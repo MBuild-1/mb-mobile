@@ -3,6 +3,9 @@ import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
 class _ConstantImpl {
+  String get restorableRouteFuturePush => "restorable-route-future-push";
+  String get restorableRouteFuturePushAndRemoveUntil => "restorable-route-future-and-remove-until";
+
   String get imageLogoSuperIndo => "assets/images/logo_superindo.png";
   String get imageSuccess => "assets/images/success.png";
   String get imageFailed => "assets/images/failed.png";

@@ -1,9 +1,14 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/services.dart';
+import 'package:get/get.dart' hide Response;
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../constant.dart';
 import '../error/cart_empty_error.dart';
+import '../error/coming_soon_error.dart';
 import '../error/message_error.dart';
 import '../error/not_found_error.dart';
+import '../error/token_empty_error.dart';
 import '../error/validation_error.dart';
 import 'error_provider.dart';
 
@@ -27,14 +32,34 @@ class DefaultErrorProvider extends ErrorProvider {
         title: e.title,
         message: e.message
       );
+    } else if (e is MultiLanguageMessageError) {
+      return ErrorProviderResult(
+        title: e.title.toStringNonNull,
+        message: e.message.toStringNonNull
+      );
     } else if (e is CartEmptyError){
       return ErrorProviderResult(
-        title: "Cart Is Empty",
-        message: "Now cart is empty."
+        title: "Cart Is Empty".tr,
+        message: "${"Now cart is empty".tr}."
+      );
+    } else if (e is TokenEmptyError) {
+      return ErrorProviderResult(
+        title: "You Are Not Login".tr,
+        message: "Please login through below button".tr
+      );
+    } else if (e is ComingSoonError) {
+      return ErrorProviderResult(
+        title: "Coming Soon".tr,
+        message: "",
+      );
+    } else if (e is PlatformException) {
+      return ErrorProviderResult(
+        title: "${"Something Failed".tr} (${e.code})",
+        message: "${e.message}"
       );
     } else {
       return ErrorProviderResult(
-        title: "Something Failed",
+        title: "Something Failed".tr,
         message: e.toString()
       );
     }
@@ -44,45 +69,87 @@ class DefaultErrorProvider extends ErrorProvider {
     DioErrorType dioErrorType = e.type;
     if (dioErrorType == DioErrorType.other) {
       return ErrorProviderResult(
-        title: "Internet Connection Problem",
-        message: "There is a problem in internet connection.",
+        title: "Internet Connection Problem".tr,
+        message: "${"There is a problem in internet connection".tr}.",
         imageAssetUrl: Constant.imageNoInternet
       );
     } else if (dioErrorType == DioErrorType.connectTimeout) {
       return ErrorProviderResult(
-        title: "Internet Connection Timeout",
-        message: "The connection of internet has been timeout.",
+        title: "Internet Connection Timeout".tr,
+        message: "${"The connection of internet has been timeout".tr}.",
         imageAssetUrl: Constant.imageNoInternet
       );
     } else if (dioErrorType == DioErrorType.sendTimeout) {
       return ErrorProviderResult(
-        title: "Internet Connection Send Timeout",
-        message: "The connection of internet has been timeout while sending.",
+        title: "Internet Connection Send Timeout".tr,
+        message: "${"The connection of internet has been timeout while sending".tr}.",
         imageAssetUrl: Constant.imageNoInternet
       );
     } else if (dioErrorType == DioErrorType.receiveTimeout) {
       return ErrorProviderResult(
-        title: "Internet Connection Receive Timeout",
-        message: "The connection of internet has been timeout while receiving.",
+        title: "Internet Connection Receive Timeout".tr,
+        message: "${"The connection of internet has been timeout while receiving".tr}.",
         imageAssetUrl: Constant.imageNoInternet
       );
     } else if (dioErrorType == DioErrorType.cancel) {
       return ErrorProviderResult(
-        title: "Request Canceled",
-        message: "Request has been canceled.",
+        title: "Request Canceled".tr,
+        message: "${"Request has been canceled".tr}.",
         imageAssetUrl: Constant.imageFailed
       );
     } else if (dioErrorType == DioErrorType.response) {
-      dynamic response = e.response?.data;
-      return ErrorProviderResult(
-        title: "Request Failed",
-        message: (response is Map ? response['message'] : (response is String ? response.substring(0, response.length > 500 ? 500 : response.length) : response)) ?? "(No Message)",
-        imageAssetUrl: Constant.imageFailed
-      );
+      if (e.response?.statusCode == 404) {
+        return ErrorProviderResult(
+          title: "Not Found".tr,
+          message: "${"Request not found (404)".tr}.",
+          imageAssetUrl: Constant.imageFailed
+        );
+      } else {
+        Response<dynamic>? response = e.response;
+        dynamic responseData = response?.data;
+        if (responseData is Map) {
+          dynamic errors = responseData['errors'];
+          if (errors != null) {
+            Map<String, dynamic> errorsMap = errors as Map<String, dynamic>;
+            String errorMessage = "";
+            void addErrorMessage(String errorMessageContent) {
+              errorMessage += "${(errorMessage.isEmptyString ? "" : "\r\n")}$errorMessageContent";
+            }
+            for (var errorValue in errorsMap.values) {
+              if (errorValue is List) {
+                for (var errorValueContent in errorValue) {
+                  addErrorMessage(errorValueContent);
+                }
+              } else {
+                addErrorMessage(errorValue);
+              }
+            }
+            return ErrorProviderResult(
+              title: "Request Failed".tr,
+              message: errorMessage.toStringNonNullWithCustomText(text: "(${"No Message".tr})"),
+              imageAssetUrl: Constant.imageFailed
+            );
+          } else {
+            String? message = responseData['message'] != null ? responseData['message']!.toString() : null;
+            return ErrorProviderResult(
+              title: "Request Failed".tr,
+              message: !message.isEmptyString ? message! : "(${"No Message".tr})",
+              imageAssetUrl: Constant.imageFailed
+            );
+          }
+        } else {
+          String effectiveResponse = responseData is String ? responseData.substring(0, responseData.length > 500 ? 500 : responseData.length) : responseData;
+          return ErrorProviderResult(
+            title: "${"Request Failed".tr} (${e.response?.statusCode})",
+            message: !effectiveResponse.isEmptyString ? effectiveResponse : "(${"No Message".tr})",
+            imageAssetUrl: Constant.imageFailed
+          );
+        }
+      }
     } else {
       return ErrorProviderResult(
-        title: "Something Wrong",
-        message: "Something wrong related with internet connection.",
+        title: "Something Wrong".tr,
+        message: "${"Something wrong related with internet connection".tr}.",
         imageAssetUrl: Constant.imageFailed
       );
     }

@@ -1,13 +1,18 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:masterbagasi/misc/ext/get_ext.dart';
-import 'package:masterbagasi/misc/typedef.dart';
 import 'package:sizer/sizer.dart';
 
+import '../controller/crop_picture_controller.dart';
 import '../presentation/page/getx_page.dart';
 import '../presentation/page/modaldialogpage/modal_dialog_page.dart';
 import '../presentation/widget/modified_loading_indicator.dart';
+import '../presentation/widget/profile_menu_item.dart';
 import 'errorprovider/error_provider.dart';
+import 'page_restoration_helper.dart';
+import 'typedef.dart';
 import 'widget_helper.dart';
 
 typedef WidgetBuilderWithPromptCallback = Widget Function(BuildContext context, VoidCallbackWithBuildContextParameter? callback);
@@ -36,7 +41,9 @@ class _DialogHelperImpl {
                   mainAxisSize: MainAxisSize.min,
                   children: const [
                     Text("Loading..."),
-                    SizedBox(height: 12.0),
+                    SizedBox(
+                      height: 12.0,
+                    ),
                     ModifiedLoadingIndicator()
                   ],
                 ),
@@ -76,33 +83,34 @@ class _DialogHelperImpl {
                       builder: (BuildContext context) {
                         Widget buildDefaultYesPromptButtonWidget(Widget textWidget) {
                           return SizedBox(
-                            height: 5.h,
                             child: TextButton(
                               onPressed: onYesPromptButtonTap != null ? () => onYesPromptButtonTap(context) : null,
-                              style: TextButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  side: BorderSide(color: Theme.of(context).colorScheme.primary, width: 1.5)
-                                ),
-                                foregroundColor: Theme.of(context).colorScheme.primary,
-                              ),
                               child: textWidget,
-                            )
-                          );
-                        }
-                        Widget buildDefaultNoPromptButtonWidget(Widget textWidget) {
-                          return SizedBox(
-                            height: 5.h,
-                            child: TextButton(
-                              onPressed: onNoPromptButtonTap != null ? () => onNoPromptButtonTap(context) : null,
                               style: TextButton.styleFrom(
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10.0),
                                 ),
                                 foregroundColor: Colors.white,
                                 backgroundColor: Theme.of(context).colorScheme.primary,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap
                               ),
+                            )
+                          );
+                        }
+                        Widget buildDefaultNoPromptButtonWidget(Widget textWidget) {
+                          return SizedBox(
+                            child: TextButton(
+                              onPressed: onNoPromptButtonTap != null ? () => onNoPromptButtonTap(context) : null,
                               child: textWidget,
+                              style:
+                              TextButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  side: BorderSide(color: Theme.of(context).colorScheme.primary, width: 1.5)
+                                ),
+                                foregroundColor: Theme.of(context).colorScheme.primary,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
                             )
                           );
                         }
@@ -120,9 +128,9 @@ class _DialogHelperImpl {
                         }
                         return Row(
                           children: [
-                            Expanded(child: yesPromptButtonWidget),
+                            Expanded(child: noPromptButtonWidget),
                             SizedBox(width: 2.w),
-                            Expanded(child: noPromptButtonWidget)
+                            Expanded(child: yesPromptButtonWidget),
                           ]
                         );
                       },
@@ -130,6 +138,170 @@ class _DialogHelperImpl {
                   ],
                 ),
               ),
+            ),
+          ),
+        );
+      }
+    );
+  }
+
+  void showPromptOkDialog({
+    required BuildContext context,
+    required WidgetBuilder prompt,
+    WidgetBuilderWithPromptCallback? okPromptButton,
+    VoidCallbackWithBuildContextParameter? onOkPromptButtonTap,
+  }) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return WillPopScope(
+          onWillPop: () async => true,
+          child: Dialog(
+            insetPadding: const EdgeInsets.all(16.0),
+            child: SizedBox(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    prompt(context),
+                    const SizedBox(height: 12.0),
+                    Builder(
+                      builder: (BuildContext context) {
+                        Widget buildDefaultYesPromptButtonWidget(Widget textWidget) {
+                          return SizedBox(
+                            child: TextButton(
+                              onPressed: onOkPromptButtonTap != null ? () => onOkPromptButtonTap(context) : null,
+                              child: textWidget,
+                              style: TextButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                foregroundColor: Colors.white,
+                                backgroundColor: Theme.of(context).colorScheme.primary,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap
+                              ),
+                            )
+                          );
+                        }
+                        Widget? yesPromptButtonWidget = okPromptButton != null ? okPromptButton(context, onOkPromptButtonTap) : null;
+                        if (yesPromptButtonWidget is Text) {
+                          yesPromptButtonWidget = buildDefaultYesPromptButtonWidget(yesPromptButtonWidget);
+                        } else {
+                          yesPromptButtonWidget = buildDefaultYesPromptButtonWidget(Text("OK".tr));
+                        }
+                        return Row(
+                          children: [
+                            Expanded(child: yesPromptButtonWidget),
+                          ]
+                        );
+                      },
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      }
+    );
+  }
+
+  void showPromptUnderConstruction(BuildContext context) {
+    DialogHelper.showPromptOkDialog(
+      context: context,
+      prompt: (context) => Column(
+        children: [
+          Text("Under Construction".tr, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+          Text("${"This feature is under construction".tr}.", textAlign: TextAlign.center)
+        ]
+      ),
+      onOkPromptButtonTap: (_) async {
+        Get.back();
+      },
+    );
+  }
+
+  void showSelectingImageDialog(BuildContext context, {dynamic parameter, double? cropAspectRatio, void Function(String)? onImageSelectedWithoutCropping, void Function()? onRemoveImage}) {
+    showDialog(
+      context: context,
+      builder: (_) {
+        return WillPopScope(
+          onWillPop: () async => true,
+          child: Dialog(
+            insetPadding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                  child: Text("Select Image With".tr, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold))
+                ),
+                ProfileMenuItem(
+                  onTap: () async {
+                    Get.back();
+                    DialogHelper.showLoadingDialog(context);
+                    ImagePicker imagePicker = ImagePicker();
+                    XFile? pickedImage = await imagePicker.pickImage(source: ImageSource.gallery);
+                    if (pickedImage != null) {
+                      if (onImageSelectedWithoutCropping != null) {
+                        onImageSelectedWithoutCropping(pickedImage.path);
+                        Get.back();
+                      } else {
+                        CropPictureParameter cropPictureParameter = CropPictureParameter(
+                          parameter: parameter,
+                          picturePath: pickedImage.path,
+                          cropAspectRatio: cropAspectRatio,
+                        );
+                        // ignore: use_build_context_synchronously
+                        PageRestorationHelper.toCropPicturePage(context, cropPictureParameter);
+                      }
+                    } else {
+                      Get.back();
+                    }
+                  },
+                  icon: (BuildContext context) => const Icon(Icons.image),
+                  title: 'Gallery'.tr,
+                ),
+                ProfileMenuItem(
+                  onTap: () async {
+                    Get.back();
+                    DialogHelper.showLoadingDialog(context);
+                    ImagePicker imagePicker = ImagePicker();
+                    XFile? pickedImage = await imagePicker.pickImage(source: ImageSource.camera);
+                    if (pickedImage != null) {
+                      if (onImageSelectedWithoutCropping != null) {
+                        onImageSelectedWithoutCropping(pickedImage.path);
+                        Get.back();
+                      } else {
+                        CropPictureParameter cropPictureParameter = CropPictureParameter(
+                          parameter: parameter,
+                          picturePath: pickedImage.path,
+                          cropAspectRatio: cropAspectRatio,
+                        );
+                        // ignore: use_build_context_synchronously
+                        PageRestorationHelper.toCropPicturePage(context, cropPictureParameter);
+                      }
+                    } else {
+                      Get.back();
+                    }
+                  },
+                  icon: (BuildContext context) => const Icon(Icons.camera),
+                  title: 'Camera'.tr,
+                ),
+                if (onRemoveImage != null)
+                  ProfileMenuItem(
+                    onTap: () {
+                      onRemoveImage();
+                      Get.back();
+                    },
+                    icon: (BuildContext context) => const Icon(Icons.delete),
+                    title: 'Remove Image'.tr,
+                  )
+              ],
             ),
           ),
         );
@@ -220,7 +392,13 @@ class _DialogHelperImpl {
       )
     );
   }
+
+  Future<FilePickerResult?> showChooseFileOrTakePhoto({bool allowMultipleSelectFiles = false}) async {
+    return await FilePicker.platform.pickFiles(
+      allowMultiple: allowMultipleSelectFiles
+    );
+  }
 }
 
 // ignore: non_constant_identifier_names
-final DialogHelper = _DialogHelperImpl();
+final _DialogHelperImpl DialogHelper = _DialogHelperImpl();

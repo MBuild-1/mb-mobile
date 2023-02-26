@@ -1,12 +1,11 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:masterbagasi/misc/ext/string_ext.dart';
 
+import '../controller/crop_picture_controller.dart';
+import '../presentation/page/crop_picture_page.dart';
 import '../presentation/page/getx_page.dart';
 import '../presentation/page/product_detail_page.dart';
 import '../presentation/page/product_page.dart';
-import 'constant.dart';
+import 'string_util.dart';
 
 class _PageRestorationHelperImpl {
   bool _checkingPageRestorationMixin<T extends GetxPageRestoration>({
@@ -50,6 +49,17 @@ class _PageRestorationHelperImpl {
     PageRestorationHelper.findPageRestorationMixin<ProductDetailPageRestorationMixin>(
       onGetxPageRestorationFound: (restoration) {
         restoration.productDetailPageRestorableRouteFuture.present(productDetailEndpoint);
+      },
+      context: context
+    );
+  }
+
+  void toCropPicturePage(BuildContext context, CropPictureParameter cropPictureParameter) {
+    PageRestorationHelper.findPageRestorationMixin<CropPicturePageRestorationMixin>(
+      onGetxPageRestorationFound: (restoration) {
+        restoration.cropPicturePageRestorableRouteFuture.present(
+          cropPictureParameter.toEncodeBase64String()
+        );
       },
       context: context
     );

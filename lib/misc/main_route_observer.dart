@@ -6,10 +6,23 @@ import '../presentation/widget/something_counter.dart';
 class _MainRouteObserver extends RouteObserver {
   Map<String, RouteWrapper?> _routeMap = {};
   Map<String, RouteWrapper?> get routeMap => _routeMap;
+  Map<String, void Function()?> _disposingEventRouteMap = {};
+  Map<String, void Function()?> get disposingEventRouteMap => _disposingEventRouteMap;
+  Map<String, BuildContext Function()?> _buildContextEventRouteMap = {};
+  Map<String, BuildContext Function()?> get buildContextEventRouteMap => _buildContextEventRouteMap;
 
   void applyNewRouteMapFromRouteKeyMap(Map<String, int> newRouteMap) {
     _routeMap = {
-      for (var key in newRouteMap.keys) key: RouteWrapper(restorationValue: newRouteMap[key] ?? 1)
+      for (var key in newRouteMap.keys) key: RouteWrapper(
+        restorationValue: newRouteMap[key] ?? 1,
+        requestLoginChangeValue: 0
+      )
+    };
+    _disposingEventRouteMap = {
+      for (var key in newRouteMap.keys) key: null
+    };
+    _buildContextEventRouteMap = {
+      for (var key in newRouteMap.keys) key: null
     };
   }
 
@@ -29,7 +42,19 @@ class _MainRouteObserver extends RouteObserver {
   @override
   void didPop(Route route, Route? previousRoute) {
     super.didPop(route, previousRoute);
-    _routeMap.remove(route.settings.name);
+    String? previousKeyMap = previousRoute?.settings.name;
+    if (routeMap.containsKey(previousKeyMap)) {
+      RouteWrapper routeWrapper = routeMap[previousKeyMap]!;
+      if (routeWrapper.requestLoginChangeValue == 1) {
+        routeWrapper.requestLoginChangeValue = 0;
+        if (routeWrapper.onLoginChange != null) {
+          routeWrapper.onLoginChange!();
+        }
+      }
+    }
+    String? keyMap = route.settings.name;
+    _routeMap[keyMap]?.onLoginChange = null;
+    _routeMap.remove(keyMap);
     _updateModifyRouteKeyMapValue(route);
     //print("Pop Route: $route");
     _showRouteMap();
@@ -38,7 +63,11 @@ class _MainRouteObserver extends RouteObserver {
   @override
   void didPush(Route route, Route? previousRoute) {
     super.didPush(route, previousRoute);
-    _routeMap[route.settings.name ?? ""] = RouteWrapper(route: route, restorationValue: 0);
+    _routeMap[route.settings.name ?? ""] = RouteWrapper(
+      route: route,
+      restorationValue: 0,
+      requestLoginChangeValue: 0
+    );
     _updateModifyRouteKeyMapValue(route);
     //print("Push Route: $route");
     _showRouteMap();
@@ -61,7 +90,11 @@ class _MainRouteObserver extends RouteObserver {
       _updateModifyRouteKeyMapValue(oldRoute);
     }
     if (newRoute != null) {
-      _routeMap[newRoute.settings.name ?? ""] = RouteWrapper(route: newRoute, restorationValue: 0);
+      _routeMap[newRoute.settings.name ?? ""] = RouteWrapper(
+        route: newRoute,
+        restorationValue: 0,
+        requestLoginChangeValue: 0
+      );
       _updateModifyRouteKeyMapValue(newRoute);
     }
     //print("Replace Route: $newRoute");
@@ -82,15 +115,19 @@ class _MainRouteObserver extends RouteObserver {
   }
 }
 
-// ignore: non_constant_identifier_names
+// ignore: library_private_types_in_public_api, non_constant_identifier_names
 final _MainRouteObserver MainRouteObserver = _MainRouteObserver();
 
 class RouteWrapper {
   Route? route;
   int restorationValue;
+  int requestLoginChangeValue;
+  void Function()? onLoginChange;
 
   RouteWrapper({
     this.route,
-    required this.restorationValue
+    required this.restorationValue,
+    required this.requestLoginChangeValue,
+    this.onLoginChange,
   });
 }

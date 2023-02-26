@@ -26,8 +26,9 @@ extension ModifiedExtensionBottomSheet on GetInterface {
       Duration? exitBottomSheetDuration,
   }) {
     Completer<T?> pushResultCompleter = Completer();
-    MaterialIgnorePointer.of(context)?.ignoring = true;
+    FocusScope.of(context).unfocus();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      MaterialIgnorePointer.of(context)?.ignoring = true;
       GetModalBottomSheetRoute<T> getModalBottomSheetRoute = ExtendedGetModalBottomSheetRoute<T>(
         builder: (_) => bottomsheet,
         isPersistent: persistent,

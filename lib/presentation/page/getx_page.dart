@@ -31,6 +31,7 @@ class _GetxPageBuilder {
       resultPage = _RestorableGetxOuterPage<T>(
         onDispose: resultPage.dispose,
         pageRestorationId: resultPage.pageRestorationId,
+        onLoginChange: resultPage.onLoginChange,
         onCreateRestoration: resultPage.createPageRestoration,
         child: restorableGetxPage,
       );
@@ -61,7 +62,8 @@ class _GetxPageBuilder {
     if (resultPage is DefaultGetxPage) {
       resultPage = _GetxOuterPage(
         onDispose: resultPage.dispose,
-        child: defaultGetxPage,
+        onLoginChange: resultPage.onLoginChange,
+        child: defaultGetxPage
       );
     }
     return resultPage;
@@ -142,12 +144,16 @@ abstract class GetxPage extends StatelessWidget {
 
   void onSetController();
 
+  void onLoginChange() {}
+
   @override
   Widget build(BuildContext context) {
     _initControllerMember();
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: _systemUiOverlayStyle,
-      child: _rawBuildPage(context)
+      child: OrientationBuilder(
+        builder: (BuildContext context, Orientation orientation) => _rawBuildPage(context),
+      )
     );
   }
 
@@ -183,7 +189,10 @@ abstract class RestorableGetxPage<T extends GetxPageRestoration> extends GetxPag
 
   @override
   Widget _rawBuildPage(BuildContext context) {
-    return buildPage(context);
+    return _StatefulRestorableGetxPage(
+      pageName: pageName,
+      child: buildPage(context)
+    );
   }
 
   Widget buildPage(BuildContext context);
@@ -203,14 +212,51 @@ abstract class RestorableGetxPage<T extends GetxPageRestoration> extends GetxPag
   }
 }
 
+class _StatefulRestorableGetxPage extends StatefulWidget {
+  final Widget child;
+  final String pageName;
+
+  const _StatefulRestorableGetxPage({
+    required this.child,
+    required this.pageName,
+  });
+
+  @override
+  State<_StatefulRestorableGetxPage> createState() => _StatefulRestorableGetxPageState();
+}
+
+class _StatefulRestorableGetxPageState extends State<_StatefulRestorableGetxPage> {
+  String get _routeMapKey => _getRouteMapKey(widget.pageName);
+
+  @override
+  void initState() {
+    MainRouteObserver.buildContextEventRouteMap[_routeMapKey] = () => context;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
+  }
+
+  @override
+  void dispose() {
+    MainRouteObserver.buildContextEventRouteMap[_routeMapKey] = null;
+    MainRouteObserver.buildContextEventRouteMap.remove(_routeMapKey);
+    super.dispose();
+  }
+}
+
 class _GetxOuterPage extends StatefulWidget {
   final Widget child;
   final VoidCallback onDispose;
+  final VoidCallback onLoginChange;
 
   const _GetxOuterPage({
     Key? key,
     required this.child,
     required this.onDispose,
+    required this.onLoginChange
   }): super(key: key);
 
   @override
@@ -241,10 +287,16 @@ class _RestorableGetxOuterPage<T extends GetxPageRestoration> extends _GetxOuter
     Key? key,
     required Widget child,
     required VoidCallback onDispose,
+    required VoidCallback onLoginChange,
     String pageName = "",
     this.pageRestorationId,
     required this.onCreateRestoration,
-  }): _pageName = pageName, super(key: key, child: child, onDispose: onDispose);
+  }): _pageName = pageName, super(
+    key: key,
+    child: child,
+    onDispose: onDispose,
+    onLoginChange: onLoginChange
+  );
 
   @override
   State<StatefulWidget> createState() => _RestorableGetxOuterPageState<T>();
@@ -261,6 +313,8 @@ class _RestorableGetxOuterPageState<T extends GetxPageRestoration> extends _Getx
   late final Restorator _restorator;
   late T _pageRestoration;
 
+  String get _routeMapKey => _getRouteMapKey(widget.pageName);
+
   _RestorableGetxOuterPageState() {
     _restorator = Restorator(this);
   }
@@ -270,6 +324,7 @@ class _RestorableGetxOuterPageState<T extends GetxPageRestoration> extends _Getx
     _pageRestoration = widget.onCreateRestoration();
     _pageRestoration._pageName = widget.pageName;
     _pageRestoration.initState();
+    MainRouteObserver.routeMap[_routeMapKey]?.onLoginChange = widget.onLoginChange;
     super.initState();
   }
 
@@ -288,8 +343,18 @@ class _RestorableGetxOuterPageState<T extends GetxPageRestoration> extends _Getx
 
   @override
   void dispose() {
-    super.dispose();
     _pageRestoration.dispose();
+    int limit = 3;
+    while (limit >= 0) {
+      var disposingEvent = MainRouteObserver.disposingEventRouteMap[_routeMapKey];
+      if (disposingEvent != null) {
+        disposingEvent();
+        break;
+      } else {
+        limit -= 1;
+      }
+    }
+    super.dispose();
   }
 }
 
@@ -385,4 +450,8 @@ class ExtendedGetPageRoute<T> extends GetPageRoute<T> {
     }
     return content;
   }
+}
+
+String _getRouteMapKey(String pageName) {
+  return "/$pageName";
 }
