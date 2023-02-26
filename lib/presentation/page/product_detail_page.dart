@@ -150,6 +150,7 @@ class ProductDetailPageRestorableRouteFuture extends GetRestorableRouteFuture {
     );
   }
 
+  @pragma('vm:entry-point')
   static Route<void> _pageRouteBuilder(BuildContext context, Object? arguments) {
     return _getRoute(arguments)!;
   }
