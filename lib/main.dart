@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
       builder: (context, orientation, deviceType) => ExtendedGetMaterialApp(
         navigatorObservers: [MainRouteObserver],
         debugShowCheckedModeBanner: false,
-        title: 'SuperIndo',
+        title: 'MasterBagasi',
         smartManagement: SmartManagement.onlyBuilder,
         onGenerateRoute: (routeSettings) {
           if (routeSettings.name == "/") {
