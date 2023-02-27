@@ -6,6 +6,9 @@ class _ConstantImpl {
   String get restorableRouteFuturePush => "restorable-route-future-push";
   String get restorableRouteFuturePushAndRemoveUntil => "restorable-route-future-and-remove-until";
 
+  String get imageIntroduction1 => "assets/images/introduction_1.png";
+  String get imageIntroduction2 => "assets/images/introduction_2.png";
+  String get imageIntroduction3 => "assets/images/introduction_3.png";
   String get imageLogoSuperIndo => "assets/images/logo_superindo.png";
   String get imageSuccess => "assets/images/success.png";
   String get imageFailed => "assets/images/failed.png";
@@ -24,8 +27,8 @@ class _ConstantImpl {
   Color get colorDarkBlack => const Color.fromRGBO(57, 57, 57, 1);
   Color get colorSurfaceBlue => const Color.fromRGBO(209, 233, 238, 1);
 
-  Color get colorMain => const Color.fromRGBO(215, 19, 10, 1);
-  Color get colorDarkMain => const Color.fromRGBO(215, 19, 10, 1);
+  Color get colorMain => const Color.fromRGBO(255, 66, 0, 1);
+  Color get colorDarkMain => colorMain;
   Color get colorNonActiveDotIndicator => colorSurfaceBlue;
   Color get colorDivider => colorGrey2;
   Color get colorBottomNavigationBarIconAndLabel => colorGrey2;
@@ -63,6 +66,8 @@ class _ConstantImpl {
 
   String get settingHiveTable => 'setting_hive_table';
   String get settingHiveTableKey => 'setting_hive_table_key';
+  String get languageSettingHiveTableKey => 'setting_language_hive_table_key';
+  String get hasVisitedIntroductionPageHiveTableKey => 'has_visited_introduction_hive_table_key';
   String get textIdKey => 'id';
   String get textTypeKey => 'type';
   String get textUrlKey => 'url';

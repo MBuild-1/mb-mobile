@@ -1,12 +1,14 @@
-import 'package:flutter/material.dart';
-
 import '../constant.dart';
 import 'extended_translation.dart';
 
 class DefaultExtendedTranslation extends ExtendedTranslation {
   @override
   Map<String, Map<String, String>> get keys => {
-    'in_ID': {}
+    Constant.textInIdLanguageKey: {
+      "Start": "Mulai",
+      "Next": "Berikutnya",
+      "Skip": "Lewati"
+    }
   };
 
   @override
