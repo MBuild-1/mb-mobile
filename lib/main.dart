@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    TextTheme textTheme = Theme.of(context).textTheme.apply(fontFamily: "Poppins");
+    TextTheme textTheme = Theme.of(context).textTheme.apply(fontFamily: "Roboto");
     textTheme = textTheme.copyWith(
       headline1: textTheme.headline1?.copyWith(color: Constant.colorTitle),
       headline2: textTheme.headline2?.copyWith(color: Constant.colorTitle),
@@ -42,7 +42,12 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'SuperIndo',
         smartManagement: SmartManagement.onlyBuilder,
-        home: GetxPageBuilder.buildRestorableGetxPage(SplashScreenPage()),
+        onGenerateRoute: (routeSettings) {
+          if (routeSettings.name == "/") {
+            return IntroductionPageRestorableRouteFuture.getRoute();
+          }
+          return null;
+        },
         defaultTransition: Transition.topLevel,
         translations: DefaultExtendedTranslation(),
         locale: Locale(Constant.textEnUsLanguageKey),
