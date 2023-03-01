@@ -14,7 +14,10 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "or login with": "atau daftar dengan",
       "This input must be an email": "Inputannya harus berupa email",
       "Login": "Masuk",
-      "Register": "Daftar"
+      "Register": "Daftar",
+      "Name is required": "Nama dibutuhkan",
+      "Password is required": "Password dibutuhkan",
+      "Password confirmation is required": "Konfirmasi password dibutuhkan"
     }
   };
 
