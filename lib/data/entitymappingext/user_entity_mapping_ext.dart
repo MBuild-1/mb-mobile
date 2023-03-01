@@ -1,0 +1,55 @@
+import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
+
+import '../../domain/entity/login/login_response.dart';
+import '../../domain/entity/register/register_response.dart';
+import '../../domain/entity/user/getuser/get_user_response.dart';
+import '../../domain/entity/user/user.dart';
+import '../../misc/response_wrapper.dart';
+
+extension UserEntityMappingExt on ResponseWrapper {
+  LoginResponse mapFromResponseToLoginResponse() {
+    return LoginResponse(
+      token: response["access_token"],
+      tokenType: response["token_type"],
+      expiresIn: response["expires_in"]
+    );
+  }
+
+  RegisterResponse mapFromResponseToRegisterResponse() {
+    return RegisterResponse(
+      token: response["access_token"],
+      tokenType: response["token_type"],
+      expiresIn: response["expires_in"]
+    );
+  }
+
+  GetUserResponse mapFromResponseToGetUserResponse() {
+    return GetUserResponse(
+      user: ResponseWrapper(response).mapFromResponseToUser()
+    );
+  }
+}
+
+extension UserDetailEntityMappingExt on ResponseWrapper {
+  User mapFromResponseToUser() {
+    return User(
+      id: response["id"],
+      name: response["name"],
+      email: response["email"],
+      role: response["role"],
+      userProfile: ResponseWrapper(response).mapFromResponseToUserProfile()
+    );
+  }
+
+  UserProfile mapFromResponseToUserProfile() {
+    return UserProfile(
+      id: response["id"],
+      userId: response["user_id"],
+      avatar: response["avatar"],
+      gender: response["gender"],
+      dateBirth: ResponseWrapper(response["date_birth"]).mapFromResponseToDateTime(),
+      placeBirth: response["place_birth"],
+      phoneNumber: response["phone_number"]
+    );
+  }
+}

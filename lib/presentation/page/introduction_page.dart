@@ -18,6 +18,7 @@ import 'package:preload_page_view/preload_page_view.dart';
 import '../widget/preload_page_controller_smooth_page_indicator.dart';
 import '../widget/rx_consumer.dart';
 import 'getx_page.dart';
+import 'login_page.dart';
 
 class IntroductionPage extends RestorableGetxPage<_IntroductionPageRestoration> {
   late final ControllerMember<IntroductionController> _introductionController = ControllerMember<IntroductionController>().addToControllerManager(controllerManager);
@@ -41,7 +42,7 @@ class IntroductionPage extends RestorableGetxPage<_IntroductionPageRestoration> 
           rxValue: _introductionController.controller.introductionPageController,
           onConsumeValue: (context, value) => _IntroductionPageView(
             pageViewControllerState: value,
-            onSkip: () {} //=> PageRestorationHelper.toMainMenuPage(context, Constant.restorableRouteFuturePushAndRemoveUntil),
+            onSkip: () => PageRestorationHelper.toLoginPage(context, Constant.restorableRouteFuturePushAndRemoveUntil),
           )
         ),
       )
@@ -49,7 +50,7 @@ class IntroductionPage extends RestorableGetxPage<_IntroductionPageRestoration> 
   }
 }
 
-class _IntroductionPageRestoration extends MixableGetxPageRestoration {
+class _IntroductionPageRestoration extends MixableGetxPageRestoration with LoginPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {

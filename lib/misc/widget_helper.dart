@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
+import '../presentation/widget/loaddataresultimplementer/load_data_result_implementer_directly.dart';
 import '../presentation/widget/prompt_indicator.dart';
 import 'constant.dart';
 import 'constrained_app_bar_return_value.dart';
+import 'defaultloaddataresultwidget/main_default_load_data_result_widget.dart';
+import 'error/token_empty_error.dart';
 import 'errorprovider/error_provider.dart';
+import 'injector.dart';
+import 'load_data_result.dart';
+import 'login_helper.dart';
+import 'page_restoration_helper.dart';
 
 class _WidgetHelperImpl {
   Widget buildPromptIndicator({
@@ -101,6 +109,29 @@ class _WidgetHelperImpl {
         child: appBarWidget ?? appBar
       ),
       appBarAndStatusHeight: appBarAndStatusHeight,
+    );
+  }
+
+  Widget checkingLogin(BuildContext context, Widget Function() resultIfHasBeenLogin, ErrorProvider errorProvider) {
+    if (LoginHelper.getTokenWithBearer().result.isNotEmpty) {
+      return resultIfHasBeenLogin();
+    }
+    return Center(
+      child: LoadDataResultImplementerDirectlyWithDefault<String>(
+        errorProvider: errorProvider,
+        loadDataResult: FailedLoadDataResult.throwException(() => throw TokenEmptyError())!,
+        onImplementLoadDataResultDirectlyWithDefault: (loadDataResult, errorProvider, defaultLoadDataResultWidget) {
+          return defaultLoadDataResultWidget.failedLoadDataResultWithButtonWidget(
+            context,
+            loadDataResult as FailedLoadDataResult<String>,
+            errorProvider,
+            failedLoadDataResultConfig: FailedLoadDataResultConfig(
+              onPressed: () => PageRestorationHelper.toLoginPage(context, Constant.restorableRouteFuturePush),
+              buttonText: "Login".tr
+            )
+          );
+        }
+      ),
     );
   }
 }

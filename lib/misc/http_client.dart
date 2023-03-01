@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
-import 'package:dio_logger/dio_logger.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import 'login_helper.dart';
+import 'modified_dio_logger.dart';
 
 class _DioHttpClientImpl {
   Dio? _dio;
@@ -10,13 +10,13 @@ class _DioHttpClientImpl {
   Dio of() {
     if (_dio == null) {
       BaseOptions baseOptions = BaseOptions(
-        baseUrl: "https://61ea514a7bc0550017bc66b4.mockapi.io/api/v1"
+        baseUrl: "https://api.masterbagasi.com/v1/mobile/"
       );
       _dio = _ModifiedDio(Dio(baseOptions));
-      _dio?.interceptors.add(dioLoggerInterceptor);
+      _dio?.interceptors.add(modifiedDioLoggerInterceptor);
     }
 
-    return _dio ?? (throw NullThrownError());
+    return _dio ?? (throw Error());
   }
 }
 
@@ -24,6 +24,7 @@ class _DioHttpClientOptionsImpl {
   Map<String, dynamic> createTokenHeader(String tokenWithBearer) {
     return <String, dynamic> {
       if (!tokenWithBearer.isEmptyString) "Authorization": tokenWithBearer,
+      "Accept": "application/json"
     };
   }
 
@@ -72,73 +73,73 @@ class _ModifiedDio implements Dio {
 
   @override
   Future<Response<T>> delete<T>(String path, {data, Map<String, dynamic>? queryParameters, Options? options, CancelToken? cancelToken})
-    => _wrappedDio.delete(path, data: data, queryParameters: queryParameters, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken);
+  => _wrappedDio.delete(path, data: data, queryParameters: queryParameters, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken);
 
   @override
   Future<Response<T>> deleteUri<T>(Uri uri, {data, Options? options, CancelToken? cancelToken})
-    => _wrappedDio.deleteUri(uri, data: data, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken);
+  => _wrappedDio.deleteUri(uri, data: data, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken);
 
   @override
   Future<Response> download(String urlPath, savePath, {ProgressCallback? onReceiveProgress, Map<String, dynamic>? queryParameters, CancelToken? cancelToken, bool deleteOnError = true, String lengthHeader = Headers.contentLengthHeader, data, Options? options})
-    => _wrappedDio.download(urlPath, savePath, onReceiveProgress: onReceiveProgress, queryParameters: queryParameters, cancelToken: cancelToken, deleteOnError: deleteOnError, lengthHeader: lengthHeader, data: data, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false));
+  => _wrappedDio.download(urlPath, savePath, onReceiveProgress: onReceiveProgress, queryParameters: queryParameters, cancelToken: cancelToken, deleteOnError: deleteOnError, lengthHeader: lengthHeader, data: data, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false));
 
   @override
   Future<Response> downloadUri(Uri uri, savePath, {ProgressCallback? onReceiveProgress, CancelToken? cancelToken, bool deleteOnError = true, String lengthHeader = Headers.contentLengthHeader, data, Options? options})
-    => _wrappedDio.downloadUri(uri, savePath, onReceiveProgress: onReceiveProgress, cancelToken: cancelToken, deleteOnError: deleteOnError, lengthHeader: lengthHeader, data: data, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false));
+  => _wrappedDio.downloadUri(uri, savePath, onReceiveProgress: onReceiveProgress, cancelToken: cancelToken, deleteOnError: deleteOnError, lengthHeader: lengthHeader, data: data, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false));
 
   @override
   Future<Response<T>> fetch<T>(RequestOptions requestOptions) => _wrappedDio.fetch(requestOptions);
 
   @override
   Future<Response<T>> get<T>(String path, {Map<String, dynamic>? queryParameters, Options? options, CancelToken? cancelToken, ProgressCallback? onReceiveProgress})
-    => _wrappedDio.get(path, queryParameters: queryParameters, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken, onReceiveProgress: onReceiveProgress);
+  => _wrappedDio.get(path, queryParameters: queryParameters, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken, onReceiveProgress: onReceiveProgress);
 
   @override
   Future<Response<T>> getUri<T>(Uri uri, {Options? options, CancelToken? cancelToken, ProgressCallback? onReceiveProgress})
-    => _wrappedDio.getUri(uri, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken, onReceiveProgress: onReceiveProgress);
+  => _wrappedDio.getUri(uri, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken, onReceiveProgress: onReceiveProgress);
 
   @override
   Future<Response<T>> head<T>(String path, {data, Map<String, dynamic>? queryParameters, Options? options, CancelToken? cancelToken})
-    => _wrappedDio.head(path, data: data, queryParameters: queryParameters, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken);
+  => _wrappedDio.head(path, data: data, queryParameters: queryParameters, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken);
 
   @override
   Future<Response<T>> headUri<T>(Uri uri, {data, Options? options, CancelToken? cancelToken})
-    => _wrappedDio.headUri(uri, data: data, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken);
+  => _wrappedDio.headUri(uri, data: data, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken);
 
   @override
   void lock() => _wrappedDio.lock();
 
   @override
   Future<Response<T>> patch<T>(String path, {data, Map<String, dynamic>? queryParameters, Options? options, CancelToken? cancelToken, ProgressCallback? onSendProgress, ProgressCallback? onReceiveProgress})
-    => _wrappedDio.patch(path, data: data, queryParameters: queryParameters, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
+  => _wrappedDio.patch(path, data: data, queryParameters: queryParameters, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
 
   @override
   Future<Response<T>> patchUri<T>(Uri uri, {data, Options? options, CancelToken? cancelToken, ProgressCallback? onSendProgress, ProgressCallback? onReceiveProgress})
-    => _wrappedDio.patchUri(uri, data: data, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
+  => _wrappedDio.patchUri(uri, data: data, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
 
   @override
   Future<Response<T>> post<T>(String path, {data, Map<String, dynamic>? queryParameters, Options? options, CancelToken? cancelToken, ProgressCallback? onSendProgress, ProgressCallback? onReceiveProgress})
-    => _wrappedDio.post(path, data: data, queryParameters: queryParameters, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
+  => _wrappedDio.post(path, data: data, queryParameters: queryParameters, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
 
   @override
   Future<Response<T>> postUri<T>(Uri uri, {data, Options? options, CancelToken? cancelToken, ProgressCallback? onSendProgress, ProgressCallback? onReceiveProgress})
-    => _wrappedDio.postUri(uri, data: data, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
+  => _wrappedDio.postUri(uri, data: data, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
 
   @override
   Future<Response<T>> put<T>(String path, {data, Map<String, dynamic>? queryParameters, Options? options, CancelToken? cancelToken, ProgressCallback? onSendProgress, ProgressCallback? onReceiveProgress})
-    => _wrappedDio.put(path, data: data, queryParameters: queryParameters, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
+  => _wrappedDio.put(path, data: data, queryParameters: queryParameters, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
 
   @override
   Future<Response<T>> putUri<T>(Uri uri, {data, Options? options, CancelToken? cancelToken, ProgressCallback? onSendProgress, ProgressCallback? onReceiveProgress})
-    => _wrappedDio.putUri(uri, data: data, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
+  => _wrappedDio.putUri(uri, data: data, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
 
   @override
   Future<Response<T>> request<T>(String path, {data, Map<String, dynamic>? queryParameters, CancelToken? cancelToken, Options? options, ProgressCallback? onSendProgress, ProgressCallback? onReceiveProgress})
-    => _wrappedDio.request(path, data: data, queryParameters: queryParameters, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
+  => _wrappedDio.request(path, data: data, queryParameters: queryParameters, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
 
   @override
   Future<Response<T>> requestUri<T>(Uri uri, {data, CancelToken? cancelToken, Options? options, ProgressCallback? onSendProgress, ProgressCallback? onReceiveProgress})
-    => _wrappedDio.requestUri(uri, data: data, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
+  => _wrappedDio.requestUri(uri, data: data, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
 
   @override
   void unlock() => _wrappedDio.unlock();

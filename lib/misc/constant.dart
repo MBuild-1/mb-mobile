@@ -13,7 +13,7 @@ class _ConstantImpl {
   String get imageSuccess => "assets/images/success.png";
   String get imageFailed => "assets/images/failed.png";
   String get imageNoInternet => imageFailed;
-  String get forgotPassword => "assets/images/forget_password.png";
+  String get imageLogin => "assets/images/login.png";
 
   Color get colorYellow => const Color.fromRGBO(244, 184, 43, 1);
   Color get colorRed => const Color.fromRGBO(255, 86, 76, 1);
@@ -26,6 +26,7 @@ class _ConstantImpl {
   Color get colorSuccessGreen => const Color.fromRGBO(67, 147, 108, 1);
   Color get colorDarkBlack => const Color.fromRGBO(57, 57, 57, 1);
   Color get colorSurfaceBlue => const Color.fromRGBO(209, 233, 238, 1);
+  Color get colorDarkBlue => const Color.fromRGBO(37, 37, 140, 1);
 
   Color get colorMain => const Color.fromRGBO(255, 66, 0, 1);
   Color get colorDarkMain => colorMain;
@@ -53,6 +54,9 @@ class _ConstantImpl {
   Color get colorLike => colorRed;
   Color get colorDiscount => colorBrown;
   Color get colorSelectedFilterButton => colorSurfaceBlue;
+  Color get colorButtonGradient1 => const Color.fromRGBO(16, 16, 91, 1);
+  Color get colorButtonGradient2 => const Color.fromRGBO(255, 66, 0, 1);
+  Color get colorButtonGradient3 => const Color.fromRGBO(0, 169, 234, 1);
 
   double get heightSpacingListItem => (1.5).h;
   double get paddingListItem => 4.w;

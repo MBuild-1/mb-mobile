@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../controller/crop_picture_controller.dart';
 import '../presentation/page/crop_picture_page.dart';
 import '../presentation/page/getx_page.dart';
+import '../presentation/page/login_page.dart';
 import '../presentation/page/product_detail_page.dart';
 import '../presentation/page/product_page.dart';
 import 'string_util.dart';
@@ -34,6 +35,15 @@ class _PageRestorationHelperImpl {
         return _checkingPageRestorationMixin(checkingWidget: element.widget, onGetxPageRestorationFound: onGetxPageRestorationFound, context: context);
       });
     }
+  }
+
+  void toLoginPage(BuildContext context, String restorableRouteFuturePushParameter) {
+    PageRestorationHelper.findPageRestorationMixin<LoginPageRestorationMixin>(
+      onGetxPageRestorationFound: (restoration) {
+        restoration.loginPageRestorableRouteFuture.present(restorableRouteFuturePushParameter);
+      },
+      context: context
+    );
   }
 
   void toProductPage(BuildContext context) {

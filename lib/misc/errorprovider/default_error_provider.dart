@@ -108,25 +108,45 @@ class DefaultErrorProvider extends ErrorProvider {
         Response<dynamic>? response = e.response;
         dynamic responseData = response?.data;
         if (responseData is Map) {
-          dynamic errors = responseData['errors'];
+          dynamic errorMeta = responseData['meta'];
+          dynamic errors = responseData['data'];
           if (errors != null) {
-            Map<String, dynamic> errorsMap = errors as Map<String, dynamic>;
-            String errorMessage = "";
-            void addErrorMessage(String errorMessageContent) {
-              errorMessage += "${(errorMessage.isEmptyString ? "" : "\r\n")}$errorMessageContent";
-            }
-            for (var errorValue in errorsMap.values) {
-              if (errorValue is List) {
-                for (var errorValueContent in errorValue) {
-                  addErrorMessage(errorValueContent);
+            if (errors is Map) {
+              Map<String, dynamic> errorsMap = errors as Map<String, dynamic>;
+              String errorMessage = "";
+              void addErrorMessage(String errorMessageContent) {
+                errorMessage += "${(errorMessage.isEmptyString ? "" : "\r\n")}$errorMessageContent";
+              }
+              for (var errorValue in errorsMap.values) {
+                if (errorValue is List) {
+                  for (var errorValueContent in errorValue) {
+                    addErrorMessage(errorValueContent);
+                  }
+                } else {
+                  addErrorMessage(errorValue);
                 }
-              } else {
-                addErrorMessage(errorValue);
+              }
+              return ErrorProviderResult(
+                title: "Request Failed".tr,
+                message: errorMessage.toStringNonNullWithCustomText(text: "(${"No Message".tr})"),
+                imageAssetUrl: Constant.imageFailed
+              );
+            } else if (errors is List) {
+              if (errors.isEmpty) {
+                if (errorMeta is Map) {
+                  if (errorMeta.containsKey('message')) {
+                    return ErrorProviderResult(
+                      title: "Request Failed".tr,
+                      message: errorMeta['message'],
+                      imageAssetUrl: Constant.imageFailed
+                    );
+                  }
+                }
               }
             }
             return ErrorProviderResult(
-              title: "Request Failed".tr,
-              message: errorMessage.toStringNonNullWithCustomText(text: "(${"No Message".tr})"),
+              title: "${"Request Failed".tr} (${e.response?.statusCode})",
+              message: "(${"No Message".tr})",
               imageAssetUrl: Constant.imageFailed
             );
           } else {

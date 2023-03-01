@@ -4,10 +4,17 @@ import 'package:masterbagasi/domain/usecase/get_product_list.dart';
 
 import '../data/datasource/productdatasource/default_product_data_source.dart';
 import '../data/datasource/productdatasource/product_data_source.dart';
+import '../data/datasource/userdatasource/default_user_data_source.dart';
+import '../data/datasource/userdatasource/user_data_source.dart';
 import '../data/repository/default_product_repository.dart';
+import '../data/repository/default_user_repository.dart';
 import '../domain/repository/product_repository.dart';
+import '../domain/repository/user_repository.dart';
 import '../domain/usecase/get_most_discount_product_from_cached_product_list.dart';
 import '../domain/usecase/get_product_detail.dart';
+import '../domain/usecase/get_user_use_case.dart';
+import '../domain/usecase/login_use_case.dart';
+import '../domain/usecase/register_use_case.dart';
 import 'additionalloadingindicatorchecker/home_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/product_detail_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/product_paging_result_parameter_checker.dart';
@@ -47,14 +54,19 @@ class _Injector {
     locator.registerLazySingleton<DefaultLoadDataResultWidget>(() => MainDefaultLoadDataResultWidget());
 
     // Use Case
+    locator.registerLazySingleton<LoginUseCase>(() => LoginUseCase(userRepository: locator()));
+    locator.registerLazySingleton<RegisterUseCase>(() => RegisterUseCase(userRepository: locator()));
+    locator.registerLazySingleton<GetUserUseCase>(() => GetUserUseCase(userRepository: locator()));
     locator.registerLazySingleton<GetProductList>(() => GetProductList(productRepository: locator()));
     locator.registerLazySingleton<GetProductDetail>(() => GetProductDetail(productRepository: locator()));
     locator.registerLazySingleton<GetMostDiscountProductFromCachedProductList>(() => GetMostDiscountProductFromCachedProductList());
 
     // Repository
+    locator.registerLazySingleton<UserRepository>(() => DefaultUserRepository(userDataSource: locator()));
     locator.registerLazySingleton<ProductRepository>(() => DefaultProductRepository(productDataSource: locator()));
 
     // Data Sources
+    locator.registerLazySingleton<UserDataSource>(() => DefaultUserDataSource(dio: locator()));
     locator.registerLazySingleton<ProductDataSource>(() => DefaultProductDataSource(dio: locator()));
 
     // Dio
