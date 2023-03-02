@@ -29,6 +29,7 @@ import '../widget/password_obscurer.dart';
 import '../widget/rx_consumer.dart';
 import '../widget/button/sized_text_button.dart';
 import 'getx_page.dart';
+import 'register_page.dart';
 
 class LoginPage extends RestorableGetxPage<_LoginPageRestoration> {
   late final ControllerMember<LoginController> _loginController = ControllerMember<LoginController>().addToControllerManager(controllerManager);
@@ -55,7 +56,7 @@ class LoginPage extends RestorableGetxPage<_LoginPageRestoration> {
   }
 }
 
-class _LoginPageRestoration extends MixableGetxPageRestoration {
+class _LoginPageRestoration extends MixableGetxPageRestoration with RegisterPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
@@ -286,7 +287,7 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
                 SizedOutlineGradientButton(
                   width: double.infinity,
                   onPressed: widget.loginController.login,
-                  text: "Next".tr,
+                  text: "Login".tr,
                 ),
                 SizedBox(height: 3.h),
                 Row(
@@ -314,7 +315,7 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
                 SizedBox(height: 2.h),
                 Builder(
                   builder: (context) {
-                    _signUpTapGestureRecognizer.onTap = () {}; //() => PageRestorationHelper.toRegisterCheckAccountPage(context);
+                    _signUpTapGestureRecognizer.onTap = () => PageRestorationHelper.toRegisterPage(context);
                     return Text.rich("New to MasterBagasi".trTextSpan(parameter: _signUpTapGestureRecognizer));
                   }
                 )
