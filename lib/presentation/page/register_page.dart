@@ -208,7 +208,7 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
       appBar: ModifiedAppBar(
         titleInterceptor: (context, title) => Row(
           children: [
-            Text("Login".tr),
+            Text("Register".tr),
             Expanded(
               child: title ?? Container()
             ),
@@ -217,7 +217,7 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
               softWrap: false,
               overflow: TextOverflow.ellipsis,
               child: GestureDetector(
-                child: Text("Register".tr),
+                child: Text("Login".tr),
               ),
             ),
           ],
@@ -255,6 +255,26 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
                       ),
                       onChanged: (value) => validator?.validate(),
                       textInputAction: TextInputAction.next,
+                      keyboardType: TextInputType.emailAddress,
+                    ),
+                    validator: value,
+                  ),
+                ),
+                SizedBox(height: 3.h),
+                RxConsumer<Validator>(
+                  rxValue: widget.registerController.nameValidatorRx,
+                  onConsumeValue: (context, value) => Field(
+                    child: (context, validationResult, validator) => ModifiedTextField(
+                      isError: validationResult.isFailed,
+                      controller: _nameTextEditingController,
+                      decoration: DefaultInputDecoration(
+                        label: Text("Name".tr),
+                        labelStyle: const TextStyle(color: Colors.black),
+                        floatingLabelStyle: const TextStyle(color: Colors.black),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                      ),
+                      onChanged: (value) => validator?.validate(),
+                      textInputAction: TextInputAction.next,
                     ),
                     validator: value,
                   ),
@@ -279,7 +299,32 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
                       obscureText: _obscurePassword,
                       onChanged: (value) => validator?.validate(),
                       textInputAction: TextInputAction.done,
-                      onEditingComplete: widget.registerController.login,
+                      onEditingComplete: widget.registerController.register,
+                    ),
+                    validator: value,
+                  )
+                ),
+                SizedBox(height: 3.h),
+                RxConsumer<Validator>(
+                  rxValue: widget.registerController.passwordValidatorRx,
+                  onConsumeValue: (context, value) => Field(
+                    child: (context, validationResult, validator) => ModifiedTextField(
+                      isError: validationResult.isFailed,
+                      controller: _passwordTextEditingController,
+                      decoration: DefaultInputDecoration(
+                        label: Text("Password Confirmation".tr),
+                        labelStyle: const TextStyle(color: Colors.black),
+                        floatingLabelStyle: const TextStyle(color: Colors.black),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        suffixIcon: PasswordObscurer(
+                          obscurePassword: _obscurePassword,
+                          onObscurePassword: () => setState(() => _obscurePassword = !_obscurePassword),
+                        )
+                      ),
+                      obscureText: _obscurePassword,
+                      onChanged: (value) => validator?.validate(),
+                      textInputAction: TextInputAction.done,
+                      onEditingComplete: widget.registerController.register,
                     ),
                     validator: value,
                   )
@@ -287,8 +332,8 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
                 SizedBox(height: 3.h),
                 SizedOutlineGradientButton(
                   width: double.infinity,
-                  onPressed: widget.registerController.login,
-                  text: "Next".tr,
+                  onPressed: widget.registerController.register,
+                  text: "Register".tr,
                 ),
                 SizedBox(height: 3.h),
                 Row(
@@ -297,7 +342,7 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
                       child: Divider()
                     ),
                     SizedBox(width: 6.w),
-                    Text("or login with".tr, style: TextStyle(
+                    Text("or register with".tr, style: TextStyle(
                       color: Theme.of(context).dividerTheme.color
                     )),
                     SizedBox(width: 6.w),
@@ -310,7 +355,7 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
                 SizedOutlineGradientButton(
                   width: double.infinity,
                   outlineGradientButtonType: OutlineGradientButtonType.outline,
-                  onPressed: widget.registerController.login,
+                  onPressed: widget.registerController.register,
                   text: "Other Method".tr,
                 ),
                 SizedBox(height: 2.h),

@@ -26,8 +26,9 @@ class RegisterController extends BaseGetxController {
   final RegisterUseCase registerUseCase;
 
   late Rx<Validator> emailValidatorRx;
+  late Rx<Validator> nameValidatorRx;
   late Rx<Validator> passwordValidatorRx;
-  late Rx<Validator> testValidatorRx;
+  late Rx<Validator> passwordConfirmationValidatorRx;
   late final RegisterValidatorGroup registerValidatorGroup;
 
   RegisterDelegate? _registerDelegate;
@@ -48,7 +49,9 @@ class RegisterController extends BaseGetxController {
       ),
     );
     emailValidatorRx = registerValidatorGroup.emailValidator.obs;
+    nameValidatorRx = registerValidatorGroup.nameValidator.obs;
     passwordValidatorRx = registerValidatorGroup.passwordValidator.obs;
+    passwordConfirmationValidatorRx = registerValidatorGroup.passwordConfirmationValidator.obs;
   }
 
   RegisterController setRegisterDelegate(RegisterDelegate registerDelegate) {
@@ -56,7 +59,7 @@ class RegisterController extends BaseGetxController {
     return this;
   }
 
-  void login() async {
+  void register() async {
     if (_registerDelegate != null) {
       _registerDelegate!.onUnfocusAllWidget();
       if (registerValidatorGroup.validate()) {

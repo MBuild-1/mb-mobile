@@ -6,7 +6,7 @@ import '../presentation/page/getx_page.dart';
 import '../presentation/page/login_page.dart';
 import '../presentation/page/product_detail_page.dart';
 import '../presentation/page/product_page.dart';
-import 'string_util.dart';
+import '../presentation/page/register_page.dart';
 
 class _PageRestorationHelperImpl {
   bool _checkingPageRestorationMixin<T extends GetxPageRestoration>({
@@ -41,6 +41,15 @@ class _PageRestorationHelperImpl {
     PageRestorationHelper.findPageRestorationMixin<LoginPageRestorationMixin>(
       onGetxPageRestorationFound: (restoration) {
         restoration.loginPageRestorableRouteFuture.present(restorableRouteFuturePushParameter);
+      },
+      context: context
+    );
+  }
+
+  void toRegisterPage(BuildContext context) {
+    PageRestorationHelper.findPageRestorationMixin<RegisterPageRestorationMixin>(
+      onGetxPageRestorationFound: (restoration) {
+        restoration.registerPageRestorableRouteFuture.present();
       },
       context: context
     );
