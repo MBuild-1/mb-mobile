@@ -13,11 +13,13 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Other Method": "Metode Lain",
       "or login with": "atau daftar dengan",
       "This input must be an email": "Inputannya harus berupa email",
+      "Email is required": "Email dibutuhkan",
       "Login": "Masuk",
       "Register": "Daftar",
       "Name is required": "Nama dibutuhkan",
       "Password is required": "Password dibutuhkan",
-      "Password confirmation is required": "Konfirmasi password dibutuhkan"
+      "Password confirmation is required": "Konfirmasi password dibutuhkan",
+      "Password must be same with password confirmation": "Password harus sama dengan konfirmasi password"
     }
   };
 

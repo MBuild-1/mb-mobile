@@ -11,6 +11,7 @@ import '../misc/login_helper.dart';
 import '../misc/manager/controller_manager.dart';
 import '../misc/typedef.dart';
 import '../misc/validation/validation_result.dart';
+import '../misc/validation/validator/compoundvalidator/password_compound_validator.dart';
 import '../misc/validation/validator/email_validator.dart';
 import '../misc/validation/validator/validator.dart';
 import '../misc/validation/validatorgroup/register_validator_group.dart';
@@ -27,8 +28,7 @@ class RegisterController extends BaseGetxController {
 
   late Rx<Validator> emailValidatorRx;
   late Rx<Validator> nameValidatorRx;
-  late Rx<Validator> passwordValidatorRx;
-  late Rx<Validator> passwordConfirmationValidatorRx;
+  late Rx<PasswordCompoundValidator> passwordCompoundValidatorRx;
   late final RegisterValidatorGroup registerValidatorGroup;
 
   RegisterDelegate? _registerDelegate;
@@ -41,17 +41,26 @@ class RegisterController extends BaseGetxController {
       nameValidator: Validator(
         onValidate: () => !_registerDelegate!.onGetNameRegisterInput().isEmptyString ? SuccessValidationResult() : FailedValidationResult(e: ValidationError(message: "${"Name is required".tr}."))
       ),
-      passwordValidator: Validator(
-        onValidate: () => !_registerDelegate!.onGetPasswordRegisterInput().isEmptyString ? SuccessValidationResult() : FailedValidationResult(e: ValidationError(message: "${"Password is required".tr}."))
-      ),
-      passwordConfirmationValidator: Validator(
-        onValidate: () => !_registerDelegate!.onGetPasswordConfirmationRegisterInput().isEmptyString ? SuccessValidationResult() : FailedValidationResult(e: ValidationError(message: "${"Password confirmation is required".tr}."))
-      ),
+      passwordCompoundValidator: PasswordCompoundValidator(
+        passwordValidator: Validator(
+          onValidate: () => !_registerDelegate!.onGetPasswordRegisterInput().isEmptyString ? SuccessValidationResult() : FailedValidationResult(e: ValidationError(message: "${"Password is required".tr}."))
+        ),
+        passwordConfirmationValidator: Validator(
+          onValidate: () {
+            String password = _registerDelegate!.onGetPasswordRegisterInput();
+            String passwordConfirmation = _registerDelegate!.onGetPasswordConfirmationRegisterInput();
+            if (password != passwordConfirmation) {
+              return FailedValidationResult(e: ValidationError(message: "${"Password must be same with password confirmation".tr}."));
+            } else {
+              return SuccessValidationResult();
+            }
+          }
+        )
+      )
     );
     emailValidatorRx = registerValidatorGroup.emailValidator.obs;
     nameValidatorRx = registerValidatorGroup.nameValidator.obs;
-    passwordValidatorRx = registerValidatorGroup.passwordValidator.obs;
-    passwordConfirmationValidatorRx = registerValidatorGroup.passwordConfirmationValidator.obs;
+    passwordCompoundValidatorRx = registerValidatorGroup.passwordCompoundValidator.obs;
   }
 
   RegisterController setRegisterDelegate(RegisterDelegate registerDelegate) {

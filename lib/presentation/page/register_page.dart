@@ -19,6 +19,7 @@ import '../../misc/main_route_observer.dart';
 import '../../misc/manager/controller_manager.dart';
 import '../../misc/navigation_helper.dart';
 import '../../misc/recognizer/sign_up_recognizer.dart';
+import '../../misc/validation/validator/compoundvalidator/password_compound_validator.dart';
 import '../../misc/validation/validator/validator.dart';
 import '../notifier/login_notifier.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
@@ -171,6 +172,7 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
   final TapGestureRecognizer _termAndConditionsTapGestureRecognizer = TapGestureRecognizer();
   final TapGestureRecognizer _privacyPolicyTapGestureRecognizer = TapGestureRecognizer();
   bool _obscurePassword = false;
+  bool _obscurePasswordConfirmation = false;
 
   @override
   void initState() {
@@ -280,9 +282,9 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
                   ),
                 ),
                 SizedBox(height: 3.h),
-                RxConsumer<Validator>(
-                  rxValue: widget.registerController.passwordValidatorRx,
-                  onConsumeValue: (context, value) => Field(
+                RxConsumer<PasswordCompoundValidator>(
+                  rxValue: widget.registerController.passwordCompoundValidatorRx,
+                  onConsumeValue: (context, passwordCompoundValidator) => Field(
                     child: (context, validationResult, validator) => ModifiedTextField(
                       isError: validationResult.isFailed,
                       controller: _passwordTextEditingController,
@@ -297,36 +299,35 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
                         )
                       ),
                       obscureText: _obscurePassword,
-                      onChanged: (value) => validator?.validate(),
-                      textInputAction: TextInputAction.done,
-                      onEditingComplete: widget.registerController.register,
+                      onChanged: (value) => passwordCompoundValidator.validate(),
+                      textInputAction: TextInputAction.next,
                     ),
-                    validator: value,
+                    validator: passwordCompoundValidator.passwordValidator,
                   )
                 ),
                 SizedBox(height: 3.h),
-                RxConsumer<Validator>(
-                  rxValue: widget.registerController.passwordValidatorRx,
-                  onConsumeValue: (context, value) => Field(
+                RxConsumer<PasswordCompoundValidator>(
+                  rxValue: widget.registerController.passwordCompoundValidatorRx,
+                  onConsumeValue: (context, passwordCompoundValidator) => Field(
                     child: (context, validationResult, validator) => ModifiedTextField(
                       isError: validationResult.isFailed,
-                      controller: _passwordTextEditingController,
+                      controller: _passwordConfirmationTextEditingController,
                       decoration: DefaultInputDecoration(
                         label: Text("Password Confirmation".tr),
                         labelStyle: const TextStyle(color: Colors.black),
                         floatingLabelStyle: const TextStyle(color: Colors.black),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                         suffixIcon: PasswordObscurer(
-                          obscurePassword: _obscurePassword,
-                          onObscurePassword: () => setState(() => _obscurePassword = !_obscurePassword),
+                          obscurePassword: _obscurePasswordConfirmation,
+                          onObscurePassword: () => setState(() => _obscurePasswordConfirmation = !_obscurePasswordConfirmation),
                         )
                       ),
-                      obscureText: _obscurePassword,
-                      onChanged: (value) => validator?.validate(),
+                      obscureText: _obscurePasswordConfirmation,
+                      onChanged: (value) => passwordCompoundValidator.validate(),
                       textInputAction: TextInputAction.done,
                       onEditingComplete: widget.registerController.register,
                     ),
-                    validator: value,
+                    validator: passwordCompoundValidator.passwordConfirmationValidator,
                   )
                 ),
                 SizedBox(height: 3.h),
