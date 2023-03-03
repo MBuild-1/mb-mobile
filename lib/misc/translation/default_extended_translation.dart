@@ -54,7 +54,7 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       ),
     },
     'in_ID': {
-      'New to MasterBagasi>': (signUpTapGestureRecognizer) => TextSpan(
+      'New to MasterBagasi': (signUpTapGestureRecognizer) => TextSpan(
         children: <InlineSpan>[
           const TextSpan(
             text: "Belum punya akun MasterBagasi? ",
