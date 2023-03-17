@@ -20,14 +20,12 @@ import '../../misc/page_restoration_helper.dart';
 import '../../misc/routeargument/login_route_argument.dart';
 import '../../misc/validation/validator/validator.dart';
 import '../notifier/login_notifier.dart';
-import '../widget/button/custombutton/outline_gradient_button.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/field.dart';
 import '../widget/modified_text_field.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import '../widget/password_obscurer.dart';
 import '../widget/rx_consumer.dart';
-import '../widget/button/sized_text_button.dart';
 import 'getx_page.dart';
 import 'register_page.dart';
 

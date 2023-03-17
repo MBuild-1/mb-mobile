@@ -124,10 +124,7 @@ flutter:
   assets:
     - assets/images/
     - assets/vectors/
-    - assets/vectors/home/
-    - assets/vectors/transaction/
-    - assets/vectors/wishlist/
-    - assets/vectors/feed/
+    - assets/vectors/mainmenu/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

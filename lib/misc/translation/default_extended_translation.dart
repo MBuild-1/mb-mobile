@@ -19,7 +19,12 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Name is required": "Nama dibutuhkan",
       "Password is required": "Password dibutuhkan",
       "Password confirmation is required": "Konfirmasi password dibutuhkan",
-      "Password must be same with password confirmation": "Password harus sama dengan konfirmasi password"
+      "Password must be same with password confirmation": "Password harus sama dengan konfirmasi password",
+      "Shipped to": "Dikirim ke",
+      "sold": "terjual",
+      "No Weight": "Tidak Ada Berat",
+      "No Sold Count": "Tidak Ada Terjual",
+      "Check Rates to Other Countries": "Cek Tarif ke Negara Lainnya"
     }
   };
 

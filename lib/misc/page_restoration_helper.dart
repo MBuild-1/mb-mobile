@@ -4,8 +4,7 @@ import '../controller/crop_picture_controller.dart';
 import '../presentation/page/crop_picture_page.dart';
 import '../presentation/page/getx_page.dart';
 import '../presentation/page/login_page.dart';
-import '../presentation/page/product_detail_page.dart';
-import '../presentation/page/product_page.dart';
+import '../presentation/page/mainmenu/main_menu_page.dart';
 import '../presentation/page/register_page.dart';
 
 class _PageRestorationHelperImpl {
@@ -46,28 +45,19 @@ class _PageRestorationHelperImpl {
     );
   }
 
+  void toMainMenuPage(BuildContext context, String restorableRouteFuturePushParameter) {
+    PageRestorationHelper.findPageRestorationMixin<MainMenuPageRestorationMixin>(
+      onGetxPageRestorationFound: (restoration) {
+        restoration.mainMenuPageRestorableRouteFuture.present(restorableRouteFuturePushParameter);
+      },
+      context: context
+    );
+  }
+
   void toRegisterPage(BuildContext context) {
     PageRestorationHelper.findPageRestorationMixin<RegisterPageRestorationMixin>(
       onGetxPageRestorationFound: (restoration) {
         restoration.registerPageRestorableRouteFuture.present();
-      },
-      context: context
-    );
-  }
-
-  void toProductPage(BuildContext context) {
-    PageRestorationHelper.findPageRestorationMixin<ProductPageRestorationMixin>(
-      onGetxPageRestorationFound: (restoration) {
-        restoration.productPageRestorableRouteFuture.present();
-      },
-      context: context
-    );
-  }
-
-  void toProductDetailPage(String productDetailEndpoint, BuildContext context) {
-    PageRestorationHelper.findPageRestorationMixin<ProductDetailPageRestorationMixin>(
-      onGetxPageRestorationFound: (restoration) {
-        restoration.productDetailPageRestorableRouteFuture.present(productDetailEndpoint);
       },
       context: context
     );

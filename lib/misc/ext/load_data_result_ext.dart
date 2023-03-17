@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+
 import '../error/load_data_result_error.dart';
 import '../load_data_result.dart';
 
@@ -6,6 +8,17 @@ typedef MapLoadDataResultType<O, T> = O Function(T);
 extension LoadDataResultExt<T> on LoadDataResult<T> {
   bool get isSuccess => this is SuccessLoadDataResult<T>;
   bool get isFailed => this is FailedLoadDataResult<T>;
+  bool get isFailedBecauseCancellation {
+    if (isFailed) {
+      dynamic e = resultIfFailed!;
+      if (e is DioError) {
+        if (e.type == DioErrorType.cancel) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
   bool get isLoading => this is IsLoadingLoadDataResult<T>;
   bool get isNotLoading => this is NoLoadDataResult<T>;
   T? get resultIfSuccess => isSuccess ? (this as SuccessLoadDataResult<T>).value : null;

@@ -3,6 +3,7 @@ import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../misc/constant.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/shimmercarousellistitemgenerator/shimmer_carousel_list_item_generator.dart';
 import '../../misc/shimmercarousellistitemgenerator/type/shimmer_carousel_list_item_generator_type.dart';
 import '../../misc/typedef.dart';
@@ -40,14 +41,14 @@ class CarouselListItem<T> extends StatelessWidget {
   }
 }
 
-class ShimmerCarouselListItem<T, G extends ShimmerCarouselListItemGeneratorType> extends StatelessWidget {
-  final WidgetBuilderWithItem<T> builderWithItem;
+class ShimmerCarouselListItem<G extends ShimmerCarouselListItemGeneratorType> extends StatelessWidget {
+  final WidgetBuilderWithItem<ListItemControllerState> builderWithItem;
   final EdgeInsetsGeometry? padding;
   final double? betweenTitleDescriptionAndCarouselItemVerticalSpace;
   final bool showTitleShimmer;
   final bool showDescriptionShimmer;
   final bool showItemShimmer;
-  final ShimmerCarouselListItemGenerator<T, G> shimmerCarouselListItemGenerator;
+  final ShimmerCarouselListItemGenerator<G> shimmerCarouselListItemGenerator;
 
   const ShimmerCarouselListItem({
     Key? key,
@@ -64,12 +65,12 @@ class ShimmerCarouselListItem<T, G extends ShimmerCarouselListItemGeneratorType>
   Widget build(BuildContext context) {
     return IgnorePointer(
       child: ModifiedShimmer.fromColors(
-        child: _InnerCarouselListItem<T>(
+        child: _InnerCarouselListItem<ListItemControllerState>(
           padding: padding,
           betweenTitleDescriptionAndCarouselItemVerticalSpace: betweenTitleDescriptionAndCarouselItemVerticalSpace,
           title: showTitleShimmer ? "Dummy Title" : "",
           description: showDescriptionShimmer ? "Dummy Description" : "",
-          itemList: List<T>.generate(10, (index) {
+          itemList: List<ListItemControllerState>.generate(10, (index) {
             return shimmerCarouselListItemGenerator.onGenerateListItemValue();
           }),
           builderWithItem: builderWithItem
@@ -171,5 +172,3 @@ class _InnerCarouselListItemState<T> extends State<_InnerCarouselListItem<T>> wi
   @override
   bool get wantKeepAlive => true;
 }
-
-class ShimmerCarouselItemValue {}

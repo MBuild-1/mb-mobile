@@ -1,29 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:sizer/sizer.dart';
 
-import '../../../domain/entity/product.dart';
+import '../../../domain/entity/product/product_appearance_data.dart';
 import 'product_item.dart';
 
 class HorizontalProductItem extends ProductItem {
   @override
-  double? get itemWidth => 150.0;
+  double? get itemWidth => 180.0;
 
   const HorizontalProductItem({
     Key? key,
-    required Product product
-  }) : super(key: key, product: product);
+    required ProductAppearanceData productAppearanceData
+  }) : super(key: key, productAppearanceData: productAppearanceData);
 
   @override
   Widget priceWidget(BuildContext context, Widget nonDiscountPriceWidget, Widget discountPriceWidget) {
     List<Widget> priceRowWidgetList = <Widget>[
       nonDiscountPriceWidget,
-      Visibility(
-        visible: discountPriceString != null,
-        maintainSize: true,
-        maintainAnimation: true,
-        maintainState: true,
-        child: discountPriceWidget,
-      )
+      // Visibility(
+      //   visible: discountPriceString != null,
+      //   maintainSize: true,
+      //   maintainAnimation: true,
+      //   maintainState: true,
+      //   child: discountPriceWidget,
+      // )
     ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

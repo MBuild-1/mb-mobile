@@ -133,7 +133,7 @@ class ModifiedAppBarState extends State<ModifiedAppBar> {
     if (_scrollNotificationObserver != null) {
       _scrollNotificationObserver!.removeListener(_handleScrollNotification);
     }
-    _scrollNotificationObserver = ScrollNotificationObserver.of(context);
+    _scrollNotificationObserver = ScrollNotificationObserver.maybeOf(context);
     if (_scrollNotificationObserver != null) {
       _scrollNotificationObserver!.addListener(_handleScrollNotification);
     }
@@ -157,11 +157,23 @@ class ModifiedAppBarState extends State<ModifiedAppBar> {
   }
 
   void _handleScrollNotification(ScrollNotification notification) {
-    if (notification is ScrollUpdateNotification) {
+    if (notification is ScrollUpdateNotification && widget.notificationPredicate(notification)) {
       final bool oldScrolledUnder = _scrolledUnder;
-      _scrolledUnder = notification.depth == 0
-          && notification.metrics.extentBefore > 0
-          && notification.metrics.axis == Axis.vertical;
+      final ScrollMetrics metrics = notification.metrics;
+      switch (metrics.axisDirection) {
+        case AxisDirection.up:
+          // Scroll view is reversed
+          _scrolledUnder = metrics.extentAfter > 0;
+          break;
+        case AxisDirection.down:
+          _scrolledUnder = metrics.extentBefore > 0;
+          break;
+        case AxisDirection.right:
+        case AxisDirection.left:
+          // Scrolled under is only supported in the vertical axis.
+          _scrolledUnder = false;
+          break;
+      }
       if (_scrolledUnder != oldScrolledUnder) {
         setState(() {
           // React to a change in MaterialState.scrolledUnder

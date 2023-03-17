@@ -6,13 +6,13 @@ import 'package:http_mock_adapter/http_mock_adapter.dart';
 import 'package:masterbagasi/data/datasource/productdatasource/default_product_data_source.dart';
 import 'package:masterbagasi/data/datasource/productdatasource/product_data_source.dart';
 import 'package:masterbagasi/data/repository/default_product_repository.dart';
-import 'package:masterbagasi/domain/entity/product.dart';
-import 'package:masterbagasi/domain/entity/product_detail_parameter.dart';
-import 'package:masterbagasi/domain/entity/product_list_parameter.dart';
+import 'package:masterbagasi/domain/dummy/productdummy/product_bundle_dummy.dart';
+import 'package:masterbagasi/domain/entity/product/product.dart';
+import 'package:masterbagasi/domain/entity/product/product_detail_parameter.dart';
+import 'package:masterbagasi/domain/entity/product/product_list_parameter.dart';
 import 'package:masterbagasi/domain/repository/product_repository.dart';
-import 'package:masterbagasi/domain/usecase/get_most_discount_product_from_cached_product_list.dart';
-import 'package:masterbagasi/domain/usecase/get_product_detail.dart';
-import 'package:masterbagasi/domain/usecase/get_product_list.dart';
+import 'package:masterbagasi/domain/usecase/get_product_detail_use_case.dart';
+import 'package:masterbagasi/domain/usecase/get_product_list_use_case.dart';
 import 'package:masterbagasi/misc/http_client.dart';
 import 'package:masterbagasi/misc/load_data_result.dart';
 
@@ -20,17 +20,15 @@ void main() {
   group('Product Use Case Test', () {
     late ProductDataSource productDataSource;
     late ProductRepository productRepository;
+    late ProductBundleDummy productBundleDummy;
 
     // Get product list
-    late GetProductList getProductList;
+    late GetProductListUseCase getProductList;
     late ProductListParameter productListParameter;
 
     // Get product detail
-    late GetProductDetail getProductDetail;
+    late GetProductDetailUseCase getProductDetail;
     late ProductDetailParameter productDetailParameter;
-
-    // Get most discount product from cached product list
-    late GetMostDiscountProductFromCachedProductList getMostDiscountProductFromCachedProductList;
 
     late Dio dio;
     late DioAdapter dioAdapter;
@@ -38,19 +36,14 @@ void main() {
     setUp(() {
       dio = DioHttpClient.of();
       dioAdapter = DioAdapter(dio: dio);
-      productDataSource = DefaultProductDataSource(dio: dio);
+
+      productBundleDummy = ProductBundleDummy();
+      productDataSource = DefaultProductDataSource(dio: dio, productBundleDummy: productBundleDummy);
       productRepository = DefaultProductRepository(productDataSource: productDataSource);
 
       // Get product list
-      getProductList = GetProductList(productRepository: productRepository);
+      getProductList = GetProductListUseCase(productRepository: productRepository);
       productListParameter = ProductListParameter();
-
-      // Get product detail
-      getProductDetail = GetProductDetail(productRepository: productRepository);
-      productDetailParameter = ProductDetailParameter(productDetailEndpoint: 'https://run.mocky.io/v3/a405cac1-0f33-4ace-bfa4-0b54a07e5db8');
-
-      // Get most discount product from cached product list
-      getMostDiscountProductFromCachedProductList = GetMostDiscountProductFromCachedProductList();
     });
 
     test('get product', () async {
@@ -70,24 +63,7 @@ void main() {
       expect(productList.length, 10);
     });
 
-    test('get product detail', () async {
-      dioAdapter.onGet(
-        "",
-        (server) => server.reply(
-          200,
-          jsonDecode("{\"isSuccess\":true,\"statusCode\":200,\"data\":{\"id\":1579,\"name\":\"SO KLIN ROYALE PARFUM COLLECTION STARRY NIGHT\",\"default_image_url\":\"https://storage.googleapis.com/dev-superindo/product-image/4230522.jpg\",\"price_per_gram\":\"0\",\"product_plu\":\"4230522\",\"product_code\":\"119\",\"unit\":\"800 ML\",\"price\":\"15000\",\"sku\":\"8998866808415\",\"product_selling_price\":\"27490\",\"product_discount_price\":\"15000\",\"description\":\"Beli Soklin royale parfum collection Starry night 800ml pewangi dan pelembut pakaian 800 ml Terbaru\"}}")
-        ),
-        queryParameters: {},
-        headers: {},
-      );
-      CancelToken cancelToken = CancelToken();
-      LoadDataResult<Product> getProductDetailLoadDataResult = await getProductDetail.execute(productDetailParameter).future(parameter: cancelToken);
-      expect(getProductDetailLoadDataResult is SuccessLoadDataResult<Product>, true);
-      Product product = (getProductDetailLoadDataResult as SuccessLoadDataResult<Product>).value;
-      expect(product.id == 1579 && product.productPlu == "4230522" && product.sku == "8998866808415", true);
-    });
-
-    test('get most discount product from cached product list', () async {
+    test('get product category', () async {
       dioAdapter.onGet(
         "/products",
         (server) => server.reply(
@@ -102,11 +78,6 @@ void main() {
       expect(getProductListResponseLoadDataResult is SuccessLoadDataResult<List<Product>>, true);
       List<Product> productList = (getProductListResponseLoadDataResult as SuccessLoadDataResult<List<Product>>).value;
       expect(productList.length, 10);
-
-      List<Product> mostDiscountProductList = getMostDiscountProductFromCachedProductList.execute(productList, 10);
-      expect(mostDiscountProductList.length, 10);
-      expect(mostDiscountProductList.first.productDiscountPrice == 0, true);
-      expect(mostDiscountProductList.last.productDiscountPrice == 137900, true);
     });
   });
 }

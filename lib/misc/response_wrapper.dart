@@ -20,7 +20,7 @@ class MainStructureResponseWrapper extends ResponseWrapper {
 
   MainStructureResponseWrapper(dynamic fullResponse) : super(fullResponse) {
     dynamic meta = fullResponse["meta"];
-    status = meta["isSuccess"];
+    status = meta["status"];
     code = meta["code"];
     message = meta["message"];
     _dataResponse = fullResponse["data"];

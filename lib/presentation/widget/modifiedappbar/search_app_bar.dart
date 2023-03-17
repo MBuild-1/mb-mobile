@@ -4,6 +4,9 @@ import 'package:get/get.dart';
 
 import '../../../misc/constant.dart';
 import '../../../misc/inputdecoration/default_input_decoration.dart';
+import '../../../misc/page_restoration_helper.dart';
+import '../../page/getx_page.dart';
+//import '../../page/search/search_page.dart';
 import 'modified_app_bar.dart';
 import '../modified_text_field.dart';
 
@@ -57,7 +60,7 @@ abstract class SearchAppBar extends ModifiedAppBar {
       focusNode: searchFocusNode,
       decoration: _searchTextFieldStyle(
         context, DefaultInputDecoration(
-          hintText: "What skills do you want to learn today?".tr,
+          hintText: "${"Search in MasterBagasi".tr}?",
           filled: true,
           fillColor: Colors.transparent,
           prefixIcon: const Icon(Icons.search),
@@ -82,12 +85,9 @@ abstract class SearchAppBar extends ModifiedAppBar {
                   if (onSearchTextFieldTapped != null) {
                     effectiveOnSearchTextFieldTapped = onSearchTextFieldTapped!;
                   } else {
-                    // PageRestorationHelper.findPageRestorationMixin<SearchPageRestorationMixin>(
-                    //   onGetxPageRestorationFound: (restoration) {
-                    //     effectiveOnSearchTextFieldTapped = () => restoration.searchPageRestorableRouteFuture.present();
-                    //   },
-                    //   context: context
-                    // );
+                    effectiveOnSearchTextFieldTapped = () {
+                      //PageRestorationHelper.toSearchPage(context);
+                    };
                   }
                   return InkWell(
                     borderRadius: Constant.inputBorderRadius,

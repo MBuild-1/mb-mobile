@@ -2,24 +2,49 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
+import 'aspect_ratio_value.dart';
+
 class _ConstantImpl {
   String get restorableRouteFuturePush => "restorable-route-future-push";
   String get restorableRouteFuturePushAndRemoveUntil => "restorable-route-future-and-remove-until";
 
-  String get imageIntroduction1 => "assets/images/introduction_1.png";
-  String get imageIntroduction2 => "assets/images/introduction_2.png";
-  String get imageIntroduction3 => "assets/images/introduction_3.png";
-  String get imageLogoSuperIndo => "assets/images/logo_superindo.png";
-  String get imageSuccess => "assets/images/success.png";
-  String get imageFailed => "assets/images/failed.png";
+  String get baseImagesAssetsPath => "assets/images/";
+  String _getImagesAssets(String imageAssetsPath) => "$baseImagesAssetsPath$imageAssetsPath";
+  String get imageIntroduction1 => _getImagesAssets("introduction_1.png");
+  String get imageIntroduction2 => _getImagesAssets("introduction_2.png");
+  String get imageIntroduction3 => _getImagesAssets("introduction_3.png");
+  String get imageLogoSuperIndo => _getImagesAssets("logo_superindo.png");
+  String get imageSuccess => _getImagesAssets("success.png");
+  String get imageFailed => _getImagesAssets("failed.png");
   String get imageNoInternet => imageFailed;
-  String get imageLogin => "assets/images/login.png";
+  String get imageLogin => _getImagesAssets("login.png");
+  String get imageStar => _getImagesAssets("star.png");
+  String get imageCheckRatesForVariousCountries => _getImagesAssets("check_rates_for_various_countries.png");
+  String get imageProductPlaceholder => _getImagesAssets("product_placeholder.png");
+
+  String get baseVectorsAssetsPath => "assets/vectors/";
+  String _getVectorsAssets(String vectorAssetsPath) => "$baseVectorsAssetsPath$vectorAssetsPath";
+  String get vectorLocation => _getVectorsAssets("location.svg");
+  String get vectorHomeSelected => _getVectorsAssets("mainmenu/home_selected.svg");
+  String get vectorHomeUnselected => _getVectorsAssets("mainmenu/home_unselected.svg");
+  String get vectorFeedSelected => _getVectorsAssets("mainmenu/feed_selected.svg");
+  String get vectorFeedUnselected => _getVectorsAssets("mainmenu/feed_unselected.svg");
+  String get vectorExploreSelected => _getVectorsAssets("mainmenu/explore_selected.svg");
+  String get vectorExploreUnselected => _getVectorsAssets("mainmenu/explore_unselected.svg");
+  String get vectorWishlistSelected => _getVectorsAssets("mainmenu/wishlist_selected.svg");
+  String get vectorWishlistUnselected => _getVectorsAssets("mainmenu/wishlist_unselected.svg");
+  String get vectorMenuSelected => _getVectorsAssets("mainmenu/menu_selected.svg");
+  String get vectorMenuUnselected => _getVectorsAssets("mainmenu/menu_unselected.svg");
+  String get vectorLove => _getVectorsAssets("love.svg");
 
   Color get colorYellow => const Color.fromRGBO(244, 184, 43, 1);
   Color get colorRed => const Color.fromRGBO(255, 86, 76, 1);
   Color get colorRedDanger => const Color.fromRGBO(203, 58, 49, 1);
   Color get colorGrey => const Color.fromRGBO(174, 174, 174, 1);
   Color get colorGrey2 => const Color.fromRGBO(213, 213, 213, 1);
+  Color get colorGrey3 => const Color.fromRGBO(179, 179, 179, 1);
+  Color get colorGrey4 => const Color.fromRGBO(244, 244, 244, 1);
+  Color get colorGrey5 => const Color.fromRGBO(235, 235, 235, 1);
   Color get colorSurfaceGrey => const Color.fromRGBO(247, 247, 247, 1);
   Color get colorDarkGrey => const Color.fromRGBO(105, 105, 105, 1);
   Color get colorBrown => const Color.fromRGBO(191, 105, 25, 1);
@@ -49,7 +74,9 @@ class _ConstantImpl {
   Color get colorBaseShimmer => const Color.fromRGBO(201, 201, 201, 1);
   Color get colorHighlightShimmer => const Color.fromRGBO(142, 142, 142, 1);
   Color get colorTabUnselected => colorGrey;
-  Color get colorBarBackground => const Color.fromRGBO(244, 244, 244, 1);
+  Color get colorBarBackground => colorGrey4;
+  Color get colorWishlistButton => colorGrey4;
+  Color get colorWishlistIcon => colorGrey3;
   Color get colorFeedbackDateText => colorGrey;
   Color get colorLike => colorRed;
   Color get colorDiscount => colorBrown;
@@ -67,6 +94,8 @@ class _ConstantImpl {
   int get dummyLoadingTimeInSeconds => 1;
   double get bannerMarginTopHeight => 130.0;
   double get bannerIndicatorAreaHeight => 40.0;
+
+  AspectRatioValue get aspectRatioValueImageCheckRatesForVariousCountries => AspectRatioValue(width: 360.0, height: 118.0);
 
   String get settingHiveTable => 'setting_hive_table';
   String get settingHiveTableKey => 'setting_hive_table_key';

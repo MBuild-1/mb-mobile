@@ -1,15 +1,26 @@
 import 'package:flutter/material.dart' hide Notification, Banner;
 import 'package:get/get.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 
-import '../../../domain/entity/product.dart';
+import '../../../domain/entity/product/product.dart';
 import '../../../presentation/widget/carousel_list_item.dart';
 import '../../../presentation/widget/colorful_chip_tab_bar.dart';
 import '../../../presentation/widget/icon_title_and_description_list_item.dart';
+import '../../../presentation/widget/modifiedassetimage/modified_asset_image.dart';
+import '../../../presentation/widget/modifiedcachednetworkimage/modified_cached_network_image.dart';
+import '../../../presentation/widget/modified_colorful_divider.dart';
 import '../../../presentation/widget/modified_divider.dart';
+import '../../../presentation/widget/modified_svg_picture.dart';
 import '../../../presentation/widget/modified_tab_bar.dart';
 import '../../../presentation/widget/product/horizontal_product_item.dart';
 import '../../../presentation/widget/product/vertical_product_item.dart';
+import '../../../presentation/widget/productbrand/horizontal_product_brand_item.dart';
+import '../../../presentation/widget/productbrand/vertical_product_brand_item.dart';
+import '../../../presentation/widget/productbundle/horizontal_product_bundle_item.dart';
+import '../../../presentation/widget/productbundle/vertical_product_bundle_item.dart';
+import '../../../presentation/widget/productcategory/horizontal_product_category_item.dart';
+import '../../../presentation/widget/productcategory/vertical_product_category_item.dart';
 import '../../../presentation/widget/prompt_indicator.dart';
 import '../../../presentation/widget/shimmer_carousel_item.dart';
 import '../../../presentation/widget/titleanddescriptionitem/title_and_description_item.dart';
@@ -17,8 +28,11 @@ import '../../../presentation/widget/titledescriptionandcontentitem/title_descri
 import '../../../presentation/widget/product_detail_header.dart';
 import '../../constant.dart';
 import '../../controllerstate/listitemcontrollerstate/carousel_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/check_rates_for_various_countries_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/colorful_chip_tab_bar_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/colorful_divider_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/column_container_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/delivery_to_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/divider_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/dynamic_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/empty_container_list_item_controller_state.dart';
@@ -31,10 +45,20 @@ import '../../controllerstate/listitemcontrollerstate/non_expanded_item_in_row_c
 import '../../controllerstate/listitemcontrollerstate/padding_container_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/page_keyed_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/product_detail_header_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/horizontal_product_brand_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/product_brand_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/vertical_product_brand_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/productbundlelistitemcontrollerstate/horizontal_product_bundle_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/productbundlelistitemcontrollerstate/product_bundle_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/productbundlelistitemcontrollerstate/vertical_product_bundle_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/productcategorylistitemcontrollerstate/horizontal_product_category_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/productcategorylistitemcontrollerstate/product_category_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/productcategorylistitemcontrollerstate/vertical_product_category_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productlistitemcontrollerstate/horizontal_product_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productlistitemcontrollerstate/product_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productlistitemcontrollerstate/vertical_product_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/row_container_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/single_banner_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/spacing_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/tab_bar_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/title_and_description_list_item_controller_state.dart';
@@ -92,27 +116,17 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
     if (item is FailedPromptIndicatorListItemControllerState) {
       return WidgetHelper.buildFailedPromptIndicatorFromErrorProvider(context: context, errorProvider: item.errorProvider, e: item.e);
     } else if (item is CarouselListItemControllerState || item is ShimmerCarouselListItemControllerState) {
-      // ignore: prefer_function_declarations_over_variables
-      WidgetBuilderWithItem widgetBuilderWithItem = (context, value) {
-        if (value is Product) {
-          return HorizontalProductItem(product: value);
-        } else if (value is ShimmerCarouselItemValue) {
-          return const ShimmerCarouselItem();
-        } else {
-          return Container();
-        }
-      };
       if (item is CarouselListItemControllerState) {
         return CarouselListItem(
           padding: item.padding,
-          itemList: item.item,
+          itemList: item.itemListItemControllerState,
           title: item.title,
           description: item.description,
-          builderWithItem: widgetBuilderWithItem
+          builderWithItem: (context, listItemControllerState) => _itemBuilder(context, listItemControllerState, index)
         );
       } else if (item is ShimmerCarouselListItemControllerState) {
         return ShimmerCarouselListItem(
-          builderWithItem: widgetBuilderWithItem,
+          builderWithItem: (context, listItemControllerState) => _itemBuilder(context, listItemControllerState, index),
           padding: item.padding,
           showTitleShimmer: item.showTitleShimmer,
           showDescriptionShimmer: item.showDescriptionShimmer,
@@ -124,12 +138,48 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
       }
     } else if (item is ProductListItemControllerState) {
       if (item is HorizontalProductListItemControllerState) {
-        return HorizontalProductItem(product: item.product);
+        return HorizontalProductItem(productAppearanceData: item.productAppearanceData);
       } else if (item is VerticalProductListItemControllerState) {
         if (item is ShimmerVerticalProductListItemControllerState) {
-          return ShimmerVerticalProductItem(product: item.product);
+          return ShimmerVerticalProductItem(productAppearanceData: item.productAppearanceData);
         } else {
-          return VerticalProductItem(product: item.product);
+          return VerticalProductItem(productAppearanceData: item.productAppearanceData);
+        }
+      } else {
+        return Container();
+      }
+    } else if (item is ProductCategoryListItemControllerState) {
+      if (item is HorizontalProductCategoryListItemControllerState) {
+        return HorizontalProductCategoryItem(productCategory: item.productCategory);
+      } else if (item is VerticalProductCategoryListItemControllerState) {
+        if (item is ShimmerVerticalProductCategoryListItemControllerState) {
+          return ShimmerVerticalProductCategoryItem(productCategory: item.productCategory);
+        } else {
+          return VerticalProductCategoryItem(productCategory: item.productCategory);
+        }
+      } else {
+        return Container();
+      }
+    } else if (item is ProductBrandListItemControllerState) {
+      if (item is HorizontalProductBrandListItemControllerState) {
+        return HorizontalProductBrandItem(productBrand: item.productBrand);
+      } else if (item is VerticalProductBrandListItemControllerState) {
+        if (item is ShimmerVerticalProductBrandListItemControllerState) {
+          return ShimmerVerticalProductBrandItem(productBrand: item.productBrand);
+        } else {
+          return VerticalProductBrandItem(productBrand: item.productBrand);
+        }
+      } else {
+        return Container();
+      }
+    } else if (item is ProductBundleListItemControllerState) {
+      if (item is HorizontalProductBundleListItemControllerState) {
+        return HorizontalProductBundleItem(productBundle: item.productBundle);
+      } else if (item is VerticalProductBundleListItemControllerState) {
+        if (item is ShimmerVerticalProductBundleListItemControllerState) {
+          return ShimmerVerticalProductBundleItem(productBundle: item.productBundle);
+        } else {
+          return VerticalProductBundleItem(productBundle: item.productBundle);
         }
       } else {
         return Container();
@@ -180,6 +230,12 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
     } else if (item is DividerListItemControllerState) {
       return ModifiedDivider(
         lineColor: item.lineColor,
+        lineHeight: item.lineHeight,
+        borderRadius: item.borderRadius
+      );
+    } else if (item is ColorfulDividerListItemControllerState) {
+      return ModifiedColorfulDivider(
+        lineColorList: item.lineColorList,
         lineHeight: item.lineHeight,
         borderRadius: item.borderRadius
       );
@@ -257,6 +313,56 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
       return Padding(
         padding: item.padding,
         child: _itemBuilder(context, item.paddingChildListItemControllerState, index)
+      );
+    } else if (item is SingleBannerListItemControllerState) {
+      return AspectRatio(
+        aspectRatio: item.banner.aspectRatio.toDouble(),
+        child: ClipRect(
+          child: ModifiedCachedNetworkImage(
+            imageUrl: item.banner.imageUrl.toEmptyStringNonNull,
+          )
+        )
+      );
+    } else if (item is DeliveryToListItemControllerState) {
+      return Container(
+        padding: const EdgeInsets.all(16.0),
+        color: Constant.colorDarkBlue,
+        child: Row(
+          children: [
+            ModifiedSvgPicture.asset(Constant.vectorLocation, color: Colors.white),
+            const SizedBox(width: 10),
+            Text.rich(
+              TextSpan(
+                children: <InlineSpan>[
+                  const TextSpan(text: "${"Delivered to"} ", style: TextStyle(color: Colors.white)),
+                  TextSpan(text: item.location.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                ]
+              )
+            )
+          ],
+        ),
+      );
+    } else if (item is CheckRatesForVariousCountriesControllerState) {
+      return Column(
+        children: [
+          AspectRatio(
+            aspectRatio: Constant.aspectRatioValueImageCheckRatesForVariousCountries.toDouble(),
+            child: ClipRect(
+              child: ModifiedAssetImage(
+                imageAssetUrl: Constant.imageCheckRatesForVariousCountries,
+              )
+            )
+          ),
+          Material(
+            child: InkWell(
+              onTap: () {},
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem, vertical: 10),
+                child: Align(child: Text("Cek Tarif ke Negara Lainnya"), alignment: Alignment.topLeft)
+              )
+            )
+          )
+        ]
       );
     } else {
       return Container();

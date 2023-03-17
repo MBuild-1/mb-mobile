@@ -1,14 +1,14 @@
-import '../../../../domain/entity/product.dart';
+import '../../../../domain/entity/product/product_appearance_data.dart';
 import 'product_list_item_controller_state.dart';
 
 class VerticalProductListItemControllerState extends ProductListItemControllerState {
   VerticalProductListItemControllerState({
-    required Product product
-  }) : super(product: product);
+    required ProductAppearanceData productAppearanceData
+  }) : super(productAppearanceData: productAppearanceData);
 }
 
 class ShimmerVerticalProductListItemControllerState extends VerticalProductListItemControllerState {
   ShimmerVerticalProductListItemControllerState({
-    required Product product
-  }) : super(product: product);
+    required ProductAppearanceData productAppearanceData
+  }) : super(productAppearanceData: productAppearanceData);
 }

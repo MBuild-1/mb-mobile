@@ -1,5 +1,6 @@
 import '../../controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../itemtypelistsubinterceptor/additional_loading_indicator_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/carousel_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/column_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/compound_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/dynamic_item_type_list_sub_interceptor.dart';
@@ -108,6 +109,9 @@ class ListItemControllerStateItemTypeInterceptorChecker extends ItemTypeListInte
     AdditionalLoadingIndicatorItemTypeListSubInterceptor(
       padding: padding,
       itemSpacing: itemSpacing,
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
+    CarouselItemTypeListSubInterceptor(
       listItemControllerStateItemTypeInterceptorChecker: this
     ),
     CompoundItemListSubInterceptor(

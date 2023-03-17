@@ -1,4 +1,4 @@
-import '../../../domain/entity/product.dart';
+import '../../../domain/entity/product/product.dart';
 import 'list_item_controller_state.dart';
 
 abstract class BaseProductDetailHeaderListItemControllerState extends ListItemControllerState {}
