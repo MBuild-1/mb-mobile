@@ -16,7 +16,11 @@ import '../../widget/custom_bottom_navigation_bar.dart';
 import '../../widget/modified_svg_picture.dart';
 import '../login_page.dart';
 import '../getx_page.dart';
+import 'mainmenusubpage/explore_nusantara_main_menu_page.dart';
+import 'mainmenusubpage/feed_main_menu_sub_page.dart';
 import 'mainmenusubpage/home_main_menu_sub_page.dart';
+import 'mainmenusubpage/menu_main_menu_sub_page.dart';
+import 'mainmenusubpage/wishlist_main_menu_sub_page.dart';
 
 class MainMenuPage extends RestorableGetxPage<_MainMenuPageRestoration> {
   late final ControllerMember<MainMenuController> _mainMenuController = ControllerMember<MainMenuController>().addToControllerManager(controllerManager);
@@ -24,6 +28,10 @@ class MainMenuPage extends RestorableGetxPage<_MainMenuPageRestoration> {
 
   MainMenuPage({Key? key}) : super(key: key, pageRestorationId: () => "main-menu-page") {
     _mainMenuSubControllerList = [
+      [ControllerMember<HomeMainMenuSubController>().addToControllerManager(controllerManager), () => Injector.locator<HomeMainMenuSubControllerInjectionFactory>().inject(controllerManager, pageName), (BaseGetxController controller) {}],
+      [ControllerMember<HomeMainMenuSubController>().addToControllerManager(controllerManager), () => Injector.locator<HomeMainMenuSubControllerInjectionFactory>().inject(controllerManager, pageName), (BaseGetxController controller) {}],
+      [ControllerMember<HomeMainMenuSubController>().addToControllerManager(controllerManager), () => Injector.locator<HomeMainMenuSubControllerInjectionFactory>().inject(controllerManager, pageName), (BaseGetxController controller) {}],
+      [ControllerMember<HomeMainMenuSubController>().addToControllerManager(controllerManager), () => Injector.locator<HomeMainMenuSubControllerInjectionFactory>().inject(controllerManager, pageName), (BaseGetxController controller) {}],
       [ControllerMember<HomeMainMenuSubController>().addToControllerManager(controllerManager), () => Injector.locator<HomeMainMenuSubControllerInjectionFactory>().inject(controllerManager, pageName), (BaseGetxController controller) {}]
     ];
   }
@@ -193,6 +201,10 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
               index: _customBottomNavigationBarSelectedIndex.currentSelectedViewMenuIndex,
               children: [
                 HomeMainMenuSubPage(ancestorPageName: widget.pageName),
+                FeedMainMenuSubPage(ancestorPageName: widget.pageName),
+                ExploreNusantaraMainMenuSubPage(ancestorPageName: widget.pageName),
+                WishlistMainMenuSubPage(ancestorPageName: widget.pageName),
+                MenuMainMenuSubPage(ancestorPageName: widget.pageName),
               ],
             )
           ),
@@ -248,13 +260,9 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
   }
 
   void _onItemTappedWithContext(CustomBottomNavigationBarSelectedIndex selectedIndex, BuildContext context) {
-    if (selectedIndex.currentSelectedMenuIndex != 3) {
-      _customBottomNavigationBarSelectedIndex = selectedIndex;
-      _firstInitTabChildWidget(selectedIndex);
-    } else {
-      DialogHelper.showPromptUnderConstruction(context);
-      //restoration.editProfilePageRestorableRouteFuture.present();
-    }
+    _customBottomNavigationBarSelectedIndex = selectedIndex;
+    _firstInitTabChildWidget(selectedIndex);
+    setState(() {});
   }
 
   void _firstInitTabChildWidget(CustomBottomNavigationBarSelectedIndex selectedIndex) {

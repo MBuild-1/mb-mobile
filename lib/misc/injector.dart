@@ -1,7 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
+import '../controller/mainmenucontroller/mainmenusubpagecontroller/explore_nusantara_main_menu_sub_controller.dart';
+import '../controller/mainmenucontroller/mainmenusubpagecontroller/feed_main_menu_sub_controller.dart';
 import '../controller/mainmenucontroller/mainmenusubpagecontroller/home_main_menu_sub_controller.dart';
+import '../controller/mainmenucontroller/mainmenusubpagecontroller/menu_main_menu_sub_controller.dart';
+import '../controller/mainmenucontroller/mainmenusubpagecontroller/wishlist_main_menu_sub_controller.dart';
 import '../data/datasource/productdatasource/default_product_data_source.dart';
 import '../data/datasource/productdatasource/product_data_source.dart';
 import '../data/datasource/userdatasource/default_user_data_source.dart';
@@ -51,6 +55,18 @@ class _Injector {
         getProductBrandListUseCase: locator(),
         getProductBundleListUseCase: locator()
       )
+    );
+    locator.registerLazySingleton<FeedMainMenuSubControllerInjectionFactory>(
+      () => FeedMainMenuSubControllerInjectionFactory()
+    );
+    locator.registerLazySingleton<ExploreNusantaraMainMenuSubControllerInjectionFactory>(
+      () => ExploreNusantaraMainMenuSubControllerInjectionFactory()
+    );
+    locator.registerLazySingleton<WishlistMainMenuSubControllerInjectionFactory>(
+      () => WishlistMainMenuSubControllerInjectionFactory()
+    );
+    locator.registerLazySingleton<MenuMainMenuSubControllerInjectionFactory>(
+      () => MenuMainMenuSubControllerInjectionFactory()
     );
 
     // Error Provider
