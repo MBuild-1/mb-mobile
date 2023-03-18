@@ -13,7 +13,6 @@ import 'misc/getextended/extended_get_material_app.dart';
 import 'misc/injector.dart';
 import 'misc/main_route_observer.dart';
 import 'presentation/notifier/login_notifier.dart';
-import 'presentation/page/getx_page.dart';
 import 'presentation/page/introduction_page.dart';
 
 void main() async {
