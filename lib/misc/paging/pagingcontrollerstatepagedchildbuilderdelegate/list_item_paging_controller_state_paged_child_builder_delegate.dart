@@ -253,6 +253,7 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
           description: item.description,
           padding: item.padding,
           verticalSpace: item.verticalSpace,
+          titleAndDescriptionItemInterceptor: item.titleAndDescriptionItemInterceptor,
         );
       }
     } else if (item is TitleDescriptionAndContentListItemControllerState) {
