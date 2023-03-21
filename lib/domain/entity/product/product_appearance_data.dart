@@ -1,5 +1,5 @@
 abstract class ProductAppearanceData {
-  String get id;
+  String get productId;
   String get name;
   double get price;
   double? get discountPrice;
