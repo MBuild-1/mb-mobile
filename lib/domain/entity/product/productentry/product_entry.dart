@@ -3,8 +3,8 @@ import '../product_appearance_data.dart';
 import '../productvariant/product_variant.dart';
 
 class ProductEntry implements ProductAppearanceData {
-  @override
   String id;
+  @override
   String productId;
   String sku;
   String sustension;

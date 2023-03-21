@@ -5,7 +5,6 @@ import 'productcategory/product_category.dart';
 import 'productcertification/product_certification.dart';
 
 class Product implements ProductAppearanceData {
-  @override
   String id;
   String userId;
   String productBrandId;
@@ -29,6 +28,9 @@ class Product implements ProductAppearanceData {
 
   @override
   double get weight => 0.0;
+
+  @override
+  String get productId => id;
 
   Product({
     required this.id,
