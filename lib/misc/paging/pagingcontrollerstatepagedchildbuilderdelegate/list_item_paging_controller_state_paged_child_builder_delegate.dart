@@ -359,7 +359,7 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
               onTap: () {},
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem, vertical: 10),
-                child: Align(child: Text("Cek Tarif ke Negara Lainnya"), alignment: Alignment.topLeft)
+                child: const Align(child: Text("Cek Tarif ke Negara Lainnya"), alignment: Alignment.topLeft)
               )
             )
           )
