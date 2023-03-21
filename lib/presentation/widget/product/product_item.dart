@@ -86,7 +86,7 @@ abstract class ProductItem extends StatelessWidget {
           borderRadius: borderRadius,
           elevation: 3,
           child: InkWell(
-            onTap: () => PageRestorationHelper.toProductDetailPage(context, productAppearanceData.productId),
+            onTap: () {},
             borderRadius: borderRadius,
             child: Container(
               clipBehavior: Clip.antiAlias,
