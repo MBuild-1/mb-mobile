@@ -95,7 +95,9 @@ class _ConstantImpl {
   double get bannerMarginTopHeight => 130.0;
   double get bannerIndicatorAreaHeight => 40.0;
 
+  AspectRatioValue get aspectRatioValueProductImage => AspectRatioValue(width: 1.0, height: 1.0);
   AspectRatioValue get aspectRatioValueImageCheckRatesForVariousCountries => AspectRatioValue(width: 360.0, height: 118.0);
+  AspectRatioValue get aspectRatioValueBrandImage => AspectRatioValue(width: 332.0, height: 75.62);
 
   String get settingHiveTable => 'setting_hive_table';
   String get settingHiveTableKey => 'setting_hive_table_key';

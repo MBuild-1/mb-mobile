@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:masterbagasi/presentation/page/product_detail_page.dart';
 
 import '../../../controller/base_getx_controller.dart';
 import '../../../controller/mainmenucontroller/main_menu_controller.dart';
@@ -64,7 +65,7 @@ class MainMenuPage extends RestorableGetxPage<_MainMenuPageRestoration> {
   }
 }
 
-class _MainMenuPageRestoration extends MixableGetxPageRestoration with LoginPageRestorationMixin {
+class _MainMenuPageRestoration extends MixableGetxPageRestoration with LoginPageRestorationMixin, ProductDetailPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {

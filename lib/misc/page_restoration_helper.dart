@@ -5,6 +5,7 @@ import '../presentation/page/crop_picture_page.dart';
 import '../presentation/page/getx_page.dart';
 import '../presentation/page/login_page.dart';
 import '../presentation/page/mainmenu/main_menu_page.dart';
+import '../presentation/page/product_detail_page.dart';
 import '../presentation/page/register_page.dart';
 
 class _PageRestorationHelperImpl {
@@ -69,6 +70,15 @@ class _PageRestorationHelperImpl {
         restoration.cropPicturePageRestorableRouteFuture.present(
           cropPictureParameter.toEncodeBase64String()
         );
+      },
+      context: context
+    );
+  }
+
+  void toProductDetailPage(BuildContext context, String productId) {
+    PageRestorationHelper.findPageRestorationMixin<ProductDetailPageRestorationMixin>(
+      onGetxPageRestorationFound: (restoration) {
+        restoration.productDetailPageRestorableRouteFuture.present(productId);
       },
       context: context
     );

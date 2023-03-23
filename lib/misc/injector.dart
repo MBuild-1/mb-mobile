@@ -32,6 +32,7 @@ import '../domain/usecase/get_user_use_case.dart';
 import '../domain/usecase/login_use_case.dart';
 import '../domain/usecase/register_use_case.dart';
 import 'additionalloadingindicatorchecker/home_sub_additional_paging_result_parameter_checker.dart';
+import 'additionalloadingindicatorchecker/product_detail_additional_paging_result_parameter_checker.dart';
 import 'defaultloaddataresultwidget/default_load_data_result_widget.dart';
 import 'defaultloaddataresultwidget/main_default_load_data_result_widget.dart';
 import 'entityandlistitemcontrollerstatemediator/horizontal_entity_and_list_item_controller_state_mediator.dart';
@@ -117,6 +118,9 @@ class _Injector {
     // Additional Paging Result Parameter
     locator.registerFactory<HomeSubAdditionalPagingResultParameterChecker>(
       () => HomeSubAdditionalPagingResultParameterChecker()
+    );
+    locator.registerFactory<ProductDetailAdditionalPagingResultParameterChecker>(
+      () => ProductDetailAdditionalPagingResultParameterChecker()
     );
 
     // Default Load Data Result Widget

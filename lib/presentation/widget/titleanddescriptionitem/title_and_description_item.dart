@@ -27,25 +27,26 @@ class TitleAndDescriptionItem extends StatelessWidget {
     return ShimmerCustomEffectMarker.of(context) != null ? Colors.black : null;
   }
 
+  Widget _interceptWithContainer(BuildContext context, Widget interceptWidget) {
+    return ShimmerCustomEffectMarker.of(context) != null ? Container(
+      color: _containerColor(context),
+      child: interceptWidget
+    ) : interceptWidget;
+  }
+
   @protected
   Widget titleWidget(BuildContext context, String title) {
-    return Container(
-      color: _containerColor(context),
-      child: Text(
-        title,
-        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-          fontWeight: FontWeight.bold
-        )
+    return _interceptWithContainer(context, Text(
+      title,
+      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+        fontWeight: FontWeight.bold
       )
-    );
+    ));
   }
 
   @protected
   Widget descriptionWidget(BuildContext context, String description) {
-    return Container(
-      color: _containerColor(context),
-      child: Text(description)
-    );
+    return _interceptWithContainer(context, Text(description));
   }
 
   @override
