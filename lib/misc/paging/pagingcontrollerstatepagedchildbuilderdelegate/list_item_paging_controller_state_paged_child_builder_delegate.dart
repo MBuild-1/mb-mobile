@@ -13,8 +13,10 @@ import '../../../presentation/widget/modified_colorful_divider.dart';
 import '../../../presentation/widget/modified_divider.dart';
 import '../../../presentation/widget/modified_svg_picture.dart';
 import '../../../presentation/widget/modified_tab_bar.dart';
+import '../../../presentation/widget/modifiedcachednetworkimage/product_modified_cached_network_image.dart';
 import '../../../presentation/widget/product/horizontal_product_item.dart';
 import '../../../presentation/widget/product/vertical_product_item.dart';
+import '../../../presentation/widget/product_detail_brand_list_item.dart';
 import '../../../presentation/widget/productbrand/horizontal_product_brand_item.dart';
 import '../../../presentation/widget/productbrand/vertical_product_brand_item.dart';
 import '../../../presentation/widget/productbundle/horizontal_product_bundle_item.dart';
@@ -44,7 +46,9 @@ import '../../controllerstate/listitemcontrollerstate/non_expanded_item_in_row_c
 import '../../controllerstate/listitemcontrollerstate/non_expanded_item_in_row_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/padding_container_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/page_keyed_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/product_detail_brand_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/product_detail_header_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/product_detail_image_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/horizontal_product_brand_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/product_brand_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/vertical_product_brand_list_item_controller_state.dart';
@@ -364,6 +368,19 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
             )
           )
         ]
+      );
+    } else if (item is ProductDetailImageListItemControllerState) {
+      return AspectRatio(
+        aspectRatio: Constant.aspectRatioValueProductImage.toDouble(),
+        child: ClipRRect(
+          child: ProductModifiedCachedNetworkImage(
+            imageUrl: item.productAppearanceData.imageUrl,
+          )
+        )
+      );
+    } else if (item is ProductDetailBrandListItemControllerState) {
+      return ProductDetailBrandListItem(
+        productBrand: item.productBrand
       );
     } else {
       return Container();

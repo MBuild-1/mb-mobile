@@ -4,9 +4,13 @@ import 'package:flutter/material.dart';
 import '../../../misc/constant.dart';
 
 class BrandModifiedCachedNetworkImage extends CachedNetworkImage {
+  final double dimension;
+
   @override
   PlaceholderWidgetBuilder? get placeholder {
     return (context, url) => Container(
+      width: dimension,
+      height: dimension,
       decoration: BoxDecoration(
         image: DecorationImage(
           image: AssetImage(Constant.imageProductPlaceholder),
@@ -19,6 +23,8 @@ class BrandModifiedCachedNetworkImage extends CachedNetworkImage {
   @override
   LoadingErrorWidgetBuilder? get errorWidget {
     return (context, url, e) => Container(
+      width: dimension,
+      height: dimension,
       decoration: BoxDecoration(
         image: DecorationImage(
           image: AssetImage(Constant.imageProductPlaceholder),
@@ -31,6 +37,8 @@ class BrandModifiedCachedNetworkImage extends CachedNetworkImage {
   @override
   ImageWidgetBuilder? get imageBuilder {
     return (context, imageProvider) => Container(
+      width: dimension,
+      height: dimension,
       decoration: BoxDecoration(
         image: DecorationImage(
           image: imageProvider,
@@ -42,6 +50,19 @@ class BrandModifiedCachedNetworkImage extends CachedNetworkImage {
 
   BrandModifiedCachedNetworkImage({
     Key? key,
-    required String imageUrl
-  }) : super(key: key, imageUrl: imageUrl);
+    required String imageUrl,
+    required this.dimension
+  }) : super(
+    key: key,
+    imageUrl: imageUrl,
+    height: dimension,
+    width: dimension,
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipOval(
+      child: super.build(context)
+    );
+  }
 }

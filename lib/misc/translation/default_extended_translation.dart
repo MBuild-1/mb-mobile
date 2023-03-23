@@ -24,7 +24,15 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "sold": "terjual",
       "No Weight": "Tidak Ada Berat",
       "No Sold Count": "Tidak Ada Terjual",
-      "Check Rates to Other Countries": "Cek Tarif ke Negara Lainnya"
+      "Check Rates to Other Countries": "Cek Tarif ke Negara Lainnya",
+      "Product Description": "Deskripsi Produk",
+      "Condition": "Kondisi",
+      "Category": "Kategori",
+      "Province": "Provinsi",
+      "Brand": "Brand",
+      "Certification": "Sertifikasi",
+      "Min. Order": "Min. Pemesanan",
+      "Storefront": "Etalase"
     }
   };
 
