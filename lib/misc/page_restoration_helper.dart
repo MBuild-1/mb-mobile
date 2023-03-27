@@ -5,6 +5,7 @@ import '../presentation/page/crop_picture_page.dart';
 import '../presentation/page/getx_page.dart';
 import '../presentation/page/login_page.dart';
 import '../presentation/page/mainmenu/main_menu_page.dart';
+import '../presentation/page/product_brand_detail_page.dart';
 import '../presentation/page/product_detail_page.dart';
 import '../presentation/page/register_page.dart';
 
@@ -79,6 +80,15 @@ class _PageRestorationHelperImpl {
     PageRestorationHelper.findPageRestorationMixin<ProductDetailPageRestorationMixin>(
       onGetxPageRestorationFound: (restoration) {
         restoration.productDetailPageRestorableRouteFuture.present(productId);
+      },
+      context: context
+    );
+  }
+
+  void toProductBrandDetailPage(BuildContext context, String productBrandId) {
+    PageRestorationHelper.findPageRestorationMixin<ProductBrandDetailPageRestorationMixin>(
+      onGetxPageRestorationFound: (restoration) {
+        restoration.productBrandDetailPageRestorableRouteFuture.present(productBrandId);
       },
       context: context
     );

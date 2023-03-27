@@ -6,7 +6,14 @@ import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../../../domain/entity/product/product.dart';
+import '../../../domain/entity/product/product_detail_from_your_search_product_entry_list_parameter.dart';
+import '../../../domain/entity/product/product_detail_other_chosen_for_you_product_entry_list_parameter.dart';
+import '../../../domain/entity/product/product_detail_other_from_this_brand_product_entry_list_parameter.dart';
+import '../../../domain/entity/product/product_detail_other_in_this_category_product_entry_list_parameter.dart';
+import '../../../domain/entity/product/product_detail_other_interested_product_brand_list_parameter.dart';
 import '../../../domain/entity/product/productbrand/product_brand.dart';
+import '../../../domain/entity/product/productbrand/product_brand_detail.dart';
+import '../../../domain/entity/product/productbrand/product_brand_detail_parameter.dart';
 import '../../../domain/entity/product/productbrand/product_brand_list_parameter.dart';
 import '../../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../../domain/entity/product/productbundle/product_bundle_list_parameter.dart';
@@ -107,6 +114,54 @@ class DefaultProductDataSource implements ProductDataSource {
     return DioHttpClientProcessing((cancelToken) {
       return dio.get("/product/${productDetailParameter.productId}", cancelToken: cancelToken)
         .map(onMap: (value) => value.wrapResponse().mapFromResponseToProduct());
+    });
+  }
+
+  @override
+  FutureProcessing<ProductBrandDetail> productBrandDetail(ProductBrandDetailParameter productBrandDetailParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.get("/product/brand/${productBrandDetailParameter.productBrandId}", cancelToken: cancelToken)
+        .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductBrandDetail());
+    });
+  }
+
+  @override
+  FutureProcessing<List<ProductEntry>> productDetailFromYourSearchProductEntryList(ProductDetailFromYourSearchProductEntryListParameter productDetailFromYourSearchProductEntryListParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.get("/product/entry", queryParameters: {"fyp": true, "page": 1, "pageNumber": 10}, cancelToken: cancelToken)
+        .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductEntryPaging().itemList);
+    });
+  }
+
+  @override
+  FutureProcessing<List<ProductEntry>> productDetailOtherChosenForYouProductEntryList(ProductDetailOtherChosenForYouProductEntryListParameter productDetailOtherChosenForYouProductEntryListParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.get("/product/entry", queryParameters: {"fyp": true, "page": 1, "pageNumber": 10}, cancelToken: cancelToken)
+        .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductEntryPaging().itemList);
+    });
+  }
+
+  @override
+  FutureProcessing<List<ProductEntry>> productDetailOtherFromThisBrandProductEntryList(ProductDetailOtherFromThisBrandProductEntryListParameter productDetailOtherFromThisBrandProductEntryListParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.get("/product/entry", queryParameters: {"brand": productDetailOtherFromThisBrandProductEntryListParameter.brandSlug, "page": 1, "pageNumber": 10}, cancelToken: cancelToken)
+        .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductEntryPaging().itemList);
+    });
+  }
+
+  @override
+  FutureProcessing<List<ProductEntry>> productDetailOtherInThisCategoryProductEntryList(ProductDetailOtherInThisCategoryProductEntryListParameter productDetailOtherInThisCategoryProductEntryListParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.get("/product/entry", queryParameters: {"category": productDetailOtherInThisCategoryProductEntryListParameter.categorySlug, "page": 1, "pageNumber": 10}, cancelToken: cancelToken)
+        .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductEntryPaging().itemList);
+    });
+  }
+
+  @override
+  FutureProcessing<List<ProductBrand>> productDetailOtherInterestedProductBrandListParameter(ProductDetailOtherInterestedProductBrandListParameter productDetailOtherInterestedProductBrandListParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.get("/product/brand", cancelToken: cancelToken)
+        .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductBrandList());
     });
   }
 }

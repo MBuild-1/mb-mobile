@@ -1,13 +1,12 @@
 import '../../../misc/multi_language_string.dart';
-import '../componententity/i_item_carousel_component_entity.dart';
-import 'home_main_menu_component_entity.dart';
+import 'i_item_carousel_component_entity.dart';
 
-class ItemCarouselHomeMainMenuComponentEntity<T> extends HomeMainMenuComponentEntity implements IItemCarouselComponentEntity<T> {
+class ItemCarouselComponentEntity<T> implements IItemCarouselComponentEntity<T> {
   MultiLanguageString? _title;
   MultiLanguageString? _description;
   List<T> _item;
 
-  ItemCarouselHomeMainMenuComponentEntity({
+  ItemCarouselComponentEntity({
     MultiLanguageString? title,
     MultiLanguageString? description,
     required List<T> item,
