@@ -1,5 +1,12 @@
 import '../../domain/entity/product/product.dart';
+import '../../domain/entity/product/product_detail_from_your_search_product_entry_list_parameter.dart';
+import '../../domain/entity/product/product_detail_other_chosen_for_you_product_entry_list_parameter.dart';
+import '../../domain/entity/product/product_detail_other_from_this_brand_product_entry_list_parameter.dart';
+import '../../domain/entity/product/product_detail_other_in_this_category_product_entry_list_parameter.dart';
+import '../../domain/entity/product/product_detail_other_interested_product_brand_list_parameter.dart';
 import '../../domain/entity/product/productbrand/product_brand.dart';
+import '../../domain/entity/product/productbrand/product_brand_detail.dart';
+import '../../domain/entity/product/productbrand/product_brand_detail_parameter.dart';
 import '../../domain/entity/product/productbrand/product_brand_list_parameter.dart';
 import '../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../domain/entity/product/productbundle/product_bundle_list_parameter.dart';
@@ -62,5 +69,35 @@ class DefaultProductRepository implements ProductRepository {
   @override
   FutureProcessing<LoadDataResult<Product>> productDetail(ProductDetailParameter productDetailParameter) {
     return productDataSource.productDetail(productDetailParameter).mapToLoadDataResult<Product>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<ProductBrandDetail>> productBrandDetail(ProductBrandDetailParameter productBrandDetailParameter) {
+    return productDataSource.productBrandDetail(productBrandDetailParameter).mapToLoadDataResult<ProductBrandDetail>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<List<ProductEntry>>> productDetailFromYourSearchProductEntryList(ProductDetailFromYourSearchProductEntryListParameter productDetailFromYourSearchProductEntryListParameter) {
+    return productDataSource.productDetailFromYourSearchProductEntryList(productDetailFromYourSearchProductEntryListParameter).mapToLoadDataResult<List<ProductEntry>>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<List<ProductEntry>>> productDetailOtherChosenForYouProductEntryList(ProductDetailOtherChosenForYouProductEntryListParameter productDetailOtherChosenForYouProductEntryListParameter) {
+    return productDataSource.productDetailOtherChosenForYouProductEntryList(productDetailOtherChosenForYouProductEntryListParameter).mapToLoadDataResult<List<ProductEntry>>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<List<ProductEntry>>> productDetailOtherFromThisBrandProductEntryList(ProductDetailOtherFromThisBrandProductEntryListParameter productDetailOtherFromThisBrandProductEntryListParameter) {
+    return productDataSource.productDetailOtherFromThisBrandProductEntryList(productDetailOtherFromThisBrandProductEntryListParameter).mapToLoadDataResult<List<ProductEntry>>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<List<ProductEntry>>> productDetailOtherInThisCategoryProductEntryList(ProductDetailOtherInThisCategoryProductEntryListParameter productDetailOtherInThisCategoryProductEntryListParameter) {
+    return productDataSource.productDetailOtherInThisCategoryProductEntryList(productDetailOtherInThisCategoryProductEntryListParameter).mapToLoadDataResult<List<ProductEntry>>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<List<ProductBrand>>> productDetailOtherInterestedProductBrandListParameter(ProductDetailOtherInterestedProductBrandListParameter productDetailOtherInterestedProductBrandListParameter) {
+    return productDataSource.productDetailOtherInterestedProductBrandListParameter(productDetailOtherInterestedProductBrandListParameter).mapToLoadDataResult<List<ProductBrand>>();
   }
 }

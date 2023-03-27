@@ -1,15 +1,28 @@
+import 'package:masterbagasi/data/entitymappingext/product_entity_mapping_ext.dart';
 import 'package:masterbagasi/data/entitymappingext/province_entity_mapping_ext.dart';
 import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 
 import '../../domain/entity/product/product.dart';
 import '../../domain/entity/product/productbrand/product_brand.dart';
+import '../../domain/entity/product/productbrand/product_brand_detail.dart';
 import '../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../domain/entity/product/productcategory/product_category.dart';
 import '../../domain/entity/product/productcertification/product_certification.dart';
 import '../../domain/entity/product/productentry/product_entry.dart';
 import '../../domain/entity/product/productvariant/product_variant.dart';
+import '../../domain/entity/product/short_product.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/response_wrapper.dart';
+
+extension ShortProductEntityMappingExt on ResponseWrapper {
+  List<ShortProduct> mapFromResponseToShortProductList() {
+    return response.map<ShortProduct>((shortProductResponse) => ResponseWrapper(shortProductResponse).mapFromResponseToShortProduct()).toList();
+  }
+
+  PagingDataResult<ShortProduct> mapFromResponseToShortProductPagingDataResult() {
+    return response.map<ShortProduct>((shortProductResponse) => ResponseWrapper(shortProductResponse).mapFromResponseToShortProduct()).toList();
+  }
+}
 
 extension ProductEntityMappingExt on ResponseWrapper {
   List<Product> mapFromResponseToProductList() {
@@ -18,6 +31,25 @@ extension ProductEntityMappingExt on ResponseWrapper {
 
   PagingDataResult<Product> mapFromResponseToProductPagingDataResult() {
     return response.map<Product>((productResponse) => ResponseWrapper(productResponse).mapFromResponseToProduct()).toList();
+  }
+}
+
+extension ShortProductDetailEntityMappingExt on ResponseWrapper {
+  ShortProduct mapFromResponseToShortProduct() {
+    return ShortProduct(
+      id: response["id"],
+      userId: response["user_id"],
+      productBrandId: response["product_brand_id"],
+      productCategoryId: response["product_category_id"],
+      provinceId: response["province_id"],
+      name: response["name"],
+      slug: response["slug"],
+      description: response["description"],
+      price: 100000,
+      discountPrice: null,
+      rating: 5.0,
+      imageUrl: "",
+    );
   }
 }
 
@@ -79,6 +111,18 @@ extension ProductBrandDetailEntityMappingExt on ResponseWrapper {
       bannerMobile: response["banner_mobile"]
     );
   }
+
+  ProductBrandDetail mapFromResponseToProductBrandDetail() {
+    return ProductBrandDetail(
+      id: response["id"],
+      name: response["name"],
+      slug: response["slug"],
+      icon: response["icon"],
+      bannerDesktop: response["banner_desktop"],
+      bannerMobile: response["banner_mobile"],
+      shortProductList: ResponseWrapper(response["product"]).mapFromResponseToShortProductList()
+    );
+  }
 }
 
 extension ProductCategoryEntityMappingExt on ResponseWrapper {
@@ -119,6 +163,14 @@ extension ProductCertificationDetailEntityMappingExt on ResponseWrapper {
 extension ProductEntryEntityMappingExt on ResponseWrapper {
   List<ProductEntry> mapFromResponseToProductEntryList() {
     return response.map<ProductEntry>((productEntryResponse) => ResponseWrapper(productEntryResponse).mapFromResponseToProductEntry()).toList();
+  }
+
+  PagingDataResult<ProductEntry> mapFromResponseToProductEntryPaging() {
+    return ResponseWrapper(response).mapFromResponseToPagingDataResult(
+      (dataResponse) => dataResponse.map<ProductEntry>(
+        (productResponse) => ResponseWrapper(productResponse).mapFromResponseToProductEntry()
+      ).toList()
+    );
   }
 }
 

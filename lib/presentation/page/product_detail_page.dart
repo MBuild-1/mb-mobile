@@ -9,13 +9,22 @@ import 'package:sizer/sizer.dart';
 import '../../controller/product_detail_controller.dart';
 import '../../domain/entity/location/location.dart';
 import '../../domain/entity/product/product.dart';
+import '../../domain/entity/product/product_detail_get_other_from_this_brand_parameter.dart';
+import '../../domain/entity/product/product_detail_get_other_in_this_category_parameter.dart';
 import '../../domain/entity/product/product_detail_parameter.dart';
+import '../../domain/usecase/get_product_category_list_use_case.dart';
+import '../../domain/usecase/get_product_detail_from_your_search_product_entry_list_use_case.dart';
+import '../../domain/usecase/get_product_detail_other_chosen_for_you_product_entry_list_use_case.dart';
+import '../../domain/usecase/get_product_detail_other_from_this_brand_product_entry_list_use_case.dart';
+import '../../domain/usecase/get_product_detail_other_in_this_category_product_entry_list_use_case.dart';
+import '../../domain/usecase/get_product_detail_other_interested_product_brand_list_use_case.dart';
 import '../../domain/usecase/get_product_detail_use_case.dart';
 import '../../misc/additionalloadingindicatorchecker/product_detail_additional_paging_result_parameter_checker.dart';
 import '../../misc/constant.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/colorful_divider_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/delivery_to_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/load_data_result_dynamic_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/padding_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/product_detail_brand_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/product_detail_header_list_item_controller_state.dart';
@@ -23,16 +32,19 @@ import '../../misc/controllerstate/listitemcontrollerstate/product_detail_image_
 import '../../misc/controllerstate/listitemcontrollerstate/title_and_description_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
+import '../../misc/entityandlistitemcontrollerstatemediator/horizontal_component_entity_parameterized_entity_and_list_item_controller_state_mediator.dart';
 import '../../misc/error/message_error.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/controller_manager.dart';
+import '../../misc/on_observe_load_product_delegate.dart';
 import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
+import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/horizontal_dynamic_item_carousel_parametered_component_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../widget/modified_divider.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/default_search_app_bar.dart';
@@ -48,7 +60,17 @@ class ProductDetailPage extends RestorableGetxPage<_ProductDetailPageRestoration
   @override
   void onSetController() {
     _productDetailController.controller = GetExtended.put<ProductDetailController>(
-      ProductDetailController(controllerManager, Injector.locator<GetProductDetailUseCase>()), tag: pageName
+      ProductDetailController(
+        controllerManager,
+        Injector.locator<GetProductDetailUseCase>(),
+        Injector.locator<GetProductCategoryListUseCase>(),
+        Injector.locator<GetProductDetailOtherChosenForYouProductEntryListUseCase>(),
+        Injector.locator<GetProductDetailOtherFromThisBrandProductEntryListUseCase>(),
+        Injector.locator<GetProductDetailOtherInThisCategoryProductEntryListUseCase>(),
+        Injector.locator<GetProductDetailFromYourSearchProductEntryListUseCase>(),
+        Injector.locator<GetProductDetailOtherInterestedProductBrandListUseCase>(),
+      ),
+      tag: pageName
     );
   }
 
@@ -66,7 +88,7 @@ class ProductDetailPage extends RestorableGetxPage<_ProductDetailPageRestoration
   }
 }
 
-class _ProductDetailPageRestoration extends MixableGetxPageRestoration {
+class _ProductDetailPageRestoration extends MixableGetxPageRestoration with ProductDetailPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
@@ -180,6 +202,7 @@ class _StatefulProductDetailControllerMediatorWidget extends StatefulWidget {
 class _StatefulProductDetailControllerMediatorWidgetState extends State<_StatefulProductDetailControllerMediatorWidget> {
   late final ModifiedPagingController<int, ListItemControllerState> _productDetailListItemPagingController;
   late final PagingControllerState<int, ListItemControllerState> _productDetailListItemPagingControllerState;
+  final List<LoadDataResultDynamicListItemControllerState> _dynamicItemLoadDataResultDynamicListItemControllerStateList = [];
 
   @override
   void initState() {
@@ -202,6 +225,11 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _productDetailListItemPagingControllerStateListener(int pageKey) async {
+    HorizontalComponentEntityParameterizedEntityAndListItemControllerStateMediator componentEntityMediator = Injector.locator<HorizontalComponentEntityParameterizedEntityAndListItemControllerStateMediator>();
+    HorizontalDynamicItemCarouselParameterizedEntityAndListItemControllerStateMediatorParameter carouselParameterizedEntityMediator = HorizontalDynamicItemCarouselParameterizedEntityAndListItemControllerStateMediatorParameter(
+      onSetState: () => setState(() {}),
+      dynamicItemLoadDataResultDynamicListItemControllerStateList: _dynamicItemLoadDataResultDynamicListItemControllerStateList
+    );
     LoadDataResult<Product> productLoadDataResult = await widget.productDetailController.getProductDetail(
       ProductDetailParameter(productId: widget.productId)
     );
@@ -291,7 +319,40 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
             ),
           ),
           VirtualSpacingListItemControllerState(height: 4.h),
+          componentEntityMediator.mapWithParameter(
+            widget.productDetailController.getOtherInThisCategory(
+              ProductDetailGetOtherInThisCategoryParameter(
+                categorySlug: product.productCategory.slug
+              )
+            ),
+            parameter: carouselParameterizedEntityMediator
+          ),
+          VirtualSpacingListItemControllerState(height: 4.h),
           ProductDetailBrandListItemControllerState(productBrand: product.productBrand),
+          VirtualSpacingListItemControllerState(height: 4.h),
+          componentEntityMediator.mapWithParameter(
+            widget.productDetailController.getOtherFromThisBrand(
+              ProductDetailGetOtherFromThisBrandParameter(
+                brandSlug: product.productBrand.slug
+              )
+            ),
+            parameter: carouselParameterizedEntityMediator
+          ),
+          VirtualSpacingListItemControllerState(height: 4.h),
+          componentEntityMediator.mapWithParameter(
+            widget.productDetailController.getOtherChosenForYou(),
+            parameter: carouselParameterizedEntityMediator
+          ),
+          VirtualSpacingListItemControllerState(height: 4.h),
+          componentEntityMediator.mapWithParameter(
+            widget.productDetailController.getOtherFromYourSearch(),
+            parameter: carouselParameterizedEntityMediator
+          ),
+          VirtualSpacingListItemControllerState(height: 4.h),
+          componentEntityMediator.mapWithParameter(
+            widget.productDetailController.getOtherInterestedProductBrand(),
+            parameter: carouselParameterizedEntityMediator
+          ),
           VirtualSpacingListItemControllerState(height: 4.h),
         ]
       );
@@ -300,6 +361,11 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
 
   @override
   Widget build(BuildContext context) {
+    widget.productDetailController.setProductDetailMainMenuDelegate(
+      ProductDetailMainMenuDelegate(
+        onObserveLoadProductDelegate: Injector.locator<OnObserveLoadProductDelegate>()
+      )
+    );
     return Scaffold(
       appBar: DefaultSearchAppBar(),
       body: SafeArea(
