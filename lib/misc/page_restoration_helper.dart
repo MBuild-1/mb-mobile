@@ -6,6 +6,7 @@ import '../presentation/page/getx_page.dart';
 import '../presentation/page/login_page.dart';
 import '../presentation/page/mainmenu/main_menu_page.dart';
 import '../presentation/page/product_brand_detail_page.dart';
+import '../presentation/page/product_category_detail_page.dart';
 import '../presentation/page/product_detail_page.dart';
 import '../presentation/page/register_page.dart';
 
@@ -89,6 +90,15 @@ class _PageRestorationHelperImpl {
     PageRestorationHelper.findPageRestorationMixin<ProductBrandDetailPageRestorationMixin>(
       onGetxPageRestorationFound: (restoration) {
         restoration.productBrandDetailPageRestorableRouteFuture.present(productBrandId);
+      },
+      context: context
+    );
+  }
+
+  void toProductCategoryDetailPage(BuildContext context, String productCategoryId) {
+    PageRestorationHelper.findPageRestorationMixin<ProductCategoryDetailPageRestorationMixin>(
+      onGetxPageRestorationFound: (restoration) {
+        restoration.productCategoryDetailPageRestorableRouteFuture.present(productCategoryId);
       },
       context: context
     );

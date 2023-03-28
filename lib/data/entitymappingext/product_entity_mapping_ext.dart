@@ -7,6 +7,7 @@ import '../../domain/entity/product/productbrand/product_brand.dart';
 import '../../domain/entity/product/productbrand/product_brand_detail.dart';
 import '../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../domain/entity/product/productcategory/product_category.dart';
+import '../../domain/entity/product/productcategory/product_category_detail.dart';
 import '../../domain/entity/product/productcertification/product_certification.dart';
 import '../../domain/entity/product/productentry/product_entry.dart';
 import '../../domain/entity/product/productvariant/product_variant.dart';
@@ -140,6 +141,18 @@ extension ProductCategoryDetailEntityMappingExt on ResponseWrapper {
       icon: response["icon"],
       bannerDesktop: response["banner_desktop"],
       bannerMobile: response["banner_mobile"],
+    );
+  }
+
+  ProductCategoryDetail mapFromResponseToProductCategoryDetail() {
+    return ProductCategoryDetail(
+      id: response["id"],
+      name: response["name"],
+      slug: response["slug"],
+      icon: response["icon"],
+      bannerDesktop: response["banner_desktop"],
+      bannerMobile: response["banner_mobile"],
+      shortProductList: ResponseWrapper(response["product"]).mapFromResponseToShortProductList()
     );
   }
 }

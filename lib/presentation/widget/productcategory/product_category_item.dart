@@ -3,6 +3,7 @@ import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../../../domain/entity/product/productcategory/product_category.dart';
 import '../../../misc/constant.dart';
+import '../../../misc/page_restoration_helper.dart';
 import '../modified_divider.dart';
 import '../modifiedcachednetworkimage/product_modified_cached_network_image.dart';
 
@@ -34,7 +35,7 @@ abstract class ProductCategoryItem extends StatelessWidget {
           borderRadius: borderRadius,
           elevation: 3,
           child: InkWell(
-            onTap: () {},
+            onTap: () => PageRestorationHelper.toProductCategoryDetailPage(context, productCategory.id),
             borderRadius: borderRadius,
             child: Container(
               clipBehavior: Clip.antiAlias,

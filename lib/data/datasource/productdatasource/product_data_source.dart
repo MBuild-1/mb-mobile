@@ -11,6 +11,8 @@ import '../../../domain/entity/product/productbrand/product_brand_list_parameter
 import '../../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../../domain/entity/product/productbundle/product_bundle_list_parameter.dart';
 import '../../../domain/entity/product/productcategory/product_category.dart';
+import '../../../domain/entity/product/productcategory/product_category_detail.dart';
+import '../../../domain/entity/product/productcategory/product_category_detail_parameter.dart';
 import '../../../domain/entity/product/productcategory/product_category_list_parameter.dart';
 import '../../../domain/entity/product/product_detail_parameter.dart';
 import '../../../domain/entity/product/productentry/product_entry.dart';
@@ -31,6 +33,7 @@ abstract class ProductDataSource {
   FutureProcessing<PagingDataResult<ProductEntry>> productWithConditionPaging(ProductWithConditionPagingParameter productWithConditionPagingParameter);
   FutureProcessing<Product> productDetail(ProductDetailParameter productDetailParameter);
   FutureProcessing<ProductBrandDetail> productBrandDetail(ProductBrandDetailParameter productBrandDetailParameter);
+  FutureProcessing<ProductCategoryDetail> productCategoryDetail(ProductCategoryDetailParameter productCategoryDetailParameter);
   FutureProcessing<List<ProductEntry>> productDetailFromYourSearchProductEntryList(ProductDetailFromYourSearchProductEntryListParameter productDetailFromYourSearchProductEntryListParameter);
   FutureProcessing<List<ProductEntry>> productDetailOtherChosenForYouProductEntryList(ProductDetailOtherChosenForYouProductEntryListParameter productDetailOtherChosenForYouProductEntryListParameter);
   FutureProcessing<List<ProductEntry>> productDetailOtherFromThisBrandProductEntryList(ProductDetailOtherFromThisBrandProductEntryListParameter productDetailOtherFromThisBrandProductEntryListParameter);

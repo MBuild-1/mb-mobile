@@ -18,6 +18,8 @@ import '../../../domain/entity/product/productbrand/product_brand_list_parameter
 import '../../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../../domain/entity/product/productbundle/product_bundle_list_parameter.dart';
 import '../../../domain/entity/product/productcategory/product_category.dart';
+import '../../../domain/entity/product/productcategory/product_category_detail.dart';
+import '../../../domain/entity/product/productcategory/product_category_detail_parameter.dart';
 import '../../../domain/entity/product/productcategory/product_category_list_parameter.dart';
 import '../../../domain/entity/product/product_detail_parameter.dart';
 import '../../../domain/entity/product/productentry/product_entry.dart';
@@ -122,6 +124,14 @@ class DefaultProductDataSource implements ProductDataSource {
     return DioHttpClientProcessing((cancelToken) {
       return dio.get("/product/brand/${productBrandDetailParameter.productBrandId}", cancelToken: cancelToken)
         .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductBrandDetail());
+    });
+  }
+
+  @override
+  FutureProcessing<ProductCategoryDetail> productCategoryDetail(ProductCategoryDetailParameter productCategoryDetailParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.get("/product/category/${productCategoryDetailParameter.productCategoryDetailId}", cancelToken: cancelToken)
+        .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductCategoryDetail());
     });
   }
 
