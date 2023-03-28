@@ -21,9 +21,11 @@ import '../../../../misc/controllerstate/listitemcontrollerstate/delivery_to_lis
 import '../../../../misc/controllerstate/listitemcontrollerstate/failed_prompt_indicator_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/load_data_result_dynamic_list_item_controller_state.dart';
+import '../../../../misc/controllerstate/listitemcontrollerstate/no_content_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/single_banner_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/paging_controller_state.dart';
+import '../../../../misc/entityandlistitemcontrollerstatemediator/horizontal_component_entity_parameterized_entity_and_list_item_controller_state_mediator.dart';
 import '../../../../misc/entityandlistitemcontrollerstatemediator/horizontal_entity_and_list_item_controller_state_mediator.dart';
 import '../../../../misc/error/message_error.dart';
 import '../../../../misc/errorprovider/error_provider.dart';
@@ -34,6 +36,7 @@ import '../../../../misc/paging/modified_paging_controller.dart';
 import '../../../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../../../misc/paging/pagingresult/paging_result.dart';
+import '../../../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/horizontal_dynamic_item_carousel_parametered_component_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../../../../misc/shimmercarousellistitemgenerator/factory/product_brand_shimmer_carousel_list_item_generator_factory.dart';
 import '../../../../misc/shimmercarousellistitemgenerator/factory/product_bundle_shimmer_carousel_list_item_generator_factory.dart';
 import '../../../../misc/shimmercarousellistitemgenerator/factory/product_category_shimmer_carousel_list_item_generator_factory.dart';
@@ -102,6 +105,11 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
   }
 
   void _checkingMainMenuContent(List<HomeMainMenuComponentEntity> mainMenuContentList, List<ListItemControllerState> listItemControllerStateList) {
+    HorizontalComponentEntityParameterizedEntityAndListItemControllerStateMediator componentEntityMediator = Injector.locator<HorizontalComponentEntityParameterizedEntityAndListItemControllerStateMediator>();
+    HorizontalDynamicItemCarouselParameterizedEntityAndListItemControllerStateMediatorParameter carouselParameterizedEntityMediator = HorizontalDynamicItemCarouselParameterizedEntityAndListItemControllerStateMediatorParameter(
+      onSetState: () => setState(() {}),
+      dynamicItemLoadDataResultDynamicListItemControllerStateList: _dynamicItemLoadDataResultDynamicListItemControllerStateList
+    );
     int i = 0;
     _dynamicItemLoadDataResultDynamicListItemControllerStateList.clear();
     while (i < mainMenuContentList.length) {
@@ -118,69 +126,27 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
             banner: homeMainMenuComponentEntity.banner
           )
         );
-      } else if (homeMainMenuComponentEntity is ItemCarouselHomeMainMenuComponentEntity) {
-        listItemControllerStateList.add(
-          CarouselListItemControllerState(
-            title: homeMainMenuComponentEntity.title.toEmptyStringNonNull,
-            description: homeMainMenuComponentEntity.description.toEmptyStringNonNull,
-            padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-            itemListItemControllerState: homeMainMenuComponentEntity.item.map<ListItemControllerState>(
-              Injector.locator<HorizontalEntityAndListItemControllerStateMediator>().map
-            ).toList()
-          )
-        );
-      } else if (homeMainMenuComponentEntity is DynamicItemCarouselHomeMainMenuComponentEntity) {
-        LoadDataResultDynamicListItemControllerState dynamicList = LoadDataResultDynamicListItemControllerState(
-          loadDataResult: IsLoadingLoadDataResult(),
-          errorProvider: Injector.locator<ErrorProvider>(),
-          isLoadingListItemControllerState: (listItemControllerState) {
-            if (homeMainMenuComponentEntity.onObserveLoadingDynamicItemActionState != null) {
-              return homeMainMenuComponentEntity.onObserveLoadingDynamicItemActionState!(
-                homeMainMenuComponentEntity.title, homeMainMenuComponentEntity.description, IsLoadingLoadDataResult()
-              );
-            }
-            return ShimmerCarouselListItemControllerState<ProductShimmerCarouselListItemGeneratorType>(
-              padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-              showTitleShimmer: true,
-              showDescriptionShimmer: false,
-              showItemShimmer: true,
-              shimmerCarouselListItemGenerator: Injector.locator<ProductShimmerCarouselListItemGeneratorFactory>().getShimmerCarouselListItemGeneratorType()
-            );
-          },
-          successListItemControllerState: (data) {
-            return homeMainMenuComponentEntity.onObserveSuccessDynamicItemActionState(
-              homeMainMenuComponentEntity.title, homeMainMenuComponentEntity.description, SuccessLoadDataResult(value: data)
-            );
-          }
-        );
-        _dynamicItemLoadDataResultDynamicListItemControllerStateList.add(dynamicList);
-        listItemControllerStateList.add(
-          _dynamicItemLoadDataResultDynamicListItemControllerStateList.last
-        );
-        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          homeMainMenuComponentEntity.onDynamicItemAction(
-            homeMainMenuComponentEntity.title,
-            homeMainMenuComponentEntity.description,
-            (title, description, itemLoadDataResult) {
-              dynamicList.loadDataResult = itemLoadDataResult;
-              setState(() {});
-            }
-          );
-        });
       } else if (homeMainMenuComponentEntity is CheckRatesForVariousCountriesComponentEntity) {
         listItemControllerStateList.add(
           CheckRatesForVariousCountriesControllerState()
         );
       } else {
-        listItemControllerStateList.add(
-          FailedPromptIndicatorListItemControllerState(
-            errorProvider: Injector.locator<ErrorProvider>(),
-            e: FailedLoadDataResult.throwException(() => throw MessageError(
-              title: "Item Not Showed",
-              message: "This item cannot be showed ${kDebugMode ? "(${homeMainMenuComponentEntity.runtimeType})" : ""}"
-            ))!.e,
-          )
+        ListItemControllerState listItemControllerState = componentEntityMediator.mapWithParameter(
+          homeMainMenuComponentEntity, parameter: carouselParameterizedEntityMediator
         );
+        if (listItemControllerState is NoContentListItemControllerState) {
+          listItemControllerStateList.add(
+            FailedPromptIndicatorListItemControllerState(
+              errorProvider: Injector.locator<ErrorProvider>(),
+              e: FailedLoadDataResult.throwException(() => throw MessageError(
+                title: "Item Not Showed",
+                message: "This item cannot be showed ${kDebugMode ? "(${homeMainMenuComponentEntity.runtimeType})" : ""}"
+              ))!.e,
+            )
+          );
+        } else {
+          listItemControllerStateList.add(listItemControllerState);
+        }
       }
       i++;
     }
