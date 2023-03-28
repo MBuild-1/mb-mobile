@@ -27,6 +27,7 @@ import '../domain/repository/user_repository.dart';
 import '../domain/usecase/get_product_brand_detail_use_case.dart';
 import '../domain/usecase/get_product_brand_use_case.dart';
 import '../domain/usecase/get_product_bundle_use_case.dart';
+import '../domain/usecase/get_product_category_detail_use_case.dart';
 import '../domain/usecase/get_product_category_list_use_case.dart';
 import '../domain/usecase/get_product_detail_from_your_search_product_entry_list_use_case.dart';
 import '../domain/usecase/get_product_detail_other_chosen_for_you_product_entry_list_use_case.dart';
@@ -41,6 +42,7 @@ import '../domain/usecase/login_use_case.dart';
 import '../domain/usecase/register_use_case.dart';
 import 'additionalloadingindicatorchecker/home_sub_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/product_brand_detail_additional_paging_result_parameter_checker.dart';
+import 'additionalloadingindicatorchecker/product_category_detail_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/product_detail_additional_paging_result_parameter_checker.dart';
 import 'constant.dart';
 import 'controllerstate/listitemcontrollerstate/carousel_list_item_controller_state.dart';
@@ -231,6 +233,9 @@ class _Injector {
     locator.registerFactory<ProductBrandDetailAdditionalPagingResultParameterChecker>(
       () => ProductBrandDetailAdditionalPagingResultParameterChecker()
     );
+    locator.registerFactory<ProductCategoryDetailAdditionalPagingResultParameterChecker>(
+      () => ProductCategoryDetailAdditionalPagingResultParameterChecker()
+    );
 
     // Default Load Data Result Widget
     locator.registerLazySingleton<DefaultLoadDataResultWidget>(() => MainDefaultLoadDataResultWidget());
@@ -250,6 +255,7 @@ class _Injector {
     locator.registerLazySingleton<GetProductDetailFromYourSearchProductEntryListUseCase>(() => GetProductDetailFromYourSearchProductEntryListUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductDetailOtherInterestedProductBrandListUseCase>(() => GetProductDetailOtherInterestedProductBrandListUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductCategoryListUseCase>(() => GetProductCategoryListUseCase(productRepository: locator()));
+    locator.registerLazySingleton<GetProductCategoryDetailUseCase>(() => GetProductCategoryDetailUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductBundleListUseCase>(() => GetProductBundleListUseCase(productRepository: locator()));
 
     // Repository

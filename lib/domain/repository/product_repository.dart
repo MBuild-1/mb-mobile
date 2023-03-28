@@ -14,6 +14,8 @@ import '../entity/product/productbrand/product_brand_list_parameter.dart';
 import '../entity/product/productbundle/product_bundle.dart';
 import '../entity/product/productbundle/product_bundle_list_parameter.dart';
 import '../entity/product/productcategory/product_category.dart';
+import '../entity/product/productcategory/product_category_detail.dart';
+import '../entity/product/productcategory/product_category_detail_parameter.dart';
 import '../entity/product/productcategory/product_category_list_parameter.dart';
 import '../entity/product/product_detail_parameter.dart';
 import '../entity/product/productentry/product_entry.dart';
@@ -32,6 +34,7 @@ abstract class ProductRepository {
   FutureProcessing<LoadDataResult<PagingDataResult<ProductEntry>>> productWithConditionPaging(ProductWithConditionPagingParameter productWithConditionPagingParameter);
   FutureProcessing<LoadDataResult<Product>> productDetail(ProductDetailParameter productDetailParameter);
   FutureProcessing<LoadDataResult<ProductBrandDetail>> productBrandDetail(ProductBrandDetailParameter productBrandDetailParameter);
+  FutureProcessing<LoadDataResult<ProductCategoryDetail>> productCategoryDetail(ProductCategoryDetailParameter productCategoryDetailParameter);
   FutureProcessing<LoadDataResult<List<ProductEntry>>> productDetailFromYourSearchProductEntryList(ProductDetailFromYourSearchProductEntryListParameter productDetailFromYourSearchProductEntryListParameter);
   FutureProcessing<LoadDataResult<List<ProductEntry>>> productDetailOtherChosenForYouProductEntryList(ProductDetailOtherChosenForYouProductEntryListParameter productDetailOtherChosenForYouProductEntryListParameter);
   FutureProcessing<LoadDataResult<List<ProductEntry>>> productDetailOtherFromThisBrandProductEntryList(ProductDetailOtherFromThisBrandProductEntryListParameter productDetailOtherFromThisBrandProductEntryListParameter);

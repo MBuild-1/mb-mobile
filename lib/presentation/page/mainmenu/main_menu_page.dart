@@ -18,6 +18,7 @@ import '../../widget/modified_svg_picture.dart';
 import '../login_page.dart';
 import '../getx_page.dart';
 import '../product_brand_detail_page.dart';
+import '../product_category_detail_page.dart';
 import 'mainmenusubpage/explore_nusantara_main_menu_page.dart';
 import 'mainmenusubpage/feed_main_menu_sub_page.dart';
 import 'mainmenusubpage/home_main_menu_sub_page.dart';
@@ -66,7 +67,7 @@ class MainMenuPage extends RestorableGetxPage<_MainMenuPageRestoration> {
   }
 }
 
-class _MainMenuPageRestoration extends MixableGetxPageRestoration with LoginPageRestorationMixin, ProductDetailPageRestorationMixin, ProductBrandDetailPageRestorationMixin {
+class _MainMenuPageRestoration extends MixableGetxPageRestoration with LoginPageRestorationMixin, ProductDetailPageRestorationMixin, ProductBrandDetailPageRestorationMixin, ProductCategoryDetailPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
