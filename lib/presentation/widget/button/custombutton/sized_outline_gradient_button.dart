@@ -56,7 +56,7 @@ class SizedOutlineGradientButton extends StatelessWidget {
         gradient: gradientButtonVariation.gradient,
         strokeWidth: 1.5,
         backgroundColor: gradientButtonVariation.backgroundColor,
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         radius: const Radius.circular(8),
         inkWell: true,
         onLongPress: onLongPress,

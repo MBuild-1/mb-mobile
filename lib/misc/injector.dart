@@ -26,7 +26,10 @@ import '../domain/repository/product_repository.dart';
 import '../domain/repository/user_repository.dart';
 import '../domain/usecase/get_product_brand_detail_use_case.dart';
 import '../domain/usecase/get_product_brand_use_case.dart';
-import '../domain/usecase/get_product_bundle_use_case.dart';
+import '../domain/usecase/get_product_bundle_detail_use_case.dart';
+import '../domain/usecase/get_product_bundle_highlight_use_case.dart';
+import '../domain/usecase/get_product_bundle_list_use_case.dart';
+import '../domain/usecase/get_product_bundle_paging_use_case.dart';
 import '../domain/usecase/get_product_category_detail_use_case.dart';
 import '../domain/usecase/get_product_category_list_use_case.dart';
 import '../domain/usecase/get_product_detail_from_your_search_product_entry_list_use_case.dart';
@@ -42,6 +45,8 @@ import '../domain/usecase/login_use_case.dart';
 import '../domain/usecase/register_use_case.dart';
 import 'additionalloadingindicatorchecker/home_sub_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/product_brand_detail_additional_paging_result_parameter_checker.dart';
+import 'additionalloadingindicatorchecker/product_bundle_additional_paging_result_parameter_checker.dart';
+import 'additionalloadingindicatorchecker/product_bundle_detail_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/product_category_detail_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/product_detail_additional_paging_result_parameter_checker.dart';
 import 'constant.dart';
@@ -74,7 +79,8 @@ class _Injector {
         getProductViralListUseCase: locator(),
         getProductCategoryListUseCase: locator(),
         getProductBrandListUseCase: locator(),
-        getProductBundleListUseCase: locator()
+        getProductBundleListUseCase: locator(),
+        getProductBundleHighlightUseCase: locator()
       )
     );
     locator.registerLazySingleton<FeedMainMenuSubControllerInjectionFactory>(
@@ -236,6 +242,12 @@ class _Injector {
     locator.registerFactory<ProductCategoryDetailAdditionalPagingResultParameterChecker>(
       () => ProductCategoryDetailAdditionalPagingResultParameterChecker()
     );
+    locator.registerFactory<ProductBundleAdditionalPagingResultParameterChecker>(
+      () => ProductBundleAdditionalPagingResultParameterChecker()
+    );
+    locator.registerFactory<ProductBundleDetailAdditionalPagingResultParameterChecker>(
+      () => ProductBundleDetailAdditionalPagingResultParameterChecker()
+    );
 
     // Default Load Data Result Widget
     locator.registerLazySingleton<DefaultLoadDataResultWidget>(() => MainDefaultLoadDataResultWidget());
@@ -257,6 +269,9 @@ class _Injector {
     locator.registerLazySingleton<GetProductCategoryListUseCase>(() => GetProductCategoryListUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductCategoryDetailUseCase>(() => GetProductCategoryDetailUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductBundleListUseCase>(() => GetProductBundleListUseCase(productRepository: locator()));
+    locator.registerLazySingleton<GetProductBundlePagingUseCase>(() => GetProductBundlePagingUseCase(productRepository: locator()));
+    locator.registerLazySingleton<GetProductBundleHighlightUseCase>(() => GetProductBundleHighlightUseCase(productRepository: locator()));
+    locator.registerLazySingleton<GetProductBundleDetailUseCase>(() => GetProductBundleDetailUseCase(productRepository: locator()));
 
     // Repository
     locator.registerLazySingleton<UserRepository>(() => DefaultUserRepository(userDataSource: locator()));

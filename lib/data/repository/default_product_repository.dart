@@ -9,7 +9,11 @@ import '../../domain/entity/product/productbrand/product_brand_detail.dart';
 import '../../domain/entity/product/productbrand/product_brand_detail_parameter.dart';
 import '../../domain/entity/product/productbrand/product_brand_list_parameter.dart';
 import '../../domain/entity/product/productbundle/product_bundle.dart';
+import '../../domain/entity/product/productbundle/product_bundle_detail.dart';
+import '../../domain/entity/product/productbundle/product_bundle_detail_parameter.dart';
+import '../../domain/entity/product/productbundle/product_bundle_highlight_parameter.dart';
 import '../../domain/entity/product/productbundle/product_bundle_list_parameter.dart';
+import '../../domain/entity/product/productbundle/product_bundle_paging_parameter.dart';
 import '../../domain/entity/product/productcategory/product_category.dart';
 import '../../domain/entity/product/productcategory/product_category_detail.dart';
 import '../../domain/entity/product/productcategory/product_category_detail_parameter.dart';
@@ -64,6 +68,16 @@ class DefaultProductRepository implements ProductRepository {
   }
 
   @override
+  FutureProcessing<LoadDataResult<PagingDataResult<ProductBundle>>> productBundlePaging(ProductBundlePagingParameter productBundlePagingParameter) {
+    return productDataSource.productBundlePaging(productBundlePagingParameter).mapToLoadDataResult<PagingDataResult<ProductBundle>>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<ProductBundle>> productBundleHighlight(ProductBundleHighlightParameter productBundleHighlightParameter) {
+    return productDataSource.productBundleHighlight(productBundleHighlightParameter).mapToLoadDataResult<ProductBundle>();
+  }
+
+  @override
   FutureProcessing<LoadDataResult<PagingDataResult<ProductEntry>>> productWithConditionPaging(ProductWithConditionPagingParameter productWithConditionPagingParameter) {
     return productDataSource.productWithConditionPaging(productWithConditionPagingParameter).mapToLoadDataResult<PagingDataResult<ProductEntry>>();
   }
@@ -81,6 +95,11 @@ class DefaultProductRepository implements ProductRepository {
   @override
   FutureProcessing<LoadDataResult<ProductCategoryDetail>> productCategoryDetail(ProductCategoryDetailParameter productCategoryDetailParameter) {
     return productDataSource.productCategoryDetail(productCategoryDetailParameter).mapToLoadDataResult<ProductCategoryDetail>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<ProductBundleDetail>> productBundleDetail(ProductBundleDetailParameter productBundleDetailParameter) {
+    return productDataSource.productBundleDetail(productBundleDetailParameter).mapToLoadDataResult<ProductBundleDetail>();
   }
 
   @override

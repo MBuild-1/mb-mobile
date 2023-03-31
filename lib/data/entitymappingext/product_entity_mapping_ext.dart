@@ -6,6 +6,7 @@ import '../../domain/entity/product/product.dart';
 import '../../domain/entity/product/productbrand/product_brand.dart';
 import '../../domain/entity/product/productbrand/product_brand_detail.dart';
 import '../../domain/entity/product/productbundle/product_bundle.dart';
+import '../../domain/entity/product/productbundle/product_bundle_detail.dart';
 import '../../domain/entity/product/productcategory/product_category.dart';
 import '../../domain/entity/product/productcategory/product_category_detail.dart';
 import '../../domain/entity/product/productcertification/product_certification.dart';
@@ -81,6 +82,14 @@ extension ProductBundleMappingExt on ResponseWrapper {
   List<ProductBundle> mapFromResponseToProductBundleList() {
     return response.map<ProductBundle>((productBundleResponse) => ResponseWrapper(productBundleResponse).mapFromResponseToProductBundle()).toList();
   }
+
+  PagingDataResult<ProductBundle> mapFromResponseToProductBundlePaging() {
+    return ResponseWrapper(response).mapFromResponseToPagingDataResult(
+      (dataResponse) => dataResponse.map<ProductBundle>(
+        (productBundleResponse) => ResponseWrapper(productBundleResponse).mapFromResponseToProductBundle()
+      ).toList()
+    );
+  }
 }
 
 extension ProductBundleDetailEntityMappingExt on ResponseWrapper {
@@ -91,6 +100,21 @@ extension ProductBundleDetailEntityMappingExt on ResponseWrapper {
       description: response["description"],
       slug: response["slug"],
       imageUrl: response["image_url"],
+      price: response["price"],
+      rating: response["rating"]
+    );
+  }
+
+  ProductBundleDetail mapFromResponseToProductBundleDetail() {
+    return ProductBundleDetail(
+      id: response["id"],
+      name: response["name"],
+      description: response["description"],
+      slug: response["slug"],
+      imageUrl: response["image_url"],
+      price: response["price"],
+      rating: response["rating"],
+      shortProductList: ResponseWrapper(response["product"]).mapFromResponseToShortProductList()
     );
   }
 }

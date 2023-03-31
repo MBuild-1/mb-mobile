@@ -32,7 +32,9 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Brand": "Brand",
       "Certification": "Sertifikasi",
       "Min. Order": "Min. Pemesanan",
-      "Storefront": "Etalase"
+      "Storefront": "Etalase",
+      "Save More With Bundles": "Lebih Hemat Dengan Bundle",
+      "More": "Lihat Semuanya"
     }
   };
 

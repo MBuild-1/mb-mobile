@@ -1,14 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide Banner;
+import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
+import 'package:sizer/sizer.dart';
 import '../../../../controller/mainmenucontroller/mainmenusubpagecontroller/home_main_menu_sub_controller.dart';
 import '../../../../domain/entity/banner/banner.dart';
 import '../../../../domain/entity/homemainmenucomponententity/banner_home_main_menu_component_entity.dart';
 import '../../../../domain/entity/homemainmenucomponententity/check_rates_for_various_countries_component_entity.dart';
-import '../../../../domain/entity/homemainmenucomponententity/dynamic_item_carousel_home_main_menu_component_entity.dart';
 import '../../../../domain/entity/homemainmenucomponententity/home_main_menu_component_entity.dart';
-import '../../../../domain/entity/homemainmenucomponententity/item_carousel_home_main_menu_component_entity.dart';
 import '../../../../domain/entity/homemainmenucomponententity/separator_home_main_menu_component_entity.dart';
 import '../../../../domain/entity/location/location.dart';
 import '../../../../misc/additionalloadingindicatorchecker/home_sub_additional_paging_result_parameter_checker.dart';
@@ -17,12 +17,16 @@ import '../../../../misc/constant.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/carousel_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/check_rates_for_various_countries_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/colorful_divider_list_item_controller_state.dart';
+import '../../../../misc/controllerstate/listitemcontrollerstate/compound_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/delivery_to_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/failed_prompt_indicator_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/load_data_result_dynamic_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/no_content_list_item_controller_state.dart';
+import '../../../../misc/controllerstate/listitemcontrollerstate/padding_container_list_item_controller_state.dart';
+import '../../../../misc/controllerstate/listitemcontrollerstate/product_bundle_highlight_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/single_banner_list_item_controller_state.dart';
+import '../../../../misc/controllerstate/listitemcontrollerstate/title_and_description_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/paging_controller_state.dart';
 import '../../../../misc/entityandlistitemcontrollerstatemediator/horizontal_component_entity_parameterized_entity_and_list_item_controller_state_mediator.dart';
@@ -32,6 +36,7 @@ import '../../../../misc/errorprovider/error_provider.dart';
 import '../../../../misc/injector.dart';
 import '../../../../misc/load_data_result.dart';
 import '../../../../misc/manager/controller_manager.dart';
+import '../../../../misc/page_restoration_helper.dart';
 import '../../../../misc/paging/modified_paging_controller.dart';
 import '../../../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../../../misc/paging/pagingresult/paging_data_result.dart';
@@ -262,6 +267,49 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
           );
         },
         onObserveLoadingLoadProductBundleCarousel: (onObserveLoadingLoadProductBundleCarouselParameter) {
+          return ShimmerCarouselListItemControllerState<ProductBundleShimmerCarouselListItemGeneratorType>(
+            padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+            showTitleShimmer: true,
+            showDescriptionShimmer: false,
+            showItemShimmer: true,
+            shimmerCarouselListItemGenerator: Injector.locator<ProductBundleShimmerCarouselListItemGeneratorFactory>().getShimmerCarouselListItemGeneratorType()
+          );
+        },
+        onObserveSuccessLoadProductBundleHighlight: (onObserveSuccessLoadProductBundleHighlightParameter) {
+          return PaddingContainerListItemControllerState(
+            padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+            paddingChildListItemControllerState: CompoundListItemControllerState(
+              listItemControllerState: [
+                TitleAndDescriptionListItemControllerState(
+                  title: "Save More With Bundles".tr,
+                  titleAndDescriptionItemInterceptor: (padding, title, titleWidget, description, descriptionWidget, titleAndDescriptionWidget, titleAndDescriptionWidgetList) {
+                    return Row(
+                      children: [
+                        Expanded(child: titleAndDescriptionWidget),
+                        GestureDetector(
+                          onTap: () => PageRestorationHelper.toProductBundlePage(context),
+                          child: Text(
+                            "More".tr,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.primary,
+                              fontWeight: FontWeight.bold
+                            )
+                          ),
+                        )
+                      ]
+                    );
+                  },
+                  verticalSpace: 0.3.h,
+                ),
+                VirtualSpacingListItemControllerState(height: 3.w),
+                ProductBundleHighlightListItemControllerState(
+                  productBundle: onObserveSuccessLoadProductBundleHighlightParameter.productBundle
+                )
+              ]
+            )
+          );
+        },
+        onObserveLoadingLoadProductBundleHighlight: (onObserveLoadingLoadProductBundleHighlightParameter) {
           return ShimmerCarouselListItemControllerState<ProductBundleShimmerCarouselListItemGeneratorType>(
             padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
             showTitleShimmer: true,

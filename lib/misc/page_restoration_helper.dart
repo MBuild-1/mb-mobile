@@ -6,6 +6,8 @@ import '../presentation/page/getx_page.dart';
 import '../presentation/page/login_page.dart';
 import '../presentation/page/mainmenu/main_menu_page.dart';
 import '../presentation/page/product_brand_detail_page.dart';
+import '../presentation/page/product_bundle_detail_page.dart';
+import '../presentation/page/product_bundle_page.dart';
 import '../presentation/page/product_category_detail_page.dart';
 import '../presentation/page/product_detail_page.dart';
 import '../presentation/page/register_page.dart';
@@ -72,6 +74,24 @@ class _PageRestorationHelperImpl {
         restoration.cropPicturePageRestorableRouteFuture.present(
           cropPictureParameter.toEncodeBase64String()
         );
+      },
+      context: context
+    );
+  }
+
+  void toProductBundlePage(BuildContext context) {
+    PageRestorationHelper.findPageRestorationMixin<ProductBundlePageRestorationMixin>(
+      onGetxPageRestorationFound: (restoration) {
+        restoration.productBundlePageRestorableRouteFuture.present();
+      },
+      context: context
+    );
+  }
+
+  void toProductBundleDetailPage(BuildContext context, String productBundleId) {
+    PageRestorationHelper.findPageRestorationMixin<ProductBundleDetailPageRestorationMixin>(
+      onGetxPageRestorationFound: (restoration) {
+        restoration.productBundleDetailPageRestorableRouteFuture.present(productBundleId);
       },
       context: context
     );

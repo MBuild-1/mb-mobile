@@ -16,6 +16,8 @@ import '../../../presentation/widget/modified_tab_bar.dart';
 import '../../../presentation/widget/modifiedcachednetworkimage/product_modified_cached_network_image.dart';
 import '../../../presentation/widget/product/horizontal_product_item.dart';
 import '../../../presentation/widget/product/vertical_product_item.dart';
+import '../../../presentation/widget/product_bundle_header_list_item.dart';
+import '../../../presentation/widget/product_bundle_highlight_list_item.dart';
 import '../../../presentation/widget/product_category_header_list_item.dart';
 import '../../../presentation/widget/product_detail_brand_list_item.dart';
 import '../../../presentation/widget/productbrand/horizontal_product_brand_item.dart';
@@ -47,6 +49,8 @@ import '../../controllerstate/listitemcontrollerstate/non_expanded_item_in_row_c
 import '../../controllerstate/listitemcontrollerstate/non_expanded_item_in_row_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/padding_container_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/page_keyed_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/product_bundle_header_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/product_bundle_highlight_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/product_category_header_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/product_detail_brand_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/product_detail_header_list_item_controller_state.dart';
@@ -387,6 +391,14 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
     } else if (item is ProductCategoryHeaderListItemControllerState) {
       return ProductCategoryHeaderListItem(
         productCategory: item.productCategory,
+      );
+    } else if (item is ProductBundleHeaderListItemControllerState) {
+      return ProductBundleHeaderListItem(
+        productBundle: item.productBundle,
+      );
+    } else if (item is ProductBundleHighlightListItemControllerState) {
+      return ProductBundleHighlightListItem(
+        productBundle: item.productBundle,
       );
     } else {
       return Container();

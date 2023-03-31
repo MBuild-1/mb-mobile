@@ -8,17 +8,20 @@ import '../../../domain/entity/product/product.dart';
 import '../../../domain/entity/product/productbrand/product_brand.dart';
 import '../../../domain/entity/product/productbrand/product_brand_list_parameter.dart';
 import '../../../domain/entity/product/productbundle/product_bundle.dart';
+import '../../../domain/entity/product/productbundle/product_bundle_highlight_parameter.dart';
 import '../../../domain/entity/product/productbundle/product_bundle_list_parameter.dart';
 import '../../../domain/entity/product/productcategory/product_category.dart';
 import '../../../domain/entity/product/productcategory/product_category_list_parameter.dart';
 import '../../../domain/entity/product/productentry/product_entry.dart';
 import '../../../domain/entity/product/product_with_condition_paging_parameter.dart';
 import '../../../domain/usecase/get_product_brand_use_case.dart';
-import '../../../domain/usecase/get_product_bundle_use_case.dart';
+import '../../../domain/usecase/get_product_bundle_highlight_use_case.dart';
+import '../../../domain/usecase/get_product_bundle_list_use_case.dart';
 import '../../../domain/usecase/get_product_category_list_use_case.dart';
 import '../../../domain/usecase/get_product_viral_list_use_case.dart';
 import '../../../misc/constant.dart';
 import '../../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
+import '../../../misc/controllerstate/listitemcontrollerstate/product_bundle_highlight_list_item_controller_state.dart';
 import '../../../misc/error/message_error.dart';
 import '../../../misc/getextended/get_extended.dart';
 import '../../../misc/load_data_result.dart';
@@ -31,6 +34,7 @@ class HomeMainMenuSubController extends BaseGetxController {
   final GetProductViralListUseCase getProductViralListUseCase;
   final GetProductCategoryListUseCase getProductCategoryListUseCase;
   final GetProductBundleListUseCase getProductBundleListUseCase;
+  final GetProductBundleHighlightUseCase getProductBundleHighlightUseCase;
   HomeMainMenuDelegate? _homeMainMenuDelegate;
 
   HomeMainMenuSubController(
@@ -38,7 +42,8 @@ class HomeMainMenuSubController extends BaseGetxController {
     this.getProductBrandListUseCase,
     this.getProductViralListUseCase,
     this.getProductCategoryListUseCase,
-    this.getProductBundleListUseCase
+    this.getProductBundleListUseCase,
+    this.getProductBundleHighlightUseCase
   ) : super(controllerManager, initLater: true);
 
   List<HomeMainMenuComponentEntity> getHomeMainMenuComponentEntity() {
@@ -171,38 +176,38 @@ class HomeMainMenuSubController extends BaseGetxController {
       SeparatorHomeMainMenuComponentEntity(),
       DynamicItemCarouselHomeMainMenuComponentEntity(
         title: MultiLanguageString({
-          Constant.textEnUsLanguageKey: "Product Bundle",
-          Constant.textInIdLanguageKey: "Bundle Produk"
+          Constant.textEnUsLanguageKey: "Product Bundle Highlight",
+          Constant.textInIdLanguageKey: "Product Bundle Highlight"
         }),
         onDynamicItemAction: (title, description, observer) async {
-          observer(title, description, IsLoadingLoadDataResult<List<ProductBundle>>());
-          LoadDataResult<List<ProductBundle>> productBundlePagingDataResult = await getProductBundleListUseCase.execute(
-            ProductBundleListParameter()
+          observer(title, description, IsLoadingLoadDataResult<ProductBundle>());
+          LoadDataResult<ProductBundle> productBundleHighlightDataResult = await getProductBundleHighlightUseCase.execute(
+            ProductBundleHighlightParameter()
           ).future(
-            parameter: apiRequestManager.addRequestToCancellationPart("product-bundle").value
+            parameter: apiRequestManager.addRequestToCancellationPart("product-bundle-highlight").value
           );
-          if (productBundlePagingDataResult.isFailedBecauseCancellation) {
+          if (productBundleHighlightDataResult.isFailedBecauseCancellation) {
             return;
           }
-          observer(title, description, productBundlePagingDataResult.map<List<ProductBundle>>(
-            (trainingPagingDataResult) => trainingPagingDataResult
+          observer(title, description, productBundleHighlightDataResult.map<ProductBundle>(
+            (productBundleHighlight) => productBundleHighlight
           ));
         },
         onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
           if (_homeMainMenuDelegate != null) {
-            return _homeMainMenuDelegate!.onObserveLoadingLoadProductBundleCarousel(
-              _OnObserveLoadingLoadProductBundleCarouselParameter()
+            return _homeMainMenuDelegate!.onObserveLoadingLoadProductBundleHighlight(
+              _OnObserveLoadingLoadProductBundleHighlightParameter()
             );
           }
         },
         onObserveSuccessDynamicItemActionState: (title, description, loadDataResult) {
-          List<ProductBundle> productBundleList = loadDataResult.resultIfSuccess!;
+          ProductBundle productBundle = loadDataResult.resultIfSuccess!;
           if (_homeMainMenuDelegate != null) {
-            return _homeMainMenuDelegate!.onObserveSuccessLoadProductBundleCarousel(
-              _OnObserveSuccessLoadProductBundleCarouselParameter(
+            return _homeMainMenuDelegate!.onObserveSuccessLoadProductBundleHighlight(
+              _OnObserveSuccessLoadProductBundleHighlightParameter(
                 title: title,
                 description: description,
-                productBundleList: productBundleList
+                productBundle: productBundle
               )
             );
           }
@@ -223,12 +228,14 @@ class HomeMainMenuSubControllerInjectionFactory {
   final GetProductViralListUseCase getProductViralListUseCase;
   final GetProductCategoryListUseCase getProductCategoryListUseCase;
   final GetProductBundleListUseCase getProductBundleListUseCase;
+  final GetProductBundleHighlightUseCase getProductBundleHighlightUseCase;
 
   HomeMainMenuSubControllerInjectionFactory({
     required this.getProductBrandListUseCase,
     required this.getProductViralListUseCase,
     required this.getProductCategoryListUseCase,
-    required this.getProductBundleListUseCase
+    required this.getProductBundleListUseCase,
+    required this.getProductBundleHighlightUseCase
   });
 
   HomeMainMenuSubController inject(ControllerManager controllerManager, String pageName) {
@@ -238,7 +245,8 @@ class HomeMainMenuSubControllerInjectionFactory {
         getProductBrandListUseCase,
         getProductViralListUseCase,
         getProductCategoryListUseCase,
-        getProductBundleListUseCase
+        getProductBundleListUseCase,
+        getProductBundleHighlightUseCase
       ),
       tag: pageName
     );
@@ -254,6 +262,8 @@ class HomeMainMenuDelegate {
   ListItemControllerState Function(_OnObserveLoadingLoadProductEntryCarouselParameter) onObserveLoadingLoadProductEntryCarousel;
   ListItemControllerState Function(_OnObserveSuccessLoadProductBundleCarouselParameter) onObserveSuccessLoadProductBundleCarousel;
   ListItemControllerState Function(_OnObserveLoadingLoadProductBundleCarouselParameter) onObserveLoadingLoadProductBundleCarousel;
+  ListItemControllerState Function(_OnObserveSuccessLoadProductBundleHighlightParameter) onObserveSuccessLoadProductBundleHighlight;
+  ListItemControllerState Function(_OnObserveLoadingLoadProductBundleHighlightParameter) onObserveLoadingLoadProductBundleHighlight;
 
   HomeMainMenuDelegate({
     required this.onObserveSuccessLoadProductBrandCarousel,
@@ -264,6 +274,8 @@ class HomeMainMenuDelegate {
     required this.onObserveLoadingLoadProductEntryCarousel,
     required this.onObserveSuccessLoadProductBundleCarousel,
     required this.onObserveLoadingLoadProductBundleCarousel,
+    required this.onObserveSuccessLoadProductBundleHighlight,
+    required this.onObserveLoadingLoadProductBundleHighlight,
   });
 }
 
@@ -322,3 +334,17 @@ class _OnObserveSuccessLoadProductEntryCarouselParameter {
 }
 
 class _OnObserveLoadingLoadProductEntryCarouselParameter {}
+
+class _OnObserveSuccessLoadProductBundleHighlightParameter {
+  MultiLanguageString? title;
+  MultiLanguageString? description;
+  ProductBundle productBundle;
+
+  _OnObserveSuccessLoadProductBundleHighlightParameter({
+    required this.title,
+    required this.description,
+    required this.productBundle
+  });
+}
+
+class _OnObserveLoadingLoadProductBundleHighlightParameter {}

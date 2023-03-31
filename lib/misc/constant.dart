@@ -98,6 +98,8 @@ class _ConstantImpl {
   AspectRatioValue get aspectRatioValueProductImage => AspectRatioValue(width: 1.0, height: 1.0);
   AspectRatioValue get aspectRatioValueImageCheckRatesForVariousCountries => AspectRatioValue(width: 360.0, height: 118.0);
   AspectRatioValue get aspectRatioValueBrandImage => AspectRatioValue(width: 332.0, height: 75.62);
+  AspectRatioValue get aspectRatioValueProductBundleArea => AspectRatioValue(width: 350.0, height: 198.0);
+  AspectRatioValue get aspectRatioValueProductBundleImage => AspectRatioValue(width: 246.94, height: 176.94);
 
   String get settingHiveTable => 'setting_hive_table';
   String get settingHiveTableKey => 'setting_hive_table_key';
