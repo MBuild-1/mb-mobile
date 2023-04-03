@@ -203,7 +203,9 @@ class _StatefulProductBundleDetailControllerMediatorWidgetState extends State<_S
           ProductBundleHeaderListItemControllerState(productBundle: productBundleDetail),
           ...productBundleDetail.shortProductList.map<ListItemControllerState>((product) {
             return VerticalProductListItemControllerState(
-              productAppearanceData: product
+              productAppearanceData: product,
+              onRemoveWishlist: (productBundleId) {},
+              onAddWishlist: (productBundleId) {}
             );
           }).toList()
         ]

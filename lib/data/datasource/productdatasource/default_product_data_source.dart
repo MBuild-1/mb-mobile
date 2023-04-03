@@ -4,6 +4,7 @@ import 'package:masterbagasi/domain/dummy/productdummy/product_bundle_dummy.dart
 import 'package:masterbagasi/misc/ext/future_ext.dart';
 import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
+import 'package:masterbagasi/misc/option_builder.dart';
 
 import '../../../domain/entity/product/product.dart';
 import '../../../domain/entity/product/product_detail_from_your_search_product_entry_list_parameter.dart';
@@ -31,6 +32,12 @@ import '../../../domain/entity/product/product_list_parameter.dart';
 import '../../../domain/entity/product/product_paging_parameter.dart';
 import '../../../domain/entity/product/product_with_condition_list_parameter.dart';
 import '../../../domain/entity/product/product_with_condition_paging_parameter.dart';
+import '../../../domain/entity/wishlist/add_wishlist_parameter.dart';
+import '../../../domain/entity/wishlist/add_wishlist_response.dart';
+import '../../../domain/entity/wishlist/remove_wishlist_parameter.dart';
+import '../../../domain/entity/wishlist/remove_wishlist_response.dart';
+import '../../../domain/entity/wishlist/wishlist.dart';
+import '../../../domain/entity/wishlist/wishlist_paging_parameter.dart';
 import '../../../misc/load_data_result.dart';
 import '../../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../../misc/processing/dio_http_client_processing.dart';
@@ -214,6 +221,30 @@ class DefaultProductDataSource implements ProductDataSource {
     return DioHttpClientProcessing((cancelToken) {
       return dio.get("/product/brand", cancelToken: cancelToken)
         .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductBrandList());
+    });
+  }
+
+  @override
+  FutureProcessing<PagingDataResult<Wishlist>> wishlistPaging(WishlistPagingParameter wishlistPagingParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.get("/wishlist", cancelToken: cancelToken)
+        .map(onMap: (value) => value.wrapResponse().mapFromResponseToWishlistPaging());
+    });
+  }
+
+  @override
+  FutureProcessing<AddWishlistResponse> addWishlist(AddWishlistParameter addWishlistParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.post("/wishlist/add", cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+        .map(onMap: (value) => value.wrapResponse().mapFromResponseToAddWishlistResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<RemoveWishlistResponse> removeWishlist(RemoveWishlistParameter removeWishlistParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.post("/wishlist/remove", cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+        .map(onMap: (value) => value.wrapResponse().mapFromResponseToRemoveWishlistResponse());
     });
   }
 }

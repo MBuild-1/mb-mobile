@@ -12,6 +12,7 @@ class ProductEntryDummy {
     return ProductEntry(
       id: "",
       productId: "",
+      productEntryId: "",
       sku: "",
       sustension: "",
       weight: 1.0,
@@ -30,6 +31,7 @@ class ProductEntryDummy {
     return ProductEntry(
       id: "1",
       productId: "1",
+      productEntryId: "1",
       sku: "1",
       sustension: "1",
       weight: 1.0,

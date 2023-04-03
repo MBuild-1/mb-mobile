@@ -1,17 +1,46 @@
+import '../../../domain/entity/wishlist/remove_wishlist_parameter.dart';
+import '../../../domain/entity/wishlist/remove_wishlist_response.dart';
+import '../../../domain/entity/wishlist/wishlist.dart';
+import '../../../domain/entity/wishlist/wishlist_paging_parameter.dart';
+import '../../../domain/usecase/get_wishlist_paging_use_case.dart';
+import '../../../domain/usecase/remove_wishlist_use_case.dart';
 import '../../../misc/getextended/get_extended.dart';
+import '../../../misc/load_data_result.dart';
 import '../../../misc/manager/controller_manager.dart';
+import '../../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../base_getx_controller.dart';
 
 class WishlistMainMenuSubController extends BaseGetxController {
-  WishlistMainMenuSubController(super.controllerManager);
+  final GetWishlistPagingUseCase getWishlistPagingUseCase;
+  final RemoveWishlistUseCase removeWishlistUseCase;
+
+  WishlistMainMenuSubController(super.controllerManager, this.getWishlistPagingUseCase, this.removeWishlistUseCase);
+
+  Future<LoadDataResult<PagingDataResult<Wishlist>>> getWishlistPaging(WishlistPagingParameter wishlistPagingParameter) {
+    return getWishlistPagingUseCase.execute(wishlistPagingParameter).future(
+      parameter: apiRequestManager.addRequestToCancellationPart("wishlist").value
+    );
+  }
+
+  Future<LoadDataResult<RemoveWishlistResponse>> removeWishlist(RemoveWishlistParameter removeWishlistParameter) {
+    return removeWishlistUseCase.execute(removeWishlistParameter).future(
+      parameter: apiRequestManager.addRequestToCancellationPart("remove-wishlist").value
+    );
+  }
 }
 
 class WishlistMainMenuSubControllerInjectionFactory {
-  WishlistMainMenuSubControllerInjectionFactory();
+  final GetWishlistPagingUseCase getWishlistPagingUseCase;
+  final RemoveWishlistUseCase removeWishlistUseCase;
+
+  WishlistMainMenuSubControllerInjectionFactory({
+    required this.getWishlistPagingUseCase,
+    required this.removeWishlistUseCase
+  });
 
   WishlistMainMenuSubController inject(ControllerManager controllerManager, String pageName) {
     return GetExtended.put<WishlistMainMenuSubController>(
-      WishlistMainMenuSubController(controllerManager),
+      WishlistMainMenuSubController(controllerManager, getWishlistPagingUseCase, removeWishlistUseCase),
       tag: pageName
     );
   }

@@ -1,7 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/painting.dart';
 import 'package:get_it/get_it.dart';
-import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../controller/mainmenucontroller/mainmenusubpagecontroller/explore_nusantara_main_menu_sub_controller.dart';
 import '../controller/mainmenucontroller/mainmenusubpagecontroller/feed_main_menu_sub_controller.dart';
@@ -24,6 +22,7 @@ import '../domain/dummy/productdummy/product_variant_dummy.dart';
 import '../domain/dummy/provincedummy/province_dummy.dart';
 import '../domain/repository/product_repository.dart';
 import '../domain/repository/user_repository.dart';
+import '../domain/usecase/add_wishlist_use_case.dart';
 import '../domain/usecase/get_product_brand_detail_use_case.dart';
 import '../domain/usecase/get_product_brand_use_case.dart';
 import '../domain/usecase/get_product_bundle_detail_use_case.dart';
@@ -41,17 +40,17 @@ import '../domain/usecase/get_product_detail_use_case.dart';
 import '../domain/usecase/get_product_list_use_case.dart';
 import '../domain/usecase/get_product_viral_list_use_case.dart';
 import '../domain/usecase/get_user_use_case.dart';
+import '../domain/usecase/get_wishlist_paging_use_case.dart';
 import '../domain/usecase/login_use_case.dart';
 import '../domain/usecase/register_use_case.dart';
+import '../domain/usecase/remove_wishlist_use_case.dart';
 import 'additionalloadingindicatorchecker/home_sub_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/product_brand_detail_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/product_bundle_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/product_bundle_detail_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/product_category_detail_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/product_detail_additional_paging_result_parameter_checker.dart';
-import 'constant.dart';
-import 'controllerstate/listitemcontrollerstate/carousel_list_item_controller_state.dart';
-import 'controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
+import 'additionalloadingindicatorchecker/wishlist_sub_additional_paging_result_parameter_checker.dart';
 import 'defaultloaddataresultwidget/default_load_data_result_widget.dart';
 import 'defaultloaddataresultwidget/main_default_load_data_result_widget.dart';
 import 'entityandlistitemcontrollerstatemediator/horizontal_component_entity_parameterized_entity_and_list_item_controller_state_mediator.dart';
@@ -64,10 +63,6 @@ import 'shimmercarousellistitemgenerator/factory/product_brand_shimmer_carousel_
 import 'shimmercarousellistitemgenerator/factory/product_bundle_shimmer_carousel_list_item_generator_factory.dart';
 import 'shimmercarousellistitemgenerator/factory/product_category_shimmer_carousel_list_item_generator_factory.dart';
 import 'shimmercarousellistitemgenerator/factory/product_shimmer_carousel_list_item_generator_factory.dart';
-import 'shimmercarousellistitemgenerator/type/product_brand_shimmer_carousel_list_item_generator_type.dart';
-import 'shimmercarousellistitemgenerator/type/product_bundle_shimmer_carousel_list_item_generator_type.dart';
-import 'shimmercarousellistitemgenerator/type/product_category_shimmer_carousel_list_item_generator_type.dart';
-import 'shimmercarousellistitemgenerator/type/product_shimmer_carousel_list_item_generator_type.dart';
 
 class _Injector {
   final GetIt locator = GetIt.instance;
@@ -80,7 +75,8 @@ class _Injector {
         getProductCategoryListUseCase: locator(),
         getProductBrandListUseCase: locator(),
         getProductBundleListUseCase: locator(),
-        getProductBundleHighlightUseCase: locator()
+        getProductBundleHighlightUseCase: locator(),
+        addWishlistUseCase: locator()
       )
     );
     locator.registerLazySingleton<FeedMainMenuSubControllerInjectionFactory>(
@@ -90,7 +86,10 @@ class _Injector {
       () => ExploreNusantaraMainMenuSubControllerInjectionFactory()
     );
     locator.registerLazySingleton<WishlistMainMenuSubControllerInjectionFactory>(
-      () => WishlistMainMenuSubControllerInjectionFactory()
+      () => WishlistMainMenuSubControllerInjectionFactory(
+        getWishlistPagingUseCase: locator(),
+        removeWishlistUseCase: locator()
+      )
     );
     locator.registerLazySingleton<MenuMainMenuSubControllerInjectionFactory>(
       () => MenuMainMenuSubControllerInjectionFactory()
@@ -100,7 +99,7 @@ class _Injector {
     locator.registerLazySingleton<ErrorProvider>(() => DefaultErrorProvider());
 
     // Entity And List Item Controller State Mediator
-    locator.registerLazySingleton<HorizontalEntityAndListItemControllerStateMediator>(() => HorizontalEntityAndListItemControllerStateMediator());
+    locator.registerLazySingleton<HorizontalParameterizedEntityAndListItemControllerStateMediator>(() => HorizontalParameterizedEntityAndListItemControllerStateMediator());
     locator.registerLazySingleton<HorizontalComponentEntityParameterizedEntityAndListItemControllerStateMediator>(
       () => HorizontalComponentEntityParameterizedEntityAndListItemControllerStateMediator(
         horizontalEntityAndListItemControllerStateMediator: locator(),
@@ -108,86 +107,9 @@ class _Injector {
       )
     );
 
-    // On Observe Load Product Delegate
-    locator.registerLazySingleton<OnObserveLoadProductDelegate>(
-      () => OnObserveLoadProductDelegate(
-        onObserveSuccessLoadProductBrandCarousel: (onObserveSuccessLoadProductBrandCarouselParameter) {
-          return CarouselListItemControllerState(
-            title: onObserveSuccessLoadProductBrandCarouselParameter.title.toEmptyStringNonNull,
-            description: onObserveSuccessLoadProductBrandCarouselParameter.description.toEmptyStringNonNull,
-            padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-            itemListItemControllerState: onObserveSuccessLoadProductBrandCarouselParameter.productBrandList.map<ListItemControllerState>(
-              locator<HorizontalEntityAndListItemControllerStateMediator>().map
-            ).toList()
-          );
-        },
-        onObserveLoadingLoadProductBrandCarousel: (onObserveLoadingLoadProductBrandCarouselParameter) {
-          return ShimmerCarouselListItemControllerState<ProductBrandShimmerCarouselListItemGeneratorType>(
-            padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-            showTitleShimmer: true,
-            showDescriptionShimmer: false,
-            showItemShimmer: true,
-            shimmerCarouselListItemGenerator: locator<ProductBrandShimmerCarouselListItemGeneratorFactory>().getShimmerCarouselListItemGeneratorType()
-          );
-        },
-        onObserveSuccessLoadProductCategoryCarousel: (onObserveSuccessLoadProductCategoryCarouselParameter) {
-          return CarouselListItemControllerState(
-            title: onObserveSuccessLoadProductCategoryCarouselParameter.title.toEmptyStringNonNull,
-            description: onObserveSuccessLoadProductCategoryCarouselParameter.description.toEmptyStringNonNull,
-            padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-            itemListItemControllerState: onObserveSuccessLoadProductCategoryCarouselParameter.productCategoryList.map<ListItemControllerState>(
-              locator<HorizontalEntityAndListItemControllerStateMediator>().map
-            ).toList()
-          );
-        },
-        onObserveLoadingLoadProductCategoryCarousel: (onObserveLoadingLoadProductCategoryCarouselParameter) {
-          return ShimmerCarouselListItemControllerState<ProductCategoryShimmerCarouselListItemGeneratorType>(
-            padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-            showTitleShimmer: true,
-            showDescriptionShimmer: false,
-            showItemShimmer: true,
-            shimmerCarouselListItemGenerator: locator<ProductCategoryShimmerCarouselListItemGeneratorFactory>().getShimmerCarouselListItemGeneratorType()
-          );
-        },
-        onObserveSuccessLoadProductEntryCarousel: (onObserveSuccessLoadProductEntryCarouselParameter) {
-          return CarouselListItemControllerState(
-            title: onObserveSuccessLoadProductEntryCarouselParameter.title.toEmptyStringNonNull,
-            description: onObserveSuccessLoadProductEntryCarouselParameter.description.toEmptyStringNonNull,
-            padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-            itemListItemControllerState: onObserveSuccessLoadProductEntryCarouselParameter.productEntryList.map<ListItemControllerState>(
-              locator<HorizontalEntityAndListItemControllerStateMediator>().map
-            ).toList()
-          );
-        },
-        onObserveLoadingLoadProductEntryCarousel: (onObserveLoadingLoadProductEntryCarouselParameter) {
-          return ShimmerCarouselListItemControllerState<ProductShimmerCarouselListItemGeneratorType>(
-            padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-            showTitleShimmer: true,
-            showDescriptionShimmer: false,
-            showItemShimmer: true,
-            shimmerCarouselListItemGenerator: locator<ProductShimmerCarouselListItemGeneratorFactory>().getShimmerCarouselListItemGeneratorType()
-          );
-        },
-        onObserveSuccessLoadProductBundleCarousel: (onObserveSuccessLoadProductBundleCarouselParameter) {
-          return CarouselListItemControllerState(
-            title: onObserveSuccessLoadProductBundleCarouselParameter.title.toEmptyStringNonNull,
-            description: onObserveSuccessLoadProductBundleCarouselParameter.description.toEmptyStringNonNull,
-            padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-            itemListItemControllerState: onObserveSuccessLoadProductBundleCarouselParameter.productBundleList.map<ListItemControllerState>(
-              locator<HorizontalEntityAndListItemControllerStateMediator>().map
-            ).toList()
-          );
-        },
-        onObserveLoadingLoadProductBundleCarousel: (onObserveLoadingLoadProductBundleCarouselParameter) {
-          return ShimmerCarouselListItemControllerState<ProductBundleShimmerCarouselListItemGeneratorType>(
-            padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-            showTitleShimmer: true,
-            showDescriptionShimmer: false,
-            showItemShimmer: true,
-            shimmerCarouselListItemGenerator: locator<ProductBundleShimmerCarouselListItemGeneratorFactory>().getShimmerCarouselListItemGeneratorType()
-          );
-        },
-      )
+    // On Observe Load Product Delegate Factory
+    locator.registerFactory<OnObserveLoadProductDelegateFactory>(
+      () => OnObserveLoadProductDelegateFactory()
     );
 
     // Dummy
@@ -248,6 +170,9 @@ class _Injector {
     locator.registerFactory<ProductBundleDetailAdditionalPagingResultParameterChecker>(
       () => ProductBundleDetailAdditionalPagingResultParameterChecker()
     );
+    locator.registerFactory<WishlistSubAdditionalPagingResultParameterChecker>(
+      () => WishlistSubAdditionalPagingResultParameterChecker()
+    );
 
     // Default Load Data Result Widget
     locator.registerLazySingleton<DefaultLoadDataResultWidget>(() => MainDefaultLoadDataResultWidget());
@@ -272,6 +197,9 @@ class _Injector {
     locator.registerLazySingleton<GetProductBundlePagingUseCase>(() => GetProductBundlePagingUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductBundleHighlightUseCase>(() => GetProductBundleHighlightUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductBundleDetailUseCase>(() => GetProductBundleDetailUseCase(productRepository: locator()));
+    locator.registerLazySingleton<GetWishlistPagingUseCase>(() => GetWishlistPagingUseCase(productRepository: locator()));
+    locator.registerLazySingleton<AddWishlistUseCase>(() => AddWishlistUseCase(productRepository: locator()));
+    locator.registerLazySingleton<RemoveWishlistUseCase>(() => RemoveWishlistUseCase(productRepository: locator()));
 
     // Repository
     locator.registerLazySingleton<UserRepository>(() => DefaultUserRepository(userDataSource: locator()));

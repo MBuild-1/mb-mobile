@@ -13,6 +13,9 @@ import '../../domain/entity/product/productcertification/product_certification.d
 import '../../domain/entity/product/productentry/product_entry.dart';
 import '../../domain/entity/product/productvariant/product_variant.dart';
 import '../../domain/entity/product/short_product.dart';
+import '../../domain/entity/wishlist/add_wishlist_response.dart';
+import '../../domain/entity/wishlist/remove_wishlist_response.dart';
+import '../../domain/entity/wishlist/wishlist.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/response_wrapper.dart';
 
@@ -216,6 +219,7 @@ extension ProductEntryDetailEntityMappingExt on ResponseWrapper {
     return ProductEntry(
       id: response["id"],
       productId: response["product_id"],
+      productEntryId: response["id"],
       sku: response["sku"],
       sustension: response["sustension"],
       weight: ResponseWrapper(response["weight"]).mapFromResponseToDouble()!,
@@ -247,5 +251,36 @@ extension ProductVariantDetailEntityMappingExt on ResponseWrapper {
       name: response["name"],
       type: response["type"],
     );
+  }
+}
+
+extension WishlistEntityMappingExt on ResponseWrapper {
+  List<Wishlist> mapFromResponseToWishlistList() {
+    return response.map<Wishlist>((wishlistResponse) => ResponseWrapper(wishlistResponse).mapFromResponseToWishlist()).toList();
+  }
+
+  PagingDataResult<Wishlist> mapFromResponseToWishlistPaging() {
+    return ResponseWrapper(response).mapFromResponseToPagingDataResult(
+      (dataResponse) => dataResponse.map<Wishlist>(
+        (wishlistResponse) => ResponseWrapper(wishlistResponse).mapFromResponseToWishlist()
+      ).toList()
+    );
+  }
+}
+
+extension WishlistDetailEntityMappingExt on ResponseWrapper {
+  Wishlist mapFromResponseToWishlist() {
+    return Wishlist(
+      id: response["id"],
+      productEntry: ResponseWrapper(response["product"]).mapFromResponseToProductEntry()
+    );
+  }
+
+  AddWishlistResponse mapFromResponseToAddWishlistResponse() {
+    return AddWishlistResponse();
+  }
+
+  RemoveWishlistResponse mapFromResponseToRemoveWishlistResponse() {
+    return RemoveWishlistResponse();
   }
 }

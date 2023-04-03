@@ -148,12 +148,22 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
       }
     } else if (item is ProductListItemControllerState) {
       if (item is HorizontalProductListItemControllerState) {
-        return HorizontalProductItem(productAppearanceData: item.productAppearanceData);
+        return HorizontalProductItem(
+          productAppearanceData: item.productAppearanceData,
+          onAddWishlist: item.onAddWishlist,
+          onRemoveWishlist: item.onRemoveWishlist,
+        );
       } else if (item is VerticalProductListItemControllerState) {
         if (item is ShimmerVerticalProductListItemControllerState) {
-          return ShimmerVerticalProductItem(productAppearanceData: item.productAppearanceData);
+          return ShimmerVerticalProductItem(
+            productAppearanceData: item.productAppearanceData,
+          );
         } else {
-          return VerticalProductItem(productAppearanceData: item.productAppearanceData);
+          return VerticalProductItem(
+            productAppearanceData: item.productAppearanceData,
+            onAddWishlist: item.onAddWishlist,
+            onRemoveWishlist: item.onRemoveWishlist,
+          );
         }
       } else {
         return Container();
@@ -184,12 +194,20 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
       }
     } else if (item is ProductBundleListItemControllerState) {
       if (item is HorizontalProductBundleListItemControllerState) {
-        return HorizontalProductBundleItem(productBundle: item.productBundle);
+        return HorizontalProductBundleItem(
+          productBundle: item.productBundle,
+          onAddWishlist: item.onAddWishlist,
+          onRemoveWishlist: item.onRemoveWishlist,
+        );
       } else if (item is VerticalProductBundleListItemControllerState) {
         if (item is ShimmerVerticalProductBundleListItemControllerState) {
           return ShimmerVerticalProductBundleItem(productBundle: item.productBundle);
         } else {
-          return VerticalProductBundleItem(productBundle: item.productBundle);
+          return VerticalProductBundleItem(
+            productBundle: item.productBundle,
+            onAddWishlist: item.onAddWishlist,
+            onRemoveWishlist: item.onRemoveWishlist,
+          );
         }
       } else {
         return Container();
@@ -399,6 +417,8 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
     } else if (item is ProductBundleHighlightListItemControllerState) {
       return ProductBundleHighlightListItem(
         productBundle: item.productBundle,
+        onAddWishlist: item.onAddWishlist,
+        onRemoveWishlist: item.onRemoveWishlist,
       );
     } else {
       return Container();

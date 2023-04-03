@@ -36,6 +36,7 @@ class _ConstantImpl {
   String get vectorMenuSelected => _getVectorsAssets("mainmenu/menu_selected.svg");
   String get vectorMenuUnselected => _getVectorsAssets("mainmenu/menu_unselected.svg");
   String get vectorLove => _getVectorsAssets("love.svg");
+  String get vectorTrash => _getVectorsAssets("trash.svg");
 
   Color get colorYellow => const Color.fromRGBO(244, 184, 43, 1);
   Color get colorRed => const Color.fromRGBO(255, 86, 76, 1);

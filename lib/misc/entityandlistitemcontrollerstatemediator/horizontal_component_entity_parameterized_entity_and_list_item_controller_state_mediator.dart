@@ -16,7 +16,7 @@ import '../parameterizedcomponententityandlistitemcontrollerstatemediatorparamet
 import 'horizontal_entity_and_list_item_controller_state_mediator.dart';
 
 class HorizontalComponentEntityParameterizedEntityAndListItemControllerStateMediator extends ParameterizedEntityAndListItemControllerStateMediator {
-  HorizontalEntityAndListItemControllerStateMediator horizontalEntityAndListItemControllerStateMediator;
+  HorizontalParameterizedEntityAndListItemControllerStateMediator horizontalEntityAndListItemControllerStateMediator;
   ErrorProvider errorProvider;
 
   HorizontalComponentEntityParameterizedEntityAndListItemControllerStateMediator({
@@ -32,7 +32,10 @@ class HorizontalComponentEntityParameterizedEntityAndListItemControllerStateMedi
         description: entity.description.toEmptyStringNonNull,
         padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
         itemListItemControllerState: entity.item.map<ListItemControllerState>(
-          horizontalEntityAndListItemControllerStateMediator.map
+          (entityParameter) => horizontalEntityAndListItemControllerStateMediator.mapWithParameter(
+            entityParameter,
+            parameter: parameter
+          )
         ).toList()
       );
     } else if (entity is IDynamicItemCarouselComponentEntity) {

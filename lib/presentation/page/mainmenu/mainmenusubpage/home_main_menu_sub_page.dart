@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide Banner;
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
-import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:sizer/sizer.dart';
 import '../../../../controller/mainmenucontroller/mainmenusubpagecontroller/home_main_menu_sub_controller.dart';
 import '../../../../domain/entity/banner/banner.dart';
@@ -30,26 +29,21 @@ import '../../../../misc/controllerstate/listitemcontrollerstate/title_and_descr
 import '../../../../misc/controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/paging_controller_state.dart';
 import '../../../../misc/entityandlistitemcontrollerstatemediator/horizontal_component_entity_parameterized_entity_and_list_item_controller_state_mediator.dart';
-import '../../../../misc/entityandlistitemcontrollerstatemediator/horizontal_entity_and_list_item_controller_state_mediator.dart';
 import '../../../../misc/error/message_error.dart';
 import '../../../../misc/errorprovider/error_provider.dart';
 import '../../../../misc/injector.dart';
 import '../../../../misc/load_data_result.dart';
 import '../../../../misc/manager/controller_manager.dart';
+import '../../../../misc/on_observe_load_product_delegate.dart';
 import '../../../../misc/page_restoration_helper.dart';
 import '../../../../misc/paging/modified_paging_controller.dart';
 import '../../../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../../../misc/paging/pagingresult/paging_result.dart';
 import '../../../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/horizontal_dynamic_item_carousel_parametered_component_entity_and_list_item_controller_state_mediator_parameter.dart';
-import '../../../../misc/shimmercarousellistitemgenerator/factory/product_brand_shimmer_carousel_list_item_generator_factory.dart';
+import '../../../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/wishlist_parameterized_entity_and_list_item_controller_state_mediator.dart';
 import '../../../../misc/shimmercarousellistitemgenerator/factory/product_bundle_shimmer_carousel_list_item_generator_factory.dart';
-import '../../../../misc/shimmercarousellistitemgenerator/factory/product_category_shimmer_carousel_list_item_generator_factory.dart';
-import '../../../../misc/shimmercarousellistitemgenerator/factory/product_shimmer_carousel_list_item_generator_factory.dart';
-import '../../../../misc/shimmercarousellistitemgenerator/type/product_brand_shimmer_carousel_list_item_generator_type.dart';
 import '../../../../misc/shimmercarousellistitemgenerator/type/product_bundle_shimmer_carousel_list_item_generator_type.dart';
-import '../../../../misc/shimmercarousellistitemgenerator/type/product_category_shimmer_carousel_list_item_generator_type.dart';
-import '../../../../misc/shimmercarousellistitemgenerator/type/product_shimmer_carousel_list_item_generator_type.dart';
 import '../../../widget/modified_paged_list_view.dart';
 import '../../../widget/modifiedappbar/default_search_app_bar.dart';
 import '../../getx_page.dart';
@@ -197,84 +191,22 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
 
   @override
   Widget build(BuildContext context) {
+    OnObserveLoadProductDelegateFactory onObserveLoadProductDelegateFactory = Injector.locator<OnObserveLoadProductDelegateFactory>()
+      ..onInjectLoadProductEntryCarouselParameterizedEntity = (
+        () => WishlistParameterizedEntityAndListItemControllerStateMediatorParameter(
+          onAddWishlist: (productOrProductEntryId) {},
+          onRemoveWishlist: (productOrProductEntryId) {},
+        )
+      )
+      ..onInjectLoadProductBundleCarouselParameterizedEntity = (
+        () => WishlistParameterizedEntityAndListItemControllerStateMediatorParameter(
+          onAddWishlist: (productBundleId) {},
+          onRemoveWishlist: (productBundleId) {},
+        )
+      );
     widget.homeMainMenuSubController.setHomeMainMenuDelegate(
       HomeMainMenuDelegate(
-        onObserveSuccessLoadProductBrandCarousel: (onObserveSuccessLoadProductBrandCarouselParameter) {
-          return CarouselListItemControllerState(
-            title: onObserveSuccessLoadProductBrandCarouselParameter.title.toEmptyStringNonNull,
-            description: onObserveSuccessLoadProductBrandCarouselParameter.description.toEmptyStringNonNull,
-            padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-            itemListItemControllerState: onObserveSuccessLoadProductBrandCarouselParameter.productBrandList.map<ListItemControllerState>(
-              Injector.locator<HorizontalEntityAndListItemControllerStateMediator>().map
-            ).toList()
-          );
-        },
-        onObserveLoadingLoadProductBrandCarousel: (onObserveLoadingLoadProductBrandCarouselParameter) {
-          return ShimmerCarouselListItemControllerState<ProductBrandShimmerCarouselListItemGeneratorType>(
-            padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-            showTitleShimmer: true,
-            showDescriptionShimmer: false,
-            showItemShimmer: true,
-            shimmerCarouselListItemGenerator: Injector.locator<ProductBrandShimmerCarouselListItemGeneratorFactory>().getShimmerCarouselListItemGeneratorType()
-          );
-        },
-        onObserveSuccessLoadProductCategoryCarousel: (onObserveSuccessLoadProductCategoryCarouselParameter) {
-          return CarouselListItemControllerState(
-            title: onObserveSuccessLoadProductCategoryCarouselParameter.title.toEmptyStringNonNull,
-            description: onObserveSuccessLoadProductCategoryCarouselParameter.description.toEmptyStringNonNull,
-            padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-            itemListItemControllerState: onObserveSuccessLoadProductCategoryCarouselParameter.productCategoryList.map<ListItemControllerState>(
-              Injector.locator<HorizontalEntityAndListItemControllerStateMediator>().map
-            ).toList()
-          );
-        },
-        onObserveLoadingLoadProductCategoryCarousel: (onObserveLoadingLoadProductCategoryCarouselParameter) {
-          return ShimmerCarouselListItemControllerState<ProductCategoryShimmerCarouselListItemGeneratorType>(
-            padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-            showTitleShimmer: true,
-            showDescriptionShimmer: false,
-            showItemShimmer: true,
-            shimmerCarouselListItemGenerator: Injector.locator<ProductCategoryShimmerCarouselListItemGeneratorFactory>().getShimmerCarouselListItemGeneratorType()
-          );
-        },
-        onObserveSuccessLoadProductEntryCarousel: (onObserveSuccessLoadProductEntryCarouselParameter) {
-          return CarouselListItemControllerState(
-            title: onObserveSuccessLoadProductEntryCarouselParameter.title.toEmptyStringNonNull,
-            description: onObserveSuccessLoadProductEntryCarouselParameter.description.toEmptyStringNonNull,
-            padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-            itemListItemControllerState: onObserveSuccessLoadProductEntryCarouselParameter.productEntryList.map<ListItemControllerState>(
-              Injector.locator<HorizontalEntityAndListItemControllerStateMediator>().map
-            ).toList()
-          );
-        },
-        onObserveLoadingLoadProductEntryCarousel: (onObserveLoadingLoadProductEntryCarouselParameter) {
-          return ShimmerCarouselListItemControllerState<ProductShimmerCarouselListItemGeneratorType>(
-            padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-            showTitleShimmer: true,
-            showDescriptionShimmer: false,
-            showItemShimmer: true,
-            shimmerCarouselListItemGenerator: Injector.locator<ProductShimmerCarouselListItemGeneratorFactory>().getShimmerCarouselListItemGeneratorType()
-          );
-        },
-        onObserveSuccessLoadProductBundleCarousel: (onObserveSuccessLoadProductBundleCarouselParameter) {
-          return CarouselListItemControllerState(
-            title: onObserveSuccessLoadProductBundleCarouselParameter.title.toEmptyStringNonNull,
-            description: onObserveSuccessLoadProductBundleCarouselParameter.description.toEmptyStringNonNull,
-            padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-            itemListItemControllerState: onObserveSuccessLoadProductBundleCarouselParameter.productBundleList.map<ListItemControllerState>(
-              Injector.locator<HorizontalEntityAndListItemControllerStateMediator>().map
-            ).toList()
-          );
-        },
-        onObserveLoadingLoadProductBundleCarousel: (onObserveLoadingLoadProductBundleCarouselParameter) {
-          return ShimmerCarouselListItemControllerState<ProductBundleShimmerCarouselListItemGeneratorType>(
-            padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-            showTitleShimmer: true,
-            showDescriptionShimmer: false,
-            showItemShimmer: true,
-            shimmerCarouselListItemGenerator: Injector.locator<ProductBundleShimmerCarouselListItemGeneratorFactory>().getShimmerCarouselListItemGeneratorType()
-          );
-        },
+        onObserveLoadProductDelegate: onObserveLoadProductDelegateFactory.generateOnObserveLoadProductDelegate(),
         onObserveSuccessLoadProductBundleHighlight: (onObserveSuccessLoadProductBundleHighlightParameter) {
           return PaddingContainerListItemControllerState(
             padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),

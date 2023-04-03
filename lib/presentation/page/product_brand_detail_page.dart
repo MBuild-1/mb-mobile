@@ -203,7 +203,9 @@ class _StatefulProductBrandDetailControllerMediatorWidgetState extends State<_St
           ProductDetailBrandListItemControllerState(productBrand: productBrandDetail),
           ...productBrandDetail.shortProductList.map<ListItemControllerState>((product) {
             return VerticalProductListItemControllerState(
-              productAppearanceData: product
+              productAppearanceData: product,
+              onRemoveWishlist: (productOrProductEntryId) {},
+              onAddWishlist: (productOrProductEntryId) {}
             );
           }).toList()
         ]

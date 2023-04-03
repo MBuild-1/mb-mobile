@@ -27,6 +27,12 @@ import '../entity/product/product_list_parameter.dart';
 import '../entity/product/product_paging_parameter.dart';
 import '../entity/product/product_with_condition_list_parameter.dart';
 import '../entity/product/product_with_condition_paging_parameter.dart';
+import '../entity/wishlist/add_wishlist_parameter.dart';
+import '../entity/wishlist/add_wishlist_response.dart';
+import '../entity/wishlist/remove_wishlist_parameter.dart';
+import '../entity/wishlist/remove_wishlist_response.dart';
+import '../entity/wishlist/wishlist.dart';
+import '../entity/wishlist/wishlist_paging_parameter.dart';
 
 abstract class ProductRepository {
   FutureProcessing<LoadDataResult<List<ProductBundle>>> productBundleList(ProductBundleListParameter productBundleListParameter);
@@ -47,4 +53,7 @@ abstract class ProductRepository {
   FutureProcessing<LoadDataResult<List<ProductEntry>>> productDetailOtherFromThisBrandProductEntryList(ProductDetailOtherFromThisBrandProductEntryListParameter productDetailOtherFromThisBrandProductEntryListParameter);
   FutureProcessing<LoadDataResult<List<ProductEntry>>> productDetailOtherInThisCategoryProductEntryList(ProductDetailOtherInThisCategoryProductEntryListParameter productDetailOtherInThisCategoryProductEntryListParameter);
   FutureProcessing<LoadDataResult<List<ProductBrand>>> productDetailOtherInterestedProductBrandListParameter(ProductDetailOtherInterestedProductBrandListParameter productDetailOtherInterestedProductBrandListParameter);
+  FutureProcessing<LoadDataResult<PagingDataResult<Wishlist>>> wishlistPaging(WishlistPagingParameter wishlistPagingParameter);
+  FutureProcessing<LoadDataResult<AddWishlistResponse>> addWishlist(AddWishlistParameter addWishlistParameter);
+  FutureProcessing<LoadDataResult<RemoveWishlistResponse>> removeWishlist(RemoveWishlistParameter removeWishlistParameter);
 }

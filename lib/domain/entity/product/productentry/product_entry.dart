@@ -2,10 +2,12 @@ import '../product.dart';
 import '../product_appearance_data.dart';
 import '../productvariant/product_variant.dart';
 
-class ProductEntry implements ProductAppearanceData {
+class ProductEntry implements ProductEntryAppearanceData {
   String id;
   @override
   String productId;
+  @override
+  String productEntryId;
   String sku;
   String sustension;
   @override
@@ -22,6 +24,7 @@ class ProductEntry implements ProductAppearanceData {
   ProductEntry({
     required this.id,
     required this.productId,
+    required this.productEntryId,
     required this.sku,
     required this.sustension,
     required this.weight,

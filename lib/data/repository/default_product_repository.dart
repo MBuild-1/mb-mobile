@@ -24,6 +24,12 @@ import '../../domain/entity/product/product_list_parameter.dart';
 import '../../domain/entity/product/product_paging_parameter.dart';
 import '../../domain/entity/product/product_with_condition_list_parameter.dart';
 import '../../domain/entity/product/product_with_condition_paging_parameter.dart';
+import '../../domain/entity/wishlist/add_wishlist_parameter.dart';
+import '../../domain/entity/wishlist/add_wishlist_response.dart';
+import '../../domain/entity/wishlist/remove_wishlist_parameter.dart';
+import '../../domain/entity/wishlist/remove_wishlist_response.dart';
+import '../../domain/entity/wishlist/wishlist.dart';
+import '../../domain/entity/wishlist/wishlist_paging_parameter.dart';
 import '../../domain/repository/product_repository.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
@@ -125,5 +131,20 @@ class DefaultProductRepository implements ProductRepository {
   @override
   FutureProcessing<LoadDataResult<List<ProductBrand>>> productDetailOtherInterestedProductBrandListParameter(ProductDetailOtherInterestedProductBrandListParameter productDetailOtherInterestedProductBrandListParameter) {
     return productDataSource.productDetailOtherInterestedProductBrandListParameter(productDetailOtherInterestedProductBrandListParameter).mapToLoadDataResult<List<ProductBrand>>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<PagingDataResult<Wishlist>>> wishlistPaging(WishlistPagingParameter wishlistPagingParameter) {
+    return productDataSource.wishlistPaging(wishlistPagingParameter).mapToLoadDataResult<PagingDataResult<Wishlist>>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<AddWishlistResponse>> addWishlist(AddWishlistParameter addWishlistParameter) {
+    return productDataSource.addWishlist(addWishlistParameter).mapToLoadDataResult<AddWishlistResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<RemoveWishlistResponse>> removeWishlist(RemoveWishlistParameter removeWishlistParameter) {
+    return productDataSource.removeWishlist(removeWishlistParameter).mapToLoadDataResult<RemoveWishlistResponse>();
   }
 }

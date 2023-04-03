@@ -5,13 +5,17 @@ import '../modified_shimmer.dart';
 import 'product_bundle_item.dart';
 
 class VerticalProductBundleItem extends ProductBundleItem {
-  @override
-  double? get itemWidth => 180.0;
-
   const VerticalProductBundleItem({
     Key? key,
-    required ProductBundle productBundle
-  }) : super(key: key, productBundle: productBundle);
+    required ProductBundle productBundle,
+    OnAddWishlistWithProductBundleId? onAddWishlist,
+    OnRemoveWishlistWithProductBundleId? onRemoveWishlist,
+  }) : super(
+    key: key,
+    productBundle: productBundle,
+    onAddWishlist: onAddWishlist,
+    onRemoveWishlist: onRemoveWishlist
+  );
 }
 
 class ShimmerVerticalProductBundleItem extends VerticalProductBundleItem {

@@ -14,8 +14,13 @@ import '../modified_vertical_divider.dart';
 import '../modifiedcachednetworkimage/product_modified_cached_network_image.dart';
 import '../rating_indicator.dart';
 
+typedef OnAddWishlistWithProductId = void Function(String);
+typedef OnRemoveWishlistWithProductId = void Function(String);
+
 abstract class ProductItem extends StatelessWidget {
   final ProductAppearanceData productAppearanceData;
+  final OnAddWishlistWithProductId? onAddWishlist;
+  final OnRemoveWishlistWithProductId? onRemoveWishlist;
 
   @protected
   String get priceString => _priceString(productAppearanceData.price.toDouble());
@@ -56,7 +61,9 @@ abstract class ProductItem extends StatelessWidget {
 
   const ProductItem({
     Key? key,
-    required this.productAppearanceData
+    required this.productAppearanceData,
+    this.onAddWishlist,
+    this.onRemoveWishlist
   }) : super(key: key);
 
   String _priceString(double price) {
@@ -76,6 +83,15 @@ abstract class ProductItem extends StatelessWidget {
     );
     String weight = productAppearanceData.weight.toString();
     String soldCount = "No Sold Count".tr;
+    void onWishlist(void Function(String)? onWishlistCallback) {
+      if (onWishlistCallback != null) {
+        if (productAppearanceData is ProductEntryAppearanceData) {
+          onWishlistCallback((productAppearanceData as ProductEntryAppearanceData).productEntryId);
+        } else {
+          onWishlistCallback(productAppearanceData.productId);
+        }
+      }
+    }
     return SizedBox(
       width: itemWidth,
       child: Padding(
@@ -157,7 +173,8 @@ abstract class ProductItem extends StatelessWidget {
                         Row(
                           children: [
                             AddOrRemoveWishlistButton(
-                              onAddWishlist: () {}
+                              onAddWishlist: onAddWishlist != null ? () => onWishlist(onAddWishlist) : null,
+                              onRemoveWishlist: onRemoveWishlist != null ? () => onWishlist(onRemoveWishlist) : null,
                             ),
                             SizedBox(width: 1.5.w),
                             Expanded(

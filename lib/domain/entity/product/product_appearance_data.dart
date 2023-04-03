@@ -6,3 +6,7 @@ abstract class ProductAppearanceData {
   double get weight;
   String get imageUrl;
 }
+
+abstract class ProductEntryAppearanceData extends ProductAppearanceData {
+  String get productEntryId;
+}

@@ -9,8 +9,15 @@ class HorizontalProductItem extends ProductItem {
 
   const HorizontalProductItem({
     Key? key,
-    required ProductAppearanceData productAppearanceData
-  }) : super(key: key, productAppearanceData: productAppearanceData);
+    required ProductAppearanceData productAppearanceData,
+    OnAddWishlistWithProductId? onAddWishlist,
+    OnRemoveWishlistWithProductId? onRemoveWishlist,
+  }) : super(
+    key: key,
+    productAppearanceData: productAppearanceData,
+    onAddWishlist: onAddWishlist,
+    onRemoveWishlist: onRemoveWishlist
+  );
 
   @override
   Widget priceWidget(BuildContext context, Widget nonDiscountPriceWidget, Widget discountPriceWidget) {

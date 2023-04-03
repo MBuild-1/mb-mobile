@@ -4,16 +4,15 @@ import '../../../domain/entity/homemainmenucomponententity/check_rates_for_vario
 import '../../../domain/entity/homemainmenucomponententity/dynamic_item_carousel_home_main_menu_component_entity.dart';
 import '../../../domain/entity/homemainmenucomponententity/home_main_menu_component_entity.dart';
 import '../../../domain/entity/homemainmenucomponententity/separator_home_main_menu_component_entity.dart';
-import '../../../domain/entity/product/product.dart';
 import '../../../domain/entity/product/productbrand/product_brand.dart';
 import '../../../domain/entity/product/productbrand/product_brand_list_parameter.dart';
 import '../../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../../domain/entity/product/productbundle/product_bundle_highlight_parameter.dart';
-import '../../../domain/entity/product/productbundle/product_bundle_list_parameter.dart';
 import '../../../domain/entity/product/productcategory/product_category.dart';
 import '../../../domain/entity/product/productcategory/product_category_list_parameter.dart';
 import '../../../domain/entity/product/productentry/product_entry.dart';
 import '../../../domain/entity/product/product_with_condition_paging_parameter.dart';
+import '../../../domain/usecase/add_wishlist_use_case.dart';
 import '../../../domain/usecase/get_product_brand_use_case.dart';
 import '../../../domain/usecase/get_product_bundle_highlight_use_case.dart';
 import '../../../domain/usecase/get_product_bundle_list_use_case.dart';
@@ -21,12 +20,12 @@ import '../../../domain/usecase/get_product_category_list_use_case.dart';
 import '../../../domain/usecase/get_product_viral_list_use_case.dart';
 import '../../../misc/constant.dart';
 import '../../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
-import '../../../misc/controllerstate/listitemcontrollerstate/product_bundle_highlight_list_item_controller_state.dart';
 import '../../../misc/error/message_error.dart';
 import '../../../misc/getextended/get_extended.dart';
 import '../../../misc/load_data_result.dart';
 import '../../../misc/manager/controller_manager.dart';
 import '../../../misc/multi_language_string.dart';
+import '../../../misc/on_observe_load_product_delegate.dart';
 import '../../base_getx_controller.dart';
 
 class HomeMainMenuSubController extends BaseGetxController {
@@ -35,6 +34,7 @@ class HomeMainMenuSubController extends BaseGetxController {
   final GetProductCategoryListUseCase getProductCategoryListUseCase;
   final GetProductBundleListUseCase getProductBundleListUseCase;
   final GetProductBundleHighlightUseCase getProductBundleHighlightUseCase;
+  final AddWishlistUseCase addWishlistUseCase;
   HomeMainMenuDelegate? _homeMainMenuDelegate;
 
   HomeMainMenuSubController(
@@ -43,7 +43,8 @@ class HomeMainMenuSubController extends BaseGetxController {
     this.getProductViralListUseCase,
     this.getProductCategoryListUseCase,
     this.getProductBundleListUseCase,
-    this.getProductBundleHighlightUseCase
+    this.getProductBundleHighlightUseCase,
+    this.addWishlistUseCase
   ) : super(controllerManager, initLater: true);
 
   List<HomeMainMenuComponentEntity> getHomeMainMenuComponentEntity() {
@@ -70,16 +71,16 @@ class HomeMainMenuSubController extends BaseGetxController {
         },
         onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
           if (_homeMainMenuDelegate != null) {
-            return _homeMainMenuDelegate!.onObserveLoadingLoadProductCategoryCarousel(
-              _OnObserveLoadingLoadProductCategoryCarouselParameter()
+            return _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductCategoryCarousel(
+              OnObserveLoadingLoadProductCategoryCarouselParameter()
             );
           }
         },
         onObserveSuccessDynamicItemActionState: (title, description, loadDataResult) {
           List<ProductCategory> productCategoryList = loadDataResult.resultIfSuccess!;
           if (_homeMainMenuDelegate != null) {
-            return _homeMainMenuDelegate!.onObserveSuccessLoadProductCategoryCarousel(
-              _OnObserveSuccessLoadProductCategoryCarouselParameter(
+            return _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveSuccessLoadProductCategoryCarousel(
+              OnObserveSuccessLoadProductCategoryCarouselParameter(
                 title: title,
                 description: description,
                 productCategoryList: productCategoryList
@@ -111,16 +112,16 @@ class HomeMainMenuSubController extends BaseGetxController {
         },
         onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
           if (_homeMainMenuDelegate != null) {
-            return _homeMainMenuDelegate!.onObserveLoadingLoadProductBrandCarousel(
-              _OnObserveLoadingLoadProductBrandCarouselParameter()
+            return _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductBrandCarousel(
+              OnObserveLoadingLoadProductBrandCarouselParameter()
             );
           }
         },
         onObserveSuccessDynamicItemActionState: (title, description, loadDataResult) {
           List<ProductBrand> productBrandList = loadDataResult.resultIfSuccess!;
           if (_homeMainMenuDelegate != null) {
-            return _homeMainMenuDelegate!.onObserveSuccessLoadProductBrandCarousel(
-              _OnObserveSuccessLoadProductBrandCarouselParameter(
+            return _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveSuccessLoadProductBrandCarousel(
+              OnObserveSuccessLoadProductBrandCarouselParameter(
                 title: title,
                 description: description,
                 productBrandList: productBrandList
@@ -152,16 +153,16 @@ class HomeMainMenuSubController extends BaseGetxController {
         },
         onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
           if (_homeMainMenuDelegate != null) {
-            return _homeMainMenuDelegate!.onObserveLoadingLoadProductEntryCarousel(
-              _OnObserveLoadingLoadProductEntryCarouselParameter()
+            return _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductEntryCarousel(
+              OnObserveLoadingLoadProductEntryCarouselParameter()
             );
           }
         },
         onObserveSuccessDynamicItemActionState: (title, description, loadDataResult) {
           List<ProductEntry> productEntryList = loadDataResult.resultIfSuccess!;
           if (_homeMainMenuDelegate != null) {
-            return _homeMainMenuDelegate!.onObserveSuccessLoadProductEntryCarousel(
-              _OnObserveSuccessLoadProductEntryCarouselParameter(
+            return _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveSuccessLoadProductEntryCarousel(
+              OnObserveSuccessLoadProductEntryCarouselParameter(
                 title: title,
                 description: description,
                 productEntryList: productEntryList
@@ -229,13 +230,15 @@ class HomeMainMenuSubControllerInjectionFactory {
   final GetProductCategoryListUseCase getProductCategoryListUseCase;
   final GetProductBundleListUseCase getProductBundleListUseCase;
   final GetProductBundleHighlightUseCase getProductBundleHighlightUseCase;
+  final AddWishlistUseCase addWishlistUseCase;
 
   HomeMainMenuSubControllerInjectionFactory({
     required this.getProductBrandListUseCase,
     required this.getProductViralListUseCase,
     required this.getProductCategoryListUseCase,
     required this.getProductBundleListUseCase,
-    required this.getProductBundleHighlightUseCase
+    required this.getProductBundleHighlightUseCase,
+    required this.addWishlistUseCase
   });
 
   HomeMainMenuSubController inject(ControllerManager controllerManager, String pageName) {
@@ -246,7 +249,8 @@ class HomeMainMenuSubControllerInjectionFactory {
         getProductViralListUseCase,
         getProductCategoryListUseCase,
         getProductBundleListUseCase,
-        getProductBundleHighlightUseCase
+        getProductBundleHighlightUseCase,
+        addWishlistUseCase
       ),
       tag: pageName
     );
@@ -254,86 +258,16 @@ class HomeMainMenuSubControllerInjectionFactory {
 }
 
 class HomeMainMenuDelegate {
-  ListItemControllerState Function(_OnObserveSuccessLoadProductBrandCarouselParameter) onObserveSuccessLoadProductBrandCarousel;
-  ListItemControllerState Function(_OnObserveLoadingLoadProductBrandCarouselParameter) onObserveLoadingLoadProductBrandCarousel;
-  ListItemControllerState Function(_OnObserveSuccessLoadProductCategoryCarouselParameter) onObserveSuccessLoadProductCategoryCarousel;
-  ListItemControllerState Function(_OnObserveLoadingLoadProductCategoryCarouselParameter) onObserveLoadingLoadProductCategoryCarousel;
-  ListItemControllerState Function(_OnObserveSuccessLoadProductEntryCarouselParameter) onObserveSuccessLoadProductEntryCarousel;
-  ListItemControllerState Function(_OnObserveLoadingLoadProductEntryCarouselParameter) onObserveLoadingLoadProductEntryCarousel;
-  ListItemControllerState Function(_OnObserveSuccessLoadProductBundleCarouselParameter) onObserveSuccessLoadProductBundleCarousel;
-  ListItemControllerState Function(_OnObserveLoadingLoadProductBundleCarouselParameter) onObserveLoadingLoadProductBundleCarousel;
+  OnObserveLoadProductDelegate onObserveLoadProductDelegate;
   ListItemControllerState Function(_OnObserveSuccessLoadProductBundleHighlightParameter) onObserveSuccessLoadProductBundleHighlight;
   ListItemControllerState Function(_OnObserveLoadingLoadProductBundleHighlightParameter) onObserveLoadingLoadProductBundleHighlight;
 
   HomeMainMenuDelegate({
-    required this.onObserveSuccessLoadProductBrandCarousel,
-    required this.onObserveLoadingLoadProductBrandCarousel,
-    required this.onObserveSuccessLoadProductCategoryCarousel,
-    required this.onObserveLoadingLoadProductCategoryCarousel,
-    required this.onObserveSuccessLoadProductEntryCarousel,
-    required this.onObserveLoadingLoadProductEntryCarousel,
-    required this.onObserveSuccessLoadProductBundleCarousel,
-    required this.onObserveLoadingLoadProductBundleCarousel,
+    required this.onObserveLoadProductDelegate,
     required this.onObserveSuccessLoadProductBundleHighlight,
     required this.onObserveLoadingLoadProductBundleHighlight,
   });
 }
-
-class _OnObserveSuccessLoadProductBundleCarouselParameter {
-  MultiLanguageString? title;
-  MultiLanguageString? description;
-  List<ProductBundle> productBundleList;
-
-  _OnObserveSuccessLoadProductBundleCarouselParameter({
-    required this.title,
-    required this.description,
-    required this.productBundleList
-  });
-}
-
-class _OnObserveLoadingLoadProductBundleCarouselParameter {}
-
-class _OnObserveSuccessLoadProductBrandCarouselParameter {
-  MultiLanguageString? title;
-  MultiLanguageString? description;
-  List<ProductBrand> productBrandList;
-
-  _OnObserveSuccessLoadProductBrandCarouselParameter({
-    required this.title,
-    required this.description,
-    required this.productBrandList
-  });
-}
-
-class _OnObserveLoadingLoadProductBrandCarouselParameter {}
-
-class _OnObserveSuccessLoadProductCategoryCarouselParameter {
-  MultiLanguageString? title;
-  MultiLanguageString? description;
-  List<ProductCategory> productCategoryList;
-
-  _OnObserveSuccessLoadProductCategoryCarouselParameter({
-    required this.title,
-    required this.description,
-    required this.productCategoryList
-  });
-}
-
-class _OnObserveLoadingLoadProductCategoryCarouselParameter {}
-
-class _OnObserveSuccessLoadProductEntryCarouselParameter {
-  MultiLanguageString? title;
-  MultiLanguageString? description;
-  List<ProductEntry> productEntryList;
-
-  _OnObserveSuccessLoadProductEntryCarouselParameter({
-    required this.title,
-    required this.description,
-    required this.productEntryList
-  });
-}
-
-class _OnObserveLoadingLoadProductEntryCarouselParameter {}
 
 class _OnObserveSuccessLoadProductBundleHighlightParameter {
   MultiLanguageString? title;

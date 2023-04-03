@@ -12,18 +12,30 @@ import '../modified_vertical_divider.dart';
 import '../modifiedcachednetworkimage/product_bundle_modified_cached_network_image.dart';
 import '../rating_indicator.dart';
 
+typedef OnAddWishlistWithProductBundleId = void Function(String);
+typedef OnRemoveWishlistWithProductBundleId = void Function(String);
+
 abstract class ProductBundleItem extends StatelessWidget {
   final ProductBundle productBundle;
+  final OnAddWishlistWithProductBundleId? onAddWishlist;
+  final OnRemoveWishlistWithProductBundleId? onRemoveWishlist;
 
   const ProductBundleItem({
     super.key,
-    required this.productBundle
+    required this.productBundle,
+    this.onAddWishlist,
+    this.onRemoveWishlist
   });
 
   @override
   Widget build(BuildContext context) {
     String soldCount = "No Sold Count".tr;
     BorderRadius borderRadius = BorderRadius.circular(16.0);
+    void onWishlist(void Function(String)? onWishlistCallback) {
+      if (onWishlistCallback != null) {
+        onWishlistCallback(productBundle.id);
+      }
+    }
     return Material(
       color: Colors.white,
       borderRadius: borderRadius,
@@ -94,7 +106,8 @@ abstract class ProductBundleItem extends StatelessWidget {
                                 Row(
                                   children: [
                                     AddOrRemoveWishlistButton(
-                                      onAddWishlist: () {}
+                                      onAddWishlist: onAddWishlist != null ? () => onWishlist(onAddWishlist) : null,
+                                      onRemoveWishlist: onRemoveWishlist != null ? () => onWishlist(onRemoveWishlist) : null,
                                     ),
                                     SizedBox(width: 1.5.w),
                                     Expanded(

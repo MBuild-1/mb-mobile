@@ -8,19 +8,36 @@ import '../controllerstate/listitemcontrollerstate/productbrandlistitemcontrolle
 import '../controllerstate/listitemcontrollerstate/productbundlelistitemcontrollerstate/horizontal_product_bundle_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/productcategorylistitemcontrollerstate/horizontal_product_category_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/productlistitemcontrollerstate/horizontal_product_list_item_controller_state.dart';
-import 'entity_and_list_item_controller_state_mediator.dart';
+import '../parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/wishlist_parameterized_entity_and_list_item_controller_state_mediator.dart';
+import 'parameterized_entity_and_list_item_controller_state_mediator.dart';
 
-class HorizontalEntityAndListItemControllerStateMediator extends EntityAndListItemControllerStateMediator {
+class HorizontalParameterizedEntityAndListItemControllerStateMediator extends ParameterizedEntityAndListItemControllerStateMediator {
   @override
-  ListItemControllerState map(entity) {
+  ListItemControllerState mapWithParameter(entity, {parameter}) {
     if (entity is ProductAppearanceData) {
-      return HorizontalProductListItemControllerState(productAppearanceData: entity);
+      if (parameter is WishlistParameterizedEntityAndListItemControllerStateMediatorParameter) {
+        return HorizontalProductListItemControllerState(
+          productAppearanceData: entity,
+          onAddWishlist: parameter.onAddWishlist,
+          onRemoveWishlist: parameter.onRemoveWishlist
+        );
+      } else {
+        return NoContentListItemControllerState();
+      }
     } else if (entity is ProductCategory) {
       return HorizontalProductCategoryListItemControllerState(productCategory: entity);
     } else if (entity is ProductBrand) {
       return HorizontalProductBrandListItemControllerState(productBrand: entity);
     } else if (entity is ProductBundle) {
-      return HorizontalProductBundleListItemControllerState(productBundle: entity);
+      if (parameter is WishlistParameterizedEntityAndListItemControllerStateMediatorParameter) {
+        return HorizontalProductBundleListItemControllerState(
+          productBundle: entity,
+          onAddWishlist: parameter.onAddWishlist,
+          onRemoveWishlist: parameter.onRemoveWishlist
+        );
+      } else {
+        return NoContentListItemControllerState();
+      }
     } else {
       return NoContentListItemControllerState();
     }
