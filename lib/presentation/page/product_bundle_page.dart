@@ -192,7 +192,10 @@ class _StatefulProductBundleControllerMediatorWidgetState extends State<_Statefu
             VirtualSpacingListItemControllerState(height: Constant.paddingListItem),
             PaddingContainerListItemControllerState(
               padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-              paddingChildListItemControllerState: VerticalProductBundleListItemControllerState(productBundle: productBundle)
+              paddingChildListItemControllerState: VerticalProductBundleListItemControllerState(
+                productBundle: productBundle,
+                onAddWishlist: (productBundleId) {}
+              )
             ),
             if (index == productBundlePaging.itemList.length - 1)
               VirtualSpacingListItemControllerState(height: Constant.paddingListItem),

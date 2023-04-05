@@ -82,7 +82,9 @@ class _StatefulWishlistMainMenuSubControllerMediatorWidgetState extends State<_S
     return wishlistPagingLoadDataResult.map<PagingResult<ListItemControllerState>>(
       (wishlistPagingDataResult) => wishlistPagingDataResult.map<ListItemControllerState>(
         (wishlist) => VerticalProductListItemControllerState(
-          productAppearanceData: wishlist.productEntry
+          productAppearanceData: wishlist.productEntry,
+          onRemoveWishlist: (productOrProductEntryId) {},
+          onAddWishlist: (productOrProductEntryId) {}
         ),
       )
     );

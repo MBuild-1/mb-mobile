@@ -235,7 +235,8 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
                 ),
                 VirtualSpacingListItemControllerState(height: 3.w),
                 ProductBundleHighlightListItemControllerState(
-                  productBundle: onObserveSuccessLoadProductBundleHighlightParameter.productBundle
+                  productBundle: onObserveSuccessLoadProductBundleHighlightParameter.productBundle,
+                  onAddWishlist: (productBundleId) {},
                 )
               ]
             )
