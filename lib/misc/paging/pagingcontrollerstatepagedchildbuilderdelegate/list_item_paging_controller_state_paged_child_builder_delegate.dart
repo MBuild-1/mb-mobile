@@ -6,6 +6,8 @@ import 'package:masterbagasi/misc/ext/string_ext.dart';
 import '../../../domain/entity/product/product.dart';
 import '../../../presentation/widget/carousel_list_item.dart';
 import '../../../presentation/widget/colorful_chip_tab_bar.dart';
+import '../../../presentation/widget/coupon/horizontal_coupon_item.dart';
+import '../../../presentation/widget/coupon/vertical_coupon_item.dart';
 import '../../../presentation/widget/icon_title_and_description_list_item.dart';
 import '../../../presentation/widget/modifiedassetimage/modified_asset_image.dart';
 import '../../../presentation/widget/modifiedcachednetworkimage/modified_cached_network_image.dart';
@@ -37,6 +39,9 @@ import '../../controllerstate/listitemcontrollerstate/check_rates_for_various_co
 import '../../controllerstate/listitemcontrollerstate/colorful_chip_tab_bar_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/colorful_divider_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/column_container_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/couponlistitemcontrollerstate/coupon_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/couponlistitemcontrollerstate/horizontal_coupon_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/couponlistitemcontrollerstate/vertical_coupon_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/delivery_to_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/divider_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/dynamic_list_item_controller_state.dart';
@@ -420,6 +425,26 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
         onAddWishlist: item.onAddWishlist,
         onRemoveWishlist: item.onRemoveWishlist,
       );
+    } else if (item is CouponListItemControllerState) {
+      if (item is HorizontalCouponListItemControllerState) {
+        return HorizontalCouponItem(
+          coupon: item.coupon,
+          onSelectCoupon: item.onSelectCoupon,
+        );
+      } else if (item is VerticalCouponListItemControllerState) {
+        if (item is ShimmerVerticalCouponListItemControllerState) {
+          return ShimmerVerticalCouponItem(
+            coupon: item.coupon,
+          );
+        } else {
+          return VerticalCouponItem(
+            coupon: item.coupon,
+            onSelectCoupon: item.onSelectCoupon,
+          );
+        }
+      } else {
+        return Container();
+      }
     } else {
       return Container();
     }

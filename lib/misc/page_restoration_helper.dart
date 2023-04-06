@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../controller/crop_picture_controller.dart';
+import '../presentation/page/coupon_page.dart';
 import '../presentation/page/crop_picture_page.dart';
 import '../presentation/page/getx_page.dart';
 import '../presentation/page/login_page.dart';
@@ -119,6 +120,15 @@ class _PageRestorationHelperImpl {
     PageRestorationHelper.findPageRestorationMixin<ProductCategoryDetailPageRestorationMixin>(
       onGetxPageRestorationFound: (restoration) {
         restoration.productCategoryDetailPageRestorableRouteFuture.present(productCategoryId);
+      },
+      context: context
+    );
+  }
+
+  void toCouponPage(BuildContext context) {
+    PageRestorationHelper.findPageRestorationMixin<CouponPageRestorationMixin>(
+      onGetxPageRestorationFound: (restoration) {
+        restoration.couponPageRestorableRouteFuture.present();
       },
       context: context
     );

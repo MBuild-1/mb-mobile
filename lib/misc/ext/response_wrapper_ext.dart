@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:intl/intl.dart';
 
 import '../date_util.dart';
 import '../paging/pagingresult/paging_data_result.dart';
@@ -11,8 +12,8 @@ extension MainStructureResponseWrapperExt on Response<dynamic> {
 }
 
 extension DateTimeResponseWrapperExt on ResponseWrapper {
-  DateTime? mapFromResponseToDateTime() {
-    return response != null ? DateUtil.standardDateFormat.parse(response) : null;
+  DateTime? mapFromResponseToDateTime({DateFormat? dateFormat}) {
+    return response != null ? (dateFormat ?? DateUtil.standardDateFormat).parse(response) : null;
   }
 }
 

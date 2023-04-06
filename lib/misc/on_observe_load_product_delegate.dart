@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
+import '../domain/entity/coupon/coupon.dart';
 import '../domain/entity/product/productbrand/product_brand.dart';
 import '../domain/entity/product/productbundle/product_bundle.dart';
 import '../domain/entity/product/productcategory/product_category.dart';
@@ -12,10 +13,12 @@ import 'entityandlistitemcontrollerstatemediator/horizontal_entity_and_list_item
 import 'injector.dart';
 import 'multi_language_string.dart';
 import 'parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
+import 'shimmercarousellistitemgenerator/factory/coupon_shimmer_carousel_list_item_generator_factory.dart';
 import 'shimmercarousellistitemgenerator/factory/product_brand_shimmer_carousel_list_item_generator_factory.dart';
 import 'shimmercarousellistitemgenerator/factory/product_bundle_shimmer_carousel_list_item_generator_factory.dart';
 import 'shimmercarousellistitemgenerator/factory/product_category_shimmer_carousel_list_item_generator_factory.dart';
 import 'shimmercarousellistitemgenerator/factory/product_shimmer_carousel_list_item_generator_factory.dart';
+import 'shimmercarousellistitemgenerator/type/coupon_shimmer_carousel_list_item_generator_type.dart';
 import 'shimmercarousellistitemgenerator/type/product_brand_shimmer_carousel_list_item_generator_type.dart';
 import 'shimmercarousellistitemgenerator/type/product_bundle_shimmer_carousel_list_item_generator_type.dart';
 import 'shimmercarousellistitemgenerator/type/product_category_shimmer_carousel_list_item_generator_type.dart';
@@ -26,6 +29,7 @@ class OnObserveLoadProductDelegateFactory {
   ParameterizedEntityAndListItemControllerStateMediatorParameter Function()? onInjectLoadProductCategoryCarouselParameterizedEntity;
   ParameterizedEntityAndListItemControllerStateMediatorParameter Function()? onInjectLoadProductEntryCarouselParameterizedEntity;
   ParameterizedEntityAndListItemControllerStateMediatorParameter Function()? onInjectLoadProductBundleCarouselParameterizedEntity;
+  ParameterizedEntityAndListItemControllerStateMediatorParameter Function()? onInjectLoadCouponCarouselParameterizedEntity;
 
   OnObserveLoadProductDelegate generateOnObserveLoadProductDelegate() {
     return OnObserveLoadProductDelegate(
@@ -121,6 +125,29 @@ class OnObserveLoadProductDelegateFactory {
           shimmerCarouselListItemGenerator: Injector.locator<ProductBundleShimmerCarouselListItemGeneratorFactory>().getShimmerCarouselListItemGeneratorType()
         );
       },
+      onObserveSuccessLoadCouponCarousel: (onObserveSuccessLoadCouponCarouselParameter) {
+        return CarouselListItemControllerState(
+          title: onObserveSuccessLoadCouponCarouselParameter.title.toEmptyStringNonNull,
+          description: onObserveSuccessLoadCouponCarouselParameter.description.toEmptyStringNonNull,
+          padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+          itemListItemControllerState: onObserveSuccessLoadCouponCarouselParameter.couponList.map<ListItemControllerState>(
+            (coupon) {
+              return Injector.locator<HorizontalParameterizedEntityAndListItemControllerStateMediator>().mapWithParameter(
+                coupon, parameter: onInjectLoadCouponCarouselParameterizedEntity != null ? onInjectLoadCouponCarouselParameterizedEntity!() : null
+              );
+            }
+          ).toList()
+        );
+      },
+      onObserveLoadingLoadCouponCarousel: (onObserveLoadingLoadCouponCarouselParameter) {
+        return ShimmerCarouselListItemControllerState<CouponShimmerCarouselListItemGeneratorType>(
+          padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+          showTitleShimmer: true,
+          showDescriptionShimmer: false,
+          showItemShimmer: true,
+          shimmerCarouselListItemGenerator: Injector.locator<CouponShimmerCarouselListItemGeneratorFactory>().getShimmerCarouselListItemGeneratorType()
+        );
+      },
     );
   }
 }
@@ -134,6 +161,8 @@ class OnObserveLoadProductDelegate {
   ListItemControllerState Function(OnObserveLoadingLoadProductEntryCarouselParameter) onObserveLoadingLoadProductEntryCarousel;
   ListItemControllerState Function(OnObserveSuccessLoadProductBundleCarouselParameter) onObserveSuccessLoadProductBundleCarousel;
   ListItemControllerState Function(OnObserveLoadingLoadProductBundleCarouselParameter) onObserveLoadingLoadProductBundleCarousel;
+  ListItemControllerState Function(OnObserveSuccessLoadCouponCarouselParameter) onObserveSuccessLoadCouponCarousel;
+  ListItemControllerState Function(OnObserveLoadingLoadCouponCarouselParameter) onObserveLoadingLoadCouponCarousel;
 
   OnObserveLoadProductDelegate({
     required this.onObserveSuccessLoadProductBrandCarousel,
@@ -144,6 +173,8 @@ class OnObserveLoadProductDelegate {
     required this.onObserveLoadingLoadProductEntryCarousel,
     required this.onObserveSuccessLoadProductBundleCarousel,
     required this.onObserveLoadingLoadProductBundleCarousel,
+    required this.onObserveSuccessLoadCouponCarousel,
+    required this.onObserveLoadingLoadCouponCarousel
   });
 }
 
@@ -202,3 +233,17 @@ class OnObserveSuccessLoadProductEntryCarouselParameter {
 }
 
 class OnObserveLoadingLoadProductEntryCarouselParameter {}
+
+class OnObserveSuccessLoadCouponCarouselParameter {
+  MultiLanguageString? title;
+  MultiLanguageString? description;
+  List<Coupon> couponList;
+
+  OnObserveSuccessLoadCouponCarouselParameter({
+    required this.title,
+    required this.description,
+    required this.couponList
+  });
+}
+
+class OnObserveLoadingLoadCouponCarouselParameter {}

@@ -6,12 +6,16 @@ import '../controller/mainmenucontroller/mainmenusubpagecontroller/feed_main_men
 import '../controller/mainmenucontroller/mainmenusubpagecontroller/home_main_menu_sub_controller.dart';
 import '../controller/mainmenucontroller/mainmenusubpagecontroller/menu_main_menu_sub_controller.dart';
 import '../controller/mainmenucontroller/mainmenusubpagecontroller/wishlist_main_menu_sub_controller.dart';
+import '../data/datasource/coupondatasource/coupon_data_source.dart';
+import '../data/datasource/coupondatasource/default_coupon_data_source.dart';
 import '../data/datasource/productdatasource/default_product_data_source.dart';
 import '../data/datasource/productdatasource/product_data_source.dart';
 import '../data/datasource/userdatasource/default_user_data_source.dart';
 import '../data/datasource/userdatasource/user_data_source.dart';
+import '../data/repository/default_coupon_repository.dart';
 import '../data/repository/default_product_repository.dart';
 import '../data/repository/default_user_repository.dart';
+import '../domain/dummy/coupondummy/coupon_dummy.dart';
 import '../domain/dummy/productdummy/product_brand_dummy.dart';
 import '../domain/dummy/productdummy/product_bundle_dummy.dart';
 import '../domain/dummy/productdummy/product_category_dummy.dart';
@@ -20,9 +24,11 @@ import '../domain/dummy/productdummy/product_dummy.dart';
 import '../domain/dummy/productdummy/product_entry_dummy.dart';
 import '../domain/dummy/productdummy/product_variant_dummy.dart';
 import '../domain/dummy/provincedummy/province_dummy.dart';
+import '../domain/repository/coupon_repository.dart';
 import '../domain/repository/product_repository.dart';
 import '../domain/repository/user_repository.dart';
 import '../domain/usecase/add_wishlist_use_case.dart';
+import '../domain/usecase/get_coupon_paging_use_case.dart';
 import '../domain/usecase/get_product_brand_detail_use_case.dart';
 import '../domain/usecase/get_product_brand_use_case.dart';
 import '../domain/usecase/get_product_bundle_detail_use_case.dart';
@@ -44,6 +50,7 @@ import '../domain/usecase/get_wishlist_paging_use_case.dart';
 import '../domain/usecase/login_use_case.dart';
 import '../domain/usecase/register_use_case.dart';
 import '../domain/usecase/remove_wishlist_use_case.dart';
+import 'additionalloadingindicatorchecker/coupon_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/home_sub_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/product_brand_detail_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/product_bundle_additional_paging_result_parameter_checker.dart';
@@ -59,6 +66,7 @@ import 'errorprovider/default_error_provider.dart';
 import 'errorprovider/error_provider.dart';
 import 'http_client.dart';
 import 'on_observe_load_product_delegate.dart';
+import 'shimmercarousellistitemgenerator/factory/coupon_shimmer_carousel_list_item_generator_factory.dart';
 import 'shimmercarousellistitemgenerator/factory/product_brand_shimmer_carousel_list_item_generator_factory.dart';
 import 'shimmercarousellistitemgenerator/factory/product_bundle_shimmer_carousel_list_item_generator_factory.dart';
 import 'shimmercarousellistitemgenerator/factory/product_category_shimmer_carousel_list_item_generator_factory.dart';
@@ -128,6 +136,7 @@ class _Injector {
     locator.registerLazySingleton<ProductCertificationDummy>(() => ProductCertificationDummy());
     locator.registerLazySingleton<ProductVariantDummy>(() => ProductVariantDummy());
     locator.registerLazySingleton<ProductBundleDummy>(() => ProductBundleDummy());
+    locator.registerLazySingleton<CouponDummy>(() => CouponDummy());
 
     // Shimmer Carousel List Item Generator
     locator.registerFactory<ProductShimmerCarouselListItemGeneratorFactory>(
@@ -148,6 +157,11 @@ class _Injector {
     locator.registerFactory<ProductBrandShimmerCarouselListItemGeneratorFactory>(
       () => ProductBrandShimmerCarouselListItemGeneratorFactory(
         productBrandDummy: locator()
+      )
+    );
+    locator.registerFactory<CouponShimmerCarouselListItemGeneratorFactory>(
+      () => CouponShimmerCarouselListItemGeneratorFactory(
+        couponDummy: locator()
       )
     );
 
@@ -172,6 +186,9 @@ class _Injector {
     );
     locator.registerFactory<WishlistSubAdditionalPagingResultParameterChecker>(
       () => WishlistSubAdditionalPagingResultParameterChecker()
+    );
+    locator.registerFactory<CouponAdditionalPagingResultParameterChecker>(
+      () => CouponAdditionalPagingResultParameterChecker()
     );
 
     // Default Load Data Result Widget
@@ -200,14 +217,17 @@ class _Injector {
     locator.registerLazySingleton<GetWishlistPagingUseCase>(() => GetWishlistPagingUseCase(productRepository: locator()));
     locator.registerLazySingleton<AddWishlistUseCase>(() => AddWishlistUseCase(productRepository: locator()));
     locator.registerLazySingleton<RemoveWishlistUseCase>(() => RemoveWishlistUseCase(productRepository: locator()));
+    locator.registerLazySingleton<GetCouponPagingUseCase>(() => GetCouponPagingUseCase(couponRepository: locator()));
 
     // Repository
     locator.registerLazySingleton<UserRepository>(() => DefaultUserRepository(userDataSource: locator()));
     locator.registerLazySingleton<ProductRepository>(() => DefaultProductRepository(productDataSource: locator()));
+    locator.registerLazySingleton<CouponRepository>(() => DefaultCouponRepository(couponDataSource: locator()));
 
     // Data Sources
     locator.registerLazySingleton<UserDataSource>(() => DefaultUserDataSource(dio: locator()));
     locator.registerLazySingleton<ProductDataSource>(() => DefaultProductDataSource(dio: locator(), productBundleDummy: locator()));
+    locator.registerLazySingleton<CouponDataSource>(() => DefaultCouponDataSource(dio: locator()));
 
     // Dio
     locator.registerLazySingleton<Dio>(() => DioHttpClient.of());

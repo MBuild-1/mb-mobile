@@ -46,8 +46,11 @@ class DefaultShimmerCarouselListItemGenerator<G extends ShimmerCarouselListItemG
       return HorizontalProductBundleListItemControllerState(
         productBundle: productBundleDummy.generateShimmerDummy()
       );
-    }
-    else if (_shimmerCarouselListItemGeneratorType is ProductBundleShimmerCarouselListItemGeneratorType) {
+    } else if (_shimmerCarouselListItemGeneratorType is ProductBundleShimmerCarouselListItemGeneratorType) {
+      return HorizontalProductBrandListItemControllerState(
+        productBrand: productBrandDummy.generateShimmerDummy()
+      );
+    } else if (_shimmerCarouselListItemGeneratorType is ProductBundleShimmerCarouselListItemGeneratorType) {
       return HorizontalProductBrandListItemControllerState(
         productBrand: productBrandDummy.generateShimmerDummy()
       );
