@@ -1,20 +1,30 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/presentation/page/product_detail_page.dart';
 
 import '../../../controller/base_getx_controller.dart';
 import '../../../controller/mainmenucontroller/main_menu_controller.dart';
+import '../../../controller/mainmenucontroller/mainmenusubpagecontroller/explore_nusantara_main_menu_sub_controller.dart';
+import '../../../controller/mainmenucontroller/mainmenusubpagecontroller/feed_main_menu_sub_controller.dart';
 import '../../../controller/mainmenucontroller/mainmenusubpagecontroller/home_main_menu_sub_controller.dart';
+import '../../../controller/mainmenucontroller/mainmenusubpagecontroller/menu_main_menu_sub_controller.dart';
+import '../../../controller/mainmenucontroller/mainmenusubpagecontroller/wishlist_main_menu_sub_controller.dart';
 import '../../../misc/constant.dart';
 import '../../../misc/dialog_helper.dart';
 import '../../../misc/getextended/get_extended.dart';
 import '../../../misc/getextended/get_restorable_route_future.dart';
 import '../../../misc/injector.dart';
+import '../../../misc/login_helper.dart';
+import '../../../misc/main_route_observer.dart';
 import '../../../misc/manager/controller_manager.dart';
+import '../../../misc/page_restoration_helper.dart';
 import '../../../misc/routeargument/main_menu_route_argument.dart';
 import '../../../misc/typedef.dart';
 import '../../widget/custom_bottom_navigation_bar.dart';
 import '../../widget/modified_svg_picture.dart';
+import '../../widget/rx_consumer.dart';
 import '../login_page.dart';
 import '../getx_page.dart';
 import '../product_brand_detail_page.dart';
@@ -33,11 +43,56 @@ class MainMenuPage extends RestorableGetxPage<_MainMenuPageRestoration> {
 
   MainMenuPage({Key? key}) : super(key: key, pageRestorationId: () => "main-menu-page") {
     _mainMenuSubControllerList = [
-      [ControllerMember<HomeMainMenuSubController>().addToControllerManager(controllerManager), () => Injector.locator<HomeMainMenuSubControllerInjectionFactory>().inject(controllerManager, pageName), (BaseGetxController controller) {}],
-      [ControllerMember<HomeMainMenuSubController>().addToControllerManager(controllerManager), () => Injector.locator<HomeMainMenuSubControllerInjectionFactory>().inject(controllerManager, pageName), (BaseGetxController controller) {}],
-      [ControllerMember<HomeMainMenuSubController>().addToControllerManager(controllerManager), () => Injector.locator<HomeMainMenuSubControllerInjectionFactory>().inject(controllerManager, pageName), (BaseGetxController controller) {}],
-      [ControllerMember<HomeMainMenuSubController>().addToControllerManager(controllerManager), () => Injector.locator<HomeMainMenuSubControllerInjectionFactory>().inject(controllerManager, pageName), (BaseGetxController controller) {}],
-      [ControllerMember<HomeMainMenuSubController>().addToControllerManager(controllerManager), () => Injector.locator<HomeMainMenuSubControllerInjectionFactory>().inject(controllerManager, pageName), (BaseGetxController controller) {}]
+      [
+        ControllerMember<HomeMainMenuSubController>().addToControllerManager(controllerManager),
+        () => Injector.locator<HomeMainMenuSubControllerInjectionFactory>().inject(controllerManager, pageName),
+        () {
+          void Function()? onRefresh = MainRouteObserver.controllerMediatorMap[Constant.subPageKeyHomeMainMenu];
+          if (onRefresh != null) {
+            onRefresh();
+          }
+        }
+      ],
+      [
+        ControllerMember<FeedMainMenuSubController>().addToControllerManager(controllerManager), () => Injector.locator<FeedMainMenuSubControllerInjectionFactory>().inject(controllerManager, pageName), () {},
+        () => Injector.locator<HomeMainMenuSubControllerInjectionFactory>().inject(controllerManager, pageName),
+        () {
+          void Function()? onRefresh = MainRouteObserver.controllerMediatorMap[Constant.subPageKeyFeedMainMenu];
+          if (onRefresh != null) {
+            onRefresh();
+          }
+        }
+      ],
+      [
+        ControllerMember<ExploreNusantaraMainMenuSubController>().addToControllerManager(controllerManager), () => Injector.locator<ExploreNusantaraMainMenuSubControllerInjectionFactory>().inject(controllerManager, pageName), () {},
+        () => Injector.locator<HomeMainMenuSubControllerInjectionFactory>().inject(controllerManager, pageName),
+        () {
+          void Function()? onRefresh = MainRouteObserver.controllerMediatorMap[Constant.subPageKeyExploreNusantaraMainMenu];
+          if (onRefresh != null) {
+            onRefresh();
+          }
+        }
+      ],
+      [
+        ControllerMember<WishlistMainMenuSubController>().addToControllerManager(controllerManager), () => Injector.locator<WishlistMainMenuSubControllerInjectionFactory>().inject(controllerManager, pageName), () {},
+        () => Injector.locator<HomeMainMenuSubControllerInjectionFactory>().inject(controllerManager, pageName),
+        () {
+          void Function()? onRefresh = MainRouteObserver.controllerMediatorMap[Constant.subPageKeyWishlistMainMenu];
+          if (onRefresh != null) {
+            onRefresh();
+          }
+        }
+      ],
+      [
+        ControllerMember<MenuMainMenuSubController>().addToControllerManager(controllerManager), () => Injector.locator<MenuMainMenuSubControllerInjectionFactory>().inject(controllerManager, pageName), () {},
+        () => Injector.locator<HomeMainMenuSubControllerInjectionFactory>().inject(controllerManager, pageName),
+        () {
+          void Function()? onRefresh = MainRouteObserver.controllerMediatorMap[Constant.subPageKeyMenuMainMenu];
+          if (onRefresh != null) {
+            onRefresh();
+          }
+        }
+      ]
     ];
   }
 
@@ -54,15 +109,16 @@ class MainMenuPage extends RestorableGetxPage<_MainMenuPageRestoration> {
 
   @override
   void onLoginChange() {
+    _mainMenuController.controller.checkLoginStatus(reset: true);
     for (var mainMenuSubController in _mainMenuSubControllerList) {
-      mainMenuSubController[2]((mainMenuSubController[0] as ControllerMember).controller);
+      mainMenuSubController[2]();
     }
   }
 
   @override
   Widget buildPage(BuildContext context) {
     return _StatefulMainMenuControllerMediatorWidget(
-      mainMenuController: _mainMenuController,
+      mainMenuController: _mainMenuController.controller,
       mainMenuSubControllerList: _mainMenuSubControllerList,
       pageName: pageName,
     );
@@ -138,7 +194,7 @@ class MainMenuPageRestorableRouteFuture extends GetRestorableRouteFuture {
     );
   }
 
-  static Route<void>? _getRoute([Object? arguments]) {
+  static Route<void>? getRoute([Object? arguments]) {
     return GetExtended.toWithGetPageRouteReturnValue<void>(
       GetxPageBuilder.buildRestorableGetxPageBuilder(MainMenuPageGetPageBuilderAssistant()),
       arguments: MainMenuRouteArgument(),
@@ -147,11 +203,11 @@ class MainMenuPageRestorableRouteFuture extends GetRestorableRouteFuture {
 
   @pragma('vm:entry-point')
   static Route<void> _pageRouteBuilder(BuildContext context, Object? arguments) {
-    return _getRoute(arguments)!;
+    return getRoute(arguments)!;
   }
 
   @override
-  bool checkBeforePresent([Object? arguments]) => _getRoute(arguments) != null;
+  bool checkBeforePresent([Object? arguments]) => getRoute(arguments) != null;
 
   @override
   void presentIfCheckIsPassed([Object? arguments]) => _pageRoute.present(arguments);
@@ -168,7 +224,7 @@ class MainMenuPageRestorableRouteFuture extends GetRestorableRouteFuture {
 }
 
 class _StatefulMainMenuControllerMediatorWidget extends StatefulWidget {
-  final ControllerMember<MainMenuController> mainMenuController;
+  final MainMenuController mainMenuController;
   final List<List<dynamic>> mainMenuSubControllerList;
   final String pageName;
 
@@ -184,6 +240,7 @@ class _StatefulMainMenuControllerMediatorWidget extends StatefulWidget {
 
 class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMainMenuControllerMediatorWidget> {
   late CustomBottomNavigationBarSelectedIndex _customBottomNavigationBarSelectedIndex;
+  final TapGestureRecognizer _signInTapGestureRecognizer = TapGestureRecognizer();
 
   @override
   void initState() {
@@ -198,6 +255,14 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
 
   @override
   Widget build(BuildContext context) {
+    widget.mainMenuController.setMainMenuDelegate(
+      MainMenuDelegate(
+        onGetLoginStatus: () => LoginHelper.getTokenWithBearer().result.isNotEmptyString
+      )
+    );
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      widget.mainMenuController.checkLoginStatus();
+    });
     return Material(
       child: Column(
         children: [
@@ -212,6 +277,25 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
                 MenuMainMenuSubPage(ancestorPageName: widget.pageName),
               ],
             )
+          ),
+          RxConsumer<bool>(
+            rxValue: widget.mainMenuController.isLoginRx,
+            onConsumeValue: (context, isLogin) => !isLogin ? Container(
+              color: Constant.colorLightRed,
+              padding: EdgeInsets.all(Constant.paddingListItem),
+              child: Row(
+                children: [
+                  ModifiedSvgPicture.asset(Constant.vectorBag, overrideDefaultColorWithSingleColor: false),
+                  const SizedBox(width: 10),
+                  Builder(
+                    builder: (context) {
+                      _signInTapGestureRecognizer.onTap = () => PageRestorationHelper.toLoginPage(context, Constant.restorableRouteFuturePush);
+                      return Text.rich("Miss Indonesian Food".trTextSpan(parameter: _signInTapGestureRecognizer));
+                    }
+                  )
+                ]
+              ),
+            ) : Container(),
           ),
           CustomBottomNavigationBar(
             type: BottomNavigationBarType.fixed,
@@ -251,17 +335,15 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
                 hideLabelWhenInactive: false
               ),
             ],
-          )
-        ]
+          ),
+        ],
       ),
     );
   }
 
   void _onItemTapped(CustomBottomNavigationBarSelectedIndex selectedIndex) {
-    if (selectedIndex.currentSelectedMenuIndex != 3) {
-      _customBottomNavigationBarSelectedIndex = selectedIndex;
-      _firstInitTabChildWidget(selectedIndex);
-    }
+    _customBottomNavigationBarSelectedIndex = selectedIndex;
+    _firstInitTabChildWidget(selectedIndex);
   }
 
   void _onItemTappedWithContext(CustomBottomNavigationBarSelectedIndex selectedIndex, BuildContext context) {

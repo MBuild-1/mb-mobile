@@ -6,7 +6,10 @@ import 'package:masterbagasi/misc/validation/validation_result.dart';
 
 import '../domain/entity/login/login_parameter.dart';
 import '../domain/entity/login/login_response.dart';
+import '../domain/entity/login/login_with_google_parameter.dart';
+import '../domain/entity/login/login_with_google_response.dart';
 import '../domain/usecase/login_use_case.dart';
+import '../domain/usecase/login_with_google_use_case.dart';
 import '../misc/error/validation_error.dart';
 import '../misc/load_data_result.dart';
 import '../misc/login_helper.dart';
@@ -21,9 +24,11 @@ typedef _OnLoginBack = void Function();
 typedef _OnShowLoginRequestProcessLoadingCallback = Future<void> Function();
 typedef _OnLoginRequestProcessSuccessCallback = Future<void> Function();
 typedef _OnShowLoginRequestProcessFailedCallback = Future<void> Function(dynamic e);
+typedef _OnLoginWithGoogle = Future<String?> Function();
 
 class LoginController extends BaseGetxController {
   final LoginUseCase loginUseCase;
+  final LoginWithGoogleUseCase loginWithGoogleUseCase;
 
   late Rx<Validator> emailValidatorRx;
   late Rx<Validator> passwordValidatorRx;
@@ -31,7 +36,11 @@ class LoginController extends BaseGetxController {
 
   LoginDelegate? _loginDelegate;
 
-  LoginController(ControllerManager? controllerManager, this.loginUseCase) : super(controllerManager) {
+  LoginController(
+    ControllerManager? controllerManager,
+    this.loginUseCase,
+    this.loginWithGoogleUseCase
+  ) : super(controllerManager) {
     loginValidatorGroup = LoginValidatorGroup(
       emailValidator: EmailValidator(
         email: () => _loginDelegate!.onGetEmailLoginInput()
@@ -72,6 +81,29 @@ class LoginController extends BaseGetxController {
       }
     }
   }
+
+  void loginWithGoogle() async {
+    if (_loginDelegate != null) {
+      _loginDelegate!.onUnfocusAllWidget();
+      String? idToken = await _loginDelegate!.onLoginWithGoogle();
+      if (idToken.isNotEmptyString) {
+        LoadDataResult<LoginWithGoogleResponse> loginWithGoogleLoadDataResult = await loginWithGoogleUseCase.execute(
+          LoginWithGoogleParameter(
+            idToken: idToken!
+          )
+        ).future(
+          parameter: apiRequestManager.addRequestToCancellationPart('login-with-google').value
+        );
+        Get.back();
+        if (loginWithGoogleLoadDataResult.isSuccess) {
+          await LoginHelper.saveToken(loginWithGoogleLoadDataResult.resultIfSuccess!.token).future();
+          _loginDelegate!.onLoginRequestProcessSuccessCallback();
+        } else {
+          _loginDelegate!.onShowLoginRequestProcessFailedCallback(loginWithGoogleLoadDataResult.resultIfFailed);
+        }
+      }
+    }
+  }
 }
 
 class LoginDelegate {
@@ -82,6 +114,7 @@ class LoginDelegate {
   _OnShowLoginRequestProcessLoadingCallback onShowLoginRequestProcessLoadingCallback;
   _OnLoginRequestProcessSuccessCallback onLoginRequestProcessSuccessCallback;
   _OnShowLoginRequestProcessFailedCallback onShowLoginRequestProcessFailedCallback;
+  _OnLoginWithGoogle onLoginWithGoogle;
 
   LoginDelegate({
     required this.onUnfocusAllWidget,
@@ -90,6 +123,7 @@ class LoginDelegate {
     required this.onGetPasswordLoginInput,
     required this.onShowLoginRequestProcessLoadingCallback,
     required this.onLoginRequestProcessSuccessCallback,
-    required this.onShowLoginRequestProcessFailedCallback
+    required this.onShowLoginRequestProcessFailedCallback,
+    required this.onLoginWithGoogle,
   });
 }

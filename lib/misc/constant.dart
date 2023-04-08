@@ -37,8 +37,10 @@ class _ConstantImpl {
   String get vectorMenuUnselected => _getVectorsAssets("mainmenu/menu_unselected.svg");
   String get vectorLove => _getVectorsAssets("love.svg");
   String get vectorTrash => _getVectorsAssets("trash.svg");
+  String get vectorBag => _getVectorsAssets("bag.svg");
 
   Color get colorYellow => const Color.fromRGBO(244, 184, 43, 1);
+  Color get colorLightRed => const Color.fromRGBO(255, 236, 230, 1);
   Color get colorRed => const Color.fromRGBO(255, 86, 76, 1);
   Color get colorRedDanger => const Color.fromRGBO(203, 58, 49, 1);
   Color get colorGrey => const Color.fromRGBO(174, 174, 174, 1);
@@ -114,6 +116,11 @@ class _ConstantImpl {
   String get textLoading => "Loading".tr;
   String get textEnUsLanguageKey => "en_US";
   String get textInIdLanguageKey => "in_ID";
+  String get subPageKeyHomeMainMenu => "sub_page_key_home_main_menu";
+  String get subPageKeyFeedMainMenu => "sub_page_key_feed_main_menu";
+  String get subPageKeyExploreNusantaraMainMenu => "sub_page_key_explore_nusantara_main_menu";
+  String get subPageKeyWishlistMainMenu => "sub_page_key_wishlist_main_menu";
+  String get subPageKeyMenuMainMenu => "sub_page_key_wishlist_main_menu";
 }
 
 // ignore: non_constant_identifier_names

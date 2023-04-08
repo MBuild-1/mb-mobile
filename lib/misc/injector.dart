@@ -48,7 +48,9 @@ import '../domain/usecase/get_product_viral_list_use_case.dart';
 import '../domain/usecase/get_user_use_case.dart';
 import '../domain/usecase/get_wishlist_paging_use_case.dart';
 import '../domain/usecase/login_use_case.dart';
+import '../domain/usecase/login_with_google_use_case.dart';
 import '../domain/usecase/register_use_case.dart';
+import '../domain/usecase/register_with_google_use_case.dart';
 import '../domain/usecase/remove_wishlist_use_case.dart';
 import 'additionalloadingindicatorchecker/coupon_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/home_sub_additional_paging_result_parameter_checker.dart';
@@ -196,7 +198,9 @@ class _Injector {
 
     // Use Case
     locator.registerLazySingleton<LoginUseCase>(() => LoginUseCase(userRepository: locator()));
+    locator.registerLazySingleton<LoginWithGoogleUseCase>(() => LoginWithGoogleUseCase(userRepository: locator()));
     locator.registerLazySingleton<RegisterUseCase>(() => RegisterUseCase(userRepository: locator()));
+    locator.registerLazySingleton<RegisterWithGoogleUseCase>(() => RegisterWithGoogleUseCase(userRepository: locator()));
     locator.registerLazySingleton<GetUserUseCase>(() => GetUserUseCase(userRepository: locator()));
     locator.registerLazySingleton<GetProductBrandListUseCase>(() => GetProductBrandListUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductBrandDetailUseCase>(() => GetProductBrandDetailUseCase(productRepository: locator()));

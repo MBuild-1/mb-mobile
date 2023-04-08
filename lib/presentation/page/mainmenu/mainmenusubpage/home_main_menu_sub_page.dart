@@ -33,6 +33,7 @@ import '../../../../misc/error/message_error.dart';
 import '../../../../misc/errorprovider/error_provider.dart';
 import '../../../../misc/injector.dart';
 import '../../../../misc/load_data_result.dart';
+import '../../../../misc/main_route_observer.dart';
 import '../../../../misc/manager/controller_manager.dart';
 import '../../../../misc/on_observe_load_product_delegate.dart';
 import '../../../../misc/page_restoration_helper.dart';
@@ -101,6 +102,7 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
       onPageKeyNext: (pageKey) => pageKey + 1
     );
     _homeMainMenuSubListItemPagingControllerState.isPagingControllerExist = true;
+    MainRouteObserver.controllerMediatorMap[Constant.subPageKeyHomeMainMenu] = refreshHomeMainMenu;
   }
 
   void _checkingMainMenuContent(List<HomeMainMenuComponentEntity> mainMenuContentList, List<ListItemControllerState> listItemControllerStateList) {
@@ -187,6 +189,10 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
         ]
       )
     );
+  }
+
+  void refreshHomeMainMenu() {
+    _homeMainMenuSubListItemPagingController.refresh();
   }
 
   @override

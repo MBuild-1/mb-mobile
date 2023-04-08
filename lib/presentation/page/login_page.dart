@@ -1,12 +1,15 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:masterbagasi/misc/ext/future_ext.dart';
 import 'package:masterbagasi/misc/ext/validation_result_ext.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../controller/login_controller.dart';
 import '../../domain/usecase/login_use_case.dart';
+import '../../domain/usecase/login_with_google_use_case.dart';
 import '../../misc/constant.dart';
 import '../../misc/dialog_helper.dart';
 import '../../misc/errorprovider/error_provider.dart';
@@ -37,7 +40,11 @@ class LoginPage extends RestorableGetxPage<_LoginPageRestoration> {
   @override
   void onSetController() {
     _loginController.controller = GetExtended.put<LoginController>(
-      LoginController(controllerManager, Injector.locator<LoginUseCase>()), tag: pageName
+      LoginController(
+        controllerManager,
+        Injector.locator<LoginUseCase>(),
+        Injector.locator<LoginWithGoogleUseCase>()
+      ), tag: pageName
     );
   }
 
@@ -169,12 +176,19 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
   final TextEditingController _passwordTextEditingController = TextEditingController();
   final TapGestureRecognizer _forgotPasswordTapGestureRecognizer = TapGestureRecognizer();
   final TapGestureRecognizer _signUpTapGestureRecognizer = TapGestureRecognizer();
+  late final GoogleSignIn _googleSignIn;
   bool _obscurePassword = false;
 
   @override
   void initState() {
     super.initState();
     _loginNotifier = Provider.of<LoginNotifier>(context, listen: false);
+    _googleSignIn = GoogleSignIn(
+      scopes: [
+        'email',
+        'https://www.googleapis.com/auth/contacts.readonly',
+      ],
+    );
   }
 
   @override
@@ -198,7 +212,15 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
             element.value?.requestLoginChangeValue = 1;
           }
           Get.back();
-        }
+        },
+        onLoginWithGoogle: () async {
+          GoogleSignInAccount? googleSignInAccount = await _googleSignIn.signIn();
+          if (googleSignInAccount == null) {
+            return null;
+          }
+          GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
+          return googleSignInAuthentication.idToken;
+        },
       )
     );
     return Scaffold(
@@ -214,6 +236,7 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
               softWrap: false,
               overflow: TextOverflow.ellipsis,
               child: GestureDetector(
+                onTap: () => PageRestorationHelper.toRegisterPage(context),
                 child: Text("Register".tr),
               ),
             ),
@@ -307,13 +330,15 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
                 SizedOutlineGradientButton(
                   width: double.infinity,
                   outlineGradientButtonType: OutlineGradientButtonType.outline,
-                  onPressed: widget.loginController.login,
-                  text: "Other Method".tr,
+                  onPressed: widget.loginController.loginWithGoogle,
+                  text: "Login With Google".tr,
                 ),
                 SizedBox(height: 2.h),
                 Builder(
                   builder: (context) {
-                    _signUpTapGestureRecognizer.onTap = () => PageRestorationHelper.toRegisterPage(context);
+                    _signUpTapGestureRecognizer.onTap = () {
+                      PageRestorationHelper.toRegisterPage(context);
+                    };
                     return Text.rich("New to MasterBagasi".trTextSpan(parameter: _signUpTapGestureRecognizer));
                   }
                 )

@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:masterbagasi/misc/ext/validation_result_ext.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
@@ -8,6 +9,7 @@ import 'package:sizer/sizer.dart';
 import '../../controller/login_controller.dart';
 import '../../controller/register_controller.dart';
 import '../../domain/usecase/register_use_case.dart';
+import '../../domain/usecase/register_with_google_use_case.dart';
 import '../../misc/constant.dart';
 import '../../misc/dialog_helper.dart';
 import '../../misc/errorprovider/error_provider.dart';
@@ -18,6 +20,7 @@ import '../../misc/inputdecoration/default_input_decoration.dart';
 import '../../misc/main_route_observer.dart';
 import '../../misc/manager/controller_manager.dart';
 import '../../misc/navigation_helper.dart';
+import '../../misc/page_restoration_helper.dart';
 import '../../misc/recognizer/sign_up_recognizer.dart';
 import '../../misc/validation/validator/compoundvalidator/password_compound_validator.dart';
 import '../../misc/validation/validator/validator.dart';
@@ -38,7 +41,11 @@ class RegisterPage extends RestorableGetxPage<_RegisterPageRestoration> {
   @override
   void onSetController() {
     _registerController.controller = GetExtended.put<RegisterController>(
-      RegisterController(controllerManager, Injector.locator<RegisterUseCase>()), tag: pageName
+      RegisterController(
+        controllerManager,
+        Injector.locator<RegisterUseCase>(),
+        Injector.locator<RegisterWithGoogleUseCase>()
+      ), tag: pageName
     );
   }
 
@@ -171,6 +178,7 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
   final TextEditingController _passwordConfirmationTextEditingController = TextEditingController();
   final TapGestureRecognizer _termAndConditionsTapGestureRecognizer = TapGestureRecognizer();
   final TapGestureRecognizer _privacyPolicyTapGestureRecognizer = TapGestureRecognizer();
+  late final GoogleSignIn _googleSignIn;
   bool _obscurePassword = false;
   bool _obscurePasswordConfirmation = false;
 
@@ -178,6 +186,12 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
   void initState() {
     super.initState();
     _loginNotifier = Provider.of<LoginNotifier>(context, listen: false);
+    _googleSignIn = GoogleSignIn(
+      scopes: [
+        'email',
+        'https://www.googleapis.com/auth/contacts.readonly',
+      ],
+    );
   }
 
   @override
@@ -203,7 +217,15 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
             element.value?.requestLoginChangeValue = 1;
           }
           NavigationHelper.navigationAfterRegisterProcess(context);
-        }
+        },
+        onRegisterWithGoogle: () async {
+          GoogleSignInAccount? googleSignInAccount = await _googleSignIn.signIn();
+          if (googleSignInAccount == null) {
+            return null;
+          }
+          GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
+          return googleSignInAuthentication.idToken;
+        },
       )
     );
     return Scaffold(
@@ -219,6 +241,7 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
               softWrap: false,
               overflow: TextOverflow.ellipsis,
               child: GestureDetector(
+                onTap: () => Get.back(),
                 child: Text("Login".tr),
               ),
             ),
@@ -356,8 +379,8 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
                 SizedOutlineGradientButton(
                   width: double.infinity,
                   outlineGradientButtonType: OutlineGradientButtonType.outline,
-                  onPressed: widget.registerController.register,
-                  text: "Other Method".tr,
+                  onPressed: widget.registerController.registerWithGoogle,
+                  text: "Register With Google".tr,
                 ),
                 SizedBox(height: 2.h),
                 Builder(

@@ -5,8 +5,12 @@ import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 
 import '../../../domain/entity/login/login_parameter.dart';
 import '../../../domain/entity/login/login_response.dart';
+import '../../../domain/entity/login/login_with_google_parameter.dart';
+import '../../../domain/entity/login/login_with_google_response.dart';
 import '../../../domain/entity/register/register_parameter.dart';
 import '../../../domain/entity/register/register_response.dart';
+import '../../../domain/entity/register/register_with_google_parameter.dart';
+import '../../../domain/entity/register/register_with_google_response.dart';
 import '../../../domain/entity/user/getuser/get_user_parameter.dart';
 import '../../../domain/entity/user/getuser/get_user_response.dart';
 import '../../../misc/option_builder.dart';
@@ -36,6 +40,19 @@ class DefaultUserDataSource implements UserDataSource {
   }
 
   @override
+  FutureProcessing<LoginWithGoogleResponse> loginWithGoogle(LoginWithGoogleParameter loginWithGoogleParameter) {
+    FormData formData = FormData.fromMap(
+      <String, dynamic> {
+        "id_token": loginWithGoogleParameter.idToken,
+      }
+    );
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.post("/auth/login/google", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+        .map<LoginWithGoogleResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToLoginWithGoogleResponse());
+    });
+  }
+
+  @override
   FutureProcessing<RegisterResponse> register(RegisterParameter registerParameter) {
     FormData formData = FormData.fromMap(
       <String, dynamic> {
@@ -51,6 +68,18 @@ class DefaultUserDataSource implements UserDataSource {
     });
   }
 
+  @override
+  FutureProcessing<RegisterWithGoogleResponse> registerWithGoogle(RegisterWithGoogleParameter registerWithGoogleParameter) {
+    FormData formData = FormData.fromMap(
+      <String, dynamic> {
+        "id_token": registerWithGoogleParameter.idToken,
+      }
+    );
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.post("/auth/register/google", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+        .map<RegisterWithGoogleResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToRegisterWithGoogleResponse());
+    });
+  }
 
   @override
   FutureProcessing<GetUserResponse> getUser(GetUserParameter getUserParameter) {

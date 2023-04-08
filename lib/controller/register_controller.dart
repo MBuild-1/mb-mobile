@@ -4,7 +4,10 @@ import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../domain/entity/register/register_parameter.dart';
 import '../domain/entity/register/register_response.dart';
+import '../domain/entity/register/register_with_google_parameter.dart';
+import '../domain/entity/register/register_with_google_response.dart';
 import '../domain/usecase/register_use_case.dart';
+import '../domain/usecase/register_with_google_use_case.dart';
 import '../misc/error/validation_error.dart';
 import '../misc/load_data_result.dart';
 import '../misc/login_helper.dart';
@@ -22,9 +25,11 @@ typedef _OnRegisterBack = void Function();
 typedef _OnShowRegisterRequestProcessLoadingCallback = Future<void> Function();
 typedef _OnRegisterRequestProcessSuccessCallback = Future<void> Function();
 typedef _OnShowRegisterRequestProcessFailedCallback = Future<void> Function(dynamic e);
+typedef _OnRegisterWithGoogle = Future<String?> Function();
 
 class RegisterController extends BaseGetxController {
   final RegisterUseCase registerUseCase;
+  final RegisterWithGoogleUseCase registerWithGoogleUseCase;
 
   late Rx<Validator> emailValidatorRx;
   late Rx<Validator> nameValidatorRx;
@@ -33,7 +38,11 @@ class RegisterController extends BaseGetxController {
 
   RegisterDelegate? _registerDelegate;
 
-  RegisterController(ControllerManager? controllerManager, this.registerUseCase) : super(controllerManager) {
+  RegisterController(
+    ControllerManager? controllerManager,
+    this.registerUseCase,
+    this.registerWithGoogleUseCase
+  ) : super(controllerManager) {
     registerValidatorGroup = RegisterValidatorGroup(
       emailValidator: EmailValidator(
         email: () => _registerDelegate!.onGetEmailRegisterInput()
@@ -93,6 +102,29 @@ class RegisterController extends BaseGetxController {
       }
     }
   }
+
+  void registerWithGoogle() async {
+    if (_registerDelegate != null) {
+      _registerDelegate!.onUnfocusAllWidget();
+      String? idToken = await _registerDelegate!.onRegisterWithGoogle();
+      if (idToken.isNotEmptyString) {
+        LoadDataResult<RegisterWithGoogleResponse> registerWithGoogleLoadDataResult = await registerWithGoogleUseCase.execute(
+          RegisterWithGoogleParameter(
+            idToken: idToken!
+          )
+        ).future(
+          parameter: apiRequestManager.addRequestToCancellationPart('register-with-google').value
+        );
+        Get.back();
+        if (registerWithGoogleLoadDataResult.isSuccess) {
+          await LoginHelper.saveToken(registerWithGoogleLoadDataResult.resultIfSuccess!.token).future();
+          _registerDelegate!.onRegisterRequestProcessSuccessCallback();
+        } else {
+          _registerDelegate!.onShowRegisterRequestProcessFailedCallback(registerWithGoogleLoadDataResult.resultIfFailed);
+        }
+      }
+    }
+  }
 }
 
 class RegisterDelegate {
@@ -105,6 +137,7 @@ class RegisterDelegate {
   _OnShowRegisterRequestProcessLoadingCallback onShowRegisterRequestProcessLoadingCallback;
   _OnRegisterRequestProcessSuccessCallback onRegisterRequestProcessSuccessCallback;
   _OnShowRegisterRequestProcessFailedCallback onShowRegisterRequestProcessFailedCallback;
+  _OnRegisterWithGoogle onRegisterWithGoogle;
 
   RegisterDelegate({
     required this.onUnfocusAllWidget,
@@ -115,6 +148,7 @@ class RegisterDelegate {
     required this.onGetPasswordConfirmationRegisterInput,
     required this.onShowRegisterRequestProcessLoadingCallback,
     required this.onRegisterRequestProcessSuccessCallback,
-    required this.onShowRegisterRequestProcessFailedCallback
+    required this.onShowRegisterRequestProcessFailedCallback,
+    required this.onRegisterWithGoogle
   });
 }

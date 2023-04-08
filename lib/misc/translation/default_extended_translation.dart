@@ -34,7 +34,9 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Min. Order": "Min. Pemesanan",
       "Storefront": "Etalase",
       "Save More With Bundles": "Lebih Hemat Dengan Bundle",
-      "More": "Lihat Semuanya"
+      "More": "Lihat Semuanya",
+      "Login With Google": "Login Dengan Google",
+      "Register With Google": "Daftar Dengan Google"
     }
   };
 
@@ -69,6 +71,19 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
           ),
         ]
       ),
+      'Miss Indonesian Food': (loginTapGestureRecognizer) => TextSpan(
+        children: <InlineSpan>[
+          const TextSpan(
+            text: "Miss Indonesian Food? ",
+            style: TextStyle(fontWeight: FontWeight.bold)
+          ),
+          TextSpan(
+            text: "let's login",
+            style: TextStyle(color: Constant.colorHyperlink, fontWeight: FontWeight.bold),
+            recognizer: loginTapGestureRecognizer
+          ),
+        ]
+      ),
     },
     'in_ID': {
       'New to MasterBagasi': (signUpTapGestureRecognizer) => TextSpan(
@@ -96,6 +111,18 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
             text: "Kebijakan Privasi",
             style: TextStyle(color: Constant.colorHyperlink),
             recognizer: signUpRecognizer.privacyPolicyTapGestureRecognizer
+          ),
+        ]
+      ),
+      'Miss Indonesian Food': (loginTapGestureRecognizer) => TextSpan(
+        children: <InlineSpan>[
+          const TextSpan(
+            text: "Kangen Makanan Indonesia? ",
+          ),
+          TextSpan(
+            text: "masuk, yuk",
+            style: TextStyle(color: Constant.colorHyperlink),
+            recognizer: loginTapGestureRecognizer
           ),
         ]
       ),

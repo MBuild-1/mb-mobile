@@ -18,6 +18,6 @@ abstract class CompoundValidator extends Validator {
         return validationResult;
       }
     }
-    return validationResult;
+    return SuccessValidationResult();
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../controller/mainmenucontroller/mainmenusubpagecontroller/menu_main_menu_sub_controller.dart';
 import '../../../../misc/injector.dart';
+import '../../../../misc/login_helper.dart';
 import '../../../../misc/manager/controller_manager.dart';
 import '../../getx_page.dart';
 
@@ -43,8 +44,14 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text("Menu (Account) Main Menu Subpage")
+    return Center(
+      child: GestureDetector(
+        onTap: () {
+          print("Delete Token");
+          LoginHelper.deleteToken().future();
+        },
+        child: Text("Menu (Account) Main Menu Subpage"),
+      )
     );
   }
 }
