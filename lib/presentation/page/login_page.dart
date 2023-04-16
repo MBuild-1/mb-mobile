@@ -177,7 +177,7 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
   final TapGestureRecognizer _forgotPasswordTapGestureRecognizer = TapGestureRecognizer();
   final TapGestureRecognizer _signUpTapGestureRecognizer = TapGestureRecognizer();
   late final GoogleSignIn _googleSignIn;
-  bool _obscurePassword = false;
+  bool _obscurePassword = true;
 
   @override
   void initState() {

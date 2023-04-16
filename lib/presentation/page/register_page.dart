@@ -179,7 +179,7 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
   final TapGestureRecognizer _termAndConditionsTapGestureRecognizer = TapGestureRecognizer();
   final TapGestureRecognizer _privacyPolicyTapGestureRecognizer = TapGestureRecognizer();
   late final GoogleSignIn _googleSignIn;
-  bool _obscurePassword = false;
+  bool _obscurePassword = true;
   bool _obscurePasswordConfirmation = false;
 
   @override
