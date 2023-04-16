@@ -98,10 +98,17 @@ class DefaultErrorProvider extends ErrorProvider {
         imageAssetUrl: Constant.imageFailed
       );
     } else if (dioErrorType == DioErrorType.response) {
-      if (e.response?.statusCode == 404) {
+      int? statusCode = e.response?.statusCode;
+      if (statusCode == 404) {
         return ErrorProviderResult(
           title: "Not Found".tr,
           message: "${"Request not found (404)".tr}.",
+          imageAssetUrl: Constant.imageFailed
+        );
+      } if (statusCode == 500) {
+        return ErrorProviderResult(
+          title: "Internal Server Error".tr,
+          message: "${"Something has internal server error".tr}.",
           imageAssetUrl: Constant.imageFailed
         );
       } else {
