@@ -6,6 +6,7 @@ class ProductBundle {
   String imageUrl;
   double price;
   double rating;
+  int soldOut;
 
   ProductBundle({
     required this.id,
@@ -14,6 +15,7 @@ class ProductBundle {
     required this.description,
     required this.imageUrl,
     required this.price,
-    required this.rating
+    required this.rating,
+    required this.soldOut
   });
 }

@@ -6,6 +6,7 @@ import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/misc/option_builder.dart';
 
+import '../../../domain/dummy/productdummy/product_entry_dummy.dart';
 import '../../../domain/entity/product/product.dart';
 import '../../../domain/entity/product/product_detail_from_your_search_product_entry_list_parameter.dart';
 import '../../../domain/entity/product/product_detail_other_chosen_for_you_product_entry_list_parameter.dart';
@@ -38,6 +39,7 @@ import '../../../domain/entity/wishlist/remove_wishlist_parameter.dart';
 import '../../../domain/entity/wishlist/remove_wishlist_response.dart';
 import '../../../domain/entity/wishlist/wishlist.dart';
 import '../../../domain/entity/wishlist/wishlist_paging_parameter.dart';
+import '../../../misc/error/not_found_error.dart';
 import '../../../misc/load_data_result.dart';
 import '../../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../../misc/processing/dio_http_client_processing.dart';
@@ -49,10 +51,12 @@ import 'product_data_source.dart';
 class DefaultProductDataSource implements ProductDataSource {
   final Dio dio;
   final ProductBundleDummy productBundleDummy;
+  final ProductEntryDummy productEntryDummy;
 
   const DefaultProductDataSource({
     required this.dio,
-    required this.productBundleDummy
+    required this.productBundleDummy,
+    required this.productEntryDummy
   });
 
   @override
@@ -140,15 +144,14 @@ class DefaultProductDataSource implements ProductDataSource {
 
   @override
   FutureProcessing<PagingDataResult<ProductEntry>> productWithConditionPaging(ProductWithConditionPagingParameter productWithConditionPagingParameter) {
+    Map<String, dynamic> queryParameters = {
+      "page": productWithConditionPagingParameter.page,
+      "pageNumber": productWithConditionPagingParameter.itemEachPageCount,
+      ...productWithConditionPagingParameter.withCondition
+    };
     return DioHttpClientProcessing((cancelToken) {
-      String withConditionParameterPath = productWithConditionPagingParameter.withCondition.isNotEmptyString ? "/${productWithConditionPagingParameter.withCondition}" : "";
-      String pageParameterPath = "/${productWithConditionPagingParameter.itemEachPageCount}?page=${productWithConditionPagingParameter.page}";
-      return dio.get("/product$withConditionParameterPath$pageParameterPath", cancelToken: cancelToken)
-        .map<PagingDataResult<ProductEntry>>(onMap: (value) => value.wrapResponse().mapFromResponseToPagingDataResult(
-          (dataResponse) => dataResponse.map<ProductEntry>(
-            (productResponse) => ResponseWrapper(productResponse).mapFromResponseToProductEntry()
-        ).toList()
-      ));
+      return dio.get("/product/entry", queryParameters: queryParameters, cancelToken: cancelToken)
+        .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductEntryPaging());
     });
   }
 
@@ -226,10 +229,24 @@ class DefaultProductDataSource implements ProductDataSource {
 
   @override
   FutureProcessing<PagingDataResult<Wishlist>> wishlistPaging(WishlistPagingParameter wishlistPagingParameter) {
-    return DioHttpClientProcessing((cancelToken) {
-      return dio.get("/wishlist", cancelToken: cancelToken)
-        .map(onMap: (value) => value.wrapResponse().mapFromResponseToWishlistPaging());
+    return DummyFutureProcessing((cancelToken) async {
+      await Future.delayed(const Duration(seconds: 1));
+      return PagingDataResult<Wishlist>(
+        page: 1,
+        totalPage: 1,
+        totalItem: 1,
+        itemList: [
+          Wishlist(
+            id: "1",
+            productEntry: productEntryDummy.generateDefaultDummy()
+          )
+        ]
+      );
     });
+    // return DioHttpClientProcessing((cancelToken) {
+    //   return dio.get("/wishlist", cancelToken: cancelToken)
+    //     .map(onMap: (value) => value.wrapResponse().mapFromResponseToWishlistPaging());
+    // });
   }
 
   @override

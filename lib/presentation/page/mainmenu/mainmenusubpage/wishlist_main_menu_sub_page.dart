@@ -7,18 +7,22 @@ import '../../../../controller/mainmenucontroller/mainmenusubpagecontroller/wish
 import '../../../../domain/entity/wishlist/wishlist.dart';
 import '../../../../domain/entity/wishlist/wishlist_paging_parameter.dart';
 import '../../../../misc/additionalloadingindicatorchecker/wishlist_sub_additional_paging_result_parameter_checker.dart';
+import '../../../../misc/constant.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/productlistitemcontrollerstate/vertical_product_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/paging_controller_state.dart';
 import '../../../../misc/injector.dart';
 import '../../../../misc/load_data_result.dart';
+import '../../../../misc/main_route_observer.dart';
 import '../../../../misc/manager/controller_manager.dart';
 import '../../../../misc/paging/modified_paging_controller.dart';
 import '../../../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../../../misc/paging/pagingresult/paging_result.dart';
+import '../../../widget/background_app_bar_scaffold.dart';
 import '../../../widget/modified_paged_list_view.dart';
 import '../../../widget/modifiedappbar/default_search_app_bar.dart';
+import '../../../widget/modifiedappbar/main_menu_search_app_bar.dart';
 import '../../getx_page.dart';
 
 class WishlistMainMenuSubPage extends DefaultGetxPage {
@@ -52,12 +56,14 @@ class _StatefulWishlistMainMenuSubControllerMediatorWidget extends StatefulWidge
 }
 
 class _StatefulWishlistMainMenuSubControllerMediatorWidgetState extends State<_StatefulWishlistMainMenuSubControllerMediatorWidget> {
+  late AssetImage _wishlistAppBarBackgroundAssetImage;
   late final ModifiedPagingController<int, ListItemControllerState> _wishlistMainMenuSubListItemPagingController;
   late final PagingControllerState<int, ListItemControllerState> _wishlistMainMenuSubListItemPagingControllerState;
 
   @override
   void initState() {
     super.initState();
+    _wishlistAppBarBackgroundAssetImage = AssetImage(Constant.imagePatternWishlistMainMenuAppBar);
     _wishlistMainMenuSubListItemPagingController = ModifiedPagingController<int, ListItemControllerState>(
       firstPageKey: 1,
       // ignore: invalid_use_of_protected_member
@@ -73,6 +79,13 @@ class _StatefulWishlistMainMenuSubControllerMediatorWidgetState extends State<_S
       onPageKeyNext: (pageKey) => pageKey + 1
     );
     _wishlistMainMenuSubListItemPagingControllerState.isPagingControllerExist = true;
+    MainRouteObserver.controllerMediatorMap[Constant.subPageKeyWishlistMainMenu] = refreshWishlistMainMenu;
+  }
+
+  @override
+  void didChangeDependencies() {
+    precacheImage(_wishlistAppBarBackgroundAssetImage, context);
+    super.didChangeDependencies();
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _wishlistMainMenuListItemPagingControllerStateListener(int pageKey) async {
@@ -90,24 +103,23 @@ class _StatefulWishlistMainMenuSubControllerMediatorWidgetState extends State<_S
     );
   }
 
+  void refreshWishlistMainMenu() {
+    _wishlistMainMenuSubListItemPagingController.refresh();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: DefaultSearchAppBar(),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
-                pagingControllerState: _wishlistMainMenuSubListItemPagingControllerState,
-                onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
-                  pagingControllerState: pagingControllerState!
-                ),
-                pullToRefresh: true
-              ),
-            ),
-          ]
-        )
+    return BackgroundAppBarScaffold(
+      backgroundAppBarImage: _wishlistAppBarBackgroundAssetImage,
+      appBar: MainMenuSearchAppBar(value: 0.0),
+      body: Expanded(
+        child: ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
+          pagingControllerState: _wishlistMainMenuSubListItemPagingControllerState,
+          onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
+            pagingControllerState: pagingControllerState!
+          ),
+          pullToRefresh: true
+        ),
       ),
     );
   }

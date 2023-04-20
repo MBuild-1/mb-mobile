@@ -1,5 +1,6 @@
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 
+import '../../../domain/entity/banner/transparent_banner.dart';
 import '../../../domain/entity/homemainmenucomponententity/check_rates_for_various_countries_component_entity.dart';
 import '../../../domain/entity/homemainmenucomponententity/dynamic_item_carousel_home_main_menu_component_entity.dart';
 import '../../../domain/entity/homemainmenucomponententity/home_main_menu_component_entity.dart';
@@ -13,11 +14,16 @@ import '../../../domain/entity/product/productcategory/product_category_list_par
 import '../../../domain/entity/product/productentry/product_entry.dart';
 import '../../../domain/entity/product/product_with_condition_paging_parameter.dart';
 import '../../../domain/usecase/add_wishlist_use_case.dart';
+import '../../../domain/usecase/get_bestseller_in_masterbagasi_list_use_case.dart';
+import '../../../domain/usecase/get_coffee_and_tea_origin_indonesia_list_use_case.dart';
+import '../../../domain/usecase/get_handycrafts_contents_banner_use_case.dart';
+import '../../../domain/usecase/get_kitchen_contents_banner_use_case.dart';
 import '../../../domain/usecase/get_product_brand_use_case.dart';
 import '../../../domain/usecase/get_product_bundle_highlight_use_case.dart';
 import '../../../domain/usecase/get_product_bundle_list_use_case.dart';
 import '../../../domain/usecase/get_product_category_list_use_case.dart';
 import '../../../domain/usecase/get_product_viral_list_use_case.dart';
+import '../../../domain/usecase/get_snack_for_lying_around_list_use_case.dart';
 import '../../../misc/constant.dart';
 import '../../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../../misc/error/message_error.dart';
@@ -34,6 +40,11 @@ class HomeMainMenuSubController extends BaseGetxController {
   final GetProductCategoryListUseCase getProductCategoryListUseCase;
   final GetProductBundleListUseCase getProductBundleListUseCase;
   final GetProductBundleHighlightUseCase getProductBundleHighlightUseCase;
+  final GetSnackForLyingAroundListUseCase getSnackForLyingAroundListUseCase;
+  final GetBestsellerInMasterbagasiListUseCase getBestsellerInMasterbagasiListUseCase;
+  final GetCoffeeAndTeaOriginIndonesiaListUseCase getCoffeeAndTeaOriginIndonesiaListUseCase;
+  final GetHandycraftsContentsBannerUseCase getHandycraftsContentsBannerUseCase;
+  final GetKitchenContentsBannerUseCase getKitchenContentsBannerUseCase;
   final AddWishlistUseCase addWishlistUseCase;
   HomeMainMenuDelegate? _homeMainMenuDelegate;
 
@@ -44,12 +55,16 @@ class HomeMainMenuSubController extends BaseGetxController {
     this.getProductCategoryListUseCase,
     this.getProductBundleListUseCase,
     this.getProductBundleHighlightUseCase,
-    this.addWishlistUseCase
+    this.addWishlistUseCase,
+    this.getSnackForLyingAroundListUseCase,
+    this.getBestsellerInMasterbagasiListUseCase,
+    this.getCoffeeAndTeaOriginIndonesiaListUseCase,
+    this.getHandycraftsContentsBannerUseCase,
+    this.getKitchenContentsBannerUseCase
   ) : super(controllerManager, initLater: true);
 
   List<HomeMainMenuComponentEntity> getHomeMainMenuComponentEntity() {
     return [
-      SeparatorHomeMainMenuComponentEntity(),
       DynamicItemCarouselHomeMainMenuComponentEntity(
         title: MultiLanguageString({
           Constant.textEnUsLanguageKey: "Indonesian Category Product",
@@ -83,14 +98,14 @@ class HomeMainMenuSubController extends BaseGetxController {
               OnObserveSuccessLoadProductCategoryCarouselParameter(
                 title: title,
                 description: description,
-                productCategoryList: productCategoryList
+                productCategoryList: productCategoryList,
+                data: Constant.carouselKeyIndonesianCategoryProduct
               )
             );
           }
           throw MessageError(title: "Home main menu delegate must be initialized");
         },
       ),
-      SeparatorHomeMainMenuComponentEntity(),
       DynamicItemCarouselHomeMainMenuComponentEntity(
         title: MultiLanguageString({
           Constant.textEnUsLanguageKey: "Indonesian Original Brand",
@@ -124,14 +139,14 @@ class HomeMainMenuSubController extends BaseGetxController {
               OnObserveSuccessLoadProductBrandCarouselParameter(
                 title: title,
                 description: description,
-                productBrandList: productBrandList
+                productBrandList: productBrandList,
+                data: Constant.carouselKeyIndonesianOriginalBrand
               )
             );
           }
           throw MessageError(title: "Home main menu delegate must be initialized");
         },
       ),
-      SeparatorHomeMainMenuComponentEntity(),
       DynamicItemCarouselHomeMainMenuComponentEntity(
         title: MultiLanguageString({
           Constant.textEnUsLanguageKey: "Is Viral",
@@ -165,16 +180,90 @@ class HomeMainMenuSubController extends BaseGetxController {
               OnObserveSuccessLoadProductEntryCarouselParameter(
                 title: title,
                 description: description,
-                productEntryList: productEntryList
+                productEntryList: productEntryList,
+                data: Constant.carouselKeyIsViral
               )
             );
           }
           throw MessageError(title: "Home main menu delegate must be initialized");
         },
       ),
-      SeparatorHomeMainMenuComponentEntity(),
       CheckRatesForVariousCountriesComponentEntity(),
-      SeparatorHomeMainMenuComponentEntity(),
+      DynamicItemCarouselHomeMainMenuComponentEntity(
+        title: MultiLanguageString({
+          Constant.textEnUsLanguageKey: "Indonesia Kitchen Contents",
+          Constant.textInIdLanguageKey: "Isi Dapur Indonesia"
+        }),
+        onDynamicItemAction: (title, description, observer) async {
+          observer(title, description, IsLoadingLoadDataResult<ProductBundle>());
+          LoadDataResult<List<TransparentBanner>> transparentBannerListLoadDataResult = await getKitchenContentsBannerUseCase.execute().future(
+            parameter: apiRequestManager.addRequestToCancellationPart("indonesia-kitchen-contents").value
+          );
+          if (transparentBannerListLoadDataResult.isFailedBecauseCancellation) {
+            return;
+          }
+          observer(title, description, transparentBannerListLoadDataResult);
+        },
+        onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
+          if (_homeMainMenuDelegate != null) {
+            return _homeMainMenuDelegate!.onObserveLoadingLoadTransparentBanner(
+              _OnObserveLoadingLoadTransparentBannerParameter()
+            );
+          }
+        },
+        onObserveSuccessDynamicItemActionState: (title, description, loadDataResult) {
+          List<TransparentBanner> transparentBannerList = loadDataResult.resultIfSuccess!;
+          if (_homeMainMenuDelegate != null) {
+            return _homeMainMenuDelegate!.onObserveSuccessLoadTransparentBanner(
+              _OnObserveSuccessLoadTransparentBannerParameter(
+                title: title,
+                description: description,
+                transparentBanner: transparentBannerList.first
+              )
+            );
+          }
+          throw MessageError(title: "Home main menu delegate must be initialized");
+        },
+      ),
+      DynamicItemCarouselHomeMainMenuComponentEntity(
+        title: MultiLanguageString({
+          Constant.textEnUsLanguageKey: "Snack For Lying Around",
+          Constant.textInIdLanguageKey: "Cemilan Buat Rebahan"
+        }),
+        onDynamicItemAction: (title, description, observer) async {
+          observer(title, description, IsLoadingLoadDataResult<List<ProductEntry>>());
+          LoadDataResult<List<ProductEntry>> productEntryPagingDataResult = await getSnackForLyingAroundListUseCase.execute().future(
+            parameter: apiRequestManager.addRequestToCancellationPart("snack-for-lying-around").value
+          );
+          if (productEntryPagingDataResult.isFailedBecauseCancellation) {
+            return;
+          }
+          observer(title, description, productEntryPagingDataResult.map<List<ProductEntry>>(
+            (trainingPagingDataResult) => trainingPagingDataResult
+          ));
+        },
+        onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
+          if (_homeMainMenuDelegate != null) {
+            return _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductEntryCarousel(
+              OnObserveLoadingLoadProductEntryCarouselParameter()
+            );
+          }
+        },
+        onObserveSuccessDynamicItemActionState: (title, description, loadDataResult) {
+          List<ProductEntry> productEntryList = loadDataResult.resultIfSuccess!;
+          if (_homeMainMenuDelegate != null) {
+            return _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveSuccessLoadProductEntryCarousel(
+              OnObserveSuccessLoadProductEntryCarouselParameter(
+                title: title,
+                description: description,
+                productEntryList: productEntryList,
+                data: Constant.carouselKeySnackForLyingAround
+              )
+            );
+          }
+          throw MessageError(title: "Home main menu delegate must be initialized");
+        },
+      ),
       DynamicItemCarouselHomeMainMenuComponentEntity(
         title: MultiLanguageString({
           Constant.textEnUsLanguageKey: "Product Bundle Highlight",
@@ -215,7 +304,120 @@ class HomeMainMenuSubController extends BaseGetxController {
           throw MessageError(title: "Home main menu delegate must be initialized");
         },
       ),
-      SeparatorHomeMainMenuComponentEntity(),
+      DynamicItemCarouselHomeMainMenuComponentEntity(
+        title: MultiLanguageString({
+          Constant.textEnUsLanguageKey: "Best Selling in Masterbagasi",
+          Constant.textInIdLanguageKey: "Terlaris di Masterbagasi"
+        }),
+        onDynamicItemAction: (title, description, observer) async {
+          observer(title, description, IsLoadingLoadDataResult<List<ProductEntry>>());
+          LoadDataResult<List<ProductEntry>> productEntryPagingDataResult = await getBestsellerInMasterbagasiListUseCase.execute().future(
+            parameter: apiRequestManager.addRequestToCancellationPart("bestselling-in-masterbagasi").value
+          );
+          if (productEntryPagingDataResult.isFailedBecauseCancellation) {
+            return;
+          }
+          observer(title, description, productEntryPagingDataResult.map<List<ProductEntry>>(
+            (trainingPagingDataResult) => trainingPagingDataResult
+          ));
+        },
+        onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
+          if (_homeMainMenuDelegate != null) {
+            return _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductEntryCarousel(
+              OnObserveLoadingLoadProductEntryCarouselParameter()
+            );
+          }
+        },
+        onObserveSuccessDynamicItemActionState: (title, description, loadDataResult) {
+          List<ProductEntry> productEntryList = loadDataResult.resultIfSuccess!;
+          if (_homeMainMenuDelegate != null) {
+            return _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveSuccessLoadProductEntryCarousel(
+              OnObserveSuccessLoadProductEntryCarouselParameter(
+                title: title,
+                description: description,
+                productEntryList: productEntryList,
+                data: Constant.carouselKeyBestSellingInMasterBagasi
+              )
+            );
+          }
+          throw MessageError(title: "Home main menu delegate must be initialized");
+        },
+      ),
+      DynamicItemCarouselHomeMainMenuComponentEntity(
+        title: MultiLanguageString({
+          Constant.textEnUsLanguageKey: "Handicrafts made by the Nation's Children",
+          Constant.textInIdLanguageKey: "Kerajinan Tangan Karya Anak Bangsa"
+        }),
+        onDynamicItemAction: (title, description, observer) async {
+          observer(title, description, IsLoadingLoadDataResult<ProductBundle>());
+          LoadDataResult<List<TransparentBanner>> transparentBannerListLoadDataResult = await getHandycraftsContentsBannerUseCase.execute().future(
+            parameter: apiRequestManager.addRequestToCancellationPart("handycrafts-contents").value
+          );
+          if (transparentBannerListLoadDataResult.isFailedBecauseCancellation) {
+            return;
+          }
+          observer(title, description, transparentBannerListLoadDataResult);
+        },
+        onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
+          if (_homeMainMenuDelegate != null) {
+            return _homeMainMenuDelegate!.onObserveLoadingLoadTransparentBanner(
+              _OnObserveLoadingLoadTransparentBannerParameter()
+            );
+          }
+        },
+        onObserveSuccessDynamicItemActionState: (title, description, loadDataResult) {
+          List<TransparentBanner> transparentBannerList = loadDataResult.resultIfSuccess!;
+          if (_homeMainMenuDelegate != null) {
+            return _homeMainMenuDelegate!.onObserveSuccessLoadTransparentBanner(
+              _OnObserveSuccessLoadTransparentBannerParameter(
+                title: title,
+                description: description,
+                transparentBanner: transparentBannerList.first
+              )
+            );
+          }
+          throw MessageError(title: "Home main menu delegate must be initialized");
+        },
+      ),
+      DynamicItemCarouselHomeMainMenuComponentEntity(
+        title: MultiLanguageString({
+          Constant.textEnUsLanguageKey: "Coffee & Tea Origin Indonesia",
+          Constant.textInIdLanguageKey: "Kopi & Teh Asli Indonesia"
+        }),
+        onDynamicItemAction: (title, description, observer) async {
+          observer(title, description, IsLoadingLoadDataResult<List<ProductEntry>>());
+          LoadDataResult<List<ProductEntry>> productEntryPagingDataResult = await getCoffeeAndTeaOriginIndonesiaListUseCase.execute().future(
+            parameter: apiRequestManager.addRequestToCancellationPart("coffee-and-tea-origin-indonesia").value
+          );
+          if (productEntryPagingDataResult.isFailedBecauseCancellation) {
+            return;
+          }
+          observer(title, description, productEntryPagingDataResult.map<List<ProductEntry>>(
+            (trainingPagingDataResult) => trainingPagingDataResult
+          ));
+        },
+        onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
+          if (_homeMainMenuDelegate != null) {
+            return _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductEntryCarousel(
+              OnObserveLoadingLoadProductEntryCarouselParameter()
+            );
+          }
+        },
+        onObserveSuccessDynamicItemActionState: (title, description, loadDataResult) {
+          List<ProductEntry> productEntryList = loadDataResult.resultIfSuccess!;
+          if (_homeMainMenuDelegate != null) {
+            return _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveSuccessLoadProductEntryCarousel(
+              OnObserveSuccessLoadProductEntryCarouselParameter(
+                title: title,
+                description: description,
+                productEntryList: productEntryList,
+                data: Constant.carouselKeyCoffeeAndTeaOriginIndonesia
+              )
+            );
+          }
+          throw MessageError(title: "Home main menu delegate must be initialized");
+        },
+      ),
     ];
   }
 
@@ -230,6 +432,11 @@ class HomeMainMenuSubControllerInjectionFactory {
   final GetProductCategoryListUseCase getProductCategoryListUseCase;
   final GetProductBundleListUseCase getProductBundleListUseCase;
   final GetProductBundleHighlightUseCase getProductBundleHighlightUseCase;
+  final GetSnackForLyingAroundListUseCase getSnackForLyingAroundListUseCase;
+  final GetBestsellerInMasterbagasiListUseCase getBestsellerInMasterbagasiListUseCase;
+  final GetCoffeeAndTeaOriginIndonesiaListUseCase getCoffeeAndTeaOriginIndonesiaListUseCase;
+  final GetHandycraftsContentsBannerUseCase getHandycraftsContentsBannerUseCase;
+  final GetKitchenContentsBannerUseCase getKitchenContentsBannerUseCase;
   final AddWishlistUseCase addWishlistUseCase;
 
   HomeMainMenuSubControllerInjectionFactory({
@@ -238,6 +445,11 @@ class HomeMainMenuSubControllerInjectionFactory {
     required this.getProductCategoryListUseCase,
     required this.getProductBundleListUseCase,
     required this.getProductBundleHighlightUseCase,
+    required this.getSnackForLyingAroundListUseCase,
+    required this.getBestsellerInMasterbagasiListUseCase,
+    required this.getCoffeeAndTeaOriginIndonesiaListUseCase,
+    required this.getHandycraftsContentsBannerUseCase,
+    required this.getKitchenContentsBannerUseCase,
     required this.addWishlistUseCase
   });
 
@@ -250,7 +462,12 @@ class HomeMainMenuSubControllerInjectionFactory {
         getProductCategoryListUseCase,
         getProductBundleListUseCase,
         getProductBundleHighlightUseCase,
-        addWishlistUseCase
+        addWishlistUseCase,
+        getSnackForLyingAroundListUseCase,
+        getBestsellerInMasterbagasiListUseCase,
+        getCoffeeAndTeaOriginIndonesiaListUseCase,
+        getHandycraftsContentsBannerUseCase,
+        getKitchenContentsBannerUseCase
       ),
       tag: pageName
     );
@@ -261,11 +478,15 @@ class HomeMainMenuDelegate {
   OnObserveLoadProductDelegate onObserveLoadProductDelegate;
   ListItemControllerState Function(_OnObserveSuccessLoadProductBundleHighlightParameter) onObserveSuccessLoadProductBundleHighlight;
   ListItemControllerState Function(_OnObserveLoadingLoadProductBundleHighlightParameter) onObserveLoadingLoadProductBundleHighlight;
+  ListItemControllerState Function(_OnObserveSuccessLoadTransparentBannerParameter) onObserveSuccessLoadTransparentBanner;
+  ListItemControllerState Function(_OnObserveLoadingLoadTransparentBannerParameter) onObserveLoadingLoadTransparentBanner;
 
   HomeMainMenuDelegate({
     required this.onObserveLoadProductDelegate,
     required this.onObserveSuccessLoadProductBundleHighlight,
     required this.onObserveLoadingLoadProductBundleHighlight,
+    required this.onObserveSuccessLoadTransparentBanner,
+    required this.onObserveLoadingLoadTransparentBanner
   });
 }
 
@@ -282,3 +503,17 @@ class _OnObserveSuccessLoadProductBundleHighlightParameter {
 }
 
 class _OnObserveLoadingLoadProductBundleHighlightParameter {}
+
+class _OnObserveSuccessLoadTransparentBannerParameter {
+  MultiLanguageString? title;
+  MultiLanguageString? description;
+  TransparentBanner transparentBanner;
+
+  _OnObserveSuccessLoadTransparentBannerParameter({
+    required this.title,
+    required this.description,
+    required this.transparentBanner
+  });
+}
+
+class _OnObserveLoadingLoadTransparentBannerParameter {}

@@ -2,6 +2,8 @@ import '../../domain/entity/login/login_parameter.dart';
 import '../../domain/entity/login/login_response.dart';
 import '../../domain/entity/login/login_with_google_parameter.dart';
 import '../../domain/entity/login/login_with_google_response.dart';
+import '../../domain/entity/logout/logout_parameter.dart';
+import '../../domain/entity/logout/logout_response.dart';
 import '../../domain/entity/register/register_parameter.dart';
 import '../../domain/entity/register/register_response.dart';
 import '../../domain/entity/register/register_with_google_parameter.dart';
@@ -38,6 +40,11 @@ class DefaultUserRepository implements UserRepository {
   @override
   FutureProcessing<LoadDataResult<RegisterWithGoogleResponse>> registerWithGoogle(RegisterWithGoogleParameter registerWithGoogleParameter) {
     return userDataSource.registerWithGoogle(registerWithGoogleParameter).mapToLoadDataResult<RegisterWithGoogleResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<LogoutResponse>> logout(LogoutParameter logoutParameter) {
+    return userDataSource.logout(logoutParameter).mapToLoadDataResult<LogoutResponse>();
   }
 
   @override

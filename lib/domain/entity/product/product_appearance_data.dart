@@ -9,4 +9,5 @@ abstract class ProductAppearanceData {
 
 abstract class ProductEntryAppearanceData extends ProductAppearanceData {
   String get productEntryId;
+  int get soldCount;
 }

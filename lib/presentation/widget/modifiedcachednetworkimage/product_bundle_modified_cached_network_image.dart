@@ -18,7 +18,7 @@ class ProductBundleModifiedCachedNetworkImage extends CachedNetworkImage {
       decoration: BoxDecoration(
         image: DecorationImage(
           image: imageProvider,
-          fit: BoxFit.cover,
+          fit: BoxFit.fitWidth,
         ),
       ),
     );
@@ -27,5 +27,8 @@ class ProductBundleModifiedCachedNetworkImage extends CachedNetworkImage {
   ProductBundleModifiedCachedNetworkImage({
     Key? key,
     required String imageUrl
-  }) : super(key: key, imageUrl: imageUrl);
+  }) : super(
+    key: key,
+    imageUrl: imageUrl,
+  );
 }

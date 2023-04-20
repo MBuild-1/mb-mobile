@@ -118,6 +118,9 @@ class ListItemControllerStateItemTypeInterceptorChecker extends ItemTypeListInte
     CompoundItemListSubInterceptor(
       listItemControllerStateItemTypeInterceptorChecker: this
     ),
+    DecoratedContainerItemTypeListSubInterceptor(
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
     PaddingContainerItemTypeListSubInterceptor(
       listItemControllerStateItemTypeInterceptorChecker: this
     ),

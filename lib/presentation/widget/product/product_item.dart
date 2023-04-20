@@ -39,7 +39,9 @@ abstract class ProductItem extends StatelessWidget {
       ) : const TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.bold
-      )
+      ),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
     );
   }
 
@@ -48,8 +50,10 @@ abstract class ProductItem extends StatelessWidget {
       priceString,
       style: TextStyle(
         color: Constant.colorProductItemDiscountOrNormal,
-        decoration: TextDecoration.lineThrough
-      )
+        decoration: TextDecoration.lineThrough,
+      ),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis
     );
   }
 
@@ -81,7 +85,7 @@ abstract class ProductItem extends StatelessWidget {
       bottomLeft: Radius.circular(16.0),
       bottomRight: Radius.circular(16.0)
     );
-    String weight = productAppearanceData.weight.toString();
+    String weight = "${productAppearanceData.weight.toString()} Kg";
     String soldCount = "No Sold Count".tr;
     void onWishlist(void Function(String)? onWishlistCallback) {
       if (onWishlistCallback != null) {
@@ -91,6 +95,9 @@ abstract class ProductItem extends StatelessWidget {
           onWishlistCallback(productAppearanceData.productId);
         }
       }
+    }
+    if (productAppearanceData is ProductEntryAppearanceData) {
+      soldCount = "${"sold".tr} ${(productAppearanceData as ProductEntryAppearanceData).soldCount}";
     }
     return SizedBox(
       width: itemWidth,
@@ -158,14 +165,6 @@ abstract class ProductItem extends StatelessWidget {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            const RatingIndicator(rating: 5.0),
-                            SizedBox(width: 1.5.w),
-                            const ModifiedVerticalDivider(
-                              lineWidth: 1,
-                              lineHeight: 10,
-                              lineColor: Colors.black,
-                            ),
-                            SizedBox(width: 1.5.w),
                             Text(soldCount, style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.w300)),
                           ],
                         ),

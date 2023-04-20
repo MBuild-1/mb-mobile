@@ -8,14 +8,19 @@ import '../controller/mainmenucontroller/mainmenusubpagecontroller/menu_main_men
 import '../controller/mainmenucontroller/mainmenusubpagecontroller/wishlist_main_menu_sub_controller.dart';
 import '../data/datasource/coupondatasource/coupon_data_source.dart';
 import '../data/datasource/coupondatasource/default_coupon_data_source.dart';
+import '../data/datasource/feeddatasource/default_feed_data_source.dart';
+import '../data/datasource/feeddatasource/feed_data_source.dart';
 import '../data/datasource/productdatasource/default_product_data_source.dart';
 import '../data/datasource/productdatasource/product_data_source.dart';
 import '../data/datasource/userdatasource/default_user_data_source.dart';
 import '../data/datasource/userdatasource/user_data_source.dart';
 import '../data/repository/default_coupon_repository.dart';
+import '../data/repository/default_feed_repository.dart';
 import '../data/repository/default_product_repository.dart';
 import '../data/repository/default_user_repository.dart';
 import '../domain/dummy/coupondummy/coupon_dummy.dart';
+import '../domain/dummy/deliveryreviewdummy/delivery_review_dummy.dart';
+import '../domain/dummy/newsdummy/news_dummy.dart';
 import '../domain/dummy/productdummy/product_brand_dummy.dart';
 import '../domain/dummy/productdummy/product_bundle_dummy.dart';
 import '../domain/dummy/productdummy/product_category_dummy.dart';
@@ -25,6 +30,7 @@ import '../domain/dummy/productdummy/product_entry_dummy.dart';
 import '../domain/dummy/productdummy/product_variant_dummy.dart';
 import '../domain/dummy/provincedummy/province_dummy.dart';
 import '../domain/repository/coupon_repository.dart';
+import '../domain/repository/feed_repository.dart';
 import '../domain/repository/product_repository.dart';
 import '../domain/repository/user_repository.dart';
 import '../domain/usecase/add_wishlist_use_case.dart';
@@ -45,14 +51,19 @@ import '../domain/usecase/get_product_detail_other_interested_product_brand_list
 import '../domain/usecase/get_product_detail_use_case.dart';
 import '../domain/usecase/get_product_list_use_case.dart';
 import '../domain/usecase/get_product_viral_list_use_case.dart';
+import '../domain/usecase/get_short_video_use_case.dart';
+import '../domain/usecase/get_snack_for_lying_around_list_use_case.dart';
+import '../domain/usecase/get_trip_default_video_use_case.dart';
 import '../domain/usecase/get_user_use_case.dart';
 import '../domain/usecase/get_wishlist_paging_use_case.dart';
 import '../domain/usecase/login_use_case.dart';
 import '../domain/usecase/login_with_google_use_case.dart';
+import '../domain/usecase/logout_use_case.dart';
 import '../domain/usecase/register_use_case.dart';
 import '../domain/usecase/register_with_google_use_case.dart';
 import '../domain/usecase/remove_wishlist_use_case.dart';
 import 'additionalloadingindicatorchecker/coupon_additional_paging_result_parameter_checker.dart';
+import 'additionalloadingindicatorchecker/feed_sub_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/home_sub_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/product_brand_detail_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/product_bundle_additional_paging_result_parameter_checker.dart';
@@ -69,6 +80,8 @@ import 'errorprovider/error_provider.dart';
 import 'http_client.dart';
 import 'on_observe_load_product_delegate.dart';
 import 'shimmercarousellistitemgenerator/factory/coupon_shimmer_carousel_list_item_generator_factory.dart';
+import 'shimmercarousellistitemgenerator/factory/delivery_review_shimmer_carousel_list_item_generator_factory.dart';
+import 'shimmercarousellistitemgenerator/factory/news_shimmer_carousel_list_item_generator_factory.dart';
 import 'shimmercarousellistitemgenerator/factory/product_brand_shimmer_carousel_list_item_generator_factory.dart';
 import 'shimmercarousellistitemgenerator/factory/product_bundle_shimmer_carousel_list_item_generator_factory.dart';
 import 'shimmercarousellistitemgenerator/factory/product_category_shimmer_carousel_list_item_generator_factory.dart';
@@ -86,11 +99,21 @@ class _Injector {
         getProductBrandListUseCase: locator(),
         getProductBundleListUseCase: locator(),
         getProductBundleHighlightUseCase: locator(),
+        getSnackForLyingAroundListUseCase: locator(),
+        getBestsellerInMasterbagasiListUseCase: locator(),
+        getCoffeeAndTeaOriginIndonesiaListUseCase: locator(),
+        getHandycraftsContentsBannerUseCase: locator(),
+        getKitchenContentsBannerUseCase: locator(),
         addWishlistUseCase: locator()
       )
     );
     locator.registerLazySingleton<FeedMainMenuSubControllerInjectionFactory>(
-      () => FeedMainMenuSubControllerInjectionFactory()
+      () => FeedMainMenuSubControllerInjectionFactory(
+        getShortVideoUseCase: locator(),
+        getDeliveryReviewUseCase: locator(),
+        getNewsUseCase: locator(),
+        getTripDefaultVideoUseCase: locator()
+      )
     );
     locator.registerLazySingleton<ExploreNusantaraMainMenuSubControllerInjectionFactory>(
       () => ExploreNusantaraMainMenuSubControllerInjectionFactory()
@@ -138,6 +161,8 @@ class _Injector {
     locator.registerLazySingleton<ProductCertificationDummy>(() => ProductCertificationDummy());
     locator.registerLazySingleton<ProductVariantDummy>(() => ProductVariantDummy());
     locator.registerLazySingleton<ProductBundleDummy>(() => ProductBundleDummy());
+    locator.registerLazySingleton<DeliveryReviewDummy>(() => DeliveryReviewDummy());
+    locator.registerLazySingleton<NewsDummy>(() => NewsDummy());
     locator.registerLazySingleton<CouponDummy>(() => CouponDummy());
 
     // Shimmer Carousel List Item Generator
@@ -159,6 +184,16 @@ class _Injector {
     locator.registerFactory<ProductBrandShimmerCarouselListItemGeneratorFactory>(
       () => ProductBrandShimmerCarouselListItemGeneratorFactory(
         productBrandDummy: locator()
+      )
+    );
+    locator.registerFactory<DeliveryReviewShimmerCarouselListItemGeneratorFactory>(
+      () => DeliveryReviewShimmerCarouselListItemGeneratorFactory(
+        deliveryReviewDummy: locator()
+      )
+    );
+    locator.registerFactory<NewsShimmerCarouselListItemGeneratorFactory>(
+      () => NewsShimmerCarouselListItemGeneratorFactory(
+        newsDummy: locator()
       )
     );
     locator.registerFactory<CouponShimmerCarouselListItemGeneratorFactory>(
@@ -189,6 +224,9 @@ class _Injector {
     locator.registerFactory<WishlistSubAdditionalPagingResultParameterChecker>(
       () => WishlistSubAdditionalPagingResultParameterChecker()
     );
+    locator.registerFactory<FeedSubAdditionalPagingResultParameterChecker>(
+      () => FeedSubAdditionalPagingResultParameterChecker()
+    );
     locator.registerFactory<CouponAdditionalPagingResultParameterChecker>(
       () => CouponAdditionalPagingResultParameterChecker()
     );
@@ -201,6 +239,7 @@ class _Injector {
     locator.registerLazySingleton<LoginWithGoogleUseCase>(() => LoginWithGoogleUseCase(userRepository: locator()));
     locator.registerLazySingleton<RegisterUseCase>(() => RegisterUseCase(userRepository: locator()));
     locator.registerLazySingleton<RegisterWithGoogleUseCase>(() => RegisterWithGoogleUseCase(userRepository: locator()));
+    locator.registerLazySingleton<LogoutUseCase>(() => LogoutUseCase(userRepository: locator()));
     locator.registerLazySingleton<GetUserUseCase>(() => GetUserUseCase(userRepository: locator()));
     locator.registerLazySingleton<GetProductBrandListUseCase>(() => GetProductBrandListUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductBrandDetailUseCase>(() => GetProductBrandDetailUseCase(productRepository: locator()));
@@ -219,18 +258,37 @@ class _Injector {
     locator.registerLazySingleton<GetProductBundleHighlightUseCase>(() => GetProductBundleHighlightUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductBundleDetailUseCase>(() => GetProductBundleDetailUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetWishlistPagingUseCase>(() => GetWishlistPagingUseCase(productRepository: locator()));
+    locator.registerLazySingleton<GetSnackForLyingAroundListUseCase>(() => GetSnackForLyingAroundListUseCase(productRepository: locator()));
+    locator.registerLazySingleton<GetBestsellerInMasterbagasiListUseCase>(() => GetBestsellerInMasterbagasiListUseCase(productRepository: locator()));
+    locator.registerLazySingleton<GetCoffeeAndTeaOriginIndonesiaListUseCase>(() => GetCoffeeAndTeaOriginIndonesiaListUseCase(productRepository: locator()));
     locator.registerLazySingleton<AddWishlistUseCase>(() => AddWishlistUseCase(productRepository: locator()));
     locator.registerLazySingleton<RemoveWishlistUseCase>(() => RemoveWishlistUseCase(productRepository: locator()));
+    locator.registerLazySingleton<GetShortVideoUseCase>(() => GetShortVideoUseCase(feedRepository: locator()));
+    locator.registerLazySingleton<GetDeliveryReviewUseCase>(() => GetDeliveryReviewUseCase(feedRepository: locator()));
+    locator.registerLazySingleton<GetNewsUseCase>(() => GetNewsUseCase(feedRepository: locator()));
+    locator.registerLazySingleton<GetTripDefaultVideoUseCase>(() => GetTripDefaultVideoUseCase(feedRepository: locator()));
+    locator.registerLazySingleton<GetKitchenContentsBannerUseCase>(() => GetKitchenContentsBannerUseCase(bannerRepository: locator()));
+    locator.registerLazySingleton<GetHandycraftsContentsBannerUseCase>(() => GetHandycraftsContentsBannerUseCase(bannerRepository: locator()));
     locator.registerLazySingleton<GetCouponPagingUseCase>(() => GetCouponPagingUseCase(couponRepository: locator()));
 
     // Repository
     locator.registerLazySingleton<UserRepository>(() => DefaultUserRepository(userDataSource: locator()));
+    locator.registerLazySingleton<FeedRepository>(() => DefaultFeedRepository(feedDataSource: locator()));
+    locator.registerLazySingleton<BannerRepository>(() => DefaultBannerRepository(bannerDataSource: locator()));
     locator.registerLazySingleton<ProductRepository>(() => DefaultProductRepository(productDataSource: locator()));
     locator.registerLazySingleton<CouponRepository>(() => DefaultCouponRepository(couponDataSource: locator()));
 
     // Data Sources
     locator.registerLazySingleton<UserDataSource>(() => DefaultUserDataSource(dio: locator()));
-    locator.registerLazySingleton<ProductDataSource>(() => DefaultProductDataSource(dio: locator(), productBundleDummy: locator()));
+    locator.registerLazySingleton<BannerDataSource>(() => DefaultBannerDataSource(dio: locator()));
+    locator.registerLazySingleton<FeedDataSource>(() => DefaultFeedDataSource(dio: locator()));
+    locator.registerLazySingleton<ProductDataSource>(
+      () => DefaultProductDataSource(
+        dio: locator(),
+        productBundleDummy: locator(),
+        productEntryDummy: locator()
+      )
+    );
     locator.registerLazySingleton<CouponDataSource>(() => DefaultCouponDataSource(dio: locator()));
 
     // Dio

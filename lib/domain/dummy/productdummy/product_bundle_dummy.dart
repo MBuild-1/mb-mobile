@@ -11,7 +11,8 @@ class ProductBundleDummy {
       slug: "",
       imageUrl: "",
       price: 0.0,
-      rating: 0.0
+      rating: 0.0,
+      soldOut: 0
     );
   }
 
@@ -23,7 +24,8 @@ class ProductBundleDummy {
       slug: "product-variant-type-sample",
       imageUrl: "",
       price: 0.0,
-      rating: 0.0
+      rating: 0.0,
+      soldOut: 0
     );
   }
 }

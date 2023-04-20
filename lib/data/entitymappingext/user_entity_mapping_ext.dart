@@ -2,6 +2,7 @@ import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 
 import '../../domain/entity/login/login_response.dart';
 import '../../domain/entity/login/login_with_google_response.dart';
+import '../../domain/entity/logout/logout_response.dart';
 import '../../domain/entity/register/register_response.dart';
 import '../../domain/entity/register/register_with_google_response.dart';
 import '../../domain/entity/user/getuser/get_user_response.dart';
@@ -39,6 +40,10 @@ extension UserEntityMappingExt on ResponseWrapper {
       tokenType: response["token_type"],
       expiresIn: response["expires_in"]
     );
+  }
+
+  LogoutResponse mapFromResponseToLogoutResponse() {
+    return LogoutResponse();
   }
 
   GetUserResponse mapFromResponseToGetUserResponse() {

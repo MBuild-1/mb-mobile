@@ -75,6 +75,8 @@ dependencies:
   flutter_otp_text_field: ^1.1.1
   image_size_getter: ^2.1.2
   image: ^4.0.15
+  touchable: ^1.0.2
+  svg_path_parser: ^1.1.1
   google_sign_in: ^6.1.0
   add_2_calendar: ^2.1.2
 

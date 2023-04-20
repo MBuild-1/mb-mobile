@@ -23,7 +23,9 @@ class ProductEntryDummy {
       sellingPrice: 0,
       isBestSelling: 0,
       productVariantList: [],
-      product: productDummy.generateShimmerDummy()
+      imageUrlList: [],
+      product: productDummy.generateShimmerDummy(),
+      soldCount: 0
     );
   }
 
@@ -42,7 +44,9 @@ class ProductEntryDummy {
       sellingPrice: 0,
       isBestSelling: 0,
       productVariantList: [],
-      product: productDummy.generateDefaultDummy()
+      imageUrlList: [],
+      product: productDummy.generateDefaultDummy(),
+      soldCount: 0
     );
   }
 }

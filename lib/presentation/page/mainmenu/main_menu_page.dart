@@ -54,8 +54,8 @@ class MainMenuPage extends RestorableGetxPage<_MainMenuPageRestoration> {
         }
       ],
       [
-        ControllerMember<FeedMainMenuSubController>().addToControllerManager(controllerManager), () => Injector.locator<FeedMainMenuSubControllerInjectionFactory>().inject(controllerManager, pageName), () {},
-        () => Injector.locator<HomeMainMenuSubControllerInjectionFactory>().inject(controllerManager, pageName),
+        ControllerMember<FeedMainMenuSubController>().addToControllerManager(controllerManager),
+        () => Injector.locator<FeedMainMenuSubControllerInjectionFactory>().inject(controllerManager, pageName),
         () {
           void Function()? onRefresh = MainRouteObserver.controllerMediatorMap[Constant.subPageKeyFeedMainMenu];
           if (onRefresh != null) {
@@ -64,8 +64,8 @@ class MainMenuPage extends RestorableGetxPage<_MainMenuPageRestoration> {
         }
       ],
       [
-        ControllerMember<ExploreNusantaraMainMenuSubController>().addToControllerManager(controllerManager), () => Injector.locator<ExploreNusantaraMainMenuSubControllerInjectionFactory>().inject(controllerManager, pageName), () {},
-        () => Injector.locator<HomeMainMenuSubControllerInjectionFactory>().inject(controllerManager, pageName),
+        ControllerMember<ExploreNusantaraMainMenuSubController>().addToControllerManager(controllerManager),
+        () => Injector.locator<ExploreNusantaraMainMenuSubControllerInjectionFactory>().inject(controllerManager, pageName),
         () {
           void Function()? onRefresh = MainRouteObserver.controllerMediatorMap[Constant.subPageKeyExploreNusantaraMainMenu];
           if (onRefresh != null) {
@@ -74,8 +74,8 @@ class MainMenuPage extends RestorableGetxPage<_MainMenuPageRestoration> {
         }
       ],
       [
-        ControllerMember<WishlistMainMenuSubController>().addToControllerManager(controllerManager), () => Injector.locator<WishlistMainMenuSubControllerInjectionFactory>().inject(controllerManager, pageName), () {},
-        () => Injector.locator<HomeMainMenuSubControllerInjectionFactory>().inject(controllerManager, pageName),
+        ControllerMember<WishlistMainMenuSubController>().addToControllerManager(controllerManager),
+        () => Injector.locator<WishlistMainMenuSubControllerInjectionFactory>().inject(controllerManager, pageName),
         () {
           void Function()? onRefresh = MainRouteObserver.controllerMediatorMap[Constant.subPageKeyWishlistMainMenu];
           if (onRefresh != null) {
@@ -84,8 +84,8 @@ class MainMenuPage extends RestorableGetxPage<_MainMenuPageRestoration> {
         }
       ],
       [
-        ControllerMember<MenuMainMenuSubController>().addToControllerManager(controllerManager), () => Injector.locator<MenuMainMenuSubControllerInjectionFactory>().inject(controllerManager, pageName), () {},
-        () => Injector.locator<HomeMainMenuSubControllerInjectionFactory>().inject(controllerManager, pageName),
+        ControllerMember<MenuMainMenuSubController>().addToControllerManager(controllerManager),
+        () => Injector.locator<MenuMainMenuSubControllerInjectionFactory>().inject(controllerManager, pageName),
         () {
           void Function()? onRefresh = MainRouteObserver.controllerMediatorMap[Constant.subPageKeyMenuMainMenu];
           if (onRefresh != null) {

@@ -36,35 +36,30 @@ abstract class ProductBundleItem extends StatelessWidget {
         onWishlistCallback(productBundle.id);
       }
     }
-    return Material(
-      color: Colors.white,
-      borderRadius: borderRadius,
-      elevation: 3,
-      child: InkWell(
-        onTap: () => PageRestorationHelper.toProductBundleDetailPage(context, productBundle.id),
-        borderRadius: borderRadius,
-        child: AspectRatio(
-          aspectRatio: Constant.aspectRatioValueProductBundleArea.toDouble(),
-          child: ClipRRect(
+    return SizedBox(
+      width: MediaQuery.of(context).size.width,
+      child: AspectRatio(
+        aspectRatio: Constant.aspectRatioValueProductBundleArea.toDouble(),
+        child: Material(
+          color: Colors.white,
+          borderRadius: borderRadius,
+          elevation: 3,
+          child: InkWell(
+            onTap: () => PageRestorationHelper.toProductBundleDetailPage(context, productBundle.id),
             borderRadius: borderRadius,
             child: Row(
               children: [
-                Expanded(
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: AspectRatio(
-                      aspectRatio: Constant.aspectRatioValueProductBundleImage.toDouble(),
-                      child: ProductBundleModifiedCachedNetworkImage(
-                        imageUrl: productBundle.imageUrl
-                      )
-                    ),
-                  )
-                ),
                 SizedBox(
-                  width: 150,
+                  width: 200,
+                  child: ProductBundleModifiedCachedNetworkImage(
+                    imageUrl: productBundle.imageUrl,
+                  ),
+                ),
+                Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           productBundle.name,
@@ -91,15 +86,17 @@ abstract class ProductBundleItem extends StatelessWidget {
                                 Row(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    const RatingIndicator(rating: 5.0),
-                                    SizedBox(width: 1.5.w),
-                                    const ModifiedVerticalDivider(
-                                      lineWidth: 1,
-                                      lineHeight: 10,
-                                      lineColor: Colors.black,
+                                    Expanded(
+                                      child: Text(
+                                        soldCount,
+                                        style: const TextStyle(
+                                          fontSize: 12.0,
+                                          fontWeight: FontWeight.w300
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                      ),
                                     ),
-                                    SizedBox(width: 1.5.w),
-                                    Text(soldCount, style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.w300)),
                                   ],
                                 ),
                                 const SizedBox(height: 10),
@@ -131,8 +128,8 @@ abstract class ProductBundleItem extends StatelessWidget {
               ]
             )
           )
-        )
-      )
+        ),
+      ),
     );
   }
 }

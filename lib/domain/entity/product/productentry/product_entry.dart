@@ -19,7 +19,10 @@ class ProductEntry implements ProductEntryAppearanceData {
   int sellingPrice;
   int isBestSelling;
   Product product;
+  List<String> imageUrlList;
   List<ProductVariant> productVariantList;
+  @override
+  int soldCount;
 
   ProductEntry({
     required this.id,
@@ -35,14 +38,21 @@ class ProductEntry implements ProductEntryAppearanceData {
     required this.sellingPrice,
     required this.isBestSelling,
     required this.product,
-    required this.productVariantList
+    required this.productVariantList,
+    required this.imageUrlList,
+    required this.soldCount
   });
 
   @override
   double? get discountPrice => product.discountPrice;
 
   @override
-  String get imageUrl => product.imageUrl;
+  String get imageUrl {
+    if (imageUrlList.isEmpty) {
+      return "";
+    }
+    return imageUrlList.first;
+  }
 
   @override
   String get name => product.name;

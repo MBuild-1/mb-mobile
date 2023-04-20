@@ -61,7 +61,7 @@ class MyApp extends StatelessWidget {
           },
           defaultTransition: Transition.topLevel,
           translations: DefaultExtendedTranslation(),
-          locale: Locale(Constant.textEnUsLanguageKey),
+          locale: Locale(Constant.textInIdLanguageKey),
           theme: ThemeData(
             indicatorColor: Constant.colorMain,
             colorScheme: ColorScheme.fromSeed(

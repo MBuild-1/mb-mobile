@@ -7,6 +7,8 @@ import '../../../domain/entity/login/login_parameter.dart';
 import '../../../domain/entity/login/login_response.dart';
 import '../../../domain/entity/login/login_with_google_parameter.dart';
 import '../../../domain/entity/login/login_with_google_response.dart';
+import '../../../domain/entity/logout/logout_parameter.dart';
+import '../../../domain/entity/logout/logout_response.dart';
 import '../../../domain/entity/register/register_parameter.dart';
 import '../../../domain/entity/register/register_response.dart';
 import '../../../domain/entity/register/register_with_google_parameter.dart';
@@ -78,6 +80,14 @@ class DefaultUserDataSource implements UserDataSource {
     return DioHttpClientProcessing((cancelToken) {
       return dio.post("/auth/register/google", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
         .map<RegisterWithGoogleResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToRegisterWithGoogleResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<LogoutResponse> logout(LogoutParameter logoutParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.post("/auth/logout", cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+        .map<LogoutResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToLogoutResponse());
     });
   }
 

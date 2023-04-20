@@ -12,7 +12,8 @@ class ProductBundleDetail extends ProductBundle {
     required String imageUrl,
     required double price,
     required double rating,
-    required this.shortProductList
+    required this.shortProductList,
+    required int soldOut
   }) : super(
     id: id,
     name: name,
@@ -20,6 +21,7 @@ class ProductBundleDetail extends ProductBundle {
     description: description,
     imageUrl: imageUrl,
     price: price,
-    rating: rating
+    rating: rating,
+    soldOut: soldOut
   );
 }

@@ -1,7 +1,10 @@
+import 'package:carousel_slider/carousel_controller.dart';
+import 'package:carousel_slider/carousel_options.dart';
 import 'package:flutter/material.dart' hide Notification, Banner;
 import 'package:get/get.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../../../domain/entity/product/product.dart';
 import '../../../presentation/widget/carousel_list_item.dart';
@@ -16,16 +19,22 @@ import '../../../presentation/widget/modified_divider.dart';
 import '../../../presentation/widget/modified_svg_picture.dart';
 import '../../../presentation/widget/modified_tab_bar.dart';
 import '../../../presentation/widget/modifiedcachednetworkimage/product_modified_cached_network_image.dart';
+import '../../../presentation/widget/news/horizontal_news_item.dart';
+import '../../../presentation/widget/news/vertical_news_item.dart';
 import '../../../presentation/widget/product/horizontal_product_item.dart';
 import '../../../presentation/widget/product/vertical_product_item.dart';
 import '../../../presentation/widget/product_bundle_header_list_item.dart';
 import '../../../presentation/widget/product_bundle_highlight_list_item.dart';
 import '../../../presentation/widget/product_category_header_list_item.dart';
 import '../../../presentation/widget/product_detail_brand_list_item.dart';
+import '../../../presentation/widget/productbrand/circleproductbrand/horizontal_circle_product_brand_item.dart';
+import '../../../presentation/widget/productbrand/circleproductbrand/vertical_circle_product_brand_item.dart';
 import '../../../presentation/widget/productbrand/horizontal_product_brand_item.dart';
 import '../../../presentation/widget/productbrand/vertical_product_brand_item.dart';
 import '../../../presentation/widget/productbundle/horizontal_product_bundle_item.dart';
 import '../../../presentation/widget/productbundle/vertical_product_bundle_item.dart';
+import '../../../presentation/widget/productcategory/circleproductcategory/horizontal_circle_product_category_item.dart';
+import '../../../presentation/widget/productcategory/circleproductcategory/vertical_circle_product_category_item.dart';
 import '../../../presentation/widget/productcategory/horizontal_product_category_item.dart';
 import '../../../presentation/widget/productcategory/vertical_product_category_item.dart';
 import '../../../presentation/widget/prompt_indicator.dart';
@@ -33,6 +42,8 @@ import '../../../presentation/widget/shimmer_carousel_item.dart';
 import '../../../presentation/widget/titleanddescriptionitem/title_and_description_item.dart';
 import '../../../presentation/widget/titledescriptionandcontentitem/title_description_and_content_item.dart';
 import '../../../presentation/widget/product_detail_header.dart';
+import '../../carouselbackground/asset_carousel_background.dart';
+import '../../carouselbackground/carousel_background.dart';
 import '../../constant.dart';
 import '../../controllerstate/listitemcontrollerstate/carousel_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/check_rates_for_various_countries_controller_state.dart';
@@ -42,7 +53,11 @@ import '../../controllerstate/listitemcontrollerstate/column_container_list_item
 import '../../controllerstate/listitemcontrollerstate/couponlistitemcontrollerstate/coupon_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/couponlistitemcontrollerstate/horizontal_coupon_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/couponlistitemcontrollerstate/vertical_coupon_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/decorated_container_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/delivery_to_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/deliveryreviewlistitemcontrollerstate/delivery_review_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/deliveryreviewlistitemcontrollerstate/horizontal_delivery_review_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/deliveryreviewlistitemcontrollerstate/vertical_delivery_review_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/divider_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/dynamic_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/empty_container_list_item_controller_state.dart';
@@ -60,12 +75,18 @@ import '../../controllerstate/listitemcontrollerstate/product_category_header_li
 import '../../controllerstate/listitemcontrollerstate/product_detail_brand_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/product_detail_header_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/product_detail_image_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/circleproductbrandlistitemcontrollerstate/circle_product_brand_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/circleproductbrandlistitemcontrollerstate/horizontal_circle_product_brand_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/circleproductbrandlistitemcontrollerstate/vertical_circle_product_brand_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/horizontal_product_brand_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/product_brand_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/vertical_product_brand_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productbundlelistitemcontrollerstate/horizontal_product_bundle_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productbundlelistitemcontrollerstate/product_bundle_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productbundlelistitemcontrollerstate/vertical_product_bundle_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/productcategorylistitemcontrollerstate/circleproductcategorylistitemcontrollerstate/circle_product_category_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/productcategorylistitemcontrollerstate/circleproductcategorylistitemcontrollerstate/horizontal_circle_product_category_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/productcategorylistitemcontrollerstate/circleproductcategorylistitemcontrollerstate/vertical_circle_product_category_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productcategorylistitemcontrollerstate/horizontal_product_category_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productcategorylistitemcontrollerstate/product_category_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productcategorylistitemcontrollerstate/vertical_product_category_list_item_controller_state.dart';
@@ -132,12 +153,23 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
       return WidgetHelper.buildFailedPromptIndicatorFromErrorProvider(context: context, errorProvider: item.errorProvider, e: item.e);
     } else if (item is CarouselListItemControllerState || item is ShimmerCarouselListItemControllerState) {
       if (item is CarouselListItemControllerState) {
+        Widget? backgroundImage;
+        double? backgroundImageHeight;
+        CarouselBackground? carouselBackground = item.carouselBackground;
+        if (carouselBackground is AssetCarouselBackground) {
+          backgroundImage = Image.asset(carouselBackground.assetImageName);
+          backgroundImageHeight = carouselBackground.imageBackgroundHeight;
+        }
         return CarouselListItem(
           padding: item.padding,
           itemList: item.itemListItemControllerState,
           title: item.title,
+          titleInterceptor: item.titleInterceptor,
           description: item.description,
-          builderWithItem: (context, listItemControllerState) => _itemBuilder(context, listItemControllerState, index)
+          descriptionInterceptor: item.descriptionInterceptor,
+          builderWithItem: (context, listItemControllerState) => _itemBuilder(context, listItemControllerState, index),
+          backgroundImage: backgroundImage,
+          backgroundImageHeight: backgroundImageHeight
         );
       } else if (item is ShimmerCarouselListItemControllerState) {
         return ShimmerCarouselListItem(
@@ -151,6 +183,14 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
       } else {
         return Container();
       }
+    } else if (item is DefaultVideoCarouselListItemControllerState) {
+      return DefaultVideoCarouselListItem(
+        defaultVideoListLoadDataResult: item.defaultVideoListLoadDataResult,
+      );
+    } else if (item is ShortVideoCarouselListItemControllerState) {
+      return ShortVideoCarouselListItem(
+        shortVideoListLoadDataResult: item.shortVideoListLoadDataResult,
+      );
     } else if (item is ProductListItemControllerState) {
       if (item is HorizontalProductListItemControllerState) {
         return HorizontalProductItem(
@@ -185,6 +225,18 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
       } else {
         return Container();
       }
+    } else if (item is CircleProductCategoryListItemControllerState) {
+      if (item is HorizontalCircleProductCategoryListItemControllerState) {
+        return HorizontalCircleProductCategoryItem(productCategory: item.productCategory);
+      } else if (item is VerticalCircleProductCategoryListItemControllerState) {
+        if (item is ShimmerVerticalCircleProductCategoryListItemControllerState) {
+          return ShimmerVerticalCircleProductCategoryItem(productCategory: item.productCategory);
+        } else {
+          return VerticalCircleProductCategoryItem(productCategory: item.productCategory);
+        }
+      } else {
+        return Container();
+      }
     } else if (item is ProductBrandListItemControllerState) {
       if (item is HorizontalProductBrandListItemControllerState) {
         return HorizontalProductBrandItem(productBrand: item.productBrand);
@@ -193,6 +245,18 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
           return ShimmerVerticalProductBrandItem(productBrand: item.productBrand);
         } else {
           return VerticalProductBrandItem(productBrand: item.productBrand);
+        }
+      } else {
+        return Container();
+      }
+    } else if (item is CircleProductBrandListItemControllerState) {
+      if (item is HorizontalCircleProductBrandListItemControllerState) {
+        return HorizontalCircleProductBrandItem(productBrand: item.productBrand);
+      } else if (item is VerticalCircleProductBrandListItemControllerState) {
+        if (item is ShimmerVerticalCircleProductBrandListItemControllerState) {
+          return ShimmerVerticalCircleProductBrandItem(productBrand: item.productBrand);
+        } else {
+          return VerticalCircleProductBrandItem(productBrand: item.productBrand);
         }
       } else {
         return Container();
@@ -212,6 +276,42 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
             productBundle: item.productBundle,
             onAddWishlist: item.onAddWishlist,
             onRemoveWishlist: item.onRemoveWishlist,
+          );
+        }
+      } else {
+        return Container();
+      }
+    } else if (item is DeliveryReviewListItemControllerState) {
+      if (item is HorizontalDeliveryReviewListItemControllerState) {
+        return HorizontalDeliveryReviewItem(
+          deliveryReview: item.deliveryReview
+        );
+      } else if (item is VerticalDeliveryReviewListItemControllerState) {
+        if (item is ShimmerVerticalDeliveryReviewListItemControllerState) {
+          return ShimmerVerticalDeliveryReviewItem(
+            deliveryReview: item.deliveryReview
+          );
+        } else {
+          return VerticalDeliveryReviewItem(
+            deliveryReview: item.deliveryReview
+          );
+        }
+      } else {
+        return Container();
+      }
+    } else if (item is NewsListItemControllerState) {
+      if (item is HorizontalNewsListItemControllerState) {
+        return HorizontalNewsItem(
+          news: item.news
+        );
+      } else if (item is VerticalNewsListItemControllerState) {
+        if (item is ShimmerVerticalNewsListItemControllerState) {
+          return ShimmerVerticalNewsItem(
+            news: item.news
+          );
+        } else {
+          return VerticalNewsItem(
+            news: item.news,
           );
         }
       } else {
@@ -348,6 +448,12 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
         padding: item.padding,
         child: _itemBuilder(context, item.paddingChildListItemControllerState, index)
       );
+    } else if (item is DecoratedContainerListItemControllerState) {
+      return Container(
+        padding: item.padding,
+        decoration: item.decoration,
+        child: _itemBuilder(context, item.decoratedChildListItemControllerState, index)
+      );
     } else if (item is SingleBannerListItemControllerState) {
       return AspectRatio(
         aspectRatio: item.banner.aspectRatio.toDouble(),
@@ -399,11 +505,71 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
         ]
       );
     } else if (item is ProductDetailImageListItemControllerState) {
+      List<ProductEntry> productEntryList = item.productEntryList;
+      int productEntryIndex = item.onGetProductEntryIndex();
+      String imageUrl = "";
+      if (productEntryList.isNotEmpty && productEntryIndex > -1) {
+        ProductEntry productEntry = productEntryList[productEntryIndex];
+        List<String> imageUrlList = productEntry.imageUrlList;
+        imageUrl = imageUrlList.isNotEmpty ? imageUrlList.first : "";
+        if (imageUrlList.isNotEmpty) {
+          return ModifiedCarouselSlider.builder(
+            itemCount: imageUrlList.length,
+            itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex) => Column(
+              children: [
+                AspectRatio(
+                  aspectRatio: Constant.aspectRatioValueProductImage.toDouble(),
+                  child: ClipRect(
+                    child: ModifiedCachedNetworkImage(
+                      imageUrl: imageUrlList[itemIndex],
+                    ),
+                  )
+                ),
+              ]
+            ),
+            options: CarouselOptions(
+              aspectRatio: Constant.aspectRatioValueProductImage.toDouble(),
+              enlargeStrategy: CenterPageEnlargeStrategy.height,
+              enableInfiniteScroll: false,
+              autoPlay: true,
+              viewportFraction: 1.0,
+            ),
+            carouselController: CarouselController(),
+            modifiedCarouselSliderTopStackWidgetBuilder: (context, pageController) {
+              return Align(
+                alignment: Alignment.bottomCenter,
+                child: SizedBox(
+                  width: double.infinity,
+                  height: Constant.bannerIndicatorAreaHeight,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Center(
+                          child: SmoothPageIndicator(
+                            controller: pageController,
+                            count: imageUrlList.length,
+                            effect: ScrollingDotsEffect(
+                              dotWidth: 8,
+                              dotHeight: 8,
+                              dotColor: Colors.white.withOpacity(0.5),
+                              activeDotColor: Colors.white
+                            ),
+                          ),
+                        )
+                      ),
+                    ]
+                  )
+                ),
+              );
+            }
+          );
+        }
+      }
       return AspectRatio(
         aspectRatio: Constant.aspectRatioValueProductImage.toDouble(),
         child: ClipRRect(
           child: ProductModifiedCachedNetworkImage(
-            imageUrl: item.productAppearanceData.imageUrl,
+            imageUrl: imageUrl,
           )
         )
       );

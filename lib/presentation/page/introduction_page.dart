@@ -194,7 +194,7 @@ class _IntroductionPageViewState extends State<_IntroductionPageView> {
                 child: SizedBox(
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 2.w),
-                    child: Text("Skip".tr, style: const TextStyle(fontWeight: FontWeight.bold))
+                    child: Text(checkIsLastIntroductionPageView() ? "Finish".tr : "Skip".tr, style: const TextStyle(fontWeight: FontWeight.bold))
                   )
                 ),
               ),
@@ -215,47 +215,20 @@ class _IntroductionPageViewState extends State<_IntroductionPageView> {
           )
         ),
         Padding(
-          padding: EdgeInsets.symmetric(vertical: 4.h),
+          padding: EdgeInsets.symmetric(vertical: 7.h),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(
-                width: 7.w
-              ),
-              Expanded(
-                child: PreloadPageControllerSmoothPageIndicator(
-                  controller: pageViewControllerState.preloadPageController,
-                  count: pageViewWidgetList.length,
-                  effect: ExpandingDotsEffect(
-                    dotColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-                    activeDotColor: Theme.of(context).colorScheme.primary,
-                    dotHeight: 8.0,
-                    dotWidth: 8.0,
-                    expansionFactor: 8
-                  ),
+              PreloadPageControllerSmoothPageIndicator(
+                controller: pageViewControllerState.preloadPageController,
+                count: pageViewWidgetList.length,
+                effect: WormEffect(
+                  dotColor: Colors.grey.shade400,
+                  activeDotColor: Theme.of(context).colorScheme.primary,
+                  dotHeight: 8.0,
+                  dotWidth: 25.0,
                 ),
               ),
-              ClipPath(
-                clipper: IntroductionButtonCustomClipper(),
-                child: Material(
-                  color: Theme.of(context).colorScheme.primary,
-                  child: InkWell(
-                    onTap: () {
-                      if (checkIsLastIntroductionPageView()) {
-                        onSkip();
-                      } else {
-                        pageViewControllerState.preloadPageController.nextPage(duration: const Duration(milliseconds: 250), curve: Curves.linear);
-                      }
-                    },
-                    child: SizedBox(
-                      width: 137,
-                      height: 102,
-                      child: Center(
-                        child: Text(checkIsLastIntroductionPageView() ? "Start".tr : "Next".tr, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold))
-                      )
-                    ),
-                  ),
-                ),
-              )
             ],
           )
         )

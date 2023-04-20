@@ -1,7 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide Banner;
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:sizer/sizer.dart';
 import '../../../../controller/mainmenucontroller/mainmenusubpagecontroller/home_main_menu_sub_controller.dart';
 import '../../../../domain/entity/banner/banner.dart';
@@ -12,11 +14,14 @@ import '../../../../domain/entity/homemainmenucomponententity/separator_home_mai
 import '../../../../domain/entity/location/location.dart';
 import '../../../../misc/additionalloadingindicatorchecker/home_sub_additional_paging_result_parameter_checker.dart';
 import '../../../../misc/aspect_ratio_value.dart';
+import '../../../../misc/carouselbackground/asset_carousel_background.dart';
+import '../../../../misc/carouselbackground/carousel_background.dart';
 import '../../../../misc/constant.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/carousel_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/check_rates_for_various_countries_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/colorful_divider_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/compound_list_item_controller_state.dart';
+import '../../../../misc/controllerstate/listitemcontrollerstate/decorated_container_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/delivery_to_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/failed_prompt_indicator_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
@@ -27,6 +32,7 @@ import '../../../../misc/controllerstate/listitemcontrollerstate/product_bundle_
 import '../../../../misc/controllerstate/listitemcontrollerstate/single_banner_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/title_and_description_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
+import '../../../../misc/controllerstate/listitemcontrollerstate/widget_substitution_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/paging_controller_state.dart';
 import '../../../../misc/entityandlistitemcontrollerstatemediator/horizontal_component_entity_parameterized_entity_and_list_item_controller_state_mediator.dart';
 import '../../../../misc/error/message_error.dart';
@@ -41,19 +47,24 @@ import '../../../../misc/paging/modified_paging_controller.dart';
 import '../../../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../../../misc/paging/pagingresult/paging_result.dart';
+import '../../../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/carousel_background_parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../../../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/horizontal_dynamic_item_carousel_parametered_component_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../../../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/wishlist_parameterized_entity_and_list_item_controller_state_mediator.dart';
 import '../../../../misc/shimmercarousellistitemgenerator/factory/product_bundle_shimmer_carousel_list_item_generator_factory.dart';
 import '../../../../misc/shimmercarousellistitemgenerator/type/product_bundle_shimmer_carousel_list_item_generator_type.dart';
+import '../../../widget/background_app_bar_scaffold.dart';
 import '../../../widget/modified_paged_list_view.dart';
-import '../../../widget/modifiedappbar/default_search_app_bar.dart';
+import '../../../widget/modifiedappbar/main_menu_search_app_bar.dart';
+import '../../../widget/modifiedcachednetworkimage/transparent_banner_modified_cached_network_image.dart';
+import '../../../widget/tap_area.dart';
+import '../../../widget/titleanddescriptionitem/title_and_description_item.dart';
 import '../../getx_page.dart';
 
 class HomeMainMenuSubPage extends DefaultGetxPage {
   late final ControllerMember<HomeMainMenuSubController> _homeMainMenuSubController = ControllerMember<HomeMainMenuSubController>().addToControllerManager(controllerManager);
   final String ancestorPageName;
 
-  HomeMainMenuSubPage({Key? key, required this.ancestorPageName}) : super(key: key);
+  HomeMainMenuSubPage({Key? key, required this.ancestorPageName}) : super(key: key, systemUiOverlayStyle: SystemUiOverlayStyle.light);
 
   @override
   void onSetController() {
@@ -84,9 +95,12 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
   late final PagingControllerState<int, ListItemControllerState> _homeMainMenuSubListItemPagingControllerState;
   final List<LoadDataResultDynamicListItemControllerState> _dynamicItemLoadDataResultDynamicListItemControllerStateList = [];
 
+  late AssetImage _homeAppBarBackgroundAssetImage;
+
   @override
   void initState() {
     super.initState();
+    _homeAppBarBackgroundAssetImage = AssetImage(Constant.imagePatternHomeMainMenuAppBar);
     _homeMainMenuSubListItemPagingController = ModifiedPagingController<int, ListItemControllerState>(
       firstPageKey: 1,
       // ignore: invalid_use_of_protected_member
@@ -103,6 +117,12 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
     );
     _homeMainMenuSubListItemPagingControllerState.isPagingControllerExist = true;
     MainRouteObserver.controllerMediatorMap[Constant.subPageKeyHomeMainMenu] = refreshHomeMainMenu;
+  }
+
+  @override
+  void didChangeDependencies() {
+    precacheImage(_homeAppBarBackgroundAssetImage, context);
+    super.didChangeDependencies();
   }
 
   void _checkingMainMenuContent(List<HomeMainMenuComponentEntity> mainMenuContentList, List<ListItemControllerState> listItemControllerStateList) {
@@ -209,14 +229,99 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
           onAddWishlist: (productBundleId) {},
           onRemoveWishlist: (productBundleId) {},
         )
+      )
+      ..onInjectCarouselParameterizedEntity = (
+        (data) {
+          Widget moreTapArea({
+            void Function()? onTap,
+            TextStyle Function(TextStyle)? onInterceptTextStyle
+          }) {
+            TextStyle textStyle = TextStyle(
+              color: Theme.of(context).colorScheme.primary,
+              fontWeight: FontWeight.bold,
+              fontSize: 12
+            );
+            return TapArea(
+              onTap: onTap,
+              child: Text(
+                "More".tr,
+                style: onInterceptTextStyle != null ? onInterceptTextStyle(textStyle) : textStyle
+              ),
+            );
+          }
+          Widget titleArea({
+            required Widget title,
+            void Function()? onTapMore,
+            TextStyle Function(TextStyle)? onInterceptTextStyle
+          }) {
+            return Row(
+              children: [
+                Expanded(child: title),
+                const SizedBox(width: 10),
+                moreTapArea(
+                  onTap: onTapMore,
+                  onInterceptTextStyle: onInterceptTextStyle
+                )
+              ],
+            );
+          }
+          late CarouselBackground carouselBackground;
+          TitleInterceptor? titleInterceptor;
+          if (data == Constant.carouselKeyIndonesianCategoryProduct) {
+            carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternGrey);
+          } else if (data == Constant.carouselKeyIndonesianOriginalBrand) {
+            carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternGrey2);
+          } else if (data == Constant.carouselKeyIsViral) {
+            carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternBlue);
+            titleInterceptor = (text, style) => titleArea(
+              title: Text(text.toStringNonNull, style: style?.copyWith(color: Colors.white)),
+              onTapMore: () {},
+            );
+          } else if (data == Constant.carouselKeySnackForLyingAround) {
+            carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternBlue);
+            titleInterceptor = (text, style) => titleArea(
+              title: Text(text.toStringNonNull, style: style?.copyWith(color: Colors.white)),
+              onTapMore: () {},
+            );
+          } else if (data == Constant.carouselKeyProductBundleHighlight) {
+            carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternBlue);
+          } else if (data == Constant.carouselKeyBestSellingInMasterBagasi) {
+            carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternLightBlue);
+            titleInterceptor = (text, style) => titleArea(
+              title: Text(text.toStringNonNull, style: style?.copyWith(color: Colors.white)),
+              onInterceptTextStyle: (style) => style.copyWith(color: Colors.white),
+              onTapMore: () {},
+            );
+          } else if (data == Constant.carouselKeyCoffeeAndTeaOriginIndonesia) {
+            carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternOrange);
+            titleInterceptor = (text, style) => titleArea(
+              title: Text(text.toStringNonNull, style: style?.copyWith(color: Colors.white)),
+              onInterceptTextStyle: (style) => style.copyWith(color: Colors.white),
+              onTapMore: () {},
+            );
+          } else {
+            carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternGrey);
+          }
+          return CarouselParameterizedEntityAndListItemControllerStateMediatorParameter(
+            carouselBackground: carouselBackground,
+            titleInterceptor: titleInterceptor
+          );
+        }
       );
     widget.homeMainMenuSubController.setHomeMainMenuDelegate(
       HomeMainMenuDelegate(
         onObserveLoadProductDelegate: onObserveLoadProductDelegateFactory.generateOnObserveLoadProductDelegate(),
         onObserveSuccessLoadProductBundleHighlight: (onObserveSuccessLoadProductBundleHighlightParameter) {
-          return PaddingContainerListItemControllerState(
-            padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-            paddingChildListItemControllerState: CompoundListItemControllerState(
+          return DecoratedContainerListItemControllerState(
+            padding: EdgeInsets.all(Constant.paddingListItem),
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(Constant.imagePatternGrey3),
+                fit: BoxFit.cover,
+                opacity: 0.4
+              )
+            ),
+            decoratedChildListItemControllerState: CompoundListItemControllerState(
               listItemControllerState: [
                 TitleAndDescriptionListItemControllerState(
                   title: "Save More With Bundles".tr,
@@ -224,13 +329,14 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
                     return Row(
                       children: [
                         Expanded(child: titleAndDescriptionWidget),
-                        GestureDetector(
+                        TapArea(
                           onTap: () => PageRestorationHelper.toProductBundlePage(context),
                           child: Text(
                             "More".tr,
                             style: TextStyle(
                               color: Theme.of(context).colorScheme.primary,
-                              fontWeight: FontWeight.bold
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12
                             )
                           ),
                         )
@@ -257,24 +363,79 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
             shimmerCarouselListItemGenerator: Injector.locator<ProductBundleShimmerCarouselListItemGeneratorFactory>().getShimmerCarouselListItemGeneratorType()
           );
         },
+        onObserveSuccessLoadTransparentBanner: (onObserveSuccessLoadTransparentBannerParameter) {
+          return DecoratedContainerListItemControllerState(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(Constant.imagePatternGrey3),
+                fit: BoxFit.cover,
+                opacity: 0.4
+              )
+            ),
+            decoratedChildListItemControllerState: CompoundListItemControllerState(
+              listItemControllerState: [
+                VirtualSpacingListItemControllerState(height: Constant.paddingListItem),
+                PaddingContainerListItemControllerState(
+                  padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+                  paddingChildListItemControllerState: TitleAndDescriptionListItemControllerState(
+                    title: onObserveSuccessLoadTransparentBannerParameter.title.toStringNonNull,
+                    titleAndDescriptionItemInterceptor: (padding, title, titleWidget, description, descriptionWidget, titleAndDescriptionWidget, titleAndDescriptionWidgetList) {
+                      return Row(
+                        children: [
+                          Expanded(child: titleAndDescriptionWidget),
+                          TapArea(
+                            onTap: () => PageRestorationHelper.toProductBundlePage(context),
+                            child: Text(
+                              "More".tr,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.primary,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12
+                              )
+                            ),
+                          )
+                        ]
+                      );
+                    },
+                    verticalSpace: 0.3.h,
+                  ),
+                ),
+                VirtualSpacingListItemControllerState(height: 3.w),
+                WidgetSubstitutionListItemControllerState(
+                  widgetSubstitution: (context, index) => SizedBox(
+                    width: double.infinity,
+                    height: 200,
+                    child: TransparentBannerModifiedCachedNetworkImage(
+                      imageUrl: onObserveSuccessLoadTransparentBannerParameter.transparentBanner.imageUrl,
+                    ),
+                  )
+                )
+              ]
+            )
+          );
+        },
+        onObserveLoadingLoadTransparentBanner: (onObserveLoadingLoadTransparentBannerParameter) {
+          return ShimmerCarouselListItemControllerState<ProductBundleShimmerCarouselListItemGeneratorType>(
+            padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+            showTitleShimmer: true,
+            showDescriptionShimmer: false,
+            showItemShimmer: true,
+            shimmerCarouselListItemGenerator: Injector.locator<ProductBundleShimmerCarouselListItemGeneratorFactory>().getShimmerCarouselListItemGeneratorType()
+          );
+        }
       )
     );
-    return Scaffold(
-      appBar: DefaultSearchAppBar(),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
-                pagingControllerState: _homeMainMenuSubListItemPagingControllerState,
-                onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
-                  pagingControllerState: pagingControllerState!
-                ),
-                pullToRefresh: true
-              ),
-            ),
-          ]
-        )
+    return BackgroundAppBarScaffold(
+      backgroundAppBarImage: _homeAppBarBackgroundAssetImage,
+      appBar: MainMenuSearchAppBar(value: 0.0),
+      body: Expanded(
+        child: ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
+          pagingControllerState: _homeMainMenuSubListItemPagingControllerState,
+          onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
+            pagingControllerState: pagingControllerState!
+          ),
+          pullToRefresh: true
+        ),
       ),
     );
   }

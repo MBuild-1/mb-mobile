@@ -10,6 +10,7 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Start": "Mulai",
       "Next": "Selanjutnya",
       "Skip": "Lewati",
+      "Finish": "Selesai",
       "Other Method": "Metode Lain",
       "or login with": "atau daftar dengan",
       "This input must be an email": "Inputannya harus berupa email",

@@ -100,11 +100,12 @@ extension ProductBundleDetailEntityMappingExt on ResponseWrapper {
     return ProductBundle(
       id: response["id"],
       name: response["name"],
-      description: response["description"],
+      description: "",
       slug: response["slug"],
-      imageUrl: response["image_url"],
-      price: response["price"],
-      rating: response["rating"]
+      imageUrl: response["banner"],
+      price: ResponseWrapper(response["price"]).mapFromResponseToDouble()!,
+      rating: 0.0,
+      soldOut: response["sold"] ?? 0
     );
   }
 
@@ -112,12 +113,13 @@ extension ProductBundleDetailEntityMappingExt on ResponseWrapper {
     return ProductBundleDetail(
       id: response["id"],
       name: response["name"],
-      description: response["description"],
+      description: "",
       slug: response["slug"],
-      imageUrl: response["image_url"],
-      price: response["price"],
-      rating: response["rating"],
-      shortProductList: ResponseWrapper(response["product"]).mapFromResponseToShortProductList()
+      imageUrl: response["banner"],
+      price: ResponseWrapper(response["price"]).mapFromResponseToDouble()!,
+      rating: 0.0,
+      shortProductList: ResponseWrapper(response["product"]).mapFromResponseToShortProductList(),
+      soldOut: response["sold"] ?? 0
     );
   }
 }
@@ -233,6 +235,7 @@ extension ProductEntryDetailEntityMappingExt on ResponseWrapper {
         (productVariantResponse) => ResponseWrapper(productVariantResponse).mapFromResponseToProductVariant()
       ).toList(),
       product: ResponseWrapper(response["product"]).mapFromResponseToProduct(),
+      soldCount: response["sold"]
     );
   }
 }

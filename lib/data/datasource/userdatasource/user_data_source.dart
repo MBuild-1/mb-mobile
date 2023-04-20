@@ -2,6 +2,8 @@ import '../../../domain/entity/login/login_parameter.dart';
 import '../../../domain/entity/login/login_response.dart';
 import '../../../domain/entity/login/login_with_google_parameter.dart';
 import '../../../domain/entity/login/login_with_google_response.dart';
+import '../../../domain/entity/logout/logout_parameter.dart';
+import '../../../domain/entity/logout/logout_response.dart';
 import '../../../domain/entity/register/register_parameter.dart';
 import '../../../domain/entity/register/register_response.dart';
 import '../../../domain/entity/register/register_with_google_parameter.dart';
@@ -15,5 +17,6 @@ abstract class UserDataSource {
   FutureProcessing<LoginWithGoogleResponse> loginWithGoogle(LoginWithGoogleParameter loginWithGoogleParameter);
   FutureProcessing<RegisterResponse> register(RegisterParameter registerParameter);
   FutureProcessing<RegisterWithGoogleResponse> registerWithGoogle(RegisterWithGoogleParameter registerWithGoogleParameter);
+  FutureProcessing<LogoutResponse> logout(LogoutParameter logoutParameter);
   FutureProcessing<GetUserResponse> getUser(GetUserParameter getUserParameter);
 }

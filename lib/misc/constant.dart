@@ -13,14 +13,28 @@ class _ConstantImpl {
   String get imageIntroduction1 => _getImagesAssets("introduction_1.png");
   String get imageIntroduction2 => _getImagesAssets("introduction_2.png");
   String get imageIntroduction3 => _getImagesAssets("introduction_3.png");
-  String get imageLogoSuperIndo => _getImagesAssets("logo_superindo.png");
+  String get imageIntroduction4 => _getImagesAssets("introduction_4.png");
+  String get imageMasterbagasi => _getImagesAssets("masterbagasi.png");
+  String get imageBringingHappiness => _getImagesAssets("bringing_happiness.png");
   String get imageSuccess => _getImagesAssets("success.png");
-  String get imageFailed => _getImagesAssets("failed.png");
+  String get imageFailed => _getImagesAssets("under_maintenance.png");
   String get imageNoInternet => imageFailed;
   String get imageLogin => _getImagesAssets("login.png");
   String get imageStar => _getImagesAssets("star.png");
   String get imageCheckRatesForVariousCountries => _getImagesAssets("check_rates_for_various_countries.png");
   String get imageProductPlaceholder => _getImagesAssets("product_placeholder.png");
+  String get imageKitchenContainsIndonesia => _getImagesAssets("kitchen_contains_indonesia.png");
+  String get imagePatternHomeMainMenuAppBar => _getImagesAssets("pattern_home_main_menu_app_bar.png");
+  String get imagePatternFeedMainMenuAppBar => _getImagesAssets("pattern_feed_main_menu_app_bar.png");
+  String get imagePatternExploreNusantaraMainMenuAppBar => _getImagesAssets("pattern_explore_nusantara_main_menu_app_bar.png");
+  String get imagePatternWishlistMainMenuAppBar => _getImagesAssets("pattern_wishlist_main_menu_app_bar.png");
+  String get imagePatternMenuMainMenuAppBar => _getImagesAssets("pattern_menu_main_menu_app_bar.png");
+  String get imagePatternGrey => _getImagesAssets("pattern_grey.png");
+  String get imagePatternGrey2 => _getImagesAssets("pattern_grey_2.png");
+  String get imagePatternGrey3 => _getImagesAssets("pattern_grey_3.png");
+  String get imagePatternBlue => _getImagesAssets("pattern_blue.png");
+  String get imagePatternLightBlue => _getImagesAssets("pattern_light_blue.png");
+  String get imagePatternOrange => _getImagesAssets("pattern_orange.png");
 
   String get baseVectorsAssetsPath => "assets/vectors/";
   String _getVectorsAssets(String vectorAssetsPath) => "$baseVectorsAssetsPath$vectorAssetsPath";
@@ -103,6 +117,9 @@ class _ConstantImpl {
   AspectRatioValue get aspectRatioValueBrandImage => AspectRatioValue(width: 332.0, height: 75.62);
   AspectRatioValue get aspectRatioValueProductBundleArea => AspectRatioValue(width: 350.0, height: 198.0);
   AspectRatioValue get aspectRatioValueProductBundleImage => AspectRatioValue(width: 246.94, height: 176.94);
+  AspectRatioValue get aspectRatioValueShortVideo => AspectRatioValue(width: 254.0, height: 466.0);
+  AspectRatioValue get aspectRatioValueDefaultVideo => AspectRatioValue(width: 16.0, height: 9.0);
+  AspectRatioValue get aspectRatioValueNewsThumbnail => AspectRatioValue(width: 16.0, height: 9.0);
 
   String get settingHiveTable => 'setting_hive_table';
   String get settingHiveTableKey => 'setting_hive_table_key';
@@ -116,6 +133,13 @@ class _ConstantImpl {
   String get textLoading => "Loading".tr;
   String get textEnUsLanguageKey => "en_US";
   String get textInIdLanguageKey => "in_ID";
+  String get carouselKeyIndonesianCategoryProduct => "carousel_key_indonesian_category_product";
+  String get carouselKeyIndonesianOriginalBrand => "carousel_key_indonesian_original_brand";
+  String get carouselKeyIsViral => "carousel_key_is_viral";
+  String get carouselKeySnackForLyingAround => "carousel_key_snack_for_lying_around";
+  String get carouselKeyProductBundleHighlight => "carousel_key_product_bundle_highlight";
+  String get carouselKeyBestSellingInMasterBagasi => "carousel_key_best_selling_in_master_bagasi";
+  String get carouselKeyCoffeeAndTeaOriginIndonesia => "carousel_key_coffee_and_tea_origin_indonesia";
   String get subPageKeyHomeMainMenu => "sub_page_key_home_main_menu";
   String get subPageKeyFeedMainMenu => "sub_page_key_feed_main_menu";
   String get subPageKeyExploreNusantaraMainMenu => "sub_page_key_explore_nusantara_main_menu";
