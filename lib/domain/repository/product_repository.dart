@@ -30,6 +30,8 @@ import '../entity/product/product_list_parameter.dart';
 import '../entity/product/product_paging_parameter.dart';
 import '../entity/product/product_with_condition_list_parameter.dart';
 import '../entity/product/product_with_condition_paging_parameter.dart';
+import '../entity/product/productentry/product_entry_header_content_parameter.dart';
+import '../entity/product/productentry/product_entry_header_content_response.dart';
 import '../entity/wishlist/add_wishlist_parameter.dart';
 import '../entity/wishlist/add_wishlist_response.dart';
 import '../entity/wishlist/remove_wishlist_parameter.dart';

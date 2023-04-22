@@ -33,6 +33,7 @@ import '../product_brand_detail_page.dart';
 import '../product_bundle_detail_page.dart';
 import '../product_bundle_page.dart';
 import '../product_category_detail_page.dart';
+import '../product_entry_is_viral_page.dart';
 import 'mainmenusubpage/explore_nusantara_main_menu_page.dart';
 import 'mainmenusubpage/feed_main_menu_sub_page.dart';
 import 'mainmenusubpage/home_main_menu_sub_page.dart';

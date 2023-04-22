@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
 import 'aspect_ratio_value.dart';
+import 'multi_language_string.dart';
 
 class _ConstantImpl {
   String get restorableRouteFuturePush => "restorable-route-future-push";
@@ -35,6 +36,7 @@ class _ConstantImpl {
   String get imagePatternBlue => _getImagesAssets("pattern_blue.png");
   String get imagePatternLightBlue => _getImagesAssets("pattern_light_blue.png");
   String get imagePatternOrange => _getImagesAssets("pattern_orange.png");
+  String get imageProductViralBackground => _getImagesAssets("product_viral_background.jpeg");
 
   String get baseVectorsAssetsPath => "assets/vectors/";
   String _getVectorsAssets(String vectorAssetsPath) => "$baseVectorsAssetsPath$vectorAssetsPath";
@@ -150,6 +152,12 @@ class _ConstantImpl {
   AspectRatioValue get aspectRatioValueShortVideo => AspectRatioValue(width: 254.0, height: 466.0);
   AspectRatioValue get aspectRatioValueDefaultVideo => AspectRatioValue(width: 16.0, height: 9.0);
   AspectRatioValue get aspectRatioValueNewsThumbnail => AspectRatioValue(width: 16.0, height: 9.0);
+  AspectRatioValue get aspectRatioValueProductEntryHeader => AspectRatioValue(width: 360.0, height: 109.0);
+
+  MultiLanguageString get multiLanguageStringIsViral => MultiLanguageString({
+    textEnUsLanguageKey: "Is Viral",
+    textInIdLanguageKey: "Lagi Viral"
+  });
 
   String get settingHiveTable => 'setting_hive_table';
   String get settingHiveTableKey => 'setting_hive_table_key';
@@ -163,6 +171,7 @@ class _ConstantImpl {
   String get textLoading => "Loading".tr;
   String get textEnUsLanguageKey => "en_US";
   String get textInIdLanguageKey => "in_ID";
+
   String get carouselKeyIndonesianCategoryProduct => "carousel_key_indonesian_category_product";
   String get carouselKeyIndonesianOriginalBrand => "carousel_key_indonesian_original_brand";
   String get carouselKeyIsViral => "carousel_key_is_viral";
@@ -170,6 +179,10 @@ class _ConstantImpl {
   String get carouselKeyProductBundleHighlight => "carousel_key_product_bundle_highlight";
   String get carouselKeyBestSellingInMasterBagasi => "carousel_key_best_selling_in_master_bagasi";
   String get carouselKeyCoffeeAndTeaOriginIndonesia => "carousel_key_coffee_and_tea_origin_indonesia";
+
+  String get transparentBannerKeyKitchenContents => "transparent_banner_key_kitchen_contents";
+  String get transparentBannerKeyHandycrafts => "transparent_banner_key_handycrafts";
+
   String get subPageKeyHomeMainMenu => "sub_page_key_home_main_menu";
   String get subPageKeyFeedMainMenu => "sub_page_key_feed_main_menu";
   String get subPageKeyExploreNusantaraMainMenu => "sub_page_key_explore_nusantara_main_menu";

@@ -6,6 +6,6 @@ class ProductWithConditionPagingParameter extends ProductPagingParameter {
   ProductWithConditionPagingParameter({
     required super.page,
     super.itemEachPageCount = 15,
-    required this.withCondition,
+    this.withCondition = const {},
   });
 }

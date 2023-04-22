@@ -144,10 +144,7 @@ class HomeMainMenuSubController extends BaseGetxController {
         },
       ),
       DynamicItemCarouselHomeMainMenuComponentEntity(
-        title: MultiLanguageString({
-          Constant.textEnUsLanguageKey: "Is Viral",
-          Constant.textInIdLanguageKey: "Lagi Viral"
-        }),
+        title: Constant.multiLanguageStringIsViral,
         onDynamicItemAction: (title, description, observer) async {
           observer(title, description, IsLoadingLoadDataResult<List<ProductEntry>>());
           LoadDataResult<List<ProductEntry>> productEntryPagingDataResult = await getProductViralListUseCase.execute().future(
@@ -212,7 +209,8 @@ class HomeMainMenuSubController extends BaseGetxController {
               _OnObserveSuccessLoadTransparentBannerParameter(
                 title: title,
                 description: description,
-                transparentBanner: transparentBannerList.first
+                transparentBanner: transparentBannerList.first,
+                data: Constant.transparentBannerKeyKitchenContents
               )
             );
           }
@@ -366,7 +364,8 @@ class HomeMainMenuSubController extends BaseGetxController {
               _OnObserveSuccessLoadTransparentBannerParameter(
                 title: title,
                 description: description,
-                transparentBanner: transparentBannerList.first
+                transparentBanner: transparentBannerList.first,
+                data: Constant.transparentBannerKeyHandycrafts
               )
             );
           }
@@ -492,7 +491,7 @@ class _OnObserveSuccessLoadProductBundleHighlightParameter {
   _OnObserveSuccessLoadProductBundleHighlightParameter({
     required this.title,
     required this.description,
-    required this.productBundle
+    required this.productBundle,
   });
 }
 
@@ -502,11 +501,13 @@ class _OnObserveSuccessLoadTransparentBannerParameter {
   MultiLanguageString? title;
   MultiLanguageString? description;
   TransparentBanner transparentBanner;
+  dynamic data;
 
   _OnObserveSuccessLoadTransparentBannerParameter({
     required this.title,
     required this.description,
-    required this.transparentBanner
+    required this.transparentBanner,
+    this.data
   });
 }
 

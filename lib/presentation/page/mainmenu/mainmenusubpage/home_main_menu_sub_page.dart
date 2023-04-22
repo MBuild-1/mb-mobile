@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
+import 'package:masterbagasi/presentation/page/product_entry_is_viral_page.dart';
 import 'package:sizer/sizer.dart';
 import '../../../../controller/mainmenucontroller/mainmenusubpagecontroller/home_main_menu_sub_controller.dart';
 import '../../../../domain/entity/banner/banner.dart';
@@ -275,13 +276,27 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
             carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternBlue);
             titleInterceptor = (text, style) => titleArea(
               title: Text(text.toStringNonNull, style: style?.copyWith(color: Colors.white)),
-              onTapMore: () {},
+              onTapMore: () => PageRestorationHelper.toProductEntryPage(
+                context,
+                ProductEntryPageParameter(
+                  productEntryParameterMap: {
+                    "type": "viral"
+                  }
+                )
+              ),
             );
           } else if (data == Constant.carouselKeySnackForLyingAround) {
             carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternBlue);
             titleInterceptor = (text, style) => titleArea(
               title: Text(text.toStringNonNull, style: style?.copyWith(color: Colors.white)),
-              onTapMore: () {},
+              onTapMore: () => PageRestorationHelper.toProductEntryPage(
+                context,
+                ProductEntryPageParameter(
+                  productEntryParameterMap: {
+                    "category": "cemilan-buat-rebahan"
+                  }
+                )
+              ),
             );
           } else if (data == Constant.carouselKeyProductBundleHighlight) {
             carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternBlue);
@@ -290,14 +305,28 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
             titleInterceptor = (text, style) => titleArea(
               title: Text(text.toStringNonNull, style: style?.copyWith(color: Colors.white)),
               onInterceptTextStyle: (style) => style.copyWith(color: Colors.white),
-              onTapMore: () {},
+              onTapMore: () => PageRestorationHelper.toProductEntryPage(
+                context,
+                ProductEntryPageParameter(
+                  productEntryParameterMap: {
+                    "fyp": true
+                  }
+                )
+              ),
             );
           } else if (data == Constant.carouselKeyCoffeeAndTeaOriginIndonesia) {
             carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternOrange);
             titleInterceptor = (text, style) => titleArea(
               title: Text(text.toStringNonNull, style: style?.copyWith(color: Colors.white)),
               onInterceptTextStyle: (style) => style.copyWith(color: Colors.white),
-              onTapMore: () {},
+              onTapMore: () => PageRestorationHelper.toProductEntryPage(
+                context,
+                ProductEntryPageParameter(
+                  productEntryParameterMap: {
+                    "category": "teh-kopi-asli-indonesia"
+                  }
+                )
+              ),
             );
           } else {
             carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternGrey);
@@ -384,7 +413,25 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
                         children: [
                           Expanded(child: titleAndDescriptionWidget),
                           TapArea(
-                            onTap: () => PageRestorationHelper.toProductBundlePage(context),
+                            onTap: () {
+                              Map<String, dynamic> productEntryParameterMap = {};
+                              dynamic data = onObserveSuccessLoadTransparentBannerParameter.data;
+                              if (data == Constant.transparentBannerKeyKitchenContents) {
+                                productEntryParameterMap = {
+                                  "type": "kitchen"
+                                };
+                              } else if (data == Constant.transparentBannerKeyHandycrafts) {
+                                productEntryParameterMap = {
+                                  "type": "handycrafts"
+                                };
+                              }
+                              PageRestorationHelper.toProductEntryPage(
+                                context,
+                                ProductEntryPageParameter(
+                                  productEntryParameterMap: productEntryParameterMap
+                                )
+                              );
+                            },
                             child: Text(
                               "More".tr,
                               style: TextStyle(
@@ -427,7 +474,7 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
     );
     return BackgroundAppBarScaffold(
       backgroundAppBarImage: _homeAppBarBackgroundAssetImage,
-      appBar: MainMenuSearchAppBar(value: 0.0),
+      appBar: MainMenuSearchAppBar(value: 0.0, onSearchTextFieldTapped: () =>PageRestorationHelper.toCartPage(context)),
       body: Expanded(
         child: ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
           pagingControllerState: _homeMainMenuSubListItemPagingControllerState,

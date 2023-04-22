@@ -190,7 +190,13 @@ class DefaultProductDataSource implements ProductDataSource {
   @override
   FutureProcessing<ProductCategoryDetail> productCategoryDetail(ProductCategoryDetailParameter productCategoryDetailParameter) {
     return DioHttpClientProcessing((cancelToken) {
-      return dio.get("/product/category/${productCategoryDetailParameter.productCategoryDetailId}", cancelToken: cancelToken)
+      late String lastPathEndpoint;
+      if (productCategoryDetailParameter.productCategoryDetailParameterType == ProductCategoryDetailParameterType.slug) {
+        lastPathEndpoint = "slug/${productCategoryDetailParameter.productCategoryDetailId}";
+      } else {
+        lastPathEndpoint = productCategoryDetailParameter.productCategoryDetailId;
+      }
+      return dio.get("/product/category/$lastPathEndpoint", cancelToken: cancelToken)
         .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductCategoryDetail());
     });
   }

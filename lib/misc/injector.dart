@@ -79,8 +79,11 @@ import '../domain/usecase/get_product_detail_other_from_this_brand_product_entry
 import '../domain/usecase/get_product_detail_other_in_this_category_product_entry_list_use_case.dart';
 import '../domain/usecase/get_product_detail_other_interested_product_brand_list_use_case.dart';
 import '../domain/usecase/get_product_detail_use_case.dart';
+import '../domain/usecase/get_product_entry_with_condition_paging_use_case.dart';
 import '../domain/usecase/get_product_list_use_case.dart';
 import '../domain/usecase/get_product_viral_list_use_case.dart';
+import '../domain/usecase/get_product_viral_paging_use_case.dart';
+import '../domain/usecase/get_short_my_cart_use_case.dart';
 import '../domain/usecase/get_short_video_use_case.dart';
 import '../domain/usecase/get_snack_for_lying_around_list_use_case.dart';
 import '../domain/usecase/get_trip_default_video_use_case.dart';
@@ -304,6 +307,8 @@ class _Injector {
     locator.registerLazySingleton<GetProductBrandDetailUseCase>(() => GetProductBrandDetailUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductListUseCase>(() => GetProductListUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductViralListUseCase>(() => GetProductViralListUseCase(productRepository: locator()));
+    locator.registerLazySingleton<GetProductViralPagingUseCase>(() => GetProductViralPagingUseCase(productRepository: locator()));
+    locator.registerLazySingleton<GetProductEntryWithConditionPagingUseCase>(() => GetProductEntryWithConditionPagingUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductDetailUseCase>(() => GetProductDetailUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductDetailOtherChosenForYouProductEntryListUseCase>(() => GetProductDetailOtherChosenForYouProductEntryListUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductDetailOtherFromThisBrandProductEntryListUseCase>(() => GetProductDetailOtherFromThisBrandProductEntryListUseCase(productRepository: locator()));

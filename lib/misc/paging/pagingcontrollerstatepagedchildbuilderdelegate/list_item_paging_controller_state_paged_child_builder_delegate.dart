@@ -41,6 +41,7 @@ import '../../../presentation/widget/product_bundle_header_list_item.dart';
 import '../../../presentation/widget/product_bundle_highlight_list_item.dart';
 import '../../../presentation/widget/product_category_header_list_item.dart';
 import '../../../presentation/widget/product_detail_brand_list_item.dart';
+import '../../../presentation/widget/product_entry_header.dart';
 import '../../../presentation/widget/productbrand/circleproductbrand/horizontal_circle_product_brand_item.dart';
 import '../../../presentation/widget/productbrand/circleproductbrand/vertical_circle_product_brand_item.dart';
 import '../../../presentation/widget/productbrand/horizontal_product_brand_item.dart';
@@ -105,6 +106,7 @@ import '../../controllerstate/listitemcontrollerstate/product_category_header_li
 import '../../controllerstate/listitemcontrollerstate/product_detail_brand_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/product_detail_header_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/product_detail_image_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/product_entry_header_background_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/circleproductbrandlistitemcontrollerstate/circle_product_brand_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/circleproductbrandlistitemcontrollerstate/horizontal_circle_product_brand_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/circleproductbrandlistitemcontrollerstate/vertical_circle_product_brand_list_item_controller_state.dart';
@@ -138,6 +140,7 @@ import '../../controllerstate/paging_controller_state.dart';
 import '../../errorprovider/error_provider.dart';
 import '../../injector.dart';
 import '../../listitempagingparameterinjection/list_item_paging_parameter_injection.dart';
+import '../../productentryheaderbackground/product_entry_header_background.dart';
 import '../../typedef.dart';
 import '../../widget_helper.dart';
 import 'paging_controller_state_paged_child_builder_delegate.dart';
@@ -314,6 +317,12 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
       } else {
         return Container();
       }
+    } else if (item is ProductEntryHeaderListItemControllerState) {
+      return ProductEntryHeader(
+        title: item.title,
+        onProductEntryTitleTap: item.onProductEntryTitleTap,
+        productEntryHeaderBackground: item.productEntryHeaderBackground
+      );
     } else if (item is DeliveryReviewListItemControllerState) {
       if (item is HorizontalDeliveryReviewListItemControllerState) {
         return HorizontalDeliveryReviewItem(
