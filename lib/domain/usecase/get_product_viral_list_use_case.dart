@@ -13,8 +13,16 @@ class GetProductViralListUseCase {
     required this.productRepository
   });
 
-  FutureProcessing<LoadDataResult<List<ProductEntry>>> execute(ProductWithConditionPagingParameter productWithConditionPagingParameter) {
-    return productRepository.productWithConditionPaging(productWithConditionPagingParameter).map(
+  FutureProcessing<LoadDataResult<List<ProductEntry>>> execute() {
+    return productRepository.productWithConditionPaging(
+      ProductWithConditionPagingParameter(
+        page: 1,
+        itemEachPageCount: 10,
+        withCondition: {
+          'type': 'viral'
+        }
+      )
+    ).map(
       onMap: (productEntryPagingDataResultLoadDataResult) {
         return productEntryPagingDataResultLoadDataResult.map<List<ProductEntry>>((productEntryPagingDataResult) {
           return productEntryPagingDataResult.itemList;

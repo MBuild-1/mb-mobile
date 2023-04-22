@@ -87,6 +87,7 @@ class LoginController extends BaseGetxController {
       _loginDelegate!.onUnfocusAllWidget();
       String? idToken = await _loginDelegate!.onLoginWithGoogle();
       if (idToken.isNotEmptyString) {
+        _loginDelegate!.onShowLoginRequestProcessLoadingCallback();
         LoadDataResult<LoginWithGoogleResponse> loginWithGoogleLoadDataResult = await loginWithGoogleUseCase.execute(
           LoginWithGoogleParameter(
             idToken: idToken!

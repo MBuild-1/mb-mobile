@@ -26,6 +26,8 @@ class SizedOutlineGradientButton extends StatelessWidget {
   final bool autofocus;
   final OutlineGradientButtonType outlineGradientButtonType;
   final OutlineGradientButtonVariation outlineGradientButtonVariation;
+  final _GradientButtonVariation Function(OutlineGradientButtonType)? customGradientButtonVariation;
+  final EdgeInsets? customPadding;
 
   const SizedOutlineGradientButton({
     Key? key,
@@ -40,23 +42,33 @@ class SizedOutlineGradientButton extends StatelessWidget {
     this.focusNode,
     this.autofocus = false,
     this.outlineGradientButtonType = OutlineGradientButtonType.solid,
-    this.outlineGradientButtonVariation = OutlineGradientButtonVariation.variation1
+    this.outlineGradientButtonVariation = OutlineGradientButtonVariation.variation1,
+    this.customGradientButtonVariation,
+    this.customPadding
   }) : super(
     key: key,
   );
 
   @override
   Widget build(BuildContext context) {
-    _GradientButtonVariation gradientButtonVariation = _getGradientButtonVariation();
+    _GradientButtonVariation gradientButtonVariation = customGradientButtonVariation != null ? customGradientButtonVariation!(outlineGradientButtonType) : _getGradientButtonVariation();
+    TextStyle disabledTextStyle = const TextStyle(
+      color: Colors.grey
+    );
+    Color disabledBackgroundColor = Colors.grey.shade300;
+    Gradient disabledGradient = SweepGradient(
+      stops: const [1],
+      colors: [disabledBackgroundColor],
+    );
     return SizedBox(
       width: width,
       height: height,
       child: OutlineGradientButton(
         onTap: onPressed,
-        gradient: gradientButtonVariation.gradient,
+        gradient: onPressed != null ? gradientButtonVariation.gradient : disabledGradient,
         strokeWidth: 1.5,
-        backgroundColor: gradientButtonVariation.backgroundColor,
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        backgroundColor: onPressed != null ? gradientButtonVariation.backgroundColor : disabledBackgroundColor,
+        padding: customPadding != null ? customPadding! : const EdgeInsets.symmetric(horizontal: 8, vertical: 9),
         radius: const Radius.circular(8),
         inkWell: true,
         onLongPress: onLongPress,
@@ -67,7 +79,7 @@ class SizedOutlineGradientButton extends StatelessWidget {
         child: child != null ? child! : Center(
           child: Text(
             text.toEmptyStringNonNull,
-            style: gradientButtonVariation.textStyle
+            style: onPressed != null ? gradientButtonVariation.textStyle : disabledTextStyle,
           )
         ),
       )
@@ -103,10 +115,7 @@ class _Variation1GradientButtonVariation extends _GradientButtonVariation {
   Color get backgroundColor => outlineGradientButtonType == OutlineGradientButtonType.solid ? Constant.colorDarkBlue : Colors.transparent;
 
   @override
-  Gradient get gradient => SweepGradient(
-    stops: const [0, 0.25, 0.25, 0.5, 0.5, 1],
-    colors: [Constant.colorButtonGradient1, Constant.colorButtonGradient1, Constant.colorButtonGradient2, Constant.colorButtonGradient2, Constant.colorButtonGradient3, Constant.colorButtonGradient3],
-  );
+  Gradient get gradient => Constant.buttonGradient;
 
   @override
   TextStyle? get textStyle => TextStyle(
@@ -130,5 +139,34 @@ class _Variation2GradientButtonVariation extends _GradientButtonVariation {
   @override
   TextStyle? get textStyle => TextStyle(
     color: outlineGradientButtonType == OutlineGradientButtonType.solid ? Colors.white : Constant.colorMain,
+  );
+}
+
+class CustomGradientButtonVariation extends _GradientButtonVariation {
+  final Color? _backgroundColor;
+  final Gradient? _gradient;
+  final TextStyle? _textStyle;
+
+  CustomGradientButtonVariation({
+    required super.outlineGradientButtonType,
+    Color? backgroundColor,
+    Gradient? gradient,
+    TextStyle? textStyle
+  }) : _backgroundColor = backgroundColor,
+      _gradient = gradient,
+      _textStyle = textStyle;
+
+  @override
+  Color get backgroundColor => _backgroundColor != null ? _backgroundColor! : (
+    outlineGradientButtonType == OutlineGradientButtonType.solid ? Constant.colorMain : Colors.transparent
+  );
+
+  @override
+  Gradient get gradient => _gradient != null ? _gradient! : Constant.buttonGradient;
+
+  @override
+  TextStyle? get textStyle => _textStyle != null ? _textStyle! : TextStyle(
+    color: outlineGradientButtonType == OutlineGradientButtonType.solid ? Colors.white : null,
+    fontWeight: FontWeight.bold
   );
 }

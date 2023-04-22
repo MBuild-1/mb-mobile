@@ -52,6 +52,26 @@ class _ConstantImpl {
   String get vectorLove => _getVectorsAssets("love.svg");
   String get vectorTrash => _getVectorsAssets("trash.svg");
   String get vectorBag => _getVectorsAssets("bag.svg");
+  String get vectorBagBlack => _getVectorsAssets("bag_black.svg");
+  String get vectorCart => _getVectorsAssets("cart.svg");
+  String get vectorInbox => _getVectorsAssets("inbox.svg");
+  String get vectorNotification => _getVectorsAssets("notification.svg");
+  String get vectorMinusCircle => _getVectorsAssets("minus_circle.svg");
+  String get vectorPlusCircle => _getVectorsAssets("plus_circle.svg");
+  String get vectorArrow => _getVectorsAssets("arrow.svg");
+  String get vectorDiscount => _getVectorsAssets("discount.svg");
+  String get vectorWishlist => _getVectorsAssets("wishlist.svg");
+  String get vectorTransactionList => _getVectorsAssets("transaction_list.svg");
+  String get vectorDeliveryShipping => _getVectorsAssets("delivery_shipping.svg");
+  String get vectorFavoriteBrand => _getVectorsAssets("favorite_brand.svg");
+  String get vectorProductDiscussion => _getVectorsAssets("product_discussion.svg");
+  String get vectorInbox2 => _getVectorsAssets("inbox_2.svg");
+  String get vectorSupportMessage => _getVectorsAssets("support_message.svg");
+  String get vectorAddressList => _getVectorsAssets("address_list.svg");
+  String get vectorAccountSecurity => _getVectorsAssets("account_security.svg");
+  String get vectorNotificationConfiguration => _getVectorsAssets("notification_configuration.svg");
+  String get vectorAccountPrivacy => _getVectorsAssets("account_privacy.svg");
+  String get vectorLogout => _getVectorsAssets("logout.svg");
 
   Color get colorYellow => const Color.fromRGBO(244, 184, 43, 1);
   Color get colorLightRed => const Color.fromRGBO(255, 236, 230, 1);
@@ -102,7 +122,17 @@ class _ConstantImpl {
   Color get colorButtonGradient2 => const Color.fromRGBO(255, 66, 0, 1);
   Color get colorButtonGradient3 => const Color.fromRGBO(0, 169, 234, 1);
 
-  double get heightSpacingListItem => (1.5).h;
+  Gradient get buttonGradient => SweepGradient(
+    stops: const [0, 0.25, 0.25, 0.5, 0.5, 1],
+    colors: [Constant.colorButtonGradient1, Constant.colorButtonGradient1, Constant.colorButtonGradient2, Constant.colorButtonGradient2, Constant.colorButtonGradient3, Constant.colorButtonGradient3],
+  );
+
+  Gradient get buttonGradient2 => SweepGradient(
+    stops: const [0, 0.25, 0.25, 0.5, 0.5, 1],
+    colors: [Constant.colorButtonGradient1, Constant.colorButtonGradient1, Constant.colorButtonGradient3, Constant.colorButtonGradient3, Constant.colorButtonGradient2, Constant.colorButtonGradient2],
+  );
+
+  double get heightSpacingListItem => 1.h;
   double get paddingListItem => 4.w;
   double get spacingListItem => 2.w;
   double get iconSpacing => 7.w;
@@ -144,7 +174,9 @@ class _ConstantImpl {
   String get subPageKeyFeedMainMenu => "sub_page_key_feed_main_menu";
   String get subPageKeyExploreNusantaraMainMenu => "sub_page_key_explore_nusantara_main_menu";
   String get subPageKeyWishlistMainMenu => "sub_page_key_wishlist_main_menu";
-  String get subPageKeyMenuMainMenu => "sub_page_key_wishlist_main_menu";
+  String get subPageKeyMenuMainMenu => "sub_page_key_menu_main_menu";
+  String get addToCartTypeProductEntry => "add_to_cart_type_product_entry";
+  String get addToCartTypeProductBundle => "add_to_cart_type_product_bundle";
 }
 
 // ignore: non_constant_identifier_names

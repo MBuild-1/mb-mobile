@@ -1,8 +1,10 @@
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 
+import '../domain/entity/cart/add_to_cart_parameter.dart';
 import '../domain/entity/componententity/dynamic_item_carousel_component_entity.dart';
 import '../domain/entity/componententity/i_dynamic_item_carousel_component_entity.dart';
 import '../domain/entity/product/product.dart';
+import '../domain/entity/product/product_detail.dart';
 import '../domain/entity/product/product_detail_from_your_search_product_entry_list_parameter.dart';
 import '../domain/entity/product/product_detail_get_other_chosen_for_you_parameter.dart';
 import '../domain/entity/product/product_detail_get_other_from_this_brand_parameter.dart';
@@ -15,6 +17,8 @@ import '../domain/entity/product/product_detail_parameter.dart';
 import '../domain/entity/product/productbrand/product_brand.dart';
 import '../domain/entity/product/productcategory/product_category.dart';
 import '../domain/entity/product/productentry/product_entry.dart';
+import '../domain/usecase/add_to_cart_use_case.dart';
+import '../domain/usecase/get_my_cart_use_case.dart';
 import '../domain/usecase/get_product_category_list_use_case.dart';
 import '../domain/usecase/get_product_detail_from_your_search_product_entry_list_use_case.dart';
 import '../domain/usecase/get_product_detail_other_chosen_for_you_product_entry_list_use_case.dart';
@@ -37,6 +41,7 @@ class ProductDetailController extends BaseGetxController {
   final GetProductDetailOtherInThisCategoryProductEntryListUseCase getProductDetailOtherInThisCategoryProductEntryListUseCase;
   final GetProductDetailFromYourSearchProductEntryListUseCase getProductDetailFromYourSearchProductEntryListUseCase;
   final GetProductDetailOtherInterestedProductBrandListUseCase getProductDetailOtherInterestedProductBrandListUseCase;
+  final AddToCartUseCase addToCartUseCase;
   ProductDetailMainMenuDelegate? _productDetailMainMenuDelegate;
 
   ProductDetailController(
@@ -47,10 +52,11 @@ class ProductDetailController extends BaseGetxController {
     this.getProductDetailOtherFromThisBrandProductEntryListUseCase,
     this.getProductDetailOtherInThisCategoryProductEntryListUseCase,
     this.getProductDetailFromYourSearchProductEntryListUseCase,
-    this.getProductDetailOtherInterestedProductBrandListUseCase
+    this.getProductDetailOtherInterestedProductBrandListUseCase,
+    this.addToCartUseCase
   );
 
-  Future<LoadDataResult<Product>> getProductDetail(ProductDetailParameter productDetailParameter) {
+  Future<LoadDataResult<ProductDetail>> getProductDetail(ProductDetailParameter productDetailParameter) {
     return getProductDetailUseCase.execute(productDetailParameter).future(
       parameter: apiRequestManager.addRequestToCancellationPart("product-detail").value
     );
@@ -282,6 +288,22 @@ class ProductDetailController extends BaseGetxController {
 
   void setProductDetailMainMenuDelegate(ProductDetailMainMenuDelegate productDetailMainMenuDelegate) {
     _productDetailMainMenuDelegate = productDetailMainMenuDelegate;
+  }
+
+
+  void addToCart(String productEntryId) {
+    addToCartUseCase.execute(
+      AddToCartParameter(
+        supportCartId: productEntryId,
+        addToCartType: Constant.addToCartTypeProductEntry,
+      )
+    ).future(
+      parameter: apiRequestManager.addRequestToCancellationPart("add-to-cart").value
+    );
+  }
+
+  void buyDirectly() {
+
   }
 }
 

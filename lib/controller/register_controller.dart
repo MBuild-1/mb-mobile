@@ -108,6 +108,7 @@ class RegisterController extends BaseGetxController {
       _registerDelegate!.onUnfocusAllWidget();
       String? idToken = await _registerDelegate!.onRegisterWithGoogle();
       if (idToken.isNotEmptyString) {
+        _registerDelegate!.onShowRegisterRequestProcessLoadingCallback();
         LoadDataResult<RegisterWithGoogleResponse> registerWithGoogleLoadDataResult = await registerWithGoogleUseCase.execute(
           RegisterWithGoogleParameter(
             idToken: idToken!

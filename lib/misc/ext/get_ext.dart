@@ -2,8 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get/get_navigation/src/dialog/dialog_route.dart';
 
 import '../../presentation/widget/material_ignore_pointer.dart';
+import '../dialog_helper.dart';
+import '../getextended/extended_get_dialog_route.dart';
 import '../getextended/extended_get_modal_bottom_sheet_route.dart';
 
 extension ModifiedExtensionBottomSheet on GetInterface {
@@ -48,6 +51,50 @@ extension ModifiedExtensionBottomSheet on GetInterface {
         exitBottomSheetDuration: exitBottomSheetDuration ?? const Duration(milliseconds: 200),
       );
       Future<T?> pushResult = Navigator.of(overlayContext!, rootNavigator: useRootNavigator).push(getModalBottomSheetRoute);
+      pushResultCompleter.complete(pushResult);
+    });
+    return pushResultCompleter.future;
+  }
+}
+
+extension ModifiedExtensionDialog on GetInterface {
+  Future<T?> dialogOriginalMethod<T>(
+    BuildContext context,
+    Widget dialog, {
+      bool barrierDismissible = true,
+      Color? barrierColor = Colors.black54,
+      String? barrierLabel,
+      bool useSafeArea = true,
+      bool useRootNavigator = true,
+      RouteSettings? routeSettings,
+      Offset? anchorPoint,
+  }) {
+    Completer<T?> pushResultCompleter = Completer();
+    FocusScope.of(context).unfocus();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      MaterialIgnorePointer.of(context)?.ignoring = true;
+      final CapturedThemes themes = InheritedTheme.capture(
+        from: context,
+        to: Navigator.of(
+          context,
+          rootNavigator: useRootNavigator,
+        ).context,
+      );
+      DialogRoute<T> dialogRoute = ExtendedGetDialogRoute<T>(
+        context: context,
+        builder: (context) => Dialog(
+          insetPadding: const EdgeInsets.all(16.0),
+          child: dialog,
+        ),
+        barrierColor: barrierColor,
+        barrierDismissible: barrierDismissible,
+        barrierLabel: barrierLabel,
+        useSafeArea: useSafeArea,
+        settings: routeSettings,
+        themes: themes,
+        anchorPoint: anchorPoint,
+      );
+      Future<T?> pushResult = Navigator.of(overlayContext!, rootNavigator: useRootNavigator).push(dialogRoute);
       pushResultCompleter.complete(pushResult);
     });
     return pushResultCompleter.future;

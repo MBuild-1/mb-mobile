@@ -58,7 +58,7 @@ abstract class SearchAppBar extends ModifiedAppBar {
       textInputAction: TextInputAction.done,
       controller: searchTextEditingController,
       focusNode: searchFocusNode,
-      decoration: _searchTextFieldStyle(
+      decoration: searchTextFieldStyle(
         context, DefaultInputDecoration(
           hintText: "${"Search in MasterBagasi".tr}?",
           filled: true,
@@ -113,7 +113,7 @@ abstract class SearchAppBar extends ModifiedAppBar {
     return (context, oldSystemUiOverlayStyle) => value > 0.5 ? null : SystemUiOverlayStyle.light;
   }
 
-  InputDecoration _searchTextFieldStyle(BuildContext context, InputDecoration decoration) {
+  InputDecoration searchTextFieldStyle(BuildContext context, InputDecoration decoration) {
     final ThemeData themeData = Theme.of(context);
     final DefaultTextStyle defaultTextStyle = DefaultTextStyle.of(context);
     TextStyle style = TextStyle(

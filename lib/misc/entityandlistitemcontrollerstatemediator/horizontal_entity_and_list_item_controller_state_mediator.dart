@@ -1,7 +1,12 @@
+import '../../domain/entity/cart/cart.dart';
+import '../../domain/entity/delivery/delivery_review.dart';
+import '../../domain/entity/news/news.dart';
 import '../../domain/entity/product/product_appearance_data.dart';
 import '../../domain/entity/product/productbrand/product_brand.dart';
 import '../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../domain/entity/product/productcategory/product_category.dart';
+import '../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/shortcartlistitemcontrollerstate/horizontal_short_cart_list_item_controller_state.dart';
+import '../controllerstate/listitemcontrollerstate/deliveryreviewlistitemcontrollerstate/horizontal_delivery_review_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/newslistitemcontrollerstate/horizontal_news_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/no_content_list_item_controller_state.dart';
@@ -45,6 +50,8 @@ class HorizontalParameterizedEntityAndListItemControllerStateMediator extends Pa
       } else {
         return NoContentListItemControllerState();
       }
+    } else if (entity is Cart) {
+      return HorizontalShortCartListItemControllerState(cart: entity);
     } else {
       return NoContentListItemControllerState();
     }

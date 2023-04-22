@@ -3,6 +3,7 @@ import 'package:masterbagasi/data/entitymappingext/province_entity_mapping_ext.d
 import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 
 import '../../domain/entity/product/product.dart';
+import '../../domain/entity/product/product_detail.dart';
 import '../../domain/entity/product/productbrand/product_brand.dart';
 import '../../domain/entity/product/productbrand/product_brand_detail.dart';
 import '../../domain/entity/product/productbundle/product_bundle.dart';
@@ -79,6 +80,29 @@ extension ProductDetailEntityMappingExt on ResponseWrapper {
       productCertificationList: ResponseWrapper(response["product_certification"]).mapFromResponseToProductCertificationList(),
     );
   }
+
+  ProductDetail mapFromResponseToProductDetail() {
+    Product product = ResponseWrapper(response).mapFromResponseToProduct();
+    return ProductDetail(
+      id: product.id,
+      userId: product.userId,
+      productBrandId: product.productBrandId,
+      productCategoryId: product.productCategoryId,
+      provinceId: product.provinceId,
+      name: product.name,
+      slug: product.slug,
+      description: product.description,
+      price: product.price,
+      discountPrice: product.discountPrice,
+      rating: product.rating,
+      imageUrl: product.imageUrl,
+      productBrand: product.productBrand,
+      productCategory: product.productCategory,
+      province: product.province,
+      productCertificationList: product.productCertificationList,
+      productEntry: ResponseWrapper(response["product_entry"]).mapFromResponseToProductEntryList()
+    );
+  }
 }
 
 extension ProductBundleMappingExt on ResponseWrapper {
@@ -128,6 +152,14 @@ extension ProductBrandDetailMappingExt on ResponseWrapper {
   List<ProductBrand> mapFromResponseToProductBrandList() {
     return response.map<ProductBrand>((productBrandResponse) => ResponseWrapper(productBrandResponse).mapFromResponseToProductBrand()).toList();
   }
+
+  PagingDataResult<ProductBrand> mapFromResponseToProductBrandPaging() {
+    return ResponseWrapper(response).mapFromResponseToPagingDataResult(
+      (dataResponse) => dataResponse.map<ProductBrand>(
+        (productBrandResponse) => ResponseWrapper(productBrandResponse).mapFromResponseToProductBrand()
+      ).toList()
+    );
+  }
 }
 
 extension ProductBrandDetailEntityMappingExt on ResponseWrapper {
@@ -158,6 +190,14 @@ extension ProductBrandDetailEntityMappingExt on ResponseWrapper {
 extension ProductCategoryEntityMappingExt on ResponseWrapper {
   List<ProductCategory> mapFromResponseToProductCategoryList() {
     return response.map<ProductCategory>((productCategoryResponse) => ResponseWrapper(productCategoryResponse).mapFromResponseToProductCategory()).toList();
+  }
+
+  PagingDataResult<ProductCategory> mapFromResponseToProductCategoryPaging() {
+    return ResponseWrapper(response).mapFromResponseToPagingDataResult(
+      (dataResponse) => dataResponse.map<ProductCategory>(
+        (productCategoryResponse) => ResponseWrapper(productCategoryResponse).mapFromResponseToProductCategory()
+      ).toList()
+    );
   }
 }
 
@@ -230,7 +270,11 @@ extension ProductEntryDetailEntityMappingExt on ResponseWrapper {
       isHandycrafts: response["is_handycrafts"],
       isFashionable: response["is_fashionable"],
       isBestSelling: response["is_best_selling"],
-      sellingPrice: response["selling_price"],
+      purchasePrice: response["purchase_price"] ?? 0,
+      sellingPrice: response["selling_price"] ?? 0,
+      imageUrlList: (response["product_image"] ?? []).map<String>(
+        (productImageResponse) => productImageResponse["path"] as String
+      ).toList(),
       productVariantList: response["product_variant"].map<ProductVariant>(
         (productVariantResponse) => ResponseWrapper(productVariantResponse).mapFromResponseToProductVariant()
       ).toList(),

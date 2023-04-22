@@ -8,6 +8,7 @@ import 'package:masterbagasi/misc/option_builder.dart';
 
 import '../../../domain/dummy/productdummy/product_entry_dummy.dart';
 import '../../../domain/entity/product/product.dart';
+import '../../../domain/entity/product/product_detail.dart';
 import '../../../domain/entity/product/product_detail_from_your_search_product_entry_list_parameter.dart';
 import '../../../domain/entity/product/product_detail_other_chosen_for_you_product_entry_list_parameter.dart';
 import '../../../domain/entity/product/product_detail_other_from_this_brand_product_entry_list_parameter.dart';
@@ -17,6 +18,7 @@ import '../../../domain/entity/product/productbrand/product_brand.dart';
 import '../../../domain/entity/product/productbrand/product_brand_detail.dart';
 import '../../../domain/entity/product/productbrand/product_brand_detail_parameter.dart';
 import '../../../domain/entity/product/productbrand/product_brand_list_parameter.dart';
+import '../../../domain/entity/product/productbrand/product_brand_paging_parameter.dart';
 import '../../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../../domain/entity/product/productbundle/product_bundle_detail.dart';
 import '../../../domain/entity/product/productbundle/product_bundle_detail_parameter.dart';
@@ -28,6 +30,7 @@ import '../../../domain/entity/product/productcategory/product_category_detail.d
 import '../../../domain/entity/product/productcategory/product_category_detail_parameter.dart';
 import '../../../domain/entity/product/productcategory/product_category_list_parameter.dart';
 import '../../../domain/entity/product/product_detail_parameter.dart';
+import '../../../domain/entity/product/productcategory/product_category_paging_parameter.dart';
 import '../../../domain/entity/product/productentry/product_entry.dart';
 import '../../../domain/entity/product/product_list_parameter.dart';
 import '../../../domain/entity/product/product_paging_parameter.dart';
@@ -103,7 +106,7 @@ class DefaultProductDataSource implements ProductDataSource {
   @override
   FutureProcessing<PagingDataResult<Product>> productPaging(ProductPagingParameter productPagingParameter) {
     return DioHttpClientProcessing((cancelToken) {
-      String pageParameterPath = "/${productPagingParameter.itemEachPageCount}?page=${productPagingParameter.page}";
+      String pageParameterPath = "/?pageNumber=${productPagingParameter.itemEachPageCount}&page=${productPagingParameter.page}";
       return dio.get("/product$pageParameterPath", cancelToken: cancelToken)
         .map<PagingDataResult<Product>>(onMap: (value) => value.wrapResponse().mapFromResponseToPagingDataResult(
           (dataResponse) => dataResponse.map<Product>(
@@ -114,32 +117,45 @@ class DefaultProductDataSource implements ProductDataSource {
   }
 
   @override
-  FutureProcessing<PagingDataResult<ProductBundle>> productBundlePaging(ProductBundlePagingParameter productBundlePagingParameter) {
-    return DummyFutureProcessing((cancelToken) async {
-      return PagingDataResult<ProductBundle>(
-        page: 1,
-        totalPage: 1,
-        totalItem: 1,
-        itemList: [productBundleDummy.generateDefaultDummy()]
-      );
+  FutureProcessing<PagingDataResult<ProductBrand>> productBrandPaging(ProductBrandPagingParameter productBrandPagingParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      String pageParameterPath = "/?pageNumber=${productBrandPagingParameter.itemEachPageCount}&page=${productBrandPagingParameter.page}";
+      return dio.get("/product/brand$pageParameterPath", cancelToken: cancelToken)
+        .map<PagingDataResult<ProductBrand>>(onMap: (value) => value.wrapResponse().mapFromResponseToProductBrandPaging());
     });
-    // return DioHttpClientProcessing((cancelToken) {
-    //   String pageParameterPath = "/${productBundlePagingParameter.itemEachPageCount}?page=${productBundlePagingParameter.page}";
-    //   return dio.get("/product$pageParameterPath", cancelToken: cancelToken)
-    //     .map<PagingDataResult<ProductBundle>>(onMap: (value) => value.wrapResponse().mapFromResponseToProductBundlePaging());
-    // });
+  }
+
+  @override
+  FutureProcessing<PagingDataResult<ProductCategory>> productCategoryPaging(ProductCategoryPagingParameter productCategoryPagingParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      String pageParameterPath = "/?pageNumber=${productCategoryPagingParameter.itemEachPageCount}&page=${productCategoryPagingParameter.page}";
+      return dio.get("/product/category$pageParameterPath", cancelToken: cancelToken)
+        .map<PagingDataResult<ProductCategory>>(onMap: (value) => value.wrapResponse().mapFromResponseToProductCategoryPaging());
+    });
+  }
+
+  @override
+  FutureProcessing<PagingDataResult<ProductBundle>> productBundlePaging(ProductBundlePagingParameter productBundlePagingParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      String pageParameterPath = "/?pageNumber=${productBundlePagingParameter.itemEachPageCount}&page=${productBundlePagingParameter.page}";
+      return dio.get("/bundling$pageParameterPath", cancelToken: cancelToken)
+        .map<PagingDataResult<ProductBundle>>(onMap: (value) => value.wrapResponse().mapFromResponseToProductBundlePaging());
+    });
   }
 
   @override
   FutureProcessing<ProductBundle> productBundleHighlight(ProductBundleHighlightParameter productBundleHighlightParameter) {
-    return DummyFutureProcessing((cancelToken) async {
-      return productBundleDummy.generateDefaultDummy();
+    return DioHttpClientProcessing((cancelToken) {
+      String pageParameterPath = "/?pageNumber=1&page=1";
+      return dio.get("/bundling$pageParameterPath", cancelToken: cancelToken)
+        .map<PagingDataResult<ProductBundle>>(onMap: (value) => value.wrapResponse().mapFromResponseToProductBundlePaging())
+        .map<ProductBundle>(onMap: (value) {
+          if (value.itemList.isEmpty) {
+            throw NotFoundError();
+          }
+          return value.itemList.first;
+        });
     });
-    // return DioHttpClientProcessing((cancelToken) {
-    //   String pageParameterPath = "/${productBundlePagingParameter.itemEachPageCount}?page=${productBundlePagingParameter.page}";
-    //   return dio.get("/product$pageParameterPath", cancelToken: cancelToken)
-    //     .map<PagingDataResult<ProductBundle>>(onMap: (value) => value.wrapResponse().mapFromResponseToProductBundlePaging());
-    // });
   }
 
   @override
@@ -156,10 +172,10 @@ class DefaultProductDataSource implements ProductDataSource {
   }
 
   @override
-  FutureProcessing<Product> productDetail(ProductDetailParameter productDetailParameter) {
+  FutureProcessing<ProductDetail> productDetail(ProductDetailParameter productDetailParameter) {
     return DioHttpClientProcessing((cancelToken) {
       return dio.get("/product/${productDetailParameter.productId}", cancelToken: cancelToken)
-        .map(onMap: (value) => value.wrapResponse().mapFromResponseToProduct());
+        .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductDetail());
     });
   }
 
@@ -229,24 +245,11 @@ class DefaultProductDataSource implements ProductDataSource {
 
   @override
   FutureProcessing<PagingDataResult<Wishlist>> wishlistPaging(WishlistPagingParameter wishlistPagingParameter) {
-    return DummyFutureProcessing((cancelToken) async {
-      await Future.delayed(const Duration(seconds: 1));
-      return PagingDataResult<Wishlist>(
-        page: 1,
-        totalPage: 1,
-        totalItem: 1,
-        itemList: [
-          Wishlist(
-            id: "1",
-            productEntry: productEntryDummy.generateDefaultDummy()
-          )
-        ]
-      );
+    return DioHttpClientProcessing((cancelToken) {
+      String pageParameterPath = "/?pageNumber=${wishlistPagingParameter.itemEachPageCount}&page=${wishlistPagingParameter.page}";
+      return dio.get("/wishlist$pageParameterPath", cancelToken: cancelToken)
+        .map(onMap: (value) => value.wrapResponse().mapFromResponseToWishlistPaging());
     });
-    // return DioHttpClientProcessing((cancelToken) {
-    //   return dio.get("/wishlist", cancelToken: cancelToken)
-    //     .map(onMap: (value) => value.wrapResponse().mapFromResponseToWishlistPaging());
-    // });
   }
 
   @override

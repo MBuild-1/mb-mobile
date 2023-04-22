@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../controller/crop_picture_controller.dart';
+import '../presentation/page/cart_page.dart';
 import '../presentation/page/coupon_page.dart';
 import '../presentation/page/crop_picture_page.dart';
+import '../presentation/page/delivery_page.dart';
 import '../presentation/page/getx_page.dart';
 import '../presentation/page/login_page.dart';
 import '../presentation/page/mainmenu/main_menu_page.dart';
@@ -12,6 +14,8 @@ import '../presentation/page/product_bundle_page.dart';
 import '../presentation/page/product_category_detail_page.dart';
 import '../presentation/page/product_detail_page.dart';
 import '../presentation/page/register_page.dart';
+import '../presentation/page/take_friend_cart_page.dart';
+import 'login_helper.dart';
 
 class _PageRestorationHelperImpl {
   bool _checkingPageRestorationMixin<T extends GetxPageRestoration>({
@@ -98,10 +102,10 @@ class _PageRestorationHelperImpl {
     );
   }
 
-  void toProductDetailPage(BuildContext context, String productId) {
+  void toProductDetailPage(BuildContext context, ProductDetailPageParameter productDetailPageParameter) {
     PageRestorationHelper.findPageRestorationMixin<ProductDetailPageRestorationMixin>(
       onGetxPageRestorationFound: (restoration) {
-        restoration.productDetailPageRestorableRouteFuture.present(productId);
+        restoration.productDetailPageRestorableRouteFuture.present(productDetailPageParameter.toEncodeBase64String());
       },
       context: context
     );
@@ -132,6 +136,39 @@ class _PageRestorationHelperImpl {
       },
       context: context
     );
+  }
+
+  void toCartPage(BuildContext context) {
+    LoginHelper.checkingLogin(context, () {
+      PageRestorationHelper.findPageRestorationMixin<CartPageRestorationMixin>(
+        onGetxPageRestorationFound: (restoration) {
+          restoration.cartPageRestorableRouteFuture.present();
+        },
+        context: context
+      );
+    });
+  }
+
+  void toTakeFriendCartPage(BuildContext context) {
+    LoginHelper.checkingLogin(context, () {
+      PageRestorationHelper.findPageRestorationMixin<TakeFriendCartPageRestorationMixin>(
+        onGetxPageRestorationFound: (restoration) {
+          restoration.takeFriendCartPageRestorableRouteFuture.present();
+        },
+        context: context
+      );
+    });
+  }
+
+  void toDeliveryPage(BuildContext context) {
+    LoginHelper.checkingLogin(context, () {
+      PageRestorationHelper.findPageRestorationMixin<DeliveryPageRestorationMixin>(
+        onGetxPageRestorationFound: (restoration) {
+          restoration.deliveryPageRestorableRouteFuture.present();
+        },
+        context: context
+      );
+    });
   }
 }
 

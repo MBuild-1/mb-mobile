@@ -1,4 +1,6 @@
-class ProductBundle {
+import '../../cart/support_cart.dart';
+
+class ProductBundle implements SupportCart {
   String id;
   String name;
   String slug;
@@ -7,6 +9,15 @@ class ProductBundle {
   double price;
   double rating;
   int soldOut;
+
+  @override
+  String get cartTitle => name;
+
+  @override
+  double get cartPrice => price;
+
+  @override
+  String get cartImageUrl => imageUrl;
 
   ProductBundle({
     required this.id,

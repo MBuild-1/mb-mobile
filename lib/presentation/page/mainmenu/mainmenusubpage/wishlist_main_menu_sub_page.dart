@@ -11,6 +11,7 @@ import '../../../../misc/constant.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/productlistitemcontrollerstate/vertical_product_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/paging_controller_state.dart';
+import '../../../../misc/errorprovider/error_provider.dart';
 import '../../../../misc/injector.dart';
 import '../../../../misc/load_data_result.dart';
 import '../../../../misc/main_route_observer.dart';
@@ -19,6 +20,7 @@ import '../../../../misc/paging/modified_paging_controller.dart';
 import '../../../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../../../misc/paging/pagingresult/paging_result.dart';
+import '../../../../misc/widget_helper.dart';
 import '../../../widget/background_app_bar_scaffold.dart';
 import '../../../widget/modified_paged_list_view.dart';
 import '../../../widget/modifiedappbar/default_search_app_bar.dart';
@@ -113,13 +115,17 @@ class _StatefulWishlistMainMenuSubControllerMediatorWidgetState extends State<_S
       backgroundAppBarImage: _wishlistAppBarBackgroundAssetImage,
       appBar: MainMenuSearchAppBar(value: 0.0),
       body: Expanded(
-        child: ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
-          pagingControllerState: _wishlistMainMenuSubListItemPagingControllerState,
-          onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
-            pagingControllerState: pagingControllerState!
+        child: WidgetHelper.checkingLogin(
+          context,
+          () => ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
+            pagingControllerState: _wishlistMainMenuSubListItemPagingControllerState,
+            onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
+              pagingControllerState: pagingControllerState!
+            ),
+            pullToRefresh: true
           ),
-          pullToRefresh: true
-        ),
+          Injector.locator<ErrorProvider>()
+        )
       ),
     );
   }

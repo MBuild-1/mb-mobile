@@ -7,9 +7,14 @@ import 'package:sizer/sizer.dart';
 
 import '../controller/crop_picture_controller.dart';
 import '../presentation/page/getx_page.dart';
+import '../presentation/page/modaldialogpage/add_host_cart_modal_dialog_page.dart';
 import '../presentation/page/modaldialogpage/modal_dialog_page.dart';
+import '../presentation/page/modaldialogpage/take_friend_cart_modal_dialog_page.dart';
+import '../presentation/widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../presentation/widget/modified_loading_indicator.dart';
+import '../presentation/widget/modified_svg_picture.dart';
 import '../presentation/widget/profile_menu_item.dart';
+import 'constant.dart';
 import 'errorprovider/error_provider.dart';
 import 'page_restoration_helper.dart';
 import 'typedef.dart';
@@ -208,6 +213,93 @@ class _DialogHelperImpl {
     );
   }
 
+  void showSharedCartOptionsPrompt(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) {
+        return WillPopScope(
+          onWillPop: () async => true,
+          child: Dialog(
+            insetPadding: const EdgeInsets.all(16.0),
+            child: SizedBox(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            children: [
+                              ModifiedSvgPicture.asset(
+                                height: 100,
+                                Constant.vectorBag,
+                                overrideDefaultColorWithSingleColor: false
+                              ),
+                              const SizedBox(height: 10),
+                              SizedOutlineGradientButton(
+                                onPressed: () async {
+                                  dynamic result = await DialogHelper.showModalDialogPage<bool, String>(
+                                    context: context,
+                                    modalDialogPageBuilder: (context, parameter) => AddHostCartModalDialogPage(),
+                                  );
+                                  if (result != null) {
+                                    if (result) {
+                                      Navigator.of(context).pop();
+                                    }
+                                  }
+                                },
+                                text: "Be Host".tr,
+                                outlineGradientButtonType: OutlineGradientButtonType.outline,
+                                outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
+                              )
+                            ]
+                          )
+                        ),
+                        SizedBox(width: 2.w),
+                        Expanded(
+                          child: Column(
+                            children: [
+                              ModifiedSvgPicture.asset(
+                                height: 100,
+                                Constant.vectorBagBlack,
+                                overrideDefaultColorWithSingleColor: false
+                              ),
+                              const SizedBox(height: 10),
+                              SizedOutlineGradientButton(
+                                onPressed: () async {
+                                  dynamic result = await DialogHelper.showModalDialogPage<bool, String>(
+                                    context: context,
+                                    modalDialogPageBuilder: (context, parameter) => TakeFriendCartModalDialogPage(),
+                                  );
+                                  if (result != null) {
+                                    if (result) {
+                                      Navigator.of(context).pop();
+                                      PageRestorationHelper.toTakeFriendCartPage(context);
+                                    }
+                                  }
+                                },
+                                text: "Take Shopping".tr,
+                                outlineGradientButtonType: OutlineGradientButtonType.solid,
+                                outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
+                              )
+                            ]
+                          )
+                        ),
+                      ]
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      }
+    );
+  }
+
   void showPromptUnderConstruction(BuildContext context) {
     DialogHelper.showPromptOkDialog(
       context: context,
@@ -346,6 +438,33 @@ class _DialogHelperImpl {
     bool enableDrag = false
   }) async {
     dynamic result = await showModalBottomSheetPage(
+      context: context,
+      backgroundColor: Theme.of(context).canvasColor,
+      builder: (context) => GetxPageBuilder.buildDefaultGetxPage(modalDialogPageBuilder(context, parameter)),
+      enableDrag: enableDrag
+    );
+    return result is T ? result : null;
+  }
+
+  Future<T?> showDialogPage<T>({
+    required BuildContext context,
+    Color? backgroundColor = Colors.transparent,
+    required WidgetBuilder builder,
+    bool enableDrag = false
+  }) async {
+    return Get.dialogOriginalMethod<T>(
+      context,
+      builder(context),
+    );
+  }
+
+  Future<T?> showModalDialogPage<T, P>({
+    required BuildContext context,
+    required ModalDialogPageBuilder<dynamic, P> modalDialogPageBuilder,
+    P? parameter,
+    bool enableDrag = false
+  }) async {
+    dynamic result = await showDialogPage(
       context: context,
       backgroundColor: Theme.of(context).canvasColor,
       builder: (context) => GetxPageBuilder.buildDefaultGetxPage(modalDialogPageBuilder(context, parameter)),

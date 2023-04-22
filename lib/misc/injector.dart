@@ -6,6 +6,12 @@ import '../controller/mainmenucontroller/mainmenusubpagecontroller/feed_main_men
 import '../controller/mainmenucontroller/mainmenusubpagecontroller/home_main_menu_sub_controller.dart';
 import '../controller/mainmenucontroller/mainmenusubpagecontroller/menu_main_menu_sub_controller.dart';
 import '../controller/mainmenucontroller/mainmenusubpagecontroller/wishlist_main_menu_sub_controller.dart';
+import '../data/datasource/addressdatasource/address_data_source.dart';
+import '../data/datasource/addressdatasource/default_address_data_source.dart';
+import '../data/datasource/bannerdatasource/banner_data_source.dart';
+import '../data/datasource/bannerdatasource/default_banner_data_source.dart';
+import '../data/datasource/cartdatasource/cart_data_source.dart';
+import '../data/datasource/cartdatasource/default_cart_data_source.dart';
 import '../data/datasource/coupondatasource/coupon_data_source.dart';
 import '../data/datasource/coupondatasource/default_coupon_data_source.dart';
 import '../data/datasource/feeddatasource/default_feed_data_source.dart';
@@ -14,10 +20,17 @@ import '../data/datasource/productdatasource/default_product_data_source.dart';
 import '../data/datasource/productdatasource/product_data_source.dart';
 import '../data/datasource/userdatasource/default_user_data_source.dart';
 import '../data/datasource/userdatasource/user_data_source.dart';
+import '../data/repository/default_address_repository.dart';
+import '../data/repository/default_banner_repository.dart';
+import '../data/repository/default_cart_repository.dart';
 import '../data/repository/default_coupon_repository.dart';
 import '../data/repository/default_feed_repository.dart';
 import '../data/repository/default_product_repository.dart';
 import '../data/repository/default_user_repository.dart';
+import '../domain/dummy/addressdummy/address_dummy.dart';
+import '../domain/dummy/addressdummy/country_dummy.dart';
+import '../domain/dummy/addressdummy/zone_dummy.dart';
+import '../domain/dummy/cartdummy/cart_dummy.dart';
 import '../domain/dummy/coupondummy/coupon_dummy.dart';
 import '../domain/dummy/deliveryreviewdummy/delivery_review_dummy.dart';
 import '../domain/dummy/newsdummy/news_dummy.dart';
@@ -29,12 +42,29 @@ import '../domain/dummy/productdummy/product_dummy.dart';
 import '../domain/dummy/productdummy/product_entry_dummy.dart';
 import '../domain/dummy/productdummy/product_variant_dummy.dart';
 import '../domain/dummy/provincedummy/province_dummy.dart';
+import '../domain/repository/address_repository.dart';
+import '../domain/repository/banner_repository.dart';
+import '../domain/repository/cart_repository.dart';
 import '../domain/repository/coupon_repository.dart';
 import '../domain/repository/feed_repository.dart';
 import '../domain/repository/product_repository.dart';
 import '../domain/repository/user_repository.dart';
+import '../domain/usecase/add_additional_item_use_case.dart';
+import '../domain/usecase/add_host_cart_use_case.dart';
+import '../domain/usecase/add_to_cart_use_case.dart';
 import '../domain/usecase/add_wishlist_use_case.dart';
+import '../domain/usecase/change_additional_item_use_case.dart';
+import '../domain/usecase/get_additional_item_use_case.dart';
+import '../domain/usecase/get_bestseller_in_masterbagasi_list_use_case.dart';
+import '../domain/usecase/get_cart_summary_use_case.dart';
+import '../domain/usecase/get_coffee_and_tea_origin_indonesia_list_use_case.dart';
 import '../domain/usecase/get_coupon_paging_use_case.dart';
+import '../domain/usecase/get_current_selected_address_use_case.dart';
+import '../domain/usecase/get_delivery_review_use_case.dart';
+import '../domain/usecase/get_handycrafts_contents_banner_use_case.dart';
+import '../domain/usecase/get_kitchen_contents_banner_use_case.dart';
+import '../domain/usecase/get_my_cart_use_case.dart';
+import '../domain/usecase/get_news_use_case.dart';
 import '../domain/usecase/get_product_brand_detail_use_case.dart';
 import '../domain/usecase/get_product_brand_use_case.dart';
 import '../domain/usecase/get_product_bundle_detail_use_case.dart';
@@ -61,15 +91,21 @@ import '../domain/usecase/login_with_google_use_case.dart';
 import '../domain/usecase/logout_use_case.dart';
 import '../domain/usecase/register_use_case.dart';
 import '../domain/usecase/register_with_google_use_case.dart';
+import '../domain/usecase/remove_additional_item_use_case.dart';
+import '../domain/usecase/remove_from_cart_use_case.dart';
 import '../domain/usecase/remove_wishlist_use_case.dart';
+import '../domain/usecase/take_friend_cart_use_case.dart';
+import 'additionalloadingindicatorchecker/cart_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/coupon_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/feed_sub_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/home_sub_additional_paging_result_parameter_checker.dart';
+import 'additionalloadingindicatorchecker/menu_main_menu_sub_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/product_brand_detail_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/product_bundle_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/product_bundle_detail_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/product_category_detail_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/product_detail_additional_paging_result_parameter_checker.dart';
+import 'additionalloadingindicatorchecker/take_friend_cart_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/wishlist_sub_additional_paging_result_parameter_checker.dart';
 import 'defaultloaddataresultwidget/default_load_data_result_widget.dart';
 import 'defaultloaddataresultwidget/main_default_load_data_result_widget.dart';
@@ -79,6 +115,7 @@ import 'errorprovider/default_error_provider.dart';
 import 'errorprovider/error_provider.dart';
 import 'http_client.dart';
 import 'on_observe_load_product_delegate.dart';
+import 'shimmercarousellistitemgenerator/factory/cart_shimmer_carousel_list_item_generator_factory.dart';
 import 'shimmercarousellistitemgenerator/factory/coupon_shimmer_carousel_list_item_generator_factory.dart';
 import 'shimmercarousellistitemgenerator/factory/delivery_review_shimmer_carousel_list_item_generator_factory.dart';
 import 'shimmercarousellistitemgenerator/factory/news_shimmer_carousel_list_item_generator_factory.dart';
@@ -125,7 +162,11 @@ class _Injector {
       )
     );
     locator.registerLazySingleton<MenuMainMenuSubControllerInjectionFactory>(
-      () => MenuMainMenuSubControllerInjectionFactory()
+      () => MenuMainMenuSubControllerInjectionFactory(
+        getUserUseCase: locator(),
+        getShortMyCartUseCase: locator(),
+        logoutUseCase: locator()
+      )
     );
 
     // Error Provider
@@ -164,6 +205,10 @@ class _Injector {
     locator.registerLazySingleton<DeliveryReviewDummy>(() => DeliveryReviewDummy());
     locator.registerLazySingleton<NewsDummy>(() => NewsDummy());
     locator.registerLazySingleton<CouponDummy>(() => CouponDummy());
+    locator.registerLazySingleton<CartDummy>(() => CartDummy(productEntryDummy: locator()));
+    locator.registerLazySingleton<AddressDummy>(() => AddressDummy(countryDummy: locator()));
+    locator.registerLazySingleton<CountryDummy>(() => CountryDummy(zoneDummy: locator()));
+    locator.registerLazySingleton<ZoneDummy>(() => ZoneDummy());
 
     // Shimmer Carousel List Item Generator
     locator.registerFactory<ProductShimmerCarouselListItemGeneratorFactory>(
@@ -201,6 +246,11 @@ class _Injector {
         couponDummy: locator()
       )
     );
+    locator.registerFactory<CartShimmerCarouselListItemGeneratorFactory>(
+      () => CartShimmerCarouselListItemGeneratorFactory(
+        cartDummy: locator()
+      )
+    );
 
     // Additional Paging Result Parameter
     locator.registerFactory<HomeSubAdditionalPagingResultParameterChecker>(
@@ -229,6 +279,15 @@ class _Injector {
     );
     locator.registerFactory<CouponAdditionalPagingResultParameterChecker>(
       () => CouponAdditionalPagingResultParameterChecker()
+    );
+    locator.registerFactory<MenuMainMenuSubAdditionalPagingResultParameterChecker>(
+      () => MenuMainMenuSubAdditionalPagingResultParameterChecker()
+    );
+    locator.registerFactory<CartAdditionalPagingResultParameterChecker>(
+      () => CartAdditionalPagingResultParameterChecker()
+    );
+    locator.registerFactory<TakeFriendCartAdditionalPagingResultParameterChecker>(
+      () => TakeFriendCartAdditionalPagingResultParameterChecker()
     );
 
     // Default Load Data Result Widget
@@ -270,6 +329,18 @@ class _Injector {
     locator.registerLazySingleton<GetKitchenContentsBannerUseCase>(() => GetKitchenContentsBannerUseCase(bannerRepository: locator()));
     locator.registerLazySingleton<GetHandycraftsContentsBannerUseCase>(() => GetHandycraftsContentsBannerUseCase(bannerRepository: locator()));
     locator.registerLazySingleton<GetCouponPagingUseCase>(() => GetCouponPagingUseCase(couponRepository: locator()));
+    locator.registerLazySingleton<GetShortMyCartUseCase>(() => GetShortMyCartUseCase(cartRepository: locator()));
+    locator.registerLazySingleton<GetMyCartUseCase>(() => GetMyCartUseCase(cartRepository: locator()));
+    locator.registerLazySingleton<AddToCartUseCase>(() => AddToCartUseCase(cartRepository: locator()));
+    locator.registerLazySingleton<RemoveFromCartUseCase>(() => RemoveFromCartUseCase(cartRepository: locator()));
+    locator.registerLazySingleton<AddHostCartUseCase>(() => AddHostCartUseCase(cartRepository: locator()));
+    locator.registerLazySingleton<TakeFriendCartUseCase>(() => TakeFriendCartUseCase(cartRepository: locator()));
+    locator.registerLazySingleton<GetCurrentSelectedAddressUseCase>(() => GetCurrentSelectedAddressUseCase(addressRepository: locator()));
+    locator.registerLazySingleton<GetCartSummaryUseCase>(() => GetCartSummaryUseCase(cartRepository: locator()));
+    locator.registerLazySingleton<GetAdditionalItemUseCase>(() => GetAdditionalItemUseCase(cartRepository: locator()));
+    locator.registerLazySingleton<AddAdditionalItemUseCase>(() => AddAdditionalItemUseCase(cartRepository: locator()));
+    locator.registerLazySingleton<ChangeAdditionalItemUseCase>(() => ChangeAdditionalItemUseCase(cartRepository: locator()));
+    locator.registerLazySingleton<RemoveAdditionalItemUseCase>(() => RemoveAdditionalItemUseCase(cartRepository: locator()));
 
     // Repository
     locator.registerLazySingleton<UserRepository>(() => DefaultUserRepository(userDataSource: locator()));
@@ -277,6 +348,8 @@ class _Injector {
     locator.registerLazySingleton<BannerRepository>(() => DefaultBannerRepository(bannerDataSource: locator()));
     locator.registerLazySingleton<ProductRepository>(() => DefaultProductRepository(productDataSource: locator()));
     locator.registerLazySingleton<CouponRepository>(() => DefaultCouponRepository(couponDataSource: locator()));
+    locator.registerLazySingleton<CartRepository>(() => DefaultCartRepository(cartDataSource: locator()));
+    locator.registerLazySingleton<AddressRepository>(() => DefaultAddressRepository(addressDataSource: locator()));
 
     // Data Sources
     locator.registerLazySingleton<UserDataSource>(() => DefaultUserDataSource(dio: locator()));
@@ -290,6 +363,8 @@ class _Injector {
       )
     );
     locator.registerLazySingleton<CouponDataSource>(() => DefaultCouponDataSource(dio: locator()));
+    locator.registerLazySingleton<CartDataSource>(() => DefaultCartDataSource(dio: locator(), cartDummy: locator()));
+    locator.registerLazySingleton<AddressDataSource>(() => DefaultAddressDataSource(dio: locator(), addressDummy: locator()));
 
     // Dio
     locator.registerLazySingleton<Dio>(() => DioHttpClient.of());

@@ -72,9 +72,7 @@ class HomeMainMenuSubController extends BaseGetxController {
         }),
         onDynamicItemAction: (title, description, observer) async {
           observer(title, description, IsLoadingLoadDataResult<List<ProductCategory>>());
-          LoadDataResult<List<ProductCategory>> productEntryPagingDataResult = await getProductCategoryListUseCase.execute(
-            ProductCategoryListParameter()
-          ).future(
+          LoadDataResult<List<ProductCategory>> productEntryPagingDataResult = await getProductCategoryListUseCase.execute().future(
             parameter: apiRequestManager.addRequestToCancellationPart("product-category").value
           );
           if (productEntryPagingDataResult.isFailedBecauseCancellation) {
@@ -113,9 +111,7 @@ class HomeMainMenuSubController extends BaseGetxController {
         }),
         onDynamicItemAction: (title, description, observer) async {
           observer(title, description, IsLoadingLoadDataResult<List<ProductBrand>>());
-          LoadDataResult<List<ProductBrand>> productEntryPagingDataResult = await getProductBrandListUseCase.execute(
-            ProductBrandListParameter()
-          ).future(
+          LoadDataResult<List<ProductBrand>> productEntryPagingDataResult = await getProductBrandListUseCase.execute().future(
             parameter: apiRequestManager.addRequestToCancellationPart("product-brand").value
           );
           if (productEntryPagingDataResult.isFailedBecauseCancellation) {
@@ -154,9 +150,7 @@ class HomeMainMenuSubController extends BaseGetxController {
         }),
         onDynamicItemAction: (title, description, observer) async {
           observer(title, description, IsLoadingLoadDataResult<List<ProductEntry>>());
-          LoadDataResult<List<ProductEntry>> productEntryPagingDataResult = await getProductViralListUseCase.execute(
-            ProductWithConditionPagingParameter(page: 1, withCondition: "is_viral")
-          ).future(
+          LoadDataResult<List<ProductEntry>> productEntryPagingDataResult = await getProductViralListUseCase.execute().future(
             parameter: apiRequestManager.addRequestToCancellationPart("product-is-viral").value
           );
           if (productEntryPagingDataResult.isFailedBecauseCancellation) {

@@ -7,11 +7,14 @@ import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../controller/product_detail_controller.dart';
-import '../../domain/entity/location/location.dart';
 import '../../domain/entity/product/product.dart';
+import '../../domain/entity/product/product_detail.dart';
 import '../../domain/entity/product/product_detail_get_other_from_this_brand_parameter.dart';
 import '../../domain/entity/product/product_detail_get_other_in_this_category_parameter.dart';
 import '../../domain/entity/product/product_detail_parameter.dart';
+import '../../domain/entity/product/productentry/product_entry.dart';
+import '../../domain/entity/product/productvariant/product_variant.dart';
+import '../../domain/usecase/add_to_cart_use_case.dart';
 import '../../domain/usecase/get_product_category_list_use_case.dart';
 import '../../domain/usecase/get_product_detail_from_your_search_product_entry_list_use_case.dart';
 import '../../domain/usecase/get_product_detail_other_chosen_for_you_product_entry_list_use_case.dart';
@@ -21,13 +24,13 @@ import '../../domain/usecase/get_product_detail_other_interested_product_brand_l
 import '../../domain/usecase/get_product_detail_use_case.dart';
 import '../../misc/additionalloadingindicatorchecker/product_detail_additional_paging_result_parameter_checker.dart';
 import '../../misc/constant.dart';
-import '../../misc/controllerstate/listitemcontrollerstate/colorful_divider_list_item_controller_state.dart';
-import '../../misc/controllerstate/listitemcontrollerstate/delivery_to_list_item_controller_state.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/builder_list_item_controller_state.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/colorful_chip_tab_bar_list_item_controller_state.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/compound_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/load_data_result_dynamic_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/padding_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/product_detail_brand_list_item_controller_state.dart';
-import '../../misc/controllerstate/listitemcontrollerstate/product_detail_header_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/product_detail_image_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/title_and_description_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
@@ -46,6 +49,9 @@ import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
 import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/horizontal_dynamic_item_carousel_parametered_component_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/wishlist_parameterized_entity_and_list_item_controller_state_mediator.dart';
+import '../../misc/string_util.dart';
+import '../widget/button/custombutton/sized_outline_gradient_button.dart';
+import '../widget/colorful_chip_tab_bar.dart';
 import '../widget/modified_divider.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/default_search_app_bar.dart';
@@ -56,8 +62,13 @@ class ProductDetailPage extends RestorableGetxPage<_ProductDetailPageRestoration
   late final ControllerMember<ProductDetailController> _productDetailController = ControllerMember<ProductDetailController>().addToControllerManager(controllerManager);
 
   final String productId;
+  final String productEntryId;
 
-  ProductDetailPage({Key? key, required this.productId}) : super(key: key, pageRestorationId: () => "product-detail-page");
+  ProductDetailPage({
+    Key? key,
+    required this.productId,
+    required this.productEntryId
+  }) : super(key: key, pageRestorationId: () => "product-detail-page");
 
   @override
   void onSetController() {
@@ -71,6 +82,7 @@ class ProductDetailPage extends RestorableGetxPage<_ProductDetailPageRestoration
         Injector.locator<GetProductDetailOtherInThisCategoryProductEntryListUseCase>(),
         Injector.locator<GetProductDetailFromYourSearchProductEntryListUseCase>(),
         Injector.locator<GetProductDetailOtherInterestedProductBrandListUseCase>(),
+        Injector.locator<AddToCartUseCase>()
       ),
       tag: pageName
     );
@@ -84,6 +96,7 @@ class ProductDetailPage extends RestorableGetxPage<_ProductDetailPageRestoration
     return Scaffold(
       body: _StatefulProductDetailControllerMediatorWidget(
         productId: productId,
+        productEntryId: productEntryId,
         productDetailController: _productDetailController.controller,
       ),
     );
@@ -112,16 +125,26 @@ class _ProductDetailPageRestoration extends MixableGetxPageRestoration with Prod
 
 class ProductDetailPageGetPageBuilderAssistant extends GetPageBuilderAssistant {
   final String productId;
+  final String productEntryId;
 
   ProductDetailPageGetPageBuilderAssistant({
-    required this.productId
+    required this.productId,
+    required this.productEntryId
   });
 
   @override
-  GetPageBuilder get pageBuilder => (() => ProductDetailPage(productId: productId));
+  GetPageBuilder get pageBuilder => (() => ProductDetailPage(
+    productId: productId,
+    productEntryId: productEntryId,
+  ));
 
   @override
-  GetPageBuilder get pageWithOuterGetxBuilder => (() => GetxPageBuilder.buildRestorableGetxPage(ProductDetailPage(productId: productId)));
+  GetPageBuilder get pageWithOuterGetxBuilder => (() => GetxPageBuilder.buildRestorableGetxPage(
+    ProductDetailPage(
+      productId: productId,
+      productEntryId: productEntryId
+    )
+  ));
 }
 
 mixin ProductDetailPageRestorationMixin on MixableGetxPageRestoration {
@@ -161,8 +184,14 @@ class ProductDetailPageRestorableRouteFuture extends GetRestorableRouteFuture {
     if (arguments is! String) {
       throw MessageError(message: "Arguments must be a String");
     }
+    ProductDetailPageParameter productDetailPageParameter = arguments.toProductDetailPageParameter();
     return GetExtended.toWithGetPageRouteReturnValue<void>(
-      GetxPageBuilder.buildRestorableGetxPageBuilder(ProductDetailPageGetPageBuilderAssistant(productId: arguments)),
+      GetxPageBuilder.buildRestorableGetxPageBuilder(
+        ProductDetailPageGetPageBuilderAssistant(
+          productId: productDetailPageParameter.productId,
+          productEntryId: productDetailPageParameter.productEntryId
+        )
+      ),
     );
   }
 
@@ -191,10 +220,12 @@ class ProductDetailPageRestorableRouteFuture extends GetRestorableRouteFuture {
 class _StatefulProductDetailControllerMediatorWidget extends StatefulWidget {
   final ProductDetailController productDetailController;
   final String productId;
+  final String productEntryId;
 
   const _StatefulProductDetailControllerMediatorWidget({
     required this.productDetailController,
-    required this.productId
+    required this.productId,
+    required this.productEntryId
   });
 
   @override
@@ -205,6 +236,8 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
   late final ModifiedPagingController<int, ListItemControllerState> _productDetailListItemPagingController;
   late final PagingControllerState<int, ListItemControllerState> _productDetailListItemPagingControllerState;
   final List<LoadDataResultDynamicListItemControllerState> _dynamicItemLoadDataResultDynamicListItemControllerStateList = [];
+  late ColorfulChipTabBarController _productVariantColorfulChipTabBarController;
+  String _selectedProductEntryId = "";
 
   @override
   void initState() {
@@ -224,6 +257,9 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
       onPageKeyNext: (pageKey) => pageKey + 1
     );
     _productDetailListItemPagingControllerState.isPagingControllerExist = true;
+    _selectedProductEntryId = widget.productEntryId;
+    _productVariantColorfulChipTabBarController = ColorfulChipTabBarController(0);
+    _productVariantColorfulChipTabBarController.addListener(() => setState(() {}));
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _productDetailListItemPagingControllerStateListener(int pageKey) async {
@@ -232,21 +268,45 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
       onSetState: () => setState(() {}),
       dynamicItemLoadDataResultDynamicListItemControllerStateList: _dynamicItemLoadDataResultDynamicListItemControllerStateList
     );
-    LoadDataResult<Product> productLoadDataResult = await widget.productDetailController.getProductDetail(
-      ProductDetailParameter(productId: widget.productId)
+    LoadDataResult<ProductDetail> productDetailLoadDataResult = await widget.productDetailController.getProductDetail(
+      ProductDetailParameter(
+        productId: widget.productId
+      )
     );
-    return productLoadDataResult.map((product) {
+    return productDetailLoadDataResult.map((productDetail) {
+      int a = 0;
+      int selectedProductVariantIndex = -1;
+      List<ProductEntry> productEntryList = productDetail.productEntry;
+      for (ProductEntry productEntry in productEntryList) {
+        List<ProductVariant> productVariantList = productEntry.productVariantList;
+        if (productVariantList.isNotEmpty) {
+          ProductVariant firstProductVariant = productVariantList.first;
+          if (firstProductVariant.productEntryId == widget.productEntryId) {
+            if (selectedProductVariantIndex == -1) {
+              selectedProductVariantIndex = a;
+              _productVariantColorfulChipTabBarController.value = selectedProductVariantIndex;
+              break;
+            }
+          }
+        }
+        a++;
+      }
       return PagingDataResult<ListItemControllerState>(
         page: 1,
         totalPage: 1,
         totalItem: 1,
         itemList: [
-          ProductDetailImageListItemControllerState(productAppearanceData: product),
+          ProductDetailImageListItemControllerState(
+            productEntryList: productDetail.productEntry,
+            onGetProductEntryIndex: () {
+              return _productVariantColorfulChipTabBarController.value;
+            }
+          ),
           VirtualSpacingListItemControllerState(height: 2.h),
           PaddingContainerListItemControllerState(
             padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
             paddingChildListItemControllerState: TitleAndDescriptionListItemControllerState(
-              title: product.name,
+              title: productDetail.name,
               verticalSpace: 5,
               titleAndDescriptionItemInterceptor: (padding, title, titleWidget, description, descriptionWidget, titleAndDescriptionWidget, titleAndDescriptionWidgetList) {
                 if (titleWidget != null) {
@@ -258,20 +318,80 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
               }
             ),
           ),
+          if (productEntryList.isNotEmpty)
+            CompoundListItemControllerState(
+              listItemControllerState: [
+                VirtualSpacingListItemControllerState(height: 2.h),
+                PaddingContainerListItemControllerState(
+                  padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+                  paddingChildListItemControllerState: TitleAndDescriptionListItemControllerState(
+                    title: "Select Variant".tr,
+                    description: null,
+                    verticalSpace: 25,
+                    titleAndDescriptionItemInterceptor: (padding, title, titleWidget, description, descriptionWidget, titleAndDescriptionWidget, titleAndDescriptionWidgetList) {
+                      titleAndDescriptionWidgetList.first = Text(title.toStringNonNull, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold));
+                      return titleAndDescriptionWidget;
+                    }
+                  )
+                ),
+                VirtualSpacingListItemControllerState(height: 2.h),
+                BuilderListItemControllerState(
+                  buildListItemControllerState: () {
+                    List<ColorfulChipTabBarData> colorfulChipTabBarDataList = [];
+                    int i = 0;
+                    int selectedProductVariantIndex = -1;
+                    List<ProductEntry> productEntryList = productDetail.productEntry;
+                    for (ProductEntry productEntry in productEntryList) {
+                      List<ProductVariant> productVariantList = productEntry.productVariantList;
+                      if (productVariantList.isNotEmpty) {
+                        ProductVariant firstProductVariant = productVariantList.first;
+                        if (firstProductVariant.productEntryId == widget.productEntryId) {
+                          if (selectedProductVariantIndex == -1) {
+                            selectedProductVariantIndex = i;
+                          }
+                        }
+                        String productVariantDescription = "";
+                        int j = 0;
+                        for (ProductVariant productVariant in productVariantList) {
+                          productVariantDescription += "${(j > 0 ? ", " : "")}${productVariant.type} (${productVariant.name})";
+                          j++;
+                        }
+                        colorfulChipTabBarDataList.add(
+                          ColorfulChipTabBarData(
+                            title: productVariantDescription,
+                            color: Theme.of(context).colorScheme.primary,
+                            data: firstProductVariant.productEntryId
+                          )
+                        );
+                      }
+                      i++;
+                    }
+                    return CompoundListItemControllerState(
+                      listItemControllerState: [
+                        ColorfulChipTabBarListItemControllerState(
+                          colorfulChipTabBarController: _productVariantColorfulChipTabBarController!,
+                          colorfulChipTabBarDataList: colorfulChipTabBarDataList,
+                        ),
+                      ],
+                    );
+                  }
+                ),
+              ]
+            ),
           VirtualSpacingListItemControllerState(height: 2.h),
           PaddingContainerListItemControllerState(
             padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
             paddingChildListItemControllerState: TitleAndDescriptionListItemControllerState(
               title: "Product Detail".tr,
-              description: product.description,
+              description: productDetail.description,
               verticalSpace: 25,
               titleAndDescriptionItemInterceptor: (padding, title, titleWidget, description, descriptionWidget, titleAndDescriptionWidget, titleAndDescriptionWidgetList) {
                 List<List<String>> productDetailContentList = [
-                  if (product.productCertificationList.isNotEmpty) <String>["Certification".tr, product.productCertificationList.first.name],
+                  if (productDetail.productCertificationList.isNotEmpty) <String>["Certification".tr, productDetail.productCertificationList.first.name],
                   //<String>["Contain".tr, product.],
-                  <String>["Category".tr, product.productCategory.name],
-                  <String>["Province".tr, product.province.name],
-                  <String>["Brand".tr, product.productBrand.name],
+                  <String>["Category".tr, productDetail.productCategory.name],
+                  <String>["Province".tr, productDetail.province.name],
+                  <String>["Brand".tr, productDetail.productBrand.name],
                 ];
                 titleAndDescriptionWidgetList.first = Text(title.toStringNonNull, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold));
                 titleAndDescriptionWidgetList.last = Column(
@@ -312,7 +432,7 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
             padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
             paddingChildListItemControllerState: TitleAndDescriptionListItemControllerState(
               title: "Product Description".tr,
-              description: product.description,
+              description: productDetail.description,
               verticalSpace: 25,
               titleAndDescriptionItemInterceptor: (padding, title, titleWidget, description, descriptionWidget, titleAndDescriptionWidget, titleAndDescriptionWidgetList) {
                 titleAndDescriptionWidgetList.first = Text(title.toStringNonNull, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold));
@@ -324,18 +444,18 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
           componentEntityMediator.mapWithParameter(
             widget.productDetailController.getOtherInThisCategory(
               ProductDetailGetOtherInThisCategoryParameter(
-                categorySlug: product.productCategory.slug
+                categorySlug: productDetail.productCategory.slug
               )
             ),
             parameter: carouselParameterizedEntityMediator
           ),
           VirtualSpacingListItemControllerState(height: 4.h),
-          ProductDetailBrandListItemControllerState(productBrand: product.productBrand),
+          ProductDetailBrandListItemControllerState(productBrand: productDetail.productBrand),
           VirtualSpacingListItemControllerState(height: 4.h),
           componentEntityMediator.mapWithParameter(
             widget.productDetailController.getOtherFromThisBrand(
               ProductDetailGetOtherFromThisBrandParameter(
-                brandSlug: product.productBrand.slug
+                brandSlug: productDetail.productBrand.slug
               )
             ),
             parameter: carouselParameterizedEntityMediator
@@ -395,6 +515,30 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
                 pullToRefresh: true
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: SizedOutlineGradientButton(
+                      width: double.infinity,
+                      outlineGradientButtonType: OutlineGradientButtonType.outline,
+                      onPressed: () => widget.productDetailController.addToCart(_selectedProductEntryId),
+                      text: "Buy Directly".tr,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: SizedOutlineGradientButton(
+                      width: double.infinity,
+                      outlineGradientButtonType: OutlineGradientButtonType.solid,
+                      onPressed: () => widget.productDetailController.addToCart(_selectedProductEntryId),
+                      text: "+ ${"Cart".tr}",
+                    ),
+                  ),
+                ],
+              )
+            )
           ]
         )
       ),
@@ -404,5 +548,34 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
   @override
   void dispose() {
     super.dispose();
+  }
+}
+
+class ProductDetailPageParameter {
+  String productId;
+  String productEntryId;
+
+  ProductDetailPageParameter({
+    required this.productId,
+    required this.productEntryId
+  });
+}
+
+extension ProductDetailPageParameterExt on ProductDetailPageParameter {
+  String toEncodeBase64String() => StringUtil.encodeBase64StringFromJson(
+    <String, dynamic>{
+      "product_id": productId,
+      "product_entry_id": productEntryId,
+    }
+  );
+}
+
+extension ProductDetailPageParameterStringExt on String {
+  ProductDetailPageParameter toProductDetailPageParameter() {
+    dynamic result = StringUtil.decodeBase64StringToJson(this);
+    return ProductDetailPageParameter(
+      productId: result["product_id"],
+      productEntryId: result["product_entry_id"],
+    );
   }
 }

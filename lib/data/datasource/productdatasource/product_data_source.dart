@@ -1,4 +1,5 @@
 import '../../../domain/entity/product/product.dart';
+import '../../../domain/entity/product/product_detail.dart';
 import '../../../domain/entity/product/product_detail_from_your_search_product_entry_list_parameter.dart';
 import '../../../domain/entity/product/product_detail_other_chosen_for_you_product_entry_list_parameter.dart';
 import '../../../domain/entity/product/product_detail_other_from_this_brand_product_entry_list_parameter.dart';
@@ -8,6 +9,7 @@ import '../../../domain/entity/product/productbrand/product_brand.dart';
 import '../../../domain/entity/product/productbrand/product_brand_detail.dart';
 import '../../../domain/entity/product/productbrand/product_brand_detail_parameter.dart';
 import '../../../domain/entity/product/productbrand/product_brand_list_parameter.dart';
+import '../../../domain/entity/product/productbrand/product_brand_paging_parameter.dart';
 import '../../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../../domain/entity/product/productbundle/product_bundle_detail.dart';
 import '../../../domain/entity/product/productbundle/product_bundle_detail_parameter.dart';
@@ -19,6 +21,7 @@ import '../../../domain/entity/product/productcategory/product_category_detail.d
 import '../../../domain/entity/product/productcategory/product_category_detail_parameter.dart';
 import '../../../domain/entity/product/productcategory/product_category_list_parameter.dart';
 import '../../../domain/entity/product/product_detail_parameter.dart';
+import '../../../domain/entity/product/productcategory/product_category_paging_parameter.dart';
 import '../../../domain/entity/product/productentry/product_entry.dart';
 import '../../../domain/entity/product/product_list_parameter.dart';
 import '../../../domain/entity/product/product_paging_parameter.dart';
@@ -40,10 +43,12 @@ abstract class ProductDataSource {
   FutureProcessing<List<Product>> productList(ProductListParameter productListParameter);
   FutureProcessing<List<ProductEntry>> productWithConditionList(ProductWithConditionListParameter productWithConditionListParameter);
   FutureProcessing<PagingDataResult<Product>> productPaging(ProductPagingParameter productPagingParameter);
+  FutureProcessing<PagingDataResult<ProductBrand>> productBrandPaging(ProductBrandPagingParameter productBrandPagingParameter);
+  FutureProcessing<PagingDataResult<ProductCategory>> productCategoryPaging(ProductCategoryPagingParameter productCategoryPagingParameter);
   FutureProcessing<PagingDataResult<ProductBundle>> productBundlePaging(ProductBundlePagingParameter productBundlePagingParameter);
   FutureProcessing<ProductBundle> productBundleHighlight(ProductBundleHighlightParameter productBundleHighlightParameter);
   FutureProcessing<PagingDataResult<ProductEntry>> productWithConditionPaging(ProductWithConditionPagingParameter productWithConditionPagingParameter);
-  FutureProcessing<Product> productDetail(ProductDetailParameter productDetailParameter);
+  FutureProcessing<ProductDetail> productDetail(ProductDetailParameter productDetailParameter);
   FutureProcessing<ProductBrandDetail> productBrandDetail(ProductBrandDetailParameter productBrandDetailParameter);
   FutureProcessing<ProductCategoryDetail> productCategoryDetail(ProductCategoryDetailParameter productCategoryDetailParameter);
   FutureProcessing<ProductBundleDetail> productBundleDetail(ProductBundleDetailParameter productBundleDetailParameter);

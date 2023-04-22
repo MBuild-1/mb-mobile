@@ -7,11 +7,25 @@ import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../../../domain/entity/product/product.dart';
+import '../../../domain/entity/product/productentry/product_entry.dart';
+import '../../../presentation/widget/additional_item_summary_widget.dart';
+import '../../../presentation/widget/additional_item_widget.dart';
 import '../../../presentation/widget/carousel_list_item.dart';
+import '../../../presentation/widget/cart/cart_header.dart';
+import '../../../presentation/widget/cart/horizontal_cart_item.dart';
+import '../../../presentation/widget/cart/shortcart/horizontal_short_cart_item.dart';
+import '../../../presentation/widget/cart/shortcart/vertical_short_cart_item.dart';
+import '../../../presentation/widget/cart/vertical_cart_item.dart';
 import '../../../presentation/widget/colorful_chip_tab_bar.dart';
 import '../../../presentation/widget/coupon/horizontal_coupon_item.dart';
 import '../../../presentation/widget/coupon/vertical_coupon_item.dart';
+import '../../../presentation/widget/default_video_carousel_list_item.dart';
+import '../../../presentation/widget/deliveryreview/horizontal_delivery_review_item.dart';
+import '../../../presentation/widget/deliveryreview/vertical_delivery_review_item.dart';
+import '../../../presentation/widget/host_cart_indicator.dart';
 import '../../../presentation/widget/icon_title_and_description_list_item.dart';
+import '../../../presentation/widget/menu_profile_header.dart';
+import '../../../presentation/widget/modified_carousel_slider.dart';
 import '../../../presentation/widget/modifiedassetimage/modified_asset_image.dart';
 import '../../../presentation/widget/modifiedcachednetworkimage/modified_cached_network_image.dart';
 import '../../../presentation/widget/modified_colorful_divider.dart';
@@ -39,13 +53,24 @@ import '../../../presentation/widget/productcategory/horizontal_product_category
 import '../../../presentation/widget/productcategory/vertical_product_category_item.dart';
 import '../../../presentation/widget/prompt_indicator.dart';
 import '../../../presentation/widget/shimmer_carousel_item.dart';
+import '../../../presentation/widget/shipping_address_indicator.dart';
+import '../../../presentation/widget/short_video_carousel_list_item.dart';
 import '../../../presentation/widget/titleanddescriptionitem/title_and_description_item.dart';
 import '../../../presentation/widget/titledescriptionandcontentitem/title_description_and_content_item.dart';
 import '../../../presentation/widget/product_detail_header.dart';
 import '../../carouselbackground/asset_carousel_background.dart';
 import '../../carouselbackground/carousel_background.dart';
 import '../../constant.dart';
+import '../../controllerstate/listitemcontrollerstate/additionalitemlistitemcontrollerstate/additional_item_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/additionalitemlistitemcontrollerstate/additional_item_summary_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/carousel_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/cart_header_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/cart_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/horizontal_cart_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/shortcartlistitemcontrollerstate/horizontal_short_cart_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/shortcartlistitemcontrollerstate/short_cart_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/shortcartlistitemcontrollerstate/vertical_short_cart_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/vertical_cart_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/check_rates_for_various_countries_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/colorful_chip_tab_bar_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/colorful_divider_list_item_controller_state.dart';
@@ -62,9 +87,14 @@ import '../../controllerstate/listitemcontrollerstate/divider_list_item_controll
 import '../../controllerstate/listitemcontrollerstate/dynamic_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/empty_container_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/failed_prompt_indicator_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/host_cart_indicator_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/icon_title_and_description_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/loading_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/menu_profile_header_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/newslistitemcontrollerstate/horizontal_news_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/newslistitemcontrollerstate/news_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/newslistitemcontrollerstate/vertical_news_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/non_expanded_item_in_row_child_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/non_expanded_item_in_row_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/padding_container_list_item_controller_state.dart';
@@ -94,6 +124,9 @@ import '../../controllerstate/listitemcontrollerstate/productlistitemcontrollers
 import '../../controllerstate/listitemcontrollerstate/productlistitemcontrollerstate/product_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productlistitemcontrollerstate/vertical_product_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/row_container_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/shipping_address_indicator_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/videocarousellistitemcontrollerstate/default_video_carousel_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/videocarousellistitemcontrollerstate/short_video_carousel_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/single_banner_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/spacing_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/tab_bar_list_item_controller_state.dart';
@@ -611,6 +644,75 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
       } else {
         return Container();
       }
+    } else if (item is MenuProfileHeaderListItemControllerState) {
+      return MenuProfileHeader(
+        userLoadDataResult: item.userLoadDataResult,
+        errorProvider: item.errorProvider,
+      );
+    } else if (item is ShortCartListItemControllerState) {
+      if (item is HorizontalShortCartListItemControllerState) {
+        return HorizontalShortCartItem(
+          cart: item.cart,
+          onSelectCart: item.onSelectCart,
+        );
+      } else if (item is VerticalShortCartListItemControllerState) {
+        if (item is ShimmerVerticalShortCartListItemControllerState) {
+          return ShimmerVerticalShortCartItem(
+            cart: item.cart,
+          );
+        } else {
+          return VerticalShortCartItem(
+            cart: item.cart,
+            onSelectCart: item.onSelectCart,
+          );
+        }
+      } else {
+        return Container();
+      }
+    } else if (item is CartListItemControllerState) {
+      if (item is HorizontalCartListItemControllerState) {
+        return HorizontalCartItem(
+          cart: item.cart,
+          isSelected: item.isSelected,
+          onChangeSelected: item.onChangeSelected,
+        );
+      } else if (item is VerticalCartListItemControllerState) {
+        if (item is ShimmerVerticalCartListItemControllerState) {
+          return ShimmerVerticalCartItem(
+            cart: item.cart,
+          );
+        } else {
+          return VerticalCartItem(
+            cart: item.cart,
+            isSelected: item.isSelected,
+            onChangeSelected: item.onChangeSelected,
+          );
+        }
+      } else {
+        return Container();
+      }
+    } else if (item is CartHeaderListItemControllerState) {
+      return CartHeader(
+        isSelected: item.isSelected,
+        onChangeSelected: item.onChangeSelected,
+      );
+    } else if (item is HostCartIndicatorListItemControllerState) {
+      return HostCartIndicator(
+        hostCart: item.hostCart,
+      );
+    } else if (item is AdditionalItemListItemControllerState) {
+      return AdditionalItemWidget(
+        additionalItem: item.additionalItem,
+        no: item.no
+      );
+    } else if (item is AdditionalItemSummaryListItemControllerState) {
+      return AdditionalItemSummaryWidget(
+        additionalItemList: item.additionalItemList,
+      );
+    } else if (item is ShippingAddressIndicatorListItemControllerState) {
+      return ShippingAddressIndicator(
+        shippingAddress: item.shippingAddress,
+      );
     } else {
       return Container();
     }

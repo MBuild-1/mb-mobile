@@ -94,7 +94,7 @@ class DefaultUserDataSource implements UserDataSource {
   @override
   FutureProcessing<GetUserResponse> getUser(GetUserParameter getUserParameter) {
     return DioHttpClientProcessing((cancelToken) {
-      return dio.get("/auth/me", cancelToken: cancelToken)
+      return dio.post("/auth/me", cancelToken: cancelToken)
         .map<GetUserResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToGetUserResponse());
     });
   }

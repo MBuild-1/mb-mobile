@@ -1,8 +1,9 @@
+import '../../cart/support_cart.dart';
 import '../product.dart';
 import '../product_appearance_data.dart';
 import '../productvariant/product_variant.dart';
 
-class ProductEntry implements ProductEntryAppearanceData {
+class ProductEntry implements ProductEntryAppearanceData, SupportCart {
   String id;
   @override
   String productId;
@@ -16,6 +17,7 @@ class ProductEntry implements ProductEntryAppearanceData {
   int isKitchen;
   int isHandycrafts;
   int isFashionable;
+  int purchasePrice;
   int sellingPrice;
   int isBestSelling;
   Product product;
@@ -23,6 +25,15 @@ class ProductEntry implements ProductEntryAppearanceData {
   List<ProductVariant> productVariantList;
   @override
   int soldCount;
+
+  @override
+  String get cartTitle => name;
+
+  @override
+  double get cartPrice => sellingPrice.toDouble();
+
+  @override
+  String get cartImageUrl => imageUrl;
 
   ProductEntry({
     required this.id,
@@ -35,6 +46,7 @@ class ProductEntry implements ProductEntryAppearanceData {
     required this.isKitchen,
     required this.isHandycrafts,
     required this.isFashionable,
+    required this.purchasePrice,
     required this.sellingPrice,
     required this.isBestSelling,
     required this.product,

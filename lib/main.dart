@@ -7,6 +7,8 @@ import 'package:masterbagasi/misc/translation/default_extended_translation.dart'
 import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 import 'domain/usecase/get_user_use_case.dart';
 import 'misc/constant.dart';
@@ -21,6 +23,9 @@ import 'presentation/page/mainmenu/main_menu_page.dart';
 void main() async {
   Injector.init();
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   await Hive.initFlutter();
   await Hive.openBox(Constant.settingHiveTable);
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(

@@ -1,4 +1,5 @@
 import '../../domain/entity/product/product.dart';
+import '../../domain/entity/product/product_detail.dart';
 import '../../domain/entity/product/product_detail_from_your_search_product_entry_list_parameter.dart';
 import '../../domain/entity/product/product_detail_other_chosen_for_you_product_entry_list_parameter.dart';
 import '../../domain/entity/product/product_detail_other_from_this_brand_product_entry_list_parameter.dart';
@@ -8,6 +9,7 @@ import '../../domain/entity/product/productbrand/product_brand.dart';
 import '../../domain/entity/product/productbrand/product_brand_detail.dart';
 import '../../domain/entity/product/productbrand/product_brand_detail_parameter.dart';
 import '../../domain/entity/product/productbrand/product_brand_list_parameter.dart';
+import '../../domain/entity/product/productbrand/product_brand_paging_parameter.dart';
 import '../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../domain/entity/product/productbundle/product_bundle_detail.dart';
 import '../../domain/entity/product/productbundle/product_bundle_detail_parameter.dart';
@@ -19,6 +21,7 @@ import '../../domain/entity/product/productcategory/product_category_detail.dart
 import '../../domain/entity/product/productcategory/product_category_detail_parameter.dart';
 import '../../domain/entity/product/productcategory/product_category_list_parameter.dart';
 import '../../domain/entity/product/product_detail_parameter.dart';
+import '../../domain/entity/product/productcategory/product_category_paging_parameter.dart';
 import '../../domain/entity/product/productentry/product_entry.dart';
 import '../../domain/entity/product/product_list_parameter.dart';
 import '../../domain/entity/product/product_paging_parameter.dart';
@@ -74,6 +77,16 @@ class DefaultProductRepository implements ProductRepository {
   }
 
   @override
+  FutureProcessing<LoadDataResult<PagingDataResult<ProductBrand>>> productBrandPaging(ProductBrandPagingParameter productBrandPagingParameter) {
+    return productDataSource.productBrandPaging(productBrandPagingParameter).mapToLoadDataResult<PagingDataResult<ProductBrand>>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<PagingDataResult<ProductCategory>>> productCategoryPaging(ProductCategoryPagingParameter productCategoryPagingParameter) {
+    return productDataSource.productCategoryPaging(productCategoryPagingParameter).mapToLoadDataResult<PagingDataResult<ProductCategory>>();
+  }
+
+  @override
   FutureProcessing<LoadDataResult<PagingDataResult<ProductBundle>>> productBundlePaging(ProductBundlePagingParameter productBundlePagingParameter) {
     return productDataSource.productBundlePaging(productBundlePagingParameter).mapToLoadDataResult<PagingDataResult<ProductBundle>>();
   }
@@ -89,8 +102,8 @@ class DefaultProductRepository implements ProductRepository {
   }
 
   @override
-  FutureProcessing<LoadDataResult<Product>> productDetail(ProductDetailParameter productDetailParameter) {
-    return productDataSource.productDetail(productDetailParameter).mapToLoadDataResult<Product>();
+  FutureProcessing<LoadDataResult<ProductDetail>> productDetail(ProductDetailParameter productDetailParameter) {
+    return productDataSource.productDetail(productDetailParameter).mapToLoadDataResult<ProductDetail>();
   }
 
   @override

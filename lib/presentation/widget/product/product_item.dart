@@ -7,6 +7,7 @@ import 'package:sizer/sizer.dart';
 import '../../../domain/entity/product/product_appearance_data.dart';
 import '../../../misc/constant.dart';
 import '../../../misc/page_restoration_helper.dart';
+import '../../page/product_detail_page.dart';
 import '../button/add_or_remove_wishlist_button.dart';
 import '../button/custombutton/sized_outline_gradient_button.dart';
 import '../modified_divider.dart';
@@ -109,7 +110,13 @@ abstract class ProductItem extends StatelessWidget {
           borderRadius: borderRadius,
           elevation: 3,
           child: InkWell(
-            onTap: () => PageRestorationHelper.toProductDetailPage(context, productAppearanceData.productId),
+            onTap: () => PageRestorationHelper.toProductDetailPage(
+              context,
+              ProductDetailPageParameter(
+                productId: productAppearanceData.productId,
+                productEntryId: productAppearanceData is ProductEntryAppearanceData ? (productAppearanceData as ProductEntryAppearanceData).productEntryId : ""
+              )
+            ),
             borderRadius: borderRadius,
             child: Container(
               clipBehavior: Clip.antiAlias,
