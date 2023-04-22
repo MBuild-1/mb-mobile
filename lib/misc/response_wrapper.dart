@@ -1,3 +1,5 @@
+import 'response_encyption_helper.dart';
+
 class ResponseWrapper {
   final dynamic response;
 
@@ -20,9 +22,11 @@ class MainStructureResponseWrapper extends ResponseWrapper {
 
   MainStructureResponseWrapper(dynamic fullResponse) : super(fullResponse) {
     dynamic meta = fullResponse["meta"];
+    dynamic dataResponse = fullResponse["data"];
+    dynamic decryptedDataResponse = ResponseEncryptionHelper.decryptResponseData(dataResponse);
     status = meta["status"];
     code = meta["code"];
     message = meta["message"];
-    _dataResponse = fullResponse["data"];
+    _dataResponse = decryptedDataResponse;
   }
 }
