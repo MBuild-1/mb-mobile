@@ -4,6 +4,7 @@ import 'package:masterbagasi/misc/ext/string_ext.dart';
 import '../../../domain/entity/product/productbrand/product_brand.dart';
 import '../../../misc/constant.dart';
 import '../../../misc/page_restoration_helper.dart';
+import '../../page/product_entry_page.dart';
 import '../modified_divider.dart';
 import '../modifiedcachednetworkimage/product_modified_cached_network_image.dart';
 
@@ -35,7 +36,14 @@ abstract class ProductBrandItem extends StatelessWidget {
           borderRadius: borderRadius,
           elevation: 3,
           child: InkWell(
-            onTap: () => PageRestorationHelper.toProductBrandDetailPage(context, productBrand.id),
+            onTap: () => PageRestorationHelper.toProductEntryPage(
+              context,
+              ProductEntryPageParameter(
+                productEntryParameterMap: {
+                  "brand_id": productBrand.id
+                }
+              )
+            ),
             borderRadius: borderRadius,
             child: Container(
               clipBehavior: Clip.antiAlias,

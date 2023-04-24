@@ -5,18 +5,23 @@ import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_ext.dart';
 
-import '../../controller/product_entry_is_viral_controller.dart';
+import '../../controller/product_entry_controller.dart';
 import '../../domain/entity/product/product_with_condition_paging_parameter.dart';
 import '../../domain/entity/product/productentry/product_entry.dart';
+import '../../domain/entity/product/productentry/product_entry_header_content_parameter.dart';
+import '../../domain/entity/product/productentry/product_entry_header_content_response.dart';
+import '../../domain/usecase/get_product_entry_header_content_use_case.dart';
 import '../../domain/usecase/get_product_entry_with_condition_paging_use_case.dart';
-import '../../domain/usecase/get_product_viral_paging_use_case.dart';
 import '../../misc/additionalloadingindicatorchecker/product_bundle_additional_paging_result_parameter_checker.dart';
 import '../../misc/constant.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/load_data_result_dynamic_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/product_entry_header_background_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/productlistitemcontrollerstate/vertical_product_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
+import '../../misc/entityandlistitemcontrollerstatemediator/horizontal_component_entity_parameterized_entity_and_list_item_controller_state_mediator.dart';
 import '../../misc/error/message_error.dart';
+import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
@@ -24,10 +29,13 @@ import '../../misc/itemtypelistsubinterceptor/verticalgriditemtypelistsubinterce
 import '../../misc/list_item_controller_state_helper.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/controller_manager.dart';
+import '../../misc/on_observe_load_product_delegate.dart';
 import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
+import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/horizontal_dynamic_item_carousel_parametered_component_entity_and_list_item_controller_state_mediator_parameter.dart';
+import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/wishlist_parameterized_entity_and_list_item_controller_state_mediator.dart';
 import '../../misc/productentryheaderbackground/asset_product_entry_header_background.dart';
 import '../../misc/string_util.dart';
 import '../widget/modified_paged_list_view.dart';
@@ -40,14 +48,15 @@ class ProductEntryPage extends RestorableGetxPage<_ProductEntryPageRestoration> 
 
   final ProductEntryPageParameter productEntryPageParameter;
 
-  ProductEntryPage({Key? key, required this.productEntryPageParameter}) : super(key: key, pageRestorationId: () => "product-entry-is-viral-page");
+  ProductEntryPage({Key? key, required this.productEntryPageParameter}) : super(key: key, pageRestorationId: () => "product-entry-page");
 
   @override
   void onSetController() {
     _productEntryController.controller = GetExtended.put<ProductEntryController>(
       ProductEntryController(
         controllerManager,
-        Injector.locator<GetProductEntryWithConditionPagingUseCase>()
+        Injector.locator<GetProductEntryWithConditionPagingUseCase>(),
+        Injector.locator<GetProductEntryHeaderContentUseCase>()
       ),
       tag: pageName
     );
@@ -190,6 +199,7 @@ class _StatefulProductEntryControllerMediatorWidget extends StatefulWidget {
 class _StatefulProductEntryControllerMediatorWidgetState extends State<_StatefulProductEntryControllerMediatorWidget> {
   late final ModifiedPagingController<int, ListItemControllerState> _productEntryListItemPagingController;
   late final PagingControllerState<int, ListItemControllerState> _productEntryListItemPagingControllerState;
+  final List<BaseLoadDataResultDynamicListItemControllerState> _dynamicItemLoadDataResultDynamicListItemControllerStateList = [];
 
   @override
   void initState() {
@@ -212,6 +222,11 @@ class _StatefulProductEntryControllerMediatorWidgetState extends State<_Stateful
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _productEntryListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? listItemControllerStateList) async {
+    HorizontalComponentEntityParameterizedEntityAndListItemControllerStateMediator componentEntityMediator = Injector.locator<HorizontalComponentEntityParameterizedEntityAndListItemControllerStateMediator>();
+    HorizontalDynamicItemCarouselParameterizedEntityAndListItemControllerStateMediatorParameter carouselParameterizedEntityMediator = HorizontalDynamicItemCarouselParameterizedEntityAndListItemControllerStateMediatorParameter(
+      onSetState: () => setState(() {}),
+      dynamicItemLoadDataResultDynamicListItemControllerStateList: _dynamicItemLoadDataResultDynamicListItemControllerStateList
+    );
     LoadDataResult<PagingDataResult<ProductEntry>> productEntryLoadDataResult = await widget.productEntryController.getProductEntryPaging(
       ProductWithConditionPagingParameter(
         page: pageKey,
@@ -232,11 +247,13 @@ class _StatefulProductEntryControllerMediatorWidgetState extends State<_Stateful
       if (pageKey == 1) {
         totalItem = 2;
         resultListItemControllerState = [
-          ProductEntryHeaderListItemControllerState(
-            title: (textStyle) => Text(Constant.multiLanguageStringIsViral.toString(), style: textStyle),
-            productEntryHeaderBackground: AssetProductEntryHeaderBackground(
-              assetImageName: Constant.imageProductViralBackground
-            )
+          componentEntityMediator.mapWithParameter(
+            widget.productEntryController.getProductEntryHeader(
+              ProductEntryHeaderContentParameter(
+                parameterMap: widget.productEntryPageParameter.productEntryParameterMap
+              )
+            ),
+            parameter: carouselParameterizedEntityMediator
           ),
           VerticalGridPaddingContentSubInterceptorSupportListItemControllerState(
             childListItemControllerStateList: [
@@ -263,6 +280,31 @@ class _StatefulProductEntryControllerMediatorWidgetState extends State<_Stateful
 
   @override
   Widget build(BuildContext context) {
+    OnObserveLoadProductDelegateFactory onObserveLoadProductDelegateFactory = Injector.locator<OnObserveLoadProductDelegateFactory>()
+      ..onInjectLoadProductEntryCarouselParameterizedEntity = (
+        () => WishlistParameterizedEntityAndListItemControllerStateMediatorParameter(
+          onAddWishlist: (productOrProductEntryId) {},
+          onRemoveWishlist: (productOrProductEntryId) {},
+        )
+      )
+      ..onInjectLoadProductBundleCarouselParameterizedEntity = (
+        () => WishlistParameterizedEntityAndListItemControllerStateMediatorParameter(
+          onAddWishlist: (productBundleId) {},
+          onRemoveWishlist: (productBundleId) {},
+        )
+      );
+    widget.productEntryController.setProductEntryDelegate(
+      ProductEntryDelegate(
+        onObserveLoadProductDelegate: onObserveLoadProductDelegateFactory.generateOnObserveLoadProductDelegate(),
+        onObserveLoadProductEntryHeaderContentDirectly: (onObserveLoadProductEntryHeaderContentDirectlyParameter) {
+          LoadDataResult<ProductEntryHeaderContentResponse> productEntryHeaderContentResponseLoadDataResult = onObserveLoadProductEntryHeaderContentDirectlyParameter.productEntryHeaderContentResponseLoadDataResult;
+          return ProductEntryHeaderLoadDataResultListItemControllerState(
+            productEntryHeaderContentResponseLoadDataResult: productEntryHeaderContentResponseLoadDataResult,
+            errorProvider: Injector.locator<ErrorProvider>()
+          );
+        },
+      )
+    );
     return Scaffold(
       appBar: DefaultSearchAppBar(),
       body: SafeArea(

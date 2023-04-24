@@ -12,6 +12,7 @@ import '../../itemtypelistsubinterceptor/expandable_description_item_type_list_s
 import '../../itemtypelistsubinterceptor/item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/padding_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/page_keyed_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/product_entry_header_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/profile_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/row_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/verticalgriditemtypelistsubinterceptor/product_vertical_grid_item_type_list_sub_interceptor.dart';
@@ -142,6 +143,9 @@ class ListItemControllerStateItemTypeInterceptorChecker extends ItemTypeListInte
     DeliveryCartItemTypeListSubInterceptor(
       padding: padding,
       itemSpacing: itemSpacing,
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
+    ProductEntryHeaderItemTypeListSubInterceptor(
       listItemControllerStateItemTypeInterceptorChecker: this
     ),
     DynamicItemTypeListSubInterceptor(

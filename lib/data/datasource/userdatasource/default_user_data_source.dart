@@ -49,7 +49,7 @@ class DefaultUserDataSource implements UserDataSource {
       }
     );
     return DioHttpClientProcessing((cancelToken) {
-      return dio.post("/auth/login/google", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+      return dio.post("/auth/google", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
         .map<LoginWithGoogleResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToLoginWithGoogleResponse());
     });
   }
@@ -78,7 +78,7 @@ class DefaultUserDataSource implements UserDataSource {
       }
     );
     return DioHttpClientProcessing((cancelToken) {
-      return dio.post("/auth/register/google", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+      return dio.post("/auth/google", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
         .map<RegisterWithGoogleResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToRegisterWithGoogleResponse());
     });
   }

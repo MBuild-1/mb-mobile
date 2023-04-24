@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_ext.dart';
 import 'package:masterbagasi/misc/processing/dummy_future_processing.dart';
@@ -33,6 +34,7 @@ import '../../domain/entity/product/product_with_condition_list_parameter.dart';
 import '../../domain/entity/product/product_with_condition_paging_parameter.dart';
 import '../../domain/entity/product/productentry/product_entry_header_content_parameter.dart';
 import '../../domain/entity/product/productentry/product_entry_header_content_response.dart';
+import '../../domain/entity/product/productentry/productentryheaderresponsevalue/brand_product_entry_header_content_response_value.dart';
 import '../../domain/entity/product/productentry/productentryheaderresponsevalue/category_product_entry_header_content_response_value.dart';
 import '../../domain/entity/product/productentry/productentryheaderresponsevalue/product_entry_header_content_response_value.dart';
 import '../../domain/entity/product/productentry/productentryheaderresponsevalue/static_product_entry_header_content_response_value.dart';
@@ -88,33 +90,46 @@ class DefaultProductRepository implements ProductRepository {
     return DioHttpClientProcessing((cancelToken) async {
       Map<String, dynamic> parameterMap = productEntryHeaderContentParameter.parameterMap;
       late ProductEntryHeaderContentResponseValue productEntryHeaderContentResponseValue;
-      if (parameterMap.containsKey("category")) {
+      if (parameterMap.containsKey("category_id") || parameterMap.containsKey("category")) {
         LoadDataResult<ProductCategoryDetail> productCategoryDetailLoadDataResult = await productDataSource.productCategoryDetail(
           ProductCategoryDetailParameter(
-            productCategoryDetailId: "1",
-            productCategoryDetailParameterType: parameterMap["category"]
+            productCategoryDetailId: parameterMap.containsKey("category_id") ? parameterMap["category_id"] : parameterMap["category"],
+            productCategoryDetailParameterType: parameterMap.containsKey("category_id") ? ProductCategoryDetailParameterType.id : ProductCategoryDetailParameterType.slug
           ),
         ).mapToLoadDataResult<ProductCategoryDetail>().future(parameter: cancelToken);
         if (productCategoryDetailLoadDataResult.isFailed) {
           return productCategoryDetailLoadDataResult.map<ProductEntryHeaderContentResponse>((test) => throw UnimplementedError());
         }
-        productEntryHeaderContentResponseValue = DynamicProductEntryHeaderContentResponseValue(
-          dynamicBannerImageUrl: "",
-          title: ""
+        ProductCategoryDetail productCategoryDetail = productCategoryDetailLoadDataResult.resultIfSuccess!;
+        productEntryHeaderContentResponseValue = CategoryProductEntryHeaderContentResponseValue(
+          productCategory: productCategoryDetail
         );
-      } else if (parameterMap.containsKey("type")) {
-        productEntryHeaderContentResponseValue = DynamicProductEntryHeaderContentResponseValue(
-          dynamicBannerImageUrl: "",
-          title: ""
+      } else if (parameterMap.containsKey("brand_id") || parameterMap.containsKey("brand")) {
+        LoadDataResult<ProductBrandDetail> productBrandDetailLoadDataResult = await productDataSource.productBrandDetail(
+          ProductBrandDetailParameter(
+            productBrandId: parameterMap.containsKey("brand_id") ? parameterMap["brand_id"] : parameterMap["brand"],
+            productBrandDetailParameterType: parameterMap.containsKey("brand_id") ? ProductBrandDetailParameterType.id : ProductBrandDetailParameterType.slug
+          ),
+        ).mapToLoadDataResult<ProductBrandDetail>().future(parameter: cancelToken);
+        if (productBrandDetailLoadDataResult.isFailed) {
+          return productBrandDetailLoadDataResult.map<ProductEntryHeaderContentResponse>((test) => throw UnimplementedError());
+        }
+        ProductBrandDetail productBrandDetail = productBrandDetailLoadDataResult.resultIfSuccess!;
+        productEntryHeaderContentResponseValue = BrandProductEntryHeaderContentResponseValue(
+          productBrand: productBrandDetail
         );
       } else {
-        productEntryHeaderContentResponseValue = StaticProductEntryHeaderContentResponseValue(
-          bannerAssetImageUrl: "",
-          title: MultiLanguageString({
-            Constant.textEnUsLanguageKey: "",
-            Constant.textInIdLanguageKey: "",
-          }).toString(),
-        );
+        if (parameterMap.containsKey("name")) {
+          productEntryHeaderContentResponseValue = StaticProductEntryHeaderContentResponseValue(
+            bannerAssetImageUrl: Constant.imageProductViralBackground,
+            title: MultiLanguageString(parameterMap["name"]).toString(),
+          );
+        } else {
+          productEntryHeaderContentResponseValue = StaticProductEntryHeaderContentResponseValue(
+            bannerAssetImageUrl: Constant.imageProductViralBackground,
+            title: MultiLanguageString("Unknown Result".tr).toString(),
+          );
+        }
       }
       return SuccessLoadDataResult<ProductEntryHeaderContentResponse>(
         value: ProductEntryHeaderContentResponse(

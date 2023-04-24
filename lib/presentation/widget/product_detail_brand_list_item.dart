@@ -31,7 +31,7 @@ class ProductDetailBrandListItem extends StatelessWidget {
             aspectRatio: aspectRatioValue.toDouble(),
             child: ClipRRect(
               child: ModifiedCachedNetworkImage(
-                imageUrl: productBrand.bannerMobile.toEmptyStringNonNull,
+                imageUrl: productBrand.bannerMobile.isNotEmptyString ? productBrand.bannerMobile! : productBrand.bannerDesktop.toEmptyStringNonNull,
               )
             )
           ),

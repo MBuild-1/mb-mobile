@@ -221,7 +221,7 @@ extension ProductCategoryDetailEntityMappingExt on ResponseWrapper {
       icon: response["icon"],
       bannerDesktop: response["banner_desktop"],
       bannerMobile: response["banner_mobile"],
-      shortProductList: ResponseWrapper(response["product"]).mapFromResponseToShortProductList()
+      shortProductList: response["product"] != null ? ResponseWrapper(response["product"]).mapFromResponseToShortProductList() : []
     );
   }
 }

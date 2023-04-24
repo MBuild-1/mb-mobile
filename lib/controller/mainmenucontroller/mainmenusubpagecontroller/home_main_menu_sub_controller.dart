@@ -13,6 +13,7 @@ import '../../../domain/entity/product/productcategory/product_category.dart';
 import '../../../domain/entity/product/productcategory/product_category_list_parameter.dart';
 import '../../../domain/entity/product/productentry/product_entry.dart';
 import '../../../domain/entity/product/product_with_condition_paging_parameter.dart';
+import '../../../domain/entity/product/productentry/product_entry_header_content_response.dart';
 import '../../../domain/usecase/add_wishlist_use_case.dart';
 import '../../../domain/usecase/get_bestseller_in_masterbagasi_list_use_case.dart';
 import '../../../domain/usecase/get_coffee_and_tea_origin_indonesia_list_use_case.dart';

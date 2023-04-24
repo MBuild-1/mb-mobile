@@ -1,6 +1,5 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/presentation/page/product_detail_page.dart';
@@ -33,7 +32,7 @@ import '../product_brand_detail_page.dart';
 import '../product_bundle_detail_page.dart';
 import '../product_bundle_page.dart';
 import '../product_category_detail_page.dart';
-import '../product_entry_is_viral_page.dart';
+import '../product_entry_page.dart';
 import 'mainmenusubpage/explore_nusantara_main_menu_page.dart';
 import 'mainmenusubpage/feed_main_menu_sub_page.dart';
 import 'mainmenusubpage/home_main_menu_sub_page.dart';

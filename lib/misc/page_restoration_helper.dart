@@ -13,7 +13,7 @@ import '../presentation/page/product_bundle_detail_page.dart';
 import '../presentation/page/product_bundle_page.dart';
 import '../presentation/page/product_category_detail_page.dart';
 import '../presentation/page/product_detail_page.dart';
-import '../presentation/page/product_entry_is_viral_page.dart';
+import '../presentation/page/product_entry_page.dart';
 import '../presentation/page/register_page.dart';
 import '../presentation/page/take_friend_cart_page.dart';
 import 'login_helper.dart';

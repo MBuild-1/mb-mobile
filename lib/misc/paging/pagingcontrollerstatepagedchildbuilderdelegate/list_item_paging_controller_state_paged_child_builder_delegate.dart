@@ -323,6 +323,11 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
         onProductEntryTitleTap: item.onProductEntryTitleTap,
         productEntryHeaderBackground: item.productEntryHeaderBackground
       );
+    } else if (item is ProductEntryHeaderLoadDataResultListItemControllerState) {
+      return ProductEntryHeaderLoadDataResult(
+        errorProvider: item.errorProvider,
+        productEntryHeaderContentResponseLoadDataResult: item.productEntryHeaderContentResponseLoadDataResult,
+      );
     } else if (item is DeliveryReviewListItemControllerState) {
       if (item is HorizontalDeliveryReviewListItemControllerState) {
         return HorizontalDeliveryReviewItem(

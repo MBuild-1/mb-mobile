@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
-import 'package:masterbagasi/presentation/page/product_entry_is_viral_page.dart';
+import 'package:masterbagasi/presentation/page/product_entry_page.dart';
 import 'package:sizer/sizer.dart';
 import '../../../../controller/mainmenucontroller/mainmenusubpagecontroller/home_main_menu_sub_controller.dart';
 import '../../../../domain/entity/banner/banner.dart';
@@ -280,7 +280,11 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
                 context,
                 ProductEntryPageParameter(
                   productEntryParameterMap: {
-                    "type": "viral"
+                    "type": "viral",
+                    "name": {
+                      Constant.textEnUsLanguageKey: "Is Viral",
+                      Constant.textInIdLanguageKey: "Lagi Viral"
+                    }
                   }
                 )
               ),
@@ -309,7 +313,11 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
                 context,
                 ProductEntryPageParameter(
                   productEntryParameterMap: {
-                    "fyp": true
+                    "fyp": true,
+                    "name": {
+                      Constant.textEnUsLanguageKey: "Bestselling in Masterbagasi",
+                      Constant.textInIdLanguageKey: "Terlaris di Masterbagasi"
+                    }
                   }
                 )
               ),
@@ -418,11 +426,19 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
                               dynamic data = onObserveSuccessLoadTransparentBannerParameter.data;
                               if (data == Constant.transparentBannerKeyKitchenContents) {
                                 productEntryParameterMap = {
-                                  "type": "kitchen"
+                                  "type": "kitchen",
+                                  "name": {
+                                    Constant.textEnUsLanguageKey: "Indonesian Kitchen Contents",
+                                    Constant.textInIdLanguageKey: "Isi Dapur Indonesia"
+                                  }
                                 };
                               } else if (data == Constant.transparentBannerKeyHandycrafts) {
                                 productEntryParameterMap = {
-                                  "type": "handycrafts"
+                                  "type": "handycrafts",
+                                  "name": {
+                                    Constant.textEnUsLanguageKey: "Handicrafts made by the Nation's Children",
+                                    Constant.textInIdLanguageKey: "Kerajinan Tangan Karya Anak Bangsa"
+                                  }
                                 };
                               }
                               PageRestorationHelper.toProductEntryPage(

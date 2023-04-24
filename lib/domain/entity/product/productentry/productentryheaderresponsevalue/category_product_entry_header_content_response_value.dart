@@ -1,11 +1,10 @@
+import '../../productcategory/product_category.dart';
 import 'product_entry_header_content_response_value.dart';
 
-class DynamicProductEntryHeaderContentResponseValue extends ProductEntryHeaderContentResponseValue {
-  String dynamicBannerImageUrl;
-  String title;
+class CategoryProductEntryHeaderContentResponseValue extends ProductEntryHeaderContentResponseValue {
+  ProductCategory productCategory;
 
-  DynamicProductEntryHeaderContentResponseValue({
-    required this.dynamicBannerImageUrl,
-    required this.title
+  CategoryProductEntryHeaderContentResponseValue({
+    required this.productCategory
   });
 }

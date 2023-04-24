@@ -321,20 +321,6 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
           if (productEntryList.isNotEmpty)
             CompoundListItemControllerState(
               listItemControllerState: [
-                VirtualSpacingListItemControllerState(height: 2.h),
-                PaddingContainerListItemControllerState(
-                  padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-                  paddingChildListItemControllerState: TitleAndDescriptionListItemControllerState(
-                    title: "Select Variant".tr,
-                    description: null,
-                    verticalSpace: 25,
-                    titleAndDescriptionItemInterceptor: (padding, title, titleWidget, description, descriptionWidget, titleAndDescriptionWidget, titleAndDescriptionWidgetList) {
-                      titleAndDescriptionWidgetList.first = Text(title.toStringNonNull, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold));
-                      return titleAndDescriptionWidget;
-                    }
-                  )
-                ),
-                VirtualSpacingListItemControllerState(height: 2.h),
                 BuilderListItemControllerState(
                   buildListItemControllerState: () {
                     List<ColorfulChipTabBarData> colorfulChipTabBarDataList = [];
@@ -368,10 +354,27 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
                     }
                     return CompoundListItemControllerState(
                       listItemControllerState: [
-                        ColorfulChipTabBarListItemControllerState(
-                          colorfulChipTabBarController: _productVariantColorfulChipTabBarController!,
-                          colorfulChipTabBarDataList: colorfulChipTabBarDataList,
-                        ),
+                        if (colorfulChipTabBarDataList.isNotEmpty)
+                          ...[
+                            VirtualSpacingListItemControllerState(height: 2.h),
+                            PaddingContainerListItemControllerState(
+                              padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+                              paddingChildListItemControllerState: TitleAndDescriptionListItemControllerState(
+                                title: "Select Variant".tr,
+                                description: null,
+                                verticalSpace: 25,
+                                titleAndDescriptionItemInterceptor: (padding, title, titleWidget, description, descriptionWidget, titleAndDescriptionWidget, titleAndDescriptionWidgetList) {
+                                  titleAndDescriptionWidgetList.first = Text(title.toStringNonNull, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold));
+                                  return titleAndDescriptionWidget;
+                                }
+                              )
+                            ),
+                            VirtualSpacingListItemControllerState(height: 2.h),
+                            ColorfulChipTabBarListItemControllerState(
+                              colorfulChipTabBarController: _productVariantColorfulChipTabBarController!,
+                              colorfulChipTabBarDataList: colorfulChipTabBarDataList,
+                            ),
+                          ]
                       ],
                     );
                   }

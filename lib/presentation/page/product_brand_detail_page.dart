@@ -192,7 +192,10 @@ class _StatefulProductBrandDetailControllerMediatorWidgetState extends State<_St
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _productBrandDetailListItemPagingControllerStateListener(int pageKey) async {
     LoadDataResult<ProductBrandDetail> productBrandDetailLoadDataResult = await widget.productBrandDetailController.getProductBrandDetail(
-      ProductBrandDetailParameter(productBrandId: widget.productBrandId)
+      ProductBrandDetailParameter(
+        productBrandId: widget.productBrandId,
+        productBrandDetailParameterType: ProductBrandDetailParameterType.id
+      )
     );
     return productBrandDetailLoadDataResult.map((productBrandDetail) {
       return PagingDataResult<ListItemControllerState>(

@@ -79,6 +79,7 @@ import '../domain/usecase/get_product_detail_other_from_this_brand_product_entry
 import '../domain/usecase/get_product_detail_other_in_this_category_product_entry_list_use_case.dart';
 import '../domain/usecase/get_product_detail_other_interested_product_brand_list_use_case.dart';
 import '../domain/usecase/get_product_detail_use_case.dart';
+import '../domain/usecase/get_product_entry_header_content_use_case.dart';
 import '../domain/usecase/get_product_entry_with_condition_paging_use_case.dart';
 import '../domain/usecase/get_product_list_use_case.dart';
 import '../domain/usecase/get_product_viral_list_use_case.dart';
@@ -309,6 +310,7 @@ class _Injector {
     locator.registerLazySingleton<GetProductViralListUseCase>(() => GetProductViralListUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductViralPagingUseCase>(() => GetProductViralPagingUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductEntryWithConditionPagingUseCase>(() => GetProductEntryWithConditionPagingUseCase(productRepository: locator()));
+    locator.registerLazySingleton<GetProductEntryHeaderContentUseCase>(() => GetProductEntryHeaderContentUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductDetailUseCase>(() => GetProductDetailUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductDetailOtherChosenForYouProductEntryListUseCase>(() => GetProductDetailOtherChosenForYouProductEntryListUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductDetailOtherFromThisBrandProductEntryListUseCase>(() => GetProductDetailOtherFromThisBrandProductEntryListUseCase(productRepository: locator()));
