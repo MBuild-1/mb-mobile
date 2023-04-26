@@ -170,11 +170,13 @@ class _PageRestorationHelperImpl {
     });
   }
 
-  void toDeliveryPage(BuildContext context) {
+  void toDeliveryPage(BuildContext context, DeliveryPageParameter deliveryPageParameter) {
     LoginHelper.checkingLogin(context, () {
       PageRestorationHelper.findPageRestorationMixin<DeliveryPageRestorationMixin>(
         onGetxPageRestorationFound: (restoration) {
-          restoration.deliveryPageRestorableRouteFuture.present();
+          restoration.deliveryPageRestorableRouteFuture.present(
+            deliveryPageParameter.toEncodeBase64String()
+          );
         },
         context: context
       );

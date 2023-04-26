@@ -10,6 +10,7 @@ class CartDummy {
 
   Cart generateShimmerDummy() {
     return Cart(
+      id: "",
       quantity: 1,
       notes: "",
       supportCart: productEntryDummy.generateShimmerDummy()
@@ -18,6 +19,7 @@ class CartDummy {
 
   Cart generateDefaultDummy() {
     return Cart(
+      id: "",
       quantity: 1,
       notes: "",
       supportCart: productEntryDummy.generateDefaultDummy()

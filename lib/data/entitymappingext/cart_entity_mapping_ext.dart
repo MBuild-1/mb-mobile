@@ -24,6 +24,7 @@ extension CartEntityMappingExt on ResponseWrapper {
 extension CartDetailEntityMappingExt on ResponseWrapper {
   Cart mapFromResponseToCart() {
     return Cart(
+      id: response["id"],
       quantity: response["quantity"],
       notes: response["notes"],
       supportCart: ResponseWrapper(response).mapFromResponseToSupportCart()

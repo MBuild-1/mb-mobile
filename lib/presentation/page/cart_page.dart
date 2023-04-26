@@ -199,6 +199,7 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
   late int _selectedCartCount = 0;
   late double _selectedCartShoppingTotal = 0;
   List<AdditionalItem> _additionalItemList = [];
+  List<Cart> _selectedCartList = [];
 
   @override
   void initState() {
@@ -357,7 +358,13 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
                         child: SizedBox()
                       ),
                       SizedOutlineGradientButton(
-                        onPressed: _selectedCartCount == 0 ? null : () => PageRestorationHelper.toDeliveryPage(context),
+                        onPressed: _selectedCartCount == 0 ? null : () => PageRestorationHelper.toDeliveryPage(
+                          context, DeliveryPageParameter(
+                            selectedCartIdList: _selectedCartList.map<String>((cart) {
+                              return cart.id;
+                            }).toList()
+                          )
+                        ),
                         width: 120,
                         text: "${"Pay".tr} ($_selectedCartCount)",
                         outlineGradientButtonType: OutlineGradientButtonType.solid,

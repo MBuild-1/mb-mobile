@@ -21,6 +21,7 @@ import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_
 import '../../misc/controllerstate/listitemcontrollerstate/padding_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/page_keyed_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
+import '../../misc/error/message_error.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
@@ -32,6 +33,7 @@ import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
+import '../../misc/string_util.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
@@ -39,8 +41,12 @@ import 'getx_page.dart';
 
 class DeliveryPage extends RestorableGetxPage<_DeliveryPageRestoration> {
   late final ControllerMember<DeliveryController> _deliveryController = ControllerMember<DeliveryController>().addToControllerManager(controllerManager);
+  final List<String> selectedCartIdList;
 
-  DeliveryPage({Key? key}) : super(key: key, pageRestorationId: () => "delivery-page");
+  DeliveryPage({
+    Key? key,
+    required this.selectedCartIdList
+  }) : super(key: key, pageRestorationId: () => "delivery-page");
 
   @override
   void onSetController() {
@@ -87,11 +93,21 @@ class _DeliveryPageRestoration extends MixableGetxPageRestoration with DeliveryP
 }
 
 class DeliveryPageGetPageBuilderAssistant extends GetPageBuilderAssistant {
-  @override
-  GetPageBuilder get pageBuilder => (() => DeliveryPage());
+  final List<String> selectedCartIdList;
+
+  DeliveryPageGetPageBuilderAssistant({
+    required this.selectedCartIdList
+  });
 
   @override
-  GetPageBuilder get pageWithOuterGetxBuilder => (() => GetxPageBuilder.buildRestorableGetxPage(DeliveryPage()));
+  GetPageBuilder get pageBuilder => (() => DeliveryPage(
+    selectedCartIdList: selectedCartIdList
+  ));
+
+  @override
+  GetPageBuilder get pageWithOuterGetxBuilder => (() => GetxPageBuilder.buildRestorableGetxPage(DeliveryPage(
+    selectedCartIdList: selectedCartIdList
+  )));
 }
 
 mixin DeliveryPageRestorationMixin on MixableGetxPageRestoration {
@@ -128,8 +144,16 @@ class DeliveryPageRestorableRouteFuture extends GetRestorableRouteFuture {
   }
 
   static Route<void>? _getRoute([Object? arguments]) {
+    if (arguments is! String) {
+      throw MessageError(message: "Arguments must be a String");
+    }
+    List<String> selectedCartIdList = arguments.toDeliveryPageParameter().selectedCartIdList;
     return GetExtended.toWithGetPageRouteReturnValue<void>(
-      GetxPageBuilder.buildRestorableGetxPageBuilder(DeliveryPageGetPageBuilderAssistant()),
+      GetxPageBuilder.buildRestorableGetxPageBuilder(
+        DeliveryPageGetPageBuilderAssistant(
+          selectedCartIdList: selectedCartIdList
+        )
+      ),
     );
   }
 
@@ -323,5 +347,30 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
   @override
   void dispose() {
     super.dispose();
+  }
+}
+
+class DeliveryPageParameter {
+  List<String> selectedCartIdList;
+
+  DeliveryPageParameter({
+    required this.selectedCartIdList
+  });
+}
+
+extension DeliveryPageParameterExt on DeliveryPageParameter {
+  String toEncodeBase64String() => StringUtil.encodeBase64StringFromJson(
+    <String, dynamic>{
+      "selected_cart_id": selectedCartIdList,
+    }
+  );
+}
+
+extension DeliveryPageParameterStringExt on String {
+  DeliveryPageParameter toDeliveryPageParameter() {
+    dynamic result = StringUtil.decodeBase64StringToJson(this);
+    return DeliveryPageParameter(
+      selectedCartIdList: result['selected_cart_id']
+    );
   }
 }
