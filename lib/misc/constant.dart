@@ -74,6 +74,7 @@ class _ConstantImpl {
   String get vectorNotificationConfiguration => _getVectorsAssets("notification_configuration.svg");
   String get vectorAccountPrivacy => _getVectorsAssets("account_privacy.svg");
   String get vectorLogout => _getVectorsAssets("logout.svg");
+  String get vectorShare => _getVectorsAssets("share.svg");
 
   Color get colorYellow => const Color.fromRGBO(244, 184, 43, 1);
   Color get colorLightRed => const Color.fromRGBO(255, 236, 230, 1);

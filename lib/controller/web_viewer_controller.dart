@@ -1,4 +1,4 @@
-import 'package:greatedu/misc/manager/controller_manager.dart';
+import 'package:masterbagasi/misc/manager/controller_manager.dart';
 
 import 'base_getx_controller.dart';
 

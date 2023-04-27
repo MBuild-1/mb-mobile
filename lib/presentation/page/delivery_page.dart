@@ -27,6 +27,7 @@ import '../../domain/usecase/get_current_selected_address_use_case.dart';
 import '../../domain/usecase/get_my_cart_use_case.dart';
 import '../../domain/usecase/remove_additional_item_use_case.dart';
 import '../../misc/additionalloadingindicatorchecker/cart_additional_paging_result_parameter_checker.dart';
+import '../../misc/constant.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/cart_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/cart_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/vertical_cart_list_item_controller_state.dart';
@@ -45,6 +46,7 @@ import '../../misc/itemtypelistsubinterceptor/cart_item_type_list_sub_intercepto
 import '../../misc/itemtypelistsubinterceptor/delivery_cart_item_type_list_sub_interceptor.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/controller_manager.dart';
+import '../../misc/page_restoration_helper.dart';
 import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
@@ -55,6 +57,7 @@ import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import 'getx_page.dart';
 import 'modaldialogpage/add_cart_note_modal_dialog_page.dart';
+import 'web_viewer_page.dart';
 
 class DeliveryPage extends RestorableGetxPage<_DeliveryPageRestoration> {
   late final ControllerMember<DeliveryController> _deliveryController = ControllerMember<DeliveryController>().addToControllerManager(controllerManager);
@@ -95,7 +98,7 @@ class DeliveryPage extends RestorableGetxPage<_DeliveryPageRestoration> {
   }
 }
 
-class _DeliveryPageRestoration extends MixableGetxPageRestoration with DeliveryPageRestorationMixin {
+class _DeliveryPageRestoration extends MixableGetxPageRestoration with DeliveryPageRestorationMixin, WebViewerPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
@@ -383,7 +386,12 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
                         )
                       ),
                       SizedOutlineGradientButton(
-                        onPressed: _selectedCartCount == 0 ? null : () {},
+                        onPressed: _selectedCartCount == 0 ? null : () {
+                          PageRestorationHelper.toWebViewerPage(
+                            context,
+                            {Constant.textEncodedUrlKey: StringUtil.encodeBase64String("")}
+                          );
+                        },
                         width: 120,
                         text: "${"Pay".tr} ($_selectedCartCount)",
                         outlineGradientButtonType: OutlineGradientButtonType.solid,

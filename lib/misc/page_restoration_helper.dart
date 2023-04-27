@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 import '../controller/crop_picture_controller.dart';
@@ -16,6 +18,8 @@ import '../presentation/page/product_detail_page.dart';
 import '../presentation/page/product_entry_page.dart';
 import '../presentation/page/register_page.dart';
 import '../presentation/page/take_friend_cart_page.dart';
+import '../presentation/page/web_viewer_page.dart';
+import 'constant.dart';
 import 'login_helper.dart';
 
 class _PageRestorationHelperImpl {
@@ -174,7 +178,6 @@ class _PageRestorationHelperImpl {
     LoginHelper.checkingLogin(context, () {
       PageRestorationHelper.findPageRestorationMixin<DeliveryPageRestorationMixin>(
         onGetxPageRestorationFound: (restoration) {
-          print("Delivery params: ${deliveryPageParameter.selectedCartIdList}");
           restoration.deliveryPageRestorableRouteFuture.present(
             deliveryPageParameter.toEncodeBase64String()
           );
@@ -182,6 +185,27 @@ class _PageRestorationHelperImpl {
         context: context
       );
     });
+  }
+
+  void toWebViewerPage(BuildContext context, Map<String, dynamic> parameter) {
+    PageRestorationHelper.findPageRestorationMixin<WebViewerPageRestorationMixin>(
+      onGetxPageRestorationFound: (restoration) {
+        String parameterString = "";
+        parameter.forEach((key, value) {
+          late String effectiveKey, effectiveValue;
+          if (key == Constant.textUrlKey) {
+            effectiveKey = Constant.textEncodedUrlKey;
+            effectiveValue = base64.encode(utf8.encode(value));
+          } else {
+            effectiveKey = key;
+            effectiveValue = value;
+          }
+          parameterString += "${parameterString.isEmpty ? "" : "&"}$effectiveKey=$effectiveValue";
+        });
+        restoration.webViewerPageRestorableRouteFuture.present(Uri.encodeFull("masterbagasi://webviewer?$parameterString"));
+      },
+      context: context
+    );
   }
 }
 

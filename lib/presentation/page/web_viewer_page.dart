@@ -10,6 +10,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import '../../controller/web_viewer_controller.dart';
 import '../../misc/constant.dart';
 import '../../misc/error/message_error.dart';
+import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
@@ -18,8 +19,8 @@ import '../../misc/manager/controller_manager.dart';
 import '../../misc/parameter_link_helper.dart';
 import '../../misc/parameterlink/parameter_link_input.dart';
 import '../../misc/toast_helper.dart';
-import '../loaddataresultimplementer/load_data_result_implementer_directly.dart';
 import '../widget/app_bar_icon_area.dart';
+import '../widget/loaddataresultimplementer/load_data_result_implementer_directly.dart';
 import '../widget/modified_svg_picture.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import '../widget/progress_indicator_bar.dart';
@@ -237,7 +238,7 @@ class _StatefulWebViewerPageState extends State<_StatefulWebViewerPage> {
       ),
       body: LoadDataResultImplementerDirectlyWithDefault<bool>(
         loadDataResult: _webLoadingFailedLoadDataResult ?? NoLoadDataResult<bool>(),
-        errorProvider: Injector.getErrorProvider(),
+        errorProvider: Injector.locator<ErrorProvider>(),
         onImplementLoadDataResultDirectlyWithDefault: (loadDataResult, errorProvider, defaultLoadDataResultWidget) {
           if (loadDataResult is FailedLoadDataResult<bool>) {
             return Center(
