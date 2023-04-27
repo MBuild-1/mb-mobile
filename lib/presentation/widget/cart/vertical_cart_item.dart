@@ -14,7 +14,14 @@ class VerticalCartItem extends CartItem {
     super.key,
     required super.cart,
     required super.isSelected,
-    super.onChangeSelected
+    super.showDefaultCart = true,
+    super.showCheck = true,
+    super.onChangeSelected,
+    super.onAddToNotes,
+    super.onRemoveFromNotes,
+    super.onAddToWishlist,
+    super.onRemoveCart,
+    super.onChangeQuantity
   });
 }
 

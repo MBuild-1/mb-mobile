@@ -4,6 +4,8 @@ class HorizontalCartListItemControllerState extends CartListItemControllerState 
   HorizontalCartListItemControllerState({
     required super.cart,
     required super.isSelected,
+    super.showCheck = true,
+    super.showDefaultCart = true,
     super.onChangeSelected
   });
 }

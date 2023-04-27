@@ -104,6 +104,13 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Sign Out": "Keluar Akun",
       "You Are Not Login": "Kamu Belum Login",
       "Please login through below button": "Silahkan login lewat tombol dibawah ini",
+      "Add Cart Note": "Tambah Catatan Keranjang",
+      "Note": "Catatan",
+      "Enter Note": "Masukan Catatan",
+      "Note is required": "Catatan dibutuhkan",
+      "Additional Items": "Kiriman Tambahan",
+      "Shipping Address": "Alamat Pengiriman",
+      "Change Other Address": "Pilih Alamat Lain"
     }
   };
 

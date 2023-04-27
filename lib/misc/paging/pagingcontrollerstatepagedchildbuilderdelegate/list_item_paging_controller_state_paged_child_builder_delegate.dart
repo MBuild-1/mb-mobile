@@ -140,6 +140,7 @@ import '../../controllerstate/paging_controller_state.dart';
 import '../../errorprovider/error_provider.dart';
 import '../../injector.dart';
 import '../../listitempagingparameterinjection/list_item_paging_parameter_injection.dart';
+import '../../page_restoration_helper.dart';
 import '../../productentryheaderbackground/product_entry_header_background.dart';
 import '../../typedef.dart';
 import '../../widget_helper.dart';
@@ -689,6 +690,8 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
           cart: item.cart,
           isSelected: item.isSelected,
           onChangeSelected: item.onChangeSelected,
+          showDefaultCart: item.showDefaultCart,
+          showCheck: item.showCheck
         );
       } else if (item is VerticalCartListItemControllerState) {
         if (item is ShimmerVerticalCartListItemControllerState) {
@@ -700,6 +703,13 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
             cart: item.cart,
             isSelected: item.isSelected,
             onChangeSelected: item.onChangeSelected,
+            onAddToNotes: item.onAddToNotes,
+            onAddToWishlist: item.onAddToWishlist,
+            onRemoveFromNotes: item.onRemoveFromNotes,
+            onRemoveCart: item.onRemoveCart,
+            onChangeQuantity: item.onChangeQuantity,
+            showDefaultCart: item.showDefaultCart,
+            showCheck: item.showCheck
           );
         }
       } else {

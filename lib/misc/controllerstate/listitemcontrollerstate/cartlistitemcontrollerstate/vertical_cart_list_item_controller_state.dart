@@ -4,7 +4,14 @@ class VerticalCartListItemControllerState extends CartListItemControllerState {
   VerticalCartListItemControllerState({
     required super.cart,
     required super.isSelected,
-    super.onChangeSelected
+    super.showDefaultCart = true,
+    super.showCheck = true,
+    super.onChangeSelected,
+    super.onAddToNotes,
+    super.onAddToWishlist,
+    super.onRemoveFromNotes,
+    super.onRemoveCart,
+    super.onChangeQuantity
   });
 }
 

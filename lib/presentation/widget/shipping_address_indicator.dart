@@ -16,6 +16,7 @@ class ShippingAddressIndicator extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: Constant.paddingListItem),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(shippingAddress.label, style: const TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 10),

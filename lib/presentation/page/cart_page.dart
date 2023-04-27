@@ -52,6 +52,7 @@ import '../widget/sharedcart/shared_cart_indicator.dart';
 import '../widget/tap_area.dart';
 import 'delivery_page.dart';
 import 'getx_page.dart';
+import 'modaldialogpage/add_cart_note_modal_dialog_page.dart';
 import 'modaldialogpage/cart_summary_cart_modal_dialog_page.dart';
 import 'take_friend_cart_page.dart';
 import 'dart:math' as math;
@@ -231,7 +232,7 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
       List<CartListItemControllerState> newCartListItemControllerStateList = cartPaging.itemList.map<CartListItemControllerState>(
         (cart) => VerticalCartListItemControllerState(
           isSelected: false,
-          cart: cart
+          cart: cart,
         )
       ).toList();
       if (pageKey == 1) {
@@ -246,6 +247,7 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
               additionalItemList: _additionalItemList,
               onChangeSelected: (cartList) {
                 setState(() {
+                  _selectedCartList = cartList;
                   _selectedCartCount = cartList.length;
                   _selectedCartShoppingTotal = 0;
                   for (Cart cart in cartList) {
@@ -260,7 +262,7 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
                 addAdditionalItem: (addAdditionalItemParameter) => widget.cartController.addAdditionalItem(addAdditionalItemParameter),
                 changeAdditionalItem: (changeAdditionalItemParameter) => widget.cartController.changeAdditionalItem(changeAdditionalItemParameter),
                 removeAdditionalItem: (removeAdditionalItemParameter) => widget.cartController.removeAdditionalItem(removeAdditionalItemParameter),
-              )
+              ),
             )
           ],
           page: cartPaging.page,

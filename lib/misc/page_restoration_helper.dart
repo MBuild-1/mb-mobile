@@ -174,6 +174,7 @@ class _PageRestorationHelperImpl {
     LoginHelper.checkingLogin(context, () {
       PageRestorationHelper.findPageRestorationMixin<DeliveryPageRestorationMixin>(
         onGetxPageRestorationFound: (restoration) {
+          print("Delivery params: ${deliveryPageParameter.selectedCartIdList}");
           restoration.deliveryPageRestorableRouteFuture.present(
             deliveryPageParameter.toEncodeBase64String()
           );

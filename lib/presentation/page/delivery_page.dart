@@ -5,12 +5,27 @@ import 'package:masterbagasi/misc/ext/number_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 
 import '../../controller/delivery_controller.dart';
+import '../../domain/entity/additionalitem/add_additional_item_parameter.dart';
+import '../../domain/entity/additionalitem/add_additional_item_response.dart';
 import '../../domain/entity/additionalitem/additional_item.dart';
+import '../../domain/entity/additionalitem/additional_item_list_parameter.dart';
+import '../../domain/entity/additionalitem/change_additional_item_parameter.dart';
+import '../../domain/entity/additionalitem/change_additional_item_response.dart';
+import '../../domain/entity/additionalitem/remove_additional_item_parameter.dart';
+import '../../domain/entity/additionalitem/remove_additional_item_response.dart';
+import '../../domain/entity/address/address.dart';
+import '../../domain/entity/address/current_selected_address_parameter.dart';
+import '../../domain/entity/address/current_selected_address_response.dart';
 import '../../domain/entity/cart/cart.dart';
 import '../../domain/entity/cart/cart_paging_parameter.dart';
 import '../../domain/entity/cart/support_cart.dart';
+import '../../domain/usecase/add_additional_item_use_case.dart';
+import '../../domain/usecase/change_additional_item_use_case.dart';
+import '../../domain/usecase/get_additional_item_use_case.dart';
+import '../../domain/usecase/get_cart_summary_use_case.dart';
 import '../../domain/usecase/get_current_selected_address_use_case.dart';
 import '../../domain/usecase/get_my_cart_use_case.dart';
+import '../../domain/usecase/remove_additional_item_use_case.dart';
 import '../../misc/additionalloadingindicatorchecker/cart_additional_paging_result_parameter_checker.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/cart_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/cart_list_item_controller_state.dart';
@@ -21,6 +36,7 @@ import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_
 import '../../misc/controllerstate/listitemcontrollerstate/padding_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/page_keyed_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
+import '../../misc/dialog_helper.dart';
 import '../../misc/error/message_error.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
@@ -38,6 +54,7 @@ import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import 'getx_page.dart';
+import 'modaldialogpage/add_cart_note_modal_dialog_page.dart';
 
 class DeliveryPage extends RestorableGetxPage<_DeliveryPageRestoration> {
   late final ControllerMember<DeliveryController> _deliveryController = ControllerMember<DeliveryController>().addToControllerManager(controllerManager);
@@ -54,7 +71,12 @@ class DeliveryPage extends RestorableGetxPage<_DeliveryPageRestoration> {
       DeliveryController(
         controllerManager,
         Injector.locator<GetMyCartUseCase>(),
-        Injector.locator<GetCurrentSelectedAddressUseCase>()
+        Injector.locator<GetCurrentSelectedAddressUseCase>(),
+        Injector.locator<GetCartSummaryUseCase>(),
+        Injector.locator<GetAdditionalItemUseCase>(),
+        Injector.locator<AddAdditionalItemUseCase>(),
+        Injector.locator<ChangeAdditionalItemUseCase>(),
+        Injector.locator<RemoveAdditionalItemUseCase>()
       ), tag: pageName
     );
   }
@@ -67,6 +89,7 @@ class DeliveryPage extends RestorableGetxPage<_DeliveryPageRestoration> {
     return Scaffold(
       body: _StatefulDeliveryControllerMediatorWidget(
         deliveryController: _deliveryController.controller,
+        selectedCartIdList: selectedCartIdList
       ),
     );
   }
@@ -181,9 +204,11 @@ class DeliveryPageRestorableRouteFuture extends GetRestorableRouteFuture {
 
 class _StatefulDeliveryControllerMediatorWidget extends StatefulWidget {
   final DeliveryController deliveryController;
+  final List<String> selectedCartIdList;
 
   const _StatefulDeliveryControllerMediatorWidget({
-    required this.deliveryController
+    required this.deliveryController,
+    required this.selectedCartIdList
   });
 
   @override
@@ -225,16 +250,40 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
       CartPagingParameter(page: pageKey)
     );
     return cartPagingLoadDataResult.map<PagingResult<ListItemControllerState>>((cartPaging) {
-      List<CartListItemControllerState> newCartListItemControllerStateList = cartPaging.itemList.map<CartListItemControllerState>(
-        (cart) => VerticalCartListItemControllerState(
-          isSelected: false,
-          cart: cart
-        )
-      ).toList();
+      List<CartListItemControllerState> newCartListItemControllerStateList = [];
+      for (var iteratedCart in cartPaging.itemList) {
+        for (var iteratedCartId in widget.selectedCartIdList) {
+          if (iteratedCart.id == iteratedCartId) {
+            newCartListItemControllerStateList.add(
+              VerticalCartListItemControllerState(
+                isSelected: true,
+                cart: iteratedCart,
+                showCheck: false,
+                showDefaultCart: false,
+                onRemoveFromNotes: () async {
+                  iteratedCart.notes = null;
+                  setState(() {});
+                },
+                onAddToNotes: () async {
+                  dynamic result = await DialogHelper.showModalDialogPage<String, String>(
+                    context: context,
+                    modalDialogPageBuilder: (context, parameter) => AddCartNoteModalDialogPage(),
+                  );
+                  if (result != null) {
+                    iteratedCart.notes = result;
+                    setState(() {});
+                  }
+                },
+              )
+            );
+          }
+        }
+      }
       if (pageKey == 1) {
         return PagingDataResult<ListItemControllerState>(
           itemList: [
             DeliveryCartContainerListItemControllerState(
+              selectedCartIdList: widget.selectedCartIdList,
               cartListItemControllerStateList: newCartListItemControllerStateList,
               onUpdateState: () => setState(() {}),
               onScrollToAdditionalItemsSection: () => _deliveryScrollController.jumpTo(
@@ -251,7 +300,14 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
                   }
                 });
               },
-              deliveryCartContainerStateStorageListItemControllerState: DefaultDeliveryCartContainerStateStorageListItemControllerState()
+              deliveryCartContainerStateStorageListItemControllerState: DefaultDeliveryCartContainerStateStorageListItemControllerState(),
+              deliveryCartContainerActionListItemControllerState: _DefaultDeliveryCartContainerActionListItemControllerState(
+                getAdditionalItemList: (additionalItemListParameter) => widget.deliveryController.getAdditionalItem(additionalItemListParameter),
+                addAdditionalItem: (addAdditionalItemParameter) => widget.deliveryController.addAdditionalItem(addAdditionalItemParameter),
+                changeAdditionalItem: (changeAdditionalItemParameter) => widget.deliveryController.changeAdditionalItem(changeAdditionalItemParameter),
+                removeAdditionalItem: (removeAdditionalItemParameter) => widget.deliveryController.removeAdditionalItem(removeAdditionalItemParameter),
+                getCurrentSelectedAddress: (currentSelectedAddressParameter) => widget.deliveryController.getCurrentSelectedAddress(currentSelectedAddressParameter),
+              )
             )
           ],
           page: cartPaging.page,
@@ -370,7 +426,44 @@ extension DeliveryPageParameterStringExt on String {
   DeliveryPageParameter toDeliveryPageParameter() {
     dynamic result = StringUtil.decodeBase64StringToJson(this);
     return DeliveryPageParameter(
-      selectedCartIdList: result['selected_cart_id']
+      selectedCartIdList: result['selected_cart_id'].map<String>(
+        (cartIdString) => cartIdString as String
+      ).toList()
     );
   }
+}
+
+class _DefaultDeliveryCartContainerActionListItemControllerState extends DeliveryCartContainerActionListItemControllerState {
+  final Future<LoadDataResult<List<AdditionalItem>>> Function(AdditionalItemListParameter)? _getAdditionalItemList;
+  final Future<LoadDataResult<AddAdditionalItemResponse>> Function(AddAdditionalItemParameter)? _addAdditionalItem;
+  final Future<LoadDataResult<ChangeAdditionalItemResponse>> Function(ChangeAdditionalItemParameter)? _changeAdditionalItem;
+  final Future<LoadDataResult<RemoveAdditionalItemResponse>> Function(RemoveAdditionalItemParameter)? _removeAdditionalItem;
+  final Future<LoadDataResult<Address>> Function(CurrentSelectedAddressParameter)? _getCurrentSelectedAddress;
+
+  _DefaultDeliveryCartContainerActionListItemControllerState({
+    required Future<LoadDataResult<List<AdditionalItem>>> Function(AdditionalItemListParameter) getAdditionalItemList,
+    required Future<LoadDataResult<AddAdditionalItemResponse>> Function(AddAdditionalItemParameter) addAdditionalItem,
+    required Future<LoadDataResult<ChangeAdditionalItemResponse>> Function(ChangeAdditionalItemParameter) changeAdditionalItem,
+    required Future<LoadDataResult<RemoveAdditionalItemResponse>> Function(RemoveAdditionalItemParameter) removeAdditionalItem,
+    required Future<LoadDataResult<Address>> Function(CurrentSelectedAddressParameter)? getCurrentSelectedAddress
+  }) : _getAdditionalItemList = getAdditionalItemList,
+        _addAdditionalItem = addAdditionalItem,
+        _changeAdditionalItem = changeAdditionalItem,
+        _removeAdditionalItem = removeAdditionalItem,
+        _getCurrentSelectedAddress = getCurrentSelectedAddress;
+
+  @override
+  Future<LoadDataResult<List<AdditionalItem>>> Function(AdditionalItemListParameter) get getAdditionalItemList => _getAdditionalItemList ?? (throw UnimplementedError());
+
+  @override
+  Future<LoadDataResult<AddAdditionalItemResponse>> Function(AddAdditionalItemParameter) get addAdditionalItem => _addAdditionalItem ?? (throw UnimplementedError());
+
+  @override
+  Future<LoadDataResult<ChangeAdditionalItemResponse>> Function(ChangeAdditionalItemParameter) get changeAdditionalItem => _changeAdditionalItem ?? (throw UnimplementedError());
+
+  @override
+  Future<LoadDataResult<RemoveAdditionalItemResponse>> Function(RemoveAdditionalItemParameter) get removeAdditionalItem => _removeAdditionalItem ?? (throw UnimplementedError());
+
+  @override
+  Future<LoadDataResult<Address>> Function(CurrentSelectedAddressParameter) get getCurrentSelectedAddress => _getCurrentSelectedAddress ?? (throw UnimplementedError());
 }

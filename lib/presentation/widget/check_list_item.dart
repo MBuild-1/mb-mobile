@@ -24,6 +24,7 @@ class CheckListItem extends StatelessWidget {
   final bool reverse;
   final double spaceBetweenCheckListAndTitle;
   final double spaceBetweenTitleAndContent;
+  final bool showCheck;
 
   const CheckListItem({
     Key? key,
@@ -46,7 +47,8 @@ class CheckListItem extends StatelessWidget {
     this.indentation = 0.0,
     this.reverse = false,
     this.spaceBetweenCheckListAndTitle = 10,
-    this.spaceBetweenTitleAndContent = 10
+    this.spaceBetweenTitleAndContent = 10,
+    this.showCheck = true
   }) : super(key: key);
 
   @override
@@ -73,6 +75,7 @@ class CheckListItem extends StatelessWidget {
         reverse: reverse,
         spaceBetweenCheckListAndTitle: spaceBetweenCheckListAndTitle,
         spaceBetweenTitleAndContent: spaceBetweenTitleAndContent,
+        showCheck: showCheck
       )
     );
   }
@@ -99,6 +102,7 @@ class _RawCheckListItem extends StatefulWidget {
   final bool reverse;
   final double spaceBetweenCheckListAndTitle;
   final double spaceBetweenTitleAndContent;
+  final bool showCheck;
 
   const _RawCheckListItem({
     Key? key,
@@ -121,7 +125,8 @@ class _RawCheckListItem extends StatefulWidget {
     required this.indentation,
     required this.reverse,
     required this.spaceBetweenCheckListAndTitle,
-    required this.spaceBetweenTitleAndContent
+    required this.spaceBetweenTitleAndContent,
+    required this.showCheck
   }) : super(key: key);
 
   bool get _selected => value;
@@ -273,43 +278,45 @@ class _RawRadioListItemState extends State<_RawCheckListItem> with TickerProvide
       Expanded(
         child: widget.title != null ? widget.title! : Text(widget.value.toString())
       ),
-      if (widget.spaceBetweenCheckListAndTitle > 0.0) SizedBox(width: widget.spaceBetweenCheckListAndTitle),
-      IgnorePointer(
-        child: Semantics(
-          inMutuallyExclusiveGroup: true,
-          checked: widget._selected,
-          child: buildToggleable(
-            focusNode: null,
-            autofocus: false,
-            mouseCursor: effectiveMouseCursor,
-            size: const Size(20, 20),
-            painter: _modifiedCheckPainter
-              ..position = position
-              ..reaction = reaction
-              ..reactionFocusFade = reactionFocusFade
-              ..reactionHoverFade = reactionHoverFade
-              ..inactiveReactionColor = effectiveInactivePressedOverlayColor
-              ..reactionColor = effectiveActivePressedOverlayColor
-              ..hoverColor = effectiveHoverOverlayColor
-              ..focusColor = effectiveFocusOverlayColor
-              ..splashRadius = widget.splashRadius ?? themeData.radioTheme.splashRadius ?? kRadialReactionRadius
-              ..downPosition = downPosition
-              ..isFocused = states.contains(MaterialState.focused)
-              ..isHovered = states.contains(MaterialState.hovered)
-              ..activeColor = effectiveActiveColor
-              ..activeStrokeColor = effectiveActiveStrokeColor
-              ..inactiveColor = effectiveInactiveColor
-              ..inactiveStrokeColor = effectiveInactiveStrokeColor
-              ..checkColor = effectiveCheckColor
-              ..value = value
-              ..previousValue = _previousValue
-              ..shape = widget.shape ?? themeData.checkboxTheme.shape ?? const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(1.0)),
-              )
-              ..side = _resolveSide(widget.side) ?? _resolveSide(themeData.checkboxTheme.side),
+      if (widget.showCheck) ...[
+        if (widget.spaceBetweenCheckListAndTitle > 0.0) SizedBox(width: widget.spaceBetweenCheckListAndTitle),
+        IgnorePointer(
+          child: Semantics(
+            inMutuallyExclusiveGroup: true,
+            checked: widget._selected,
+            child: buildToggleable(
+              focusNode: null,
+              autofocus: false,
+              mouseCursor: effectiveMouseCursor,
+              size: const Size(20, 20),
+              painter: _modifiedCheckPainter
+                ..position = position
+                ..reaction = reaction
+                ..reactionFocusFade = reactionFocusFade
+                ..reactionHoverFade = reactionHoverFade
+                ..inactiveReactionColor = effectiveInactivePressedOverlayColor
+                ..reactionColor = effectiveActivePressedOverlayColor
+                ..hoverColor = effectiveHoverOverlayColor
+                ..focusColor = effectiveFocusOverlayColor
+                ..splashRadius = widget.splashRadius ?? themeData.radioTheme.splashRadius ?? kRadialReactionRadius
+                ..downPosition = downPosition
+                ..isFocused = states.contains(MaterialState.focused)
+                ..isHovered = states.contains(MaterialState.hovered)
+                ..activeColor = effectiveActiveColor
+                ..activeStrokeColor = effectiveActiveStrokeColor
+                ..inactiveColor = effectiveInactiveColor
+                ..inactiveStrokeColor = effectiveInactiveStrokeColor
+                ..checkColor = effectiveCheckColor
+                ..value = value
+                ..previousValue = _previousValue
+                ..shape = widget.shape ?? themeData.checkboxTheme.shape ?? const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(1.0)),
+                )
+                ..side = _resolveSide(widget.side) ?? _resolveSide(themeData.checkboxTheme.side),
+            ),
           ),
-        ),
-      )
+        )
+      ]
     ];
     List<Widget> columnWidget = [
       Row(children: widget.reverse ? rowWidget.reversed.toList() : rowWidget),

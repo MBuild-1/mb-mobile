@@ -13,12 +13,16 @@ import '../../../misc/constant.dart';
 import '../check_list_item.dart';
 import '../modified_svg_picture.dart';
 import '../modifiedcachednetworkimage/product_modified_cached_network_image.dart';
+import '../tap_area.dart';
 
 abstract class CartItem extends StatelessWidget {
   final Cart cart;
   final bool isSelected;
+  final bool showDefaultCart;
+  final bool showCheck;
   final void Function()? onChangeSelected;
   final void Function()? onAddToNotes;
+  final void Function()? onRemoveFromNotes;
   final void Function()? onAddToWishlist;
   final void Function()? onRemoveCart;
   final void Function(int)? onChangeQuantity;
@@ -33,8 +37,11 @@ abstract class CartItem extends StatelessWidget {
     super.key,
     required this.cart,
     required this.isSelected,
+    required this.showDefaultCart,
     required this.onChangeSelected,
+    this.showCheck = true,
     this.onAddToNotes,
+    this.onRemoveFromNotes,
     this.onAddToWishlist,
     this.onRemoveCart,
     this.onChangeQuantity
@@ -44,6 +51,7 @@ abstract class CartItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return CheckListItem(
       value: isSelected,
+      showCheck: showCheck,
       title: Row(
         children: [
           SizedBox(
@@ -127,66 +135,84 @@ abstract class CartItem extends StatelessWidget {
         ],
       ),
       content: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Wrap(
-                  children: [
-                    GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: () {},
-                      child: Text("Add To Notes".tr, style: TextStyle(color: Theme.of(context).colorScheme.primary))
-                    ),
-                  ]
+          if (onAddToNotes != null) ...[
+            const SizedBox(height: 10.0),
+            Row(
+              children: [
+                Expanded(
+                  child: Wrap(
+                    children: [
+                      TapArea(
+                        onTap: onAddToNotes,
+                        child: Text(
+                          cart.notes.isEmptyString ? "Add To Notes".tr : cart.notes.toEmptyStringNonNull,
+                          style: TextStyle(
+                            color: cart.notes.isEmptyString ? Theme.of(context).colorScheme.primary : Colors.black
+                          )
+                        )
+                      ),
+                    ]
+                  )
+                ),
+              ]
+            ),
+            const SizedBox(height: 10.0),
+            if (cart.notes.isNotEmptyString)
+              TapArea(
+                onTap: onRemoveFromNotes != null ? () => onRemoveFromNotes!() : null,
+                child: Text(
+                  "Remove To Notes".tr,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary
+                  )
                 )
               ),
-            ]
-          ),
-          const SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Text("Add To Wishlist".tr),
-              const SizedBox(width: 20),
-              const Text("|"),
-              const SizedBox(width: 20),
-              GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () {},
-                child: ModifiedSvgPicture.asset(
-                  Constant.vectorTrash,
-                  fit: BoxFit.fitHeight,
+          ],
+          if (showDefaultCart) ...[
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text("Add To Wishlist".tr),
+                const SizedBox(width: 20),
+                const Text("|"),
+                const SizedBox(width: 20),
+                TapArea(
+                  onTap: onAddToWishlist,
+                  child: ModifiedSvgPicture.asset(
+                    Constant.vectorTrash,
+                    fit: BoxFit.fitHeight,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 20),
-              GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () {},
-                child: ModifiedSvgPicture.asset(
-                  Constant.vectorMinusCircle,
-                  fit: BoxFit.fitHeight,
+                const SizedBox(width: 20),
+                TapArea(
+                  onTap: onChangeQuantity != null ? () => onChangeQuantity!(cart.quantity - 1) : null,
+                  child: ModifiedSvgPicture.asset(
+                    Constant.vectorMinusCircle,
+                    fit: BoxFit.fitHeight,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 20),
-              Text(cart.quantity.toString()),
-              const SizedBox(width: 20),
-              GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () {},
-                child: ModifiedSvgPicture.asset(
-                  Constant.vectorPlusCircle,
-                  fit: BoxFit.fitHeight,
+                const SizedBox(width: 20),
+                Text(cart.quantity.toString()),
+                const SizedBox(width: 20),
+                TapArea(
+                  onTap: onChangeQuantity != null ? () => onChangeQuantity!(cart.quantity + 1) : null,
+                  child: ModifiedSvgPicture.asset(
+                    Constant.vectorPlusCircle,
+                    fit: BoxFit.fitHeight,
+                  ),
                 ),
-              ),
-            ],
-          )
+              ],
+            )
+          ]
         ],
       ),
       onChanged: onChangeSelected != null ? (bool? value) => onChangeSelected!() : null,
       reverse: true,
       spaceBetweenCheckListAndTitle: 4.w,
-      spaceBetweenTitleAndContent: 4.w,
+      spaceBetweenTitleAndContent: showDefaultCart ? 4.w : 0.0,
     );
   }
 }
