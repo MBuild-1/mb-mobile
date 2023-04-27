@@ -45,12 +45,6 @@ class DeliveryController extends BaseGetxController {
     this.removeAdditionalItemUseCase
   );
 
-  Future<LoadDataResult<PagingDataResult<Cart>>> getCartPaging(CartPagingParameter cartPagingParameter) {
-    return getMyCartUseCase.execute(cartPagingParameter).future(
-      parameter: apiRequestManager.addRequestToCancellationPart("cart").value
-    );
-  }
-
   Future<LoadDataResult<CartSummary>> getCartSummary(CartSummaryParameter cartSummaryParameter) {
     return getCartSummaryUseCase.execute(cartSummaryParameter).future(
       parameter: apiRequestManager.addRequestToCancellationPart("cart-summary").value
@@ -82,13 +76,13 @@ class DeliveryController extends BaseGetxController {
 
   Future<LoadDataResult<PagingDataResult<Cart>>> getDeliveryCartPaging(CartPagingParameter cartPagingParameter) {
     return getMyCartUseCase.execute(cartPagingParameter).future(
-      parameter: apiRequestManager.addRequestToCancellationPart("cart").value
+      parameter: apiRequestManager.addRequestToCancellationPart("cart-paging").value
     );
   }
 
   Future<LoadDataResult<Address>> getCurrentSelectedAddress(CurrentSelectedAddressParameter currentSelectedAddressParameter) {
     return getCurrentSelectedAddressUseCase.execute(currentSelectedAddressParameter).future(
-      parameter: apiRequestManager.addRequestToCancellationPart("cart").value
+      parameter: apiRequestManager.addRequestToCancellationPart("current-selected-address").value
     ).map<Address>((currentSelectedAddressResponse) {
       return currentSelectedAddressResponse.address;
     });
