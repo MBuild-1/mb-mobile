@@ -10,9 +10,14 @@ import '../../domain/entity/product/productbrand/product_brand.dart';
 import '../../domain/entity/product/productbrand/product_brand_paging_parameter.dart';
 import '../../domain/usecase/get_product_brand_paging_use_case.dart';
 import '../../misc/additionalloadingindicatorchecker/product_bundle_additional_paging_result_parameter_checker.dart';
+import '../../misc/constant.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/compound_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/load_data_result_dynamic_list_item_controller_state.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/padding_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/vertical_product_brand_list_item_controller_state.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/title_and_description_list_item_controller_state.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
@@ -204,6 +209,17 @@ class _StatefulProductBrandControllerMediatorWidgetState extends State<_Stateful
       if (pageKey == 1) {
         totalItem = 2;
         resultListItemControllerState = [
+          CompoundListItemControllerState(
+            listItemControllerState: [
+              VirtualSpacingListItemControllerState(height: Constant.paddingListItem),
+              PaddingContainerListItemControllerState(
+                padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+                paddingChildListItemControllerState: TitleAndDescriptionListItemControllerState(
+                  title: "Product Brand".tr
+                ),
+              ),
+            ]
+          ),
           VerticalGridPaddingContentSubInterceptorSupportListItemControllerState(
             childListItemControllerStateList: [
               ...verticalProductBrandListItemControllerStateList
