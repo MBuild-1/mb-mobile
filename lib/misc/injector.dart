@@ -69,6 +69,7 @@ import '../domain/usecase/get_kitchen_contents_banner_use_case.dart';
 import '../domain/usecase/get_my_cart_use_case.dart';
 import '../domain/usecase/get_news_use_case.dart';
 import '../domain/usecase/get_product_brand_detail_use_case.dart';
+import '../domain/usecase/get_product_brand_paging_use_case.dart';
 import '../domain/usecase/get_product_brand_use_case.dart';
 import '../domain/usecase/get_product_bundle_detail_use_case.dart';
 import '../domain/usecase/get_product_bundle_highlight_use_case.dart';
@@ -315,6 +316,7 @@ class _Injector {
     locator.registerLazySingleton<LogoutUseCase>(() => LogoutUseCase(userRepository: locator()));
     locator.registerLazySingleton<GetUserUseCase>(() => GetUserUseCase(userRepository: locator()));
     locator.registerLazySingleton<GetProductBrandListUseCase>(() => GetProductBrandListUseCase(productRepository: locator()));
+    locator.registerLazySingleton<GetProductBrandPagingUseCase>(() => GetProductBrandPagingUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductBrandDetailUseCase>(() => GetProductBrandDetailUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductListUseCase>(() => GetProductListUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductViralListUseCase>(() => GetProductViralListUseCase(productRepository: locator()));

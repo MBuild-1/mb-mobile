@@ -16,6 +16,7 @@ import '../../itemtypelistsubinterceptor/page_keyed_item_type_list_sub_intercept
 import '../../itemtypelistsubinterceptor/product_entry_header_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/profile_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/row_container_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/verticalgriditemtypelistsubinterceptor/product_brand_vertical_grid_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/verticalgriditemtypelistsubinterceptor/product_vertical_grid_item_type_list_sub_interceptor.dart';
 import '../../typedef.dart';
 import '../item_type_list_interceptor_parameter.dart';
@@ -109,6 +110,11 @@ class ListItemControllerStateItemTypeInterceptorChecker extends ItemTypeListInte
   List<BaseItemTypeListSubInterceptor> get itemTypeListSubInterceptorList => [
     PageKeyedItemTypeListSubInterceptor(),
     ProductVerticalGridItemTypeListSubInterceptor(
+      padding: padding,
+      itemSpacing: itemSpacing,
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
+    ProductBrandVerticalGridItemTypeListSubInterceptor(
       padding: padding,
       itemSpacing: itemSpacing,
       listItemControllerStateItemTypeInterceptorChecker: this

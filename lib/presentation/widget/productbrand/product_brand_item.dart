@@ -40,7 +40,8 @@ abstract class ProductBrandItem extends StatelessWidget {
               context,
               ProductEntryPageParameter(
                 productEntryParameterMap: {
-                  "brand_id": productBrand.id
+                  "brand_id": productBrand.id,
+                  "brand": productBrand.slug
                 }
               )
             ),

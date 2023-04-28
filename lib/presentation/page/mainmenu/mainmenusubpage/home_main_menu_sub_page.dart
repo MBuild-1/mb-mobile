@@ -272,6 +272,11 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
             carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternGrey);
           } else if (data == Constant.carouselKeyIndonesianOriginalBrand) {
             carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternGrey2);
+            titleInterceptor = (text, style) => titleArea(
+              title: Text(text.toStringNonNull, style: style?.copyWith()),
+              onInterceptTextStyle: (style) => style.copyWith(),
+              onTapMore: () => PageRestorationHelper.toProductBrandPage(context)
+            );
           } else if (data == Constant.carouselKeyIsViral) {
             carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternBlue);
             titleInterceptor = (text, style) => titleArea(

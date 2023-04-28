@@ -12,6 +12,7 @@ import '../presentation/page/getx_page.dart';
 import '../presentation/page/login_page.dart';
 import '../presentation/page/mainmenu/main_menu_page.dart';
 import '../presentation/page/product_brand_detail_page.dart';
+import '../presentation/page/product_brand_page.dart';
 import '../presentation/page/product_bundle_detail_page.dart';
 import '../presentation/page/product_bundle_page.dart';
 import '../presentation/page/product_category_detail_page.dart';
@@ -121,6 +122,15 @@ class _PageRestorationHelperImpl {
     PageRestorationHelper.findPageRestorationMixin<ProductDetailPageRestorationMixin>(
       onGetxPageRestorationFound: (restoration) {
         restoration.productDetailPageRestorableRouteFuture.present(productDetailPageParameter.toEncodeBase64String());
+      },
+      context: context
+    );
+  }
+
+  void toProductBrandPage(BuildContext context) {
+    PageRestorationHelper.findPageRestorationMixin<ProductBrandPageRestorationMixin>(
+      onGetxPageRestorationFound: (restoration) {
+        restoration.productBrandPageRestorableRouteFuture.present();
       },
       context: context
     );
