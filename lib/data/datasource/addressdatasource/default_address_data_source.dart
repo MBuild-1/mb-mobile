@@ -1,8 +1,18 @@
 import 'package:dio/dio.dart';
+import 'package:masterbagasi/data/entitymappingext/address_entity_mapping_ext.dart';
+import 'package:masterbagasi/misc/ext/future_ext.dart';
+import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 
 import '../../../domain/dummy/addressdummy/address_dummy.dart';
+import '../../../domain/entity/address/address.dart';
+import '../../../domain/entity/address/address_list_parameter.dart';
+import '../../../domain/entity/address/address_paging_parameter.dart';
 import '../../../domain/entity/address/current_selected_address_parameter.dart';
 import '../../../domain/entity/address/current_selected_address_response.dart';
+import '../../../domain/entity/address/update_current_selected_address_parameter.dart';
+import '../../../domain/entity/address/update_current_selected_address_response.dart';
+import '../../../misc/paging/pagingresult/paging_data_result.dart';
+import '../../../misc/processing/dio_http_client_processing.dart';
 import '../../../misc/processing/dummy_future_processing.dart';
 import '../../../misc/processing/future_processing.dart';
 import 'address_data_source.dart';
@@ -18,11 +28,44 @@ class DefaultAddressDataSource implements AddressDataSource {
 
   @override
   FutureProcessing<CurrentSelectedAddressResponse> currentSelectedAddress(CurrentSelectedAddressParameter currentSelectedAddressParameter) {
-    return DummyFutureProcessing((parameter) async {
-      await Future.delayed(const Duration(seconds: 1));
-      return CurrentSelectedAddressResponse(
-        address: addressDummy.generateDefaultDummy()
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.get("/user/address", queryParameters: {"isPrimary": 1}, cancelToken: cancelToken)
+        .map<CurrentSelectedAddressResponse>(
+          onMap: (value) => CurrentSelectedAddressResponse(
+            address: value.wrapResponse().mapFromResponseToAddress()
+          )
+        );
+    });
+  }
+
+  @override
+  FutureProcessing<PagingDataResult<Address>> addressPaging(AddressPagingParameter addressPagingParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      String pageParameterPath = "/?pageNumber=${addressPagingParameter.itemEachPageCount}&page=${addressPagingParameter.page}";
+      return dio.get("/user/address$pageParameterPath", cancelToken: cancelToken)
+        .map<PagingDataResult<Address>>(
+          onMap: (value) => value.wrapResponse().mapFromResponseToAddressPaging()
       );
+    });
+  }
+
+  @override
+  FutureProcessing<List<Address>> addressList(AddressListParameter addressListParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.get("/user/address", cancelToken: cancelToken)
+        .map<List<Address>>(
+          onMap: (value) => value.wrapResponse().mapFromResponseToAddressList()
+        );
+    });
+  }
+
+  @override
+  FutureProcessing<UpdateCurrentSelectedAddressResponse> updateCurrentSelectedAddress(UpdateCurrentSelectedAddressParameter updateCurrentSelectedAddressParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.patch("/user/address/${updateCurrentSelectedAddressParameter.addressId}", cancelToken: cancelToken)
+        .map<UpdateCurrentSelectedAddressResponse>(
+          onMap: (value) => value.wrapResponse().mapFromResponseToUpdateCurrentSelectedAddressResponse()
+        );
     });
   }
 }

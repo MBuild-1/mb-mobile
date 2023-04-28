@@ -1,11 +1,14 @@
 import '../../entity/address/address.dart';
+import 'address_user_dummy.dart';
 import 'country_dummy.dart';
 
 class AddressDummy {
   CountryDummy countryDummy;
+  AddressUserDummy addressUserDummy;
 
   AddressDummy({
-    required this.countryDummy
+    required this.countryDummy,
+    required this.addressUserDummy
   });
 
   Address generateShimmerDummy() {
@@ -18,7 +21,8 @@ class AddressDummy {
       address: "",
       phoneNumber: "",
       zipCode: "",
-      country: countryDummy.generateShimmerDummy()
+      country: countryDummy.generateShimmerDummy(),
+      addressUser: addressUserDummy.generateShimmerDummy()
     );
   }
 
@@ -32,7 +36,8 @@ class AddressDummy {
       address: "Street 2",
       phoneNumber: "08512412521532",
       zipCode: "16517",
-      country: countryDummy.generateShimmerDummy()
+      country: countryDummy.generateDefaultDummy(),
+      addressUser: addressUserDummy.generateDefaultDummy()
     );
   }
 }

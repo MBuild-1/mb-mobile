@@ -1,3 +1,4 @@
+import 'address_user.dart';
 import 'country.dart';
 import 'zone.dart';
 
@@ -11,6 +12,7 @@ class Address {
   String phoneNumber;
   String zipCode;
   Country country;
+  AddressUser addressUser;
 
   Address({
     required this.id,
@@ -21,6 +23,7 @@ class Address {
     required this.address,
     required this.phoneNumber,
     required this.zipCode,
-    required this.country
+    required this.country,
+    required this.addressUser
   });
 }

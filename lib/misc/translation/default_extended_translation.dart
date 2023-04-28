@@ -110,7 +110,8 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Note is required": "Catatan dibutuhkan",
       "Additional Items": "Kiriman Tambahan",
       "Shipping Address": "Alamat Pengiriman",
-      "Change Other Address": "Pilih Alamat Lain"
+      "Change Other Address": "Pilih Alamat Lain",
+      "Choose Address": "Pilih Alamat"
     }
   };
 

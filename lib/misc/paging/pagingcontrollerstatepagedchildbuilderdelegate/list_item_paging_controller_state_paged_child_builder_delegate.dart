@@ -10,6 +10,8 @@ import '../../../domain/entity/product/product.dart';
 import '../../../domain/entity/product/productentry/product_entry.dart';
 import '../../../presentation/widget/additional_item_summary_widget.dart';
 import '../../../presentation/widget/additional_item_widget.dart';
+import '../../../presentation/widget/address/horizontal_address_item.dart';
+import '../../../presentation/widget/address/vertical_address_item.dart';
 import '../../../presentation/widget/carousel_list_item.dart';
 import '../../../presentation/widget/cart/cart_header.dart';
 import '../../../presentation/widget/cart/horizontal_cart_item.dart';
@@ -54,7 +56,7 @@ import '../../../presentation/widget/productcategory/horizontal_product_category
 import '../../../presentation/widget/productcategory/vertical_product_category_item.dart';
 import '../../../presentation/widget/prompt_indicator.dart';
 import '../../../presentation/widget/shimmer_carousel_item.dart';
-import '../../../presentation/widget/shipping_address_indicator.dart';
+import '../../../presentation/widget/address/shipping_address_indicator.dart';
 import '../../../presentation/widget/short_video_carousel_list_item.dart';
 import '../../../presentation/widget/titleanddescriptionitem/title_and_description_item.dart';
 import '../../../presentation/widget/titledescriptionandcontentitem/title_description_and_content_item.dart';
@@ -64,6 +66,9 @@ import '../../carouselbackground/carousel_background.dart';
 import '../../constant.dart';
 import '../../controllerstate/listitemcontrollerstate/additionalitemlistitemcontrollerstate/additional_item_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/additionalitemlistitemcontrollerstate/additional_item_summary_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/addresslistitemcontrollerstate/address_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/addresslistitemcontrollerstate/horizontal_address_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/addresslistitemcontrollerstate/vertical_address_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/carousel_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/cart_header_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/cart_list_item_controller_state.dart';
@@ -737,6 +742,20 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
       return ShippingAddressIndicator(
         shippingAddress: item.shippingAddress,
       );
+    } else if (item is AddressListItemControllerState) {
+      if (item is HorizontalAddressListItemControllerState) {
+        return HorizontalAddressItem(
+          address: item.address,
+          onSelectAddress: item.onSelectAddress,
+        );
+      } else if (item is VerticalAddressListItemControllerState) {
+        return VerticalAddressItem(
+          address: item.address,
+          onSelectAddress: item.onSelectAddress,
+        );
+      } else {
+        return Container();
+      }
     } else {
       return Container();
     }

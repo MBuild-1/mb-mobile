@@ -92,6 +92,7 @@ class _ConstantImpl {
   Color get colorDarkBlack => const Color.fromRGBO(57, 57, 57, 1);
   Color get colorSurfaceBlue => const Color.fromRGBO(209, 233, 238, 1);
   Color get colorDarkBlue => const Color.fromRGBO(37, 37, 140, 1);
+  Color get colorLightOrange => const Color.fromRGBO(255, 208, 191, 1);
 
   Color get colorMain => const Color.fromRGBO(255, 66, 0, 1);
   Color get colorDarkMain => colorMain;

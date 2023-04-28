@@ -28,6 +28,7 @@ import '../data/repository/default_feed_repository.dart';
 import '../data/repository/default_product_repository.dart';
 import '../data/repository/default_user_repository.dart';
 import '../domain/dummy/addressdummy/address_dummy.dart';
+import '../domain/dummy/addressdummy/address_user_dummy.dart';
 import '../domain/dummy/addressdummy/country_dummy.dart';
 import '../domain/dummy/addressdummy/zone_dummy.dart';
 import '../domain/dummy/cartdummy/cart_dummy.dart';
@@ -55,6 +56,8 @@ import '../domain/usecase/add_to_cart_use_case.dart';
 import '../domain/usecase/add_wishlist_use_case.dart';
 import '../domain/usecase/change_additional_item_use_case.dart';
 import '../domain/usecase/get_additional_item_use_case.dart';
+import '../domain/usecase/get_address_list_use_case.dart';
+import '../domain/usecase/get_address_paging_use_case.dart';
 import '../domain/usecase/get_bestseller_in_masterbagasi_list_use_case.dart';
 import '../domain/usecase/get_cart_summary_use_case.dart';
 import '../domain/usecase/get_coffee_and_tea_origin_indonesia_list_use_case.dart';
@@ -99,6 +102,7 @@ import '../domain/usecase/remove_additional_item_use_case.dart';
 import '../domain/usecase/remove_from_cart_use_case.dart';
 import '../domain/usecase/remove_wishlist_use_case.dart';
 import '../domain/usecase/take_friend_cart_use_case.dart';
+import '../domain/usecase/update_current_selected_address_use_case.dart';
 import 'additionalloadingindicatorchecker/cart_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/coupon_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/feed_sub_additional_paging_result_parameter_checker.dart';
@@ -145,7 +149,7 @@ class _Injector {
         getCoffeeAndTeaOriginIndonesiaListUseCase: locator(),
         getHandycraftsContentsBannerUseCase: locator(),
         getKitchenContentsBannerUseCase: locator(),
-        addWishlistUseCase: locator()
+        addWishlistUseCase: locator(),
       )
     );
     locator.registerLazySingleton<FeedMainMenuSubControllerInjectionFactory>(
@@ -210,7 +214,13 @@ class _Injector {
     locator.registerLazySingleton<NewsDummy>(() => NewsDummy());
     locator.registerLazySingleton<CouponDummy>(() => CouponDummy());
     locator.registerLazySingleton<CartDummy>(() => CartDummy(productEntryDummy: locator()));
-    locator.registerLazySingleton<AddressDummy>(() => AddressDummy(countryDummy: locator()));
+    locator.registerLazySingleton<AddressDummy>(
+      () => AddressDummy(
+        countryDummy: locator(),
+        addressUserDummy: locator(),
+      )
+    );
+    locator.registerLazySingleton<AddressUserDummy>(() => AddressUserDummy());
     locator.registerLazySingleton<CountryDummy>(() => CountryDummy(zoneDummy: locator()));
     locator.registerLazySingleton<ZoneDummy>(() => ZoneDummy());
 
@@ -343,6 +353,9 @@ class _Injector {
     locator.registerLazySingleton<AddHostCartUseCase>(() => AddHostCartUseCase(cartRepository: locator()));
     locator.registerLazySingleton<TakeFriendCartUseCase>(() => TakeFriendCartUseCase(cartRepository: locator()));
     locator.registerLazySingleton<GetCurrentSelectedAddressUseCase>(() => GetCurrentSelectedAddressUseCase(addressRepository: locator()));
+    locator.registerLazySingleton<GetAddressListUseCase>(() => GetAddressListUseCase(addressRepository: locator()));
+    locator.registerLazySingleton<GetAddressPagingUseCase>(() => GetAddressPagingUseCase(addressRepository: locator()));
+    locator.registerLazySingleton<UpdateCurrentSelectedAddressUseCase>(() => UpdateCurrentSelectedAddressUseCase(addressRepository: locator()));
     locator.registerLazySingleton<GetCartSummaryUseCase>(() => GetCartSummaryUseCase(cartRepository: locator()));
     locator.registerLazySingleton<GetAdditionalItemUseCase>(() => GetAdditionalItemUseCase(cartRepository: locator()));
     locator.registerLazySingleton<AddAdditionalItemUseCase>(() => AddAdditionalItemUseCase(cartRepository: locator()));

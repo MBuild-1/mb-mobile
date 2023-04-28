@@ -29,6 +29,7 @@ import '../controllerstate/listitemcontrollerstate/widget_substitution_list_item
 import '../dialog_helper.dart';
 import '../itemtypelistinterceptor/itemtypelistinterceptorchecker/list_item_controller_state_item_type_list_interceptor_checker.dart';
 import '../load_data_result.dart';
+import '../page_restoration_helper.dart';
 import '../typedef.dart';
 import 'cart_item_type_list_sub_interceptor.dart';
 import 'item_type_list_sub_interceptor.dart';
@@ -124,6 +125,7 @@ class DeliveryCartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
                   return Row(
                     children: [
                       TapArea(
+                        onTap: () => PageRestorationHelper.toAddressPage(context),
                         child: Container(
                           child: Text("Change Other Address".tr, style: const TextStyle(fontWeight: FontWeight.bold)),
                           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),

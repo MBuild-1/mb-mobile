@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../domain/entity/address/address.dart';
-import '../../misc/constant.dart';
+import '../../../domain/entity/address/address.dart';
+import '../../../misc/constant.dart';
 
 class ShippingAddressIndicator extends StatelessWidget {
   final Address shippingAddress;

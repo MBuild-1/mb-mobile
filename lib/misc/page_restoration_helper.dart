@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import '../controller/crop_picture_controller.dart';
+import '../presentation/page/address_page.dart';
 import '../presentation/page/cart_page.dart';
 import '../presentation/page/coupon_page.dart';
 import '../presentation/page/crop_picture_page.dart';
@@ -206,6 +207,17 @@ class _PageRestorationHelperImpl {
       },
       context: context
     );
+  }
+
+  void toAddressPage(BuildContext context) {
+    LoginHelper.checkingLogin(context, () {
+      PageRestorationHelper.findPageRestorationMixin<AddressPageRestorationMixin>(
+        onGetxPageRestorationFound: (restoration) {
+          restoration.addressPageRestorableRouteFuture.present();
+        },
+        context: context
+      );
+    });
   }
 }
 

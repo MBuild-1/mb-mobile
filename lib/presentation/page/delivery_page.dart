@@ -55,13 +55,16 @@ import '../../misc/string_util.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
+import 'address_page.dart';
 import 'getx_page.dart';
 import 'modaldialogpage/add_cart_note_modal_dialog_page.dart';
 import 'web_viewer_page.dart';
 
+// ignore: must_be_immutable
 class DeliveryPage extends RestorableGetxPage<_DeliveryPageRestoration> {
   late final ControllerMember<DeliveryController> _deliveryController = ControllerMember<DeliveryController>().addToControllerManager(controllerManager);
   final List<String> selectedCartIdList;
+  _StatefulDeliveryControllerMediatorWidgetDelegate _statefulDeliveryControllerMediatorWidgetDelegate = _StatefulDeliveryControllerMediatorWidgetDelegate();
 
   DeliveryPage({
     Key? key,
@@ -85,23 +88,41 @@ class DeliveryPage extends RestorableGetxPage<_DeliveryPageRestoration> {
   }
 
   @override
-  _DeliveryPageRestoration createPageRestoration() => _DeliveryPageRestoration();
+  _DeliveryPageRestoration createPageRestoration() => _DeliveryPageRestoration(
+    onCompleteAddressPage: (result) {
+      if (result != null) {
+        if (result) {
+          if (_statefulDeliveryControllerMediatorWidgetDelegate.onRefreshDelivery != null) {
+            _statefulDeliveryControllerMediatorWidgetDelegate.onRefreshDelivery!();
+          }
+        }
+      }
+    }
+  );
 
   @override
   Widget buildPage(BuildContext context) {
     return Scaffold(
       body: _StatefulDeliveryControllerMediatorWidget(
         deliveryController: _deliveryController.controller,
-        selectedCartIdList: selectedCartIdList
+        selectedCartIdList: selectedCartIdList,
+        statefulDeliveryControllerMediatorWidgetDelegate: _statefulDeliveryControllerMediatorWidgetDelegate,
       ),
     );
   }
 }
 
-class _DeliveryPageRestoration extends MixableGetxPageRestoration with DeliveryPageRestorationMixin, WebViewerPageRestorationMixin {
+class _DeliveryPageRestoration extends MixableGetxPageRestoration with DeliveryPageRestorationMixin, WebViewerPageRestorationMixin, AddressPageRestorationMixin {
+  final RouteCompletionCallback<bool?>? _onCompleteAddressPage;
+
+  _DeliveryPageRestoration({
+    RouteCompletionCallback<bool?>? onCompleteAddressPage,
+  }) : _onCompleteAddressPage = onCompleteAddressPage;
+
   @override
   // ignore: unnecessary_overrides
   void initState() {
+    onCompleteSelectAddress = _onCompleteAddressPage;
     super.initState();
   }
 
@@ -205,13 +226,19 @@ class DeliveryPageRestorableRouteFuture extends GetRestorableRouteFuture {
   }
 }
 
+class _StatefulDeliveryControllerMediatorWidgetDelegate {
+  void Function()? onRefreshDelivery;
+}
+
 class _StatefulDeliveryControllerMediatorWidget extends StatefulWidget {
   final DeliveryController deliveryController;
   final List<String> selectedCartIdList;
+  final _StatefulDeliveryControllerMediatorWidgetDelegate statefulDeliveryControllerMediatorWidgetDelegate;
 
   const _StatefulDeliveryControllerMediatorWidget({
     required this.deliveryController,
-    required this.selectedCartIdList
+    required this.selectedCartIdList,
+    required this.statefulDeliveryControllerMediatorWidgetDelegate
   });
 
   @override
@@ -246,6 +273,7 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
       onPageKeyNext: (pageKey) => pageKey + 1
     );
     _deliveryListItemPagingControllerState.isPagingControllerExist = true;
+    widget.statefulDeliveryControllerMediatorWidgetDelegate.onRefreshDelivery = () => _deliveryListItemPagingController.refresh();
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _deliveryListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? cartListItemControllerStateList) async {
