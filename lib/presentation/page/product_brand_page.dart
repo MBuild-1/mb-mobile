@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_navigation/src/routes/transitions_type.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_ext.dart';
@@ -229,7 +228,7 @@ class _StatefulProductBrandControllerMediatorWidgetState extends State<_Stateful
       } else {
         if (ListItemControllerStateHelper.checkListItemControllerStateList(listItemControllerStateList)) {
           VerticalGridPaddingContentSubInterceptorSupportListItemControllerState verticalGridListItemControllerState = ListItemControllerStateHelper.parsePageKeyedListItemControllerState(
-            listItemControllerStateList![0]
+            listItemControllerStateList![1]
           ) as VerticalGridPaddingContentSubInterceptorSupportListItemControllerState;
           verticalGridListItemControllerState.childListItemControllerStateList.addAll(
             verticalProductBrandListItemControllerStateList

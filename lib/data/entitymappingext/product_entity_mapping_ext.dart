@@ -16,7 +16,9 @@ import '../../domain/entity/product/productvariant/product_variant.dart';
 import '../../domain/entity/product/short_product.dart';
 import '../../domain/entity/wishlist/add_wishlist_response.dart';
 import '../../domain/entity/wishlist/remove_wishlist_response.dart';
+import '../../domain/entity/wishlist/support_wishlist.dart';
 import '../../domain/entity/wishlist/wishlist.dart';
+import '../../misc/error/message_error.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/response_wrapper.dart';
 
@@ -142,7 +144,9 @@ extension ProductBundleDetailEntityMappingExt on ResponseWrapper {
       imageUrl: response["banner"],
       price: ResponseWrapper(response["price"]).mapFromResponseToDouble()!,
       rating: 0.0,
-      shortProductList: ResponseWrapper(response["product"]).mapFromResponseToShortProductList(),
+      productEntryList: response["bundling_list"].map<ProductEntry>(
+        (bundlingResponse) => ResponseWrapper(bundlingResponse["product_entry"]).mapFromResponseToProductEntry()
+      ).toList(),
       soldOut: response["sold"] ?? 0
     );
   }
@@ -319,7 +323,7 @@ extension WishlistDetailEntityMappingExt on ResponseWrapper {
   Wishlist mapFromResponseToWishlist() {
     return Wishlist(
       id: response["id"],
-      productEntry: ResponseWrapper(response["product"]).mapFromResponseToProductEntry()
+      supportWishlist: ResponseWrapper(response).mapFromResponseToSupportWishlist()
     );
   }
 
@@ -329,5 +333,17 @@ extension WishlistDetailEntityMappingExt on ResponseWrapper {
 
   RemoveWishlistResponse mapFromResponseToRemoveWishlistResponse() {
     return RemoveWishlistResponse();
+  }
+
+  SupportWishlist mapFromResponseToSupportWishlist() {
+    dynamic productEntry = response["product_entry"];
+    dynamic bundling = response["bundling"];
+    if (productEntry != null) {
+      return ResponseWrapper(productEntry).mapFromResponseToProductEntry();
+    } else if (bundling != null) {
+      return ResponseWrapper(productEntry).mapFromResponseToProductBundle();
+    } else {
+      throw MessageError(message: "Support wishlist not suitable");
+    }
   }
 }

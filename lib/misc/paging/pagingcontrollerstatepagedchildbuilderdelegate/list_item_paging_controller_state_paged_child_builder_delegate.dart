@@ -323,6 +323,8 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
       } else {
         return Container();
       }
+    } else if (item is ProductBundleHeaderListItemControllerState) {
+      return ProductBundleHeaderListItem(productBundle: item.productBundle);
     } else if (item is ProductEntryHeaderListItemControllerState) {
       return ProductEntryHeader(
         title: item.title,

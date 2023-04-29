@@ -1,11 +1,11 @@
-import '../product/productentry/product_entry.dart';
+import 'support_wishlist.dart';
 
 class Wishlist {
   String id;
-  ProductEntry productEntry;
+  SupportWishlist supportWishlist;
 
   Wishlist({
     required this.id,
-    required this.productEntry
+    required this.supportWishlist
   });
 }

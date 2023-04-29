@@ -1,8 +1,8 @@
-import '../short_product.dart';
+import '../productentry/product_entry.dart';
 import 'product_bundle.dart';
 
 class ProductBundleDetail extends ProductBundle {
-  final List<ShortProduct> shortProductList;
+  final List<ProductEntry> productEntryList;
 
   ProductBundleDetail({
     required String id,
@@ -12,7 +12,7 @@ class ProductBundleDetail extends ProductBundle {
     required String imageUrl,
     required double price,
     required double rating,
-    required this.shortProductList,
+    required this.productEntryList,
     required int soldOut
   }) : super(
     id: id,

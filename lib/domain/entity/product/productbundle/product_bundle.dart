@@ -1,6 +1,7 @@
 import '../../cart/support_cart.dart';
+import '../../wishlist/support_wishlist.dart';
 
-class ProductBundle implements SupportCart {
+class ProductBundle implements SupportCart, SupportWishlist {
   String id;
   String name;
   String slug;

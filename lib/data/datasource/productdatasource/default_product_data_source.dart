@@ -210,7 +210,7 @@ class DefaultProductDataSource implements ProductDataSource {
   @override
   FutureProcessing<ProductBundleDetail> productBundleDetail(ProductBundleDetailParameter productBundleDetailParameter) {
     return DioHttpClientProcessing((cancelToken) {
-      return dio.get("/product/bundle/${productBundleDetailParameter.productBundleId}", cancelToken: cancelToken)
+      return dio.get("/bundling/${productBundleDetailParameter.productBundleId}", cancelToken: cancelToken)
         .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductBundleDetail());
     });
   }
@@ -259,7 +259,7 @@ class DefaultProductDataSource implements ProductDataSource {
   FutureProcessing<PagingDataResult<Wishlist>> wishlistPaging(WishlistPagingParameter wishlistPagingParameter) {
     return DioHttpClientProcessing((cancelToken) {
       String pageParameterPath = "/?pageNumber=${wishlistPagingParameter.itemEachPageCount}&page=${wishlistPagingParameter.page}";
-      return dio.get("/wishlist$pageParameterPath", cancelToken: cancelToken)
+      return dio.get("/user/wishlist$pageParameterPath", cancelToken: cancelToken)
         .map(onMap: (value) => value.wrapResponse().mapFromResponseToWishlistPaging());
     });
   }
@@ -267,7 +267,7 @@ class DefaultProductDataSource implements ProductDataSource {
   @override
   FutureProcessing<AddWishlistResponse> addWishlist(AddWishlistParameter addWishlistParameter) {
     return DioHttpClientProcessing((cancelToken) {
-      return dio.post("/wishlist/add", cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+      return dio.post("/user/wishlist/add", cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
         .map(onMap: (value) => value.wrapResponse().mapFromResponseToAddWishlistResponse());
     });
   }
@@ -275,7 +275,7 @@ class DefaultProductDataSource implements ProductDataSource {
   @override
   FutureProcessing<RemoveWishlistResponse> removeWishlist(RemoveWishlistParameter removeWishlistParameter) {
     return DioHttpClientProcessing((cancelToken) {
-      return dio.post("/wishlist/remove", cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+      return dio.post("/user/wishlist/remove", cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
         .map(onMap: (value) => value.wrapResponse().mapFromResponseToRemoveWishlistResponse());
     });
   }
