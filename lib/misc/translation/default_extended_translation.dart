@@ -112,7 +112,8 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Shipping Address": "Alamat Pengiriman",
       "Change Other Address": "Pilih Alamat Lain",
       "Choose Address": "Pilih Alamat",
-      "Product Brand": "Brand Product"
+      "Product Brand": "Brand Product",
+      "Delivery to": "Dikirim ke"
     }
   };
 

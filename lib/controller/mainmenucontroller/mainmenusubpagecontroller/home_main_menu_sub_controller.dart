@@ -1,7 +1,12 @@
+import 'package:masterbagasi/misc/ext/future_ext.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 
+import '../../../domain/entity/address/address.dart';
+import '../../../domain/entity/address/current_selected_address_parameter.dart';
 import '../../../domain/entity/banner/transparent_banner.dart';
+import '../../../domain/entity/componententity/dynamic_item_carousel_directly_component_entity.dart';
 import '../../../domain/entity/homemainmenucomponententity/check_rates_for_various_countries_component_entity.dart';
+import '../../../domain/entity/homemainmenucomponententity/dynamic_item_carousel_directly_home_main_menu_component_entity.dart';
 import '../../../domain/entity/homemainmenucomponententity/dynamic_item_carousel_home_main_menu_component_entity.dart';
 import '../../../domain/entity/homemainmenucomponententity/home_main_menu_component_entity.dart';
 import '../../../domain/entity/homemainmenucomponententity/separator_home_main_menu_component_entity.dart';
@@ -17,6 +22,7 @@ import '../../../domain/entity/product/productentry/product_entry_header_content
 import '../../../domain/usecase/add_wishlist_use_case.dart';
 import '../../../domain/usecase/get_bestseller_in_masterbagasi_list_use_case.dart';
 import '../../../domain/usecase/get_coffee_and_tea_origin_indonesia_list_use_case.dart';
+import '../../../domain/usecase/get_current_selected_address_use_case.dart';
 import '../../../domain/usecase/get_handycrafts_contents_banner_use_case.dart';
 import '../../../domain/usecase/get_kitchen_contents_banner_use_case.dart';
 import '../../../domain/usecase/get_product_brand_use_case.dart';
@@ -47,6 +53,7 @@ class HomeMainMenuSubController extends BaseGetxController {
   final GetHandycraftsContentsBannerUseCase getHandycraftsContentsBannerUseCase;
   final GetKitchenContentsBannerUseCase getKitchenContentsBannerUseCase;
   final AddWishlistUseCase addWishlistUseCase;
+  final GetCurrentSelectedAddressUseCase getCurrentSelectedAddressUseCase;
   HomeMainMenuDelegate? _homeMainMenuDelegate;
 
   HomeMainMenuSubController(
@@ -61,8 +68,41 @@ class HomeMainMenuSubController extends BaseGetxController {
     this.getBestsellerInMasterbagasiListUseCase,
     this.getCoffeeAndTeaOriginIndonesiaListUseCase,
     this.getHandycraftsContentsBannerUseCase,
-    this.getKitchenContentsBannerUseCase
+    this.getKitchenContentsBannerUseCase,
+    this.getCurrentSelectedAddressUseCase
   ) : super(controllerManager, initLater: true);
+
+  HomeMainMenuComponentEntity getDeliveryTo() {
+    return DynamicItemCarouselDirectlyHomeMainMenuComponentEntity(
+      title: MultiLanguageString(""),
+      onDynamicItemAction: (title, description, observer) async {
+        observer(title, description, IsLoadingLoadDataResult<Address>());
+        LoadDataResult<Address> addressPagingDataResult = await getCurrentSelectedAddressUseCase.execute(
+          CurrentSelectedAddressParameter()
+        ).future(
+          parameter: apiRequestManager.addRequestToCancellationPart("short-video-list").value
+        ).map<Address>(
+          (currentSelectedAddressResponse) => currentSelectedAddressResponse.address
+        );
+        if (addressPagingDataResult.isFailedBecauseCancellation) {
+          return;
+        }
+        observer(title, description, addressPagingDataResult);
+      },
+      observeDynamicItemActionStateDirectly: (title, description, itemLoadDataResult, errorProvider) {
+        LoadDataResult<Address> addressLoadDataResult = itemLoadDataResult.castFromDynamic<Address>();
+        if (_homeMainMenuDelegate != null) {
+          return _homeMainMenuDelegate!.onObserveLoadCurrentAddress(
+            _OnObserveLoadCurrentAddressParameter(
+              addressLoadDataResult: addressLoadDataResult
+            )
+          );
+        } else {
+          throw MessageError(title: "Feed main menu sub delegate must be not null");
+        }
+      },
+    );
+  }
 
   List<HomeMainMenuComponentEntity> getHomeMainMenuComponentEntity() {
     return [
@@ -432,6 +472,7 @@ class HomeMainMenuSubControllerInjectionFactory {
   final GetHandycraftsContentsBannerUseCase getHandycraftsContentsBannerUseCase;
   final GetKitchenContentsBannerUseCase getKitchenContentsBannerUseCase;
   final AddWishlistUseCase addWishlistUseCase;
+  final GetCurrentSelectedAddressUseCase getCurrentSelectedAddressUseCase;
 
   HomeMainMenuSubControllerInjectionFactory({
     required this.getProductBrandListUseCase,
@@ -444,7 +485,8 @@ class HomeMainMenuSubControllerInjectionFactory {
     required this.getCoffeeAndTeaOriginIndonesiaListUseCase,
     required this.getHandycraftsContentsBannerUseCase,
     required this.getKitchenContentsBannerUseCase,
-    required this.addWishlistUseCase
+    required this.addWishlistUseCase,
+    required this.getCurrentSelectedAddressUseCase
   });
 
   HomeMainMenuSubController inject(ControllerManager controllerManager, String pageName) {
@@ -461,7 +503,8 @@ class HomeMainMenuSubControllerInjectionFactory {
         getBestsellerInMasterbagasiListUseCase,
         getCoffeeAndTeaOriginIndonesiaListUseCase,
         getHandycraftsContentsBannerUseCase,
-        getKitchenContentsBannerUseCase
+        getKitchenContentsBannerUseCase,
+        getCurrentSelectedAddressUseCase
       ),
       tag: pageName
     );
@@ -474,13 +517,15 @@ class HomeMainMenuDelegate {
   ListItemControllerState Function(_OnObserveLoadingLoadProductBundleHighlightParameter) onObserveLoadingLoadProductBundleHighlight;
   ListItemControllerState Function(_OnObserveSuccessLoadTransparentBannerParameter) onObserveSuccessLoadTransparentBanner;
   ListItemControllerState Function(_OnObserveLoadingLoadTransparentBannerParameter) onObserveLoadingLoadTransparentBanner;
+  ListItemControllerState Function(_OnObserveLoadCurrentAddressParameter) onObserveLoadCurrentAddress;
 
   HomeMainMenuDelegate({
     required this.onObserveLoadProductDelegate,
     required this.onObserveSuccessLoadProductBundleHighlight,
     required this.onObserveLoadingLoadProductBundleHighlight,
     required this.onObserveSuccessLoadTransparentBanner,
-    required this.onObserveLoadingLoadTransparentBanner
+    required this.onObserveLoadingLoadTransparentBanner,
+    required this.onObserveLoadCurrentAddress,
   });
 }
 
@@ -513,3 +558,11 @@ class _OnObserveSuccessLoadTransparentBannerParameter {
 }
 
 class _OnObserveLoadingLoadTransparentBannerParameter {}
+
+class _OnObserveLoadCurrentAddressParameter {
+  LoadDataResult<Address> addressLoadDataResult;
+
+  _OnObserveLoadCurrentAddressParameter({
+    required this.addressLoadDataResult
+  });
+}

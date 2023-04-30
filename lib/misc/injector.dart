@@ -151,6 +151,7 @@ class _Injector {
         getHandycraftsContentsBannerUseCase: locator(),
         getKitchenContentsBannerUseCase: locator(),
         addWishlistUseCase: locator(),
+        getCurrentSelectedAddressUseCase: locator()
       )
     );
     locator.registerLazySingleton<FeedMainMenuSubControllerInjectionFactory>(

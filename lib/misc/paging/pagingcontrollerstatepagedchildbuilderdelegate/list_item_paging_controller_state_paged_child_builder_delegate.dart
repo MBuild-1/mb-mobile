@@ -1,11 +1,15 @@
 import 'package:carousel_slider/carousel_controller.dart';
 import 'package:carousel_slider/carousel_options.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart' hide Notification, Banner;
 import 'package:get/get.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:masterbagasi/misc/ext/error_provider_ext.dart';
+import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
+import '../../../domain/entity/address/address.dart';
 import '../../../domain/entity/product/product.dart';
 import '../../../domain/entity/product/productentry/product_entry.dart';
 import '../../../presentation/widget/additional_item_summary_widget.dart';
@@ -28,6 +32,7 @@ import '../../../presentation/widget/host_cart_indicator.dart';
 import '../../../presentation/widget/icon_title_and_description_list_item.dart';
 import '../../../presentation/widget/menu_profile_header.dart';
 import '../../../presentation/widget/modified_carousel_slider.dart';
+import '../../../presentation/widget/modified_shimmer.dart';
 import '../../../presentation/widget/modifiedassetimage/modified_asset_image.dart';
 import '../../../presentation/widget/modifiedcachednetworkimage/modified_cached_network_image.dart';
 import '../../../presentation/widget/modified_colorful_divider.dart';
@@ -145,6 +150,7 @@ import '../../controllerstate/paging_controller_state.dart';
 import '../../errorprovider/error_provider.dart';
 import '../../injector.dart';
 import '../../listitempagingparameterinjection/list_item_paging_parameter_injection.dart';
+import '../../load_data_result.dart';
 import '../../page_restoration_helper.dart';
 import '../../productentryheaderbackground/product_entry_header_background.dart';
 import '../../typedef.dart';
@@ -519,24 +525,50 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
         )
       );
     } else if (item is DeliveryToListItemControllerState) {
-      return Container(
-        padding: const EdgeInsets.all(16.0),
-        color: Constant.colorDarkBlue,
-        child: Row(
-          children: [
-            ModifiedSvgPicture.asset(Constant.vectorLocation, color: Colors.white),
-            const SizedBox(width: 10),
-            Text.rich(
-              TextSpan(
-                children: <InlineSpan>[
-                  const TextSpan(text: "${"Delivered to"} ", style: TextStyle(color: Colors.white)),
-                  TextSpan(text: item.location.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                ]
+      LoadDataResult<Address> addressLoadDataResult = item.addressLoadDataResult;
+      Widget getDeliveryToWidget(LoadDataResult<Address> addressLoadDataResultParameter) {
+        List<InlineSpan> inlineSpanList = [];
+        if (addressLoadDataResultParameter.isLoading) {
+          inlineSpanList = [
+            TextSpan(text: "${"Delivered to".tr} ", style: const TextStyle(color: Colors.white))
+          ];
+        } else if (addressLoadDataResultParameter.isSuccess) {
+          Address address = addressLoadDataResultParameter.resultIfSuccess!;
+          inlineSpanList = [
+            TextSpan(text: "${"Delivered to".tr} ", style: const TextStyle(color: Colors.white)),
+            TextSpan(text: address.country.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          ];
+        } else if (addressLoadDataResultParameter.isFailed) {
+          ErrorProviderResult errorProviderResult = item.errorProvider.onGetErrorProviderResult(addressLoadDataResultParameter.resultIfFailed).toErrorProviderResultNonNull();
+          inlineSpanList = [
+            TextSpan(text: errorProviderResult.title, style: const TextStyle(color: Colors.white)),
+          ];
+        }
+        return Container(
+          padding: const EdgeInsets.all(16.0),
+          color: Constant.colorDarkBlue,
+          child: Row(
+            children: [
+              ModifiedSvgPicture.asset(Constant.vectorLocation, color: Colors.white),
+              const SizedBox(width: 10),
+              Text.rich(
+                TextSpan(
+                  children: inlineSpanList
+                )
               )
-            )
-          ],
-        ),
-      );
+            ],
+          ),
+        );
+      }
+      if (addressLoadDataResult.isLoading) {
+        return IgnorePointer(
+          child: ModifiedShimmer.fromColors(
+            child: getDeliveryToWidget(addressLoadDataResult)
+          ),
+        );
+      } else {
+        return getDeliveryToWidget(addressLoadDataResult);
+      }
     } else if (item is CheckRatesForVariousCountriesControllerState) {
       return Column(
         children: [

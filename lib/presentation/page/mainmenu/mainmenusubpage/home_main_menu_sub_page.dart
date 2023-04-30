@@ -7,6 +7,7 @@ import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/presentation/page/product_entry_page.dart';
 import 'package:sizer/sizer.dart';
 import '../../../../controller/mainmenucontroller/mainmenusubpagecontroller/home_main_menu_sub_controller.dart';
+import '../../../../domain/entity/address/address.dart';
 import '../../../../domain/entity/banner/banner.dart';
 import '../../../../domain/entity/homemainmenucomponententity/banner_home_main_menu_component_entity.dart';
 import '../../../../domain/entity/homemainmenucomponententity/check_rates_for_various_countries_component_entity.dart';
@@ -94,7 +95,7 @@ class _StatefulHomeMainMenuSubControllerMediatorWidget extends StatefulWidget {
 class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_StatefulHomeMainMenuSubControllerMediatorWidget> {
   late final ModifiedPagingController<int, ListItemControllerState> _homeMainMenuSubListItemPagingController;
   late final PagingControllerState<int, ListItemControllerState> _homeMainMenuSubListItemPagingControllerState;
-  final List<LoadDataResultDynamicListItemControllerState> _dynamicItemLoadDataResultDynamicListItemControllerStateList = [];
+  final List<BaseLoadDataResultDynamicListItemControllerState> _dynamicItemLoadDataResultDynamicListItemControllerStateList = [];
 
   late AssetImage _homeAppBarBackgroundAssetImage;
 
@@ -175,6 +176,9 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _homeMainMenuListItemPagingControllerStateListener(int pageKey) async {
+    List<HomeMainMenuComponentEntity> firstMainMenuContentList = [
+      widget.homeMainMenuSubController.getDeliveryTo(),
+    ];
     List<HomeMainMenuComponentEntity> mainMenuContentList = [
       BannerHomeMainMenuComponentEntity(
         banner: Banner(
@@ -185,7 +189,9 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
       ),
       ...widget.homeMainMenuSubController.getHomeMainMenuComponentEntity()
     ];
+    List<ListItemControllerState> firstListItemControllerStateList = [];
     List<ListItemControllerState> listItemControllerStateList = [];
+    _checkingMainMenuContent(firstMainMenuContentList, firstListItemControllerStateList);
     _checkingMainMenuContent(mainMenuContentList, listItemControllerStateList);
     return SuccessLoadDataResult<PagingResult<ListItemControllerState>>(
       value: PagingDataResult<ListItemControllerState>(
@@ -193,15 +199,7 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
         totalPage: 1,
         totalItem: 1,
         itemList: [
-          DeliveryToListItemControllerState(
-            location: Location(
-              id: "",
-              name: "Test",
-              description: "",
-              latitude: 0.0,
-              longitude: 0.0
-            )
-          ),
+          ...firstListItemControllerStateList,
           ColorfulDividerListItemControllerState(
             lineColorList: [Constant.colorButtonGradient2, Constant.colorButtonGradient3],
             lineHeight: 3
@@ -489,6 +487,12 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
             showDescriptionShimmer: false,
             showItemShimmer: true,
             shimmerCarouselListItemGenerator: Injector.locator<ProductBundleShimmerCarouselListItemGeneratorFactory>().getShimmerCarouselListItemGeneratorType()
+          );
+        },
+        onObserveLoadCurrentAddress: (onObserveLoadCurrentAddressParameter) {
+          return DeliveryToListItemControllerState(
+            addressLoadDataResult: onObserveLoadCurrentAddressParameter.addressLoadDataResult,
+            errorProvider: Injector.locator<ErrorProvider>()
           );
         }
       )
