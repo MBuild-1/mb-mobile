@@ -60,6 +60,7 @@ import '../../../presentation/widget/productcategory/circleproductcategory/verti
 import '../../../presentation/widget/productcategory/horizontal_product_category_item.dart';
 import '../../../presentation/widget/productcategory/vertical_product_category_item.dart';
 import '../../../presentation/widget/prompt_indicator.dart';
+import '../../../presentation/widget/province_map_header_list_item.dart';
 import '../../../presentation/widget/shimmer_carousel_item.dart';
 import '../../../presentation/widget/address/shipping_address_indicator.dart';
 import '../../../presentation/widget/short_video_carousel_list_item.dart';
@@ -135,6 +136,7 @@ import '../../controllerstate/listitemcontrollerstate/productcategorylistitemcon
 import '../../controllerstate/listitemcontrollerstate/productlistitemcontrollerstate/horizontal_product_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productlistitemcontrollerstate/product_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productlistitemcontrollerstate/vertical_product_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/province_map_header_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/row_container_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/shipping_address_indicator_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/videocarousellistitemcontrollerstate/default_video_carousel_list_item_controller_state.dart';
@@ -671,6 +673,10 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
     } else if (item is ProductBundleHeaderListItemControllerState) {
       return ProductBundleHeaderListItem(
         productBundle: item.productBundle,
+      );
+    } else if (item is ProvinceMapHeaderListItemControllerState) {
+      return ProvinceMapHeaderListItem(
+        provinceMap: item.provinceMap,
       );
     } else if (item is ProductBundleHighlightListItemControllerState) {
       return ProductBundleHighlightListItem(

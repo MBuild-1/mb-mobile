@@ -113,7 +113,8 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Change Other Address": "Pilih Alamat Lain",
       "Choose Address": "Pilih Alamat",
       "Product Brand": "Brand Product",
-      "Delivery to": "Dikirim ke"
+      "Delivery to": "Dikirim ke",
+      "Welcome To Nusantara": "Selamat Datang di Nusantara"
     }
   };
 

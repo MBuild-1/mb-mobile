@@ -3,12 +3,12 @@ import 'province_map_metadata.dart';
 class ProvinceMap {
   String id;
   String name;
-  String description;
+  String? description;
   String slug;
-  String icon;
-  String background;
-  String bannerDesktop;
-  String bannerMobile;
+  String? icon;
+  String? background;
+  String? bannerDesktop;
+  String? bannerMobile;
   ProvinceMapMetadata provinceMapMetadata;
 
   ProvinceMap({

@@ -1,7 +1,5 @@
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
-import 'package:masterbagasi/misc/ext/paging_ext.dart';
-import 'package:masterbagasi/misc/processing/dummy_future_processing.dart';
 
 import '../../domain/entity/product/product.dart';
 import '../../domain/entity/product/product_detail.dart';
@@ -37,7 +35,10 @@ import '../../domain/entity/product/productentry/product_entry_header_content_re
 import '../../domain/entity/product/productentry/productentryheaderresponsevalue/brand_product_entry_header_content_response_value.dart';
 import '../../domain/entity/product/productentry/productentryheaderresponsevalue/category_product_entry_header_content_response_value.dart';
 import '../../domain/entity/product/productentry/productentryheaderresponsevalue/product_entry_header_content_response_value.dart';
+import '../../domain/entity/product/productentry/productentryheaderresponsevalue/province_map_product_entry_header_content_response_value.dart';
 import '../../domain/entity/product/productentry/productentryheaderresponsevalue/static_product_entry_header_content_response_value.dart';
+import '../../domain/entity/province/province_map.dart';
+import '../../domain/entity/province/province_map_detail_parameter.dart';
 import '../../domain/entity/wishlist/add_wishlist_parameter.dart';
 import '../../domain/entity/wishlist/add_wishlist_response.dart';
 import '../../domain/entity/wishlist/remove_wishlist_parameter.dart';
@@ -51,13 +52,16 @@ import '../../misc/multi_language_string.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/processing/dio_http_client_processing.dart';
 import '../../misc/processing/future_processing.dart';
+import '../datasource/mapdatasource/map_data_source.dart';
 import '../datasource/productdatasource/product_data_source.dart';
 
 class DefaultProductRepository implements ProductRepository {
   final ProductDataSource productDataSource;
+  final MapDataSource mapDataSource;
 
   const DefaultProductRepository({
-    required this.productDataSource
+    required this.productDataSource,
+    required this.mapDataSource
   });
 
   @override
@@ -117,6 +121,20 @@ class DefaultProductRepository implements ProductRepository {
         ProductBrandDetail productBrandDetail = productBrandDetailLoadDataResult.resultIfSuccess!;
         productEntryHeaderContentResponseValue = BrandProductEntryHeaderContentResponseValue(
           productBrand: productBrandDetail
+        );
+      } else if (parameterMap.containsKey("province")) {
+        LoadDataResult<ProvinceMap> provinceMapLoadDataResult = await mapDataSource.provinceMapDetail(
+          ProvinceMapDetailParameter(
+            provinceMapId: parameterMap.containsKey("province_id") ? parameterMap["province_id"] : parameterMap["province"],
+            provinceMapDetailParameterType: parameterMap.containsKey("province_id") ? ProvinceMapDetailParameterType.id : ProvinceMapDetailParameterType.slug
+          ),
+        ).mapToLoadDataResult<ProvinceMap>().future(parameter: cancelToken);
+        if (provinceMapLoadDataResult.isFailed) {
+          return provinceMapLoadDataResult.map<ProductEntryHeaderContentResponse>((test) => throw UnimplementedError());
+        }
+        ProvinceMap provinceMap = provinceMapLoadDataResult.resultIfSuccess!;
+        productEntryHeaderContentResponseValue = ProvinceMapProductEntryHeaderContentResponseValue(
+          provinceMap: provinceMap
         );
       } else {
         if (parameterMap.containsKey("name")) {

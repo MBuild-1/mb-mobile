@@ -16,6 +16,8 @@ import '../data/datasource/coupondatasource/coupon_data_source.dart';
 import '../data/datasource/coupondatasource/default_coupon_data_source.dart';
 import '../data/datasource/feeddatasource/default_feed_data_source.dart';
 import '../data/datasource/feeddatasource/feed_data_source.dart';
+import '../data/datasource/mapdatasource/default_map_data_source.dart';
+import '../data/datasource/mapdatasource/map_data_source.dart';
 import '../data/datasource/productdatasource/default_product_data_source.dart';
 import '../data/datasource/productdatasource/product_data_source.dart';
 import '../data/datasource/userdatasource/default_user_data_source.dart';
@@ -25,6 +27,7 @@ import '../data/repository/default_banner_repository.dart';
 import '../data/repository/default_cart_repository.dart';
 import '../data/repository/default_coupon_repository.dart';
 import '../data/repository/default_feed_repository.dart';
+import '../data/repository/default_map_repository.dart';
 import '../data/repository/default_product_repository.dart';
 import '../data/repository/default_user_repository.dart';
 import '../domain/dummy/addressdummy/address_dummy.dart';
@@ -48,6 +51,7 @@ import '../domain/repository/banner_repository.dart';
 import '../domain/repository/cart_repository.dart';
 import '../domain/repository/coupon_repository.dart';
 import '../domain/repository/feed_repository.dart';
+import '../domain/repository/map_repository.dart';
 import '../domain/repository/product_repository.dart';
 import '../domain/repository/user_repository.dart';
 import '../domain/usecase/add_additional_item_use_case.dart';
@@ -88,6 +92,7 @@ import '../domain/usecase/get_product_entry_with_condition_paging_use_case.dart'
 import '../domain/usecase/get_product_list_use_case.dart';
 import '../domain/usecase/get_product_viral_list_use_case.dart';
 import '../domain/usecase/get_product_viral_paging_use_case.dart';
+import '../domain/usecase/get_province_map_use_case.dart';
 import '../domain/usecase/get_short_my_cart_use_case.dart';
 import '../domain/usecase/get_short_video_use_case.dart';
 import '../domain/usecase/get_snack_for_lying_around_list_use_case.dart';
@@ -151,7 +156,7 @@ class _Injector {
         getHandycraftsContentsBannerUseCase: locator(),
         getKitchenContentsBannerUseCase: locator(),
         addWishlistUseCase: locator(),
-        getCurrentSelectedAddressUseCase: locator()
+        getCurrentSelectedAddressUseCase: locator(),
       )
     );
     locator.registerLazySingleton<FeedMainMenuSubControllerInjectionFactory>(
@@ -163,7 +168,9 @@ class _Injector {
       )
     );
     locator.registerLazySingleton<ExploreNusantaraMainMenuSubControllerInjectionFactory>(
-      () => ExploreNusantaraMainMenuSubControllerInjectionFactory()
+      () => ExploreNusantaraMainMenuSubControllerInjectionFactory(
+        getProvinceMapUseCase: locator()
+      )
     );
     locator.registerLazySingleton<WishlistMainMenuSubControllerInjectionFactory>(
       () => WishlistMainMenuSubControllerInjectionFactory(
@@ -364,15 +371,22 @@ class _Injector {
     locator.registerLazySingleton<AddAdditionalItemUseCase>(() => AddAdditionalItemUseCase(cartRepository: locator()));
     locator.registerLazySingleton<ChangeAdditionalItemUseCase>(() => ChangeAdditionalItemUseCase(cartRepository: locator()));
     locator.registerLazySingleton<RemoveAdditionalItemUseCase>(() => RemoveAdditionalItemUseCase(cartRepository: locator()));
+    locator.registerLazySingleton<GetProvinceMapUseCase>(() => GetProvinceMapUseCase(mapRepository: locator()));
 
     // Repository
     locator.registerLazySingleton<UserRepository>(() => DefaultUserRepository(userDataSource: locator()));
     locator.registerLazySingleton<FeedRepository>(() => DefaultFeedRepository(feedDataSource: locator()));
     locator.registerLazySingleton<BannerRepository>(() => DefaultBannerRepository(bannerDataSource: locator()));
-    locator.registerLazySingleton<ProductRepository>(() => DefaultProductRepository(productDataSource: locator()));
+    locator.registerLazySingleton<ProductRepository>(
+      () => DefaultProductRepository(
+        productDataSource: locator(),
+        mapDataSource: locator()
+      )
+    );
     locator.registerLazySingleton<CouponRepository>(() => DefaultCouponRepository(couponDataSource: locator()));
     locator.registerLazySingleton<CartRepository>(() => DefaultCartRepository(cartDataSource: locator()));
     locator.registerLazySingleton<AddressRepository>(() => DefaultAddressRepository(addressDataSource: locator()));
+    locator.registerLazySingleton<MapRepository>(() => DefaultMapRepository(mapDataSource: locator()));
 
     // Data Sources
     locator.registerLazySingleton<UserDataSource>(() => DefaultUserDataSource(dio: locator()));
@@ -388,6 +402,7 @@ class _Injector {
     locator.registerLazySingleton<CouponDataSource>(() => DefaultCouponDataSource(dio: locator()));
     locator.registerLazySingleton<CartDataSource>(() => DefaultCartDataSource(dio: locator(), cartDummy: locator()));
     locator.registerLazySingleton<AddressDataSource>(() => DefaultAddressDataSource(dio: locator(), addressDummy: locator()));
+    locator.registerLazySingleton<MapDataSource>(() => DefaultMapDataSource(dio: locator()));
 
     // Dio
     locator.registerLazySingleton<Dio>(() => DioHttpClient.of());

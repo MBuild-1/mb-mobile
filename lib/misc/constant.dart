@@ -85,6 +85,7 @@ class _ConstantImpl {
   Color get colorGrey3 => const Color.fromRGBO(179, 179, 179, 1);
   Color get colorGrey4 => const Color.fromRGBO(244, 244, 244, 1);
   Color get colorGrey5 => const Color.fromRGBO(235, 235, 235, 1);
+  Color get colorGrey6 => const Color.fromRGBO(209, 211, 217, 1);
   Color get colorSurfaceGrey => const Color.fromRGBO(247, 247, 247, 1);
   Color get colorDarkGrey => const Color.fromRGBO(105, 105, 105, 1);
   Color get colorBrown => const Color.fromRGBO(191, 105, 25, 1);
@@ -155,6 +156,9 @@ class _ConstantImpl {
   AspectRatioValue get aspectRatioValueDefaultVideo => AspectRatioValue(width: 16.0, height: 9.0);
   AspectRatioValue get aspectRatioValueNewsThumbnail => AspectRatioValue(width: 16.0, height: 9.0);
   AspectRatioValue get aspectRatioValueProductEntryHeader => AspectRatioValue(width: 360.0, height: 109.0);
+  AspectRatioValue get aspectRatioValueExploreNusantaraBackground => AspectRatioValue(width: 361.0, height: 248.0);
+  AspectRatioValue get aspectRatioValueExploreNusantaraBanner => AspectRatioValue(width: 361.0, height: 248.0);
+  AspectRatioValue get aspectRatioValueExploreNusantaraIcon => AspectRatioValue(width: 544.0, height: 408.0);
 
   MultiLanguageString get multiLanguageStringIsViral => MultiLanguageString({
     textEnUsLanguageKey: "Is Viral",
