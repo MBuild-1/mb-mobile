@@ -21,6 +21,7 @@ import '../../domain/entity/cart/cart_paging_parameter.dart';
 import '../../domain/entity/cart/support_cart.dart';
 import '../../domain/usecase/add_additional_item_use_case.dart';
 import '../../domain/usecase/change_additional_item_use_case.dart';
+import '../../domain/usecase/create_order_use_case.dart';
 import '../../domain/usecase/get_additional_item_use_case.dart';
 import '../../domain/usecase/get_cart_summary_use_case.dart';
 import '../../domain/usecase/get_current_selected_address_use_case.dart';
@@ -82,7 +83,8 @@ class DeliveryPage extends RestorableGetxPage<_DeliveryPageRestoration> {
         Injector.locator<GetAdditionalItemUseCase>(),
         Injector.locator<AddAdditionalItemUseCase>(),
         Injector.locator<ChangeAdditionalItemUseCase>(),
-        Injector.locator<RemoveAdditionalItemUseCase>()
+        Injector.locator<RemoveAdditionalItemUseCase>(),
+        Injector.locator<CreateOrderUseCase>()
       ), tag: pageName
     );
   }

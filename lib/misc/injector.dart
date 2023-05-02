@@ -18,6 +18,8 @@ import '../data/datasource/feeddatasource/default_feed_data_source.dart';
 import '../data/datasource/feeddatasource/feed_data_source.dart';
 import '../data/datasource/mapdatasource/default_map_data_source.dart';
 import '../data/datasource/mapdatasource/map_data_source.dart';
+import '../data/datasource/orderdatasource/default_order_data_source.dart';
+import '../data/datasource/orderdatasource/order_data_source.dart';
 import '../data/datasource/productdatasource/default_product_data_source.dart';
 import '../data/datasource/productdatasource/product_data_source.dart';
 import '../data/datasource/userdatasource/default_user_data_source.dart';
@@ -28,6 +30,7 @@ import '../data/repository/default_cart_repository.dart';
 import '../data/repository/default_coupon_repository.dart';
 import '../data/repository/default_feed_repository.dart';
 import '../data/repository/default_map_repository.dart';
+import '../data/repository/default_order_repository.dart';
 import '../data/repository/default_product_repository.dart';
 import '../data/repository/default_user_repository.dart';
 import '../domain/dummy/addressdummy/address_dummy.dart';
@@ -52,6 +55,7 @@ import '../domain/repository/cart_repository.dart';
 import '../domain/repository/coupon_repository.dart';
 import '../domain/repository/feed_repository.dart';
 import '../domain/repository/map_repository.dart';
+import '../domain/repository/order_repository.dart';
 import '../domain/repository/product_repository.dart';
 import '../domain/repository/user_repository.dart';
 import '../domain/usecase/add_additional_item_use_case.dart';
@@ -59,6 +63,7 @@ import '../domain/usecase/add_host_cart_use_case.dart';
 import '../domain/usecase/add_to_cart_use_case.dart';
 import '../domain/usecase/add_wishlist_use_case.dart';
 import '../domain/usecase/change_additional_item_use_case.dart';
+import '../domain/usecase/create_order_use_case.dart';
 import '../domain/usecase/get_additional_item_use_case.dart';
 import '../domain/usecase/get_address_list_use_case.dart';
 import '../domain/usecase/get_address_paging_use_case.dart';
@@ -372,6 +377,7 @@ class _Injector {
     locator.registerLazySingleton<ChangeAdditionalItemUseCase>(() => ChangeAdditionalItemUseCase(cartRepository: locator()));
     locator.registerLazySingleton<RemoveAdditionalItemUseCase>(() => RemoveAdditionalItemUseCase(cartRepository: locator()));
     locator.registerLazySingleton<GetProvinceMapUseCase>(() => GetProvinceMapUseCase(mapRepository: locator()));
+    locator.registerLazySingleton<CreateOrderUseCase>(() => CreateOrderUseCase(orderRepository: locator()));
 
     // Repository
     locator.registerLazySingleton<UserRepository>(() => DefaultUserRepository(userDataSource: locator()));
@@ -387,6 +393,7 @@ class _Injector {
     locator.registerLazySingleton<CartRepository>(() => DefaultCartRepository(cartDataSource: locator()));
     locator.registerLazySingleton<AddressRepository>(() => DefaultAddressRepository(addressDataSource: locator()));
     locator.registerLazySingleton<MapRepository>(() => DefaultMapRepository(mapDataSource: locator()));
+    locator.registerLazySingleton<OrderRepository>(() => DefaultOrderRepository(orderDataSource: locator()));
 
     // Data Sources
     locator.registerLazySingleton<UserDataSource>(() => DefaultUserDataSource(dio: locator()));
@@ -403,6 +410,7 @@ class _Injector {
     locator.registerLazySingleton<CartDataSource>(() => DefaultCartDataSource(dio: locator(), cartDummy: locator()));
     locator.registerLazySingleton<AddressDataSource>(() => DefaultAddressDataSource(dio: locator(), addressDummy: locator()));
     locator.registerLazySingleton<MapDataSource>(() => DefaultMapDataSource(dio: locator()));
+    locator.registerLazySingleton<OrderDataSource>(() => DefaultOrderDataSource(dio: locator()));
 
     // Dio
     locator.registerLazySingleton<Dio>(() => DioHttpClient.of());
