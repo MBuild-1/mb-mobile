@@ -308,10 +308,9 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
           } else if (data == Constant.carouselKeyProductBundleHighlight) {
             carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternBlue);
           } else if (data == Constant.carouselKeyBestSellingInMasterBagasi) {
-            carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternLightBlue);
+            carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternBlue);
             titleInterceptor = (text, style) => titleArea(
               title: Text(text.toStringNonNull, style: style?.copyWith(color: Colors.white)),
-              onInterceptTextStyle: (style) => style.copyWith(color: Colors.white),
               onTapMore: () => PageRestorationHelper.toProductEntryPage(
                 context,
                 ProductEntryPageParameter(
@@ -326,10 +325,9 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
               ),
             );
           } else if (data == Constant.carouselKeyCoffeeAndTeaOriginIndonesia) {
-            carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternOrange);
+            carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternBlue);
             titleInterceptor = (text, style) => titleArea(
               title: Text(text.toStringNonNull, style: style?.copyWith(color: Colors.white)),
-              onInterceptTextStyle: (style) => style.copyWith(color: Colors.white),
               onTapMore: () => PageRestorationHelper.toProductEntryPage(
                 context,
                 ProductEntryPageParameter(
