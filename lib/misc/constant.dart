@@ -159,6 +159,9 @@ class _ConstantImpl {
   AspectRatioValue get aspectRatioValueExploreNusantaraBackground => AspectRatioValue(width: 361.0, height: 248.0);
   AspectRatioValue get aspectRatioValueExploreNusantaraBanner => AspectRatioValue(width: 361.0, height: 248.0);
   AspectRatioValue get aspectRatioValueExploreNusantaraIcon => AspectRatioValue(width: 544.0, height: 408.0);
+  AspectRatioValue get aspectRatioValueTransparentBanner => AspectRatioValue(width: 2500.0, height: 986.0);
+  AspectRatioValue get aspectRatioValueHomepageBanner => AspectRatioValue(width: 2126.0, height: 1181.0);
+  AspectRatioValue get aspectRatioValueShippingPriceBanner => AspectRatioValue(width: 1878.0, height: 377.0);
 
   MultiLanguageString get multiLanguageStringIsViral => MultiLanguageString({
     textEnUsLanguageKey: "Is Viral",
@@ -188,6 +191,8 @@ class _ConstantImpl {
 
   String get transparentBannerKeyKitchenContents => "transparent_banner_key_kitchen_contents";
   String get transparentBannerKeyHandycrafts => "transparent_banner_key_handycrafts";
+  String get transparentBannerKeyMultipleHomepage => "transparent_banner_key_multiple_homepage";
+  String get transparentBannerKeyMultipleShippingPrice => "transparent_banner_key_multiple_shipping_price";
 
   String get subPageKeyHomeMainMenu => "sub_page_key_home_main_menu";
   String get subPageKeyFeedMainMenu => "sub_page_key_feed_main_menu";

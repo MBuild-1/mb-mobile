@@ -2,12 +2,12 @@ import '../../../domain/entity/banner/banner.dart';
 import '../../aspect_ratio_value.dart';
 import 'list_item_controller_state.dart';
 
-class SingleBannerListItemControllerState extends ListItemControllerState {
-  Banner banner;
+class MultiBannerListItemControllerState extends ListItemControllerState {
+  List<Banner> bannerList;
   AspectRatioValue aspectRatioValue;
 
-  SingleBannerListItemControllerState({
-    required this.banner,
+  MultiBannerListItemControllerState({
+    required this.bannerList,
     required this.aspectRatioValue
   });
 }

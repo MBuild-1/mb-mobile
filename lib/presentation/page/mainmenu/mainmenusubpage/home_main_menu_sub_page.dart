@@ -10,7 +10,6 @@ import '../../../../controller/mainmenucontroller/mainmenusubpagecontroller/home
 import '../../../../domain/entity/address/address.dart';
 import '../../../../domain/entity/banner/banner.dart';
 import '../../../../domain/entity/homemainmenucomponententity/banner_home_main_menu_component_entity.dart';
-import '../../../../domain/entity/homemainmenucomponententity/check_rates_for_various_countries_component_entity.dart';
 import '../../../../domain/entity/homemainmenucomponententity/home_main_menu_component_entity.dart';
 import '../../../../domain/entity/homemainmenucomponententity/separator_home_main_menu_component_entity.dart';
 import '../../../../domain/entity/location/location.dart';
@@ -20,7 +19,6 @@ import '../../../../misc/carouselbackground/asset_carousel_background.dart';
 import '../../../../misc/carouselbackground/carousel_background.dart';
 import '../../../../misc/constant.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/carousel_list_item_controller_state.dart';
-import '../../../../misc/controllerstate/listitemcontrollerstate/check_rates_for_various_countries_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/colorful_divider_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/compound_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/decorated_container_list_item_controller_state.dart';
@@ -28,6 +26,7 @@ import '../../../../misc/controllerstate/listitemcontrollerstate/delivery_to_lis
 import '../../../../misc/controllerstate/listitemcontrollerstate/failed_prompt_indicator_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/load_data_result_dynamic_list_item_controller_state.dart';
+import '../../../../misc/controllerstate/listitemcontrollerstate/multi_banner_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/no_content_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/padding_container_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/product_bundle_highlight_list_item_controller_state.dart';
@@ -146,12 +145,9 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
       } else if (homeMainMenuComponentEntity is BannerHomeMainMenuComponentEntity) {
         listItemControllerStateList.add(
           SingleBannerListItemControllerState(
-            banner: homeMainMenuComponentEntity.banner
+            banner: homeMainMenuComponentEntity.banner,
+            aspectRatioValue: homeMainMenuComponentEntity.aspectRatioValue
           )
-        );
-      } else if (homeMainMenuComponentEntity is CheckRatesForVariousCountriesComponentEntity) {
-        listItemControllerStateList.add(
-          CheckRatesForVariousCountriesControllerState()
         );
       } else {
         ListItemControllerState listItemControllerState = componentEntityMediator.mapWithParameter(
@@ -179,19 +175,17 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
     List<HomeMainMenuComponentEntity> firstMainMenuContentList = [
       widget.homeMainMenuSubController.getDeliveryTo(),
     ];
+    List<HomeMainMenuComponentEntity> middleMainMenuContentList = [
+      widget.homeMainMenuSubController.getHomepageBanner(),
+    ];
     List<HomeMainMenuComponentEntity> mainMenuContentList = [
-      BannerHomeMainMenuComponentEntity(
-        banner: Banner(
-          id: "1",
-          imageUrl: "https://firebasestorage.googleapis.com/v0/b/actions-codelab-c28a7.appspot.com/o/banner_menu_utama_masterbagasi_1.png?alt=media&token=65e68fd3-5036-427b-bc46-e3e8e3d2e145",
-          aspectRatio: AspectRatioValue(width: 360, height: 200)
-        )
-      ),
       ...widget.homeMainMenuSubController.getHomeMainMenuComponentEntity()
     ];
     List<ListItemControllerState> firstListItemControllerStateList = [];
+    List<ListItemControllerState> middleListItemControllerStateList = [];
     List<ListItemControllerState> listItemControllerStateList = [];
     _checkingMainMenuContent(firstMainMenuContentList, firstListItemControllerStateList);
+    _checkingMainMenuContent(middleMainMenuContentList, middleListItemControllerStateList);
     _checkingMainMenuContent(mainMenuContentList, listItemControllerStateList);
     return SuccessLoadDataResult<PagingResult<ListItemControllerState>>(
       value: PagingDataResult<ListItemControllerState>(
@@ -204,6 +198,7 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
             lineColorList: [Constant.colorButtonGradient2, Constant.colorButtonGradient3],
             lineHeight: 3
           ),
+          ...middleListItemControllerStateList,
           ...listItemControllerStateList,
         ]
       )
@@ -401,6 +396,47 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
             shimmerCarouselListItemGenerator: Injector.locator<ProductBundleShimmerCarouselListItemGeneratorFactory>().getShimmerCarouselListItemGeneratorType()
           );
         },
+        onObserveSuccessLoadMultipleTransparentBanner: (onObserveSuccessLoadMultipleTransparentBannerParameter) {
+          dynamic data = onObserveSuccessLoadMultipleTransparentBannerParameter.data;
+          if (data == Constant.transparentBannerKeyMultipleHomepage) {
+            return MultiBannerListItemControllerState(
+              bannerList: onObserveSuccessLoadMultipleTransparentBannerParameter.transparentBannerList.map(
+                (transparentBanner) => Banner(
+                  id: transparentBanner.id,
+                  imageUrl: transparentBanner.imageUrl
+                )
+              ).toList(),
+              aspectRatioValue: Constant.aspectRatioValueHomepageBanner
+            );
+          } else if (data == Constant.transparentBannerKeyMultipleShippingPrice){
+            return CompoundListItemControllerState(
+              listItemControllerState: [
+                MultiBannerListItemControllerState(
+                  bannerList: onObserveSuccessLoadMultipleTransparentBannerParameter.transparentBannerList.map(
+                    (transparentBanner) => Banner(
+                      id: transparentBanner.id,
+                      imageUrl: transparentBanner.imageUrl
+                    )
+                  ).toList(),
+                  aspectRatioValue: Constant.aspectRatioValueShippingPriceBanner
+                ),
+                WidgetSubstitutionListItemControllerState(
+                  widgetSubstitution: (BuildContext context, int index) => Material(
+                    child: InkWell(
+                      onTap: () {},
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem, vertical: 10),
+                        child: const Align(child: Text("Cek Tarif ke Negara Lainnya"), alignment: Alignment.topLeft)
+                      )
+                    )
+                  )
+                )
+              ]
+            );
+          } else {
+            return NoContentListItemControllerState();
+          }
+        },
         onObserveSuccessLoadTransparentBanner: (onObserveSuccessLoadTransparentBannerParameter) {
           return DecoratedContainerListItemControllerState(
             decoration: BoxDecoration(
@@ -466,13 +502,17 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
                 ),
                 VirtualSpacingListItemControllerState(height: 3.w),
                 WidgetSubstitutionListItemControllerState(
-                  widgetSubstitution: (context, index) => SizedBox(
-                    width: double.infinity,
-                    height: 200,
-                    child: TransparentBannerModifiedCachedNetworkImage(
-                      imageUrl: onObserveSuccessLoadTransparentBannerParameter.transparentBanner.imageUrl,
-                    ),
-                  )
+                  widgetSubstitution: (context, index) {
+                    AspectRatioValue aspectRatioValue = Constant.aspectRatioValueTransparentBanner;
+                    double height = MediaQuery.of(context).size.width * aspectRatioValue.height / aspectRatioValue.width;
+                    return SizedBox(
+                      width: double.infinity,
+                      height: height,
+                      child: TransparentBannerModifiedCachedNetworkImage(
+                        imageUrl: onObserveSuccessLoadTransparentBannerParameter.transparentBanner.imageUrl,
+                      ),
+                    );
+                  }
                 )
               ]
             )

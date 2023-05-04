@@ -74,6 +74,7 @@ import '../domain/usecase/get_coupon_paging_use_case.dart';
 import '../domain/usecase/get_current_selected_address_use_case.dart';
 import '../domain/usecase/get_delivery_review_use_case.dart';
 import '../domain/usecase/get_handycrafts_contents_banner_use_case.dart';
+import '../domain/usecase/get_homepage_contents_banner_use_case.dart';
 import '../domain/usecase/get_kitchen_contents_banner_use_case.dart';
 import '../domain/usecase/get_my_cart_use_case.dart';
 import '../domain/usecase/get_news_use_case.dart';
@@ -98,6 +99,7 @@ import '../domain/usecase/get_product_list_use_case.dart';
 import '../domain/usecase/get_product_viral_list_use_case.dart';
 import '../domain/usecase/get_product_viral_paging_use_case.dart';
 import '../domain/usecase/get_province_map_use_case.dart';
+import '../domain/usecase/get_shipping_price_contents_banner_use_case.dart';
 import '../domain/usecase/get_short_my_cart_use_case.dart';
 import '../domain/usecase/get_short_video_use_case.dart';
 import '../domain/usecase/get_snack_for_lying_around_list_use_case.dart';
@@ -162,6 +164,8 @@ class _Injector {
         getKitchenContentsBannerUseCase: locator(),
         addWishlistUseCase: locator(),
         getCurrentSelectedAddressUseCase: locator(),
+        getHomepageContentsBannerUseCase: locator(),
+        getShippingPriceContentsBannerUseCase: locator()
       )
     );
     locator.registerLazySingleton<FeedMainMenuSubControllerInjectionFactory>(
@@ -360,6 +364,8 @@ class _Injector {
     locator.registerLazySingleton<GetTripDefaultVideoUseCase>(() => GetTripDefaultVideoUseCase(feedRepository: locator()));
     locator.registerLazySingleton<GetKitchenContentsBannerUseCase>(() => GetKitchenContentsBannerUseCase(bannerRepository: locator()));
     locator.registerLazySingleton<GetHandycraftsContentsBannerUseCase>(() => GetHandycraftsContentsBannerUseCase(bannerRepository: locator()));
+    locator.registerLazySingleton<GetHomepageContentsBannerUseCase>(() => GetHomepageContentsBannerUseCase(bannerRepository: locator()));
+    locator.registerLazySingleton<GetShippingPriceContentsBannerUseCase>(() => GetShippingPriceContentsBannerUseCase(bannerRepository: locator()));
     locator.registerLazySingleton<GetCouponPagingUseCase>(() => GetCouponPagingUseCase(couponRepository: locator()));
     locator.registerLazySingleton<GetShortMyCartUseCase>(() => GetShortMyCartUseCase(cartRepository: locator()));
     locator.registerLazySingleton<GetMyCartUseCase>(() => GetMyCartUseCase(cartRepository: locator()));

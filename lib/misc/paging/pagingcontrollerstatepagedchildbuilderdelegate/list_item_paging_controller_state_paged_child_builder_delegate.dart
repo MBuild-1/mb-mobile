@@ -83,7 +83,6 @@ import '../../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstat
 import '../../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/shortcartlistitemcontrollerstate/short_cart_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/shortcartlistitemcontrollerstate/vertical_short_cart_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/vertical_cart_list_item_controller_state.dart';
-import '../../controllerstate/listitemcontrollerstate/check_rates_for_various_countries_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/colorful_chip_tab_bar_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/colorful_divider_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/column_container_list_item_controller_state.dart';
@@ -104,6 +103,7 @@ import '../../controllerstate/listitemcontrollerstate/icon_title_and_description
 import '../../controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/loading_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/menu_profile_header_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/multi_banner_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/newslistitemcontrollerstate/horizontal_news_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/newslistitemcontrollerstate/news_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/newslistitemcontrollerstate/vertical_news_list_item_controller_state.dart';
@@ -519,12 +519,63 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
       );
     } else if (item is SingleBannerListItemControllerState) {
       return AspectRatio(
-        aspectRatio: item.banner.aspectRatio.toDouble(),
+        aspectRatio: item.aspectRatioValue.toDouble(),
         child: ClipRect(
           child: ModifiedCachedNetworkImage(
             imageUrl: item.banner.imageUrl.toEmptyStringNonNull,
           )
         )
+      );
+    } else if (item is MultiBannerListItemControllerState) {
+      return ModifiedCarouselSlider.builder(
+        itemCount: item.bannerList.length,
+        itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex) => Column(
+          children: [
+            AspectRatio(
+              aspectRatio: item.aspectRatioValue.toDouble(),
+              child: ClipRect(
+                child: ProductModifiedCachedNetworkImage(
+                  imageUrl: item.bannerList[itemIndex].imageUrl,
+                ),
+              )
+            ),
+          ]
+        ),
+        options: CarouselOptions(
+          aspectRatio: item.aspectRatioValue.toDouble(),
+          enlargeStrategy: CenterPageEnlargeStrategy.height,
+          enableInfiniteScroll: false,
+          autoPlay: true,
+          viewportFraction: 1.0,
+        ),
+        carouselController: CarouselController(),
+        modifiedCarouselSliderTopStackWidgetBuilder: (context, pageController) {
+          return Align(
+            alignment: Alignment.bottomCenter,
+            child: SizedBox(
+              width: double.infinity,
+              height: Constant.bannerIndicatorAreaHeight,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Center(
+                      child: SmoothPageIndicator(
+                        controller: pageController,
+                        count: item.bannerList.length,
+                        effect: ScrollingDotsEffect(
+                          dotWidth: 8,
+                          dotHeight: 8,
+                          dotColor: Colors.white.withOpacity(0.5),
+                          activeDotColor: Colors.white
+                        ),
+                      ),
+                    )
+                  ),
+                ]
+              )
+            ),
+          );
+        }
       );
     } else if (item is DeliveryToListItemControllerState) {
       LoadDataResult<Address> addressLoadDataResult = item.addressLoadDataResult;
@@ -571,28 +622,6 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
       } else {
         return getDeliveryToWidget(addressLoadDataResult);
       }
-    } else if (item is CheckRatesForVariousCountriesControllerState) {
-      return Column(
-        children: [
-          AspectRatio(
-            aspectRatio: Constant.aspectRatioValueImageCheckRatesForVariousCountries.toDouble(),
-            child: ClipRect(
-              child: ModifiedAssetImage(
-                imageAssetUrl: Constant.imageCheckRatesForVariousCountries,
-              )
-            )
-          ),
-          Material(
-            child: InkWell(
-              onTap: () {},
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem, vertical: 10),
-                child: const Align(child: Text("Cek Tarif ke Negara Lainnya"), alignment: Alignment.topLeft)
-              )
-            )
-          )
-        ]
-      );
     } else if (item is ProductDetailImageListItemControllerState) {
       List<ProductEntry> productEntryList = item.productEntryList;
       int productEntryIndex = item.onGetProductEntryIndex();
