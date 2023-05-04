@@ -609,7 +609,7 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
                 AspectRatio(
                   aspectRatio: Constant.aspectRatioValueProductImage.toDouble(),
                   child: ClipRect(
-                    child: ModifiedCachedNetworkImage(
+                    child: ProductModifiedCachedNetworkImage(
                       imageUrl: imageUrlList[itemIndex],
                     ),
                   )
