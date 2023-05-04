@@ -72,5 +72,5 @@ class ProductEntry implements ProductEntryAppearanceData, SupportCart, SupportWi
   String get name => product.name;
 
   @override
-  double get price => product.price;
+  double get price => sellingPrice.toDouble();
 }
