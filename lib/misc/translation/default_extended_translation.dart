@@ -105,6 +105,7 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "You Are Not Login": "Kamu Belum Login",
       "Please login through below button": "Silahkan login lewat tombol dibawah ini",
       "Add Cart Note": "Tambah Catatan Keranjang",
+      "Change Cart Note": "Ubah Catatan Keranjang",
       "Note": "Catatan",
       "Enter Note": "Masukan Catatan",
       "Note is required": "Catatan dibutuhkan",
@@ -114,7 +115,24 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Choose Address": "Pilih Alamat",
       "Product Brand": "Brand Product",
       "Delivery to": "Dikirim ke",
-      "Welcome To Nusantara": "Selamat Datang di Nusantara"
+      "Welcome To Nusantara": "Selamat Datang di Nusantara",
+      "Coupon" : "Kupon",
+      "No selected coupon": "Tidak ada kupon yang dipilih",
+      "Select Coupon": "Pilih Kupon",
+      "My Coupon": "Kupon Saya",
+      "Valid Until": "Berlaku Hingga",
+      "No additional items": "Tidak ada kiriman tambahan",
+      "Add Notes": "Tambah Catatan",
+      "Change Notes": "Tambah Catatan",
+      "Remove Notes": "Hapus Catatan",
+      "Cart note is required": "Catatan keranjang dibutuhkan",
+      "Add To Wishlist": "Tambah Ke Wishlist",
+      "Success add to cart": "Sukses tambahkan ke keranjang",
+      "Cart": "Keranjang",
+      "Buy Directly": "Beli Langsung",
+      "Remove Coupon": "Hapus Kupon",
+      "Success add to wishlist": "Sukses tambahkan ke wishlist",
+      "Delivered to": "Dikirim ke"
     }
   };
 

@@ -32,6 +32,9 @@ import '../../domain/entity/address/address_user.dart';
 import '../../domain/entity/address/country.dart';
 import '../../domain/entity/address/update_current_selected_address_response.dart';
 import '../../domain/entity/address/zone.dart';
+import '../../misc/constant.dart';
+import '../../misc/error/message_error.dart';
+import '../../misc/multi_language_string.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/response_wrapper.dart';
 
@@ -51,6 +54,14 @@ extension AddressEntityMappingExt on ResponseWrapper {
 
 extension AddressDetailEntityMappingExt on ResponseWrapper {
   Address mapFromResponseToAddress() {
+    if (response == null) {
+      throw MultiLanguageMessageError(
+        title: MultiLanguageString({
+          Constant.textEnUsLanguageKey: "No address selected.",
+          Constant.textInIdLanguageKey: "Tidak ada alamat dipilih."
+        })
+      );
+    }
     return Address(
       id: response["id"],
       userId: response["user_id"],
@@ -60,7 +71,7 @@ extension AddressDetailEntityMappingExt on ResponseWrapper {
       address: response["address"],
       phoneNumber: response["phone_number"],
       zipCode: response["zip_code"],
-      addressUser: ResponseWrapper(response["user"]).mapFromResponseToAddressUser(),
+      addressUser: response["user"] != null ? ResponseWrapper(response["user"]).mapFromResponseToAddressUser() : null,
       country: ResponseWrapper(response["country"]).mapFromResponseToCountry(),
     );
   }

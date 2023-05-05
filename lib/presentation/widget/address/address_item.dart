@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../../../domain/entity/address/address.dart';
 import '../../../misc/constant.dart';
@@ -39,7 +40,7 @@ abstract class AddressItem extends StatelessWidget {
               children: [
                 Text(address.label, style: const TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 10),
-                Text(address.addressUser.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text((address.addressUser != null ? address.addressUser!.name : null).toEmptyStringNonNull, style: const TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 5),
                 Text(address.phoneNumber, style: const TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 10),

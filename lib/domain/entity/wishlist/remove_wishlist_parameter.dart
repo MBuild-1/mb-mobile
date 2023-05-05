@@ -1,7 +1,7 @@
 class RemoveWishlistParameter {
-  String productEntryId;
+  String wishlistId;
 
   RemoveWishlistParameter({
-    required this.productEntryId
+    required this.wishlistId
   });
 }

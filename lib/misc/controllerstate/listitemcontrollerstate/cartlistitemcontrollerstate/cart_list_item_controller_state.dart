@@ -11,6 +11,7 @@ abstract class CartListItemControllerState extends ListItemControllerState {
   void Function()? onAddToWishlist;
   void Function()? onRemoveFromNotes;
   void Function()? onRemoveCart;
+  void Function()? onChangeNotes;
   void Function(int)? onChangeQuantity;
 
   CartListItemControllerState({
@@ -23,6 +24,7 @@ abstract class CartListItemControllerState extends ListItemControllerState {
     this.onAddToWishlist,
     this.onRemoveFromNotes,
     this.onRemoveCart,
+    this.onChangeNotes,
     this.onChangeQuantity,
   });
 }

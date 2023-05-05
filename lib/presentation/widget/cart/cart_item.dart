@@ -22,6 +22,7 @@ abstract class CartItem extends StatelessWidget {
   final bool showCheck;
   final void Function()? onChangeSelected;
   final void Function()? onAddToNotes;
+  final void Function()? onChangeNotes;
   final void Function()? onRemoveFromNotes;
   final void Function()? onAddToWishlist;
   final void Function()? onRemoveCart;
@@ -41,6 +42,7 @@ abstract class CartItem extends StatelessWidget {
     required this.onChangeSelected,
     this.showCheck = true,
     this.onAddToNotes,
+    this.onChangeNotes,
     this.onRemoveFromNotes,
     this.onAddToWishlist,
     this.onRemoveCart,
@@ -113,6 +115,16 @@ abstract class CartItem extends StatelessWidget {
                             fontWeight: FontWeight.bold
                           )
                         ),
+                        if (!showDefaultCart)
+                          ...[
+                            Text(
+                              " | ${"Quantity".tr} ${cart.quantity}",
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold
+                              )
+                            ),
+                          ]
                       ]
                     )
                   ]);
@@ -147,7 +159,7 @@ abstract class CartItem extends StatelessWidget {
                       TapArea(
                         onTap: onAddToNotes,
                         child: Text(
-                          cart.notes.isEmptyString ? "Add To Notes".tr : cart.notes.toEmptyStringNonNull,
+                          cart.notes.isEmptyString ? "Add Notes".tr : cart.notes.toEmptyStringNonNull,
                           style: TextStyle(
                             color: cart.notes.isEmptyString ? Theme.of(context).colorScheme.primary : Colors.black
                           )
@@ -160,27 +172,44 @@ abstract class CartItem extends StatelessWidget {
             ),
             const SizedBox(height: 10.0),
             if (cart.notes.isNotEmptyString)
-              TapArea(
-                onTap: onRemoveFromNotes != null ? () => onRemoveFromNotes!() : null,
-                child: Text(
-                  "Remove To Notes".tr,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.primary
-                  )
-                )
-              ),
+              Row(
+                children: [
+                  TapArea(
+                    onTap: onChangeNotes != null ? () => onChangeNotes!() : null,
+                    child: Text(
+                      "Change Notes".tr,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary
+                      )
+                    )
+                  ),
+                  const SizedBox(width: 10),
+                  TapArea(
+                    onTap: onRemoveFromNotes != null ? () => onRemoveFromNotes!() : null,
+                    child: Text(
+                      "Remove Notes".tr,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary
+                      )
+                    )
+                  ),
+                ]
+              )
           ],
           if (showDefaultCart) ...[
             const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Text("Add To Wishlist".tr),
+                TapArea(
+                  onTap: onAddToWishlist,
+                  child: Text("Add To Wishlist".tr),
+                ),
                 const SizedBox(width: 20),
                 const Text("|"),
                 const SizedBox(width: 20),
                 TapArea(
-                  onTap: onAddToWishlist,
+                  onTap: onRemoveCart,
                   child: ModifiedSvgPicture.asset(
                     Constant.vectorTrash,
                     fit: BoxFit.fitHeight,

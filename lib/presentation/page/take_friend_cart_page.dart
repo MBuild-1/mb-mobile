@@ -188,6 +188,7 @@ class _StatefulTakeFriendCartControllerMediatorWidgetState extends State<_Statef
   late final ModifiedPagingController<int, ListItemControllerState> _takeFriendCartListItemPagingController;
   late final PagingControllerState<int, ListItemControllerState> _takeFriendCartListItemPagingControllerState;
   List<AdditionalItem> _additionalItemList = [];
+  CartContainerInterceptingActionListItemControllerState _cartContainerInterceptingActionListItemControllerState = DefaultCartContainerInterceptingActionListItemControllerState();
 
   @override
   void initState() {
@@ -244,7 +245,8 @@ class _StatefulTakeFriendCartControllerMediatorWidgetState extends State<_Statef
                 addAdditionalItem: (addAdditionalItemParameter) => widget.takeFriendCartController.addAdditionalItem(addAdditionalItemParameter),
                 changeAdditionalItem: (changeAdditionalItemParameter) => widget.takeFriendCartController.changeAdditionalItem(changeAdditionalItemParameter),
                 removeAdditionalItem: (removeAdditionalItemParameter) => widget.takeFriendCartController.removeAdditionalItem(removeAdditionalItemParameter),
-              )
+              ),
+              cartContainerInterceptingActionListItemControllerState: _cartContainerInterceptingActionListItemControllerState
             )
           ],
           page: cartPaging.page,

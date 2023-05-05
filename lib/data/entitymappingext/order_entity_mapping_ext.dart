@@ -56,9 +56,9 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
       id: response["id"],
       orderId: response["order_id"],
       userAddressId: response["user_address_id"],
-      orderDetail: ResponseWrapper(response["order_detail"]).mapFromResponseToOrderDetail(),
+      orderDetail: ResponseWrapper(response["order"]).mapFromResponseToOrderDetail(),
       userAddress: ResponseWrapper(response["user_address"]).mapFromResponseToAddress(),
-      orderProductDetailList: response["order_product_list"].map(
+      orderProductDetailList: response["order_product_list"].map<OrderProductDetail>(
         (orderProductDetailResponse) => ResponseWrapper(orderProductDetailResponse).mapFromResponseToOrderProductDetail()
       ).toList(),
       additionalItemList: ResponseWrapper(response["order_send_to_warehouse_list"]).mapFromResponseToAdditionalItemList()

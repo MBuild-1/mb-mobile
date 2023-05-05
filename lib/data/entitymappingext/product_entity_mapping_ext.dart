@@ -72,7 +72,7 @@ extension ProductDetailEntityMappingExt on ResponseWrapper {
       name: response["name"],
       slug: response["slug"],
       description: response["description"],
-      price: 100000,
+      price: 0,
       discountPrice: null,
       rating: 5.0,
       imageUrl: "",

@@ -12,11 +12,13 @@ import '../domain/entity/additionalitem/remove_additional_item_parameter.dart';
 import '../domain/entity/additionalitem/remove_additional_item_response.dart';
 import '../domain/entity/address/address.dart';
 import '../domain/entity/address/current_selected_address_parameter.dart';
+import '../domain/entity/address/current_selected_address_response.dart';
 import '../domain/entity/cart/cart.dart';
 import '../domain/entity/cart/cart_paging_parameter.dart';
 import '../domain/entity/cart/cart_summary.dart';
 import '../domain/entity/cart/cart_summary_parameter.dart';
 import '../domain/entity/coupon/coupon.dart';
+import '../domain/entity/coupon/coupon_detail_parameter.dart';
 import '../domain/entity/order/create_order_parameter.dart';
 import '../domain/entity/order/order.dart';
 import '../domain/usecase/add_additional_item_use_case.dart';
@@ -24,6 +26,7 @@ import '../domain/usecase/change_additional_item_use_case.dart';
 import '../domain/usecase/create_order_use_case.dart';
 import '../domain/usecase/get_additional_item_use_case.dart';
 import '../domain/usecase/get_cart_summary_use_case.dart';
+import '../domain/usecase/get_coupon_detail_use_case.dart';
 import '../domain/usecase/get_current_selected_address_use_case.dart';
 import '../domain/usecase/get_my_cart_use_case.dart';
 import '../domain/usecase/remove_additional_item_use_case.dart';
@@ -34,8 +37,10 @@ import 'base_getx_controller.dart';
 
 typedef _OnDeliveryBack = void Function();
 typedef _OnGetCoupon = Coupon? Function();
+typedef _OnGetCartList = List<Cart> Function();
+typedef _OnGetAdditionalList = List<AdditionalItem> Function();
 typedef _OnShowDeliveryRequestProcessLoadingCallback = Future<void> Function();
-typedef _OnDeliveryRequestProcessSuccessCallback = Future<void> Function();
+typedef _OnDeliveryRequestProcessSuccessCallback = Future<void> Function(Order);
 typedef _OnShowDeliveryRequestProcessFailedCallback = Future<void> Function(dynamic e);
 
 class DeliveryController extends BaseGetxController {
@@ -46,6 +51,7 @@ class DeliveryController extends BaseGetxController {
   final ChangeAdditionalItemUseCase changeAdditionalItemUseCase;
   final RemoveAdditionalItemUseCase removeAdditionalItemUseCase;
   final GetCurrentSelectedAddressUseCase getCurrentSelectedAddressUseCase;
+  final GetCouponDetailUseCase getCouponDetailUseCase;
   final CreateOrderUseCase createOrderUseCase;
 
   DeliveryDelegate? _deliveryDelegate;
@@ -59,6 +65,7 @@ class DeliveryController extends BaseGetxController {
     this.addAdditionalItemUseCase,
     this.changeAdditionalItemUseCase,
     this.removeAdditionalItemUseCase,
+    this.getCouponDetailUseCase,
     this.createOrderUseCase
   );
 
@@ -105,6 +112,12 @@ class DeliveryController extends BaseGetxController {
     });
   }
 
+  Future<LoadDataResult<Coupon>> getCouponDetail(CouponDetailParameter couponDetailParameter) {
+    return getCouponDetailUseCase.execute(couponDetailParameter).future(
+      parameter: apiRequestManager.addRequestToCancellationPart("coupon-detail").value
+    );
+  }
+
   DeliveryController setDeliveryDelegate(DeliveryDelegate deliveryDelegate) {
     _deliveryDelegate = deliveryDelegate;
     return this;
@@ -114,21 +127,30 @@ class DeliveryController extends BaseGetxController {
     if (_deliveryDelegate != null) {
       _deliveryDelegate!.onUnfocusAllWidget();
       _deliveryDelegate!.onShowDeliveryRequestProcessLoadingCallback();
-      LoadDataResult<Order> createOrderLoadDataResult = await createOrderUseCase.execute(
-        CreateOrderParameter(
-          cartList: [],
-          additionalItemList: [],
-          coupon: null,
-          address: null
-        )
+      LoadDataResult<CurrentSelectedAddressResponse> currentAddressLoadDataResult = await getCurrentSelectedAddressUseCase.execute(
+        CurrentSelectedAddressParameter()
       ).future(
-        parameter: apiRequestManager.addRequestToCancellationPart('order').value
+        parameter: apiRequestManager.addRequestToCancellationPart("address").value
       );
-      Get.back();
-      if (createOrderLoadDataResult.isSuccess) {
-        _deliveryDelegate!.onDeliveryRequestProcessSuccessCallback();
+      if (currentAddressLoadDataResult.isSuccess) {
+        LoadDataResult<Order> createOrderLoadDataResult = await createOrderUseCase.execute(
+          CreateOrderParameter(
+            cartList: _deliveryDelegate!.onGetCartList(),
+            additionalItemList: _deliveryDelegate!.onGetAdditionalList(),
+            coupon: _deliveryDelegate!.onGetCoupon(),
+            address: currentAddressLoadDataResult.resultIfSuccess!.address
+          )
+        ).future(
+          parameter: apiRequestManager.addRequestToCancellationPart('order').value
+        );
+        Get.back();
+        if (createOrderLoadDataResult.isSuccess) {
+          _deliveryDelegate!.onDeliveryRequestProcessSuccessCallback(createOrderLoadDataResult.resultIfSuccess!);
+        } else {
+          _deliveryDelegate!.onShowDeliveryRequestProcessFailedCallback(createOrderLoadDataResult.resultIfFailed);
+        }
       } else {
-        _deliveryDelegate!.onShowDeliveryRequestProcessFailedCallback(createOrderLoadDataResult.resultIfFailed);
+        _deliveryDelegate!.onShowDeliveryRequestProcessFailedCallback(currentAddressLoadDataResult.resultIfFailed);
       }
     }
   }
@@ -141,6 +163,8 @@ class DeliveryDelegate {
   _OnDeliveryRequestProcessSuccessCallback onDeliveryRequestProcessSuccessCallback;
   _OnShowDeliveryRequestProcessFailedCallback onShowDeliveryRequestProcessFailedCallback;
   _OnGetCoupon onGetCoupon;
+  _OnGetCartList onGetCartList;
+  _OnGetAdditionalList onGetAdditionalList;
 
   DeliveryDelegate({
     required this.onUnfocusAllWidget,
@@ -148,6 +172,8 @@ class DeliveryDelegate {
     required this.onShowDeliveryRequestProcessLoadingCallback,
     required this.onDeliveryRequestProcessSuccessCallback,
     required this.onShowDeliveryRequestProcessFailedCallback,
-    required this.onGetCoupon
+    required this.onGetCoupon,
+    required this.onGetCartList,
+    required this.onGetAdditionalList
   });
 }

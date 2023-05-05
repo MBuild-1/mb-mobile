@@ -18,6 +18,7 @@ class VerticalCartItem extends CartItem {
     super.showCheck = true,
     super.onChangeSelected,
     super.onAddToNotes,
+    super.onChangeNotes,
     super.onRemoveFromNotes,
     super.onAddToWishlist,
     super.onRemoveCart,

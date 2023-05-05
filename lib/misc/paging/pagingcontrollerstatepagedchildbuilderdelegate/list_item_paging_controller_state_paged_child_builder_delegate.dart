@@ -594,7 +594,7 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
         } else if (addressLoadDataResultParameter.isFailed) {
           ErrorProviderResult errorProviderResult = item.errorProvider.onGetErrorProviderResult(addressLoadDataResultParameter.resultIfFailed).toErrorProviderResultNonNull();
           inlineSpanList = [
-            TextSpan(text: errorProviderResult.title, style: const TextStyle(color: Colors.white)),
+            TextSpan(text: errorProviderResult.message, style: const TextStyle(color: Colors.white)),
           ];
         }
         return Container(
@@ -718,6 +718,7 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
         return HorizontalCouponItem(
           coupon: item.coupon,
           onSelectCoupon: item.onSelectCoupon,
+          isSelected: item.isSelected,
         );
       } else if (item is VerticalCouponListItemControllerState) {
         if (item is ShimmerVerticalCouponListItemControllerState) {
@@ -728,6 +729,7 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
           return VerticalCouponItem(
             coupon: item.coupon,
             onSelectCoupon: item.onSelectCoupon,
+            isSelected: item.isSelected
           );
         }
       } else {
@@ -780,6 +782,7 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
             onAddToNotes: item.onAddToNotes,
             onAddToWishlist: item.onAddToWishlist,
             onRemoveFromNotes: item.onRemoveFromNotes,
+            onChangeNotes: item.onChangeNotes,
             onRemoveCart: item.onRemoveCart,
             onChangeQuantity: item.onChangeQuantity,
             showDefaultCart: item.showDefaultCart,

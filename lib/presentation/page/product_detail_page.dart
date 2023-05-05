@@ -7,6 +7,7 @@ import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../controller/product_detail_controller.dart';
+import '../../domain/entity/cart/support_cart.dart';
 import '../../domain/entity/product/product.dart';
 import '../../domain/entity/product/product_detail.dart';
 import '../../domain/entity/product/product_detail_get_other_from_this_brand_parameter.dart';
@@ -35,8 +36,10 @@ import '../../misc/controllerstate/listitemcontrollerstate/product_detail_image_
 import '../../misc/controllerstate/listitemcontrollerstate/title_and_description_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
+import '../../misc/dialog_helper.dart';
 import '../../misc/entityandlistitemcontrollerstatemediator/horizontal_component_entity_parameterized_entity_and_list_item_controller_state_mediator.dart';
 import '../../misc/error/message_error.dart';
+import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
@@ -50,6 +53,7 @@ import '../../misc/paging/pagingresult/paging_result.dart';
 import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/horizontal_dynamic_item_carousel_parametered_component_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/wishlist_parameterized_entity_and_list_item_controller_state_mediator.dart';
 import '../../misc/string_util.dart';
+import '../../misc/toast_helper.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/colorful_chip_tab_bar.dart';
 import '../widget/modified_divider.dart';
@@ -238,6 +242,7 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
   final List<LoadDataResultDynamicListItemControllerState> _dynamicItemLoadDataResultDynamicListItemControllerStateList = [];
   late ColorfulChipTabBarController _productVariantColorfulChipTabBarController;
   String _selectedProductEntryId = "";
+  LoadDataResult<ProductDetail> _productDetailLoadDataResult = NoLoadDataResult<ProductDetail>();
 
   @override
   void initState() {
@@ -258,7 +263,7 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
     );
     _productDetailListItemPagingControllerState.isPagingControllerExist = true;
     _selectedProductEntryId = widget.productEntryId;
-    _productVariantColorfulChipTabBarController = ColorfulChipTabBarController(0);
+    _productVariantColorfulChipTabBarController = ColorfulChipTabBarController(-1);
     _productVariantColorfulChipTabBarController.addListener(() => setState(() {}));
   }
 
@@ -268,11 +273,19 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
       onSetState: () => setState(() {}),
       dynamicItemLoadDataResultDynamicListItemControllerStateList: _dynamicItemLoadDataResultDynamicListItemControllerStateList
     );
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _productDetailLoadDataResult = IsLoadingLoadDataResult<ProductDetail>();
+      setState(() {});
+    });
     LoadDataResult<ProductDetail> productDetailLoadDataResult = await widget.productDetailController.getProductDetail(
       ProductDetailParameter(
         productId: widget.productId
       )
     );
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _productDetailLoadDataResult = productDetailLoadDataResult;
+      setState(() {});
+    });
     return productDetailLoadDataResult.map((productDetail) {
       int a = 0;
       int selectedProductVariantIndex = -1;
@@ -371,7 +384,7 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
                             ),
                             VirtualSpacingListItemControllerState(height: 2.h),
                             ColorfulChipTabBarListItemControllerState(
-                              colorfulChipTabBarController: _productVariantColorfulChipTabBarController!,
+                              colorfulChipTabBarController: _productVariantColorfulChipTabBarController,
                               colorfulChipTabBarDataList: colorfulChipTabBarDataList,
                             ),
                           ]
@@ -501,7 +514,31 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
       );
     widget.productDetailController.setProductDetailMainMenuDelegate(
       ProductDetailMainMenuDelegate(
+        onUnfocusAllWidget: () => FocusScope.of(context).unfocus(),
         onObserveLoadProductDelegate: onObserveLoadProductDelegateFactory.generateOnObserveLoadProductDelegate(),
+        onGetSupportCart: () {
+          return _productDetailLoadDataResult.isSuccess
+            ? _productDetailLoadDataResult.resultIfSuccess!.productEntry as SupportCart
+            : null;
+        },
+        onShowAddToCartRequestProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
+        onShowAddToCartRequestProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
+          context: context,
+          errorProvider: Injector.locator<ErrorProvider>(),
+          e: e
+        ),
+        onAddToCartRequestProcessSuccessCallback: () async {
+          ToastHelper.showToast("${"Success add to cart".tr}.");
+        },
+        onShowBuyDirectlyRequestProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
+        onShowBuyDirectlyRequestProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
+          context: context,
+          errorProvider: Injector.locator<ErrorProvider>(),
+          e: e
+        ),
+        onBuyDirectlyRequestProcessSuccessCallback: () async {
+
+        }
       )
     );
     return Scaffold(
@@ -518,30 +555,31 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
                 pullToRefresh: true
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: SizedOutlineGradientButton(
-                      width: double.infinity,
-                      outlineGradientButtonType: OutlineGradientButtonType.outline,
-                      onPressed: () => widget.productDetailController.addToCart(_selectedProductEntryId),
-                      text: "Buy Directly".tr,
+            if (_productDetailLoadDataResult.isSuccess)
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: SizedOutlineGradientButton(
+                        width: double.infinity,
+                        outlineGradientButtonType: OutlineGradientButtonType.outline,
+                        onPressed: widget.productDetailController.buyDirectly,
+                        text: "Buy Directly".tr,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: SizedOutlineGradientButton(
-                      width: double.infinity,
-                      outlineGradientButtonType: OutlineGradientButtonType.solid,
-                      onPressed: () => widget.productDetailController.addToCart(_selectedProductEntryId),
-                      text: "+ ${"Cart".tr}",
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: SizedOutlineGradientButton(
+                        width: double.infinity,
+                        outlineGradientButtonType: OutlineGradientButtonType.solid,
+                        onPressed: widget.productDetailController.addToCart,
+                        text: "+ ${"Cart".tr}",
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                )
               )
-            )
           ]
         )
       ),

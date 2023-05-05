@@ -18,6 +18,7 @@ class CartContainerListItemControllerState extends ListItemControllerState {
   void Function(List<Cart>) onChangeSelected;
   CartContainerStateStorageListItemControllerState cartContainerStateStorageListItemControllerState;
   CartContainerActionListItemControllerState cartContainerActionListItemControllerState;
+  CartContainerInterceptingActionListItemControllerState cartContainerInterceptingActionListItemControllerState;
   List<AdditionalItem> additionalItemList;
 
   CartContainerListItemControllerState({
@@ -27,6 +28,7 @@ class CartContainerListItemControllerState extends ListItemControllerState {
     required this.onChangeSelected,
     required this.cartContainerStateStorageListItemControllerState,
     required this.cartContainerActionListItemControllerState,
+    required this.cartContainerInterceptingActionListItemControllerState,
     required this.additionalItemList
   });
 }
@@ -38,4 +40,8 @@ abstract class CartContainerActionListItemControllerState extends ListItemContro
   Future<LoadDataResult<AddAdditionalItemResponse>> Function(AddAdditionalItemParameter) get addAdditionalItem;
   Future<LoadDataResult<ChangeAdditionalItemResponse>> Function(ChangeAdditionalItemParameter) get changeAdditionalItem;
   Future<LoadDataResult<RemoveAdditionalItemResponse>> Function(RemoveAdditionalItemParameter) get removeAdditionalItem;
+}
+
+abstract class CartContainerInterceptingActionListItemControllerState extends ListItemControllerState {
+  void Function(Cart)? get removeCart;
 }

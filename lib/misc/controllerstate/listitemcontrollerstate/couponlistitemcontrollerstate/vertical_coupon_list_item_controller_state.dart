@@ -5,18 +5,22 @@ import 'coupon_list_item_controller_state.dart';
 class VerticalCouponListItemControllerState extends CouponListItemControllerState {
   VerticalCouponListItemControllerState({
     required Coupon coupon,
-    OnSelectCoupon? onSelectCoupon
+    OnSelectCoupon? onSelectCoupon,
+    required bool isSelected
   }) : super(
     coupon: coupon,
-    onSelectCoupon: onSelectCoupon
+    onSelectCoupon: onSelectCoupon,
+    isSelected: isSelected
   );
 }
 
 class ShimmerVerticalCouponListItemControllerState extends VerticalCouponListItemControllerState {
   ShimmerVerticalCouponListItemControllerState({
     required Coupon coupon,
+    bool isSelected = false
   }) : super(
     coupon: coupon,
-    onSelectCoupon: null
+    onSelectCoupon: null,
+    isSelected: false
   );
 }

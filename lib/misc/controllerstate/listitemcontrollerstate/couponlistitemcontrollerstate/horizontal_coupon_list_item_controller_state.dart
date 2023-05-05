@@ -5,9 +5,11 @@ import 'coupon_list_item_controller_state.dart';
 class HorizontalCouponListItemControllerState extends CouponListItemControllerState {
   HorizontalCouponListItemControllerState({
     required Coupon coupon,
-    OnSelectCoupon? onSelectCoupon
+    OnSelectCoupon? onSelectCoupon,
+    required bool isSelected
   }) : super(
     coupon: coupon,
-    onSelectCoupon: onSelectCoupon
+    onSelectCoupon: onSelectCoupon,
+    isSelected: isSelected
   );
 }

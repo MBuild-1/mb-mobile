@@ -25,8 +25,12 @@ import '../../../domain/entity/cart/cart_summary_parameter.dart';
 import '../../../domain/entity/cart/remove_from_cart_parameter.dart';
 import '../../../domain/entity/cart/remove_from_cart_response.dart';
 import '../../../domain/entity/cart/shared_cart_paging_parameter.dart';
+import '../../../domain/entity/cart/support_cart.dart';
 import '../../../domain/entity/cart/take_friend_cart_parameter.dart';
 import '../../../domain/entity/cart/take_friend_cart_response.dart';
+import '../../../domain/entity/product/product_appearance_data.dart';
+import '../../../domain/entity/product/productbundle/product_bundle.dart';
+import '../../../domain/entity/product/productentry/product_entry.dart';
 import '../../../domain/entity/summaryvalue/summary_value.dart';
 import '../../../misc/option_builder.dart';
 import '../../../misc/processing/dio_http_client_processing.dart';
@@ -51,7 +55,7 @@ class DefaultCartDataSource implements CartDataSource {
   FutureProcessing<PagingDataResult<Cart>> cartPaging(CartPagingParameter cartPagingParameter) {
     return DioHttpClientProcessing((cancelToken) {
       String pageParameterPath = "/?pageNumber=${cartPagingParameter.itemEachPageCount}&page=${cartPagingParameter.page}";
-      return dio.get("user/cart$pageParameterPath", cancelToken: cancelToken)
+      return dio.get("/user/cart$pageParameterPath", cancelToken: cancelToken)
         .map<PagingDataResult<Cart>>(onMap: (value) => value.wrapResponse().mapFromResponseToCartPaging());
     });
   }
@@ -59,7 +63,7 @@ class DefaultCartDataSource implements CartDataSource {
   @override
   FutureProcessing<List<Cart>> cartList(CartListParameter cartListParameter) {
     return DioHttpClientProcessing((cancelToken) {
-      return dio.get("user/cart", cancelToken: cancelToken)
+      return dio.get("/user/cart", cancelToken: cancelToken)
         .map<List<Cart>>(onMap: (value) => value.wrapResponse().mapFromResponseToCartList());
     });
   }
@@ -86,17 +90,25 @@ class DefaultCartDataSource implements CartDataSource {
 
   @override
   FutureProcessing<AddToCartResponse> addToCart(AddToCartParameter addToCartParameter) {
-    return DummyFutureProcessing((parameter) async {
-      await Future.delayed(const Duration(seconds: 1));
-      return AddToCartResponse();
+    return DioHttpClientProcessing((cancelToken) async {
+      SupportCart supportCart = addToCartParameter.supportCart;
+      FormData formData = FormData.fromMap(
+        <String, dynamic> {
+          if (supportCart is ProductEntryAppearanceData) "product_entry_id": (supportCart as ProductEntryAppearanceData).productEntryId,
+          if (supportCart is ProductBundle) "bundling_id": supportCart.id,
+          "quantity": addToCartParameter.quantity
+        }
+      );
+      return dio.post("/user/cart", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+        .map<AddToCartResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToAddToCartResponse());
     });
   }
 
   @override
   FutureProcessing<RemoveFromCartResponse> removeFromCart(RemoveFromCartParameter removeFromCartParameter) {
-    return DummyFutureProcessing((parameter) async {
-      await Future.delayed(const Duration(seconds: 1));
-      return RemoveFromCartResponse();
+    return DioHttpClientProcessing((cancelToken) async {
+      return dio.delete("/user/cart/${removeFromCartParameter.cart.id}", cancelToken: cancelToken)
+        .map<RemoveFromCartResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToRemoveFromCartResponse());
     });
   }
 

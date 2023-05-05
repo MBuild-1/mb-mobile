@@ -13,8 +13,8 @@ extension CouponEntityMappingExt on ResponseWrapper {
 
   PagingDataResult<Coupon> mapFromResponseToCouponPaging() {
     return ResponseWrapper(response).mapFromResponseToPagingDataResult(
-      (dataResponse) => dataResponse.map<Wishlist>(
-        (wishlistResponse) => ResponseWrapper(wishlistResponse).mapFromResponseToCoupon()
+      (dataResponse) => dataResponse.map<Coupon>(
+        (couponResponse) => ResponseWrapper(couponResponse).mapFromResponseToCoupon()
       ).toList()
     );
   }
@@ -22,19 +22,26 @@ extension CouponEntityMappingExt on ResponseWrapper {
 
 extension CouponDetailEntityMappingExt on ResponseWrapper {
   Coupon mapFromResponseToCoupon() {
+    late dynamic effectiveResponse;
+    if (response is List) {
+      effectiveResponse = response[0];
+    } else {
+      effectiveResponse = response;
+    }
     return Coupon(
-      id: response["id"],
-      title: response["title"],
-      code: response["code"],
-      type: response["type"],
-      discount: ResponseWrapper(response["discount"]).mapFromResponseToDouble()!,
-      minOrder: response["min_order"],
-      activePeriodStart: ResponseWrapper(response["active_period_start"]).mapFromResponseToDateTime(dateFormat: DateUtil.standardDateFormat3)!,
-      activePeriodEnd: ResponseWrapper(response["active_period_end"]).mapFromResponseToDateTime(dateFormat: DateUtil.standardDateFormat3)!,
-      minPerUser: response["min_per_user"],
-      image: response["image"],
-      banner: response["banner"],
-      notes: response["notes"],
+      id: effectiveResponse["id"],
+      userProfessionId: effectiveResponse["user_profession_id"],
+      title: effectiveResponse["title"],
+      code: effectiveResponse["code"],
+      type: effectiveResponse["type"],
+      activePeriodStart: ResponseWrapper(effectiveResponse["active_period_start"]).mapFromResponseToDateTime(dateFormat: DateUtil.standardDateFormat3)!,
+      activePeriodEnd: ResponseWrapper(effectiveResponse["active_period_end"]).mapFromResponseToDateTime(dateFormat: DateUtil.standardDateFormat3)!,
+      minPerUser: effectiveResponse["min_per_user"],
+      imageMobile: effectiveResponse["image_mobile"],
+      imageDesktop: effectiveResponse["image_desktop"],
+      bannerDesktop: effectiveResponse["banner_desktop"],
+      bannerMobile: effectiveResponse["banner_mobile"],
+      notes: effectiveResponse["notes"],
     );
   }
 }

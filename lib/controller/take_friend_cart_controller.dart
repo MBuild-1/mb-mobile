@@ -58,8 +58,8 @@ class TakeFriendCartController extends BaseGetxController {
     );
   }
 
-  Future<LoadDataResult<RemoveFromCartResponse>> removeFromCart() {
-    return removeFromCartUseCase.execute(RemoveFromCartParameter()).future(
+  Future<LoadDataResult<RemoveFromCartResponse>> removeFromCart(Cart cart) {
+    return removeFromCartUseCase.execute(RemoveFromCartParameter(cart: cart)).future(
       parameter: apiRequestManager.addRequestToCancellationPart("remove-to-cart").value
     );
   }

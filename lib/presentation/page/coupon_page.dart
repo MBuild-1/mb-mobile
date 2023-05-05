@@ -6,40 +6,57 @@ import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_ext.dart';
 import '../../controller/coupon_controller.dart';
 import '../../domain/entity/coupon/coupon.dart';
+import '../../domain/entity/coupon/coupon_list_parameter.dart';
 import '../../domain/entity/coupon/coupon_paging_parameter.dart';
+import '../../domain/usecase/get_coupon_list_use_case.dart';
 import '../../domain/usecase/get_coupon_paging_use_case.dart';
 import '../../misc/additionalloadingindicatorchecker/coupon_additional_paging_result_parameter_checker.dart';
 import '../../misc/constant.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/compound_list_item_controller_state.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/couponlistitemcontrollerstate/coupon_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/couponlistitemcontrollerstate/vertical_coupon_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/padding_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
+import '../../misc/error/message_error.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
+import '../../misc/itemtypelistsubinterceptor/coupon_item_type_list_sub_interceptor.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/controller_manager.dart';
 import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
+import '../../misc/string_util.dart';
+import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/default_search_app_bar.dart';
+import '../widget/modifiedappbar/modified_app_bar.dart';
 import 'getx_page.dart';
 
 class CouponPage extends RestorableGetxPage<_CouponPageRestoration> {
+  final String couponId;
+
   late final ControllerMember<CouponController> _couponController = ControllerMember<CouponController>().addToControllerManager(controllerManager);
 
-  CouponPage({Key? key}) : super(key: key, pageRestorationId: () => "coupon-page");
+  CouponPage({
+    Key? key,
+    required this.couponId
+  }) : super(
+    key: key,
+    pageRestorationId: () => "coupon-page"
+  );
 
   @override
   void onSetController() {
     _couponController.controller = GetExtended.put<CouponController>(
       CouponController(
         controllerManager,
-        Injector.locator<GetCouponPagingUseCase>()
+        Injector.locator<GetCouponPagingUseCase>(),
+        Injector.locator<GetCouponListUseCase>()
       ),
       tag: pageName
     );
@@ -53,6 +70,7 @@ class CouponPage extends RestorableGetxPage<_CouponPageRestoration> {
     return Scaffold(
       body: _StatefulCouponControllerMediatorWidget(
         couponController: _couponController.controller,
+        couponId: couponId,
       ),
     );
   }
@@ -79,22 +97,37 @@ class _CouponPageRestoration extends MixableGetxPageRestoration with CouponPageR
 }
 
 class CouponPageGetPageBuilderAssistant extends GetPageBuilderAssistant {
-  CouponPageGetPageBuilderAssistant();
+  final String couponId;
+
+  CouponPageGetPageBuilderAssistant({
+    required this.couponId
+  });
 
   @override
-  GetPageBuilder get pageBuilder => (() => CouponPage());
+  GetPageBuilder get pageBuilder => (() => CouponPage(
+    couponId: couponId
+  ));
 
   @override
-  GetPageBuilder get pageWithOuterGetxBuilder => (() => GetxPageBuilder.buildRestorableGetxPage(CouponPage()));
+  GetPageBuilder get pageWithOuterGetxBuilder => (() => GetxPageBuilder.buildRestorableGetxPage(
+    CouponPage(
+      couponId: couponId
+    )
+  ));
 }
 
 mixin CouponPageRestorationMixin on MixableGetxPageRestoration {
+  RouteCompletionCallback<String?>? onCompleteSelectCoupon;
+
   late CouponPageRestorableRouteFuture couponPageRestorableRouteFuture;
 
   @override
   void initState() {
     super.initState();
-    couponPageRestorableRouteFuture = CouponPageRestorableRouteFuture(restorationId: restorationIdWithPageName('coupon-route'));
+    couponPageRestorableRouteFuture = CouponPageRestorableRouteFuture(
+      restorationId: restorationIdWithPageName('coupon-route'),
+      onComplete: onCompleteSelectCoupon
+    );
   }
 
   @override
@@ -111,24 +144,37 @@ mixin CouponPageRestorationMixin on MixableGetxPageRestoration {
 }
 
 class CouponPageRestorableRouteFuture extends GetRestorableRouteFuture {
+  final RouteCompletionCallback<String?>? onComplete;
+
   late RestorableRouteFuture<void> _pageRoute;
 
-  CouponPageRestorableRouteFuture({required String restorationId}) : super(restorationId: restorationId) {
-    _pageRoute = RestorableRouteFuture<void>(
+  CouponPageRestorableRouteFuture({
+    required String restorationId,
+    this.onComplete
+  }) : super(restorationId: restorationId) {
+    _pageRoute = RestorableRouteFuture<String?>(
       onPresent: (NavigatorState navigator, Object? arguments) {
         return navigator.restorablePush(_pageRouteBuilder, arguments: arguments);
       },
+      onComplete: onComplete
     );
   }
 
-  static Route<void>? _getRoute([Object? arguments]) {
-    return GetExtended.toWithGetPageRouteReturnValue<void>(
-      GetxPageBuilder.buildRestorableGetxPageBuilder(CouponPageGetPageBuilderAssistant()),
+  static Route<String?>? _getRoute([Object? arguments]) {
+    if (arguments is! String) {
+      throw MessageError(message: "Arguments must be a String");
+    }
+    return GetExtended.toWithGetPageRouteReturnValue<String?>(
+      GetxPageBuilder.buildRestorableGetxPageBuilder(
+        CouponPageGetPageBuilderAssistant(
+          couponId: arguments
+        )
+      ),
     );
   }
 
   @pragma('vm:entry-point')
-  static Route<void> _pageRouteBuilder(BuildContext context, Object? arguments) {
+  static Route<String?> _pageRouteBuilder(BuildContext context, Object? arguments) {
     return _getRoute(arguments)!;
   }
 
@@ -151,9 +197,11 @@ class CouponPageRestorableRouteFuture extends GetRestorableRouteFuture {
 
 class _StatefulCouponControllerMediatorWidget extends StatefulWidget {
   final CouponController couponController;
+  final String? couponId;
 
   const _StatefulCouponControllerMediatorWidget({
     required this.couponController,
+    required this.couponId
   });
 
   @override
@@ -163,6 +211,7 @@ class _StatefulCouponControllerMediatorWidget extends StatefulWidget {
 class _StatefulCouponControllerMediatorWidgetState extends State<_StatefulCouponControllerMediatorWidget> {
   late final ModifiedPagingController<int, ListItemControllerState> _couponListItemPagingController;
   late final PagingControllerState<int, ListItemControllerState> _couponListItemPagingControllerState;
+  Coupon? _selectCoupon;
 
   @override
   void initState() {
@@ -171,44 +220,39 @@ class _StatefulCouponControllerMediatorWidgetState extends State<_StatefulCoupon
       firstPageKey: 1,
       // ignore: invalid_use_of_protected_member
       apiRequestManager: widget.couponController.apiRequestManager,
-      additionalPagingResultParameterChecker: Injector.locator<CouponAdditionalPagingResultParameterChecker>()
     );
     _couponListItemPagingControllerState = PagingControllerState(
       pagingController: _couponListItemPagingController,
       isPagingControllerExist: false
     );
-    _couponListItemPagingControllerState.pagingController.addPageRequestListenerForLoadDataResult(
+    _couponListItemPagingControllerState.pagingController.addPageRequestListenerWithItemListForLoadDataResult(
       listener: _couponListItemPagingControllerStateListener,
       onPageKeyNext: (pageKey) => pageKey + 1
     );
     _couponListItemPagingControllerState.isPagingControllerExist = true;
   }
 
-  Future<LoadDataResult<PagingResult<ListItemControllerState>>> _couponListItemPagingControllerStateListener(int pageKey) async {
-    LoadDataResult<PagingDataResult<Coupon>> couponPagingLoadDataResult = await widget.couponController.getCouponPaging(
-      CouponPagingParameter(page: pageKey)
-    );
-    return couponPagingLoadDataResult.map((couponPaging) {
-      List<ListItemControllerState> couponListItemControllerState = couponPaging.itemList.mapIndexed<ListItemControllerState>(
-        (index, coupon) => CompoundListItemControllerState(
-          listItemControllerState: [
-            VirtualSpacingListItemControllerState(height: Constant.paddingListItem),
-            PaddingContainerListItemControllerState(
-              padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-              paddingChildListItemControllerState: VerticalCouponListItemControllerState(
-                coupon: coupon,
-                onSelectCoupon: (selectedCoupon) {}
-              )
-            ),
-            if (index == couponPaging.itemList.length - 1)
-              VirtualSpacingListItemControllerState(height: Constant.paddingListItem),
-          ]
-        )
-      ).toList();
-      return couponPaging.map(
-        (coupon) => CompoundListItemControllerState(
-          listItemControllerState: couponListItemControllerState
-        )
+  Future<LoadDataResult<PagingResult<ListItemControllerState>>> _couponListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? listItemControllerStateList) async {
+    LoadDataResult<List<Coupon>> couponListLoadDataResult = await widget.couponController.getCouponList(CouponListParameter());
+    return couponListLoadDataResult.map<PagingResult<ListItemControllerState>>((couponList) {
+      return PagingDataResult<ListItemControllerState>(
+        itemList: [
+          CouponContainerListItemControllerState(
+            coupon: couponList,
+            onUpdateState: () => setState(() {}),
+            onGetLastSelectedCouponId: () => widget.couponId,
+            onSelectCoupon: (coupon) {
+              setState(() {
+                _selectCoupon = coupon;
+              });
+            },
+            onGetSelectedCoupon: () => _selectCoupon,
+            couponContainerStorageListItemControllerState: DefaultCouponContainerStorageListItemControllerState()
+          )
+        ],
+        page: 1,
+        totalPage: 1,
+        totalItem: 1
       );
     });
   }
@@ -216,7 +260,13 @@ class _StatefulCouponControllerMediatorWidgetState extends State<_StatefulCoupon
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: DefaultSearchAppBar(),
+      appBar: ModifiedAppBar(
+        titleInterceptor: (context, title) => Row(
+          children: [
+            Text("My Coupon".tr),
+          ],
+        ),
+      ),
       body: SafeArea(
         child: Column(
           children: [
@@ -229,6 +279,21 @@ class _StatefulCouponControllerMediatorWidgetState extends State<_StatefulCoupon
                 pullToRefresh: true
               ),
             ),
+            if (_selectCoupon != null)
+              Container(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedOutlineGradientButton(
+                      onPressed: () => Get.back(result: _selectCoupon!.id),
+                      text: "Choose Address".tr,
+                      outlineGradientButtonType: OutlineGradientButtonType.solid,
+                      outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
+                    )
+                  ]
+                ),
+              )
           ]
         )
       ),

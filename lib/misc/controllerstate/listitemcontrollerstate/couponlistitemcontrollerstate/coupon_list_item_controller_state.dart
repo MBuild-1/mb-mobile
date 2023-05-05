@@ -5,9 +5,11 @@ import '../list_item_controller_state.dart';
 abstract class CouponListItemControllerState extends ListItemControllerState {
   Coupon coupon;
   OnSelectCoupon? onSelectCoupon;
+  bool isSelected;
 
   CouponListItemControllerState({
     required this.coupon,
-    this.onSelectCoupon
+    this.onSelectCoupon,
+    required this.isSelected
   });
 }

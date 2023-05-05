@@ -1,7 +1,9 @@
 import 'package:masterbagasi/data/entitymappingext/product_entity_mapping_ext.dart';
 import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 
+import '../../domain/entity/cart/add_to_cart_response.dart';
 import '../../domain/entity/cart/cart.dart';
+import '../../domain/entity/cart/remove_from_cart_response.dart';
 import '../../domain/entity/cart/support_cart.dart';
 import '../../misc/error/message_error.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
@@ -41,5 +43,13 @@ extension CartDetailEntityMappingExt on ResponseWrapper {
     } else {
       throw MessageError(message: "Support cart not suitable");
     }
+  }
+
+  AddToCartResponse mapFromResponseToAddToCartResponse() {
+    return AddToCartResponse();
+  }
+
+  RemoveFromCartResponse mapFromResponseToRemoveFromCartResponse() {
+    return RemoveFromCartResponse();
   }
 }

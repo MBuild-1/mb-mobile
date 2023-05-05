@@ -12,7 +12,7 @@ class Address {
   String phoneNumber;
   String zipCode;
   Country country;
-  AddressUser addressUser;
+  AddressUser? addressUser;
 
   Address({
     required this.id,

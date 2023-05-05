@@ -18,7 +18,8 @@ class CouponShimmerCarouselListItemGenerator extends ShimmerCarouselListItemGene
   @override
   ListItemControllerState onGenerateListItemValue() {
     return HorizontalCouponListItemControllerState(
-      coupon: couponDummy.generateShimmerDummy()
+      coupon: couponDummy.generateShimmerDummy(),
+      isSelected: false
     );
   }
 }

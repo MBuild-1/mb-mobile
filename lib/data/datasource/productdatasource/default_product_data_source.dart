@@ -7,7 +7,9 @@ import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/misc/option_builder.dart';
 
 import '../../../domain/dummy/productdummy/product_entry_dummy.dart';
+import '../../../domain/entity/cart/support_cart.dart';
 import '../../../domain/entity/product/product.dart';
+import '../../../domain/entity/product/product_appearance_data.dart';
 import '../../../domain/entity/product/product_detail.dart';
 import '../../../domain/entity/product/product_detail_from_your_search_product_entry_list_parameter.dart';
 import '../../../domain/entity/product/product_detail_other_chosen_for_you_product_entry_list_parameter.dart';
@@ -40,6 +42,7 @@ import '../../../domain/entity/wishlist/add_wishlist_parameter.dart';
 import '../../../domain/entity/wishlist/add_wishlist_response.dart';
 import '../../../domain/entity/wishlist/remove_wishlist_parameter.dart';
 import '../../../domain/entity/wishlist/remove_wishlist_response.dart';
+import '../../../domain/entity/wishlist/support_wishlist.dart';
 import '../../../domain/entity/wishlist/wishlist.dart';
 import '../../../domain/entity/wishlist/wishlist_paging_parameter.dart';
 import '../../../misc/error/not_found_error.dart';
@@ -266,16 +269,23 @@ class DefaultProductDataSource implements ProductDataSource {
 
   @override
   FutureProcessing<AddWishlistResponse> addWishlist(AddWishlistParameter addWishlistParameter) {
-    return DioHttpClientProcessing((cancelToken) {
-      return dio.post("/user/wishlist/add", cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
-        .map(onMap: (value) => value.wrapResponse().mapFromResponseToAddWishlistResponse());
+    return DioHttpClientProcessing((cancelToken) async {
+      SupportWishlist supportWishlist = addWishlistParameter.supportWishlist;
+      FormData formData = FormData.fromMap(
+        <String, dynamic> {
+          if (supportWishlist is ProductEntryAppearanceData) "product_entry_id": (supportWishlist as ProductEntryAppearanceData).productEntryId,
+          if (supportWishlist is ProductBundle) "bundling_id": supportWishlist.id,
+        }
+      );
+      return dio.post("/user/wishlist", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+        .map<AddWishlistResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToAddWishlistResponse());
     });
   }
 
   @override
   FutureProcessing<RemoveWishlistResponse> removeWishlist(RemoveWishlistParameter removeWishlistParameter) {
     return DioHttpClientProcessing((cancelToken) {
-      return dio.post("/user/wishlist/remove", cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+      return dio.delete("/user/wishlist/${removeWishlistParameter.wishlistId}", cancelToken: cancelToken)
         .map(onMap: (value) => value.wrapResponse().mapFromResponseToRemoveWishlistResponse());
     });
   }

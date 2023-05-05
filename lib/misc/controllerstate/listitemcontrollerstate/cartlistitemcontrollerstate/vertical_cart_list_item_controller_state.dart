@@ -11,6 +11,7 @@ class VerticalCartListItemControllerState extends CartListItemControllerState {
     super.onAddToWishlist,
     super.onRemoveFromNotes,
     super.onRemoveCart,
+    super.onChangeNotes,
     super.onChangeQuantity
   });
 }

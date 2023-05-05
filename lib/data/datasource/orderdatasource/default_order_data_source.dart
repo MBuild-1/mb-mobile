@@ -48,6 +48,7 @@ class DefaultOrderDataSource implements OrderDataSource {
       ).toList();
       List<dynamic> sendToWarehouseList = additionalItemList.map(
         (additionalItem) => {
+          "id": additionalItem.id,
           "name" : additionalItem.name,
           "price": additionalItem.estimationPrice,
           "weight": additionalItem.estimationWeight,

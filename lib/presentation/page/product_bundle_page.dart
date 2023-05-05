@@ -186,25 +186,10 @@ class _StatefulProductBundleControllerMediatorWidgetState extends State<_Statefu
       ProductBundlePagingParameter(page: pageKey)
     );
     return productBundlePagingLoadDataResult.map((productBundlePaging) {
-      List<ListItemControllerState> productBundleListItemControllerState = productBundlePaging.itemList.mapIndexed<ListItemControllerState>(
-        (index, productBundle) => CompoundListItemControllerState(
-          listItemControllerState: [
-            VirtualSpacingListItemControllerState(height: Constant.paddingListItem),
-            PaddingContainerListItemControllerState(
-              padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-              paddingChildListItemControllerState: VerticalProductBundleListItemControllerState(
-                productBundle: productBundle,
-                onAddWishlist: (productBundleId) {}
-              )
-            ),
-            if (index == productBundlePaging.itemList.length - 1)
-              VirtualSpacingListItemControllerState(height: Constant.paddingListItem),
-          ]
-        )
-      ).toList();
       return productBundlePaging.map(
-        (productBundle) => CompoundListItemControllerState(
-          listItemControllerState: productBundleListItemControllerState
+        (productBundle) => VerticalProductBundleListItemControllerState(
+          productBundle: productBundle,
+          onAddWishlist: (productBundleId) {}
         )
       );
     });

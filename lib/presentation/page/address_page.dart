@@ -17,6 +17,7 @@ import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
+import '../../misc/itemtypelistsubinterceptor/address_item_type_list_sub_interceptor.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/controller_manager.dart';
 import '../../misc/paging/modified_paging_controller.dart';
@@ -205,6 +206,7 @@ class _StatefulAddressControllerMediatorWidgetState extends State<_StatefulAddre
           AddressContainerListItemControllerState(
             address: addressList,
             onUpdateState: () => setState(() {}),
+            addressContainerStorageListItemControllerState: DefaultAddressContainerStorageListItemControllerState(),
             onSelectAddress: (address) {
               setState(() {
                 _selectAddress = address;

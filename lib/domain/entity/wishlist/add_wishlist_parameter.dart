@@ -1,7 +1,9 @@
+import 'support_wishlist.dart';
+
 class AddWishlistParameter {
-  String productEntryId;
+  SupportWishlist supportWishlist;
 
   AddWishlistParameter({
-    required this.productEntryId
+    required this.supportWishlist
   });
 }

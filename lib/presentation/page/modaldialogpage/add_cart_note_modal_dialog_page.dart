@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/misc/ext/validation_result_ext.dart';
 import 'package:sizer/sizer.dart';
 
@@ -13,10 +14,13 @@ import '../../widget/rx_consumer.dart';
 import 'modal_dialog_page.dart';
 
 class AddCartNoteModalDialogPage extends ModalDialogPage<AddCartNoteModalDialogController> {
+  final String? notes;
+
   AddCartNoteModalDialogController get addCartNoteModalDialogController => modalDialogController.controller;
 
   AddCartNoteModalDialogPage({
     Key? key,
+    this.notes
   }) : super(key: key);
 
   @override
@@ -28,15 +32,18 @@ class AddCartNoteModalDialogPage extends ModalDialogPage<AddCartNoteModalDialogC
   Widget buildPage(BuildContext context) {
     return _StatefulAddCartNoteControllerMediatorWidget(
       addCartNoteModalDialogController: addCartNoteModalDialogController,
+      notes: notes
     );
   }
 }
 
 class _StatefulAddCartNoteControllerMediatorWidget extends StatefulWidget {
   final AddCartNoteModalDialogController addCartNoteModalDialogController;
+  final String? notes;
 
   const _StatefulAddCartNoteControllerMediatorWidget({
-    required this.addCartNoteModalDialogController
+    required this.addCartNoteModalDialogController,
+    required this.notes
   });
 
   @override
@@ -45,6 +52,12 @@ class _StatefulAddCartNoteControllerMediatorWidget extends StatefulWidget {
 
 class _StatefulAddCartNoteControllerMediatorWidgetState extends State<_StatefulAddCartNoteControllerMediatorWidget> {
   final TextEditingController _addCartTextEditingController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _addCartTextEditingController.text = widget.notes.toEmptyStringNonNull;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +80,7 @@ class _StatefulAddCartNoteControllerMediatorWidgetState extends State<_StatefulA
               child: ExcludeFocus(
                 child: SizedOutlineGradientButton(
                   onPressed: () {},
-                  text: "Add Cart Note".tr,
+                  text: widget.notes.isEmptyString ? "Add Cart Note".tr : "Change Cart Note".tr,
                   outlineGradientButtonType: OutlineGradientButtonType.outline,
                   outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
                   customGradientButtonVariation: (outlineGradientButtonType) {
@@ -101,7 +114,7 @@ class _StatefulAddCartNoteControllerMediatorWidgetState extends State<_StatefulA
             const SizedBox(height: 20),
             SizedOutlineGradientButton(
               onPressed: widget.addCartNoteModalDialogController.addCartNote,
-              text: "Add".tr,
+              text: "Submit".tr,
               outlineGradientButtonType: OutlineGradientButtonType.solid,
               outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
             ),

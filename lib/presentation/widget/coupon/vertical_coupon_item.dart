@@ -7,7 +7,8 @@ class VerticalCouponItem extends CouponItem {
   const VerticalCouponItem({
     super.key,
     required super.coupon,
-    super.onSelectCoupon
+    super.onSelectCoupon,
+    required super.isSelected
   });
 }
 
@@ -15,6 +16,7 @@ class ShimmerVerticalCouponItem extends VerticalCouponItem {
   const ShimmerVerticalCouponItem({
     super.key,
     required super.coupon,
+    super.isSelected = false
   });
 
   @override

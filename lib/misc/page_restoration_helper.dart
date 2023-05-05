@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../controller/crop_picture_controller.dart';
 import '../presentation/page/address_page.dart';
@@ -154,10 +155,10 @@ class _PageRestorationHelperImpl {
     );
   }
 
-  void toCouponPage(BuildContext context) {
+  void toCouponPage(BuildContext context, String? couponId) {
     PageRestorationHelper.findPageRestorationMixin<CouponPageRestorationMixin>(
       onGetxPageRestorationFound: (restoration) {
-        restoration.couponPageRestorableRouteFuture.present();
+        restoration.couponPageRestorableRouteFuture.present(couponId.toEmptyStringNonNull);
       },
       context: context
     );

@@ -6,6 +6,7 @@ import '../../itemtypelistsubinterceptor/carousel_item_type_list_sub_interceptor
 import '../../itemtypelistsubinterceptor/cart_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/column_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/compound_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/coupon_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/decorated_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/delivery_cart_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/dynamic_item_type_list_sub_interceptor.dart';
@@ -13,6 +14,7 @@ import '../../itemtypelistsubinterceptor/expandable_description_item_type_list_s
 import '../../itemtypelistsubinterceptor/item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/padding_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/page_keyed_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/product_bundle_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/product_entry_header_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/profile_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/row_container_item_type_list_sub_interceptor.dart';
@@ -153,6 +155,15 @@ class ListItemControllerStateItemTypeInterceptorChecker extends ItemTypeListInte
       listItemControllerStateItemTypeInterceptorChecker: this
     ),
     ProductEntryHeaderItemTypeListSubInterceptor(
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
+    ProductBundleItemTypeListSubInterceptor(
+      padding: padding,
+      itemSpacing: itemSpacing
+    ),
+    CouponItemTypeListSubInterceptor(
+      padding: padding,
+      itemSpacing: itemSpacing,
       listItemControllerStateItemTypeInterceptorChecker: this
     ),
     AddressItemTypeListSubInterceptor(

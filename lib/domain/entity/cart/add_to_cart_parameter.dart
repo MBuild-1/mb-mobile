@@ -1,9 +1,11 @@
+import 'support_cart.dart';
+
 class AddToCartParameter {
-  String supportCartId;
-  String addToCartType;
+  SupportCart supportCart;
+  int quantity;
 
   AddToCartParameter({
-    required this.supportCartId,
-    required this.addToCartType
+    required this.supportCart,
+    required this.quantity
   });
 }

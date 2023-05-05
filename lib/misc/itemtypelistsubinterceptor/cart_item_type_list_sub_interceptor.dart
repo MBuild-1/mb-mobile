@@ -101,6 +101,7 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
       }
       CartContainerStateStorageListItemControllerState cartContainerStateStorageListItemControllerState = oldItemType.cartContainerStateStorageListItemControllerState;
       CartContainerActionListItemControllerState cartContainerActionListItemControllerState = oldItemType.cartContainerActionListItemControllerState;
+      CartContainerInterceptingActionListItemControllerState cartContainerInterceptingActionListItemControllerState = oldItemType.cartContainerInterceptingActionListItemControllerState;
       if (cartContainerStateStorageListItemControllerState is DefaultCartContainerStateStorageListItemControllerState) {
         if (selectedCount != cartContainerStateStorageListItemControllerState._lastSelectedCount) {
           cartContainerStateStorageListItemControllerState._lastSelectedCount = selectedCount;
@@ -108,6 +109,20 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
             oldItemType.onChangeSelected(selectedCart);
           });
         }
+      }
+      if (cartContainerInterceptingActionListItemControllerState is DefaultCartContainerInterceptingActionListItemControllerState) {
+        cartContainerInterceptingActionListItemControllerState._removeCart = (cart) {
+          int l = 0;
+          while (l < cartListItemControllerStateList.length) {
+            CartListItemControllerState cartListItemControllerState = cartListItemControllerStateList[l];
+            if (cartListItemControllerState.cart.id == cart.id) {
+              cartListItemControllerStateList.removeAt(l);
+              break;
+            }
+            l++;
+          }
+          oldItemType.onUpdateState();
+        };
       }
       newItemTypeList.add(VirtualSpacingListItemControllerState(height: 10.0));
       void loadAdditionalItem() async {
@@ -122,7 +137,8 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
             return;
           }
           if (additionalItemListLoadDataResult.isSuccess) {
-            oldItemType.additionalItemList = additionalItemListLoadDataResult.resultIfSuccess!;
+            oldItemType.additionalItemList.clear();
+            oldItemType.additionalItemList.addAll(additionalItemListLoadDataResult.resultIfSuccess!);
           }
           cartContainerStateStorageListItemControllerState._additionalItemLoadDataResult = additionalItemListLoadDataResult;
           oldItemType.onUpdateState();
@@ -146,7 +162,7 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
                         oldItemType.onScrollToAdditionalItemsSection();
                       });
                     } else {
-                      oldItemType.additionalItemList = [];
+                      oldItemType.additionalItemList.clear();
                     }
                     oldItemType.onUpdateState();
                   }
@@ -270,4 +286,11 @@ class DefaultCartContainerStateStorageListItemControllerState extends CartContai
   int _lastSelectedCount = -1;
   bool _enableSendAdditionalItems = false;
   LoadDataResult<List<AdditionalItem>> _additionalItemLoadDataResult = NoLoadDataResult<List<AdditionalItem>>();
+}
+
+class DefaultCartContainerInterceptingActionListItemControllerState extends CartContainerInterceptingActionListItemControllerState {
+  void Function(Cart)? _removeCart;
+
+  @override
+  void Function(Cart)? get removeCart => _removeCart ?? (throw UnimplementedError());
 }

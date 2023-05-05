@@ -6,10 +6,14 @@ class AddressContainerListItemControllerState extends ListItemControllerState {
   List<Address> address;
   OnSelectAddress? onSelectAddress;
   void Function() onUpdateState;
+  AddressContainerStorageListItemControllerState addressContainerStorageListItemControllerState;
 
   AddressContainerListItemControllerState({
     required this.address,
     this.onSelectAddress,
-    required this.onUpdateState
+    required this.onUpdateState,
+    required this.addressContainerStorageListItemControllerState
   });
 }
+
+abstract class AddressContainerStorageListItemControllerState {}

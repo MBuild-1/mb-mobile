@@ -70,6 +70,8 @@ import '../domain/usecase/get_address_paging_use_case.dart';
 import '../domain/usecase/get_bestseller_in_masterbagasi_list_use_case.dart';
 import '../domain/usecase/get_cart_summary_use_case.dart';
 import '../domain/usecase/get_coffee_and_tea_origin_indonesia_list_use_case.dart';
+import '../domain/usecase/get_coupon_detail_use_case.dart';
+import '../domain/usecase/get_coupon_list_use_case.dart';
 import '../domain/usecase/get_coupon_paging_use_case.dart';
 import '../domain/usecase/get_current_selected_address_use_case.dart';
 import '../domain/usecase/get_delivery_review_use_case.dart';
@@ -367,6 +369,8 @@ class _Injector {
     locator.registerLazySingleton<GetHomepageContentsBannerUseCase>(() => GetHomepageContentsBannerUseCase(bannerRepository: locator()));
     locator.registerLazySingleton<GetShippingPriceContentsBannerUseCase>(() => GetShippingPriceContentsBannerUseCase(bannerRepository: locator()));
     locator.registerLazySingleton<GetCouponPagingUseCase>(() => GetCouponPagingUseCase(couponRepository: locator()));
+    locator.registerLazySingleton<GetCouponListUseCase>(() => GetCouponListUseCase(couponRepository: locator()));
+    locator.registerLazySingleton<GetCouponDetailUseCase>(() => GetCouponDetailUseCase(couponRepository: locator()));
     locator.registerLazySingleton<GetShortMyCartUseCase>(() => GetShortMyCartUseCase(cartRepository: locator()));
     locator.registerLazySingleton<GetMyCartUseCase>(() => GetMyCartUseCase(cartRepository: locator()));
     locator.registerLazySingleton<AddToCartUseCase>(() => AddToCartUseCase(cartRepository: locator()));
