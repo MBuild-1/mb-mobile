@@ -107,13 +107,11 @@ class _StatefulWishlistMainMenuSubControllerMediatorWidgetState extends State<_S
             return VerticalProductListItemControllerState(
               productAppearanceData: supportWishlist as ProductAppearanceData,
               onRemoveWishlist: (productOrProductEntryId) {},
-              onAddWishlist: (productOrProductEntryId) {}
             );
           } else if (supportWishlist is ProductBundle) {
             return VerticalProductBundleListItemControllerState(
               productBundle: supportWishlist,
               onRemoveWishlist: (productOrProductEntryId) {},
-              onAddWishlist: (productOrProductEntryId) {}
             );
           } else {
             throw MessageError(title: "Support wishlist is not valid");

@@ -16,6 +16,10 @@ import '../controllerstate/listitemcontrollerstate/productbundlelistitemcontroll
 import '../controllerstate/listitemcontrollerstate/productcategorylistitemcontrollerstate/circleproductcategorylistitemcontrollerstate/horizontal_circle_product_category_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/productcategorylistitemcontrollerstate/horizontal_product_category_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/productlistitemcontrollerstate/horizontal_product_list_item_controller_state.dart';
+import '../parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/cart_delegate_parameterized_entity_and_list_item_controllere_state_mediator_parameter.dart';
+import '../parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/compound_parameterized_entity_and_list_item_controller_state_mediator.dart';
+import '../parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
+import '../parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/wishlist_delegate_parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/wishlist_parameterized_entity_and_list_item_controller_state_mediator.dart';
 import 'parameterized_entity_and_list_item_controller_state_mediator.dart';
 
@@ -41,7 +45,25 @@ class HorizontalParameterizedEntityAndListItemControllerStateMediator extends Pa
     } else if (entity is ProductBrand) {
       return HorizontalCircleProductBrandListItemControllerState(productBrand: entity);
     } else if (entity is ProductBundle) {
-      if (parameter is WishlistParameterizedEntityAndListItemControllerStateMediatorParameter) {
+      List<ParameterizedEntityAndListItemControllerStateMediatorParameter> parameterList = [];
+      if (parameter is CompoundParameterizedEntityAndListItemControllerStateMediatorParameter) {
+        parameterList = parameter.parameterizedEntityAndListItemControllerStateMediatorParameterList;
+      } else if (
+        parameter is WishlistDelegateParameterizedEntityAndListItemControllerStateMediatorParameter
+        || parameter is CartDelegateParameterizedEntityAndListItemControllerStateMediatorParameter
+      ) {
+        parameterList.add(parameter);
+      }
+      if (parameterList.isNotEmpty) {
+        WishlistDelegateParameterizedEntityAndListItemControllerStateMediatorParameter? wishlistDelegateParameter;
+        CartDelegateParameterizedEntityAndListItemControllerStateMediatorParameter? cartDelegateParameter;
+        for (var iteratedParameter in parameterList) {
+          if (iteratedParameter is WishlistDelegateParameterizedEntityAndListItemControllerStateMediatorParameter) {
+            wishlistDelegateParameter = iteratedParameter;
+          } else if (iteratedParameter is CartDelegateParameterizedEntityAndListItemControllerStateMediatorParameter) {
+            cartDelegateParameter = iteratedParameter;
+          }
+        }
         return HorizontalProductBundleListItemControllerState(
           productBundle: entity,
           onAddWishlist: parameter.onAddWishlist,

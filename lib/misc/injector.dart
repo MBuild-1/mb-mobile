@@ -186,6 +186,7 @@ class _Injector {
     locator.registerLazySingleton<WishlistMainMenuSubControllerInjectionFactory>(
       () => WishlistMainMenuSubControllerInjectionFactory(
         getWishlistPagingUseCase: locator(),
+        addToCartUseCase: locator(),
         removeWishlistUseCase: locator()
       )
     );
