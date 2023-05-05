@@ -537,7 +537,7 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
     );
     return BackgroundAppBarScaffold(
       backgroundAppBarImage: _homeAppBarBackgroundAssetImage,
-      appBar: MainMenuSearchAppBar(value: 0.0, onSearchTextFieldTapped: () =>PageRestorationHelper.toCartPage(context)),
+      appBar: MainMenuSearchAppBar(value: 0.0),
       body: Expanded(
         child: ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
           pagingControllerState: _homeMainMenuSubListItemPagingControllerState,

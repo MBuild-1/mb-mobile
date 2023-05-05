@@ -132,7 +132,8 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Buy Directly": "Beli Langsung",
       "Remove Coupon": "Hapus Kupon",
       "Success add to wishlist": "Sukses tambahkan ke wishlist",
-      "Delivered to": "Dikirim ke"
+      "Delivered to": "Dikirim ke",
+      "Search in Masterbagasi": "Cari di Masterbagasi"
     }
   };
 

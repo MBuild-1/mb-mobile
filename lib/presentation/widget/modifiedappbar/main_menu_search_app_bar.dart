@@ -29,58 +29,37 @@ class MainMenuSearchAppBar extends SearchAppBar {
 
   @override
   TextFieldBuilder get textFieldBuilder {
-    return (context) => ModifiedTextField(
-      isError: false,
-      onEditingComplete: onSearch != null ? () {
-        if (searchTextEditingController != null) {
-          onSearch!(searchTextEditingController!.text);
-        }
-      } : null,
-      textInputAction: TextInputAction.done,
-      controller: searchTextEditingController,
-      focusNode: searchFocusNode,
-      decoration: searchTextFieldStyle(
-        context, DefaultInputDecoration(
-          hintText: "Search in MasterBagasi".tr,
-          filled: true,
-          fillColor: Colors.transparent,
-          prefixIcon: Icon(Icons.search, color: Colors.grey.shade600),
-          suffixIcon: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 7),
-                child: SvgPicture.asset(
-                  Constant.vectorNotification,
-                  color: Colors.grey.shade600,
-                ),
-              ),
-              const SizedBox(width: 10),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 7),
-                child: SvgPicture.asset(
-                  Constant.vectorInbox,
-                  color: Colors.grey.shade600,
-                ),
-              ),
-              const SizedBox(width: 10),
-              GestureDetector(
-                onTap: () {
-                  PageRestorationHelper.toCartPage(context);
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 7),
-                  child: SvgPicture.asset(
-                    Constant.vectorCart,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 15),
-            ]
+    return (context) => Container(
+      padding: const EdgeInsets.symmetric(
+        vertical: 8.0,
+        horizontal: 12.0
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.search, color: Colors.grey.shade600),
+          const SizedBox(width: 10),
+          Text("Search in Masterbagasi".tr, style: TextStyle(color: Colors.grey.shade600)),
+          const Spacer(),
+          SvgPicture.asset(
+            Constant.vectorNotification,
+            color: Colors.grey.shade600,
           ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0)
-        )
+          const SizedBox(width: 10),
+          SvgPicture.asset(
+            Constant.vectorInbox,
+            color: Colors.grey.shade600,
+          ),
+          const SizedBox(width: 10),
+          TapArea(
+            onTap: () {
+              PageRestorationHelper.toCartPage(context);
+            },
+            child: SvgPicture.asset(
+              Constant.vectorCart,
+              color: Colors.grey.shade600,
+            ),
+          ),
+        ]
       )
     );
   }

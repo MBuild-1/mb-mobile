@@ -48,23 +48,27 @@ abstract class SearchAppBar extends ModifiedAppBar {
   ActionTitleBuilder? get actionTitleBuilder => null;
 
   TextFieldBuilder get textFieldBuilder {
-    return (context) => ModifiedTextField(
-      isError: false,
-      onEditingComplete: onSearch != null ? () {
-        if (searchTextEditingController != null) {
-          onSearch!(searchTextEditingController!.text);
-        }
-      } : null,
-      textInputAction: TextInputAction.done,
-      controller: searchTextEditingController,
-      focusNode: searchFocusNode,
-      decoration: searchTextFieldStyle(
-        context, DefaultInputDecoration(
-          hintText: "${"Search in MasterBagasi".tr}?",
-          filled: true,
-          fillColor: Colors.transparent,
-          prefixIcon: const Icon(Icons.search),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0)
+    return (context) => IgnorePointer(
+      child: ExcludeFocus(
+        child: ModifiedTextField(
+          isError: false,
+          onEditingComplete: onSearch != null ? () {
+            if (searchTextEditingController != null) {
+              onSearch!(searchTextEditingController!.text);
+            }
+          } : null,
+          textInputAction: TextInputAction.done,
+          controller: searchTextEditingController,
+          focusNode: searchFocusNode,
+          decoration: searchTextFieldStyle(
+            context, DefaultInputDecoration(
+              hintText: "${"Search in MasterBagasi".tr}?",
+              filled: true,
+              fillColor: Colors.transparent,
+              prefixIcon: const Icon(Icons.search),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0)
+            )
+          )
         )
       )
     );
@@ -92,11 +96,7 @@ abstract class SearchAppBar extends ModifiedAppBar {
                   return InkWell(
                     borderRadius: Constant.inputBorderRadius,
                     onTap: effectiveOnSearchTextFieldTapped,
-                    child: IgnorePointer(
-                      child: ExcludeFocus(
-                        child: textFieldBuilder(context)
-                      )
-                    )
+                    child: textFieldBuilder(context)
                   );
                 },
               )
