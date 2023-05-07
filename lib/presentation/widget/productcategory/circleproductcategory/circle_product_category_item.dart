@@ -3,6 +3,7 @@ import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../../../../domain/entity/product/productcategory/product_category.dart';
 import '../../../../misc/page_restoration_helper.dart';
+import '../../../page/product_entry_page.dart';
 import '../../modifiedcachednetworkimage/circle_product_modified_cached_network_image.dart';
 import '../../tap_area.dart';
 
@@ -22,7 +23,14 @@ abstract class CircleProductCategoryItem extends StatelessWidget {
     return SizedBox(
       width: itemWidth,
       child: TapArea(
-        onTap: () => PageRestorationHelper.toProductCategoryDetailPage(context, productCategory.id),
+        onTap: () => PageRestorationHelper.toProductEntryPage(
+          context,
+          ProductEntryPageParameter(
+            productEntryParameterMap: {
+              "category": productCategory.slug
+            }
+          )
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
