@@ -50,6 +50,18 @@ extension AddressEntityMappingExt on ResponseWrapper {
       ).toList()
     );
   }
+
+  List<Country> mapFromResponseToCountryList() {
+    return response.map<Country>((countryResponse) => ResponseWrapper(countryResponse).mapFromResponseToCountry()).toList();
+  }
+
+  PagingDataResult<Country> mapFromResponseToCountryPaging() {
+    return ResponseWrapper(response).mapFromResponseToPagingDataResult(
+      (dataResponse) => dataResponse.map<Country>(
+        (countryResponse) => ResponseWrapper(countryResponse).mapFromResponseToCountry()
+      ).toList()
+    );
+  }
 }
 
 extension AddressDetailEntityMappingExt on ResponseWrapper {

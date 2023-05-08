@@ -1,6 +1,9 @@
 import '../../domain/entity/address/address.dart';
 import '../../domain/entity/address/address_list_parameter.dart';
 import '../../domain/entity/address/address_paging_parameter.dart';
+import '../../domain/entity/address/country.dart';
+import '../../domain/entity/address/country_list_parameter.dart';
+import '../../domain/entity/address/country_paging_parameter.dart';
 import '../../domain/entity/address/current_selected_address_parameter.dart';
 import '../../domain/entity/address/current_selected_address_response.dart';
 import '../../domain/entity/address/update_current_selected_address_parameter.dart';
@@ -36,5 +39,15 @@ class DefaultAddressRepository implements AddressRepository {
   @override
   FutureProcessing<LoadDataResult<UpdateCurrentSelectedAddressResponse>> updateCurrentSelectedAddress(UpdateCurrentSelectedAddressParameter updateCurrentSelectedAddressParameter) {
     return addressDataSource.updateCurrentSelectedAddress(updateCurrentSelectedAddressParameter).mapToLoadDataResult<UpdateCurrentSelectedAddressResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<List<Country>>> countryList(CountryListParameter countryListParameter) {
+    return addressDataSource.countryList(countryListParameter).mapToLoadDataResult<List<Country>>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<PagingDataResult<Country>>> countryPaging(CountryPagingParameter countryPagingParameter) {
+    return addressDataSource.countryPaging(countryPagingParameter).mapToLoadDataResult<PagingDataResult<Country>>();
   }
 }

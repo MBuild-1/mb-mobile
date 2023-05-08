@@ -35,6 +35,7 @@ import '../../../../misc/controllerstate/listitemcontrollerstate/title_and_descr
 import '../../../../misc/controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/widget_substitution_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/paging_controller_state.dart';
+import '../../../../misc/dialog_helper.dart';
 import '../../../../misc/entityandlistitemcontrollerstatemediator/horizontal_component_entity_parameterized_entity_and_list_item_controller_state_mediator.dart';
 import '../../../../misc/error/message_error.dart';
 import '../../../../misc/errorprovider/error_provider.dart';
@@ -60,6 +61,7 @@ import '../../../widget/modifiedcachednetworkimage/transparent_banner_modified_c
 import '../../../widget/tap_area.dart';
 import '../../../widget/titleanddescriptionitem/title_and_description_item.dart';
 import '../../getx_page.dart';
+import '../../modaldialogpage/check_rates_for_various_countries_modal_dialog_page.dart';
 
 class HomeMainMenuSubPage extends DefaultGetxPage {
   late final ControllerMember<HomeMainMenuSubController> _homeMainMenuSubController = ControllerMember<HomeMainMenuSubController>().addToControllerManager(controllerManager);
@@ -423,10 +425,15 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
                 WidgetSubstitutionListItemControllerState(
                   widgetSubstitution: (BuildContext context, int index) => Material(
                     child: InkWell(
-                      onTap: () {},
+                      onTap: () async {
+                        DialogHelper.showModalDialogPage<String, String>(
+                          context: context,
+                          modalDialogPageBuilder: (context, parameter) => CheckRatesForVariousCountriesModalDialogPage(),
+                        );
+                      },
                       child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem, vertical: 10),
-                        child: const Align(child: Text("Cek Tarif ke Negara Lainnya"), alignment: Alignment.topLeft)
+                        child: Align(child: Text("Check Rates to Other Countries".tr), alignment: Alignment.topLeft)
                       )
                     )
                   )

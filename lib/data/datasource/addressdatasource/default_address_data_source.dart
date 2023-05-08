@@ -7,6 +7,9 @@ import '../../../domain/dummy/addressdummy/address_dummy.dart';
 import '../../../domain/entity/address/address.dart';
 import '../../../domain/entity/address/address_list_parameter.dart';
 import '../../../domain/entity/address/address_paging_parameter.dart';
+import '../../../domain/entity/address/country.dart';
+import '../../../domain/entity/address/country_list_parameter.dart';
+import '../../../domain/entity/address/country_paging_parameter.dart';
 import '../../../domain/entity/address/current_selected_address_parameter.dart';
 import '../../../domain/entity/address/current_selected_address_response.dart';
 import '../../../domain/entity/address/update_current_selected_address_parameter.dart';
@@ -66,6 +69,27 @@ class DefaultAddressDataSource implements AddressDataSource {
         .map<UpdateCurrentSelectedAddressResponse>(
           onMap: (value) => value.wrapResponse().mapFromResponseToUpdateCurrentSelectedAddressResponse()
         );
+    });
+  }
+
+  @override
+  FutureProcessing<List<Country>> countryList(CountryListParameter countryListParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.get("/country", cancelToken: cancelToken)
+        .map<List<Country>>(
+          onMap: (value) => value.wrapResponse().mapFromResponseToCountryList()
+        );
+    });
+  }
+
+  @override
+  FutureProcessing<PagingDataResult<Country>> countryPaging(CountryPagingParameter countryPagingParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      String pageParameterPath = "/?pageNumber=${countryPagingParameter.itemEachPageCount}&page=${countryPagingParameter.page}";
+      return dio.get("/country$pageParameterPath", cancelToken: cancelToken)
+        .map<PagingDataResult<Country>>(
+          onMap: (value) => value.wrapResponse().mapFromResponseToCountryPaging()
+      );
     });
   }
 }

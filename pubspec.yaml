@@ -81,6 +81,7 @@ dependencies:
   add_2_calendar: ^2.1.2
   encrypt: ^5.0.1
   tuple: ^2.0.1
+  flag: ^6.0.0
 
   url_launcher:
   flutter_localizations:

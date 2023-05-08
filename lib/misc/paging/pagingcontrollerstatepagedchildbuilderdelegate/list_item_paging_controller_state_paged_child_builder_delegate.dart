@@ -23,6 +23,7 @@ import '../../../presentation/widget/cart/shortcart/horizontal_short_cart_item.d
 import '../../../presentation/widget/cart/shortcart/vertical_short_cart_item.dart';
 import '../../../presentation/widget/cart/vertical_cart_item.dart';
 import '../../../presentation/widget/colorful_chip_tab_bar.dart';
+import '../../../presentation/widget/country/vertical_country_item.dart';
 import '../../../presentation/widget/coupon/horizontal_coupon_item.dart';
 import '../../../presentation/widget/coupon/vertical_coupon_item.dart';
 import '../../../presentation/widget/default_video_carousel_list_item.dart';
@@ -86,6 +87,8 @@ import '../../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstat
 import '../../controllerstate/listitemcontrollerstate/colorful_chip_tab_bar_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/colorful_divider_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/column_container_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/countrylistitemcontrollerstate/country_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/countrylistitemcontrollerstate/vertical_country_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/couponlistitemcontrollerstate/coupon_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/couponlistitemcontrollerstate/horizontal_coupon_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/couponlistitemcontrollerstate/vertical_coupon_list_item_controller_state.dart';
@@ -824,6 +827,16 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
         return VerticalAddressItem(
           address: item.address,
           onSelectAddress: item.onSelectAddress,
+        );
+      } else {
+        return Container();
+      }
+    } else if (item is CountryListItemControllerState) {
+      if (item is VerticalCountryListItemControllerState) {
+        return VerticalCountryItem(
+          country: item.country,
+          isSelected: item.isSelected,
+          onSelectCountry: item.onSelectCountry
         );
       } else {
         return Container();
