@@ -27,19 +27,18 @@ abstract class CountryItem extends StatelessWidget {
       width: itemWidth,
       child: Material(
         color: !isSelected ? Colors.transparent : Constant.colorLightOrange,
-        shape: RoundedRectangleBorder(
-          side: BorderSide(
-            color: !isSelected ? Colors.grey : Constant.colorMain,
-          ),
-          borderRadius: BorderRadius.circular(16.0),
-        ),
         child: InkWell(
           onTap: onSelectCountry != null ? () => onSelectCountry!(country) : null,
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
               children: [
-                Flag.fromString(country.code),
+                SizedBox(
+                  width: 16,
+                  height: 12,
+                  child: Flag.fromString(country.code),
+                ),
+                const SizedBox(width: 12),
                 Text(country.name, style: const TextStyle(fontWeight: FontWeight.bold)),
               ]
             )

@@ -135,7 +135,14 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Delivered to": "Dikirim ke",
       "Search in Masterbagasi": "Cari di Masterbagasi",
       "Our shipping price list": "Daftar harga pengiriman kami",
-      "Not Selected": "Belum Dipilih"
+      "Not Selected": "Belum Dipilih",
+      "Select Country": "Pilih Negara",
+      "Choose Country": "Pilih Negara",
+      "The price of air delivery is listed /Kg": "Harga Pengiriman Udara Tertera /Kg",
+      "Berat": "Weight",
+      "Harga": "Price",
+      "Min": "Min",
+      "Max": "Maks"
     }
   };
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 
@@ -16,7 +17,9 @@ import '../../../misc/paging/modified_paging_controller.dart';
 import '../../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../../misc/paging/pagingresult/paging_result.dart';
+import '../../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../../widget/modified_paged_list_view.dart';
+import '../../widget/modifiedappbar/modified_app_bar.dart';
 import 'modal_dialog_page.dart';
 
 class SelectCountriesModalDialogPage extends ModalDialogPage<SelectCountriesModalDialogController> {
@@ -84,6 +87,7 @@ class _StatefulCheckRatesForVariousCountriesControllerMediatorWidgetState extend
       onPageKeyNext: (pageKey) => pageKey + 1
     );
     _selectCountriesListItemPagingControllerState.isPagingControllerExist = true;
+    _selectedCountry = widget.selectedCountry;
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _selectCountriesListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? listItemControllerStateList) async {
@@ -124,12 +128,40 @@ class _StatefulCheckRatesForVariousCountriesControllerMediatorWidgetState extend
 
   @override
   Widget build(BuildContext context) {
-    return ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
-      pagingControllerState: _selectCountriesListItemPagingControllerState,
-      onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
-        pagingControllerState: pagingControllerState!
-      ),
-      pullToRefresh: true
+    return Column(
+      children: [
+        ModifiedAppBar(
+          titleInterceptor: (context, title) => Row(
+            children: [
+              Text("Select Country".tr),
+            ],
+          ),
+        ),
+        Expanded(
+          child: ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
+            pagingControllerState: _selectCountriesListItemPagingControllerState,
+            onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
+              pagingControllerState: pagingControllerState!
+            ),
+            pullToRefresh: true
+          ),
+        ),
+        if (_selectedCountry != null)
+          Container(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedOutlineGradientButton(
+                  onPressed: () => Get.back(result: _selectedCountry),
+                  text: "Choose Country".tr,
+                  outlineGradientButtonType: OutlineGradientButtonType.solid,
+                  outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
+                )
+              ]
+            ),
+          )
+      ]
     );
   }
 }

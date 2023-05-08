@@ -6,6 +6,7 @@ import '../../itemtypelistsubinterceptor/carousel_item_type_list_sub_interceptor
 import '../../itemtypelistsubinterceptor/cart_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/column_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/compound_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/country_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/coupon_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/decorated_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/delivery_cart_item_type_list_sub_interceptor.dart';
@@ -162,6 +163,11 @@ class ListItemControllerStateItemTypeInterceptorChecker extends ItemTypeListInte
       itemSpacing: itemSpacing
     ),
     CouponItemTypeListSubInterceptor(
+      padding: padding,
+      itemSpacing: itemSpacing,
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
+    CountryItemTypeListSubInterceptor(
       padding: padding,
       itemSpacing: itemSpacing,
       listItemControllerStateItemTypeInterceptorChecker: this

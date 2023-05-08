@@ -23,8 +23,8 @@ extension CartDetailEntityMappingExt on ResponseWrapper {
     return Cargo(
       id: response["id"],
       zoneId: response["zone_id"],
-      minWeight: response["min_weight"],
-      maxWeight: response["max_weight"],
+      minWeight: ResponseWrapper(response["min_weight"]).mapFromResponseToDouble()!,
+      maxWeight: ResponseWrapper(response["max_weight"]).mapFromResponseToDouble()!,
       price: response["price"],
       priceTogether: response["price_together"],
     );
