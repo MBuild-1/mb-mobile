@@ -538,7 +538,6 @@ extension DeliveryPageParameterExt on DeliveryPageParameter {
 extension DeliveryPageParameterStringExt on String {
   DeliveryPageParameter toDeliveryPageParameter() {
     dynamic result = StringUtil.decodeBase64StringToJson(this);
-    print("asdsasdsa: $result");
     return DeliveryPageParameter(
       selectedCartIdList: (result['selected_cart_id'] as List<dynamic>).map<List<String>>(
         (cartIdString) => (cartIdString as List<dynamic>).map<String>(

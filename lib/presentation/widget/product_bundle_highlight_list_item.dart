@@ -6,5 +6,7 @@ class ProductBundleHighlightListItem extends ProductBundleItem {
     required super.productBundle,
     super.onAddWishlist,
     super.onRemoveWishlist,
+    super.onAddCart,
+    super.onRemoveCart
   });
 }

@@ -33,6 +33,7 @@ import '../../../domain/usecase/get_product_viral_list_use_case.dart';
 import '../../../domain/usecase/get_shipping_price_contents_banner_use_case.dart';
 import '../../../domain/usecase/get_snack_for_lying_around_list_use_case.dart';
 import '../../../misc/constant.dart';
+import '../../../misc/controllercontentdelegate/wishlist_and_cart_controller_content_delegate.dart';
 import '../../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../../misc/error/message_error.dart';
 import '../../../misc/getextended/get_extended.dart';
@@ -57,6 +58,7 @@ class HomeMainMenuSubController extends BaseGetxController {
   final GetShippingPriceContentsBannerUseCase getShippingPriceContentsBannerUseCase;
   final AddWishlistUseCase addWishlistUseCase;
   final GetCurrentSelectedAddressUseCase getCurrentSelectedAddressUseCase;
+  final WishlistAndCartControllerContentDelegate wishlistAndCartControllerContentDelegate;
   HomeMainMenuDelegate? _homeMainMenuDelegate;
 
   HomeMainMenuSubController(
@@ -74,8 +76,13 @@ class HomeMainMenuSubController extends BaseGetxController {
     this.getKitchenContentsBannerUseCase,
     this.getHomepageContentsBannerUseCase,
     this.getShippingPriceContentsBannerUseCase,
-    this.getCurrentSelectedAddressUseCase
-  ) : super(controllerManager, initLater: true);
+    this.getCurrentSelectedAddressUseCase,
+    this.wishlistAndCartControllerContentDelegate
+  ) : super(controllerManager, initLater: true) {
+    wishlistAndCartControllerContentDelegate.setApiRequestManager(
+      () => apiRequestManager
+    );
+  }
 
   HomeMainMenuComponentEntity getHomepageBanner() {
     return DynamicItemCarouselHomeMainMenuComponentEntity(
@@ -556,6 +563,7 @@ class HomeMainMenuSubControllerInjectionFactory {
   final GetShippingPriceContentsBannerUseCase getShippingPriceContentsBannerUseCase;
   final AddWishlistUseCase addWishlistUseCase;
   final GetCurrentSelectedAddressUseCase getCurrentSelectedAddressUseCase;
+  final WishlistAndCartControllerContentDelegate wishlistAndCartControllerContentDelegate;
 
   HomeMainMenuSubControllerInjectionFactory({
     required this.getProductBrandListUseCase,
@@ -571,7 +579,8 @@ class HomeMainMenuSubControllerInjectionFactory {
     required this.getHomepageContentsBannerUseCase,
     required this.getShippingPriceContentsBannerUseCase,
     required this.addWishlistUseCase,
-    required this.getCurrentSelectedAddressUseCase
+    required this.getCurrentSelectedAddressUseCase,
+    required this.wishlistAndCartControllerContentDelegate
   });
 
   HomeMainMenuSubController inject(ControllerManager controllerManager, String pageName) {
@@ -591,7 +600,8 @@ class HomeMainMenuSubControllerInjectionFactory {
         getKitchenContentsBannerUseCase,
         getHomepageContentsBannerUseCase,
         getShippingPriceContentsBannerUseCase,
-        getCurrentSelectedAddressUseCase
+        getCurrentSelectedAddressUseCase,
+        wishlistAndCartControllerContentDelegate
       ),
       tag: pageName
     );

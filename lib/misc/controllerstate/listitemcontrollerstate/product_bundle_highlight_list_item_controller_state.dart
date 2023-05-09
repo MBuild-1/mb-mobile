@@ -4,12 +4,16 @@ import 'list_item_controller_state.dart';
 
 class ProductBundleHighlightListItemControllerState extends ListItemControllerState {
   ProductBundle productBundle;
-  OnAddWishlistWithProductBundleId? onAddWishlist;
-  OnRemoveWishlistWithProductBundleId? onRemoveWishlist;
+  OnAddWishlistWithProductBundle? onAddWishlist;
+  OnRemoveWishlistWithProductBundle? onRemoveWishlist;
+  OnAddWishlistWithProductBundle? onAddCart;
+  OnRemoveWishlistWithProductBundle? onRemoveCart;
 
   ProductBundleHighlightListItemControllerState({
     required this.productBundle,
     this.onAddWishlist,
-    this.onRemoveWishlist
+    this.onRemoveWishlist,
+    this.onAddCart,
+    this.onRemoveCart
   });
 }

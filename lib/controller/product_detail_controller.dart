@@ -29,6 +29,7 @@ import '../domain/usecase/get_product_detail_other_in_this_category_product_entr
 import '../domain/usecase/get_product_detail_other_interested_product_brand_list_use_case.dart';
 import '../domain/usecase/get_product_detail_use_case.dart';
 import '../misc/constant.dart';
+import '../misc/controllercontentdelegate/wishlist_and_cart_controller_content_delegate.dart';
 import '../misc/error/message_error.dart';
 import '../misc/load_data_result.dart';
 import '../misc/multi_language_string.dart';
@@ -53,6 +54,7 @@ class ProductDetailController extends BaseGetxController {
   final GetProductDetailFromYourSearchProductEntryListUseCase getProductDetailFromYourSearchProductEntryListUseCase;
   final GetProductDetailOtherInterestedProductBrandListUseCase getProductDetailOtherInterestedProductBrandListUseCase;
   final AddToCartUseCase addToCartUseCase;
+  final WishlistAndCartControllerContentDelegate wishlistAndCartControllerContentDelegate;
   ProductDetailMainMenuDelegate? _productDetailMainMenuDelegate;
 
   ProductDetailController(
@@ -64,8 +66,11 @@ class ProductDetailController extends BaseGetxController {
     this.getProductDetailOtherInThisCategoryProductEntryListUseCase,
     this.getProductDetailFromYourSearchProductEntryListUseCase,
     this.getProductDetailOtherInterestedProductBrandListUseCase,
-    this.addToCartUseCase
-  );
+    this.addToCartUseCase,
+    this.wishlistAndCartControllerContentDelegate
+  ) {
+    wishlistAndCartControllerContentDelegate.setApiRequestManager(() => apiRequestManager);
+  }
 
   Future<LoadDataResult<ProductDetail>> getProductDetail(ProductDetailParameter productDetailParameter) {
     return getProductDetailUseCase.execute(productDetailParameter).future(

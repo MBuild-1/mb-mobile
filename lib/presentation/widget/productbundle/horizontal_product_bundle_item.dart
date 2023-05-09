@@ -7,12 +7,16 @@ class HorizontalProductBundleItem extends ProductBundleItem {
   const HorizontalProductBundleItem({
     Key? key,
     required ProductBundle productBundle,
-    OnAddWishlistWithProductBundleId? onAddWishlist,
-    OnRemoveWishlistWithProductBundleId? onRemoveWishlist,
+    OnAddWishlistWithProductBundle? onAddWishlist,
+    OnRemoveWishlistWithProductBundle? onRemoveWishlist,
+    OnAddCartWithProductBundle? onAddCart,
+    OnRemoveCartWithProductBundle? onRemoveCart
   }) : super(
     key: key,
     productBundle: productBundle,
     onAddWishlist: onAddWishlist,
-    onRemoveWishlist: onRemoveWishlist
+    onRemoveWishlist: onRemoveWishlist,
+    onAddCart: onAddCart,
+    onRemoveCart: onRemoveCart
   );
 }

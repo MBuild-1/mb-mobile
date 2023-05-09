@@ -1,20 +1,14 @@
+import 'package:flutter/material.dart';
+
 import '../typedef.dart';
 import 'parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
 
 class WishlistDelegateParameterizedEntityAndListItemControllerStateMediatorParameter extends ParameterizedEntityAndListItemControllerStateMediatorParameter {
-  OnShowAddToWishlistRequestProcessLoadingCallback onShowAddToWishlistRequestProcessLoadingCallback;
-  OnAddToWishlistRequestProcessSuccessCallback onAddToWishlistRequestProcessSuccessCallback;
-  OnShowAddToWishlistRequestProcessFailedCallback onShowAddToWishlistRequestProcessFailedCallback;
-  OnShowRemoveFromWishlistRequestProcessLoadingCallback onRemoveAddToWishlistRequestProcessLoadingCallback;
-  OnRemoveFromWishlistRequestProcessSuccessCallback onRemoveToWishlistRequestProcessSuccessCallback;
-  OnRemoveFromToWishlistRequestProcessFailedCallback onRemoveAddToWishlistRequestProcessFailedCallback;
+  OnAddToWishlist? onAddToWishlist;
+  OnRemoveFromWishlist? onRemoveFromWishlist;
 
   WishlistDelegateParameterizedEntityAndListItemControllerStateMediatorParameter({
-    required this.onShowAddToWishlistRequestProcessLoadingCallback,
-    required this.onAddToWishlistRequestProcessSuccessCallback,
-    required this.onShowAddToWishlistRequestProcessFailedCallback,
-    required this.onRemoveAddToWishlistRequestProcessLoadingCallback,
-    required this.onRemoveToWishlistRequestProcessSuccessCallback,
-    required this.onRemoveAddToWishlistRequestProcessFailedCallback,
+    this.onAddToWishlist,
+    this.onRemoveFromWishlist,
   });
 }

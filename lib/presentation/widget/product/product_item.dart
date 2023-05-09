@@ -13,15 +13,20 @@ import '../button/custombutton/sized_outline_gradient_button.dart';
 import '../modified_divider.dart';
 import '../modified_vertical_divider.dart';
 import '../modifiedcachednetworkimage/product_modified_cached_network_image.dart';
+import '../productbundle/product_bundle_item.dart';
 import '../rating_indicator.dart';
 
-typedef OnAddWishlistWithProductId = void Function(String);
-typedef OnRemoveWishlistWithProductId = void Function(String);
+typedef OnAddWishlistWithProductAppearanceData = void Function(ProductAppearanceData);
+typedef OnRemoveWishlistWithProductAppearanceData = void Function(ProductAppearanceData);
+typedef OnAddCartWithProductAppearanceData = void Function(ProductAppearanceData);
+typedef OnRemoveCartWithProductAppearanceData = void Function(ProductAppearanceData);
 
 abstract class ProductItem extends StatelessWidget {
   final ProductAppearanceData productAppearanceData;
-  final OnAddWishlistWithProductId? onAddWishlist;
-  final OnRemoveWishlistWithProductId? onRemoveWishlist;
+  final OnAddWishlistWithProductAppearanceData? onAddWishlist;
+  final OnRemoveWishlistWithProductAppearanceData? onRemoveWishlist;
+  final OnAddCartWithProductAppearanceData? onAddCart;
+  final OnRemoveCartWithProductAppearanceData? onRemoveCart;
 
   @protected
   String get priceString => _priceString(productAppearanceData.price.toDouble());
@@ -68,7 +73,9 @@ abstract class ProductItem extends StatelessWidget {
     Key? key,
     required this.productAppearanceData,
     this.onAddWishlist,
-    this.onRemoveWishlist
+    this.onRemoveWishlist,
+    this.onAddCart,
+    this.onRemoveCart
   }) : super(key: key);
 
   String _priceString(double price) {
@@ -88,12 +95,12 @@ abstract class ProductItem extends StatelessWidget {
     );
     String weight = "${productAppearanceData.weight.toString()} Kg";
     String soldCount = "No Sold Count".tr;
-    void onWishlist(void Function(String)? onWishlistCallback) {
+    void onWishlist(void Function(ProductAppearanceData)? onWishlistCallback) {
       if (onWishlistCallback != null) {
         if (productAppearanceData is ProductEntryAppearanceData) {
-          onWishlistCallback((productAppearanceData as ProductEntryAppearanceData).productEntryId);
+          onWishlistCallback((productAppearanceData as ProductEntryAppearanceData));
         } else {
-          onWishlistCallback(productAppearanceData.productId);
+          onWishlistCallback(productAppearanceData);
         }
       }
     }
@@ -185,7 +192,7 @@ abstract class ProductItem extends StatelessWidget {
                             SizedBox(width: 1.5.w),
                             Expanded(
                               child: SizedOutlineGradientButton(
-                                onPressed: () {},
+                                onPressed: onAddCart != null ? () => onAddCart!(productAppearanceData) : null,
                                 text: "+ ${"Cart".tr}",
                                 outlineGradientButtonType: OutlineGradientButtonType.outline,
                                 outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,

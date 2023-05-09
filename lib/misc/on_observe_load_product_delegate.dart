@@ -9,6 +9,7 @@ import '../domain/entity/product/productbrand/product_brand.dart';
 import '../domain/entity/product/productbundle/product_bundle.dart';
 import '../domain/entity/product/productcategory/product_category.dart';
 import '../domain/entity/product/productentry/product_entry.dart';
+import '../domain/entity/wishlist/add_wishlist_response.dart';
 import '../presentation/widget/titleanddescriptionitem/title_and_description_item.dart';
 import 'carouselbackground/carousel_background.dart';
 import 'constant.dart';
@@ -16,6 +17,7 @@ import 'controllerstate/listitemcontrollerstate/carousel_list_item_controller_st
 import 'controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import 'entityandlistitemcontrollerstatemediator/horizontal_entity_and_list_item_controller_state_mediator.dart';
 import 'injector.dart';
+import 'load_data_result.dart';
 import 'multi_language_string.dart';
 import 'parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/carousel_background_parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
 import 'parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/cart_delegate_parameterized_entity_and_list_item_controllere_state_mediator_parameter.dart';
@@ -49,8 +51,6 @@ class OnObserveLoadProductDelegateFactory {
   ParameterizedEntityAndListItemControllerStateMediatorParameter Function()? onInjectLoadNewsCarouselParameterizedEntity;
   ParameterizedEntityAndListItemControllerStateMediatorParameter Function()? onInjectLoadCouponCarouselParameterizedEntity;
   ParameterizedEntityAndListItemControllerStateMediatorParameter Function()? onInjectLoadCartCarouselParameterizedEntity;
-  CartDelegateParameterizedEntityAndListItemControllerStateMediatorParameter Function()? onInjectLoadCartDelegateParameterizedEntity;
-  WishlistDelegateParameterizedEntityAndListItemControllerStateMediatorParameter Function()? onInjectLoadWishlistDelegateParameterizedEntity;
 
   OnObserveLoadProductDelegate generateOnObserveLoadProductDelegate() {
     return OnObserveLoadProductDelegate(
@@ -303,14 +303,14 @@ class OnObserveLoadProductDelegateFactory {
         );
       },
       onShowAddToWishlistRequestProcessLoadingCallback: () async {},
-      onAddToWishlistRequestProcessSuccessCallback: (wishlist) async {},
+      onAddToWishlistRequestProcessSuccessCallback: () async {},
       onShowAddToWishlistRequestProcessFailedCallback: (e) async {},
       onRemoveAddToWishlistRequestProcessLoadingCallback: () async {},
       onRemoveToWishlistRequestProcessSuccessCallback: (wishlist) async {},
       onRemoveAddToWishlistRequestProcessFailedCallback: (e) async {},
       onShowAddCartRequestProcessLoadingCallback: () async {},
-      onAddCartRequestProcessSuccessCallback: (wishlist) async {},
-      onShowAddCartRequestProcessFailedCallback: (e) async {}
+      onAddCartRequestProcessSuccessCallback: () async {},
+      onShowAddCartRequestProcessFailedCallback: (e) async {},
     );
   }
 }
@@ -337,7 +337,7 @@ class OnObserveLoadProductDelegate {
   OnShowAddToWishlistRequestProcessFailedCallback onShowAddToWishlistRequestProcessFailedCallback;
   OnShowRemoveFromWishlistRequestProcessLoadingCallback onRemoveAddToWishlistRequestProcessLoadingCallback;
   OnRemoveFromWishlistRequestProcessSuccessCallback onRemoveToWishlistRequestProcessSuccessCallback;
-  OnRemoveFromToWishlistRequestProcessFailedCallback onRemoveAddToWishlistRequestProcessFailedCallback;
+  OnShowRemoveFromWishlistRequestProcessFailedCallback onRemoveAddToWishlistRequestProcessFailedCallback;
   OnShowAddCartRequestProcessLoadingCallback onShowAddCartRequestProcessLoadingCallback;
   OnAddCartRequestProcessSuccessCallback onAddCartRequestProcessSuccessCallback;
   OnShowAddCartRequestProcessFailedCallback onShowAddCartRequestProcessFailedCallback;

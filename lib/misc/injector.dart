@@ -130,6 +130,7 @@ import 'additionalloadingindicatorchecker/product_category_detail_additional_pag
 import 'additionalloadingindicatorchecker/product_detail_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/take_friend_cart_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/wishlist_sub_additional_paging_result_parameter_checker.dart';
+import 'controllercontentdelegate/wishlist_and_cart_controller_content_delegate.dart';
 import 'defaultloaddataresultwidget/default_load_data_result_widget.dart';
 import 'defaultloaddataresultwidget/main_default_load_data_result_widget.dart';
 import 'entityandlistitemcontrollerstatemediator/horizontal_component_entity_parameterized_entity_and_list_item_controller_state_mediator.dart';
@@ -167,7 +168,8 @@ class _Injector {
         addWishlistUseCase: locator(),
         getCurrentSelectedAddressUseCase: locator(),
         getHomepageContentsBannerUseCase: locator(),
-        getShippingPriceContentsBannerUseCase: locator()
+        getShippingPriceContentsBannerUseCase: locator(),
+        wishlistAndCartControllerContentDelegate: locator()
       )
     );
     locator.registerLazySingleton<FeedMainMenuSubControllerInjectionFactory>(
@@ -187,7 +189,8 @@ class _Injector {
       () => WishlistMainMenuSubControllerInjectionFactory(
         getWishlistPagingUseCase: locator(),
         addToCartUseCase: locator(),
-        removeWishlistUseCase: locator()
+        removeWishlistUseCase: locator(),
+        wishlistAndCartControllerContentDelegate: locator()
       )
     );
     locator.registerLazySingleton<MenuMainMenuSubControllerInjectionFactory>(
@@ -323,6 +326,20 @@ class _Injector {
     );
     locator.registerFactory<TakeFriendCartAdditionalPagingResultParameterChecker>(
       () => TakeFriendCartAdditionalPagingResultParameterChecker()
+    );
+
+    // Controller Content Delegate
+    locator.registerFactory<WishlistAndCartControllerContentDelegate>(
+      () => WishlistAndCartControllerContentDelegate(
+        addWishlistUseCase: locator(),
+        removeWishlistUseCase: locator(),
+        addToCartUseCase: locator()
+      )
+    );
+
+    // Controller Delegate Factory
+    locator.registerLazySingleton<WishlistAndCartDelegateFactory>(
+      () => WishlistAndCartDelegateFactory()
     );
 
     // Default Load Data Result Widget

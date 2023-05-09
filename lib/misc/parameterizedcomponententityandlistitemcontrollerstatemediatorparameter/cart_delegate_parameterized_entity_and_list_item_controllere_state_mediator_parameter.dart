@@ -1,14 +1,14 @@
+import 'package:flutter/material.dart';
+
 import '../typedef.dart';
 import 'parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
 
 class CartDelegateParameterizedEntityAndListItemControllerStateMediatorParameter extends ParameterizedEntityAndListItemControllerStateMediatorParameter {
-  OnShowAddCartRequestProcessLoadingCallback onShowAddCartRequestProcessLoadingCallback;
-  OnAddCartRequestProcessSuccessCallback onAddCartRequestProcessSuccessCallback;
-  OnShowAddCartRequestProcessFailedCallback onShowAddCartRequestProcessFailedCallback;
+  OnAddCart? onAddCart;
+  OnRemoveCart? onRemoveCart;
 
   CartDelegateParameterizedEntityAndListItemControllerStateMediatorParameter({
-    required this.onShowAddCartRequestProcessLoadingCallback,
-    required this.onAddCartRequestProcessSuccessCallback,
-    required this.onShowAddCartRequestProcessFailedCallback
+    this.onAddCart,
+    this.onRemoveCart
   });
 }

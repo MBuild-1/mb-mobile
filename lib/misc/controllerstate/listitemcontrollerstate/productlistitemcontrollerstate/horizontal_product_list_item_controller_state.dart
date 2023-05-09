@@ -6,11 +6,15 @@ import 'product_list_item_controller_state.dart';
 class HorizontalProductListItemControllerState extends ProductListItemControllerState {
   HorizontalProductListItemControllerState({
     required ProductAppearanceData productAppearanceData,
-    OnAddWishlistWithProductId? onAddWishlist,
-    OnRemoveWishlistWithProductId? onRemoveWishlist
+    OnAddWishlistWithProductAppearanceData? onAddWishlist,
+    OnRemoveWishlistWithProductAppearanceData? onRemoveWishlist,
+    OnAddCartWithProductAppearanceData? onAddCart,
+    OnRemoveCartWithProductAppearanceData? onRemoveCart
   }) : super(
     productAppearanceData: productAppearanceData,
     onAddWishlist: onAddWishlist,
-    onRemoveWishlist: onRemoveWishlist
+    onRemoveWishlist: onRemoveWishlist,
+    onAddCart: onAddCart,
+    onRemoveCart: onRemoveCart
   );
 }

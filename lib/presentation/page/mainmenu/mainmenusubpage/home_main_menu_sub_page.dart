@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
+import 'package:masterbagasi/misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/wishlist_delegate_parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
 import 'package:masterbagasi/presentation/page/product_entry_page.dart';
 import 'package:sizer/sizer.dart';
 import '../../../../controller/mainmenucontroller/mainmenusubpagecontroller/home_main_menu_sub_controller.dart';
@@ -18,6 +19,7 @@ import '../../../../misc/aspect_ratio_value.dart';
 import '../../../../misc/carouselbackground/asset_carousel_background.dart';
 import '../../../../misc/carouselbackground/carousel_background.dart';
 import '../../../../misc/constant.dart';
+import '../../../../misc/controllercontentdelegate/wishlist_and_cart_controller_content_delegate.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/carousel_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/colorful_divider_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/compound_list_item_controller_state.dart';
@@ -49,8 +51,9 @@ import '../../../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/l
 import '../../../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../../../misc/paging/pagingresult/paging_result.dart';
 import '../../../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/carousel_background_parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
+import '../../../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/cart_delegate_parameterized_entity_and_list_item_controllere_state_mediator_parameter.dart';
+import '../../../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/compound_parameterized_entity_and_list_item_controller_state_mediator.dart';
 import '../../../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/horizontal_dynamic_item_carousel_parametered_component_entity_and_list_item_controller_state_mediator_parameter.dart';
-import '../../../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/wishlist_parameterized_entity_and_list_item_controller_state_mediator.dart';
 import '../../../../misc/shimmercarousellistitemgenerator/factory/product_bundle_shimmer_carousel_list_item_generator_factory.dart';
 import '../../../../misc/shimmercarousellistitemgenerator/type/product_bundle_shimmer_carousel_list_item_generator_type.dart';
 import '../../../widget/background_app_bar_scaffold.dart';
@@ -211,17 +214,37 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
 
   @override
   Widget build(BuildContext context) {
+    widget.homeMainMenuSubController.wishlistAndCartControllerContentDelegate.setWishlistAndCartDelegate(
+      Injector.locator<WishlistAndCartDelegateFactory>().generateWishlistAndCartDelegate(
+        onGetBuildContext: () => context,
+        onGetErrorProvider: () => Injector.locator<ErrorProvider>()
+      )
+    );
     OnObserveLoadProductDelegateFactory onObserveLoadProductDelegateFactory = Injector.locator<OnObserveLoadProductDelegateFactory>()
       ..onInjectLoadProductEntryCarouselParameterizedEntity = (
-        () => WishlistParameterizedEntityAndListItemControllerStateMediatorParameter(
-          onAddWishlist: (productOrProductEntryId) {},
-          onRemoveWishlist: (productOrProductEntryId) {},
+        () => CompoundParameterizedEntityAndListItemControllerStateMediatorParameter(
+          parameterizedEntityAndListItemControllerStateMediatorParameterList: [
+            WishlistDelegateParameterizedEntityAndListItemControllerStateMediatorParameter(
+              onAddToWishlist: (data) => widget.homeMainMenuSubController.wishlistAndCartControllerContentDelegate.addToWishlist(data),
+              onRemoveFromWishlist: (data) => widget.homeMainMenuSubController.wishlistAndCartControllerContentDelegate.removeFromWishlist(data),
+            ),
+            CartDelegateParameterizedEntityAndListItemControllerStateMediatorParameter(
+              onAddCart: (data) => widget.homeMainMenuSubController.wishlistAndCartControllerContentDelegate.addToCart(data),
+            )
+          ]
         )
       )
       ..onInjectLoadProductBundleCarouselParameterizedEntity = (
-        () => WishlistParameterizedEntityAndListItemControllerStateMediatorParameter(
-          onAddWishlist: (productBundleId) {},
-          onRemoveWishlist: (productBundleId) {},
+        () => CompoundParameterizedEntityAndListItemControllerStateMediatorParameter(
+          parameterizedEntityAndListItemControllerStateMediatorParameterList: [
+            WishlistDelegateParameterizedEntityAndListItemControllerStateMediatorParameter(
+              onAddToWishlist: (data) => widget.homeMainMenuSubController.wishlistAndCartControllerContentDelegate.addToWishlist(data),
+              onRemoveFromWishlist: (data) => widget.homeMainMenuSubController.wishlistAndCartControllerContentDelegate.removeFromWishlist(data),
+            ),
+            CartDelegateParameterizedEntityAndListItemControllerStateMediatorParameter(
+              onAddCart: (data) => widget.homeMainMenuSubController.wishlistAndCartControllerContentDelegate.addToCart(data),
+            )
+          ]
         )
       )
       ..onInjectCarouselParameterizedEntity = (
