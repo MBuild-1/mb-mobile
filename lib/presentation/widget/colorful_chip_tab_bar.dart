@@ -10,17 +10,48 @@ class ColorfulChipTabBar extends StatelessWidget {
   final List<ColorfulChipTabBarData> colorfulChipTabBarDataList;
   final ColorfulChipTabBarController colorfulChipTabBarController;
   final EdgeInsetsGeometry? padding;
+  final bool isWrap;
 
   const ColorfulChipTabBar({
     Key? key,
     required this.colorfulChipTabBarDataList,
     required this.colorfulChipTabBarController,
-    this.padding
+    this.padding,
+    this.isWrap = true
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     EdgeInsetsGeometry effectivePadding = padding ?? EdgeInsets.symmetric(horizontal: Constant.paddingListItem);
+    if (isWrap) {
+      return ValueListenableBuilder<int>(
+        valueListenable: colorfulChipTabBarController,
+        builder: (context, value, child) => Builder(
+          builder: (context) {
+            List<Widget> result = [];
+            for (int i = 0; i < colorfulChipTabBarDataList.length; i++) {
+              ColorfulChipTabBarData data = colorfulChipTabBarDataList[i];
+              result.add(
+                ModifiedChipButton(
+                  label: Text(data.title.toStringNonNull),
+                  backgroundColor: Constant.colorTrainingPreEmploymentChip(context),
+                  isSelected: i == value,
+                  onTap: () => colorfulChipTabBarController.value = i
+                )
+              );
+            }
+            return Padding(
+              padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+              child: Wrap(
+                children: result,
+                spacing: 10.0,
+                runSpacing: 10.0
+              ),
+            );
+          }
+        )
+      );
+    }
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: effectivePadding,

@@ -6,10 +6,14 @@ import '../modified_shimmer.dart';
 import '../shimmer_custom_effect_marker.dart';
 
 typedef TitleAndDescriptionItemInterceptor = Widget Function(EdgeInsetsGeometry? padding, String? title, Widget? titleWidget, String? description, Widget? descriptionWidget, Widget titleAndDescriptionWidget, List<Widget> titleAndDescriptionWidgetList);
+typedef TitleInterceptor = Widget Function(String title, TextStyle? lastTitleTextStyle);
+typedef DescriptionInterceptor = Widget Function(String description, TextStyle? lastDescriptionTextStyle);
 
 class TitleAndDescriptionItem extends StatelessWidget {
   final String? title;
   final String? description;
+  final TitleInterceptor? titleInterceptor;
+  final DescriptionInterceptor? descriptionInterceptor;
   final TitleAndDescriptionItemInterceptor? titleAndDescriptionItemInterceptor;
   final EdgeInsetsGeometry? padding;
   final double? verticalSpace;
@@ -18,6 +22,8 @@ class TitleAndDescriptionItem extends StatelessWidget {
     Key? key,
     required this.title,
     required this.description,
+    this.titleInterceptor,
+    this.descriptionInterceptor,
     this.titleAndDescriptionItemInterceptor,
     required this.padding,
     this.verticalSpace
@@ -36,17 +42,28 @@ class TitleAndDescriptionItem extends StatelessWidget {
 
   @protected
   Widget titleWidget(BuildContext context, String title) {
-    return _interceptWithContainer(context, Text(
-      title,
-      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-        fontWeight: FontWeight.bold
+    TextStyle? lastTitleTextStyle = Theme.of(context).textTheme.titleMedium?.copyWith(
+      fontWeight: FontWeight.bold
+    );
+    return _interceptWithContainer(
+      context,
+      titleInterceptor != null ? titleInterceptor!(title, lastTitleTextStyle) : Text(
+        title,
+        style: lastTitleTextStyle!
       )
-    ));
+    );
   }
 
   @protected
   Widget descriptionWidget(BuildContext context, String description) {
-    return _interceptWithContainer(context, Text(description));
+    TextStyle? lastDescriptionTextStyle = const TextStyle();
+    return _interceptWithContainer(
+      context,
+      descriptionInterceptor != null ? descriptionInterceptor!(description, lastDescriptionTextStyle) : Text(
+        description,
+        style: lastDescriptionTextStyle
+      )
+    );
   }
 
   @override

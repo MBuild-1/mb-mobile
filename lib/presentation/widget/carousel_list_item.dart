@@ -14,18 +14,26 @@ class CarouselListItem<T> extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final double? betweenTitleDescriptionAndCarouselItemVerticalSpace;
   final String title;
+  final TitleInterceptor? titleInterceptor;
   final String description;
+  final DescriptionInterceptor? descriptionInterceptor;
   final List<T> itemList;
   final WidgetBuilderWithItem<T> builderWithItem;
+  final Widget? backgroundImage;
+  final double? backgroundImageHeight;
 
   const CarouselListItem({
     Key? key,
     this.padding,
     this.betweenTitleDescriptionAndCarouselItemVerticalSpace,
     this.title = "",
+    this.titleInterceptor,
     this.description = "",
+    this.descriptionInterceptor,
     required this.itemList,
-    required this.builderWithItem
+    required this.builderWithItem,
+    this.backgroundImage,
+    this.backgroundImageHeight
   }) : super(key: key);
 
   @override
@@ -34,9 +42,13 @@ class CarouselListItem<T> extends StatelessWidget {
       padding: padding,
       betweenTitleDescriptionAndCarouselItemVerticalSpace: betweenTitleDescriptionAndCarouselItemVerticalSpace,
       title: title,
+      titleInterceptor: titleInterceptor,
       description: description,
+      descriptionInterceptor: descriptionInterceptor,
       itemList: itemList,
-      builderWithItem: builderWithItem
+      builderWithItem: builderWithItem,
+      backgroundImage: backgroundImage,
+      backgroundImageHeight: backgroundImageHeight
     );
   }
 }
@@ -49,6 +61,7 @@ class ShimmerCarouselListItem<G extends ShimmerCarouselListItemGeneratorType> ex
   final bool showDescriptionShimmer;
   final bool showItemShimmer;
   final ShimmerCarouselListItemGenerator<G> shimmerCarouselListItemGenerator;
+  final Widget? backgroundImage;
 
   const ShimmerCarouselListItem({
     Key? key,
@@ -58,7 +71,8 @@ class ShimmerCarouselListItem<G extends ShimmerCarouselListItemGeneratorType> ex
     required this.showTitleShimmer,
     required this.showDescriptionShimmer,
     required this.showItemShimmer,
-    required this.shimmerCarouselListItemGenerator
+    required this.shimmerCarouselListItemGenerator,
+    this.backgroundImage
   }) : super(key: key);
 
   @override
@@ -84,18 +98,26 @@ class _InnerCarouselListItem<T> extends StatefulWidget {
   final EdgeInsetsGeometry? padding;
   final double? betweenTitleDescriptionAndCarouselItemVerticalSpace;
   final String title;
+  final TitleInterceptor? titleInterceptor;
   final String description;
+  final DescriptionInterceptor? descriptionInterceptor;
   final List<T> itemList;
   final WidgetBuilderWithItem<T> builderWithItem;
+  final Widget? backgroundImage;
+  final double? backgroundImageHeight;
 
   const _InnerCarouselListItem({
     Key? key,
     this.padding,
     this.betweenTitleDescriptionAndCarouselItemVerticalSpace,
     required this.title,
+    this.titleInterceptor,
     required this.description,
+    this.descriptionInterceptor,
     required this.itemList,
-    required this.builderWithItem
+    required this.builderWithItem,
+    this.backgroundImage,
+    this.backgroundImageHeight
   }) : super(key: key);
 
   @override
@@ -124,47 +146,69 @@ class _InnerCarouselListItemState<T> extends State<_InnerCarouselListItem<T>> wi
       right = edgeInsetsDirectional.end;
       bottom = edgeInsetsDirectional.bottom;
     }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    bool hasBackgroundImage = widget.backgroundImage != null;
+    return Stack(
       children: [
-        TitleAndDescriptionItem(
-          padding: EdgeInsets.only(
-            left: left ?? Constant.paddingListItem,
-            top: top ?? Constant.paddingListItem,
-            right: right ?? Constant.paddingListItem,
+        if (hasBackgroundImage)
+          Container(
+            clipBehavior: Clip.antiAlias,
+            decoration: const BoxDecoration(),
+            width: double.infinity,
+            height: widget.backgroundImageHeight ?? 200,
+            child: FittedBox(
+              fit: BoxFit.cover,
+              child: widget.backgroundImage,
+            )
           ),
-          title: widget.title,
-          description: widget.description,
-          verticalSpace: 0.3.h,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (hasBackgroundImage)
+              SizedBox(height: Constant.paddingListItem),
+            TitleAndDescriptionItem(
+              padding: EdgeInsets.only(
+                left: left ?? Constant.paddingListItem,
+                top: top ?? Constant.paddingListItem,
+                right: right ?? Constant.paddingListItem,
+              ),
+              title: widget.title,
+              titleInterceptor: widget.titleInterceptor,
+              description: widget.description,
+              descriptionInterceptor: widget.descriptionInterceptor,
+              verticalSpace: 0.3.h,
+            ),
+            if (!widget.title.isEmptyString || !widget.description.isEmptyString)
+              SizedBox(height: verticalSpace ?? Constant.paddingListItem),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: EdgeInsets.only(
+                left: left ?? Constant.paddingListItem,
+                right: right ?? Constant.paddingListItem,
+              ),
+              child: Builder(
+                builder: (context) {
+                  List<Widget> itemMap = [];
+                  int i = 0;
+                  while (i < widget.itemList.length) {
+                    if (i > 0) {
+                      itemMap.add(SizedBox(width: 3.w));
+                    }
+                    itemMap.add(widget.builderWithItem(context, widget.itemList[i]));
+                    i++;
+                  }
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: itemMap,
+                  );
+                },
+              )
+            ),
+            SizedBox(height: bottom ?? Constant.paddingListItem),
+            if (hasBackgroundImage)
+              SizedBox(height: Constant.paddingListItem)
+          ],
         ),
-        if (!widget.title.isEmptyString || !widget.description.isEmptyString)
-          SizedBox(height: verticalSpace ?? Constant.paddingListItem),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          padding: EdgeInsets.only(
-            left: left ?? Constant.paddingListItem,
-            right: right ?? Constant.paddingListItem,
-          ),
-          child: Builder(
-            builder: (context) {
-              List<Widget> itemMap = [];
-              int i = 0;
-              while (i < widget.itemList.length) {
-                if (i > 0) {
-                  itemMap.add(SizedBox(width: 3.w));
-                }
-                itemMap.add(widget.builderWithItem(context, widget.itemList[i]));
-                i++;
-              }
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: itemMap,
-              );
-            },
-          )
-        ),
-        SizedBox(height: bottom ?? Constant.paddingListItem)
       ],
     );
   }

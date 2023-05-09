@@ -9,6 +9,7 @@ class ProfileMenuItem extends StatelessWidget {
   final VoidCallback? onTap;
   final WidgetBuilder icon;
   final String title;
+  final String? description;
   final Color? color;
   final EdgeInsetsGeometry? padding;
 
@@ -17,6 +18,7 @@ class ProfileMenuItem extends StatelessWidget {
     this.onTap,
     required this.icon,
     required this.title,
+    this.description,
     this.color,
     this.padding
   }) : super(key: key);
@@ -35,12 +37,21 @@ class ProfileMenuItem extends StatelessWidget {
           padding: padding ?? EdgeInsets.all(4.w),
           child: IconTitleAndDescriptionListItem(
             title: title,
-            description: null,
+            description: description,
+            titleInterceptor: (title, titleTextStyle) {
+              return Text(
+                title,
+                style: const TextStyle(fontWeight: FontWeight.bold)
+              );
+            },
+            descriptionInterceptor: (description, descriptionTextStyle) {
+              return Text(
+                description,
+                style: const TextStyle(color: Colors.grey)
+              );
+            },
             space: 4.w,
             verticalSpace: (0.5).h,
-            titleAndDescriptionItemInterceptor: (padding, title, titleWidget, description, descriptionWidget, titleAndDescriptionWidget, titleAndDescriptionWidgetList) {
-              return Text(title.toEmptyStringNonNull, style: TextStyle(color: color));
-            },
             icon: effectiveIcon,
           )
         ),

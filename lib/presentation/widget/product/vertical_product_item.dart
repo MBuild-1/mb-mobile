@@ -10,8 +10,19 @@ class VerticalProductItem extends ProductItem {
 
   const VerticalProductItem({
     Key? key,
-    required ProductAppearanceData productAppearanceData
-  }) : super(key: key, productAppearanceData: productAppearanceData);
+    required ProductAppearanceData productAppearanceData,
+    OnAddWishlistWithProductAppearanceData? onAddWishlist,
+    OnRemoveWishlistWithProductAppearanceData? onRemoveWishlist,
+    OnAddCartWithProductAppearanceData? onAddCart,
+    OnRemoveCartWithProductAppearanceData? onRemoveCart
+  }) : super(
+    key: key,
+    productAppearanceData: productAppearanceData,
+    onAddWishlist: onAddWishlist,
+    onRemoveWishlist: onRemoveWishlist,
+    onAddCart: onAddCart,
+    onRemoveCart: onRemoveCart
+  );
 
   @override
   Widget priceWidget(BuildContext context, Widget nonDiscountPriceWidget, Widget discountPriceWidget) {

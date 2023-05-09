@@ -12,6 +12,7 @@ class ProductEntryDummy {
     return ProductEntry(
       id: "",
       productId: "",
+      productEntryId: "",
       sku: "",
       sustension: "",
       weight: 1.0,
@@ -19,10 +20,13 @@ class ProductEntryDummy {
       isKitchen: 0,
       isHandycrafts: 0,
       isFashionable: 0,
+      purchasePrice: 0,
       sellingPrice: 0,
       isBestSelling: 0,
       productVariantList: [],
-      product: productDummy.generateShimmerDummy()
+      imageUrlList: [],
+      product: productDummy.generateShimmerDummy(),
+      soldCount: 0
     );
   }
 
@@ -30,6 +34,7 @@ class ProductEntryDummy {
     return ProductEntry(
       id: "1",
       productId: "1",
+      productEntryId: "1",
       sku: "1",
       sustension: "1",
       weight: 1.0,
@@ -37,10 +42,13 @@ class ProductEntryDummy {
       isKitchen: 0,
       isHandycrafts: 0,
       isFashionable: 0,
-      sellingPrice: 0,
+      purchasePrice: 0,
+      sellingPrice: 100000,
       isBestSelling: 0,
       productVariantList: [],
-      product: productDummy.generateDefaultDummy()
+      imageUrlList: [],
+      product: productDummy.generateDefaultDummy(),
+      soldCount: 0
     );
   }
 }

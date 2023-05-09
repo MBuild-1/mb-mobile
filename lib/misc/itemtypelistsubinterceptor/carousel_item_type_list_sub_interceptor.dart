@@ -35,7 +35,10 @@ class CarouselItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<List
           betweenTitleDescriptionAndCarouselItemVerticalSpace: oldItemType.betweenTitleDescriptionAndCarouselItemVerticalSpace,
           itemListItemControllerState: newColumnChildListItemControllerState,
           title: oldItemType.title,
+          titleInterceptor: oldItemType.titleInterceptor,
           description: oldItemType.description,
+          descriptionInterceptor: oldItemType.descriptionInterceptor,
+          carouselBackground: oldItemType.carouselBackground
         )
       );
       return true;

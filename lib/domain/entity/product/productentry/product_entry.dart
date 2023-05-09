@@ -1,11 +1,16 @@
+import '../../cart/support_cart.dart';
+import '../../order/support_order_product.dart';
+import '../../wishlist/support_wishlist.dart';
 import '../product.dart';
 import '../product_appearance_data.dart';
 import '../productvariant/product_variant.dart';
 
-class ProductEntry implements ProductAppearanceData {
+class ProductEntry implements ProductEntryAppearanceData, SupportCart, SupportWishlist, SupportOrderProduct {
   String id;
   @override
   String productId;
+  @override
+  String productEntryId;
   String sku;
   String sustension;
   @override
@@ -14,14 +19,28 @@ class ProductEntry implements ProductAppearanceData {
   int isKitchen;
   int isHandycrafts;
   int isFashionable;
+  int purchasePrice;
   int sellingPrice;
   int isBestSelling;
   Product product;
+  List<String> imageUrlList;
   List<ProductVariant> productVariantList;
+  @override
+  int soldCount;
+
+  @override
+  String get cartTitle => name;
+
+  @override
+  double get cartPrice => sellingPrice.toDouble();
+
+  @override
+  String get cartImageUrl => imageUrl;
 
   ProductEntry({
     required this.id,
     required this.productId,
+    required this.productEntryId,
     required this.sku,
     required this.sustension,
     required this.weight,
@@ -29,21 +48,29 @@ class ProductEntry implements ProductAppearanceData {
     required this.isKitchen,
     required this.isHandycrafts,
     required this.isFashionable,
+    required this.purchasePrice,
     required this.sellingPrice,
     required this.isBestSelling,
     required this.product,
-    required this.productVariantList
+    required this.productVariantList,
+    required this.imageUrlList,
+    required this.soldCount
   });
 
   @override
   double? get discountPrice => product.discountPrice;
 
   @override
-  String get imageUrl => product.imageUrl;
+  String get imageUrl {
+    if (imageUrlList.isEmpty) {
+      return "";
+    }
+    return imageUrlList.first;
+  }
 
   @override
   String get name => product.name;
 
   @override
-  double get price => product.price;
+  double get price => sellingPrice.toDouble();
 }

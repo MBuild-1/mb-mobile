@@ -10,6 +10,7 @@ import '../error/message_error.dart';
 import '../error/not_found_error.dart';
 import '../error/token_empty_error.dart';
 import '../error/validation_error.dart';
+import '../multi_language_string.dart';
 import 'error_provider.dart';
 
 class DefaultErrorProvider extends ErrorProvider {
@@ -98,10 +99,29 @@ class DefaultErrorProvider extends ErrorProvider {
         imageAssetUrl: Constant.imageFailed
       );
     } else if (dioErrorType == DioErrorType.response) {
-      if (e.response?.statusCode == 404) {
+      int? statusCode = e.response?.statusCode;
+      if (statusCode == 404) {
+        Response<dynamic>? response = e.response;
+        dynamic responseData = response?.data;
+        if (responseData is Map) {
+          dynamic errorMeta = responseData['meta'];
+          if (errorMeta is Map) {
+            return ErrorProviderResult(
+              title: "Not Found".tr,
+              message: MultiLanguageString(errorMeta["message"]).toEmptyStringNonNull,
+              imageAssetUrl: Constant.imageFailed
+            );
+          }
+        }
         return ErrorProviderResult(
           title: "Not Found".tr,
           message: "${"Request not found (404)".tr}.",
+          imageAssetUrl: Constant.imageFailed
+        );
+      } if (statusCode == 500) {
+        return ErrorProviderResult(
+          title: "Internal Server Error".tr,
+          message: "${"Something has internal server error".tr}.",
           imageAssetUrl: Constant.imageFailed
         );
       } else {
@@ -137,7 +157,7 @@ class DefaultErrorProvider extends ErrorProvider {
                   if (errorMeta.containsKey('message')) {
                     return ErrorProviderResult(
                       title: "Request Failed".tr,
-                      message: errorMeta['message'],
+                      message: MultiLanguageString(errorMeta['message']).toEmptyStringNonNull,
                       imageAssetUrl: Constant.imageFailed
                     );
                   }

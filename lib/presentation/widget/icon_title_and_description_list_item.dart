@@ -6,6 +6,8 @@ import 'titleanddescriptionitem/title_and_description_item.dart';
 class IconTitleAndDescriptionListItem extends StatelessWidget {
   final String? title;
   final String? description;
+  final TitleInterceptor? titleInterceptor;
+  final DescriptionInterceptor? descriptionInterceptor;
   final TitleAndDescriptionItemInterceptor? titleAndDescriptionItemInterceptor;
   final Widget? icon;
   final double? space;
@@ -16,6 +18,8 @@ class IconTitleAndDescriptionListItem extends StatelessWidget {
     Key? key,
     required this.title,
     required this.description,
+    this.titleInterceptor,
+    this.descriptionInterceptor,
     this.titleAndDescriptionItemInterceptor,
     required this.icon,
     this.space,
@@ -38,6 +42,8 @@ class IconTitleAndDescriptionListItem extends StatelessWidget {
             padding: const EdgeInsets.all(0),
             title: title,
             description: description,
+            titleInterceptor: titleInterceptor,
+            descriptionInterceptor: descriptionInterceptor,
             titleAndDescriptionItemInterceptor: titleAndDescriptionItemInterceptor,
             verticalSpace: verticalSpace,
           ),

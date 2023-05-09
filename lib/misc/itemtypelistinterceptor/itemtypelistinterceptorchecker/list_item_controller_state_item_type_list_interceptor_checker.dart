@@ -1,13 +1,25 @@
 import '../../controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../itemtypelistsubinterceptor/additional_loading_indicator_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/address_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/builder_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/carousel_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/cart_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/column_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/compound_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/country_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/coupon_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/decorated_container_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/delivery_cart_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/dynamic_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/expandable_description_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/padding_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/page_keyed_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/product_bundle_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/product_entry_header_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/profile_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/row_container_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/verticalgriditemtypelistsubinterceptor/product_brand_vertical_grid_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/verticalgriditemtypelistsubinterceptor/product_vertical_grid_item_type_list_sub_interceptor.dart';
 import '../../typedef.dart';
 import '../item_type_list_interceptor_parameter.dart';
@@ -105,6 +117,11 @@ class ListItemControllerStateItemTypeInterceptorChecker extends ItemTypeListInte
       itemSpacing: itemSpacing,
       listItemControllerStateItemTypeInterceptorChecker: this
     ),
+    ProductBrandVerticalGridItemTypeListSubInterceptor(
+      padding: padding,
+      itemSpacing: itemSpacing,
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
     ExpandableDescriptionItemTypeListSubInterceptor(),
     AdditionalLoadingIndicatorItemTypeListSubInterceptor(
       padding: padding,
@@ -117,6 +134,49 @@ class ListItemControllerStateItemTypeInterceptorChecker extends ItemTypeListInte
     CompoundItemListSubInterceptor(
       listItemControllerStateItemTypeInterceptorChecker: this
     ),
+    DecoratedContainerItemTypeListSubInterceptor(
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
+    PaddingContainerItemTypeListSubInterceptor(
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
+    ProfileItemTypeListSubInterceptor(
+      padding: padding,
+      itemSpacing: itemSpacing,
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
+    CartItemTypeListSubInterceptor(
+      padding: padding,
+      itemSpacing: itemSpacing,
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
+    DeliveryCartItemTypeListSubInterceptor(
+      padding: padding,
+      itemSpacing: itemSpacing,
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
+    ProductEntryHeaderItemTypeListSubInterceptor(
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
+    ProductBundleItemTypeListSubInterceptor(
+      padding: padding,
+      itemSpacing: itemSpacing
+    ),
+    CouponItemTypeListSubInterceptor(
+      padding: padding,
+      itemSpacing: itemSpacing,
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
+    CountryItemTypeListSubInterceptor(
+      padding: padding,
+      itemSpacing: itemSpacing,
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
+    AddressItemTypeListSubInterceptor(
+      padding: padding,
+      itemSpacing: itemSpacing,
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
     DynamicItemTypeListSubInterceptor(
       listItemControllerStateItemTypeInterceptorChecker: this
     ),
@@ -126,5 +186,10 @@ class ListItemControllerStateItemTypeInterceptorChecker extends ItemTypeListInte
     RowContainerItemTypeListSubInterceptor(
       listItemControllerStateItemTypeInterceptorChecker: this
     ),
+    BuilderItemTypeListSubInterceptor(
+      padding: padding,
+      itemSpacing: itemSpacing,
+      listItemControllerStateItemTypeInterceptorChecker: this
+    )
   ];
 }

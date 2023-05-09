@@ -30,7 +30,7 @@ class ProductCategoryHeaderListItem extends StatelessWidget {
             aspectRatio: aspectRatioValue.toDouble(),
             child: ClipRRect(
               child: ModifiedCachedNetworkImage(
-                imageUrl: productCategory.bannerMobile.toEmptyStringNonNull,
+                imageUrl: productCategory.bannerMobile.isNotEmptyString ? productCategory.bannerMobile! : productCategory.bannerDesktop.toEmptyStringNonNull,
               )
             )
           ),

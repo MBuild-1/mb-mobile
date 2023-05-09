@@ -1,14 +1,29 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../controller/crop_picture_controller.dart';
+import '../presentation/page/address_page.dart';
+import '../presentation/page/cart_page.dart';
+import '../presentation/page/coupon_page.dart';
 import '../presentation/page/crop_picture_page.dart';
+import '../presentation/page/delivery_page.dart';
 import '../presentation/page/getx_page.dart';
 import '../presentation/page/login_page.dart';
 import '../presentation/page/mainmenu/main_menu_page.dart';
 import '../presentation/page/product_brand_detail_page.dart';
+import '../presentation/page/product_brand_page.dart';
+import '../presentation/page/product_bundle_detail_page.dart';
+import '../presentation/page/product_bundle_page.dart';
 import '../presentation/page/product_category_detail_page.dart';
 import '../presentation/page/product_detail_page.dart';
+import '../presentation/page/product_entry_page.dart';
 import '../presentation/page/register_page.dart';
+import '../presentation/page/take_friend_cart_page.dart';
+import '../presentation/page/web_viewer_page.dart';
+import 'constant.dart';
+import 'login_helper.dart';
 
 class _PageRestorationHelperImpl {
   bool _checkingPageRestorationMixin<T extends GetxPageRestoration>({
@@ -77,10 +92,46 @@ class _PageRestorationHelperImpl {
     );
   }
 
-  void toProductDetailPage(BuildContext context, String productId) {
+  void toProductEntryPage(BuildContext context, ProductEntryPageParameter productEntryPageParameter) {
+    PageRestorationHelper.findPageRestorationMixin<ProductEntryPageRestorationMixin>(
+      onGetxPageRestorationFound: (restoration) {
+        restoration.productEntryPageRestorableRouteFuture.present(productEntryPageParameter.toEncodeBase64String());
+      },
+      context: context
+    );
+  }
+
+  void toProductBundlePage(BuildContext context) {
+    PageRestorationHelper.findPageRestorationMixin<ProductBundlePageRestorationMixin>(
+      onGetxPageRestorationFound: (restoration) {
+        restoration.productBundlePageRestorableRouteFuture.present();
+      },
+      context: context
+    );
+  }
+
+  void toProductBundleDetailPage(BuildContext context, String productBundleId) {
+    PageRestorationHelper.findPageRestorationMixin<ProductBundleDetailPageRestorationMixin>(
+      onGetxPageRestorationFound: (restoration) {
+        restoration.productBundleDetailPageRestorableRouteFuture.present(productBundleId);
+      },
+      context: context
+    );
+  }
+
+  void toProductDetailPage(BuildContext context, ProductDetailPageParameter productDetailPageParameter) {
     PageRestorationHelper.findPageRestorationMixin<ProductDetailPageRestorationMixin>(
       onGetxPageRestorationFound: (restoration) {
-        restoration.productDetailPageRestorableRouteFuture.present(productId);
+        restoration.productDetailPageRestorableRouteFuture.present(productDetailPageParameter.toEncodeBase64String());
+      },
+      context: context
+    );
+  }
+
+  void toProductBrandPage(BuildContext context) {
+    PageRestorationHelper.findPageRestorationMixin<ProductBrandPageRestorationMixin>(
+      onGetxPageRestorationFound: (restoration) {
+        restoration.productBrandPageRestorableRouteFuture.present();
       },
       context: context
     );
@@ -102,6 +153,82 @@ class _PageRestorationHelperImpl {
       },
       context: context
     );
+  }
+
+  void toCouponPage(BuildContext context, String? couponId) {
+    PageRestorationHelper.findPageRestorationMixin<CouponPageRestorationMixin>(
+      onGetxPageRestorationFound: (restoration) {
+        restoration.couponPageRestorableRouteFuture.present(couponId.toEmptyStringNonNull);
+      },
+      context: context
+    );
+  }
+
+  void toCartPage(BuildContext context) {
+    LoginHelper.checkingLogin(context, () {
+      PageRestorationHelper.findPageRestorationMixin<CartPageRestorationMixin>(
+        onGetxPageRestorationFound: (restoration) {
+          restoration.cartPageRestorableRouteFuture.present();
+        },
+        context: context
+      );
+    });
+  }
+
+  void toTakeFriendCartPage(BuildContext context) {
+    LoginHelper.checkingLogin(context, () {
+      PageRestorationHelper.findPageRestorationMixin<TakeFriendCartPageRestorationMixin>(
+        onGetxPageRestorationFound: (restoration) {
+          restoration.takeFriendCartPageRestorableRouteFuture.present();
+        },
+        context: context
+      );
+    });
+  }
+
+  void toDeliveryPage(BuildContext context, DeliveryPageParameter deliveryPageParameter) {
+    LoginHelper.checkingLogin(context, () {
+      PageRestorationHelper.findPageRestorationMixin<DeliveryPageRestorationMixin>(
+        onGetxPageRestorationFound: (restoration) {
+          restoration.deliveryPageRestorableRouteFuture.present(
+            deliveryPageParameter.toEncodeBase64String()
+          );
+        },
+        context: context
+      );
+    });
+  }
+
+  void toWebViewerPage(BuildContext context, Map<String, dynamic> parameter) {
+    PageRestorationHelper.findPageRestorationMixin<WebViewerPageRestorationMixin>(
+      onGetxPageRestorationFound: (restoration) {
+        String parameterString = "";
+        parameter.forEach((key, value) {
+          late String effectiveKey, effectiveValue;
+          if (key == Constant.textUrlKey) {
+            effectiveKey = Constant.textEncodedUrlKey;
+            effectiveValue = base64.encode(utf8.encode(value));
+          } else {
+            effectiveKey = key;
+            effectiveValue = value;
+          }
+          parameterString += "${parameterString.isEmpty ? "" : "&"}$effectiveKey=$effectiveValue";
+        });
+        restoration.webViewerPageRestorableRouteFuture.present(Uri.encodeFull("masterbagasi://webviewer?$parameterString"));
+      },
+      context: context
+    );
+  }
+
+  void toAddressPage(BuildContext context) {
+    LoginHelper.checkingLogin(context, () {
+      PageRestorationHelper.findPageRestorationMixin<AddressPageRestorationMixin>(
+        onGetxPageRestorationFound: (restoration) {
+          restoration.addressPageRestorableRouteFuture.present();
+        },
+        context: context
+      );
+    });
   }
 }
 

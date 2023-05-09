@@ -63,16 +63,20 @@ class CoreSearchAppBar extends SearchAppBar {
       return super.titleInterceptor;
     }
     return (context, oldTitle) {
-      return Row(
-        children: [
-          Expanded(
-            child: SizedBox(
-              height: searchTextFieldHeight,
-              child: textFieldBuilder(context)
-            )
-          ),
-          if (actionTitleBuilder != null) actionTitleBuilder!(context),
-        ]
+      return IgnorePointer(
+        child: ExcludeFocus(
+          child: Row(
+            children: [
+              Expanded(
+                child: SizedBox(
+                  height: searchTextFieldHeight,
+                  child: textFieldBuilder(context)
+                )
+              ),
+              if (actionTitleBuilder != null) actionTitleBuilder!(context),
+            ]
+          )
+        )
       );
     };
   }

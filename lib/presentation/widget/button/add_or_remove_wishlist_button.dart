@@ -4,32 +4,44 @@ import '../../../misc/constant.dart';
 import '../modified_svg_picture.dart';
 
 typedef OnAddWishlist = void Function();
+typedef OnRemoveWishlist = void Function();
 
 class AddOrRemoveWishlistButton extends StatelessWidget {
-  final OnAddWishlist onAddWishlist;
+  final OnAddWishlist? onAddWishlist;
+  final OnRemoveWishlist? onRemoveWishlist;
 
   const AddOrRemoveWishlistButton({
     super.key,
-    required this.onAddWishlist
+    this.onAddWishlist,
+    this.onRemoveWishlist
   });
 
   @override
   Widget build(BuildContext context) {
+    void Function()? onTap;
+    String? vectorString;
+    if (onAddWishlist != null) {
+      onTap = onAddWishlist;
+      vectorString = Constant.vectorLove;
+    } else if (onRemoveWishlist != null) {
+      onTap = onRemoveWishlist;
+      vectorString = Constant.vectorTrash;
+    }
     return ClipOval(
       child: Material(
         color: Constant.colorWishlistButton,
         child: InkWell(
-          onTap: onAddWishlist,
+          onTap: onTap,
           child: SizedBox(
             width: 40,
             height: 40,
             child: Center(
-              child: ModifiedSvgPicture.asset(
-                Constant.vectorLove,
+              child: vectorString != null ? ModifiedSvgPicture.asset(
+                vectorString,
                 color: Constant.colorWishlistIcon,
                 width: 25,
                 height: 25
-              )
+              ) : Container()
             )
           ),
         ),

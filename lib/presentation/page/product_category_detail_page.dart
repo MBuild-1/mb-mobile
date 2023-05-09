@@ -192,7 +192,10 @@ class _StatefulProductCategoryDetailControllerMediatorWidgetState extends State<
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _productCategoryDetailListItemPagingControllerStateListener(int pageKey) async {
     LoadDataResult<ProductCategoryDetail> productCategoryDetailLoadDataResult = await widget.productCategoryDetailController.getProductCategoryDetail(
-      ProductCategoryDetailParameter(productCategoryDetailId: widget.productCategoryId)
+      ProductCategoryDetailParameter(
+        productCategoryDetailId: widget.productCategoryId,
+        productCategoryDetailParameterType: ProductCategoryDetailParameterType.id
+      )
     );
     return productCategoryDetailLoadDataResult.map((productCategoryDetail) {
       return PagingDataResult<ListItemControllerState>(
@@ -203,7 +206,9 @@ class _StatefulProductCategoryDetailControllerMediatorWidgetState extends State<
           ProductCategoryHeaderListItemControllerState(productCategory: productCategoryDetail),
           ...productCategoryDetail.shortProductList.map<ListItemControllerState>((product) {
             return VerticalProductListItemControllerState(
-              productAppearanceData: product
+              productAppearanceData: product,
+              onRemoveWishlist: (productOrProductEntryId) {},
+              onAddWishlist: (productOrProductEntryId) {}
             );
           }).toList()
         ]

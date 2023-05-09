@@ -10,6 +10,8 @@ class _MainRouteObserver extends RouteObserver {
   Map<String, void Function()?> get disposingEventRouteMap => _disposingEventRouteMap;
   Map<String, BuildContext Function()?> _buildContextEventRouteMap = {};
   Map<String, BuildContext Function()?> get buildContextEventRouteMap => _buildContextEventRouteMap;
+  Map<String, void Function()?> _controllerMediatorMap = {};
+  Map<String, void Function()?> get controllerMediatorMap => _controllerMediatorMap;
 
   void applyNewRouteMapFromRouteKeyMap(Map<String, int> newRouteMap) {
     _routeMap = {
@@ -22,6 +24,9 @@ class _MainRouteObserver extends RouteObserver {
       for (var key in newRouteMap.keys) key: null
     };
     _buildContextEventRouteMap = {
+      for (var key in newRouteMap.keys) key: null
+    };
+    _controllerMediatorMap = {
       for (var key in newRouteMap.keys) key: null
     };
   }

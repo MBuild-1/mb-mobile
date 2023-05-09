@@ -2,22 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/misc/translation/default_extended_translation.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 import 'domain/usecase/get_user_use_case.dart';
 import 'misc/constant.dart';
 import 'misc/getextended/extended_get_material_app.dart';
 import 'misc/injector.dart';
+import 'misc/login_helper.dart';
 import 'misc/main_route_observer.dart';
 import 'presentation/notifier/login_notifier.dart';
 import 'presentation/page/introduction_page.dart';
+import 'presentation/page/mainmenu/main_menu_page.dart';
 
 void main() async {
   Injector.init();
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   await Hive.initFlutter();
   await Hive.openBox(Constant.settingHiveTable);
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
@@ -48,13 +56,17 @@ class MyApp extends StatelessWidget {
           smartManagement: SmartManagement.onlyBuilder,
           onGenerateRoute: (routeSettings) {
             if (routeSettings.name == "/") {
-              return IntroductionPageRestorableRouteFuture.getRoute();
+              if (LoginHelper.getTokenWithBearer().result.isNotEmptyString) {
+                return MainMenuPageRestorableRouteFuture.getRoute();
+              } else {
+                return IntroductionPageRestorableRouteFuture.getRoute();
+              }
             }
             return null;
           },
           defaultTransition: Transition.topLevel,
           translations: DefaultExtendedTranslation(),
-          locale: Locale(Constant.textEnUsLanguageKey),
+          locale: Locale(Constant.textInIdLanguageKey),
           theme: ThemeData(
             indicatorColor: Constant.colorMain,
             colorScheme: ColorScheme.fromSeed(
