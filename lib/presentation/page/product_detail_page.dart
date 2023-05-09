@@ -25,6 +25,7 @@ import '../../domain/usecase/get_product_detail_other_interested_product_brand_l
 import '../../domain/usecase/get_product_detail_use_case.dart';
 import '../../misc/additionalloadingindicatorchecker/product_detail_additional_paging_result_parameter_checker.dart';
 import '../../misc/constant.dart';
+import '../../misc/controllercontentdelegate/wishlist_and_cart_controller_content_delegate.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/builder_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/colorful_chip_tab_bar_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/compound_list_item_controller_state.dart';
@@ -50,8 +51,10 @@ import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
+import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/cart_delegate_parameterized_entity_and_list_item_controllere_state_mediator_parameter.dart';
+import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/compound_parameterized_entity_and_list_item_controller_state_mediator.dart';
 import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/horizontal_dynamic_item_carousel_parametered_component_entity_and_list_item_controller_state_mediator_parameter.dart';
-import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/wishlist_parameterized_entity_and_list_item_controller_state_mediator.dart';
+import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/wishlist_delegate_parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../../misc/string_util.dart';
 import '../../misc/toast_helper.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
@@ -86,7 +89,8 @@ class ProductDetailPage extends RestorableGetxPage<_ProductDetailPageRestoration
         Injector.locator<GetProductDetailOtherInThisCategoryProductEntryListUseCase>(),
         Injector.locator<GetProductDetailFromYourSearchProductEntryListUseCase>(),
         Injector.locator<GetProductDetailOtherInterestedProductBrandListUseCase>(),
-        Injector.locator<AddToCartUseCase>()
+        Injector.locator<AddToCartUseCase>(),
+        Injector.locator<WishlistAndCartControllerContentDelegate>()
       ),
       tag: pageName
     );
@@ -501,15 +505,29 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
   Widget build(BuildContext context) {
     OnObserveLoadProductDelegateFactory onObserveLoadProductDelegateFactory = Injector.locator<OnObserveLoadProductDelegateFactory>()
       ..onInjectLoadProductEntryCarouselParameterizedEntity = (
-        () => WishlistParameterizedEntityAndListItemControllerStateMediatorParameter(
-          onAddWishlist: (productOrProductEntryId) {},
-          onRemoveWishlist: (productOrProductEntryId) {},
+        () => CompoundParameterizedEntityAndListItemControllerStateMediatorParameter(
+          parameterizedEntityAndListItemControllerStateMediatorParameterList: [
+            WishlistDelegateParameterizedEntityAndListItemControllerStateMediatorParameter(
+              onAddToWishlist: (data) async => widget.productDetailController.wishlistAndCartControllerContentDelegate.addToWishlist(data),
+              onRemoveFromWishlist: (data) async => widget.productDetailController.wishlistAndCartControllerContentDelegate.removeFromWishlist(data),
+            ),
+            CartDelegateParameterizedEntityAndListItemControllerStateMediatorParameter(
+              onAddCart: (data) async => widget.productDetailController.wishlistAndCartControllerContentDelegate.addToCart(data),
+            )
+          ]
         )
       )
       ..onInjectLoadProductBundleCarouselParameterizedEntity = (
-        () => WishlistParameterizedEntityAndListItemControllerStateMediatorParameter(
-          onAddWishlist: (productBundleId) {},
-          onRemoveWishlist: (productBundleId) {},
+        () => CompoundParameterizedEntityAndListItemControllerStateMediatorParameter(
+          parameterizedEntityAndListItemControllerStateMediatorParameterList: [
+            WishlistDelegateParameterizedEntityAndListItemControllerStateMediatorParameter(
+              onAddToWishlist: (data) async => widget.productDetailController.wishlistAndCartControllerContentDelegate.addToWishlist(data),
+              onRemoveFromWishlist: (data) async => widget.productDetailController.wishlistAndCartControllerContentDelegate.removeFromWishlist(data),
+            ),
+            CartDelegateParameterizedEntityAndListItemControllerStateMediatorParameter(
+              onAddCart: (data) async => widget.productDetailController.wishlistAndCartControllerContentDelegate.addToCart(data),
+            )
+          ]
         )
       );
     widget.productDetailController.setProductDetailMainMenuDelegate(

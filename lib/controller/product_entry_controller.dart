@@ -6,26 +6,38 @@ import '../domain/entity/product/product_with_condition_paging_parameter.dart';
 import '../domain/entity/product/productentry/product_entry.dart';
 import '../domain/entity/product/productentry/product_entry_header_content_parameter.dart';
 import '../domain/entity/product/productentry/product_entry_header_content_response.dart';
+import '../domain/entity/wishlist/add_wishlist_parameter.dart';
+import '../domain/entity/wishlist/add_wishlist_response.dart';
+import '../domain/entity/wishlist/support_wishlist.dart';
+import '../domain/usecase/add_to_cart_use_case.dart';
+import '../domain/usecase/add_wishlist_use_case.dart';
 import '../domain/usecase/get_product_entry_header_content_use_case.dart';
 import '../domain/usecase/get_product_entry_with_condition_paging_use_case.dart';
+import '../domain/usecase/remove_wishlist_use_case.dart';
+import '../misc/controllercontentdelegate/wishlist_and_cart_controller_content_delegate.dart';
 import '../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../misc/error/message_error.dart';
 import '../misc/load_data_result.dart';
 import '../misc/multi_language_string.dart';
 import '../misc/on_observe_load_product_delegate.dart';
 import '../misc/paging/pagingresult/paging_data_result.dart';
+import '../misc/typedef.dart';
 import 'base_getx_controller.dart';
 
 class ProductEntryController extends BaseGetxController {
   final GetProductEntryWithConditionPagingUseCase getProductEntryWithConditionPagingUseCase;
   final GetProductEntryHeaderContentUseCase getProductEntryHeaderContentUseCase;
+  final WishlistAndCartControllerContentDelegate wishlistAndCartControllerContentDelegate;
   ProductEntryDelegate? _productEntryDelegate;
 
   ProductEntryController(
     super.controllerManager,
     this.getProductEntryWithConditionPagingUseCase,
-    this.getProductEntryHeaderContentUseCase
-  );
+    this.getProductEntryHeaderContentUseCase,
+    this.wishlistAndCartControllerContentDelegate
+  ) {
+    wishlistAndCartControllerContentDelegate.setApiRequestManager(() => apiRequestManager);
+  }
 
   IComponentEntity getProductEntryHeader(ProductEntryHeaderContentParameter productEntryHeaderContentParameter) {
     return DynamicItemCarouselDirectlyComponentEntity(
@@ -69,11 +81,9 @@ class ProductEntryController extends BaseGetxController {
 }
 
 class ProductEntryDelegate {
-  OnObserveLoadProductDelegate onObserveLoadProductDelegate;
   ListItemControllerState Function(_OnObserveLoadProductEntryHeaderContentDirectlyParameter) onObserveLoadProductEntryHeaderContentDirectly;
 
   ProductEntryDelegate({
-    required this.onObserveLoadProductDelegate,
     required this.onObserveLoadProductEntryHeaderContentDirectly,
   });
 }

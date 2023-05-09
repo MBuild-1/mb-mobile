@@ -5,11 +5,15 @@ import 'product_bundle_list_item_controller_state.dart';
 class HorizontalProductBundleListItemControllerState extends ProductBundleListItemControllerState {
   HorizontalProductBundleListItemControllerState({
     required ProductBundle productBundle,
-    OnAddWishlistWithProductBundleId? onAddWishlist,
-    OnRemoveWishlistWithProductBundleId? onRemoveWishlist
+    OnAddWishlistWithProductBundle? onAddWishlist,
+    OnRemoveWishlistWithProductBundle? onRemoveWishlist,
+    OnAddCartWithProductBundle? onAddCart,
+    OnRemoveCartWithProductBundle? onRemoveCart
   }) : super(
     productBundle: productBundle,
     onAddWishlist: onAddWishlist,
-    onRemoveWishlist: onRemoveWishlist
+    onRemoveWishlist: onRemoveWishlist,
+    onAddCart: onAddCart,
+    onRemoveCart: onRemoveCart
   );
 }

@@ -9,6 +9,7 @@ import '../domain/entity/product/productbrand/product_brand.dart';
 import '../domain/entity/product/productbundle/product_bundle.dart';
 import '../domain/entity/product/productcategory/product_category.dart';
 import '../domain/entity/product/productentry/product_entry.dart';
+import '../domain/entity/wishlist/add_wishlist_response.dart';
 import '../presentation/widget/titleanddescriptionitem/title_and_description_item.dart';
 import 'carouselbackground/carousel_background.dart';
 import 'constant.dart';
@@ -16,9 +17,12 @@ import 'controllerstate/listitemcontrollerstate/carousel_list_item_controller_st
 import 'controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import 'entityandlistitemcontrollerstatemediator/horizontal_entity_and_list_item_controller_state_mediator.dart';
 import 'injector.dart';
+import 'load_data_result.dart';
 import 'multi_language_string.dart';
 import 'parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/carousel_background_parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
+import 'parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/cart_delegate_parameterized_entity_and_list_item_controllere_state_mediator_parameter.dart';
 import 'parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
+import 'parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/wishlist_delegate_parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
 import 'shimmercarousellistitemgenerator/factory/cart_shimmer_carousel_list_item_generator_factory.dart';
 import 'shimmercarousellistitemgenerator/factory/coupon_shimmer_carousel_list_item_generator_factory.dart';
 import 'shimmercarousellistitemgenerator/factory/delivery_review_shimmer_carousel_list_item_generator_factory.dart';
@@ -35,6 +39,7 @@ import 'shimmercarousellistitemgenerator/type/product_brand_shimmer_carousel_lis
 import 'shimmercarousellistitemgenerator/type/product_bundle_shimmer_carousel_list_item_generator_type.dart';
 import 'shimmercarousellistitemgenerator/type/product_category_shimmer_carousel_list_item_generator_type.dart';
 import 'shimmercarousellistitemgenerator/type/product_shimmer_carousel_list_item_generator_type.dart';
+import 'typedef.dart';
 
 class OnObserveLoadProductDelegateFactory {
   CarouselParameterizedEntityAndListItemControllerStateMediatorParameter Function(dynamic data)? onInjectCarouselParameterizedEntity;
@@ -297,6 +302,15 @@ class OnObserveLoadProductDelegateFactory {
           shimmerCarouselListItemGenerator: Injector.locator<CartShimmerCarouselListItemGeneratorFactory>().getShimmerCarouselListItemGeneratorType()
         );
       },
+      onShowAddToWishlistRequestProcessLoadingCallback: () async {},
+      onAddToWishlistRequestProcessSuccessCallback: () async {},
+      onShowAddToWishlistRequestProcessFailedCallback: (e) async {},
+      onRemoveAddToWishlistRequestProcessLoadingCallback: () async {},
+      onRemoveToWishlistRequestProcessSuccessCallback: (wishlist) async {},
+      onRemoveAddToWishlistRequestProcessFailedCallback: (e) async {},
+      onShowAddCartRequestProcessLoadingCallback: () async {},
+      onAddCartRequestProcessSuccessCallback: () async {},
+      onShowAddCartRequestProcessFailedCallback: (e) async {},
     );
   }
 }
@@ -318,6 +332,15 @@ class OnObserveLoadProductDelegate {
   ListItemControllerState Function(OnObserveLoadingLoadCouponCarouselParameter) onObserveLoadingLoadCouponCarousel;
   ListItemControllerState Function(OnObserveSuccessLoadCartCarouselParameter) onObserveSuccessLoadCartCarousel;
   ListItemControllerState Function(OnObserveLoadingLoadCartCarouselParameter) onObserveLoadingLoadCartCarousel;
+  OnShowAddToWishlistRequestProcessLoadingCallback onShowAddToWishlistRequestProcessLoadingCallback;
+  OnAddToWishlistRequestProcessSuccessCallback onAddToWishlistRequestProcessSuccessCallback;
+  OnShowAddToWishlistRequestProcessFailedCallback onShowAddToWishlistRequestProcessFailedCallback;
+  OnShowRemoveFromWishlistRequestProcessLoadingCallback onRemoveAddToWishlistRequestProcessLoadingCallback;
+  OnRemoveFromWishlistRequestProcessSuccessCallback onRemoveToWishlistRequestProcessSuccessCallback;
+  OnShowRemoveFromWishlistRequestProcessFailedCallback onRemoveAddToWishlistRequestProcessFailedCallback;
+  OnShowAddCartRequestProcessLoadingCallback onShowAddCartRequestProcessLoadingCallback;
+  OnAddCartRequestProcessSuccessCallback onAddCartRequestProcessSuccessCallback;
+  OnShowAddCartRequestProcessFailedCallback onShowAddCartRequestProcessFailedCallback;
 
   OnObserveLoadProductDelegate({
     required this.onObserveSuccessLoadProductBrandCarousel,
@@ -335,7 +358,16 @@ class OnObserveLoadProductDelegate {
     required this.onObserveSuccessLoadCouponCarousel,
     required this.onObserveLoadingLoadCouponCarousel,
     required this.onObserveSuccessLoadCartCarousel,
-    required this.onObserveLoadingLoadCartCarousel
+    required this.onObserveLoadingLoadCartCarousel,
+    required this.onShowAddToWishlistRequestProcessLoadingCallback,
+    required this.onAddToWishlistRequestProcessSuccessCallback,
+    required this.onShowAddToWishlistRequestProcessFailedCallback,
+    required this.onRemoveAddToWishlistRequestProcessLoadingCallback,
+    required this.onRemoveToWishlistRequestProcessSuccessCallback,
+    required this.onRemoveAddToWishlistRequestProcessFailedCallback,
+    required this.onShowAddCartRequestProcessLoadingCallback,
+    required this.onAddCartRequestProcessSuccessCallback,
+    required this.onShowAddCartRequestProcessFailedCallback
   });
 }
 
@@ -466,3 +498,4 @@ class OnObserveSuccessLoadCartCarouselParameter {
 }
 
 class OnObserveLoadingLoadCartCarouselParameter {}
+

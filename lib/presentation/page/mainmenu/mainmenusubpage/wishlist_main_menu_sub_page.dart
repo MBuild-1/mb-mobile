@@ -4,6 +4,7 @@ import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_ext.dart';
 
 import '../../../../controller/mainmenucontroller/mainmenusubpagecontroller/wishlist_main_menu_sub_controller.dart';
+import '../../../../domain/entity/cart/support_cart.dart';
 import '../../../../domain/entity/product/product_appearance_data.dart';
 import '../../../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../../../domain/entity/wishlist/support_wishlist.dart';
@@ -11,6 +12,7 @@ import '../../../../domain/entity/wishlist/wishlist.dart';
 import '../../../../domain/entity/wishlist/wishlist_paging_parameter.dart';
 import '../../../../misc/additionalloadingindicatorchecker/wishlist_sub_additional_paging_result_parameter_checker.dart';
 import '../../../../misc/constant.dart';
+import '../../../../misc/controllercontentdelegate/wishlist_and_cart_controller_content_delegate.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/productbundlelistitemcontrollerstate/vertical_product_bundle_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/productlistitemcontrollerstate/vertical_product_list_item_controller_state.dart';
@@ -106,14 +108,16 @@ class _StatefulWishlistMainMenuSubControllerMediatorWidgetState extends State<_S
           if (supportWishlist is ProductAppearanceData) {
             return VerticalProductListItemControllerState(
               productAppearanceData: supportWishlist as ProductAppearanceData,
-              onRemoveWishlist: (productOrProductEntryId) {},
-              onAddWishlist: (productOrProductEntryId) {}
+              onAddWishlist: (productAppearanceData) => widget.wishlistMainMenuSubController.wishlistAndCartControllerContentDelegate.addToWishlist(productAppearanceData as SupportWishlist),
+              onRemoveWishlist: (productAppearanceData) => widget.wishlistMainMenuSubController.wishlistAndCartControllerContentDelegate.removeFromWishlist(productAppearanceData as SupportWishlist),
+              onAddCart: (productAppearanceData) => widget.wishlistMainMenuSubController.wishlistAndCartControllerContentDelegate.addToCart(productAppearanceData as SupportCart),
             );
           } else if (supportWishlist is ProductBundle) {
             return VerticalProductBundleListItemControllerState(
               productBundle: supportWishlist,
-              onRemoveWishlist: (productOrProductEntryId) {},
-              onAddWishlist: (productOrProductEntryId) {}
+              onAddWishlist: (productBundle) => widget.wishlistMainMenuSubController.wishlistAndCartControllerContentDelegate.addToWishlist(productBundle),
+              onRemoveWishlist: (productBundle) => widget.wishlistMainMenuSubController.wishlistAndCartControllerContentDelegate.removeFromWishlist(productBundle),
+              onAddCart: (productBundle) => widget.wishlistMainMenuSubController.wishlistAndCartControllerContentDelegate.addToCart(productBundle),
             );
           } else {
             throw MessageError(title: "Support wishlist is not valid");
@@ -129,6 +133,12 @@ class _StatefulWishlistMainMenuSubControllerMediatorWidgetState extends State<_S
 
   @override
   Widget build(BuildContext context) {
+    widget.wishlistMainMenuSubController.wishlistAndCartControllerContentDelegate.setWishlistAndCartDelegate(
+      Injector.locator<WishlistAndCartDelegateFactory>().generateWishlistAndCartDelegate(
+        onGetBuildContext: () => context,
+        onGetErrorProvider: () => Injector.locator<ErrorProvider>()
+      )
+    );
     return BackgroundAppBarScaffold(
       backgroundAppBarImage: _wishlistAppBarBackgroundAssetImage,
       appBar: MainMenuSearchAppBar(value: 0.0),

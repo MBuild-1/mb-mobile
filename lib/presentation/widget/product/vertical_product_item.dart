@@ -11,13 +11,17 @@ class VerticalProductItem extends ProductItem {
   const VerticalProductItem({
     Key? key,
     required ProductAppearanceData productAppearanceData,
-    OnAddWishlistWithProductId? onAddWishlist,
-    OnRemoveWishlistWithProductId? onRemoveWishlist,
+    OnAddWishlistWithProductAppearanceData? onAddWishlist,
+    OnRemoveWishlistWithProductAppearanceData? onRemoveWishlist,
+    OnAddCartWithProductAppearanceData? onAddCart,
+    OnRemoveCartWithProductAppearanceData? onRemoveCart
   }) : super(
     key: key,
     productAppearanceData: productAppearanceData,
     onAddWishlist: onAddWishlist,
-    onRemoveWishlist: onRemoveWishlist
+    onRemoveWishlist: onRemoveWishlist,
+    onAddCart: onAddCart,
+    onRemoveCart: onRemoveCart
   );
 
   @override

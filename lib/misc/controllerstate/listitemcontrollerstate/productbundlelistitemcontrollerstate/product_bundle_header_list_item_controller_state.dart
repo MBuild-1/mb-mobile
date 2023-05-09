@@ -4,8 +4,8 @@ import '../list_item_controller_state.dart';
 
 class ProductBundleHeaderListItemControllerState extends ListItemControllerState {
   ProductBundle productBundle;
-  OnAddWishlistWithProductBundleId? onAddWishlist;
-  OnRemoveWishlistWithProductBundleId? onRemoveWishlist;
+  OnAddWishlistWithProductBundle? onAddWishlist;
+  OnRemoveWishlistWithProductBundle? onRemoveWishlist;
 
   ProductBundleHeaderListItemControllerState({
     required this.productBundle,

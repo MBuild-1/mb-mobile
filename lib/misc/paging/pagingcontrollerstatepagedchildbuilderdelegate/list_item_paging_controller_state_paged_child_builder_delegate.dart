@@ -250,6 +250,8 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
           productAppearanceData: item.productAppearanceData,
           onAddWishlist: item.onAddWishlist,
           onRemoveWishlist: item.onRemoveWishlist,
+          onAddCart: item.onAddCart,
+          onRemoveCart: item.onRemoveCart,
         );
       } else if (item is VerticalProductListItemControllerState) {
         if (item is ShimmerVerticalProductListItemControllerState) {
@@ -261,6 +263,8 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
             productAppearanceData: item.productAppearanceData,
             onAddWishlist: item.onAddWishlist,
             onRemoveWishlist: item.onRemoveWishlist,
+            onAddCart: item.onAddCart,
+            onRemoveCart: item.onRemoveCart,
           );
         }
       } else {
@@ -320,6 +324,8 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
           productBundle: item.productBundle,
           onAddWishlist: item.onAddWishlist,
           onRemoveWishlist: item.onRemoveWishlist,
+          onAddCart: item.onAddCart,
+          onRemoveCart: item.onRemoveCart,
         );
       } else if (item is VerticalProductBundleListItemControllerState) {
         if (item is ShimmerVerticalProductBundleListItemControllerState) {
@@ -329,6 +335,8 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
             productBundle: item.productBundle,
             onAddWishlist: item.onAddWishlist,
             onRemoveWishlist: item.onRemoveWishlist,
+            onAddCart: item.onAddCart,
+            onRemoveCart: item.onRemoveCart,
           );
         }
       } else {

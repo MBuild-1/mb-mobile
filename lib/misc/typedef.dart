@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:masterbagasi/misc/aspect_ratio_value.dart';
 
 import '../controller/base_getx_controller.dart';
+import '../domain/entity/cart/cart.dart';
+import '../domain/entity/wishlist/wishlist.dart';
 import 'validation/validation_result.dart';
 import 'validation/validator/validator.dart';
 
@@ -20,3 +22,17 @@ typedef GetControllerFromGetPut = BaseGetxController Function();
 typedef VoidCallbackWithBuildContextParameter = void Function(BuildContext);
 typedef OnShowProcessCancelTransactionRequestProcessLoadingCallback = Future<void> Function();
 typedef OnShowProcessCancelTransactionRequestProcessFailedCallback = Future<void> Function(dynamic e);
+typedef OnAddToWishlist = void Function(dynamic);
+typedef OnShowAddToWishlistRequestProcessLoadingCallback = Future<void> Function();
+typedef OnAddToWishlistRequestProcessSuccessCallback = Future<void> Function();
+typedef OnShowAddToWishlistRequestProcessFailedCallback = Future<void> Function(dynamic e);
+typedef OnShowRemoveFromWishlistRequestProcessLoadingCallback = Future<void> Function();
+typedef OnRemoveFromWishlist = void Function(dynamic);
+typedef OnRemoveFromWishlistRequestProcessSuccessCallback = Future<void> Function(Wishlist);
+typedef OnShowRemoveFromWishlistRequestProcessFailedCallback = Future<void> Function(dynamic e);
+typedef OnAddCart = void Function(dynamic);
+typedef OnShowAddCartRequestProcessLoadingCallback = Future<void> Function();
+typedef OnAddCartRequestProcessSuccessCallback = Future<void> Function();
+typedef OnShowAddCartRequestProcessFailedCallback = Future<void> Function(dynamic e);
+typedef OnBack = void Function();
+typedef OnRemoveCart = void Function(dynamic);

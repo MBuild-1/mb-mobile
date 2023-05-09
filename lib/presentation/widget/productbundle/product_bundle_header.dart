@@ -12,23 +12,27 @@ import 'product_bundle_item.dart';
 
 class ProductBundleHeader extends StatelessWidget {
   final ProductBundle productBundle;
-  final OnAddWishlistWithProductBundleId? onAddWishlist;
-  final OnRemoveWishlistWithProductBundleId? onRemoveWishlist;
+  final OnAddWishlistWithProductBundle? onAddWishlist;
+  final OnRemoveWishlistWithProductBundle? onRemoveWishlist;
+  final OnAddCartWithProductBundle? onAddCart;
+  final OnRemoveCartWithProductBundle? onRemoveCart;
 
   const ProductBundleHeader({
     super.key,
     required this.productBundle,
     this.onAddWishlist,
-    this.onRemoveWishlist
+    this.onRemoveWishlist,
+    this.onAddCart,
+    this.onRemoveCart
   });
 
   @override
   Widget build(BuildContext context) {
     String soldCount = "No Sold Count".tr;
     BorderRadius borderRadius = BorderRadius.circular(16.0);
-    void onWishlist(void Function(String)? onWishlistCallback) {
+    void onWishlist(void Function(ProductBundle)? onWishlistCallback) {
       if (onWishlistCallback != null) {
-        onWishlistCallback(productBundle.id);
+        onWishlistCallback(productBundle);
       }
     }
     return SizedBox(
@@ -103,7 +107,7 @@ class ProductBundleHeader extends StatelessWidget {
                                     SizedBox(width: 1.5.w),
                                     Expanded(
                                       child: SizedOutlineGradientButton(
-                                        onPressed: () {},
+                                        onPressed: onAddCart != null ? () => onAddCart!(productBundle) : null,
                                         text: "+ ${"Cart".tr}",
                                         outlineGradientButtonType: OutlineGradientButtonType.outline,
                                         outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,

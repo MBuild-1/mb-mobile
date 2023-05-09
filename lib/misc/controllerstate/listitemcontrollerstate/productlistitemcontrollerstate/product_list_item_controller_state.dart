@@ -4,12 +4,16 @@ import '../list_item_controller_state.dart';
 
 abstract class ProductListItemControllerState extends ListItemControllerState {
   ProductAppearanceData productAppearanceData;
-  OnAddWishlistWithProductId? onAddWishlist;
-  OnRemoveWishlistWithProductId? onRemoveWishlist;
+  OnAddWishlistWithProductAppearanceData? onAddWishlist;
+  OnRemoveWishlistWithProductAppearanceData? onRemoveWishlist;
+  OnAddCartWithProductAppearanceData? onAddCart;
+  OnRemoveCartWithProductAppearanceData? onRemoveCart;
 
   ProductListItemControllerState({
     required this.productAppearanceData,
     this.onAddWishlist,
-    this.onRemoveWishlist
+    this.onRemoveWishlist,
+    this.onAddCart,
+    this.onRemoveCart
   });
 }
