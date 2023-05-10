@@ -139,10 +139,12 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Select Country": "Pilih Negara",
       "Choose Country": "Pilih Negara",
       "The price of air delivery is listed /Kg": "Harga Pengiriman Udara Tertera /Kg",
-      "Berat": "Weight",
-      "Harga": "Price",
+      "Weight": "Berat",
+      "Price": "Harga",
       "Min": "Min",
-      "Max": "Maks"
+      "Max": "Maks",
+      "Where do you want it sent": "Mau dikirim ke mana",
+      "To make your shopping experience better, choose an address first": "Biar pengalaman belanjamu lebih baik, pilih alamat dulu"
     }
   };
 
