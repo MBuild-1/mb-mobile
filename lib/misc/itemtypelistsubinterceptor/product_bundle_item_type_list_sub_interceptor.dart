@@ -32,7 +32,9 @@ class ProductBundleItemTypeListSubInterceptor extends ItemTypeListSubInterceptor
           paddingChildListItemControllerState: VerticalProductBundleListItemControllerState(
             productBundle: oldItemType.productBundle,
             onAddWishlist: oldItemType.onAddWishlist,
-            onRemoveWishlist: oldItemType.onRemoveWishlist
+            onRemoveWishlist: oldItemType.onRemoveWishlist,
+            onAddCart: oldItemType.onAddCart,
+            onRemoveCart: oldItemType.onRemoveCart
           )
         ),
       ]);

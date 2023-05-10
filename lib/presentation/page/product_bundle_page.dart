@@ -6,11 +6,14 @@ import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_ext.dart';
 
 import '../../controller/product_bundle_controller.dart';
+import '../../domain/entity/cart/support_cart.dart';
 import '../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../domain/entity/product/productbundle/product_bundle_paging_parameter.dart';
+import '../../domain/entity/wishlist/support_wishlist.dart';
 import '../../domain/usecase/get_product_bundle_paging_use_case.dart';
 import '../../misc/additionalloadingindicatorchecker/product_bundle_additional_paging_result_parameter_checker.dart';
 import '../../misc/constant.dart';
+import '../../misc/controllercontentdelegate/wishlist_and_cart_controller_content_delegate.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/compound_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/padding_container_list_item_controller_state.dart';
@@ -18,6 +21,7 @@ import '../../misc/controllerstate/listitemcontrollerstate/productbundlelistitem
 import '../../misc/controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
 import '../../misc/error/message_error.dart';
+import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
@@ -40,7 +44,12 @@ class ProductBundlePage extends RestorableGetxPage<_ProductBundlePageRestoration
   @override
   void onSetController() {
     _productBundleController.controller = GetExtended.put<ProductBundleController>(
-      ProductBundleController(controllerManager, Injector.locator<GetProductBundlePagingUseCase>()), tag: pageName
+      ProductBundleController(
+        controllerManager,
+        Injector.locator<GetProductBundlePagingUseCase>(),
+        Injector.locator<WishlistAndCartControllerContentDelegate>()
+      ),
+      tag: pageName
     );
   }
 
@@ -189,7 +198,9 @@ class _StatefulProductBundleControllerMediatorWidgetState extends State<_Statefu
       return productBundlePaging.map(
         (productBundle) => VerticalProductBundleListItemControllerState(
           productBundle: productBundle,
-          onAddWishlist: (productBundleId) {}
+          onAddWishlist: (productBundleOutput) => widget.productBundleController.wishlistAndCartControllerContentDelegate.addToWishlist(productBundleOutput),
+          onRemoveWishlist: (productBundleOutput) => widget.productBundleController.wishlistAndCartControllerContentDelegate.removeFromWishlist(productBundleOutput),
+          onAddCart: (productBundleOutput) => widget.productBundleController.wishlistAndCartControllerContentDelegate.addToCart(productBundleOutput),
         )
       );
     });
@@ -197,6 +208,12 @@ class _StatefulProductBundleControllerMediatorWidgetState extends State<_Statefu
 
   @override
   Widget build(BuildContext context) {
+    widget.productBundleController.wishlistAndCartControllerContentDelegate.setWishlistAndCartDelegate(
+      Injector.locator<WishlistAndCartDelegateFactory>().generateWishlistAndCartDelegate(
+        onGetBuildContext: () => context,
+        onGetErrorProvider: () => Injector.locator<ErrorProvider>()
+      )
+    );
     return Scaffold(
       appBar: DefaultSearchAppBar(),
       body: SafeArea(

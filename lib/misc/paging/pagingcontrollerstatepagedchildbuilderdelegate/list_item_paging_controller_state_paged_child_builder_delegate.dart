@@ -723,6 +723,8 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
         productBundle: item.productBundle,
         onAddWishlist: item.onAddWishlist,
         onRemoveWishlist: item.onRemoveWishlist,
+        onAddCart: item.onAddCart,
+        onRemoveCart: item.onRemoveCart,
       );
     } else if (item is CouponListItemControllerState) {
       if (item is HorizontalCouponListItemControllerState) {

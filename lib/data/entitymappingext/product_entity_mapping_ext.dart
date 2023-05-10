@@ -341,7 +341,7 @@ extension WishlistDetailEntityMappingExt on ResponseWrapper {
     if (productEntry != null) {
       return ResponseWrapper(productEntry).mapFromResponseToProductEntry();
     } else if (bundling != null) {
-      return ResponseWrapper(productEntry).mapFromResponseToProductBundle();
+      return ResponseWrapper(bundling).mapFromResponseToProductBundle();
     } else {
       throw MessageError(message: "Support wishlist not suitable");
     }

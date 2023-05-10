@@ -406,7 +406,9 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
                 VirtualSpacingListItemControllerState(height: 3.w),
                 ProductBundleHighlightListItemControllerState(
                   productBundle: onObserveSuccessLoadProductBundleHighlightParameter.productBundle,
-                  onAddWishlist: (productBundleId) {},
+                  onAddWishlist: (productBundleOutput) => widget.homeMainMenuSubController.wishlistAndCartControllerContentDelegate.addToWishlist(productBundleOutput),
+                  onRemoveWishlist: (productBundleOutput) => widget.homeMainMenuSubController.wishlistAndCartControllerContentDelegate.removeFromWishlist(productBundleOutput),
+                  onAddCart: (productBundleOutput) => widget.homeMainMenuSubController.wishlistAndCartControllerContentDelegate.addToCart(productBundleOutput),
                 )
               ]
             )
