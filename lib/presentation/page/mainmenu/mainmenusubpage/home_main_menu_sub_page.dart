@@ -562,7 +562,10 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
         onObserveLoadCurrentAddress: (onObserveLoadCurrentAddressParameter) {
           return DeliveryToListItemControllerState(
             addressLoadDataResult: onObserveLoadCurrentAddressParameter.addressLoadDataResult,
-            errorProvider: Injector.locator<ErrorProvider>()
+            errorProvider: Injector.locator<ErrorProvider>(),
+            onAddressSelectedChanged: (address) {
+              onObserveLoadCurrentAddressParameter.repeatableDynamicItemCarouselAdditionalParameter.onRepeatLoading();
+            }
           );
         }
       )

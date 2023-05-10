@@ -1,5 +1,6 @@
 import 'package:masterbagasi/presentation/widget/product/product_item.dart';
 
+import '../../domain/entity/address/address.dart';
 import '../../domain/entity/cart/cart.dart';
 import '../../domain/entity/delivery/delivery_review.dart';
 import '../../domain/entity/news/news.dart';
@@ -7,7 +8,9 @@ import '../../domain/entity/product/product_appearance_data.dart';
 import '../../domain/entity/product/productbrand/product_brand.dart';
 import '../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../domain/entity/product/productcategory/product_category.dart';
+import '../../presentation/widget/address/address_item.dart';
 import '../../presentation/widget/productbundle/product_bundle_item.dart';
+import '../controllerstate/listitemcontrollerstate/addresslistitemcontrollerstate/horizontal_address_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/shortcartlistitemcontrollerstate/horizontal_short_cart_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/deliveryreviewlistitemcontrollerstate/horizontal_delivery_review_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
@@ -18,6 +21,8 @@ import '../controllerstate/listitemcontrollerstate/productbundlelistitemcontroll
 import '../controllerstate/listitemcontrollerstate/productcategorylistitemcontrollerstate/circleproductcategorylistitemcontrollerstate/horizontal_circle_product_category_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/productlistitemcontrollerstate/horizontal_product_list_item_controller_state.dart';
 import '../error/message_error.dart';
+import '../on_observe_load_product_delegate.dart';
+import '../parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/address_delegate_parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/cart_delegate_parameterized_entity_and_list_item_controllere_state_mediator_parameter.dart';
 import '../parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/compound_parameterized_entity_and_list_item_controller_state_mediator.dart';
 import '../parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
@@ -41,6 +46,8 @@ class HorizontalParameterizedEntityAndListItemControllerStateMediator extends Pa
       return _checkingForProductBundle(entity, parameter: parameter);
     } else if (entity is Cart) {
       return HorizontalShortCartListItemControllerState(cart: entity);
+    } else if (entity is AddressCarouselCompoundParameterized) {
+      return _checkingForAddress(entity, parameter: parameter);
     } else {
       return NoContentListItemControllerState();
     }
@@ -48,8 +55,7 @@ class HorizontalParameterizedEntityAndListItemControllerStateMediator extends Pa
 
   void _separateWishlistAndCartDelegateParameter(
     void Function(
-      WishlistDelegateParameterizedEntityAndListItemControllerStateMediatorParameter? wishlistDelegateParameter,
-      CartDelegateParameterizedEntityAndListItemControllerStateMediatorParameter? cartDelegateParameter,
+      SeparatedParameterizedEntityAndListItemControllerStateMediatorParameter separatedParameter,
     ) afterSeparateParameter,
     {parameter}
   ) {
@@ -65,17 +71,22 @@ class HorizontalParameterizedEntityAndListItemControllerStateMediator extends Pa
     if (parameterList.isNotEmpty) {
       WishlistDelegateParameterizedEntityAndListItemControllerStateMediatorParameter? wishlistDelegateParameter;
       CartDelegateParameterizedEntityAndListItemControllerStateMediatorParameter? cartDelegateParameter;
+      AddressDelegateParameterizedEntityAndListItemControllerStateMediatorParameter? addressDelegateParameter;
       for (var iteratedParameter in parameterList) {
         if (iteratedParameter is WishlistDelegateParameterizedEntityAndListItemControllerStateMediatorParameter) {
           wishlistDelegateParameter = iteratedParameter;
-        } else
-        if (iteratedParameter is CartDelegateParameterizedEntityAndListItemControllerStateMediatorParameter) {
+        } else if (iteratedParameter is CartDelegateParameterizedEntityAndListItemControllerStateMediatorParameter) {
           cartDelegateParameter = iteratedParameter;
+        } else if (iteratedParameter is AddressDelegateParameterizedEntityAndListItemControllerStateMediatorParameter) {
+          addressDelegateParameter = iteratedParameter;
         }
       }
       afterSeparateParameter(
-        wishlistDelegateParameter,
-        cartDelegateParameter
+        SeparatedParameterizedEntityAndListItemControllerStateMediatorParameter(
+          wishlistDelegateParameter: wishlistDelegateParameter,
+          cartDelegateParameter: cartDelegateParameter,
+          addressDelegateParameter: addressDelegateParameter
+        )
       );
     } else {
       throw MessageError(title: "Wishlist and cart delegate is required.");
@@ -83,33 +94,29 @@ class HorizontalParameterizedEntityAndListItemControllerStateMediator extends Pa
   }
 
   ListItemControllerState _checkingForProduct(ProductAppearanceData productAppearanceData, {parameter}) {
-    WishlistDelegateParameterizedEntityAndListItemControllerStateMediatorParameter? wishlistDelegateParameter;
-    CartDelegateParameterizedEntityAndListItemControllerStateMediatorParameter? cartDelegateParameter;
+    late SeparatedParameterizedEntityAndListItemControllerStateMediatorParameter separatedParameter;
     _separateWishlistAndCartDelegateParameter(
-      (wishlistDelegateParameterOutput, cartDelegateParameterOutput) {
-        wishlistDelegateParameter = wishlistDelegateParameterOutput;
-        cartDelegateParameter = cartDelegateParameterOutput;
-      },
+      (separatedParameterOutput) => separatedParameter = separatedParameterOutput,
       parameter: parameter
     );
     OnAddWishlistWithProductAppearanceData? onAddToWishlist;
     OnRemoveWishlistWithProductAppearanceData? onRemoveFromWishlist;
     OnAddCartWithProductAppearanceData? onAddCart;
     OnRemoveCartWithProductAppearanceData? onRemoveCart;
-    if (wishlistDelegateParameter != null) {
-      if (wishlistDelegateParameter!.onAddToWishlist != null) {
-        onAddToWishlist = (productAppearanceData) => wishlistDelegateParameter!.onAddToWishlist!(productAppearanceData);
+    if (separatedParameter.wishlistDelegateParameter != null) {
+      if (separatedParameter.wishlistDelegateParameter!.onAddToWishlist != null) {
+        onAddToWishlist = (productAppearanceData) => separatedParameter.wishlistDelegateParameter!.onAddToWishlist!(productAppearanceData);
       }
-      if (wishlistDelegateParameter!.onRemoveFromWishlist != null) {
-        onRemoveFromWishlist = (productAppearanceData) => wishlistDelegateParameter!.onRemoveFromWishlist!(productAppearanceData);
+      if (separatedParameter.wishlistDelegateParameter!.onRemoveFromWishlist != null) {
+        onRemoveFromWishlist = (productAppearanceData) => separatedParameter.wishlistDelegateParameter!.onRemoveFromWishlist!(productAppearanceData);
       }
     }
-    if (cartDelegateParameter != null) {
-      if (cartDelegateParameter!.onAddCart != null) {
-        onAddCart = (productAppearanceData) => cartDelegateParameter!.onAddCart!(productAppearanceData);
+    if (separatedParameter.cartDelegateParameter != null) {
+      if (separatedParameter.cartDelegateParameter!.onAddCart != null) {
+        onAddCart = (productAppearanceData) => separatedParameter.cartDelegateParameter!.onAddCart!(productAppearanceData);
       }
-      if (cartDelegateParameter!.onRemoveCart != null) {
-        onRemoveCart = (productAppearanceData) => cartDelegateParameter!.onRemoveCart!(productAppearanceData);
+      if (separatedParameter.cartDelegateParameter!.onRemoveCart != null) {
+        onRemoveCart = (productAppearanceData) => separatedParameter.cartDelegateParameter!.onRemoveCart!(productAppearanceData);
       }
     }
     return HorizontalProductListItemControllerState(
@@ -122,33 +129,29 @@ class HorizontalParameterizedEntityAndListItemControllerStateMediator extends Pa
   }
 
   ListItemControllerState _checkingForProductBundle(ProductBundle productBundle, {parameter}) {
-    WishlistDelegateParameterizedEntityAndListItemControllerStateMediatorParameter? wishlistDelegateParameter;
-    CartDelegateParameterizedEntityAndListItemControllerStateMediatorParameter? cartDelegateParameter;
+    late SeparatedParameterizedEntityAndListItemControllerStateMediatorParameter separatedParameter;
     _separateWishlistAndCartDelegateParameter(
-      (wishlistDelegateParameterOutput, cartDelegateParameterOutput) {
-        wishlistDelegateParameter = wishlistDelegateParameterOutput;
-        cartDelegateParameter = cartDelegateParameterOutput;
-      },
+      (separatedParameterOutput) => separatedParameter = separatedParameterOutput,
       parameter: parameter
     );
     OnAddWishlistWithProductBundle? onAddToWishlist;
     OnRemoveWishlistWithProductBundle? onRemoveFromWishlist;
     OnAddCartWithProductBundle? onAddCart;
     OnRemoveCartWithProductBundle? onRemoveCart;
-    if (wishlistDelegateParameter != null) {
-      if (wishlistDelegateParameter!.onAddToWishlist != null) {
-        onAddToWishlist = (productBundle) => wishlistDelegateParameter!.onAddToWishlist!(productBundle);
+    if (separatedParameter.wishlistDelegateParameter != null) {
+      if (separatedParameter.wishlistDelegateParameter!.onAddToWishlist != null) {
+        onAddToWishlist = (productBundle) => separatedParameter.wishlistDelegateParameter!.onAddToWishlist!(productBundle);
       }
-      if (wishlistDelegateParameter!.onRemoveFromWishlist != null) {
-        onRemoveFromWishlist = (productBundle) => wishlistDelegateParameter!.onRemoveFromWishlist!(productBundle);
+      if (separatedParameter.wishlistDelegateParameter!.onRemoveFromWishlist != null) {
+        onRemoveFromWishlist = (productBundle) => separatedParameter.wishlistDelegateParameter!.onRemoveFromWishlist!(productBundle);
       }
     }
-    if (cartDelegateParameter != null) {
-      if (cartDelegateParameter!.onAddCart != null) {
-        onAddCart = (productBundle) => cartDelegateParameter!.onAddCart!(productBundle);
+    if (separatedParameter.cartDelegateParameter != null) {
+      if (separatedParameter.cartDelegateParameter!.onAddCart != null) {
+        onAddCart = (productBundle) => separatedParameter.cartDelegateParameter!.onAddCart!(productBundle);
       }
-      if (cartDelegateParameter!.onRemoveCart != null) {
-        onRemoveCart = (productBundle) => cartDelegateParameter!.onRemoveCart!(productBundle);
+      if (separatedParameter.cartDelegateParameter!.onRemoveCart != null) {
+        onRemoveCart = (productBundle) => separatedParameter.cartDelegateParameter!.onRemoveCart!(productBundle);
       }
     }
     return HorizontalProductBundleListItemControllerState(
@@ -159,4 +162,44 @@ class HorizontalParameterizedEntityAndListItemControllerStateMediator extends Pa
       onRemoveCart: onRemoveCart
     );
   }
+
+  ListItemControllerState _checkingForAddress(AddressCarouselCompoundParameterized addressCarouselCompoundParameterized, {parameter}) {
+    late SeparatedParameterizedEntityAndListItemControllerStateMediatorParameter separatedParameter;
+    _separateWishlistAndCartDelegateParameter(
+      (separatedParameterOutput) => separatedParameter = separatedParameterOutput,
+      parameter: parameter
+    );
+    void Function(Address)? onSelectAddress;
+    if (separatedParameter.addressDelegateParameter != null) {
+      if (separatedParameter.addressDelegateParameter!.onSelectAddressFromDelegate != null) {
+        onSelectAddress = (addressOutput) {
+          separatedParameter.addressDelegateParameter!.onSelectAddressFromDelegate!(
+            addressOutput, () {
+              List<Address> addressList = addressCarouselCompoundParameterized.onObserveSuccessLoadAddressCarouselParameter.addressList;
+              for (Address iteratedAddress in addressList) {
+                iteratedAddress.isPrimary = 0;
+              }
+              addressOutput.isPrimary = 1;
+            }
+          );
+        };
+      }
+    }
+    return HorizontalAddressListItemControllerState(
+      address: addressCarouselCompoundParameterized.address,
+      onSelectAddress: onSelectAddress,
+    );
+  }
+}
+
+class SeparatedParameterizedEntityAndListItemControllerStateMediatorParameter {
+  WishlistDelegateParameterizedEntityAndListItemControllerStateMediatorParameter? wishlistDelegateParameter;
+  CartDelegateParameterizedEntityAndListItemControllerStateMediatorParameter? cartDelegateParameter;
+  AddressDelegateParameterizedEntityAndListItemControllerStateMediatorParameter? addressDelegateParameter;
+
+  SeparatedParameterizedEntityAndListItemControllerStateMediatorParameter({
+    required this.wishlistDelegateParameter,
+    required this.cartDelegateParameter,
+    required this.addressDelegateParameter
+  });
 }

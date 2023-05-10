@@ -35,6 +35,7 @@ import '../../../domain/usecase/get_snack_for_lying_around_list_use_case.dart';
 import '../../../misc/constant.dart';
 import '../../../misc/controllercontentdelegate/wishlist_and_cart_controller_content_delegate.dart';
 import '../../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
+import '../../../misc/entityandlistitemcontrollerstatemediator/horizontal_component_entity_parameterized_entity_and_list_item_controller_state_mediator.dart';
 import '../../../misc/error/message_error.dart';
 import '../../../misc/getextended/get_extended.dart';
 import '../../../misc/load_data_result.dart';
@@ -125,6 +126,7 @@ class HomeMainMenuSubController extends BaseGetxController {
   }
 
   HomeMainMenuComponentEntity getDeliveryTo() {
+    RepeatableDynamicItemCarouselAdditionalParameter repeatableDynamicItemCarouselAdditionalParameter = RepeatableDynamicItemCarouselAdditionalParameter();
     return DynamicItemCarouselDirectlyHomeMainMenuComponentEntity(
       title: MultiLanguageString(""),
       onDynamicItemAction: (title, description, observer) async {
@@ -146,13 +148,15 @@ class HomeMainMenuSubController extends BaseGetxController {
         if (_homeMainMenuDelegate != null) {
           return _homeMainMenuDelegate!.onObserveLoadCurrentAddress(
             _OnObserveLoadCurrentAddressParameter(
-              addressLoadDataResult: addressLoadDataResult
+              addressLoadDataResult: addressLoadDataResult,
+              repeatableDynamicItemCarouselAdditionalParameter: repeatableDynamicItemCarouselAdditionalParameter
             )
           );
         } else {
           throw MessageError(title: "Feed main menu sub delegate must be not null");
         }
       },
+      dynamicItemCarouselAdditionalParameter: repeatableDynamicItemCarouselAdditionalParameter
     );
   }
 
@@ -674,8 +678,10 @@ class _OnObserveLoadingLoadTransparentBannerParameter {}
 
 class _OnObserveLoadCurrentAddressParameter {
   LoadDataResult<Address> addressLoadDataResult;
+  RepeatableDynamicItemCarouselAdditionalParameter repeatableDynamicItemCarouselAdditionalParameter;
 
   _OnObserveLoadCurrentAddressParameter({
-    required this.addressLoadDataResult
+    required this.addressLoadDataResult,
+    required this.repeatableDynamicItemCarouselAdditionalParameter
   });
 }

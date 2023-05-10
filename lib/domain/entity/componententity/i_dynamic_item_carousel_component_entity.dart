@@ -1,5 +1,6 @@
 import '../../../misc/multi_language_string.dart';
 import '../homemainmenucomponententity/dynamic_item_carousel_home_main_menu_component_entity.dart';
+import 'dynamicitemcarouseladditionalparameter/dynamic_item_carousel_additional_parameter.dart';
 import 'i_component_entity.dart';
 
 abstract class IDynamicItemCarouselComponentEntity<T> implements IComponentEntity {
@@ -13,4 +14,6 @@ abstract class IDynamicItemCarouselComponentEntity<T> implements IComponentEntit
   set onObserveLoadingDynamicItemActionState(ObserveDynamicItemAction? value);
   ObserveDynamicItemAction get onObserveSuccessDynamicItemActionState;
   set onObserveSuccessDynamicItemActionState(ObserveDynamicItemAction value);
+  DynamicItemCarouselAdditionalParameter? get dynamicItemCarouselAdditionalParameter;
+  set dynamicItemCarouselAdditionalParameter(DynamicItemCarouselAdditionalParameter? value);
 }

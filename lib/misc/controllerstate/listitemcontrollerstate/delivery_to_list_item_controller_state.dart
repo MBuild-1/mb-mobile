@@ -6,9 +6,11 @@ import 'list_item_controller_state.dart';
 class DeliveryToListItemControllerState extends ListItemControllerState {
   LoadDataResult<Address> addressLoadDataResult;
   ErrorProvider errorProvider;
+  void Function(Address)? onAddressSelectedChanged;
 
   DeliveryToListItemControllerState({
     required this.addressLoadDataResult,
-    required this.errorProvider
+    required this.errorProvider,
+    this.onAddressSelectedChanged
   });
 }

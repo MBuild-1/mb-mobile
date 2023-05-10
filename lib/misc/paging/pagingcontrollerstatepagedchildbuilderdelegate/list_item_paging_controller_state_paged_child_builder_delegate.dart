@@ -12,6 +12,7 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../../../domain/entity/address/address.dart';
 import '../../../domain/entity/product/product.dart';
 import '../../../domain/entity/product/productentry/product_entry.dart';
+import '../../../presentation/page/modaldialogpage/select_address_modal_dialog_page.dart';
 import '../../../presentation/widget/additional_item_summary_widget.dart';
 import '../../../presentation/widget/additional_item_widget.dart';
 import '../../../presentation/widget/address/horizontal_address_item.dart';
@@ -65,6 +66,7 @@ import '../../../presentation/widget/province_map_header_list_item.dart';
 import '../../../presentation/widget/shimmer_carousel_item.dart';
 import '../../../presentation/widget/address/shipping_address_indicator.dart';
 import '../../../presentation/widget/short_video_carousel_list_item.dart';
+import '../../../presentation/widget/tap_area.dart';
 import '../../../presentation/widget/titleanddescriptionitem/title_and_description_item.dart';
 import '../../../presentation/widget/titledescriptionandcontentitem/title_description_and_content_item.dart';
 import '../../../presentation/widget/product_detail_header.dart';
@@ -152,6 +154,7 @@ import '../../controllerstate/listitemcontrollerstate/title_description_and_cont
 import '../../controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/widget_substitution_list_item_controller_state.dart';
 import '../../controllerstate/paging_controller_state.dart';
+import '../../dialog_helper.dart';
 import '../../errorprovider/error_provider.dart';
 import '../../injector.dart';
 import '../../listitempagingparameterinjection/list_item_paging_parameter_injection.dart';
@@ -608,19 +611,29 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
             TextSpan(text: errorProviderResult.message, style: const TextStyle(color: Colors.white)),
           ];
         }
-        return Container(
-          padding: const EdgeInsets.all(16.0),
-          color: Constant.colorDarkBlue,
-          child: Row(
-            children: [
-              ModifiedSvgPicture.asset(Constant.vectorLocation, color: Colors.white),
-              const SizedBox(width: 10),
-              Text.rich(
-                TextSpan(
-                  children: inlineSpanList
-                )
+        return TapArea(
+          onTap: () async {
+            await DialogHelper.showModalBottomDialogPage<bool, String>(
+              context: context,
+              modalDialogPageBuilder: (context, parameter) => SelectAddressModalDialogPage(
+                onAddressSelectedChanged: item.onAddressSelectedChanged,
               )
-            ],
+            );
+          },
+          child: Container(
+            padding: const EdgeInsets.all(16.0),
+            color: Constant.colorDarkBlue,
+            child: Row(
+              children: [
+                ModifiedSvgPicture.asset(Constant.vectorLocation, color: Colors.white),
+                const SizedBox(width: 10),
+                Text.rich(
+                  TextSpan(
+                    children: inlineSpanList
+                  )
+                )
+              ],
+            ),
           ),
         );
       }

@@ -1,5 +1,6 @@
 import '../../../misc/load_data_result.dart';
 import '../../../misc/multi_language_string.dart';
+import '../componententity/dynamicitemcarouseladditionalparameter/dynamic_item_carousel_additional_parameter.dart';
 import '../componententity/i_dynamic_item_carousel_component_entity.dart';
 import 'home_main_menu_component_entity.dart';
 
@@ -12,18 +13,21 @@ class DynamicItemCarouselHomeMainMenuComponentEntity extends HomeMainMenuCompone
   Future<void> Function(MultiLanguageString? title, MultiLanguageString? description, DynamicItemAction dynamicItemAction) _onDynamicItemAction;
   ObserveDynamicItemAction? _onObserveLoadingDynamicItemActionState;
   ObserveDynamicItemAction _onObserveSuccessDynamicItemActionState;
+  DynamicItemCarouselAdditionalParameter? _dynamicItemCarouselAdditionalParameter;
 
   DynamicItemCarouselHomeMainMenuComponentEntity({
     MultiLanguageString? title,
     MultiLanguageString? description,
     required Future<void> Function(MultiLanguageString? title, MultiLanguageString? description, DynamicItemAction dynamicItemAction) onDynamicItemAction,
     ObserveDynamicItemAction? onObserveLoadingDynamicItemActionState,
-    required ObserveDynamicItemAction onObserveSuccessDynamicItemActionState
+    required ObserveDynamicItemAction onObserveSuccessDynamicItemActionState,
+    DynamicItemCarouselAdditionalParameter? dynamicItemCarouselAdditionalParameter
   }) : _title = title,
       _description = description,
       _onDynamicItemAction = onDynamicItemAction,
       _onObserveLoadingDynamicItemActionState = onObserveLoadingDynamicItemActionState,
-      _onObserveSuccessDynamicItemActionState = onObserveSuccessDynamicItemActionState;
+      _onObserveSuccessDynamicItemActionState = onObserveSuccessDynamicItemActionState,
+      _dynamicItemCarouselAdditionalParameter = dynamicItemCarouselAdditionalParameter;
 
   @override
   MultiLanguageString? get title => _title;
@@ -54,4 +58,10 @@ class DynamicItemCarouselHomeMainMenuComponentEntity extends HomeMainMenuCompone
 
   @override
   set onObserveSuccessDynamicItemActionState(ObserveDynamicItemAction value) => _onObserveSuccessDynamicItemActionState = value;
+
+  @override
+  DynamicItemCarouselAdditionalParameter? get dynamicItemCarouselAdditionalParameter => _dynamicItemCarouselAdditionalParameter;
+
+  @override
+  set dynamicItemCarouselAdditionalParameter(DynamicItemCarouselAdditionalParameter? value) => _dynamicItemCarouselAdditionalParameter = value;
 }

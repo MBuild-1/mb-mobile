@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:masterbagasi/misc/entityandlistitemcontrollerstatemediator/parameterized_entity_and_list_item_controller_state_mediator.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
+import '../../domain/entity/componententity/dynamicitemcarouseladditionalparameter/dynamic_item_carousel_additional_parameter.dart';
 import '../../domain/entity/componententity/i_dynamic_item_carousel_component_entity.dart';
 import '../../domain/entity/componententity/i_dynamic_item_carousel_directly_component_entity.dart';
 import '../../domain/entity/componententity/i_item_carousel_component_entity.dart';
@@ -59,16 +60,23 @@ class HorizontalComponentEntityParameterizedEntityAndListItemControllerStateMedi
           }
         );
         parameter.dynamicItemLoadDataResultDynamicListItemControllerStateList.add(dynamicList);
-        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          entity.onDynamicItemAction(
-            entity.title,
-            entity.description,
-            (title, description, itemLoadDataResult) {
-              dynamicList.loadDataResult = itemLoadDataResult;
-              parameter.onSetState();
-            }
-          );
-        });
+        void dynamicItemAction() {
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            entity.onDynamicItemAction(
+              entity.title,
+              entity.description,
+              (title, description, itemLoadDataResult) {
+                dynamicList.loadDataResult = itemLoadDataResult;
+                parameter.onSetState();
+              }
+            );
+          });
+        }
+        dynamicItemAction();
+        if (entity.dynamicItemCarouselAdditionalParameter is RepeatableDynamicItemCarouselAdditionalParameter) {
+          RepeatableDynamicItemCarouselAdditionalParameter repeatableDynamicItemCarouselAdditionalParameter = entity.dynamicItemCarouselAdditionalParameter as RepeatableDynamicItemCarouselAdditionalParameter;
+          repeatableDynamicItemCarouselAdditionalParameter._onRepeatLoading = dynamicItemAction;
+        }
         return parameter.dynamicItemLoadDataResultDynamicListItemControllerStateList.last;
       } else {
         return NoContentListItemControllerState();
@@ -88,16 +96,23 @@ class HorizontalComponentEntityParameterizedEntityAndListItemControllerStateMedi
           }
         );
         parameter.dynamicItemLoadDataResultDynamicListItemControllerStateList.add(dynamicList);
-        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          entity.onDynamicItemAction(
-            entity.title,
-            entity.description,
-            (title, description, itemLoadDataResult) {
-              dynamicList.loadDataResult = itemLoadDataResult;
-              parameter.onSetState();
-            }
-          );
-        });
+        void dynamicItemAction() {
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            entity.onDynamicItemAction(
+              entity.title,
+              entity.description,
+              (title, description, itemLoadDataResult) {
+                dynamicList.loadDataResult = itemLoadDataResult;
+                parameter.onSetState();
+              }
+            );
+          });
+        }
+        dynamicItemAction();
+        if (entity.dynamicItemCarouselAdditionalParameter is RepeatableDynamicItemCarouselAdditionalParameter) {
+          RepeatableDynamicItemCarouselAdditionalParameter repeatableDynamicItemCarouselAdditionalParameter = entity.dynamicItemCarouselAdditionalParameter as RepeatableDynamicItemCarouselAdditionalParameter;
+          repeatableDynamicItemCarouselAdditionalParameter._onRepeatLoading = dynamicItemAction;
+        }
         return parameter.dynamicItemLoadDataResultDynamicListItemControllerStateList.last;
       } else {
         return NoContentListItemControllerState();
@@ -106,4 +121,10 @@ class HorizontalComponentEntityParameterizedEntityAndListItemControllerStateMedi
       return NoContentListItemControllerState();
     }
   }
+}
+
+class RepeatableDynamicItemCarouselAdditionalParameter extends DynamicItemCarouselAdditionalParameter {
+  void Function()? _onRepeatLoading;
+
+  void Function() get onRepeatLoading => _onRepeatLoading ?? (throw UnimplementedError());
 }

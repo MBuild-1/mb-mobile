@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
+import '../domain/entity/address/address.dart';
 import '../domain/entity/cart/cart.dart';
 import '../domain/entity/coupon/coupon.dart';
 import '../domain/entity/delivery/delivery_review.dart';
@@ -51,6 +52,7 @@ class OnObserveLoadProductDelegateFactory {
   ParameterizedEntityAndListItemControllerStateMediatorParameter Function()? onInjectLoadNewsCarouselParameterizedEntity;
   ParameterizedEntityAndListItemControllerStateMediatorParameter Function()? onInjectLoadCouponCarouselParameterizedEntity;
   ParameterizedEntityAndListItemControllerStateMediatorParameter Function()? onInjectLoadCartCarouselParameterizedEntity;
+  ParameterizedEntityAndListItemControllerStateMediatorParameter Function()? onInjectLoadAddressCarouselParameterizedEntity;
 
   OnObserveLoadProductDelegate generateOnObserveLoadProductDelegate() {
     return OnObserveLoadProductDelegate(
@@ -302,15 +304,41 @@ class OnObserveLoadProductDelegateFactory {
           shimmerCarouselListItemGenerator: Injector.locator<CartShimmerCarouselListItemGeneratorFactory>().getShimmerCarouselListItemGeneratorType()
         );
       },
-      onShowAddToWishlistRequestProcessLoadingCallback: () async {},
-      onAddToWishlistRequestProcessSuccessCallback: () async {},
-      onShowAddToWishlistRequestProcessFailedCallback: (e) async {},
-      onRemoveAddToWishlistRequestProcessLoadingCallback: () async {},
-      onRemoveToWishlistRequestProcessSuccessCallback: (wishlist) async {},
-      onRemoveAddToWishlistRequestProcessFailedCallback: (e) async {},
-      onShowAddCartRequestProcessLoadingCallback: () async {},
-      onAddCartRequestProcessSuccessCallback: () async {},
-      onShowAddCartRequestProcessFailedCallback: (e) async {},
+      onObserveSuccessLoadAddressCarousel: (onObserveSuccessLoadAddressCarouselParameter) {
+        TitleInterceptor? titleInterceptor;
+        CarouselBackground? carouselBackground;
+        if (onInjectCarouselParameterizedEntity != null) {
+          titleInterceptor = onInjectCarouselParameterizedEntity!(onObserveSuccessLoadAddressCarouselParameter.data).titleInterceptor;
+          carouselBackground = onInjectCarouselParameterizedEntity!(onObserveSuccessLoadAddressCarouselParameter.data).carouselBackground;
+        }
+        return CarouselListItemControllerState(
+          title: onObserveSuccessLoadAddressCarouselParameter.title.toEmptyStringNonNull,
+          description: onObserveSuccessLoadAddressCarouselParameter.description.toEmptyStringNonNull,
+          titleInterceptor: titleInterceptor,
+          padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+          itemListItemControllerState: onObserveSuccessLoadAddressCarouselParameter.addressList.map<ListItemControllerState>(
+            (address) {
+              AddressCarouselCompoundParameterized addressCarouselCompoundParameterized = AddressCarouselCompoundParameterized(
+                onObserveSuccessLoadAddressCarouselParameter: onObserveSuccessLoadAddressCarouselParameter,
+                address: address
+              );
+              return Injector.locator<HorizontalParameterizedEntityAndListItemControllerStateMediator>().mapWithParameter(
+                addressCarouselCompoundParameterized, parameter: onInjectLoadAddressCarouselParameterizedEntity != null ? onInjectLoadAddressCarouselParameterizedEntity!() : null
+              );
+            }
+          ).toList(),
+          carouselBackground: carouselBackground
+        );
+      },
+      onObserveLoadingLoadAddressCarousel: (onObserveLoadingLoadAddressCarouselParameter) {
+        return ShimmerCarouselListItemControllerState<CartShimmerCarouselListItemGeneratorType>(
+          padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+          showTitleShimmer: true,
+          showDescriptionShimmer: false,
+          showItemShimmer: true,
+          shimmerCarouselListItemGenerator: Injector.locator<CartShimmerCarouselListItemGeneratorFactory>().getShimmerCarouselListItemGeneratorType()
+        );
+      },
     );
   }
 }
@@ -332,15 +360,8 @@ class OnObserveLoadProductDelegate {
   ListItemControllerState Function(OnObserveLoadingLoadCouponCarouselParameter) onObserveLoadingLoadCouponCarousel;
   ListItemControllerState Function(OnObserveSuccessLoadCartCarouselParameter) onObserveSuccessLoadCartCarousel;
   ListItemControllerState Function(OnObserveLoadingLoadCartCarouselParameter) onObserveLoadingLoadCartCarousel;
-  OnShowAddToWishlistRequestProcessLoadingCallback onShowAddToWishlistRequestProcessLoadingCallback;
-  OnAddToWishlistRequestProcessSuccessCallback onAddToWishlistRequestProcessSuccessCallback;
-  OnShowAddToWishlistRequestProcessFailedCallback onShowAddToWishlistRequestProcessFailedCallback;
-  OnShowRemoveFromWishlistRequestProcessLoadingCallback onRemoveAddToWishlistRequestProcessLoadingCallback;
-  OnRemoveFromWishlistRequestProcessSuccessCallback onRemoveToWishlistRequestProcessSuccessCallback;
-  OnShowRemoveFromWishlistRequestProcessFailedCallback onRemoveAddToWishlistRequestProcessFailedCallback;
-  OnShowAddCartRequestProcessLoadingCallback onShowAddCartRequestProcessLoadingCallback;
-  OnAddCartRequestProcessSuccessCallback onAddCartRequestProcessSuccessCallback;
-  OnShowAddCartRequestProcessFailedCallback onShowAddCartRequestProcessFailedCallback;
+  ListItemControllerState Function(OnObserveSuccessLoadAddressCarouselParameter) onObserveSuccessLoadAddressCarousel;
+  ListItemControllerState Function(OnObserveLoadingLoadAddressCarouselParameter) onObserveLoadingLoadAddressCarousel;
 
   OnObserveLoadProductDelegate({
     required this.onObserveSuccessLoadProductBrandCarousel,
@@ -359,15 +380,8 @@ class OnObserveLoadProductDelegate {
     required this.onObserveLoadingLoadCouponCarousel,
     required this.onObserveSuccessLoadCartCarousel,
     required this.onObserveLoadingLoadCartCarousel,
-    required this.onShowAddToWishlistRequestProcessLoadingCallback,
-    required this.onAddToWishlistRequestProcessSuccessCallback,
-    required this.onShowAddToWishlistRequestProcessFailedCallback,
-    required this.onRemoveAddToWishlistRequestProcessLoadingCallback,
-    required this.onRemoveToWishlistRequestProcessSuccessCallback,
-    required this.onRemoveAddToWishlistRequestProcessFailedCallback,
-    required this.onShowAddCartRequestProcessLoadingCallback,
-    required this.onAddCartRequestProcessSuccessCallback,
-    required this.onShowAddCartRequestProcessFailedCallback
+    required this.onObserveSuccessLoadAddressCarousel,
+    required this.onObserveLoadingLoadAddressCarousel
   });
 }
 
@@ -499,3 +513,28 @@ class OnObserveSuccessLoadCartCarouselParameter {
 
 class OnObserveLoadingLoadCartCarouselParameter {}
 
+class OnObserveSuccessLoadAddressCarouselParameter {
+  MultiLanguageString? title;
+  MultiLanguageString? description;
+  List<Address> addressList;
+  dynamic data;
+
+  OnObserveSuccessLoadAddressCarouselParameter({
+    required this.title,
+    required this.description,
+    required this.addressList,
+    this.data
+  });
+}
+
+class OnObserveLoadingLoadAddressCarouselParameter {}
+
+class AddressCarouselCompoundParameterized {
+  OnObserveSuccessLoadAddressCarouselParameter onObserveSuccessLoadAddressCarouselParameter;
+  Address address;
+
+  AddressCarouselCompoundParameterized({
+    required this.onObserveSuccessLoadAddressCarouselParameter,
+    required this.address
+  });
+}
