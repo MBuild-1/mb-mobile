@@ -130,11 +130,16 @@ abstract class CartItem extends StatelessWidget {
                   ]);
                 } else if (supportCart is ProductBundle) {
                   ProductBundle productBundle = supportCart;
-                  List<Widget> productBundleColumnWidget = [];
                   columnWidget.addAll(<Widget>[
                     Text(productBundle.name),
                     const SizedBox(height: 10),
-                    ...productBundleColumnWidget
+                    Text(
+                      productBundle.price.toRupiah(),
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold
+                      )
+                    ),
                   ]);
                 }
                 return Column(
