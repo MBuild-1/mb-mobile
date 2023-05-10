@@ -253,7 +253,7 @@ class _ModifiedPagedListViewState<PageKeyType, ItemType> extends State<ModifiedP
         overscroll.disallowIndicator();
         return false;
       },
-      child: SmartRefresher(
+      child: !widget.pagedListView.shrinkWrap ? SmartRefresher(
         enablePullDown: widget.pullToRefresh,
         controller: _refreshController,
         header: MaterialClassicHeader(color: Theme.of(context).colorScheme.primary),
@@ -262,7 +262,7 @@ class _ModifiedPagedListViewState<PageKeyType, ItemType> extends State<ModifiedP
           _refreshController.refreshCompleted();
         },
         child: widget.pagedListView
-      )
+      ) : widget.pagedListView
     ) : Container();
   }
 }
