@@ -48,8 +48,8 @@ android {
         applicationId "com.masterbagasi.masterbagasi"
         minSdkVersion 21
         targetSdkVersion 32
-        versionCode 5
-        versionName "0.0.4"
+        versionCode 6
+        versionName "0.0.5"
     }
 
     buildTypes {
