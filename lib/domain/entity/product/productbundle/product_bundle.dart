@@ -21,6 +21,15 @@ class ProductBundle implements SupportCart, SupportWishlist, SupportOrderProduct
   @override
   String get cartImageUrl => imageUrl;
 
+  @override
+  String get orderTitle => name;
+
+  @override
+  double get orderPrice => price;
+
+  @override
+  String get orderImageUrl => imageUrl;
+
   ProductBundle({
     required this.id,
     required this.name,

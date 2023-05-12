@@ -125,7 +125,7 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
           VirtualSpacingListItemControllerState(height: Constant.paddingListItem),
           SpacingListItemControllerState(),
           ProfileMenuListItemControllerState(
-            onTap: (context) {},
+            onTap: (context) => PageRestorationHelper.toOrderPage(context),
             icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorTransactionList, width: 20.0),
             title: 'Transaction List'.tr,
           ),

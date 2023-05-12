@@ -8,7 +8,7 @@ class OrderProduct {
   String orderId;
   String userAddressId;
   OrderDetail orderDetail;
-  Address userAddress;
+  Address? userAddress;
   List<OrderProductDetail> orderProductDetailList;
   List<AdditionalItem> additionalItemList;
 

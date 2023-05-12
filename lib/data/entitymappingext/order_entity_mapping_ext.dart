@@ -4,6 +4,7 @@ import 'package:masterbagasi/data/entitymappingext/coupon_entity_mapping_ext.dar
 import 'package:masterbagasi/data/entitymappingext/product_entity_mapping_ext.dart';
 import 'package:masterbagasi/data/entitymappingext/user_entity_mapping_ext.dart';
 import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../../domain/entity/order/combined_order.dart';
 import '../../domain/entity/order/order.dart';
@@ -13,7 +14,22 @@ import '../../domain/entity/order/order_product_detail.dart';
 import '../../domain/entity/order/order_summary.dart';
 import '../../domain/entity/order/support_order_product.dart';
 import '../../misc/error/message_error.dart';
+import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/response_wrapper.dart';
+
+extension ProductEntityMappingExt on ResponseWrapper {
+  List<CombinedOrder> mapFromResponseToCombinedOrderList() {
+    return response.map<CombinedOrder>((combinedOrderResponse) => ResponseWrapper(combinedOrderResponse).mapFromResponseToCombinedOrder()).toList();
+  }
+
+  PagingDataResult<CombinedOrder> mapFromResponseToCombinedOrderPagingDataResult() {
+    return ResponseWrapper(response).mapFromResponseToPagingDataResult(
+      (dataResponse) => dataResponse.map<CombinedOrder>(
+        (combinedOrderResponse) => ResponseWrapper(combinedOrderResponse).mapFromResponseToCombinedOrder()
+      ).toList()
+    );
+  }
+}
 
 extension OrderDetailEntityMappingExt on ResponseWrapper {
   Order mapFromResponseToOrder() {
@@ -45,9 +61,10 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
       status: response["status"],
       takeoverAt: response["takeover_at"] != null ? ResponseWrapper(response["takeover_at"]).mapFromResponseToDateTime() : null,
       review: response["review"],
-      coupon: ResponseWrapper(response["coupon"]).mapFromResponseToCoupon(),
+      coupon: response["coupon"] != null ? ResponseWrapper(response["coupon"]).mapFromResponseToCoupon() : null,
       user: ResponseWrapper(response["user"]).mapFromResponseToUser(),
       orderProduct: ResponseWrapper(response["order_product"]).mapFromResponseToOrderProduct(),
+      createdAt: ResponseWrapper(response["created_at"]).mapFromResponseToDateTime()!
     );
   }
 
@@ -57,7 +74,7 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
       orderId: response["order_id"],
       userAddressId: response["user_address_id"],
       orderDetail: ResponseWrapper(response["order"]).mapFromResponseToOrderDetail(),
-      userAddress: ResponseWrapper(response["user_address"]).mapFromResponseToAddress(),
+      userAddress: response["user_address"] != null ? ResponseWrapper(response["user_address"]).mapFromResponseToAddress() : null,
       orderProductDetailList: response["order_product_list"].map<OrderProductDetail>(
         (orderProductDetailResponse) => ResponseWrapper(orderProductDetailResponse).mapFromResponseToOrderProductDetail()
       ).toList(),
@@ -71,7 +88,7 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
       status: response["status"],
       paymentType: response["payment_type"],
       totalPrice: response["total_price"],
-      snapToken: response["snap_token"],
+      snapToken: (response["snap_token"] as String?).toEmptyStringNonNull,
       realTotalPrice: response["real_total_price"]
     );
   }

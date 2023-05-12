@@ -23,7 +23,7 @@ class Product implements ProductAppearanceData {
   String imageUrl;
   ProductBrand productBrand;
   ProductCategory productCategory;
-  Province province;
+  Province? province;
   List<ProductCertification> productCertificationList;
 
   @override

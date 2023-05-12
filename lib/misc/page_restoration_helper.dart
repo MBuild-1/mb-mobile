@@ -12,6 +12,7 @@ import '../presentation/page/delivery_page.dart';
 import '../presentation/page/getx_page.dart';
 import '../presentation/page/login_page.dart';
 import '../presentation/page/mainmenu/main_menu_page.dart';
+import '../presentation/page/order_page.dart';
 import '../presentation/page/product_brand_detail_page.dart';
 import '../presentation/page/product_brand_page.dart';
 import '../presentation/page/product_bundle_detail_page.dart';
@@ -225,6 +226,17 @@ class _PageRestorationHelperImpl {
       PageRestorationHelper.findPageRestorationMixin<AddressPageRestorationMixin>(
         onGetxPageRestorationFound: (restoration) {
           restoration.addressPageRestorableRouteFuture.present();
+        },
+        context: context
+      );
+    });
+  }
+
+  void toOrderPage(BuildContext context) {
+    LoginHelper.checkingLogin(context, () {
+      PageRestorationHelper.findPageRestorationMixin<OrderPageRestorationMixin>(
+        onGetxPageRestorationFound: (restoration) {
+          restoration.orderPageRestorableRouteFuture.present();
         },
         context: context
       );

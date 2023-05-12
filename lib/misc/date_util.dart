@@ -1,5 +1,7 @@
 import 'package:intl/intl.dart';
 
+import 'dateformat/anthony_input_date_format.dart';
+
 class _DateUtilImpl {
   DateFormat standardDateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
   DateFormat standardDateFormat2 = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'");
@@ -11,6 +13,7 @@ class _DateUtilImpl {
   DateFormat standardDateFormat8 = DateFormat("dd MMM yyyy HH:mm:ss");
   DateFormat standardTimeFormat = DateFormat("HH:mm:ss");
   DateFormat standardHourMinuteTimeFormat = DateFormat("HH:mm");
+  DateFormat anthonyInputDateFormat = AnthonyInputDateFormat();
 
   String formatDateBasedTodayOrNot(DateTime? willBeFormatting) {
     return willBeFormatting == null ? "(Empty)" : (

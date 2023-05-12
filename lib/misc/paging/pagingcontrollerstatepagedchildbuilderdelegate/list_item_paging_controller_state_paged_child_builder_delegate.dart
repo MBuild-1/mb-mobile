@@ -44,6 +44,9 @@ import '../../../presentation/widget/modified_tab_bar.dart';
 import '../../../presentation/widget/modifiedcachednetworkimage/product_modified_cached_network_image.dart';
 import '../../../presentation/widget/news/horizontal_news_item.dart';
 import '../../../presentation/widget/news/vertical_news_item.dart';
+import '../../../presentation/widget/order/is_running_order_item.dart';
+import '../../../presentation/widget/order/vertical_order_item.dart';
+import '../../../presentation/widget/order/waiting_for_payment_order_item.dart';
 import '../../../presentation/widget/product/horizontal_product_item.dart';
 import '../../../presentation/widget/product/vertical_product_item.dart';
 import '../../../presentation/widget/product_bundle_header_list_item.dart';
@@ -112,6 +115,10 @@ import '../../controllerstate/listitemcontrollerstate/newslistitemcontrollerstat
 import '../../controllerstate/listitemcontrollerstate/newslistitemcontrollerstate/vertical_news_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/non_expanded_item_in_row_child_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/non_expanded_item_in_row_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/base_order_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/is_running_order_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/vertical_order_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/waiting_for_payment_order_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/padding_container_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/page_keyed_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/product_bundle_header_list_item_controller_state.dart';
@@ -860,6 +867,24 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
           country: item.country,
           isSelected: item.isSelected,
           onSelectCountry: item.onSelectCountry
+        );
+      } else {
+        return Container();
+      }
+    } else if (item is BaseOrderListItemControllerState) {
+      if (item is VerticalOrderListItemControllerState) {
+        return VerticalOrderItem(
+          order: item.order
+        );
+      } else if (item is IsRunningOrderListItemControllerState) {
+        return IsRunningOrderItem(
+          isRunningOrderCount: item.isRunningOrderCount,
+          onTap: item.onTap
+        );
+      } else if (item is WaitingForPaymentOrderListItemControllerState) {
+        return WaitingForPaymentOrderItem(
+          waitingForPaymentOrderCount: item.waitingForPaymentOrderCount,
+          onTap: item.onTap
         );
       } else {
         return Container();

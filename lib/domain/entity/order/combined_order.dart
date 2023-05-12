@@ -17,6 +17,7 @@ class CombinedOrder {
   Coupon? coupon;
   User user;
   OrderProduct orderProduct;
+  DateTime createdAt;
 
   CombinedOrder({
     required this.id,
@@ -32,6 +33,7 @@ class CombinedOrder {
     required this.review,
     this.coupon,
     required this.user,
-    required this.orderProduct
+    required this.orderProduct,
+    required this.createdAt
   });
 }

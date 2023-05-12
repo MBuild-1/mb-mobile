@@ -410,7 +410,7 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
                   if (productDetail.productCertificationList.isNotEmpty) <String>["Certification".tr, productDetail.productCertificationList.first.name],
                   //<String>["Contain".tr, product.],
                   <String>["Category".tr, productDetail.productCategory.name],
-                  <String>["Province".tr, productDetail.province.name],
+                  <String>["Province".tr, (productDetail.province?.name).toStringNonNull],
                   <String>["Brand".tr, productDetail.productBrand.name],
                 ];
                 titleAndDescriptionWidgetList.first = Text(title.toStringNonNull, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold));

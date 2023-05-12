@@ -78,8 +78,8 @@ extension ProductDetailEntityMappingExt on ResponseWrapper {
       imageUrl: "",
       productBrand: ResponseWrapper(response["product_brand"]).mapFromResponseToProductBrand(),
       productCategory: ResponseWrapper(response["product_category"]).mapFromResponseToProductCategory(),
-      province: ResponseWrapper(response["province"]).mapFromResponseToProvince(),
-      productCertificationList: ResponseWrapper(response["product_certification"]).mapFromResponseToProductCertificationList(),
+      province: response["province"] != null ? ResponseWrapper(response["province"]).mapFromResponseToProvince() : null,
+      productCertificationList: response["product_certification"] != null ? ResponseWrapper(response["product_certification"]).mapFromResponseToProductCertificationList() : [],
     );
   }
 

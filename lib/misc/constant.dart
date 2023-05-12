@@ -77,6 +77,9 @@ class _ConstantImpl {
   String get vectorLogout => _getVectorsAssets("logout.svg");
   String get vectorShare => _getVectorsAssets("share.svg");
   String get vectorCoupon => _getVectorsAssets("coupon.svg");
+  String get vectorOrderBag => _getVectorsAssets("order_bag.svg");
+  String get vectorIsRunningOrder => _getVectorsAssets("is_running_order.svg");
+  String get vectorWaitingForPaymentOrder => _getVectorsAssets("waiting_for_payment_order.svg");
 
   Color get colorYellow => const Color.fromRGBO(244, 184, 43, 1);
   Color get colorLightRed => const Color.fromRGBO(255, 236, 230, 1);

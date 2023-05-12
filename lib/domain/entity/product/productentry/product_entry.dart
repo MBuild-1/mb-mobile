@@ -37,6 +37,15 @@ class ProductEntry implements ProductEntryAppearanceData, SupportCart, SupportWi
   @override
   String get cartImageUrl => imageUrl;
 
+  @override
+  String get orderTitle => name;
+
+  @override
+  double get orderPrice => sellingPrice.toDouble();
+
+  @override
+  String get orderImageUrl => imageUrl;
+
   ProductEntry({
     required this.id,
     required this.productId,

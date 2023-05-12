@@ -144,7 +144,12 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Min": "Min",
       "Max": "Maks",
       "Where do you want it sent": "Mau dikirim ke mana",
-      "To make your shopping experience better, choose an address first": "Biar pengalaman belanjamu lebih baik, pilih alamat dulu"
+      "To make your shopping experience better, choose an address first": "Biar pengalaman belanjamu lebih baik, pilih alamat dulu",
+      "Shopping": "Belanja",
+      "Transaction": "Transaksi",
+      "Is Running": "Sedang Berjalan",
+      "Waiting For Payment": "Menunggu Pembayaran",
+      "Item": "Barang"
     }
   };
 
