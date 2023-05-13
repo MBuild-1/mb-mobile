@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:masterbagasi/misc/ext/number_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../../../domain/entity/order/combined_order.dart';
@@ -8,6 +9,7 @@ import '../../../domain/entity/order/support_order_product.dart';
 import '../../../misc/constant.dart';
 import '../../../misc/date_util.dart';
 import '../../../misc/multi_language_string.dart';
+import '../button/custombutton/sized_outline_gradient_button.dart';
 import '../modified_divider.dart';
 import '../modified_svg_picture.dart';
 import '../modifiedcachednetworkimage/product_modified_cached_network_image.dart';
@@ -45,19 +47,63 @@ abstract class OrderItem extends StatelessWidget {
                   children: [
                     ModifiedSvgPicture.asset(Constant.vectorOrderBag, overrideDefaultColorWithSingleColor: false),
                     const SizedBox(width: 12),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Shopping".tr, style: const TextStyle(fontWeight: FontWeight.bold)),
-                        Text(DateUtil.standardDateFormat7.format(order.createdAt))
-                      ]
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Shopping".tr, style: const TextStyle(fontWeight: FontWeight.bold)),
+                          Text(DateUtil.standardDateFormat7.format(order.createdAt))
+                        ]
+                      ),
                     ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 12.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.0),
+                        color: Colors.grey.shade300,
+                      ),
+                      child: Text(
+                        order.status,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold
+                        ),
+                      ),
+                    )
                   ]
                 ),
                 const SizedBox(height: 12),
                 const ModifiedDivider(),
                 const SizedBox(height: 12),
-                ..._allOrderProductDetailWidget(order.orderProduct.orderProductDetailList)
+                ..._allOrderProductDetailWidget(order.orderProduct.orderProductDetailList),
+                const SizedBox(height: 15),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Shopping Total".tr),
+                          const SizedBox(height: 3),
+                          Text(
+                            order.orderProduct.orderDetail.totalPrice.toRupiah(),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 17
+                            ),
+                          )
+                        ]
+                      ),
+                    ),
+                    SizedOutlineGradientButton(
+                      onPressed: () {},
+                      text: "Buy Again".tr,
+                      customPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                      outlineGradientButtonType: OutlineGradientButtonType.solid,
+                      outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
+                    )
+                  ],
+                )
               ],
             )
           )

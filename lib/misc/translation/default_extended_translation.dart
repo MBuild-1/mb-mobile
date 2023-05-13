@@ -149,7 +149,8 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Transaction": "Transaksi",
       "Is Running": "Sedang Berjalan",
       "Waiting For Payment": "Menunggu Pembayaran",
-      "Item": "Barang"
+      "Item": "Barang",
+      "Buy Again": "Beli Lagi"
     }
   };
 
