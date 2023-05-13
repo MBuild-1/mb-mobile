@@ -130,7 +130,12 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
             title: 'Transaction List'.tr,
           ),
           ProfileMenuListItemControllerState(
-            onTap: (context) {},
+            onTap: (context) {
+              void Function(int)? onChangeMainMenuTap = MainRouteObserver.onChangeMainMenuTap;
+              if (onChangeMainMenuTap != null) {
+                onChangeMainMenuTap(3);
+              }
+            },
             icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorWishlist, width: 20.0),
             title: 'Wishlist'.tr,
           ),

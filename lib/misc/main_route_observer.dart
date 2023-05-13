@@ -12,6 +12,7 @@ class _MainRouteObserver extends RouteObserver {
   Map<String, BuildContext Function()?> get buildContextEventRouteMap => _buildContextEventRouteMap;
   Map<String, void Function()?> _controllerMediatorMap = {};
   Map<String, void Function()?> get controllerMediatorMap => _controllerMediatorMap;
+  void Function(int)? onChangeMainMenuTap;
 
   void applyNewRouteMapFromRouteKeyMap(Map<String, int> newRouteMap) {
     _routeMap = {

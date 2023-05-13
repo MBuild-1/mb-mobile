@@ -256,6 +256,13 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
         currentSelectedMenuIndex: 0
       )
     );
+    MainRouteObserver.onChangeMainMenuTap = (index) => _onItemTappedWithContext(
+      CustomBottomNavigationBarSelectedIndex(
+        currentSelectedMenuIndex: index,
+        currentSelectedViewMenuIndex: index
+      ),
+      context
+    );
   }
 
   @override
