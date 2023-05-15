@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:masterbagasi/misc/ext/error_provider_ext.dart';
 import 'package:masterbagasi/misc/ext/future_ext.dart';
 import 'package:masterbagasi/misc/ext/validation_result_ext.dart';
 import 'package:provider/provider.dart';
@@ -177,6 +178,7 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
   final TapGestureRecognizer _forgotPasswordTapGestureRecognizer = TapGestureRecognizer();
   final TapGestureRecognizer _signUpTapGestureRecognizer = TapGestureRecognizer();
   late final GoogleSignIn _googleSignIn;
+  dynamic _failedLoginError;
   bool _obscurePassword = true;
 
   @override
@@ -200,11 +202,9 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
         onGetPasswordLoginInput: () => _passwordTextEditingController.text,
         onLoginBack: () => Get.back(),
         onShowLoginRequestProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
-        onShowLoginRequestProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
-          context: context,
-          errorProvider: Injector.locator<ErrorProvider>(),
-          e: e
-        ),
+        onShowLoginRequestProcessFailedCallback: (e) async {
+          setState(() => _failedLoginError = e);
+        },
         onLoginRequestProcessSuccessCallback: () async {
           _loginNotifier.loadProfile();
           Map<String, RouteWrapper?> routeMap = MainRouteObserver.routeMap;
@@ -260,6 +260,33 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
                     child: Image.asset(Constant.imageLogin),
                   )
                 ),
+                if (_failedLoginError != null)
+                  ...[
+                    SizedBox(height: 3.h),
+                    Builder(
+                      builder: (context) {
+                        ErrorProviderResult errorProviderResult = Injector.locator<ErrorProvider>()
+                          .onGetErrorProviderResult(_failedLoginError)
+                          .toErrorProviderResultNonNull();
+                        return Container(
+                          width: double.infinity,
+                          child: Center(
+                            child: Text(
+                              errorProviderResult.message,
+                              style: const TextStyle(
+                                color: Colors.white
+                              ),
+                            ),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16.0),
+                            color: Constant.colorRedDanger
+                          ),
+                        );
+                      }
+                    ),
+                  ],
                 SizedBox(height: 3.h),
                 RxConsumer<Validator>(
                   rxValue: widget.loginController.emailValidatorRx,
