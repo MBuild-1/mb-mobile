@@ -166,7 +166,7 @@ class _ConstantImpl {
   AspectRatioValue get aspectRatioValueExploreNusantaraIcon => AspectRatioValue(width: 544.0, height: 408.0);
   AspectRatioValue get aspectRatioValueTransparentBanner => AspectRatioValue(width: 2500.0, height: 986.0);
   AspectRatioValue get aspectRatioValueHomepageBanner => AspectRatioValue(width: 2126.0, height: 1181.0);
-  AspectRatioValue get aspectRatioValueShippingPriceBanner => AspectRatioValue(width: 1878.0, height: 377.0);
+  AspectRatioValue get aspectRatioValueShippingPriceBanner => AspectRatioValue(width: 692.0, height: 456.0);
 
   MultiLanguageString get multiLanguageStringIsViral => MultiLanguageString({
     textEnUsLanguageKey: "Is Viral",
