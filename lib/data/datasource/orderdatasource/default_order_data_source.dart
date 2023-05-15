@@ -46,7 +46,7 @@ class DefaultOrderDataSource implements OrderDataSource {
             if (productEntryId.isNotEmptyString) "product_entry_id": productEntryId,
             if (bundlingId.isNotEmptyString) "bundling_id": bundlingId,
             "quantity": cart.quantity,
-            if (cart.notes.isNotEmptyString) "notes": cart.notes
+            "notes": cart.notes.isNotEmptyString ? cart.notes : null
           };
         }
       ).toList();
@@ -60,7 +60,7 @@ class DefaultOrderDataSource implements OrderDataSource {
         }
       ).toList();
       dynamic data = {
-        if (createOrderParameter.address != null) "user_address_id": createOrderParameter.coupon!.id,
+        if (createOrderParameter.address != null) "user_address_id": createOrderParameter.address!.id,
         if (createOrderParameter.coupon != null) "coupon_id": createOrderParameter.coupon!.id,
         "order_list": orderList,
         "order_send_to_warehouse_list": sendToWarehouseList
