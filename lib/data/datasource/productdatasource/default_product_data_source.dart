@@ -6,6 +6,7 @@ import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/misc/option_builder.dart';
 
+import '../../../domain/dummy/productdummy/product_brand_dummy.dart';
 import '../../../domain/dummy/productdummy/product_entry_dummy.dart';
 import '../../../domain/entity/product/product.dart';
 import '../../../domain/entity/product/product_appearance_data.dart';
@@ -15,6 +16,7 @@ import '../../../domain/entity/product/product_detail_other_chosen_for_you_produ
 import '../../../domain/entity/product/product_detail_other_from_this_brand_product_entry_list_parameter.dart';
 import '../../../domain/entity/product/product_detail_other_in_this_category_product_entry_list_parameter.dart';
 import '../../../domain/entity/product/product_detail_other_interested_product_brand_list_parameter.dart';
+import '../../../domain/entity/product/productbrand/favorite_product_brand_paging_parameter.dart';
 import '../../../domain/entity/product/productbrand/product_brand.dart';
 import '../../../domain/entity/product/productbrand/product_brand_detail.dart';
 import '../../../domain/entity/product/productbrand/product_brand_detail_parameter.dart';
@@ -47,6 +49,7 @@ import '../../../domain/entity/wishlist/wishlist_paging_parameter.dart';
 import '../../../misc/error/not_found_error.dart';
 import '../../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../../misc/processing/dio_http_client_processing.dart';
+import '../../../misc/processing/dummy_future_processing.dart';
 import '../../../misc/processing/future_processing.dart';
 import '../../../misc/response_wrapper.dart';
 import 'product_data_source.dart';
@@ -55,11 +58,13 @@ class DefaultProductDataSource implements ProductDataSource {
   final Dio dio;
   final ProductBundleDummy productBundleDummy;
   final ProductEntryDummy productEntryDummy;
+  final ProductBrandDummy productBrandDummy;
 
   const DefaultProductDataSource({
     required this.dio,
     required this.productBundleDummy,
-    required this.productEntryDummy
+    required this.productEntryDummy,
+    required this.productBrandDummy
   });
 
   @override
@@ -284,6 +289,15 @@ class DefaultProductDataSource implements ProductDataSource {
     return DioHttpClientProcessing((cancelToken) {
       return dio.delete("/user/wishlist/${removeWishlistParameter.wishlistId}", cancelToken: cancelToken)
         .map(onMap: (value) => value.wrapResponse().mapFromResponseToRemoveWishlistResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<PagingDataResult<ProductBrand>> favoriteProductBrandPaging(FavoriteProductBrandPagingParameter favoriteProductBrandPagingParameter) {
+    return DummyFutureProcessing((parameter) async {
+      String pageParameterPath = "/?pageNumber=${favoriteProductBrandPagingParameter.itemEachPageCount}&page=${favoriteProductBrandPagingParameter.page}";
+      return dio.get("/product/brand$pageParameterPath", cancelToken: parameter)
+        .map<PagingDataResult<ProductBrand>>(onMap: (value) => value.wrapResponse().mapFromResponseToProductBrandPaging());
     });
   }
 }

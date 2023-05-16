@@ -85,6 +85,7 @@ import '../domain/usecase/get_coupon_list_use_case.dart';
 import '../domain/usecase/get_coupon_paging_use_case.dart';
 import '../domain/usecase/get_current_selected_address_use_case.dart';
 import '../domain/usecase/get_delivery_review_use_case.dart';
+import '../domain/usecase/get_favorite_product_brand_use_case.dart';
 import '../domain/usecase/get_handycrafts_contents_banner_use_case.dart';
 import '../domain/usecase/get_history_delivery_review_paging_use_case.dart';
 import '../domain/usecase/get_homepage_contents_banner_use_case.dart';
@@ -379,6 +380,7 @@ class _Injector {
     locator.registerLazySingleton<GetUserUseCase>(() => GetUserUseCase(userRepository: locator()));
     locator.registerLazySingleton<GetProductBrandListUseCase>(() => GetProductBrandListUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductBrandPagingUseCase>(() => GetProductBrandPagingUseCase(productRepository: locator()));
+    locator.registerLazySingleton<GetFavoriteProductBrandPagingUseCase>(() => GetFavoriteProductBrandPagingUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductBrandDetailUseCase>(() => GetProductBrandDetailUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductListUseCase>(() => GetProductListUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductViralListUseCase>(() => GetProductViralListUseCase(productRepository: locator()));
@@ -465,7 +467,8 @@ class _Injector {
       () => DefaultProductDataSource(
         dio: locator(),
         productBundleDummy: locator(),
-        productEntryDummy: locator()
+        productEntryDummy: locator(),
+        productBrandDummy: locator()
       )
     );
     locator.registerLazySingleton<CouponDataSource>(() => DefaultCouponDataSource(dio: locator()));

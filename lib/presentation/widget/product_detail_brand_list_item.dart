@@ -9,11 +9,17 @@ import '../../misc/constant.dart';
 import 'modifiedcachednetworkimage/brand_modified_cached_network_image.dart';
 import 'modifiedcachednetworkimage/modified_cached_network_image.dart';
 import 'profile_picture_cache_network_image.dart';
+import 'tap_area.dart';
 
 class ProductDetailBrandListItem extends StatelessWidget {
   final ProductBrand productBrand;
+  final void Function(ProductBrand)? onTapProductBrand;
 
-  const ProductDetailBrandListItem({super.key, required this.productBrand});
+  const ProductDetailBrandListItem({
+    super.key,
+    required this.productBrand,
+    this.onTapProductBrand
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,44 +31,47 @@ class ProductDetailBrandListItem extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       height: containerHeight,
-      child: Stack(
-        children: [
-          AspectRatio(
-            aspectRatio: aspectRatioValue.toDouble(),
-            child: ClipRRect(
-              child: ModifiedCachedNetworkImage(
-                imageUrl: productBrand.bannerMobile.isNotEmptyString ? productBrand.bannerMobile! : productBrand.bannerDesktop.toEmptyStringNonNull,
+      child: TapArea(
+        onTap: onTapProductBrand != null ? () => onTapProductBrand!(productBrand) : null,
+        child: Stack(
+          children: [
+            AspectRatio(
+              aspectRatio: aspectRatioValue.toDouble(),
+              child: ClipRRect(
+                child: ModifiedCachedNetworkImage(
+                  imageUrl: productBrand.bannerMobile.isNotEmptyString ? productBrand.bannerMobile! : productBrand.bannerDesktop.toEmptyStringNonNull,
+                )
               )
-            )
-          ),
-          Align(
-            alignment: Alignment.bottomLeft,
-            child: Padding(
-              padding: EdgeInsets.only(left: 4.w),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  BrandModifiedCachedNetworkImage(
-                    imageUrl: productBrand.icon.toEmptyStringNonNull,
-                    dimension: profilePictureDimension,
-                  ),
-                  const SizedBox(width: 10),
-                  Text(productBrand.name, style: const TextStyle(fontWeight: FontWeight.bold))
-                ]
+            ),
+            Align(
+              alignment: Alignment.bottomLeft,
+              child: Padding(
+                padding: EdgeInsets.only(left: 4.w),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    BrandModifiedCachedNetworkImage(
+                      imageUrl: productBrand.icon.toEmptyStringNonNull,
+                      dimension: profilePictureDimension,
+                    ),
+                    const SizedBox(width: 10),
+                    Text(productBrand.name, style: const TextStyle(fontWeight: FontWeight.bold))
+                  ]
+                )
               )
-            )
-          ),
-          Align(
-            alignment: Alignment.bottomLeft,
-            child: Padding(
-              padding: EdgeInsets.only(left: 4.w),
-              child: BrandModifiedCachedNetworkImage(
-                imageUrl: productBrand.icon.toEmptyStringNonNull,
-                dimension: profilePictureDimension,
-              ),
-            )
-          ),
-        ]
+            ),
+            Align(
+              alignment: Alignment.bottomLeft,
+              child: Padding(
+                padding: EdgeInsets.only(left: 4.w),
+                child: BrandModifiedCachedNetworkImage(
+                  imageUrl: productBrand.icon.toEmptyStringNonNull,
+                  dimension: profilePictureDimension,
+                ),
+              )
+            ),
+          ]
+        ),
       )
     );
   }

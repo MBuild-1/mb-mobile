@@ -8,6 +8,7 @@ import '../entity/product/product_detail_other_chosen_for_you_product_entry_list
 import '../entity/product/product_detail_other_from_this_brand_product_entry_list_parameter.dart';
 import '../entity/product/product_detail_other_in_this_category_product_entry_list_parameter.dart';
 import '../entity/product/product_detail_other_interested_product_brand_list_parameter.dart';
+import '../entity/product/productbrand/favorite_product_brand_paging_parameter.dart';
 import '../entity/product/productbrand/product_brand.dart';
 import '../entity/product/productbrand/product_brand_detail.dart';
 import '../entity/product/productbrand/product_brand_detail_parameter.dart';
@@ -64,4 +65,5 @@ abstract class ProductRepository {
   FutureProcessing<LoadDataResult<PagingDataResult<Wishlist>>> wishlistPaging(WishlistPagingParameter wishlistPagingParameter);
   FutureProcessing<LoadDataResult<AddWishlistResponse>> addWishlist(AddWishlistParameter addWishlistParameter);
   FutureProcessing<LoadDataResult<RemoveWishlistResponse>> removeWishlist(RemoveWishlistParameter removeWishlistParameter);
+  FutureProcessing<LoadDataResult<PagingDataResult<ProductBrand>>> favoriteProductBrandPaging(FavoriteProductBrandPagingParameter favoriteProductBrandPagingParameter);
 }

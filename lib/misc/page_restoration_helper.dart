@@ -10,6 +10,7 @@ import '../presentation/page/coupon_page.dart';
 import '../presentation/page/crop_picture_page.dart';
 import '../presentation/page/delivery_page.dart';
 import '../presentation/page/deliveryreview/delivery_review_page.dart';
+import '../presentation/page/favorite_product_brand_page.dart';
 import '../presentation/page/getx_page.dart';
 import '../presentation/page/login_page.dart';
 import '../presentation/page/mainmenu/main_menu_page.dart';
@@ -249,6 +250,17 @@ class _PageRestorationHelperImpl {
       PageRestorationHelper.findPageRestorationMixin<DeliveryReviewPageRestorationMixin>(
         onGetxPageRestorationFound: (restoration) {
           restoration.deliveryReviewPageRestorableRouteFuture.present();
+        },
+        context: context
+      );
+    });
+  }
+
+  void toFavoriteProductBrandPage(BuildContext context) {
+    LoginHelper.checkingLogin(context, () {
+      PageRestorationHelper.findPageRestorationMixin<FavoriteProductBrandPageRestorationMixin>(
+        onGetxPageRestorationFound: (restoration) {
+          restoration.favoriteProductBrandPageRestorableRouteFuture.present();
         },
         context: context
       );

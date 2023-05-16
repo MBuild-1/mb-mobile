@@ -8,6 +8,7 @@ import '../../domain/entity/product/product_detail_other_chosen_for_you_product_
 import '../../domain/entity/product/product_detail_other_from_this_brand_product_entry_list_parameter.dart';
 import '../../domain/entity/product/product_detail_other_in_this_category_product_entry_list_parameter.dart';
 import '../../domain/entity/product/product_detail_other_interested_product_brand_list_parameter.dart';
+import '../../domain/entity/product/productbrand/favorite_product_brand_paging_parameter.dart';
 import '../../domain/entity/product/productbrand/product_brand.dart';
 import '../../domain/entity/product/productbrand/product_brand_detail.dart';
 import '../../domain/entity/product/productbrand/product_brand_detail_parameter.dart';
@@ -245,5 +246,10 @@ class DefaultProductRepository implements ProductRepository {
   @override
   FutureProcessing<LoadDataResult<RemoveWishlistResponse>> removeWishlist(RemoveWishlistParameter removeWishlistParameter) {
     return productDataSource.removeWishlist(removeWishlistParameter).mapToLoadDataResult<RemoveWishlistResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<PagingDataResult<ProductBrand>>> favoriteProductBrandPaging(FavoriteProductBrandPagingParameter favoriteProductBrandPagingParameter) {
+    return productDataSource.favoriteProductBrandPaging(favoriteProductBrandPagingParameter).mapToLoadDataResult<PagingDataResult<ProductBrand>>();
   }
 }

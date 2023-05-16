@@ -84,6 +84,7 @@ import '../../controllerstate/listitemcontrollerstate/additionalitemlistitemcont
 import '../../controllerstate/listitemcontrollerstate/addresslistitemcontrollerstate/address_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/addresslistitemcontrollerstate/horizontal_address_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/addresslistitemcontrollerstate/vertical_address_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/card_container_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/carousel_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/cart_header_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/cart_list_item_controller_state.dart';
@@ -546,6 +547,20 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
         decoration: item.decoration,
         child: _itemBuilder(context, item.decoratedChildListItemControllerState, index)
       );
+    } else if (item is CardContainerListItemControllerState) {
+      return Padding(
+        // Use padding widget for avoiding shadow elevation overlap.
+        padding: const EdgeInsets.only(top: 1.0, bottom: 5.0),
+        child: Material(
+          color: Colors.white,
+          borderRadius: item.borderRadius,
+          elevation: 3,
+          child: ClipRRect(
+            borderRadius: item.borderRadius,
+            child: _itemBuilder(context, item.cardContainerChildListItemControllerState, index)
+          )
+        )
+      );
     } else if (item is SingleBannerListItemControllerState) {
       return AspectRatio(
         aspectRatio: item.aspectRatioValue.toDouble(),
@@ -732,7 +747,8 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
       );
     } else if (item is ProductDetailBrandListItemControllerState) {
       return ProductDetailBrandListItem(
-        productBrand: item.productBrand
+        productBrand: item.productBrand,
+        onTapProductBrand: item.onTapProductBrand
       );
     } else if (item is ProductCategoryHeaderListItemControllerState) {
       return ProductCategoryHeaderListItem(

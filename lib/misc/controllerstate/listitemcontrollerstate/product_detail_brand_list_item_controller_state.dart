@@ -3,8 +3,10 @@ import 'list_item_controller_state.dart';
 
 class ProductDetailBrandListItemControllerState extends ListItemControllerState {
   ProductBrand productBrand;
+  void Function(ProductBrand)? onTapProductBrand;
 
   ProductDetailBrandListItemControllerState({
-    required this.productBrand
+    required this.productBrand,
+    this.onTapProductBrand
   });
 }

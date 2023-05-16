@@ -47,6 +47,7 @@ import '../../misc/injector.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/controller_manager.dart';
 import '../../misc/on_observe_load_product_delegate.dart';
+import '../../misc/page_restoration_helper.dart';
 import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
@@ -64,6 +65,7 @@ import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/default_search_app_bar.dart';
 import 'getx_page.dart';
 import 'product_brand_detail_page.dart';
+import 'product_entry_page.dart';
 
 class ProductDetailPage extends RestorableGetxPage<_ProductDetailPageRestoration> {
   late final ControllerMember<ProductDetailController> _productDetailController = ControllerMember<ProductDetailController>().addToControllerManager(controllerManager);
@@ -111,7 +113,7 @@ class ProductDetailPage extends RestorableGetxPage<_ProductDetailPageRestoration
   }
 }
 
-class _ProductDetailPageRestoration extends MixableGetxPageRestoration with ProductDetailPageRestorationMixin, ProductBrandDetailPageRestorationMixin {
+class _ProductDetailPageRestoration extends MixableGetxPageRestoration with ProductDetailPageRestorationMixin, ProductEntryPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
@@ -470,7 +472,18 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
             parameter: carouselParameterizedEntityMediator
           ),
           VirtualSpacingListItemControllerState(height: 4.h),
-          ProductDetailBrandListItemControllerState(productBrand: productDetail.productBrand),
+          ProductDetailBrandListItemControllerState(
+            productBrand: productDetail.productBrand,
+            onTapProductBrand: (productBrand) => PageRestorationHelper.toProductEntryPage(
+              context,
+              ProductEntryPageParameter(
+                productEntryParameterMap: {
+                  "brand_id": productBrand.id,
+                  "brand": productBrand.slug
+                }
+              )
+            )
+          ),
           VirtualSpacingListItemControllerState(height: 4.h),
           componentEntityMediator.mapWithParameter(
             widget.productDetailController.getOtherFromThisBrand(

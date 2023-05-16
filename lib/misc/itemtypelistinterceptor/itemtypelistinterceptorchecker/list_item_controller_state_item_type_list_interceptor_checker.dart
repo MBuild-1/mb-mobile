@@ -2,6 +2,7 @@ import '../../controllerstate/listitemcontrollerstate/list_item_controller_state
 import '../../itemtypelistsubinterceptor/additional_loading_indicator_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/address_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/builder_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/card_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/carousel_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/cart_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/column_container_item_type_list_sub_interceptor.dart';
@@ -13,6 +14,7 @@ import '../../itemtypelistsubinterceptor/delivery_cart_item_type_list_sub_interc
 import '../../itemtypelistsubinterceptor/delivery_review_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/dynamic_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/expandable_description_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/favorite_product_brand_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/order_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/padding_container_item_type_list_sub_interceptor.dart';
@@ -139,6 +141,9 @@ class ListItemControllerStateItemTypeInterceptorChecker extends ItemTypeListInte
     DecoratedContainerItemTypeListSubInterceptor(
       listItemControllerStateItemTypeInterceptorChecker: this
     ),
+    CardContainerItemTypeListSubInterceptor(
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
     PaddingContainerItemTypeListSubInterceptor(
       listItemControllerStateItemTypeInterceptorChecker: this
     ),
@@ -185,6 +190,11 @@ class ListItemControllerStateItemTypeInterceptorChecker extends ItemTypeListInte
       listItemControllerStateItemTypeInterceptorChecker: this
     ),
     DeliveryReviewItemTypeListSubInterceptor(
+      padding: padding,
+      itemSpacing: itemSpacing,
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
+    FavoriteProductBrandItemTypeListSubInterceptor(
       padding: padding,
       itemSpacing: itemSpacing,
       listItemControllerStateItemTypeInterceptorChecker: this
