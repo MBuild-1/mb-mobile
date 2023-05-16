@@ -6,22 +6,28 @@ class DeliveryReviewDummy {
   DeliveryReview generateShimmerDummy() {
     return DeliveryReview(
       id: "1",
+      userProfilePicture: "",
+      userName: "",
+      productImageUrl: "",
+      productName: "",
       review: "",
       country: "",
       rating: 5.0,
-      userName: "",
-      userProfilePicture: ""
+      reviewDate: DateTime.now(),
     );
   }
 
   DeliveryReview generateDefaultDummy() {
     return DeliveryReview(
       id: "1",
+      userProfilePicture: "",
+      userName: "",
+      productImageUrl: "",
+      productName: "",
       review: "",
       country: "",
       rating: 5.0,
-      userName: "",
-      userProfilePicture: ""
+      reviewDate: DateTime.now(),
     );
   }
 }

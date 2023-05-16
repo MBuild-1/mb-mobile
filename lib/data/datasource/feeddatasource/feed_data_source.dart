@@ -1,5 +1,10 @@
+import '../../../domain/entity/delivery/check_your_contribution_delivery_review_detail_parameter.dart';
+import '../../../domain/entity/delivery/check_your_contribution_delivery_review_detail_response.dart';
 import '../../../domain/entity/delivery/delivery_review.dart';
 import '../../../domain/entity/delivery/delivery_review_list_parameter.dart';
+import '../../../domain/entity/delivery/delivery_review_paging_parameter.dart';
+import '../../../domain/entity/delivery/give_review_delivery_review_detail_parameter.dart';
+import '../../../domain/entity/delivery/give_review_delivery_review_detail_response.dart';
 import '../../../domain/entity/news/news.dart';
 import '../../../domain/entity/news/news_paging_parameter.dart';
 import '../../../domain/entity/video/defaultvideo/default_video.dart';
@@ -15,5 +20,10 @@ abstract class FeedDataSource {
   FutureProcessing<List<ShortVideo>> shortVideoList(ShortVideoListParameter shortVideoPagingParameter);
   FutureProcessing<List<DefaultVideo>> defaultVideoList(DefaultVideoListParameter defaultVideoListParameter);
   FutureProcessing<List<DeliveryReview>> deliveryReviewList(DeliveryReviewListParameter deliveryReviewListParameter);
+  FutureProcessing<PagingDataResult<DeliveryReview>> deliveryReviewPaging(DeliveryReviewPagingParameter deliveryReviewPagingParameter);
+  FutureProcessing<PagingDataResult<DeliveryReview>> waitingToBeReviewedDeliveryReviewPaging(DeliveryReviewPagingParameter deliveryReviewPagingParameter);
+  FutureProcessing<PagingDataResult<DeliveryReview>> historyDeliveryReviewPaging(DeliveryReviewPagingParameter deliveryReviewPagingParameter);
   FutureProcessing<PagingDataResult<News>> newsPaging(NewsPagingParameter newsPagingParameter);
+  FutureProcessing<CheckYourContributionDeliveryReviewDetailResponse> checkYourContributionDeliveryReviewDetail(CheckYourContributionDeliveryReviewDetailParameter checkYourContributionDeliveryReviewDetailParameter);
+  FutureProcessing<GiveReviewDeliveryReviewDetailResponse> giveReviewDeliveryReviewDetail(GiveReviewDeliveryReviewDetailParameter giveReviewDeliveryReviewDetailParameter);
 }

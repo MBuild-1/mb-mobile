@@ -26,6 +26,7 @@ import '../../widget/custom_bottom_navigation_bar.dart';
 import '../../widget/modified_svg_picture.dart';
 import '../../widget/rx_consumer.dart';
 import '../cart_page.dart';
+import '../deliveryreview/delivery_review_page.dart';
 import '../login_page.dart';
 import '../getx_page.dart';
 import '../order_page.dart';
@@ -130,7 +131,7 @@ class MainMenuPage extends RestorableGetxPage<_MainMenuPageRestoration> {
   }
 }
 
-class _MainMenuPageRestoration extends MixableGetxPageRestoration with MainMenuPageRestorationMixin, LoginPageRestorationMixin, ProductEntryPageRestorationMixin, ProductDetailPageRestorationMixin, ProductBrandDetailPageRestorationMixin, ProductCategoryDetailPageRestorationMixin, ProductBundlePageRestorationMixin, ProductBundleDetailPageRestorationMixin, CartPageRestorationMixin, ProductBrandPageRestorationMixin, WebViewerPageRestorationMixin, OrderPageRestorationMixin {
+class _MainMenuPageRestoration extends MixableGetxPageRestoration with MainMenuPageRestorationMixin, LoginPageRestorationMixin, ProductEntryPageRestorationMixin, ProductDetailPageRestorationMixin, ProductBrandDetailPageRestorationMixin, ProductCategoryDetailPageRestorationMixin, ProductBundlePageRestorationMixin, ProductBundleDetailPageRestorationMixin, CartPageRestorationMixin, ProductBrandPageRestorationMixin, WebViewerPageRestorationMixin, OrderPageRestorationMixin, DeliveryReviewPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {

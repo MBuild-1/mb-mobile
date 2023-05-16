@@ -25,6 +25,7 @@ class CheckListItem extends StatelessWidget {
   final double spaceBetweenCheckListAndTitle;
   final double spaceBetweenTitleAndContent;
   final bool showCheck;
+  final EdgeInsetsGeometry? padding;
 
   const CheckListItem({
     Key? key,
@@ -48,7 +49,8 @@ class CheckListItem extends StatelessWidget {
     this.reverse = false,
     this.spaceBetweenCheckListAndTitle = 10,
     this.spaceBetweenTitleAndContent = 10,
-    this.showCheck = true
+    this.showCheck = true,
+    this.padding
   }) : super(key: key);
 
   @override
@@ -75,7 +77,8 @@ class CheckListItem extends StatelessWidget {
         reverse: reverse,
         spaceBetweenCheckListAndTitle: spaceBetweenCheckListAndTitle,
         spaceBetweenTitleAndContent: spaceBetweenTitleAndContent,
-        showCheck: showCheck
+        showCheck: showCheck,
+        padding: padding
       )
     );
   }
@@ -103,6 +106,7 @@ class _RawCheckListItem extends StatefulWidget {
   final double spaceBetweenCheckListAndTitle;
   final double spaceBetweenTitleAndContent;
   final bool showCheck;
+  final EdgeInsetsGeometry? padding;
 
   const _RawCheckListItem({
     Key? key,
@@ -126,7 +130,8 @@ class _RawCheckListItem extends StatefulWidget {
     required this.reverse,
     required this.spaceBetweenCheckListAndTitle,
     required this.spaceBetweenTitleAndContent,
-    required this.showCheck
+    required this.showCheck,
+    required this.padding
   }) : super(key: key);
 
   bool get _selected => value;
@@ -327,7 +332,22 @@ class _RawRadioListItemState extends State<_RawCheckListItem> with TickerProvide
         widget.content!
       ]);
     }
+    EdgeInsetsGeometry effectivePadding = widget.padding ?? EdgeInsets.all(Constant.paddingListItem);
+    EdgeInsetsGeometry? effectiveDuplicatePadding;
+    if (effectivePadding is EdgeInsets) {
+      effectiveDuplicatePadding = effectivePadding.copyWith(
+        left: effectivePadding.left + widget.indentation
+      );
+    } else if (effectivePadding is EdgeInsetsDirectional) {
+      effectiveDuplicatePadding = EdgeInsetsDirectional.only(
+        start: effectivePadding.start + widget.indentation,
+        top: effectivePadding.top,
+        bottom: effectivePadding.bottom,
+        end: effectivePadding.end
+      );
+    }
     return Material(
+      color: Colors.transparent,
       child: InkWell(
         onTap: () {
           if (!isInteractive) {
@@ -347,9 +367,7 @@ class _RawRadioListItemState extends State<_RawCheckListItem> with TickerProvide
           context.findRenderObject()!.sendSemanticsEvent(const TapSemanticEvent());
         },
         child: Padding(
-          padding: EdgeInsets.all(Constant.paddingListItem).copyWith(
-            left: Constant.paddingListItem + widget.indentation
-          ),
+          padding: effectiveDuplicatePadding ?? effectivePadding,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: columnWidget

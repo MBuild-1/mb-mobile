@@ -1,30 +1,60 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:sizer/sizer.dart';
 
 import '../../misc/constant.dart';
+import 'tap_area.dart';
 
 class RatingIndicator extends StatelessWidget {
   final double rating;
+  final double maxRating;
+  final double ratingSize;
+  final double ratingSpacing;
+  final void Function(int)? onTapRating;
 
   const RatingIndicator({
     super.key,
-    required this.rating
+    required this.rating,
+    this.maxRating = 5.0,
+    this.ratingSize = 20,
+    this.ratingSpacing = 10,
+    this.onTapRating
   });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        const SizedBox(
-          width: 15,
-          height: 15,
-          child: Icon(Icons.star, size: 15)
+    List<Widget> starRowWidget = [];
+    int maxRatingCount = 5;
+    int roundedRating = maxRatingCount.toDouble() * rating ~/ maxRating;
+    int i = 1;
+    while (i <= maxRatingCount) {
+      if (i > 1) {
+        starRowWidget.add(
+          SizedBox(width: ratingSpacing)
+        );
+      }
+      late String imageStarAsset;
+      if (i > roundedRating) {
+        imageStarAsset = Constant.imageStarPlaceholder;
+      } else {
+        imageStarAsset = Constant.imageStar;
+      }
+      int currentTapRating = i;
+      starRowWidget.add(
+        TapArea(
+          onTap: onTapRating != null ? () => onTapRating!(currentTapRating) : null,
+          child: SizedBox(
+            width: ratingSize,
+            height: ratingSize,
+            child: FittedBox(
+              child: Image.asset(imageStarAsset),
+            )
+          ),
         ),
-        SizedBox(width: 1.w),
-        Text("$rating", style: const TextStyle(fontSize: 12.0)),
-      ],
+      );
+      i++;
+    }
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: starRowWidget,
     );
   }
 }

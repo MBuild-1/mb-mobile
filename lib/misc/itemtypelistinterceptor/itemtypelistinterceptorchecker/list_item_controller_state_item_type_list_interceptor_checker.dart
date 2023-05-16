@@ -10,6 +10,7 @@ import '../../itemtypelistsubinterceptor/country_item_type_list_sub_interceptor.
 import '../../itemtypelistsubinterceptor/coupon_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/decorated_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/delivery_cart_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/delivery_review_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/dynamic_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/expandable_description_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/item_type_list_sub_interceptor.dart';
@@ -179,6 +180,11 @@ class ListItemControllerStateItemTypeInterceptorChecker extends ItemTypeListInte
       listItemControllerStateItemTypeInterceptorChecker: this
     ),
     AddressItemTypeListSubInterceptor(
+      padding: padding,
+      itemSpacing: itemSpacing,
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
+    DeliveryReviewItemTypeListSubInterceptor(
       padding: padding,
       itemSpacing: itemSpacing,
       listItemControllerStateItemTypeInterceptorChecker: this

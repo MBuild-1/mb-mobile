@@ -22,6 +22,7 @@ class _ConstantImpl {
   String get imageNoInternet => imageFailed;
   String get imageLogin => _getImagesAssets("login.png");
   String get imageStar => _getImagesAssets("star.png");
+  String get imageStarPlaceholder => _getImagesAssets("star_placeholder.png");
   String get imageCheckRatesForVariousCountries => _getImagesAssets("check_rates_for_various_countries.png");
   String get imageProductPlaceholder => _getImagesAssets("product_placeholder.png");
   String get imageKitchenContainsIndonesia => _getImagesAssets("kitchen_contains_indonesia.png");
@@ -80,6 +81,10 @@ class _ConstantImpl {
   String get vectorOrderBag => _getVectorsAssets("order_bag.svg");
   String get vectorIsRunningOrder => _getVectorsAssets("is_running_order.svg");
   String get vectorWaitingForPaymentOrder => _getVectorsAssets("waiting_for_payment_order.svg");
+  String get vectorCheckYourContributionDeliveryReviewFullReview => _getVectorsAssets("check_your_contribution_delivery_review_full_review.svg");
+  String get vectorCheckYourContributionDeliveryReviewPhotoAndVideo => _getVectorsAssets("check_your_contribution_delivery_review_photo_and_video.svg");
+  String get vectorCheckYourContributionDeliveryReviewRating => _getVectorsAssets("check_your_contribution_delivery_review_rating.svg");
+  String get vectorCameraOutline => _getVectorsAssets("camera_outline.svg");
 
   Color get colorYellow => const Color.fromRGBO(244, 184, 43, 1);
   Color get colorLightRed => const Color.fromRGBO(255, 236, 230, 1);

@@ -60,7 +60,8 @@ extension UserDetailEntityMappingExt on ResponseWrapper {
       name: response["name"],
       email: response["email"],
       role: response["role"],
-      userProfile: ResponseWrapper(response["user_profile"]).mapFromResponseToUserProfile()
+      userProfile: ResponseWrapper(response["user_profile"]).mapFromResponseToUserProfile(),
+      createdAt: ResponseWrapper(response["created_at"]).mapFromResponseToDateTime()!
     );
   }
 

@@ -1,5 +1,10 @@
+import '../../domain/entity/delivery/check_your_contribution_delivery_review_detail_parameter.dart';
+import '../../domain/entity/delivery/check_your_contribution_delivery_review_detail_response.dart';
 import '../../domain/entity/delivery/delivery_review.dart';
 import '../../domain/entity/delivery/delivery_review_list_parameter.dart';
+import '../../domain/entity/delivery/delivery_review_paging_parameter.dart';
+import '../../domain/entity/delivery/give_review_delivery_review_detail_parameter.dart';
+import '../../domain/entity/delivery/give_review_delivery_review_detail_response.dart';
 import '../../domain/entity/news/news.dart';
 import '../../domain/entity/news/news_paging_parameter.dart';
 import '../../domain/entity/video/defaultvideo/default_video.dart';
@@ -41,7 +46,32 @@ class DefaultFeedRepository implements FeedRepository {
   }
 
   @override
+  FutureProcessing<LoadDataResult<PagingDataResult<DeliveryReview>>> deliveryReviewPaging(DeliveryReviewPagingParameter deliveryReviewPagingParameter) {
+    return feedDataSource.deliveryReviewPaging(deliveryReviewPagingParameter).mapToLoadDataResult<PagingDataResult<DeliveryReview>>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<PagingDataResult<DeliveryReview>>> waitingToBeReviewedDeliveryReviewPaging(DeliveryReviewPagingParameter deliveryReviewPagingParameter) {
+    return feedDataSource.waitingToBeReviewedDeliveryReviewPaging(deliveryReviewPagingParameter).mapToLoadDataResult<PagingDataResult<DeliveryReview>>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<PagingDataResult<DeliveryReview>>> historyDeliveryReviewPaging(DeliveryReviewPagingParameter deliveryReviewPagingParameter) {
+    return feedDataSource.historyDeliveryReviewPaging(deliveryReviewPagingParameter).mapToLoadDataResult<PagingDataResult<DeliveryReview>>();
+  }
+
+  @override
   FutureProcessing<LoadDataResult<PagingDataResult<News>>> newsPaging(NewsPagingParameter newsPagingParameter) {
     return feedDataSource.newsPaging(newsPagingParameter).mapToLoadDataResult<PagingDataResult<News>>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<CheckYourContributionDeliveryReviewDetailResponse>> checkYourContributionDeliveryReviewDetail(CheckYourContributionDeliveryReviewDetailParameter checkYourContributionDeliveryReviewDetailParameter) {
+    return feedDataSource.checkYourContributionDeliveryReviewDetail(checkYourContributionDeliveryReviewDetailParameter).mapToLoadDataResult<CheckYourContributionDeliveryReviewDetailResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<GiveReviewDeliveryReviewDetailResponse>> giveReviewDeliveryReviewDetail(GiveReviewDeliveryReviewDetailParameter giveReviewDeliveryReviewDetailParameter) {
+    return feedDataSource.giveReviewDeliveryReviewDetail(giveReviewDeliveryReviewDetailParameter).mapToLoadDataResult<GiveReviewDeliveryReviewDetailResponse>();
   }
 }

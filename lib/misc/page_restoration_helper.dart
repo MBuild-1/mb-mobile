@@ -9,6 +9,7 @@ import '../presentation/page/cart_page.dart';
 import '../presentation/page/coupon_page.dart';
 import '../presentation/page/crop_picture_page.dart';
 import '../presentation/page/delivery_page.dart';
+import '../presentation/page/deliveryreview/delivery_review_page.dart';
 import '../presentation/page/getx_page.dart';
 import '../presentation/page/login_page.dart';
 import '../presentation/page/mainmenu/main_menu_page.dart';
@@ -237,6 +238,17 @@ class _PageRestorationHelperImpl {
       PageRestorationHelper.findPageRestorationMixin<OrderPageRestorationMixin>(
         onGetxPageRestorationFound: (restoration) {
           restoration.orderPageRestorableRouteFuture.present();
+        },
+        context: context
+      );
+    });
+  }
+
+  void toDeliveryReviewPage(BuildContext context) {
+    LoginHelper.checkingLogin(context, () {
+      PageRestorationHelper.findPageRestorationMixin<DeliveryReviewPageRestorationMixin>(
+        onGetxPageRestorationFound: (restoration) {
+          restoration.deliveryReviewPageRestorableRouteFuture.present();
         },
         context: context
       );

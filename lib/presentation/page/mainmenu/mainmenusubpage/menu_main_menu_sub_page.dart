@@ -140,7 +140,7 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
             title: 'Wishlist'.tr,
           ),
           ProfileMenuListItemControllerState(
-            onTap: (context) {},
+            onTap: (context) => PageRestorationHelper.toDeliveryReviewPage(context),
             icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorDeliveryShipping, width: 20.0),
             title: 'Delivery Shipping'.tr,
           ),

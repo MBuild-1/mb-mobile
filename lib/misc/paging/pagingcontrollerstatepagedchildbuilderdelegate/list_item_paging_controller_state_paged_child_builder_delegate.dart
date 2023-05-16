@@ -28,6 +28,9 @@ import '../../../presentation/widget/country/vertical_country_item.dart';
 import '../../../presentation/widget/coupon/horizontal_coupon_item.dart';
 import '../../../presentation/widget/coupon/vertical_coupon_item.dart';
 import '../../../presentation/widget/default_video_carousel_list_item.dart';
+import '../../../presentation/widget/deliveryreview/deliveryreviewdetail/check_your_contribution_delivery_review_detail_item.dart';
+import '../../../presentation/widget/deliveryreview/deliveryreviewdetail/horizontal_delivery_review_detail_item.dart';
+import '../../../presentation/widget/deliveryreview/deliveryreviewdetail/vertical_delivery_review_detail_item.dart';
 import '../../../presentation/widget/deliveryreview/horizontal_delivery_review_item.dart';
 import '../../../presentation/widget/deliveryreview/vertical_delivery_review_item.dart';
 import '../../../presentation/widget/host_cart_indicator.dart';
@@ -98,6 +101,11 @@ import '../../controllerstate/listitemcontrollerstate/couponlistitemcontrollerst
 import '../../controllerstate/listitemcontrollerstate/decorated_container_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/delivery_to_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/deliveryreviewlistitemcontrollerstate/delivery_review_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/deliveryreviewlistitemcontrollerstate/deliveryreviewdetaillistitemcontrollerstate/base_delivery_review_detail_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/deliveryreviewlistitemcontrollerstate/deliveryreviewdetaillistitemcontrollerstate/check_your_contribution_delivery_review_detail_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/deliveryreviewlistitemcontrollerstate/deliveryreviewdetaillistitemcontrollerstate/delivery_review_detail_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/deliveryreviewlistitemcontrollerstate/deliveryreviewdetaillistitemcontrollerstate/horizontal_delivery_review_detail_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/deliveryreviewlistitemcontrollerstate/deliveryreviewdetaillistitemcontrollerstate/vertical_delivery_review_detail_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/deliveryreviewlistitemcontrollerstate/horizontal_delivery_review_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/deliveryreviewlistitemcontrollerstate/vertical_delivery_review_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/divider_list_item_controller_state.dart';
@@ -884,6 +892,31 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
       } else if (item is WaitingForPaymentOrderListItemControllerState) {
         return WaitingForPaymentOrderItem(
           waitingForPaymentOrderCount: item.waitingForPaymentOrderCount,
+          onTap: item.onTap
+        );
+      } else {
+        return Container();
+      }
+    } else if (item is BaseDeliveryReviewDetailListItemControllerState) {
+      if (item is DeliveryReviewDetailListItemControllerState) {
+        if (item is HorizontalDeliveryReviewDetailListItemControllerState) {
+          return HorizontalDeliveryReviewDetailItem(
+            deliveryReview: item.deliveryReview,
+            deliveryReviewDetailType: item.deliveryReviewDetailType,
+          );
+        } else if (item is VerticalDeliveryReviewDetailListItemControllerState) {
+          return VerticalDeliveryReviewDetailItem(
+            deliveryReview: item.deliveryReview,
+            deliveryReviewDetailType: item.deliveryReviewDetailType,
+            onDeliveryReviewRatingTap: item.onDeliveryReviewRatingTap,
+          );
+        } else {
+          return Container();
+        }
+      } else if (item is CheckYourContributionDeliveryReviewDetailListItemControllerState) {
+        return CheckYourContributionDeliveryReviewDetailItem(
+          userLoadDataResult: item.userLoadDataResult,
+          errorProvider: item.errorProvider,
           onTap: item.onTap
         );
       } else {

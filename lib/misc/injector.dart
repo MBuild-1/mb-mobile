@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
+import '../controller/deliveryreviewcontroller/deliveryreviewsubpagecontroller/history_delivery_review_sub_controller.dart';
+import '../controller/deliveryreviewcontroller/deliveryreviewsubpagecontroller/waiting_to_be_reviewed_delivery_review_sub_controller.dart';
 import '../controller/mainmenucontroller/mainmenusubpagecontroller/explore_nusantara_main_menu_sub_controller.dart';
 import '../controller/mainmenucontroller/mainmenusubpagecontroller/feed_main_menu_sub_controller.dart';
 import '../controller/mainmenucontroller/mainmenusubpagecontroller/home_main_menu_sub_controller.dart';
@@ -74,6 +76,7 @@ import '../domain/usecase/get_address_list_use_case.dart';
 import '../domain/usecase/get_address_paging_use_case.dart';
 import '../domain/usecase/get_bestseller_in_masterbagasi_list_use_case.dart';
 import '../domain/usecase/get_cart_summary_use_case.dart';
+import '../domain/usecase/get_check_your_contribution_delivery_review_detail_use_case.dart';
 import '../domain/usecase/get_coffee_and_tea_origin_indonesia_list_use_case.dart';
 import '../domain/usecase/get_country_list_use_case.dart';
 import '../domain/usecase/get_country_paging_use_case.dart';
@@ -83,6 +86,7 @@ import '../domain/usecase/get_coupon_paging_use_case.dart';
 import '../domain/usecase/get_current_selected_address_use_case.dart';
 import '../domain/usecase/get_delivery_review_use_case.dart';
 import '../domain/usecase/get_handycrafts_contents_banner_use_case.dart';
+import '../domain/usecase/get_history_delivery_review_paging_use_case.dart';
 import '../domain/usecase/get_homepage_contents_banner_use_case.dart';
 import '../domain/usecase/get_kitchen_contents_banner_use_case.dart';
 import '../domain/usecase/get_my_cart_use_case.dart';
@@ -115,7 +119,9 @@ import '../domain/usecase/get_short_video_use_case.dart';
 import '../domain/usecase/get_snack_for_lying_around_list_use_case.dart';
 import '../domain/usecase/get_trip_default_video_use_case.dart';
 import '../domain/usecase/get_user_use_case.dart';
+import '../domain/usecase/get_waiting_to_be_reviewed_delivery_review_paging_use_case.dart';
 import '../domain/usecase/get_wishlist_paging_use_case.dart';
+import '../domain/usecase/give_review_delivery_review_detail_use_case.dart';
 import '../domain/usecase/login_use_case.dart';
 import '../domain/usecase/login_with_google_use_case.dart';
 import '../domain/usecase/logout_use_case.dart';
@@ -206,6 +212,17 @@ class _Injector {
         getUserUseCase: locator(),
         getShortMyCartUseCase: locator(),
         logoutUseCase: locator()
+      )
+    );
+    locator.registerLazySingleton<WaitingToBeReviewedDeliveryReviewSubControllerInjectionFactory>(
+      () => WaitingToBeReviewedDeliveryReviewSubControllerInjectionFactory(
+        getWaitingToBeReviewedDeliveryReviewPagingUseCase: locator(),
+        getUserUseCase: locator()
+      )
+    );
+    locator.registerLazySingleton<HistoryDeliveryReviewSubControllerInjectionFactory>(
+      () => HistoryDeliveryReviewSubControllerInjectionFactory(
+        getHistoryDeliveryReviewPagingUseCase: locator()
       )
     );
 
@@ -388,6 +405,10 @@ class _Injector {
     locator.registerLazySingleton<RemoveWishlistUseCase>(() => RemoveWishlistUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetShortVideoUseCase>(() => GetShortVideoUseCase(feedRepository: locator()));
     locator.registerLazySingleton<GetDeliveryReviewUseCase>(() => GetDeliveryReviewUseCase(feedRepository: locator()));
+    locator.registerLazySingleton<GetWaitingToBeReviewedDeliveryReviewPagingUseCase>(() => GetWaitingToBeReviewedDeliveryReviewPagingUseCase(feedRepository: locator()));
+    locator.registerLazySingleton<GetHistoryDeliveryReviewPagingUseCase>(() => GetHistoryDeliveryReviewPagingUseCase(feedRepository: locator()));
+    locator.registerLazySingleton<GetCheckYourContributionDeliveryReviewDetailUseCase>(() => GetCheckYourContributionDeliveryReviewDetailUseCase(feedRepository: locator()));
+    locator.registerLazySingleton<GiveReviewDeliveryReviewDetailUseCase>(() => GiveReviewDeliveryReviewDetailUseCase(feedRepository: locator()));
     locator.registerLazySingleton<GetNewsUseCase>(() => GetNewsUseCase(feedRepository: locator()));
     locator.registerLazySingleton<GetTripDefaultVideoUseCase>(() => GetTripDefaultVideoUseCase(feedRepository: locator()));
     locator.registerLazySingleton<GetKitchenContentsBannerUseCase>(() => GetKitchenContentsBannerUseCase(bannerRepository: locator()));

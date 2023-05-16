@@ -4,13 +4,15 @@ class User {
   int role;
   String email;
   UserProfile userProfile;
+  DateTime createdAt;
 
   User({
     required this.id,
     required this.name,
     required this.role,
     required this.email,
-    required this.userProfile
+    required this.userProfile,
+    required this.createdAt
   });
 }
 

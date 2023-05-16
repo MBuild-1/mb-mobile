@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../presentation/widget/something_counter.dart';
+import 'refresh_delivery_review.dart';
 
 class _MainRouteObserver extends RouteObserver {
   Map<String, RouteWrapper?> _routeMap = {};
@@ -13,6 +14,7 @@ class _MainRouteObserver extends RouteObserver {
   Map<String, void Function()?> _controllerMediatorMap = {};
   Map<String, void Function()?> get controllerMediatorMap => _controllerMediatorMap;
   void Function(int)? onChangeMainMenuTap;
+  RefreshDeliveryReview? onRefreshDeliveryReview;
 
   void applyNewRouteMapFromRouteKeyMap(Map<String, int> newRouteMap) {
     _routeMap = {

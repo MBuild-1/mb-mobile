@@ -150,7 +150,24 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Is Running": "Sedang Berjalan",
       "Waiting For Payment": "Menunggu Pembayaran",
       "Item": "Barang",
-      "Buy Again": "Beli Lagi"
+      "Buy Again": "Beli Lagi",
+      "Delivery Review": "Ulasan Pengiriman",
+      "Waiting To Be Reviewed": "Menunggu Diulas",
+      "History": "Riwayat",
+      "Check your contribution in": "Cek kontribusimu di",
+      "You have been help many people with your review!": "Kamu sudah bantu banyak orang dengan reviewmu, loh!",
+      "Rating": "Rating",
+      "Full Review": "Ulasan Lengkap",
+      "Photo & Video": "Foto & Video",
+      "Give Review": "Kasih Ulasan",
+      "Feedback is required": "Feedback dibutuhkan",
+      "Come on, tell me your satisfaction about the quality of goods and our service": "Yuk, ceritain kepuasanmu tentang kualitas barang maupun pelayanan kami",
+      "Love to see a photo or video of the item": "Kasih liat foto atau video barang",
+      "Service Quality": "Kualitas Pelayanan",
+      "Packaging Quality": "Kualitas Kemasan",
+      "Price Quality": "Kualitas Harga",
+      "Item Quality": "Kualitas Barang",
+      "Delivery Quality": "Kualitas Pengiriman",
     }
   };
 
