@@ -33,6 +33,7 @@ import '../../../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/l
 import '../../../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../../../misc/paging/pagingresult/paging_result.dart';
 import '../../../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/horizontal_dynamic_item_carousel_parametered_component_entity_and_list_item_controller_state_mediator_parameter.dart';
+import '../../../../misc/string_util.dart';
 import '../../../../misc/widget_helper.dart';
 import '../../../widget/background_app_bar_scaffold.dart';
 import '../../../widget/menu_profile_header.dart';
@@ -210,17 +211,35 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
             title: 'Regarding MasterBagasi'.tr,
             profileMenuListItemControllerStateList: [
               ProfileMenuListItemControllerState(
-                onTap: (context) {},
+                onTap: (context) {
+                  PageRestorationHelper.toWebViewerPage(
+                    context, <String, dynamic>{
+                      Constant.textEncodedUrlKey: StringUtil.encodeBase64String("https://masterbagasi.com/about")
+                    }
+                  );
+                },
                 icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorArrow, width: 20.0, height: 13.0),
                 title: 'About MasterBagasi'.tr
               ),
               ProfileMenuListItemControllerState(
-                onTap: (context) {},
+                onTap: (context) {
+                  PageRestorationHelper.toWebViewerPage(
+                    context, <String, dynamic>{
+                      Constant.textEncodedUrlKey: StringUtil.encodeBase64String("https://masterbagasi.com/term-and-condition")
+                    }
+                  );
+                },
                 icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorArrow, width: 20.0, height: 13.0),
                 title: 'Terms & Conditions'.tr
               ),
               ProfileMenuListItemControllerState(
-                onTap: (context) {},
+                onTap: (context) {
+                  PageRestorationHelper.toWebViewerPage(
+                    context, <String, dynamic>{
+                      Constant.textEncodedUrlKey: StringUtil.encodeBase64String("https://masterbagasi.com/privacy")
+                    }
+                  );
+                },
                 icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorArrow, width: 20.0, height: 13.0),
                 title: 'Privacy Policy'.tr
               ),
