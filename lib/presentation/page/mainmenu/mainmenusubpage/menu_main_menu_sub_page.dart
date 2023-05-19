@@ -189,23 +189,58 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
             title: 'Account Privation'.tr,
             description: "${'Manage data usage and connected accounts'.tr}."
           ),
+          // SpacingListItemControllerState(),
+          // ProfileDropdownMenuListItemControllerState(
+          //   onUpdateState: () => setState(() {}),
+          //   isExpand: false,
+          //   title: 'Apps Configuration'.tr,
+          //   profileMenuListItemControllerStateList: [
+          //     ProfileMenuListItemControllerState(
+          //       onTap: (context) {},
+          //       icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorAccountPrivacy, width: 20.0),
+          //       title: 'Account Privation'.tr,
+          //       description: "${'Manage data usage and connected accounts'.tr}."
+          //     ),
+          //   ]
+          // ),
           SpacingListItemControllerState(),
           ProfileDropdownMenuListItemControllerState(
             onUpdateState: () => setState(() {}),
             isExpand: false,
-            title: 'Apps Configuration'.tr,
-          ),
-          SpacingListItemControllerState(),
-          ProfileDropdownMenuListItemControllerState(
-            onUpdateState: () => setState(() {}),
-            isExpand: false,
-            title: 'About Masterbagasi'.tr,
+            title: 'Regarding Masterbagasi'.tr,
+            profileMenuListItemControllerStateList: [
+              ProfileMenuListItemControllerState(
+                onTap: (context) {},
+                icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorArrow, width: 20.0, height: 13.0),
+                title: 'About MasterBagasi'.tr
+              ),
+              ProfileMenuListItemControllerState(
+                onTap: (context) {},
+                icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorArrow, width: 20.0, height: 13.0),
+                title: 'Terms & Conditions'.tr
+              ),
+              ProfileMenuListItemControllerState(
+                onTap: (context) {},
+                icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorArrow, width: 20.0, height: 13.0),
+                title: 'Privacy Policy'.tr
+              ),
+              ProfileMenuListItemControllerState(
+                onTap: (context) {},
+                icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorArrow, width: 20.0, height: 13.0),
+                title: 'Intellectual Rights and Property'.tr
+              ),
+              ProfileMenuListItemControllerState(
+                onTap: (context) {},
+                icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorArrow, width: 20.0, height: 13.0),
+                title: 'Review This App'.tr
+              ),
+            ]
           ),
           SpacingListItemControllerState(),
           ProfileMenuListItemControllerState(
             onTap: (context) => widget.menuMainMenuSubController.logout(),
             title: 'Sign Out'.tr,
-            icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorLogout, width: 20.0),
+            icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorLogout, width: 20.0, height: 13.0),
           ),
         ]
       )
