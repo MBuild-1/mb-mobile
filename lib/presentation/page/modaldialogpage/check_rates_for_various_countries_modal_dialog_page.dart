@@ -17,6 +17,7 @@ import '../../../misc/load_data_result.dart';
 import '../../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../../widget/loaddataresultimplementer/load_data_result_implementer.dart';
 import '../../widget/rx_consumer.dart';
+import '../../widget/select_country_indicator.dart';
 import 'modal_dialog_page.dart';
 import 'select_countries_modal_dialog_page.dart';
 
@@ -78,54 +79,12 @@ class _StatefulCheckRatesForVariousCountriesControllerMediatorWidgetState extend
         children: [
           Text("Our shipping price list".tr),
           const SizedBox(height: 10),
-          SizedBox(
-            width: double.infinity,
-            child: SizedOutlineGradientButton(
-              onPressed: () async {
-                dynamic result = await DialogHelper.showModalDialogPage<Country, Country>(
-                  context: context,
-                  modalDialogPageBuilder: (context, parameter) => SelectCountriesModalDialogPage(
-                    selectedCountry: parameter,
-                  ),
-                  parameter: _selectedCountry,
-                );
-                if (result is Country) {
-                  setState(() {
-                    _selectedCountry = result;
-                  });
-                  widget.checkRatesForVariousCountriesModalDialogController.loadCargo();
-                }
-              },
-              child: _selectedCountry == null ? Text(
-                "(${"Not Selected".tr})",
-                style: getDefaultTextStyle()
-              ) : Row(
-                children: [
-                  SizedBox(
-                    width: 16,
-                    height: 12,
-                    child: Flag.fromString(_selectedCountry!.code),
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    _selectedCountry!.name,
-                    style: getDefaultTextStyle()
-                  )
-                ]
-              ),
-              text: "",
-              outlineGradientButtonType: OutlineGradientButtonType.outline,
-              outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
-              customGradientButtonVariation: (outlineGradientButtonType) {
-                return CustomGradientButtonVariation(
-                  outlineGradientButtonType: outlineGradientButtonType,
-                  gradient: Constant.buttonGradient2,
-                  backgroundColor: Colors.white,
-                  textStyle: getDefaultTextStyle()
-                );
-              },
-              customPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 9),
-            ),
+          SelectCountryIndicator(
+            selectedCountry: _selectedCountry,
+            onSelectCountry: (country) {
+              setState(() => _selectedCountry = country);
+              widget.checkRatesForVariousCountriesModalDialogController.loadCargo();
+            }
           ),
           RxConsumer<LoadDataResultWrapper<List<Cargo>>>(
             rxValue: widget.checkRatesForVariousCountriesModalDialogController.cargoLoadDataResultWrapperRx,
