@@ -225,12 +225,16 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
                 title: 'Privacy Policy'.tr
               ),
               ProfileMenuListItemControllerState(
-                onTap: (context) {},
+                onTap: (context) {
+                  DialogHelper.showPromptUnderConstruction(context);
+                },
                 icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorArrow, width: 20.0, height: 13.0),
                 title: 'Intellectual Rights and Property'.tr
               ),
               ProfileMenuListItemControllerState(
-                onTap: (context) {},
+                onTap: (context) {
+                  DialogHelper.showPromptUnderConstruction(context);
+                },
                 icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorArrow, width: 20.0, height: 13.0),
                 title: 'Review This App'.tr
               ),

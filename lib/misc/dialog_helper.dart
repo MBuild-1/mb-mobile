@@ -309,8 +309,10 @@ class _DialogHelperImpl {
       context: context,
       prompt: (context) => Column(
         children: [
-          Text("Under Construction".tr, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-          Text("${"This feature is under construction".tr}.", textAlign: TextAlign.center)
+          Text("Feature Coming Soon".tr, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+          const SizedBox(height: 4),
+          Text("${"We apologize for the inconvenience caused".tr}.\r\n${"We're almost done".tr}.", textAlign: TextAlign.center),
+          const SizedBox(height: 4),
         ]
       ),
       onOkPromptButtonTap: (_) async {
