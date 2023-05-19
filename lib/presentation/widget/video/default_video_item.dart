@@ -1,10 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../../domain/entity/video/defaultvideo/default_video.dart';
 import '../../../misc/constant.dart';
+import '../../../misc/string_util.dart';
 import '../modified_loading_indicator.dart';
 
 class DefaultVideoItem extends StatelessWidget {
@@ -74,7 +76,9 @@ class _DefaultVideoPlayerState extends State<_DefaultVideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    String baseUrl = "https://www.youtube.com/shorts/${widget.defaultVideo.url}";
+    String? effectiveUrl = StringUtil.convertYoutubeLinkUrlToId(widget.defaultVideo.url);
+    String baseUrl = effectiveUrl.isNotEmptyString ? "https://www.youtube.com/${widget.defaultVideo.url}" : widget.defaultVideo.url;
+    String embedUrl = effectiveUrl.isNotEmptyString ? "https://www.youtube.com/embed/$effectiveUrl" : widget.defaultVideo.url;
     return IndexedStack(
       index: _isLoading ? 0 : 1,
       children: [
@@ -100,7 +104,7 @@ class _DefaultVideoPlayerState extends State<_DefaultVideoPlayer> {
             _webViewController = webViewController;
             //_webViewController?.
             _webViewController?.loadHtmlString(
-              '''<html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><iframe id="youtube-iframe" src="https://www.youtube.com/embed/${widget.defaultVideo.url}?enablejsapi=1&autoplay=1&fs=0" frameborder="0" style="position:fixed;top:0;left:0;bottom:0;right:0;width:100%;height:100%;border:none;margin:0;padding:0;overflow:hidden;z-index:999999"></iframe><script type="text/javascript">var tag=document.createElement("script");tag.id="iframe-demo",tag.src="https://www.youtube.com/iframe_api";var player,firstScriptTag=document.getElementsByTagName("script")[0];function onYouTubeIframeAPIReady(){player=new YT.Player("youtube-iframe",{events:{onReady:onPlayerReady,onStateChange:onPlayerStateChange}})}function onPlayerReady(e){document.getElementById("existing-iframe-example").style.borderColor="#FF6D00"}function changeBorderColor(e){-1==e||0==e&&Print.postMessage("Ended")}function onPlayerStateChange(e){changeBorderColor(e.data)}firstScriptTag.parentNode.insertBefore(tag,firstScriptTag)</script></body></html>''',
+              '''<html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><iframe id="youtube-iframe" src="$embedUrl?enablejsapi=1&autoplay=1&fs=0" frameborder="0" style="position:fixed;top:0;left:0;bottom:0;right:0;width:100%;height:100%;border:none;margin:0;padding:0;overflow:hidden;z-index:999999"></iframe><script type="text/javascript">var tag=document.createElement("script");tag.id="iframe-demo",tag.src="https://www.youtube.com/iframe_api";var player,firstScriptTag=document.getElementsByTagName("script")[0];function onYouTubeIframeAPIReady(){player=new YT.Player("youtube-iframe",{events:{onReady:onPlayerReady,onStateChange:onPlayerStateChange}})}function onPlayerReady(e){document.getElementById("existing-iframe-example").style.borderColor="#FF6D00"}function changeBorderColor(e){-1==e||0==e&&Print.postMessage("Ended")}function onPlayerStateChange(e){changeBorderColor(e.data)}firstScriptTag.parentNode.insertBefore(tag,firstScriptTag)</script></body></html>''',
               baseUrl: baseUrl
             );
           },
