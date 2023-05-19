@@ -104,7 +104,7 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Account Privation": "Privasi Akun",
       "Manage data usage and connected accounts": "Atur penggunaan data & akun yang tersambung",
       "Apps Configuration": "Pengaturan Aplikasi",
-      "Regarding MasterBagasi": "Seputar Masterbagasi",
+      "Regarding MasterBagasi": "Seputar MasterBagasi",
       "About MasterBagasi": "Tentang MasterBagasi",
       "Terms & Conditions": "Syarat & Ketentuan",
       "Privacy Policy": "Kebijakan Privasi",

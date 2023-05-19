@@ -207,7 +207,7 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
           ProfileDropdownMenuListItemControllerState(
             onUpdateState: () => setState(() {}),
             isExpand: false,
-            title: 'Regarding Masterbagasi'.tr,
+            title: 'Regarding MasterBagasi'.tr,
             profileMenuListItemControllerStateList: [
               ProfileMenuListItemControllerState(
                 onTap: (context) {},
