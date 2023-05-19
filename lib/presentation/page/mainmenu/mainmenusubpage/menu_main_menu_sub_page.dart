@@ -169,25 +169,25 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
             onTap: (context) {},
             icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorAddressList, width: 20.0),
             title: 'Address List'.tr,
-            description: "${'Atur alamat pengiriman belanjaan'.tr}."
+            description: "${'Set the address for sending groceries'.tr}."
           ),
           ProfileMenuListItemControllerState(
             onTap: (context) {},
             icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorAccountSecurity, width: 20.0),
             title: 'Account Security'.tr,
-            description: "${'Kata sandi, PIN, & verifikasi data diri'.tr}."
+            description: "${'Password, PIN, and personal data verification'.tr}."
           ),
           ProfileMenuListItemControllerState(
             onTap: (context) {},
             icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorNotificationConfiguration, width: 20.0),
             title: 'Notification Configuration'.tr,
-            description: "${'Atur segala jenis pesan notifikasi'.tr}."
+            description: "${'Manage all kinds of notification messages'.tr}."
           ),
           ProfileMenuListItemControllerState(
             onTap: (context) {},
             icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorAccountPrivacy, width: 20.0),
             title: 'Account Privation'.tr,
-            description: "${'Atur penggunaan data & akun yang tersambung'.tr}."
+            description: "${'Manage data usage and connected accounts'.tr}."
           ),
           SpacingListItemControllerState(),
           ProfileDropdownMenuListItemControllerState(
