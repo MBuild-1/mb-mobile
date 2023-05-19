@@ -150,7 +150,7 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
             title: 'Favorite Brand'.tr,
           ),
           ProfileMenuListItemControllerState(
-            onTap: (context) {},
+            onTap: (context) => PageRestorationHelper.toProductDiscussionPage(context),
             icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorProductDiscussion, width: 20.0),
             title: 'Product Discussion'.tr,
           ),

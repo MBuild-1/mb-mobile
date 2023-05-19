@@ -67,6 +67,8 @@ import '../../../presentation/widget/productcategory/circleproductcategory/horiz
 import '../../../presentation/widget/productcategory/circleproductcategory/vertical_circle_product_category_item.dart';
 import '../../../presentation/widget/productcategory/horizontal_product_category_item.dart';
 import '../../../presentation/widget/productcategory/vertical_product_category_item.dart';
+import '../../../presentation/widget/productdiscussion/productdiscussiondialog/vertical_product_discussion_dialog_item.dart';
+import '../../../presentation/widget/productdiscussion/vertical_product_discussion_item.dart';
 import '../../../presentation/widget/prompt_indicator.dart';
 import '../../../presentation/widget/province_map_header_list_item.dart';
 import '../../../presentation/widget/shimmer_carousel_item.dart';
@@ -152,6 +154,10 @@ import '../../controllerstate/listitemcontrollerstate/productcategorylistitemcon
 import '../../controllerstate/listitemcontrollerstate/productcategorylistitemcontrollerstate/horizontal_product_category_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productcategorylistitemcontrollerstate/product_category_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productcategorylistitemcontrollerstate/vertical_product_category_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/productdiscussionlistitemcontrollerstate/product_discussion_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/productdiscussionlistitemcontrollerstate/productdiscussiondialoglistitemcontrollerstate/product_discussion_dialog_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/productdiscussionlistitemcontrollerstate/productdiscussiondialoglistitemcontrollerstate/vertical_product_discussion_dialog_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/productdiscussionlistitemcontrollerstate/vertical_product_discussion_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productlistitemcontrollerstate/horizontal_product_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productlistitemcontrollerstate/product_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productlistitemcontrollerstate/vertical_product_list_item_controller_state.dart';
@@ -934,6 +940,25 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
           userLoadDataResult: item.userLoadDataResult,
           errorProvider: item.errorProvider,
           onTap: item.onTap
+        );
+      } else {
+        return Container();
+      }
+    } else if (item is ProductDiscussionListItemControllerState) {
+      if (item is VerticalProductDiscussionListItemControllerState) {
+        return VerticalProductDiscussionItem(
+          productDiscussion: item.productDiscussion,
+          isExpanded: item.isExpanded,
+          onProductDiscussionTap: item.onProductDiscussionTap
+        );
+      } else {
+        return Container();
+      }
+    } else if (item is ProductDiscussionDialogListItemControllerState) {
+      if (item is VerticalProductDiscussionDialogListItemControllerState) {
+        return VerticalProductDiscussionDialogItem(
+          productDiscussionDialog: item.productDiscussionDialog,
+          isMainProductDiscussion: item.isMainProductDiscussion,
         );
       } else {
         return Container();

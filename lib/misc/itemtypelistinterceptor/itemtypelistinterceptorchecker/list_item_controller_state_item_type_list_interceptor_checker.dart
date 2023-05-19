@@ -20,6 +20,7 @@ import '../../itemtypelistsubinterceptor/order_item_type_list_sub_interceptor.da
 import '../../itemtypelistsubinterceptor/padding_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/page_keyed_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/product_bundle_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/product_discussion_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/product_entry_header_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/profile_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/row_container_item_type_list_sub_interceptor.dart';
@@ -173,6 +174,11 @@ class ListItemControllerStateItemTypeInterceptorChecker extends ItemTypeListInte
     ProductBundleItemTypeListSubInterceptor(
       padding: padding,
       itemSpacing: itemSpacing
+    ),
+    ProductDiscussionContainerItemTypeListSubInterceptor(
+      padding: padding,
+      itemSpacing: itemSpacing,
+      listItemControllerStateItemTypeInterceptorChecker: this
     ),
     CouponItemTypeListSubInterceptor(
       padding: padding,

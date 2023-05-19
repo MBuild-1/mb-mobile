@@ -36,6 +36,7 @@ import '../product_brand_page.dart';
 import '../product_bundle_detail_page.dart';
 import '../product_bundle_page.dart';
 import '../product_category_detail_page.dart';
+import '../product_discussion_page.dart';
 import '../product_entry_page.dart';
 import '../web_viewer_page.dart';
 import 'mainmenusubpage/explore_nusantara_main_menu_page.dart';
@@ -132,7 +133,7 @@ class MainMenuPage extends RestorableGetxPage<_MainMenuPageRestoration> {
   }
 }
 
-class _MainMenuPageRestoration extends MixableGetxPageRestoration with MainMenuPageRestorationMixin, LoginPageRestorationMixin, ProductEntryPageRestorationMixin, ProductDetailPageRestorationMixin, ProductBrandDetailPageRestorationMixin, ProductCategoryDetailPageRestorationMixin, ProductBundlePageRestorationMixin, ProductBundleDetailPageRestorationMixin, CartPageRestorationMixin, ProductBrandPageRestorationMixin, WebViewerPageRestorationMixin, OrderPageRestorationMixin, DeliveryReviewPageRestorationMixin, FavoriteProductBrandPageRestorationMixin {
+class _MainMenuPageRestoration extends MixableGetxPageRestoration with MainMenuPageRestorationMixin, LoginPageRestorationMixin, ProductEntryPageRestorationMixin, ProductDetailPageRestorationMixin, ProductBrandDetailPageRestorationMixin, ProductCategoryDetailPageRestorationMixin, ProductBundlePageRestorationMixin, ProductBundleDetailPageRestorationMixin, CartPageRestorationMixin, ProductBrandPageRestorationMixin, WebViewerPageRestorationMixin, OrderPageRestorationMixin, DeliveryReviewPageRestorationMixin, FavoriteProductBrandPageRestorationMixin, ProductDiscussionPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {

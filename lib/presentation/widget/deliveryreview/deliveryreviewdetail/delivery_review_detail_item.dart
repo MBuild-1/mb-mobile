@@ -67,19 +67,21 @@ abstract class DeliveryReviewDetailItem extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 20),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(DateUtil.standardDateFormat4.format(deliveryReview.reviewDate), style: const TextStyle(fontSize: 12)),
-                      const SizedBox(height: 5),
-                      Text(deliveryReview.productName.toStringNonNull, style: const TextStyle(fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 10),
-                      RatingIndicator(
-                        rating: deliveryReview.rating
-                      ),
-                      const SizedBox(height: 10),
-                      Text(deliveryReview.review),
-                    ],
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(DateUtil.standardDateFormat4.format(deliveryReview.reviewDate), style: const TextStyle(fontSize: 12)),
+                        const SizedBox(height: 5),
+                        Text(deliveryReview.productName.toStringNonNull, style: const TextStyle(fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 10),
+                        RatingIndicator(
+                          rating: deliveryReview.rating
+                        ),
+                        const SizedBox(height: 10),
+                        Text(deliveryReview.review),
+                      ],
+                    ),
                   )
                 ],
               )
@@ -123,19 +125,21 @@ abstract class DeliveryReviewDetailItem extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 20),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(DateUtil.standardDateFormat4.format(deliveryReview.reviewDate), style: const TextStyle(fontSize: 12)),
-                      const SizedBox(height: 5),
-                      Text(deliveryReview.productName.toStringNonNull, style: const TextStyle(fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 10),
-                      RatingIndicator(
-                        rating: 0.0,
-                        ratingSize: 30,
-                        onTapRating: onDeliveryReviewRatingTap != null ? (rating) => onDeliveryReviewRatingTap!(rating) : null,
-                      ),
-                    ],
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(DateUtil.standardDateFormat4.format(deliveryReview.reviewDate), style: const TextStyle(fontSize: 12)),
+                        const SizedBox(height: 5),
+                        Text(deliveryReview.productName.toStringNonNull, style: const TextStyle(fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 10),
+                        RatingIndicator(
+                          rating: 0.0,
+                          ratingSize: 30,
+                          onTapRating: onDeliveryReviewRatingTap != null ? (rating) => onDeliveryReviewRatingTap!(rating) : null,
+                        ),
+                      ],
+                    ),
                   )
                 ],
               )

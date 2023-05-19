@@ -168,7 +168,8 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Price Quality": "Kualitas Harga",
       "Item Quality": "Kualitas Barang",
       "Delivery Quality": "Kualitas Pengiriman",
-      "My Favorite Brand": "Brand Favorit Saya"
+      "My Favorite Brand": "Brand Favorit Saya",
+      "Answer": "Jawaban"
     }
   };
 

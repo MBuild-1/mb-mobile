@@ -11,6 +11,7 @@ class _DateUtilImpl {
   DateFormat standardDateFormat6 = DateFormat("dd MMMM yyyy HH:mm:ss");
   DateFormat standardDateFormat7 = DateFormat("dd MMM yyyy");
   DateFormat standardDateFormat8 = DateFormat("dd MMM yyyy HH:mm:ss");
+  DateFormat standardDateFormat9 = DateFormat("dd MMM");
   DateFormat standardTimeFormat = DateFormat("HH:mm:ss");
   DateFormat standardHourMinuteTimeFormat = DateFormat("HH:mm");
   DateFormat anthonyInputDateFormat = AnthonyInputDateFormat();

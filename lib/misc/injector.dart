@@ -26,6 +26,8 @@ import '../data/datasource/orderdatasource/default_order_data_source.dart';
 import '../data/datasource/orderdatasource/order_data_source.dart';
 import '../data/datasource/productdatasource/default_product_data_source.dart';
 import '../data/datasource/productdatasource/product_data_source.dart';
+import '../data/datasource/productdiscussiondatasource/default_product_discussion_data_source.dart';
+import '../data/datasource/productdiscussiondatasource/product_discussion_data_source.dart';
 import '../data/datasource/userdatasource/default_user_data_source.dart';
 import '../data/datasource/userdatasource/user_data_source.dart';
 import '../data/repository/default_address_repository.dart';
@@ -36,6 +38,7 @@ import '../data/repository/default_coupon_repository.dart';
 import '../data/repository/default_feed_repository.dart';
 import '../data/repository/default_map_repository.dart';
 import '../data/repository/default_order_repository.dart';
+import '../data/repository/default_product_discussion_repository.dart';
 import '../data/repository/default_product_repository.dart';
 import '../data/repository/default_user_repository.dart';
 import '../domain/dummy/addressdummy/address_dummy.dart';
@@ -54,6 +57,7 @@ import '../domain/dummy/productdummy/product_dummy.dart';
 import '../domain/dummy/productdummy/product_entry_dummy.dart';
 import '../domain/dummy/productdummy/product_variant_dummy.dart';
 import '../domain/dummy/provincedummy/province_dummy.dart';
+import '../domain/dummy/userdummy/user_dummy.dart';
 import '../domain/repository/address_repository.dart';
 import '../domain/repository/banner_repository.dart';
 import '../domain/repository/cargo_repository.dart';
@@ -62,6 +66,7 @@ import '../domain/repository/coupon_repository.dart';
 import '../domain/repository/feed_repository.dart';
 import '../domain/repository/map_repository.dart';
 import '../domain/repository/order_repository.dart';
+import '../domain/repository/product_discussion_repository.dart';
 import '../domain/repository/product_repository.dart';
 import '../domain/repository/user_repository.dart';
 import '../domain/usecase/add_additional_item_use_case.dart';
@@ -108,6 +113,8 @@ import '../domain/usecase/get_product_detail_other_from_this_brand_product_entry
 import '../domain/usecase/get_product_detail_other_in_this_category_product_entry_list_use_case.dart';
 import '../domain/usecase/get_product_detail_other_interested_product_brand_list_use_case.dart';
 import '../domain/usecase/get_product_detail_use_case.dart';
+import '../domain/usecase/get_product_discussion_dialog_paging_use_case.dart';
+import '../domain/usecase/get_product_discussion_paging_use_case.dart';
 import '../domain/usecase/get_product_entry_header_content_use_case.dart';
 import '../domain/usecase/get_product_entry_with_condition_paging_use_case.dart';
 import '../domain/usecase/get_product_list_use_case.dart';
@@ -273,6 +280,7 @@ class _Injector {
     locator.registerLazySingleton<AddressUserDummy>(() => AddressUserDummy());
     locator.registerLazySingleton<CountryDummy>(() => CountryDummy(zoneDummy: locator()));
     locator.registerLazySingleton<ZoneDummy>(() => ZoneDummy());
+    locator.registerLazySingleton<UserDummy>(() => UserDummy());
 
     // Shimmer Carousel List Item Generator
     locator.registerFactory<ProductShimmerCarouselListItemGeneratorFactory>(
@@ -399,6 +407,8 @@ class _Injector {
     locator.registerLazySingleton<GetProductBundlePagingUseCase>(() => GetProductBundlePagingUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductBundleHighlightUseCase>(() => GetProductBundleHighlightUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductBundleDetailUseCase>(() => GetProductBundleDetailUseCase(productRepository: locator()));
+    locator.registerLazySingleton<GetProductDiscussionPagingUseCase>(() => GetProductDiscussionPagingUseCase(productDiscussionRepository: locator()));
+    locator.registerLazySingleton<GetProductDiscussionDialogPagingUseCase>(() => GetProductDiscussionDialogPagingUseCase(productDiscussionRepository: locator()));
     locator.registerLazySingleton<GetWishlistPagingUseCase>(() => GetWishlistPagingUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetSnackForLyingAroundListUseCase>(() => GetSnackForLyingAroundListUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetBestsellerInMasterbagasiListUseCase>(() => GetBestsellerInMasterbagasiListUseCase(productRepository: locator()));
@@ -452,6 +462,11 @@ class _Injector {
         mapDataSource: locator()
       )
     );
+    locator.registerLazySingleton<ProductDiscussionRepository>(
+      () => DefaultProductDiscussionRepository(
+        productDiscussionDataSource: locator()
+      )
+    );
     locator.registerLazySingleton<CouponRepository>(() => DefaultCouponRepository(couponDataSource: locator()));
     locator.registerLazySingleton<CartRepository>(() => DefaultCartRepository(cartDataSource: locator()));
     locator.registerLazySingleton<AddressRepository>(() => DefaultAddressRepository(addressDataSource: locator()));
@@ -469,6 +484,12 @@ class _Injector {
         productBundleDummy: locator(),
         productEntryDummy: locator(),
         productBrandDummy: locator()
+      )
+    );
+    locator.registerLazySingleton<ProductDiscussionDataSource>(
+      () => DefaultProductDiscussionDataSource(
+        dio: locator(),
+        userDummy: locator()
       )
     );
     locator.registerLazySingleton<CouponDataSource>(() => DefaultCouponDataSource(dio: locator()));
