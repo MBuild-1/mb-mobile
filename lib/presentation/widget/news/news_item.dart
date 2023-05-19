@@ -65,8 +65,10 @@ abstract class NewsItem extends StatelessWidget {
                               news.title,
                               style: const TextStyle(
                                 fontSize: 17,
-                                fontWeight: FontWeight.bold
+                                fontWeight: FontWeight.bold,
                               ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ]
                         ),
