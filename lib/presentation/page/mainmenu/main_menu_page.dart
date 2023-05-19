@@ -25,6 +25,7 @@ import '../../../misc/typedef.dart';
 import '../../widget/custom_bottom_navigation_bar.dart';
 import '../../widget/modified_svg_picture.dart';
 import '../../widget/rx_consumer.dart';
+import '../address_page.dart';
 import '../cart_page.dart';
 import '../deliveryreview/delivery_review_page.dart';
 import '../favorite_product_brand_page.dart';
@@ -113,7 +114,17 @@ class MainMenuPage extends RestorableGetxPage<_MainMenuPageRestoration> {
   }
 
   @override
-  _MainMenuPageRestoration createPageRestoration() => _MainMenuPageRestoration();
+  _MainMenuPageRestoration createPageRestoration() => _MainMenuPageRestoration(
+    onCompleteAddressPage: (result) {
+      if (result != null) {
+        if (result) {
+          if (MainRouteObserver.onRefreshAddress != null) {
+            MainRouteObserver.onRefreshAddress!();
+          }
+        }
+      }
+    }
+  );
 
   @override
   void onLoginChange() {
@@ -133,10 +144,17 @@ class MainMenuPage extends RestorableGetxPage<_MainMenuPageRestoration> {
   }
 }
 
-class _MainMenuPageRestoration extends MixableGetxPageRestoration with MainMenuPageRestorationMixin, LoginPageRestorationMixin, ProductEntryPageRestorationMixin, ProductDetailPageRestorationMixin, ProductBrandDetailPageRestorationMixin, ProductCategoryDetailPageRestorationMixin, ProductBundlePageRestorationMixin, ProductBundleDetailPageRestorationMixin, CartPageRestorationMixin, ProductBrandPageRestorationMixin, WebViewerPageRestorationMixin, OrderPageRestorationMixin, DeliveryReviewPageRestorationMixin, FavoriteProductBrandPageRestorationMixin, ProductDiscussionPageRestorationMixin {
+class _MainMenuPageRestoration extends MixableGetxPageRestoration with MainMenuPageRestorationMixin, LoginPageRestorationMixin, ProductEntryPageRestorationMixin, ProductDetailPageRestorationMixin, ProductBrandDetailPageRestorationMixin, ProductCategoryDetailPageRestorationMixin, ProductBundlePageRestorationMixin, ProductBundleDetailPageRestorationMixin, CartPageRestorationMixin, ProductBrandPageRestorationMixin, WebViewerPageRestorationMixin, OrderPageRestorationMixin, DeliveryReviewPageRestorationMixin, FavoriteProductBrandPageRestorationMixin, ProductDiscussionPageRestorationMixin, MainMenuPageRestorationMixin, AddressPageRestorationMixin {
+  final RouteCompletionCallback<bool?>? _onCompleteAddressPage;
+
+  _MainMenuPageRestoration({
+    RouteCompletionCallback<bool?>? onCompleteAddressPage
+  }) : _onCompleteAddressPage = onCompleteAddressPage;
+
   @override
   // ignore: unnecessary_overrides
   void initState() {
+    onCompleteSelectAddress = _onCompleteAddressPage;
     super.initState();
   }
 
@@ -375,5 +393,11 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
         controller.initController();
       }
     }
+  }
+
+  @override
+  void dispose() {
+    MainRouteObserver.onRefreshAddress = null;
+    super.dispose();
   }
 }

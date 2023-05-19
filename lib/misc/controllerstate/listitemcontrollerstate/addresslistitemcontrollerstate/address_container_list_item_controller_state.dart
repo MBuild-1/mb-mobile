@@ -5,15 +5,23 @@ import '../list_item_controller_state.dart';
 class AddressContainerListItemControllerState extends ListItemControllerState {
   List<Address> address;
   OnSelectAddress? onSelectAddress;
+  OnRemoveAddress? onRemoveAddress;
   void Function() onUpdateState;
   AddressContainerStorageListItemControllerState addressContainerStorageListItemControllerState;
+  AddressContainerInterceptingActionListItemControllerState addressContainerInterceptingActionListItemControllerState;
 
   AddressContainerListItemControllerState({
     required this.address,
     this.onSelectAddress,
+    this.onRemoveAddress,
     required this.onUpdateState,
-    required this.addressContainerStorageListItemControllerState
+    required this.addressContainerStorageListItemControllerState,
+    required this.addressContainerInterceptingActionListItemControllerState
   });
 }
 
-abstract class AddressContainerStorageListItemControllerState {}
+abstract class AddressContainerStorageListItemControllerState extends ListItemControllerState {}
+
+abstract class AddressContainerInterceptingActionListItemControllerState extends ListItemControllerState {
+  void Function(Address)? get removeAddress;
+}

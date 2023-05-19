@@ -10,7 +10,7 @@ enum OutlineGradientButtonType {
 }
 
 enum OutlineGradientButtonVariation {
-  variation1, variation2
+  variation1, variation2, variation3
 }
 
 class SizedOutlineGradientButton extends StatelessWidget {
@@ -52,6 +52,9 @@ class SizedOutlineGradientButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     _GradientButtonVariation gradientButtonVariation = customGradientButtonVariation != null ? customGradientButtonVariation!(outlineGradientButtonType) : _getGradientButtonVariation();
+    if (gradientButtonVariation is CustomGradientButtonVariation) {
+      gradientButtonVariation._defaultGradientButtonVariation = _getGradientButtonVariation();
+    }
     TextStyle disabledTextStyle = const TextStyle(
       color: Colors.grey
     );
@@ -91,6 +94,8 @@ class SizedOutlineGradientButton extends StatelessWidget {
       return _Variation1GradientButtonVariation(outlineGradientButtonType: outlineGradientButtonType);
     } else if (outlineGradientButtonVariation == OutlineGradientButtonVariation.variation2) {
       return _Variation2GradientButtonVariation(outlineGradientButtonType: outlineGradientButtonType);
+    } else if (outlineGradientButtonVariation == OutlineGradientButtonVariation.variation3) {
+      return _Variation3GradientButtonVariation(outlineGradientButtonType: outlineGradientButtonType);
     } else {
       throw MessageError(title: "Outline gradient button is not suitable");
     }
@@ -142,31 +147,82 @@ class _Variation2GradientButtonVariation extends _GradientButtonVariation {
   );
 }
 
+class _Variation3GradientButtonVariation extends _GradientButtonVariation {
+  _Variation3GradientButtonVariation({required super.outlineGradientButtonType});
+
+  @override
+  Color get backgroundColor => outlineGradientButtonType == OutlineGradientButtonType.solid ? Colors.black : Colors.transparent;
+
+  @override
+  Gradient get gradient => const SweepGradient(
+    stops: [1],
+    colors: [Colors.black],
+  );
+
+  @override
+  TextStyle? get textStyle => TextStyle(
+    color: outlineGradientButtonType == OutlineGradientButtonType.solid ? Colors.white : Colors.black,
+    fontWeight: FontWeight.bold
+  );
+}
+
 class CustomGradientButtonVariation extends _GradientButtonVariation {
   final Color? _backgroundColor;
   final Gradient? _gradient;
   final TextStyle? _textStyle;
+  final bool _showDefaultGradientButtonVariationIfNotConfigured;
+  late _GradientButtonVariation _defaultGradientButtonVariation;
 
   CustomGradientButtonVariation({
     required super.outlineGradientButtonType,
     Color? backgroundColor,
     Gradient? gradient,
-    TextStyle? textStyle
+    TextStyle? textStyle,
+    bool showDefaultGradientButtonVariationIfNotConfigured = false
   }) : _backgroundColor = backgroundColor,
       _gradient = gradient,
-      _textStyle = textStyle;
+      _textStyle = textStyle,
+      _showDefaultGradientButtonVariationIfNotConfigured = showDefaultGradientButtonVariationIfNotConfigured;
 
   @override
-  Color get backgroundColor => _backgroundColor != null ? _backgroundColor! : (
-    outlineGradientButtonType == OutlineGradientButtonType.solid ? Constant.colorMain : Colors.transparent
-  );
+  Color get backgroundColor {
+    if (_backgroundColor != null) {
+      return _backgroundColor!;
+    } else {
+      if (_showDefaultGradientButtonVariationIfNotConfigured) {
+        return _defaultGradientButtonVariation.backgroundColor;
+      } else {
+        return outlineGradientButtonType == OutlineGradientButtonType.solid ? Constant.colorMain : Colors.transparent;
+      }
+    }
+  }
 
   @override
-  Gradient get gradient => _gradient != null ? _gradient! : Constant.buttonGradient;
+  Gradient get gradient {
+    if (_gradient != null) {
+      return _gradient!;
+    } else {
+      if (_showDefaultGradientButtonVariationIfNotConfigured) {
+        return _defaultGradientButtonVariation.gradient;
+      } else {
+        return Constant.buttonGradient;
+      }
+    }
+  }
 
   @override
-  TextStyle? get textStyle => _textStyle != null ? _textStyle! : TextStyle(
-    color: outlineGradientButtonType == OutlineGradientButtonType.solid ? Colors.white : null,
-    fontWeight: FontWeight.bold
-  );
+  TextStyle? get textStyle {
+    if (_textStyle != null) {
+      return _textStyle!;
+    } else {
+      if (_showDefaultGradientButtonVariationIfNotConfigured) {
+        return _defaultGradientButtonVariation.textStyle;
+      } else {
+        return TextStyle(
+          color: outlineGradientButtonType == OutlineGradientButtonType.solid ? Colors.white : null,
+          fontWeight: FontWeight.bold
+        );
+      }
+    }
+  }
 }

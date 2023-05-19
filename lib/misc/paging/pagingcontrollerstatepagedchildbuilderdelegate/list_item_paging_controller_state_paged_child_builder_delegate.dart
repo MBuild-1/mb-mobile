@@ -882,11 +882,13 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
         return HorizontalAddressItem(
           address: item.address,
           onSelectAddress: item.onSelectAddress,
+          onRemoveAddress: item.onRemoveAddress
         );
       } else if (item is VerticalAddressListItemControllerState) {
         return VerticalAddressItem(
           address: item.address,
           onSelectAddress: item.onSelectAddress,
+          onRemoveAddress: item.onRemoveAddress,
         );
       } else {
         return Container();

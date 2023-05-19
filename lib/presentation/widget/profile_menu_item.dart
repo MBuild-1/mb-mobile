@@ -7,7 +7,7 @@ import 'modified_svg_picture.dart';
 
 class ProfileMenuItem extends StatelessWidget {
   final VoidCallback? onTap;
-  final WidgetBuilder icon;
+  final WidgetBuilder? icon;
   final String title;
   final String? description;
   final Color? color;
@@ -16,7 +16,7 @@ class ProfileMenuItem extends StatelessWidget {
   const ProfileMenuItem({
     Key? key,
     this.onTap,
-    required this.icon,
+    this.icon,
     required this.title,
     this.description,
     this.color,
@@ -25,7 +25,10 @@ class ProfileMenuItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget effectiveIcon = icon(context);
+    Widget? effectiveIcon;
+    if (icon != null) {
+      effectiveIcon = icon!(context);
+    }
     if (effectiveIcon is ModifiedSvgPicture && color != null) {
       effectiveIcon = effectiveIcon.copy(color: color);
     }

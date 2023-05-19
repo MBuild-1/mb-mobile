@@ -6,13 +6,17 @@ import 'package:masterbagasi/misc/ext/get_ext.dart';
 import 'package:sizer/sizer.dart';
 
 import '../controller/crop_picture_controller.dart';
+import '../domain/entity/address/address.dart';
 import '../presentation/page/getx_page.dart';
 import '../presentation/page/modaldialogpage/add_host_cart_modal_dialog_page.dart';
 import '../presentation/page/modaldialogpage/modal_dialog_page.dart';
 import '../presentation/page/modaldialogpage/take_friend_cart_modal_dialog_page.dart';
+import '../presentation/page/modify_address_page.dart';
 import '../presentation/widget/button/custombutton/sized_outline_gradient_button.dart';
+import '../presentation/widget/modified_divider.dart';
 import '../presentation/widget/modified_loading_indicator.dart';
 import '../presentation/widget/modified_svg_picture.dart';
+import '../presentation/widget/modifiedappbar/modified_app_bar.dart';
 import '../presentation/widget/profile_menu_item.dart';
 import 'constant.dart';
 import 'errorprovider/error_provider.dart';
@@ -398,6 +402,72 @@ class _DialogHelperImpl {
           ),
         );
       }
+    );
+  }
+
+  void showAddressOtherMenu({
+    required BuildContext context,
+    required Address address,
+    required void Function(Address) onChangeAddress,
+    required void Function(Address) onRemoveAddress
+  }) {
+    showModalBottomSheetPage(
+      context: context,
+      backgroundColor: Theme.of(context).canvasColor,
+      builder: (context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ModifiedAppBar(
+            primary: false,
+            title: Text("Other Choice".tr)
+          ),
+          SafeArea(
+            top: false,
+            child: Column(
+              children: [
+                ProfileMenuItem(
+                  onTap: () async {
+                    Get.back();
+                    onChangeAddress(address);
+                  },
+                  title: 'Change Address'.tr,
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+                  child: const ModifiedDivider()
+                ),
+                ProfileMenuItem(
+                  onTap: () async {
+                    Get.back();
+                    DialogHelper.showPromptYesNoDialog(
+                      context: context,
+                      prompt: (context) => Column(
+                        children: [
+                          Text("Remove Address".tr, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                          const SizedBox(height: 5),
+                          Text("${"Are you sure remove address".tr}?"),
+                          const SizedBox(height: 5),
+                        ]
+                      ),
+                      onYesPromptButtonTap: (_) {
+                        Get.back();
+                        onRemoveAddress(address);
+                      },
+                      onNoPromptButtonTap: (context) => Get.back(),
+                    );
+                  },
+                  title: 'Remove Address'.tr,
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+                  child: const ModifiedDivider()
+                ),
+                SizedBox(height: Constant.paddingListItem)
+              ]
+            )
+          )
+        ]
+      )
     );
   }
 

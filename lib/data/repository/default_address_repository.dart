@@ -1,11 +1,18 @@
+import '../../domain/entity/address/add_address_parameter.dart';
+import '../../domain/entity/address/add_address_response.dart';
 import '../../domain/entity/address/address.dart';
+import '../../domain/entity/address/address_based_id_parameter.dart';
 import '../../domain/entity/address/address_list_parameter.dart';
 import '../../domain/entity/address/address_paging_parameter.dart';
+import '../../domain/entity/address/change_address_parameter.dart';
+import '../../domain/entity/address/change_address_response.dart';
 import '../../domain/entity/address/country.dart';
 import '../../domain/entity/address/country_list_parameter.dart';
 import '../../domain/entity/address/country_paging_parameter.dart';
 import '../../domain/entity/address/current_selected_address_parameter.dart';
 import '../../domain/entity/address/current_selected_address_response.dart';
+import '../../domain/entity/address/remove_address_parameter.dart';
+import '../../domain/entity/address/remove_address_response.dart';
 import '../../domain/entity/address/update_current_selected_address_parameter.dart';
 import '../../domain/entity/address/update_current_selected_address_response.dart';
 import '../../domain/repository/address_repository.dart';
@@ -49,5 +56,25 @@ class DefaultAddressRepository implements AddressRepository {
   @override
   FutureProcessing<LoadDataResult<PagingDataResult<Country>>> countryPaging(CountryPagingParameter countryPagingParameter) {
     return addressDataSource.countryPaging(countryPagingParameter).mapToLoadDataResult<PagingDataResult<Country>>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<AddAddressResponse>> addAddress(AddAddressParameter addAddressParameter) {
+    return addressDataSource.addAddress(addAddressParameter).mapToLoadDataResult<AddAddressResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<ChangeAddressResponse>> changeAddress(ChangeAddressParameter changeAddressParameter) {
+    return addressDataSource.changeAddress(changeAddressParameter).mapToLoadDataResult<ChangeAddressResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<RemoveAddressResponse>> removeAddress(RemoveAddressParameter removeAddressParameter) {
+    return addressDataSource.removeAddress(removeAddressParameter).mapToLoadDataResult<RemoveAddressResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<Address>> addressBasedId(AddressBasedIdParameter addressBasedIdParameter) {
+    return addressDataSource.addressBasedId(addressBasedIdParameter).mapToLoadDataResult<Address>();
   }
 }

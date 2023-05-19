@@ -7,6 +7,8 @@ class HorizontalAddressItem extends AddressItem {
   const HorizontalAddressItem({
     super.key,
     required super.address,
-    super.onSelectAddress
+    super.onSelectAddress,
+    super.onRemoveAddress,
+    super.canBeModified = false
   });
 }

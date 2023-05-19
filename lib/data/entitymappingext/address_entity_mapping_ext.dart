@@ -27,9 +27,12 @@
 
 import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 
+import '../../domain/entity/address/add_address_response.dart';
 import '../../domain/entity/address/address.dart';
 import '../../domain/entity/address/address_user.dart';
+import '../../domain/entity/address/change_address_response.dart';
 import '../../domain/entity/address/country.dart';
+import '../../domain/entity/address/remove_address_response.dart';
 import '../../domain/entity/address/update_current_selected_address_response.dart';
 import '../../domain/entity/address/zone.dart';
 import '../../misc/constant.dart';
@@ -76,13 +79,18 @@ extension AddressDetailEntityMappingExt on ResponseWrapper {
     }
     return Address(
       id: response["id"],
+      email: response["email"],
+      name: response["name"],
       userId: response["user_id"],
       label: response["label"],
       countryId: response["country_id"],
       isPrimary: response["is_primary"],
       address: response["address"],
+      address2: response["address2"],
       phoneNumber: response["phone_number"],
       zipCode: response["zip_code"],
+      city: response["city"],
+      state: response["state"],
       addressUser: response["user"] != null ? ResponseWrapper(response["user"]).mapFromResponseToAddressUser() : null,
       country: ResponseWrapper(response["country"]).mapFromResponseToCountry(),
     );
@@ -117,5 +125,17 @@ extension AddressDetailEntityMappingExt on ResponseWrapper {
 
   UpdateCurrentSelectedAddressResponse mapFromResponseToUpdateCurrentSelectedAddressResponse() {
     return UpdateCurrentSelectedAddressResponse();
+  }
+
+  AddAddressResponse mapFromResponseToAddAddressResponse() {
+    return AddAddressResponse();
+  }
+
+  ChangeAddressResponse mapFromResponseToChangeAddressResponse() {
+    return ChangeAddressResponse();
+  }
+
+  RemoveAddressResponse mapFromResponseToRemoveAddressResponse() {
+    return RemoveAddressResponse();
   }
 }

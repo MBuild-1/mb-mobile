@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
+import '../../domain/entity/address/address.dart';
 import '../controllerstate/listitemcontrollerstate/addresslistitemcontrollerstate/address_container_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/addresslistitemcontrollerstate/vertical_address_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/compound_list_item_controller_state.dart';
@@ -46,6 +47,20 @@ class AddressItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListI
           }
         });
       }
+      var addressContainerInterceptingActionListItemControllerState = oldItemType.addressContainerInterceptingActionListItemControllerState;
+      if (addressContainerInterceptingActionListItemControllerState is DefaultAddressContainerInterceptingActionListItemControllerState) {
+        addressContainerInterceptingActionListItemControllerState._removeAddress = (address) {
+          int l = 0;
+          while (l < oldItemType.address.length) {
+            if (oldItemType.address[l].id == address.id) {
+              oldItemType.address.removeAt(l);
+              break;
+            }
+            l++;
+          }
+          oldItemType.onUpdateState();
+        };
+      }
       List<ListItemControllerState> resultListItemControllerStateList = oldItemType.address.mapIndexed<ListItemControllerState>(
         (index, address) {
           return CompoundListItemControllerState(
@@ -66,7 +81,8 @@ class AddressItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListI
                     if (oldItemType.onSelectAddress != null) {
                       oldItemType.onSelectAddress!(address);
                     }
-                  }
+                  },
+                  onRemoveAddress: oldItemType.onRemoveAddress
                 )
               ),
               if (index == oldItemType.address.length - 1)
@@ -90,4 +106,11 @@ class AddressItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListI
 
 class DefaultAddressContainerStorageListItemControllerState extends AddressContainerStorageListItemControllerState {
   bool _hasInitSelectedAddress = false;
+}
+
+class DefaultAddressContainerInterceptingActionListItemControllerState extends AddressContainerInterceptingActionListItemControllerState {
+  void Function(Address)? _removeAddress;
+
+  @override
+  void Function(Address)? get removeAddress => _removeAddress ?? (throw UnimplementedError());
 }

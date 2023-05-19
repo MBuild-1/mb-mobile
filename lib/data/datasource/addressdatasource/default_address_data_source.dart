@@ -4,16 +4,24 @@ import 'package:masterbagasi/misc/ext/future_ext.dart';
 import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 
 import '../../../domain/dummy/addressdummy/address_dummy.dart';
+import '../../../domain/entity/address/add_address_parameter.dart';
+import '../../../domain/entity/address/add_address_response.dart';
 import '../../../domain/entity/address/address.dart';
+import '../../../domain/entity/address/address_based_id_parameter.dart';
 import '../../../domain/entity/address/address_list_parameter.dart';
 import '../../../domain/entity/address/address_paging_parameter.dart';
+import '../../../domain/entity/address/change_address_parameter.dart';
+import '../../../domain/entity/address/change_address_response.dart';
 import '../../../domain/entity/address/country.dart';
 import '../../../domain/entity/address/country_list_parameter.dart';
 import '../../../domain/entity/address/country_paging_parameter.dart';
 import '../../../domain/entity/address/current_selected_address_parameter.dart';
 import '../../../domain/entity/address/current_selected_address_response.dart';
+import '../../../domain/entity/address/remove_address_parameter.dart';
+import '../../../domain/entity/address/remove_address_response.dart';
 import '../../../domain/entity/address/update_current_selected_address_parameter.dart';
 import '../../../domain/entity/address/update_current_selected_address_response.dart';
+import '../../../misc/option_builder.dart';
 import '../../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../../misc/processing/dio_http_client_processing.dart';
 import '../../../misc/processing/dummy_future_processing.dart';
@@ -90,6 +98,62 @@ class DefaultAddressDataSource implements AddressDataSource {
         .map<PagingDataResult<Country>>(
           onMap: (value) => value.wrapResponse().mapFromResponseToCountryPaging()
       );
+    });
+  }
+
+  @override
+  FutureProcessing<AddAddressResponse> addAddress(AddAddressParameter addAddressParameter) {
+    FormData formData = FormData.fromMap(
+      <String, dynamic> {
+        "name": addAddressParameter.name,
+        "email": addAddressParameter.email,
+        "label": addAddressParameter.label,
+        "address": addAddressParameter.address,
+        "phone_number": addAddressParameter.phoneNumber,
+        "zip_code": addAddressParameter.zipCode,
+        "country_id": addAddressParameter.countryId,
+        "city": addAddressParameter.city,
+        "state": addAddressParameter.state,
+      }
+    );
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.post("/user/address", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+        .map<AddAddressResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToAddAddressResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<ChangeAddressResponse> changeAddress(ChangeAddressParameter changeAddressParameter) {
+    dynamic formData = <String, dynamic>{
+      "name": changeAddressParameter.name,
+      "email": changeAddressParameter.email,
+      "label": changeAddressParameter.label,
+      "address": changeAddressParameter.address,
+      "phone_number": changeAddressParameter.phoneNumber,
+      "zip_code": changeAddressParameter.zipCode,
+      "country_id": changeAddressParameter.countryId,
+      "city": changeAddressParameter.city,
+      "state": changeAddressParameter.state,
+    };
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.put("/user/address/${changeAddressParameter.addressId}", data: formData, cancelToken: cancelToken)
+        .map<ChangeAddressResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToChangeAddressResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<RemoveAddressResponse> removeAddress(RemoveAddressParameter removeAddressParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.delete("/user/address/${removeAddressParameter.addressId}", cancelToken: cancelToken)
+        .map<RemoveAddressResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToRemoveAddressResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<Address> addressBasedId(AddressBasedIdParameter addressBasedIdParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.get("/user/address/${addressBasedIdParameter.addressId}", cancelToken: cancelToken)
+        .map<Address>(onMap: (value) => value.wrapResponse().mapFromResponseToAddress());
     });
   }
 }

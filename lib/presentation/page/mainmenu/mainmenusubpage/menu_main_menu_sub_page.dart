@@ -166,7 +166,7 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
           ),
           SpacingListItemControllerState(),
           ProfileMenuListItemControllerState(
-            onTap: (context) {},
+            onTap: (context) => PageRestorationHelper.toAddressPage(context),
             icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorAddressList, width: 20.0),
             title: 'Address List'.tr,
             description: "${'Set the address for sending groceries'.tr}."

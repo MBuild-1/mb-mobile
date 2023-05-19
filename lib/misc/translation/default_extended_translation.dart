@@ -178,7 +178,31 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Item Quality": "Kualitas Barang",
       "Delivery Quality": "Kualitas Pengiriman",
       "My Favorite Brand": "Brand Favorit Saya",
-      "Answer": "Jawaban"
+      "Answer": "Jawaban",
+      "Add Address": "Tambah Alamat",
+      "Label": "Label",
+      "Label is required": "Label dibutuhkan",
+      "Address": "Alamat",
+      "Address is required": "Alamat dibutuhkan",
+      "Phone Number": "Nomor Telepon",
+      "Phone number is required": "Nomor telepon dibutuhkan",
+      "Zip Code": "Kode Pos",
+      "Zip code is required": "Kode pos dibutuhkan",
+      "Country": "Negara",
+      "Country is required": "Negara dibutuhkan",
+      "City": "Kota",
+      "City is required": "Kota dibutuhkan",
+      "State": "State",
+      "State is required": "State dibutuhkan",
+      "Create Address": "Tambah Alamat",
+      "Change Address": "Ubah Alamat",
+      "Reload": "Muat Ulang",
+      "Remove Address": "Hapus Alamat",
+      "Are you sure remove address": "Apakah yakin ingin menghapus alamat",
+      "Other Choice": "Pilihan Lainnya",
+      "No": "Tidak",
+      "Yes": "Ya",
+      "Success remove address": "Sukses hapus alamat"
     }
   };
 

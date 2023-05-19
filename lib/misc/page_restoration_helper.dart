@@ -14,6 +14,7 @@ import '../presentation/page/favorite_product_brand_page.dart';
 import '../presentation/page/getx_page.dart';
 import '../presentation/page/login_page.dart';
 import '../presentation/page/mainmenu/main_menu_page.dart';
+import '../presentation/page/modify_address_page.dart';
 import '../presentation/page/order_page.dart';
 import '../presentation/page/product_brand_detail_page.dart';
 import '../presentation/page/product_brand_page.dart';
@@ -273,6 +274,19 @@ class _PageRestorationHelperImpl {
       PageRestorationHelper.findPageRestorationMixin<ProductDiscussionPageRestorationMixin>(
         onGetxPageRestorationFound: (restoration) {
           restoration.productDiscussionPageRestorableRouteFuture.present();
+        },
+        context: context
+      );
+    });
+  }
+
+  void toModifyAddressPage(BuildContext context, ModifyAddressPageParameter modifyAddressPageParameter) {
+    LoginHelper.checkingLogin(context, () {
+      PageRestorationHelper.findPageRestorationMixin<ModifyAddressPageRestorationMixin>(
+        onGetxPageRestorationFound: (restoration) {
+          restoration.modifyAddressPageRestorableRouteFuture.present(
+            modifyAddressPageParameter.toEncodeBase64String()
+          );
         },
         context: context
       );

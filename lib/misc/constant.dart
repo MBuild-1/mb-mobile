@@ -85,6 +85,7 @@ class _ConstantImpl {
   String get vectorCheckYourContributionDeliveryReviewPhotoAndVideo => _getVectorsAssets("check_your_contribution_delivery_review_photo_and_video.svg");
   String get vectorCheckYourContributionDeliveryReviewRating => _getVectorsAssets("check_your_contribution_delivery_review_rating.svg");
   String get vectorCameraOutline => _getVectorsAssets("camera_outline.svg");
+  String get vectorTripleLines => _getVectorsAssets("triple_lines.svg");
 
   Color get colorYellow => const Color.fromRGBO(244, 184, 43, 1);
   Color get colorLightRed => const Color.fromRGBO(255, 236, 230, 1);

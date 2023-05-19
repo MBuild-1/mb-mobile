@@ -7,6 +7,7 @@ class VerticalAddressItem extends AddressItem {
   const VerticalAddressItem({
     super.key,
     required super.address,
-    super.onSelectAddress
+    super.onSelectAddress,
+    super.onRemoveAddress
   });
 }
