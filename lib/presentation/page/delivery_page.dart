@@ -60,12 +60,16 @@ import '../../misc/paging/pagingresult/paging_result.dart';
 import '../../misc/string_util.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/modified_paged_list_view.dart';
+import '../widget/modified_svg_picture.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
+import '../widget/tap_area.dart';
 import 'address_page.dart';
 import 'coupon_page.dart';
 import 'getx_page.dart';
 import 'modaldialogpage/add_cart_note_modal_dialog_page.dart';
+import 'modaldialogpage/cart_summary_cart_modal_dialog_page.dart';
 import 'web_viewer_page.dart';
+import 'dart:math' as math;
 
 // ignore: must_be_immutable
 class DeliveryPage extends RestorableGetxPage<_DeliveryPageRestoration> {
@@ -479,18 +483,40 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
                 children: [
                   Row(
                     children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                      TapArea(
+                        onTap: () => DialogHelper.showModalBottomDialogPage<bool, String>(
+                          context: context,
+                          modalDialogPageBuilder: (context, parameter) => CartSummaryCartModalDialogPage()
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Text("Shopping Total".tr),
-                            const SizedBox(height: 4),
-                            Text(_selectedCartShoppingTotal.toRupiah(), style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold
-                            )),
-                          ]
-                        )
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text("Shopping Total".tr),
+                                const SizedBox(height: 4),
+                                Text(_selectedCartShoppingTotal.toRupiah(), style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold
+                                )),
+                              ]
+                            ),
+                            const SizedBox(width: 10),
+                            Transform.rotate(
+                              angle: math.pi / 2,
+                              child: SizedBox(
+                                child: ModifiedSvgPicture.asset(
+                                  Constant.vectorArrow,
+                                  height: 12,
+                                ),
+                              )
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Expanded(
+                        child: SizedBox()
                       ),
                       SizedOutlineGradientButton(
                         onPressed: _selectedCartCount == 0 ? null : () => widget.deliveryController.createOrder(),

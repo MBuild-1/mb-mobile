@@ -35,11 +35,13 @@ import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_
 import '../../misc/controllerstate/listitemcontrollerstate/page_keyed_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
 import '../../misc/dialog_helper.dart';
+import '../../misc/error/cart_empty_error.dart';
 import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
 import '../../misc/itemtypelistsubinterceptor/cart_item_type_list_sub_interceptor.dart';
+import '../../misc/list_item_controller_state_helper.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/controller_manager.dart';
 import '../../misc/page_restoration_helper.dart';
@@ -202,6 +204,7 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
   late final ScrollController _cartScrollController;
   late final ModifiedPagingController<int, ListItemControllerState> _cartListItemPagingController;
   late final PagingControllerState<int, ListItemControllerState> _cartListItemPagingControllerState;
+  int _cartCount = 0;
   late int _selectedCartCount = 0;
   late double _selectedCartShoppingTotal = 0;
   List<AdditionalItem> _additionalItemList = [];
@@ -235,6 +238,9 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
     for (Cart cart in _selectedCartList) {
       SupportCart supportCart = cart.supportCart;
       _selectedCartShoppingTotal += supportCart.cartPrice * cart.quantity.toDouble();
+    }
+    if (_cartContainerInterceptingActionListItemControllerState.getCartCount != null) {
+      _cartCount = _cartContainerInterceptingActionListItemControllerState.getCartCount!();
     }
   }
 
@@ -281,6 +287,12 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
                   _updateCartInformation();
                 });
               },
+              onCartChange: () {
+                setState(() => _updateCartInformation());
+                if (_cartCount == 0) {
+                  _cartListItemPagingController.errorFirstPageOuterProcess = CartEmptyError();
+                }
+              },
               cartContainerStateStorageListItemControllerState: DefaultCartContainerStateStorageListItemControllerState(),
               cartContainerActionListItemControllerState: _DefaultCartContainerActionListItemControllerState(
                 getAdditionalItemList: (additionalItemListParameter) => widget.cartController.getAdditionalItem(additionalItemListParameter),
@@ -296,20 +308,11 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
           totalItem: 1
         );
       } else {
-        if (cartListItemControllerStateList != null) {
-          if (cartListItemControllerStateList.isNotEmpty) {
-            ListItemControllerState cartListItemControllerState = cartListItemControllerStateList.first;
-            if (cartListItemControllerState is PageKeyedListItemControllerState) {
-              if (cartListItemControllerState.listItemControllerState != null) {
-                cartListItemControllerState = cartListItemControllerState.listItemControllerState!;
-              }
-            }
-            if (cartListItemControllerState is CartContainerListItemControllerState) {
-              cartListItemControllerState.cartListItemControllerStateList.addAll(
-                newCartListItemControllerStateList
-              );
-            }
-          }
+        if (ListItemControllerStateHelper.checkListItemControllerStateList(cartListItemControllerStateList)) {
+          CartContainerListItemControllerState cartContainerListItemControllerState = ListItemControllerStateHelper.parsePageKeyedListItemControllerState(cartListItemControllerStateList![0]) as CartContainerListItemControllerState;
+          cartContainerListItemControllerState.cartListItemControllerStateList.addAll(
+            newCartListItemControllerStateList
+          );
         }
         return PagingDataResult<ListItemControllerState>(
           itemList: [],
@@ -369,19 +372,15 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
                 pullToRefresh: true
               ),
             ),
-            Container(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      TapArea(
-                        onTap: () => DialogHelper.showModalBottomDialogPage<bool, String>(
-                          context: context,
-                          modalDialogPageBuilder: (context, parameter) => CartSummaryCartModalDialogPage()
-                        ),
-                        child: Row(
+            if (_cartCount > 0)
+              Container(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Column(
@@ -395,45 +394,34 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
                                 )),
                               ]
                             ),
-                            const SizedBox(width: 10),
-                            Transform.rotate(
-                              angle: math.pi / 2,
-                              child: SizedBox(
-                                child: ModifiedSvgPicture.asset(
-                                  Constant.vectorArrow,
-                                  height: 12,
-                                ),
-                              )
-                            ),
                           ],
                         ),
-                      ),
-                      const Expanded(
-                        child: SizedBox()
-                      ),
-                      SizedOutlineGradientButton(
-                        onPressed: _selectedCartCount == 0 ? null : () {
-                          PageRestorationHelper.toDeliveryPage(
-                            context, DeliveryPageParameter(
-                              selectedCartIdList: _selectedCartList.map<List<String>>((cart) {
-                                return <String>[cart.id, cart.quantity.toString()];
-                              }).toList(),
-                              selectedAdditionalItemIdList: _additionalItemList.map<String>((additionalItem) {
-                                return additionalItem.id;
-                              }).toList(),
-                            )
-                          );
-                        },
-                        width: 120,
-                        text: "${"Checkout".tr} ($_selectedCartCount)",
-                        outlineGradientButtonType: OutlineGradientButtonType.solid,
-                        outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
-                      )
-                    ],
-                  )
-                ]
-              ),
-            )
+                        const Expanded(
+                          child: SizedBox()
+                        ),
+                        SizedOutlineGradientButton(
+                          onPressed: _selectedCartCount == 0 ? null : () {
+                            PageRestorationHelper.toDeliveryPage(
+                              context, DeliveryPageParameter(
+                                selectedCartIdList: _selectedCartList.map<List<String>>((cart) {
+                                  return <String>[cart.id, cart.quantity.toString()];
+                                }).toList(),
+                                selectedAdditionalItemIdList: _additionalItemList.map<String>((additionalItem) {
+                                  return additionalItem.id;
+                                }).toList(),
+                              )
+                            );
+                          },
+                          width: 120,
+                          text: "${"Checkout".tr} ($_selectedCartCount)",
+                          outlineGradientButtonType: OutlineGradientButtonType.solid,
+                          outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
+                        )
+                      ],
+                    )
+                  ]
+                ),
+              )
           ]
         )
       ),

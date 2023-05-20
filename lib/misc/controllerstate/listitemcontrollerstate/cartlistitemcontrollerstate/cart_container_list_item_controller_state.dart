@@ -16,6 +16,7 @@ class CartContainerListItemControllerState extends ListItemControllerState {
   void Function() onUpdateState;
   void Function() onScrollToAdditionalItemsSection;
   void Function(List<Cart>) onChangeSelected;
+  void Function() onCartChange;
   CartContainerStateStorageListItemControllerState cartContainerStateStorageListItemControllerState;
   CartContainerActionListItemControllerState cartContainerActionListItemControllerState;
   CartContainerInterceptingActionListItemControllerState cartContainerInterceptingActionListItemControllerState;
@@ -26,6 +27,7 @@ class CartContainerListItemControllerState extends ListItemControllerState {
     required this.onUpdateState,
     required this.onScrollToAdditionalItemsSection,
     required this.onChangeSelected,
+    required this.onCartChange,
     required this.cartContainerStateStorageListItemControllerState,
     required this.cartContainerActionListItemControllerState,
     required this.cartContainerInterceptingActionListItemControllerState,
@@ -44,4 +46,5 @@ abstract class CartContainerActionListItemControllerState extends ListItemContro
 
 abstract class CartContainerInterceptingActionListItemControllerState extends ListItemControllerState {
   void Function(Cart)? get removeCart;
+  int Function()? get getCartCount;
 }

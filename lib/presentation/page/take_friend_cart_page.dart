@@ -240,6 +240,7 @@ class _StatefulTakeFriendCartControllerMediatorWidgetState extends State<_Statef
               onChangeSelected: (cartList) {},
               cartContainerStateStorageListItemControllerState: DefaultCartContainerStateStorageListItemControllerState(),
               additionalItemList: [],
+              onCartChange: () => setState(() {}),
               cartContainerActionListItemControllerState: _DefaultTakeFriendCartContainerActionListItemControllerState(
                 getAdditionalItemList: (additionalItemListParameter) => widget.takeFriendCartController.getAdditionalItem(additionalItemListParameter),
                 addAdditionalItem: (addAdditionalItemParameter) => widget.takeFriendCartController.addAdditionalItem(addAdditionalItemParameter),

@@ -39,10 +39,7 @@ class DefaultErrorProvider extends ErrorProvider {
         message: e.message.toStringNonNull
       );
     } else if (e is CartEmptyError){
-      return ErrorProviderResult(
-        title: "Cart Is Empty".tr,
-        message: "${"Now cart is empty".tr}."
-      );
+      return _cartIsEmptyErrorProvider();
     } else if (e is TokenEmptyError) {
       return ErrorProviderResult(
         title: "You Are Not Login".tr,
@@ -64,6 +61,13 @@ class DefaultErrorProvider extends ErrorProvider {
         message: e.toString()
       );
     }
+  }
+
+  ErrorProviderResult _cartIsEmptyErrorProvider() {
+    return ErrorProviderResult(
+      title: "Cart Is Empty".tr,
+      message: "${"Now cart is empty".tr}."
+    );
   }
 
   ErrorProviderResult _handlingDioError(DioError e) {
@@ -99,32 +103,7 @@ class DefaultErrorProvider extends ErrorProvider {
         imageAssetUrl: Constant.imageFailed
       );
     } else if (dioErrorType == DioErrorType.response) {
-      int? statusCode = e.response?.statusCode;
-      if (statusCode == 404) {
-        Response<dynamic>? response = e.response;
-        dynamic responseData = response?.data;
-        if (responseData is Map) {
-          dynamic errorMeta = responseData['meta'];
-          if (errorMeta is Map) {
-            return ErrorProviderResult(
-              title: "Not Found".tr,
-              message: MultiLanguageString(errorMeta["message"]).toEmptyStringNonNull,
-              imageAssetUrl: Constant.imageFailed
-            );
-          }
-        }
-        return ErrorProviderResult(
-          title: "Not Found".tr,
-          message: "${"Request not found (404)".tr}.",
-          imageAssetUrl: Constant.imageFailed
-        );
-      } if (statusCode == 500) {
-        return ErrorProviderResult(
-          title: "Internal Server Error".tr,
-          message: "${"Something has internal server error".tr}.",
-          imageAssetUrl: Constant.imageFailed
-        );
-      } else {
+      ErrorProviderResult elseResponseDecision() {
         Response<dynamic>? response = e.response;
         dynamic responseData = response?.data;
         if (responseData is Map) {
@@ -185,6 +164,47 @@ class DefaultErrorProvider extends ErrorProvider {
             imageAssetUrl: Constant.imageFailed
           );
         }
+      }
+      int? statusCode = e.response?.statusCode;
+      if (statusCode == 404) {
+        Response<dynamic>? response = e.response;
+        dynamic responseData = response?.data;
+        if (responseData is Map) {
+          dynamic errorMeta = responseData['meta'];
+          if (errorMeta is Map) {
+            return ErrorProviderResult(
+              title: "Not Found".tr,
+              message: MultiLanguageString(errorMeta["message"]).toEmptyStringNonNull,
+              imageAssetUrl: Constant.imageFailed
+            );
+          }
+        }
+        return ErrorProviderResult(
+          title: "Not Found".tr,
+          message: "${"Request not found (404)".tr}.",
+          imageAssetUrl: Constant.imageFailed
+        );
+      } else if (statusCode == 400) {
+        Response<dynamic>? response = e.response;
+        dynamic responseData = response?.data;
+        if (responseData is Map) {
+          dynamic errorMeta = responseData['meta'];
+          if (errorMeta is Map) {
+            dynamic message = errorMeta["message"];
+            if (message == "Data Cart not found!") {
+              return _cartIsEmptyErrorProvider();
+            }
+          }
+        }
+        return elseResponseDecision();
+      } else if (statusCode == 500) {
+        return ErrorProviderResult(
+          title: "Internal Server Error".tr,
+          message: "${"Something has internal server error".tr}.",
+          imageAssetUrl: Constant.imageFailed
+        );
+      } else {
+        return elseResponseDecision();
       }
     } else {
       return ErrorProviderResult(

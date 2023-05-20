@@ -205,7 +205,10 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Success remove address": "Sukses hapus alamat",
       "Feature Coming Soon": "Fitur Ini Segera Datang",
       "We apologize for the inconvenience caused": "Kami mohon maaf atas ketidaknyamanan yang ditimbulkan",
-      "We're almost done": "Kami hampir selesai"
+      "We're almost done": "Kami hampir selesai",
+      "Cart Is Empty": "Keranjangnya Lagi Kosong",
+      "Now cart is empty": "Untuk sekarang keranjangnya lagi kosong",
+      "Select All": "Pilih Semua"
     }
   };
 

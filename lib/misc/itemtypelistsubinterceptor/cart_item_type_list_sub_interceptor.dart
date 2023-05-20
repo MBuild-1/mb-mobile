@@ -109,6 +109,12 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
             oldItemType.onChangeSelected(selectedCart);
           });
         }
+        if (cartListItemControllerStateList.length != cartContainerStateStorageListItemControllerState._lastCartCount) {
+          cartContainerStateStorageListItemControllerState._lastCartCount = cartListItemControllerStateList.length;
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            oldItemType.onCartChange();
+          });
+        }
       }
       if (cartContainerInterceptingActionListItemControllerState is DefaultCartContainerInterceptingActionListItemControllerState) {
         cartContainerInterceptingActionListItemControllerState._removeCart = (cart) {
@@ -123,6 +129,7 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
           }
           oldItemType.onUpdateState();
         };
+        cartContainerInterceptingActionListItemControllerState._getCartCount = () => cartListItemControllerStateList.length;
       }
       newItemTypeList.add(VirtualSpacingListItemControllerState(height: 10.0));
       void loadAdditionalItem() async {
@@ -284,13 +291,18 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
 
 class DefaultCartContainerStateStorageListItemControllerState extends CartContainerStateStorageListItemControllerState {
   int _lastSelectedCount = -1;
+  int _lastCartCount = -1;
   bool _enableSendAdditionalItems = false;
   LoadDataResult<List<AdditionalItem>> _additionalItemLoadDataResult = NoLoadDataResult<List<AdditionalItem>>();
 }
 
 class DefaultCartContainerInterceptingActionListItemControllerState extends CartContainerInterceptingActionListItemControllerState {
   void Function(Cart)? _removeCart;
+  int Function()? _getCartCount;
 
   @override
   void Function(Cart)? get removeCart => _removeCart ?? (throw UnimplementedError());
+
+  @override
+  int Function()? get getCartCount => _getCartCount ?? (throw UnimplementedError());
 }
