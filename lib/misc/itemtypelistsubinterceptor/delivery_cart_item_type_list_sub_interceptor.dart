@@ -257,6 +257,12 @@ class DeliveryCartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
             oldItemType.onChangeSelected(selectedCart);
           });
         }
+        if (cartListItemControllerStateList.length != deliveryCartContainerStateStorageListItemControllerState._lastCartCount) {
+          deliveryCartContainerStateStorageListItemControllerState._lastCartCount = cartListItemControllerStateList.length;
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            oldItemType.onCartChange();
+          });
+        }
       }
       newItemTypeList.add(VirtualSpacingListItemControllerState(height: 10.0));
 
@@ -615,9 +621,9 @@ class DeliveryCartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
 
 class DefaultDeliveryCartContainerStateStorageListItemControllerState extends DeliveryCartContainerStateStorageListItemControllerState {
   int _lastSelectedCount = -1;
+  int _lastCartCount = -1;
   bool _enableSendAdditionalItems = false;
   bool _hasLoadingShippingAddress = false;
-  bool _hasLoadingSelectedCoupon = false;
   LoadDataResult<List<AdditionalItem>> _additionalItemLoadDataResult = NoLoadDataResult<List<AdditionalItem>>();
   LoadDataResult<Address> _shippingAddressLoadDataResult = NoLoadDataResult<Address>();
   LoadDataResult<Coupon> _selectedCouponLoadDataResult = NoLoadDataResult<Coupon>();

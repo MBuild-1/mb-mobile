@@ -21,7 +21,8 @@ class TapArea extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          child: child
+          child: child,
+
         )
       )
     );

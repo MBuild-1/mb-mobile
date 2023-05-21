@@ -21,8 +21,11 @@ import 'modal_dialog_page.dart';
 class CartSummaryCartModalDialogPage extends ModalDialogPage<CartSummaryCartModalDialogController> {
   CartSummaryCartModalDialogController get cartSummaryCartModalDialogController => modalDialogController.controller;
 
+  final CartSummary cartSummary;
+
   CartSummaryCartModalDialogPage({
     Key? key,
+    required this.cartSummary
   }) : super(key: key);
 
   @override
@@ -37,15 +40,18 @@ class CartSummaryCartModalDialogPage extends ModalDialogPage<CartSummaryCartModa
   Widget buildPage(BuildContext context) {
     return _StatefulCartSummaryControllerMediatorWidget(
       cartSummaryCartModalDialogController: cartSummaryCartModalDialogController,
+      cartSummary: cartSummary
     );
   }
 }
 
 class _StatefulCartSummaryControllerMediatorWidget extends StatefulWidget {
   final CartSummaryCartModalDialogController cartSummaryCartModalDialogController;
+  final CartSummary cartSummary;
 
   const _StatefulCartSummaryControllerMediatorWidget({
-    required this.cartSummaryCartModalDialogController
+    required this.cartSummaryCartModalDialogController,
+    required this.cartSummary
   });
 
   @override
@@ -55,9 +61,6 @@ class _StatefulCartSummaryControllerMediatorWidget extends StatefulWidget {
 class _StatefulCartSummaryControllerMediatorWidgetState extends State<_StatefulCartSummaryControllerMediatorWidget> {
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      widget.cartSummaryCartModalDialogController.initCartSummary();
-    });
     return Padding(
       padding: EdgeInsets.all(4.w),
       child: RxConsumer<LoadDataResultWrapper<CartSummary>>(
@@ -66,10 +69,9 @@ class _StatefulCartSummaryControllerMediatorWidgetState extends State<_StatefulC
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            LoadDataResultImplementer<CartSummary>(
-              loadDataResult: cartSummaryLoadDataResultWrapper.loadDataResult,
-              errorProvider: Injector.locator<ErrorProvider>(),
-              onSuccessLoadDataResultWidget: (cartSummary) {
+            Builder(
+              builder: (context) {
+                CartSummary cartSummary = widget.cartSummary;
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

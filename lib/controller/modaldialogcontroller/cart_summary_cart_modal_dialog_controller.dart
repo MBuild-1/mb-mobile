@@ -21,26 +21,4 @@ class CartSummaryCartModalDialogController extends ModalDialogController {
   ) : super(controllerManager) {
     cartSummaryLoadDataResultWrapperRx = LoadDataResultWrapper<CartSummary>(_cartSummaryLoadDataResult).obs;
   }
-
-  void initCartSummary() async {
-    if (_hasInitCartSummary) {
-      return;
-    }
-    _hasInitCartSummary = true;
-    _cartSummaryLoadDataResult = IsLoadingLoadDataResult<CartSummary>();
-    _updateCartSummaryState();
-    _cartSummaryLoadDataResult = await getCartSummaryUseCase.execute(
-      CartSummaryParameter()
-    ).future(
-      parameter: apiRequestManager.addRequestToCancellationPart('cart-summary').value
-    );
-    _updateCartSummaryState();
-  }
-
-  void _updateCartSummaryState() {
-    cartSummaryLoadDataResultWrapperRx.valueFromLast(
-      (value) => LoadDataResultWrapper<CartSummary>(_cartSummaryLoadDataResult)
-    );
-    update();
-  }
 }

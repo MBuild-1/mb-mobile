@@ -36,12 +36,14 @@ import '../misc/typedef.dart';
 import 'base_getx_controller.dart';
 
 typedef _OnDeliveryBack = void Function();
+typedef _OnGetCouponId = String? Function();
 typedef _OnGetCoupon = Coupon? Function();
 typedef _OnGetCartList = List<Cart> Function();
 typedef _OnGetAdditionalList = List<AdditionalItem> Function();
 typedef _OnShowDeliveryRequestProcessLoadingCallback = Future<void> Function();
 typedef _OnDeliveryRequestProcessSuccessCallback = Future<void> Function(Order);
 typedef _OnShowDeliveryRequestProcessFailedCallback = Future<void> Function(dynamic e);
+typedef _OnShowCartSummaryProcessCallback = Future<void> Function(LoadDataResult<CartSummary>);
 
 class DeliveryController extends BaseGetxController {
   final GetMyCartUseCase getMyCartUseCase;
@@ -53,6 +55,7 @@ class DeliveryController extends BaseGetxController {
   final GetCurrentSelectedAddressUseCase getCurrentSelectedAddressUseCase;
   final GetCouponDetailUseCase getCouponDetailUseCase;
   final CreateOrderUseCase createOrderUseCase;
+  bool _hasGetCartSummary = false;
 
   DeliveryDelegate? _deliveryDelegate;
 
@@ -68,12 +71,6 @@ class DeliveryController extends BaseGetxController {
     this.getCouponDetailUseCase,
     this.createOrderUseCase
   );
-
-  Future<LoadDataResult<CartSummary>> getCartSummary(CartSummaryParameter cartSummaryParameter) {
-    return getCartSummaryUseCase.execute(cartSummaryParameter).future(
-      parameter: apiRequestManager.addRequestToCancellationPart("cart-summary").value
-    );
-  }
 
   Future<LoadDataResult<List<AdditionalItem>>> getAdditionalItem(AdditionalItemListParameter additionalItemListParameter) {
     return getAdditionalItemUseCase.execute(additionalItemListParameter).future(
@@ -137,13 +134,13 @@ class DeliveryController extends BaseGetxController {
           CreateOrderParameter(
             cartList: _deliveryDelegate!.onGetCartList(),
             additionalItemList: _deliveryDelegate!.onGetAdditionalList(),
-            coupon: _deliveryDelegate!.onGetCoupon(),
+            couponId: _deliveryDelegate!.onGetCouponId(),
             address: currentAddressLoadDataResult.resultIfSuccess!.address
           )
         ).future(
           parameter: apiRequestManager.addRequestToCancellationPart('order').value
         );
-        Get.back();
+        _deliveryDelegate!.onDeliveryBack();
         if (createOrderLoadDataResult.isSuccess) {
           _deliveryDelegate!.onDeliveryRequestProcessSuccessCallback(createOrderLoadDataResult.resultIfSuccess!);
         } else {
@@ -151,6 +148,37 @@ class DeliveryController extends BaseGetxController {
         }
       } else {
         _deliveryDelegate!.onShowDeliveryRequestProcessFailedCallback(currentAddressLoadDataResult.resultIfFailed);
+      }
+    }
+  }
+
+  void getCartSummary() async {
+    if (_deliveryDelegate != null) {
+      _deliveryDelegate!.onShowCartSummaryProcessCallback(IsLoadingLoadDataResult<CartSummary>());
+      LoadDataResult<CurrentSelectedAddressResponse> currentAddressLoadDataResult = await getCurrentSelectedAddressUseCase.execute(
+        CurrentSelectedAddressParameter()
+      ).future(
+        parameter: apiRequestManager.addRequestToCancellationPart("address-for-cart-summary").value
+      );
+      if (currentAddressLoadDataResult.isFailedBecauseCancellation) {
+        return;
+      }
+      if (currentAddressLoadDataResult.isSuccess) {
+        LoadDataResult<CartSummary> cartSummaryLoadDataResult = await getCartSummaryUseCase.execute(
+          CartSummaryParameter(
+            cartList: _deliveryDelegate!.onGetCartList(),
+            additionalItemList: _deliveryDelegate!.onGetAdditionalList(),
+            couponId: _deliveryDelegate!.onGetCouponId(),
+            address: currentAddressLoadDataResult.resultIfSuccess!.address
+          )
+        ).future(
+          parameter: apiRequestManager.addRequestToCancellationPart("cart-summary").value
+        );
+        _deliveryDelegate!.onShowCartSummaryProcessCallback(cartSummaryLoadDataResult);
+      } else {
+        _deliveryDelegate!.onShowCartSummaryProcessCallback(
+          currentAddressLoadDataResult.map<CartSummary>((test) => throw UnimplementedError())
+        );
       }
     }
   }
@@ -162,7 +190,8 @@ class DeliveryDelegate {
   _OnShowDeliveryRequestProcessLoadingCallback onShowDeliveryRequestProcessLoadingCallback;
   _OnDeliveryRequestProcessSuccessCallback onDeliveryRequestProcessSuccessCallback;
   _OnShowDeliveryRequestProcessFailedCallback onShowDeliveryRequestProcessFailedCallback;
-  _OnGetCoupon onGetCoupon;
+  _OnShowCartSummaryProcessCallback onShowCartSummaryProcessCallback;
+  _OnGetCouponId onGetCouponId;
   _OnGetCartList onGetCartList;
   _OnGetAdditionalList onGetAdditionalList;
 
@@ -172,7 +201,8 @@ class DeliveryDelegate {
     required this.onShowDeliveryRequestProcessLoadingCallback,
     required this.onDeliveryRequestProcessSuccessCallback,
     required this.onShowDeliveryRequestProcessFailedCallback,
-    required this.onGetCoupon,
+    required this.onShowCartSummaryProcessCallback,
+    required this.onGetCouponId,
     required this.onGetCartList,
     required this.onGetAdditionalList
   });

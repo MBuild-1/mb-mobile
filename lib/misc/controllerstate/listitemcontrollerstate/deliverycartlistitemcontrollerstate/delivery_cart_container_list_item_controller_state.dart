@@ -23,6 +23,7 @@ class DeliveryCartContainerListItemControllerState extends ListItemControllerSta
   void Function() onUpdateState;
   void Function() onScrollToAdditionalItemsSection;
   void Function(List<Cart>) onChangeSelected;
+  void Function() onCartChange;
   void Function(Coupon?) onUpdateCoupon;
   DeliveryCartContainerStateStorageListItemControllerState deliveryCartContainerStateStorageListItemControllerState;
   DeliveryCartContainerActionListItemControllerState deliveryCartContainerActionListItemControllerState;
@@ -37,6 +38,7 @@ class DeliveryCartContainerListItemControllerState extends ListItemControllerSta
     required this.onUpdateState,
     required this.onScrollToAdditionalItemsSection,
     required this.onChangeSelected,
+    required this.onCartChange,
     required this.onUpdateCoupon,
     required this.deliveryCartContainerStateStorageListItemControllerState,
     required this.deliveryCartContainerActionListItemControllerState,

@@ -130,29 +130,45 @@ class DefaultCartDataSource implements CartDataSource {
 
   @override
   FutureProcessing<CartSummary> cartSummary(CartSummaryParameter cartSummaryParameter) {
-    return DummyFutureProcessing((parameter) async {
-      await Future.delayed(const Duration(seconds: 1));
-      return CartSummary(
-        cartSummaryValue: [
-          SummaryValue(
-            name: "Total Belanja (8 Barang)",
-            type: "currency",
-            value: 5000000
-          ),
-          SummaryValue(
-            name: "Diskon",
-            type: "text",
-            value: "50%"
-          ),
-        ],
-        finalCartSummaryValue: [
-          SummaryValue(
-            name: "Total",
-            type: "currency",
-            value: 2500000
-          )
-        ],
-      );
+    List<Cart> cartList = cartSummaryParameter.cartList;
+    List<AdditionalItem> additionalItemList = cartSummaryParameter.additionalItemList;
+    List<dynamic> orderList = cartList.map(
+      (cart) {
+        SupportCart supportCart = cart.supportCart;
+        String? productEntryId;
+        String? bundlingId;
+        if (supportCart is ProductEntryAppearanceData) {
+          productEntryId = (supportCart as ProductEntryAppearanceData).productEntryId;
+        } else if (supportCart is ProductBundle) {
+          bundlingId = supportCart.id;
+        }
+        return {
+          "id": cart.id,
+          if (productEntryId.isNotEmptyString) "product_entry_id": productEntryId,
+          if (bundlingId.isNotEmptyString) "bundling_id": bundlingId,
+          "quantity": cart.quantity,
+          "notes": cart.notes.isNotEmptyString ? cart.notes : null
+        };
+      }
+    ).toList();
+    List<dynamic> sendToWarehouseList = additionalItemList.map(
+      (additionalItem) => {
+        "id": additionalItem.id,
+        "name" : additionalItem.name,
+        "price": additionalItem.estimationPrice,
+        "weight": additionalItem.estimationWeight,
+        "quantity": additionalItem.quantity
+      }
+    ).toList();
+    dynamic data = {
+      if (cartSummaryParameter.address != null) "user_address_id": cartSummaryParameter.address!.id,
+      if (cartSummaryParameter.couponId.isNotEmptyString) "coupon_id": cartSummaryParameter.couponId!,
+      "order_list": orderList,
+      "order_send_to_warehouse_list": sendToWarehouseList
+    };
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.post("/user/order/summary", data: data, cancelToken: cancelToken)
+        .map<CartSummary>(onMap: (value) => value.wrapResponse().mapFromResponseToCartSummary());
     });
   }
 

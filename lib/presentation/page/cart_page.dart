@@ -245,6 +245,9 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _cartListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? cartListItemControllerStateList) async {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      setState(() => _cartCount = 0);
+    });
     LoadDataResult<PagingDataResult<Cart>> cartPagingLoadDataResult = await widget.cartController.getCartPaging(
       CartPagingParameter(page: pageKey)
     );

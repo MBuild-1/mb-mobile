@@ -3,8 +3,10 @@ import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 
 import '../../domain/entity/cart/add_to_cart_response.dart';
 import '../../domain/entity/cart/cart.dart';
+import '../../domain/entity/cart/cart_summary.dart';
 import '../../domain/entity/cart/remove_from_cart_response.dart';
 import '../../domain/entity/cart/support_cart.dart';
+import '../../domain/entity/summaryvalue/summary_value.dart';
 import '../../misc/error/message_error.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/response_wrapper.dart';
@@ -51,5 +53,32 @@ extension CartDetailEntityMappingExt on ResponseWrapper {
 
   RemoveFromCartResponse mapFromResponseToRemoveFromCartResponse() {
     return RemoveFromCartResponse();
+  }
+
+  CartSummary mapFromResponseToCartSummary() {
+    return CartSummary(
+      cartSummaryValue: ResponseWrapper(response["summary"]).mapFromResponseToSummaryValueList(),
+      finalCartSummaryValue: ResponseWrapper(response["final_summary"]).mapFromResponseToSummaryValueList(),
+    );
+  }
+
+  List<SummaryValue> mapFromResponseToSummaryValueList() {
+    if (response is List) {
+      return response.map<SummaryValue>(
+        (summaryResponse) => ResponseWrapper(summaryResponse).mapFromResponseToSummaryValue()
+      ).toList();
+    } else if (response is Map) {
+      return [ResponseWrapper(response).mapFromResponseToSummaryValue()];
+    } else {
+      return [];
+    }
+  }
+
+  SummaryValue mapFromResponseToSummaryValue() {
+    return SummaryValue(
+      name: response["name"],
+      type: response["type"],
+      value: response["value"]
+    );
   }
 }

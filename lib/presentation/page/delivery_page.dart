@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:masterbagasi/misc/ext/error_provider_ext.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/number_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
@@ -18,9 +19,11 @@ import '../../domain/entity/address/current_selected_address_parameter.dart';
 import '../../domain/entity/address/current_selected_address_response.dart';
 import '../../domain/entity/cart/cart.dart';
 import '../../domain/entity/cart/cart_paging_parameter.dart';
+import '../../domain/entity/cart/cart_summary.dart';
 import '../../domain/entity/cart/support_cart.dart';
 import '../../domain/entity/coupon/coupon.dart';
 import '../../domain/entity/coupon/coupon_detail_parameter.dart';
+import '../../domain/entity/summaryvalue/summary_value.dart';
 import '../../domain/usecase/add_additional_item_use_case.dart';
 import '../../domain/usecase/change_additional_item_use_case.dart';
 import '../../domain/usecase/create_order_use_case.dart';
@@ -42,6 +45,7 @@ import '../../misc/controllerstate/listitemcontrollerstate/padding_container_lis
 import '../../misc/controllerstate/listitemcontrollerstate/page_keyed_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
 import '../../misc/dialog_helper.dart';
+import '../../misc/error/cart_empty_error.dart';
 import '../../misc/error/message_error.dart';
 import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/getextended/get_extended.dart';
@@ -59,7 +63,9 @@ import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
 import '../../misc/string_util.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
+import '../widget/loaddataresultimplementer/load_data_result_implementer_directly.dart';
 import '../widget/modified_paged_list_view.dart';
+import '../widget/modified_shimmer.dart';
 import '../widget/modified_svg_picture.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import '../widget/tap_area.dart';
@@ -286,8 +292,8 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
   late final ModifiedPagingController<int, ListItemControllerState> _deliveryListItemPagingController;
   late final PagingControllerState<int, ListItemControllerState> _deliveryListItemPagingControllerState;
   late int _selectedCartCount = 0;
-  late double _selectedCartShoppingTotal = 0;
-  Coupon? _coupon;
+  LoadDataResult<CartSummary> _cartSummaryLoadDataResult = NoLoadDataResult<CartSummary>();
+  String? _couponId;
   List<Cart> _cartList = [];
   List<AdditionalItem> _additionalItemList = [];
 
@@ -315,13 +321,18 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
     _deliveryListItemPagingControllerState.isPagingControllerExist = true;
     widget.statefulDeliveryControllerMediatorWidgetDelegate.onRefreshDelivery = () => _deliveryListItemPagingController.refresh();
     widget.statefulDeliveryControllerMediatorWidgetDelegate.onRefreshCoupon = (coupon) {
+      _couponId = coupon;
       if (_defaultDeliveryCartContainerInterceptingActionListItemControllerState.onRefreshCoupon != null) {
         _defaultDeliveryCartContainerInterceptingActionListItemControllerState.onRefreshCoupon!(coupon);
       }
+      widget.deliveryController.getCartSummary();
     };
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _deliveryListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? cartListItemControllerStateList) async {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      setState(() => _selectedCartCount = 0);
+    });
     LoadDataResult<PagingDataResult<Cart>> cartPagingLoadDataResult = await widget.deliveryController.getDeliveryCartPaging(
       CartPagingParameter(page: pageKey)
     );
@@ -385,14 +396,20 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
                 _cartList = cartList;
                 setState(() {
                   _selectedCartCount = cartList.length;
-                  _selectedCartShoppingTotal = 0;
-                  for (Cart cart in cartList) {
-                    SupportCart supportCart = cart.supportCart;
-                    _selectedCartShoppingTotal += supportCart.cartPrice * cart.quantity.toDouble();
-                  }
                 });
+                widget.deliveryController.getCartSummary();
               },
-              onUpdateCoupon: (coupon) => _coupon = coupon,
+              onCartChange: () {
+                if (_selectedCartCount == 0) {
+                  _deliveryListItemPagingController.errorFirstPageOuterProcess = CartEmptyError();
+                }
+              },
+              onUpdateCoupon: (coupon) {
+                if (coupon == null) {
+                  _couponId = null;
+                  widget.deliveryController.getCartSummary();
+                }
+              },
               deliveryCartContainerStateStorageListItemControllerState: DefaultDeliveryCartContainerStateStorageListItemControllerState(),
               deliveryCartContainerActionListItemControllerState: _DefaultDeliveryCartContainerActionListItemControllerState(
                 getAdditionalItemList: (additionalItemListParameter) => widget.deliveryController.getAdditionalItem(additionalItemListParameter),
@@ -442,7 +459,7 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
       DeliveryDelegate(
         onUnfocusAllWidget: () => FocusScope.of(context).unfocus(),
         onDeliveryBack: () => Get.back(),
-        onGetCoupon: () => _coupon,
+        onGetCouponId: () => _couponId,
         onShowDeliveryRequestProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
         onShowDeliveryRequestProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
           context: context,
@@ -451,6 +468,9 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
         ),
         onDeliveryRequestProcessSuccessCallback: (order) async {
           NavigationHelper.navigationAfterPurchaseProcess(context, order);
+        },
+        onShowCartSummaryProcessCallback: (cartSummaryLoadDataResult) async {
+          setState(() => _cartSummaryLoadDataResult = cartSummaryLoadDataResult);
         },
         onGetAdditionalList: () => _additionalItemList,
         onGetCartList: () => _cartList
@@ -476,60 +496,112 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
                 pullToRefresh: true
               ),
             ),
-            Container(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      TapArea(
-                        onTap: () => DialogHelper.showModalBottomDialogPage<bool, String>(
-                          context: context,
-                          modalDialogPageBuilder: (context, parameter) => CartSummaryCartModalDialogPage()
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text("Shopping Total".tr),
-                                const SizedBox(height: 4),
-                                Text(_selectedCartShoppingTotal.toRupiah(), style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold
-                                )),
+            if (_selectedCartCount > 0)
+              Container(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: LoadDataResultImplementerDirectly<CartSummary>(
+                        loadDataResult: _cartSummaryLoadDataResult,
+                        errorProvider: Injector.locator<ErrorProvider>(),
+                        onImplementLoadDataResultDirectly: (cartSummaryLoadDataResult, errorProviderOutput) {
+                          bool hasLoadingShimmer = cartSummaryLoadDataResult.isNotLoading || cartSummaryLoadDataResult.isLoading;
+                          Widget result = Wrap(
+                            crossAxisAlignment: WrapCrossAlignment.end,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Shopping Total".tr,
+                                    style: TextStyle(
+                                      backgroundColor: hasLoadingShimmer ? Colors.grey : null
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Builder(
+                                    builder: (context) {
+                                      String text = "No Loading";
+                                      if (cartSummaryLoadDataResult.isLoading) {
+                                        text = "Is Loading";
+                                      } else if (cartSummaryLoadDataResult.isSuccess) {
+                                        SummaryValue finalCartSummaryValue = cartSummaryLoadDataResult.resultIfSuccess!.finalCartSummaryValue.first;
+                                        if (finalCartSummaryValue.type == "currency") {
+                                          if (finalCartSummaryValue.value is num) {
+                                            text = (finalCartSummaryValue.value as num).toRupiah();
+                                          } else {
+                                            text = double.parse(finalCartSummaryValue.value as String).toRupiah();
+                                          }
+                                        } else {
+                                          text = finalCartSummaryValue.value;
+                                        }
+                                      } else if (cartSummaryLoadDataResult.isFailed) {
+                                        text = errorProviderOutput.onGetErrorProviderResult(
+                                          cartSummaryLoadDataResult.resultIfFailed!
+                                        ).toErrorProviderResultNonNull().message;
+                                      }
+                                      return Text(
+                                        text,
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          backgroundColor: hasLoadingShimmer ? Colors.grey : null
+                                        )
+                                      );
+                                    }
+                                  ),
+                                ]
+                              ),
+                              if (cartSummaryLoadDataResult.isSuccess) ...[
+                                TapArea(
+                                  onTap: cartSummaryLoadDataResult.isSuccess ? () => DialogHelper.showModalBottomDialogPage<bool, CartSummary>(
+                                    context: context,
+                                    modalDialogPageBuilder: (context, parameter) => CartSummaryCartModalDialogPage(
+                                      cartSummary: parameter!
+                                    ),
+                                    parameter: cartSummaryLoadDataResult.resultIfSuccess!
+                                  ) : null,
+                                  child: SizedBox(
+                                    width: 40,
+                                    height: 30,
+                                    child: Stack(
+                                      children: [
+                                        Align(
+                                          alignment: Alignment.bottomCenter,
+                                          child: Transform.rotate(
+                                            angle: math.pi / 2,
+                                            child: SizedBox(
+                                              child: ModifiedSvgPicture.asset(
+                                                Constant.vectorArrow,
+                                                height: 15,
+                                              ),
+                                            )
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                )
                               ]
-                            ),
-                            const SizedBox(width: 10),
-                            Transform.rotate(
-                              angle: math.pi / 2,
-                              child: SizedBox(
-                                child: ModifiedSvgPicture.asset(
-                                  Constant.vectorArrow,
-                                  height: 12,
-                                ),
-                              )
-                            ),
-                          ],
-                        ),
+                            ]
+                          );
+                          return hasLoadingShimmer ? ModifiedShimmer.fromColors(
+                            child: result
+                          ) : result;
+                        }
                       ),
-                      const Expanded(
-                        child: SizedBox()
-                      ),
-                      SizedOutlineGradientButton(
-                        onPressed: _selectedCartCount == 0 ? null : () => widget.deliveryController.createOrder(),
-                        width: 120,
-                        text: "${"Pay".tr} ($_selectedCartCount)",
-                        outlineGradientButtonType: OutlineGradientButtonType.solid,
-                        outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
-                      )
-                    ],
-                  )
-                ]
-              ),
-            )
+                    ),
+                    SizedOutlineGradientButton(
+                      onPressed: _selectedCartCount == 0 ? null : () => widget.deliveryController.createOrder(),
+                      width: 120,
+                      text: "${"Pay".tr} ($_selectedCartCount)",
+                      outlineGradientButtonType: OutlineGradientButtonType.solid,
+                      outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
+                    )
+                  ],
+                ),
+              )
           ]
         )
       ),

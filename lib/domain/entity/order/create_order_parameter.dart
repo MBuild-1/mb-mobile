@@ -4,7 +4,7 @@ import '../cart/cart.dart';
 import '../coupon/coupon.dart';
 
 class CreateOrderParameter {
-  Coupon? coupon;
+  String? couponId;
   Address? address;
   List<Cart> cartList;
   List<AdditionalItem> additionalItemList;
@@ -12,7 +12,7 @@ class CreateOrderParameter {
   CreateOrderParameter({
     required this.cartList,
     required this.additionalItemList,
-    required this.coupon,
+    required this.couponId,
     required this.address
   });
 }
