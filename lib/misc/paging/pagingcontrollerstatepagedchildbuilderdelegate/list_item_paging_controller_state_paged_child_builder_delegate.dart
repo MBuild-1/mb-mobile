@@ -684,73 +684,80 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
       }
     } else if (item is ProductDetailImageListItemControllerState) {
       List<ProductEntry> productEntryList = item.productEntryList;
+      ProductEntry? selectedProductEntry;
       int productEntryIndex = item.onGetProductEntryIndex();
       String imageUrl = "";
+      List<String> imageUrlList = [];
       if (productEntryList.isNotEmpty && productEntryIndex > -1) {
-        ProductEntry productEntry = productEntryList[productEntryIndex];
-        List<String> imageUrlList = productEntry.imageUrlList;
-        imageUrl = imageUrlList.isNotEmpty ? imageUrlList.first : "";
-        if (imageUrlList.isNotEmpty) {
-          return ModifiedCarouselSlider.builder(
-            itemCount: imageUrlList.length,
-            itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex) => Column(
-              children: [
-                AspectRatio(
-                  aspectRatio: Constant.aspectRatioValueProductImage.toDouble(),
-                  child: ClipRect(
-                    child: ProductModifiedCachedNetworkImage(
-                      imageUrl: imageUrlList[itemIndex],
-                    ),
-                  )
-                ),
-              ]
-            ),
-            options: CarouselOptions(
-              aspectRatio: Constant.aspectRatioValueProductImage.toDouble(),
-              enlargeStrategy: CenterPageEnlargeStrategy.height,
-              enableInfiniteScroll: false,
-              autoPlay: true,
-              viewportFraction: 1.0,
-            ),
-            carouselController: CarouselController(),
-            modifiedCarouselSliderTopStackWidgetBuilder: (context, pageController) {
-              return Align(
-                alignment: Alignment.bottomCenter,
-                child: SizedBox(
-                  width: double.infinity,
-                  height: Constant.bannerIndicatorAreaHeight,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Center(
-                          child: SmoothPageIndicator(
-                            controller: pageController,
-                            count: imageUrlList.length,
-                            effect: ScrollingDotsEffect(
-                              dotWidth: 8,
-                              dotHeight: 8,
-                              dotColor: Colors.white.withOpacity(0.5),
-                              activeDotColor: Colors.white
-                            ),
-                          ),
-                        )
-                      ),
-                    ]
-                  )
-                ),
-              );
-            }
-          );
-        }
+        selectedProductEntry = productEntryList[productEntryIndex];
+      } else if (productEntryList.length == 1 && productEntryIndex == -1) {
+        selectedProductEntry = productEntryList.first;
       }
-      return AspectRatio(
-        aspectRatio: Constant.aspectRatioValueProductImage.toDouble(),
-        child: ClipRRect(
-          child: ProductModifiedCachedNetworkImage(
-            imageUrl: imageUrl,
+      if (selectedProductEntry != null) {
+        imageUrlList = selectedProductEntry.imageUrlList;
+        imageUrl = imageUrlList.isNotEmpty ? imageUrlList.first : "";
+      }
+      if (imageUrlList.isEmpty) {
+        return AspectRatio(
+          aspectRatio: Constant.aspectRatioValueProductImage.toDouble(),
+          child: ClipRRect(
+            child: ProductModifiedCachedNetworkImage(
+              imageUrl: imageUrl,
+            )
           )
-        )
-      );
+        );
+      } else {
+        return ModifiedCarouselSlider.builder(
+          itemCount: imageUrlList.length,
+          itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex) => Column(
+            children: [
+              AspectRatio(
+                aspectRatio: Constant.aspectRatioValueProductImage.toDouble(),
+                child: ClipRect(
+                  child: ProductModifiedCachedNetworkImage(
+                    imageUrl: imageUrlList[itemIndex],
+                  ),
+                )
+              ),
+            ]
+          ),
+          options: CarouselOptions(
+            aspectRatio: Constant.aspectRatioValueProductImage.toDouble(),
+            enlargeStrategy: CenterPageEnlargeStrategy.height,
+            enableInfiniteScroll: false,
+            autoPlay: true,
+            viewportFraction: 1.0,
+          ),
+          carouselController: CarouselController(),
+          modifiedCarouselSliderTopStackWidgetBuilder: (context, pageController) {
+            return Align(
+              alignment: Alignment.bottomCenter,
+              child: SizedBox(
+                width: double.infinity,
+                height: Constant.bannerIndicatorAreaHeight,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Center(
+                        child: SmoothPageIndicator(
+                          controller: pageController,
+                          count: imageUrlList.length,
+                          effect: ScrollingDotsEffect(
+                            dotWidth: 8,
+                            dotHeight: 8,
+                            dotColor: Colors.white.withOpacity(0.5),
+                            activeDotColor: Colors.white
+                          ),
+                        ),
+                      )
+                    ),
+                  ]
+                )
+              ),
+            );
+          }
+        );
+      }
     } else if (item is ProductDetailBrandListItemControllerState) {
       return ProductDetailBrandListItem(
         productBrand: item.productBrand,
