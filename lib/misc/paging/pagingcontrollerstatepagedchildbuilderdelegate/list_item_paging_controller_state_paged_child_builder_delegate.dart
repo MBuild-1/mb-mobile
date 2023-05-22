@@ -56,6 +56,7 @@ import '../../../presentation/widget/product_bundle_header_list_item.dart';
 import '../../../presentation/widget/product_bundle_highlight_list_item.dart';
 import '../../../presentation/widget/product_category_header_list_item.dart';
 import '../../../presentation/widget/product_detail_brand_list_item.dart';
+import '../../../presentation/widget/product_detail_short_header.dart';
 import '../../../presentation/widget/product_entry_header.dart';
 import '../../../presentation/widget/productbrand/circleproductbrand/horizontal_circle_product_brand_item.dart';
 import '../../../presentation/widget/productbrand/circleproductbrand/vertical_circle_product_brand_item.dart';
@@ -138,6 +139,7 @@ import '../../controllerstate/listitemcontrollerstate/product_category_header_li
 import '../../controllerstate/listitemcontrollerstate/product_detail_brand_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/product_detail_header_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/product_detail_image_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/product_detail_short_header_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/product_entry_header_background_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/circleproductbrandlistitemcontrollerstate/circle_product_brand_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/circleproductbrandlistitemcontrollerstate/horizontal_circle_product_brand_list_item_controller_state.dart';
@@ -182,6 +184,7 @@ import '../../injector.dart';
 import '../../listitempagingparameterinjection/list_item_paging_parameter_injection.dart';
 import '../../load_data_result.dart';
 import '../../page_restoration_helper.dart';
+import '../../product_helper.dart';
 import '../../productentryheaderbackground/product_entry_header_background.dart';
 import '../../typedef.dart';
 import '../../widget_helper.dart';
@@ -539,6 +542,13 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
       } else {
         return Container();
       }
+    } else if (item is ProductDetailShortHeaderListItemControllerState) {
+      return ProductDetailShortHeader(
+        productDetail: item.productDetail,
+        onGetProductEntryIndex: item.onGetProductEntryIndex,
+        onAddWishlist: item.onAddWishlist,
+        onRemoveWishlist: item.onRemoveWishlist
+      );
     } else if (item is WidgetSubstitutionListItemControllerState) {
       return item.widgetSubstitution(context, index);
     } else if (item is IconTitleAndDescriptionListItemControllerState) {
@@ -692,15 +702,12 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
       }
     } else if (item is ProductDetailImageListItemControllerState) {
       List<ProductEntry> productEntryList = item.productEntryList;
-      ProductEntry? selectedProductEntry;
       int productEntryIndex = item.onGetProductEntryIndex();
       String imageUrl = "";
       List<String> imageUrlList = [];
-      if (productEntryList.isNotEmpty && productEntryIndex > -1) {
-        selectedProductEntry = productEntryList[productEntryIndex];
-      } else if (productEntryList.length == 1 && productEntryIndex == -1) {
-        selectedProductEntry = productEntryList.first;
-      }
+      ProductEntry? selectedProductEntry = ProductHelper.getSelectedProductEntry(
+        productEntryList, productEntryIndex
+      );
       if (selectedProductEntry != null) {
         imageUrlList = selectedProductEntry.imageUrlList;
         imageUrl = imageUrlList.isNotEmpty ? imageUrlList.first : "";

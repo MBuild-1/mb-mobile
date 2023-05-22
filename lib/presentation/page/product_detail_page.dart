@@ -15,6 +15,7 @@ import '../../domain/entity/product/product_detail_get_other_in_this_category_pa
 import '../../domain/entity/product/product_detail_parameter.dart';
 import '../../domain/entity/product/productentry/product_entry.dart';
 import '../../domain/entity/product/productvariant/product_variant.dart';
+import '../../domain/entity/wishlist/support_wishlist.dart';
 import '../../domain/usecase/add_to_cart_use_case.dart';
 import '../../domain/usecase/get_product_category_list_use_case.dart';
 import '../../domain/usecase/get_product_detail_from_your_search_product_entry_list_use_case.dart';
@@ -34,6 +35,7 @@ import '../../misc/controllerstate/listitemcontrollerstate/load_data_result_dyna
 import '../../misc/controllerstate/listitemcontrollerstate/padding_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/product_detail_brand_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/product_detail_image_list_item_controller_state.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/product_detail_short_header_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/title_and_description_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
@@ -56,6 +58,7 @@ import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediato
 import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/compound_parameterized_entity_and_list_item_controller_state_mediator.dart';
 import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/horizontal_dynamic_item_carousel_parametered_component_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/wishlist_delegate_parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
+import '../../misc/product_helper.dart';
 import '../../misc/string_util.dart';
 import '../../misc/toast_helper.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
@@ -321,6 +324,14 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
               return _productVariantColorfulChipTabBarController.value;
             }
           ),
+          ProductDetailShortHeaderListItemControllerState(
+            productDetail: productDetail,
+            onGetProductEntryIndex: () {
+              return _productVariantColorfulChipTabBarController.value;
+            },
+            onAddWishlist: (productAppearanceData) => widget.productDetailController.wishlistAndCartControllerContentDelegate.addToWishlist(productAppearanceData as SupportWishlist),
+            onRemoveWishlist: (productAppearanceData) => widget.productDetailController.wishlistAndCartControllerContentDelegate.removeFromWishlist(productAppearanceData as SupportWishlist),
+          ),
           VirtualSpacingListItemControllerState(height: 2.h),
           PaddingContainerListItemControllerState(
             padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
@@ -408,12 +419,20 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
               description: productDetail.description,
               verticalSpace: 25,
               titleAndDescriptionItemInterceptor: (padding, title, titleWidget, description, descriptionWidget, titleAndDescriptionWidget, titleAndDescriptionWidgetList) {
+                ProductEntry? _selectedProductEntry = ProductHelper.getSelectedProductEntry(
+                  productDetail.productEntry, _productVariantColorfulChipTabBarController.value
+                );
+                bool hasSelectedProductEntry = _selectedProductEntry != null;
                 List<List<String>> productDetailContentList = [
                   if (productDetail.productCertificationList.isNotEmpty) <String>["Certification".tr, productDetail.productCertificationList.first.name],
                   //<String>["Contain".tr, product.],
                   <String>["Category".tr, productDetail.productCategory.name],
                   <String>["Province".tr, (productDetail.province?.name).toStringNonNull],
                   <String>["Brand".tr, productDetail.productBrand.name],
+                  if (hasSelectedProductEntry) ...[
+                    <String>["SKU".tr, _selectedProductEntry.sku],
+                    <String>["Sustension".tr, _selectedProductEntry.sustension]
+                  ]
                 ];
                 titleAndDescriptionWidgetList.first = Text(title.toStringNonNull, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold));
                 titleAndDescriptionWidgetList.last = Column(
@@ -572,6 +591,12 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
         }
       )
     );
+    widget.productDetailController.wishlistAndCartControllerContentDelegate.setWishlistAndCartDelegate(
+      Injector.locator<WishlistAndCartDelegateFactory>().generateWishlistAndCartDelegate(
+        onGetBuildContext: () => context,
+        onGetErrorProvider: () => Injector.locator<ErrorProvider>()
+      )
+    );
     return Scaffold(
       appBar: DefaultSearchAppBar(),
       body: SafeArea(
@@ -604,7 +629,18 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
                       child: SizedOutlineGradientButton(
                         width: double.infinity,
                         outlineGradientButtonType: OutlineGradientButtonType.solid,
-                        onPressed: widget.productDetailController.addToCart,
+                        onPressed: () {
+                          if (_productDetailLoadDataResult.isSuccess) {
+                            ProductDetail productDetail = _productDetailLoadDataResult.resultIfSuccess!;
+                            int productEntryIndex = _productVariantColorfulChipTabBarController.value;
+                            ProductEntry? productEntry = ProductHelper.getSelectedProductEntry(
+                              productDetail.productEntry, productEntryIndex
+                            );
+                            if (productEntry != null) {
+                              widget.productDetailController.wishlistAndCartControllerContentDelegate.addToCart(productEntry);
+                            }
+                          }
+                        },
                         text: "+ ${"Cart".tr}",
                       ),
                     ),

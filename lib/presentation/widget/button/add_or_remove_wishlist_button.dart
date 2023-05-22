@@ -9,11 +9,13 @@ typedef OnRemoveWishlist = void Function();
 class AddOrRemoveWishlistButton extends StatelessWidget {
   final OnAddWishlist? onAddWishlist;
   final OnRemoveWishlist? onRemoveWishlist;
+  final bool isTransparent;
 
   const AddOrRemoveWishlistButton({
     super.key,
     this.onAddWishlist,
-    this.onRemoveWishlist
+    this.onRemoveWishlist,
+    this.isTransparent = false
   });
 
   @override
@@ -29,7 +31,7 @@ class AddOrRemoveWishlistButton extends StatelessWidget {
     }
     return ClipOval(
       child: Material(
-        color: Constant.colorWishlistButton,
+        color: isTransparent ? Colors.transparent : Constant.colorWishlistButton,
         child: InkWell(
           onTap: onTap,
           child: SizedBox(
