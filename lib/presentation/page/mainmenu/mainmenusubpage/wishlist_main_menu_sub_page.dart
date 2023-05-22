@@ -20,6 +20,8 @@ import '../../../../misc/controllerstate/paging_controller_state.dart';
 import '../../../../misc/error/message_error.dart';
 import '../../../../misc/errorprovider/error_provider.dart';
 import '../../../../misc/injector.dart';
+import '../../../../misc/itemtypelistsubinterceptor/verticalgriditemtypelistsubinterceptor/vertical_grid_item_type_list_sub_interceptor.dart';
+import '../../../../misc/list_item_controller_state_helper.dart';
 import '../../../../misc/load_data_result.dart';
 import '../../../../misc/main_route_observer.dart';
 import '../../../../misc/manager/controller_manager.dart';
@@ -83,7 +85,7 @@ class _StatefulWishlistMainMenuSubControllerMediatorWidgetState extends State<_S
       pagingController: _wishlistMainMenuSubListItemPagingController,
       isPagingControllerExist: false
     );
-    _wishlistMainMenuSubListItemPagingControllerState.pagingController.addPageRequestListenerForLoadDataResult(
+    _wishlistMainMenuSubListItemPagingControllerState.pagingController.addPageRequestListenerWithItemListForLoadDataResult(
       listener: _wishlistMainMenuListItemPagingControllerStateListener,
       onPageKeyNext: (pageKey) => pageKey + 1
     );
@@ -97,34 +99,59 @@ class _StatefulWishlistMainMenuSubControllerMediatorWidgetState extends State<_S
     super.didChangeDependencies();
   }
 
-  Future<LoadDataResult<PagingResult<ListItemControllerState>>> _wishlistMainMenuListItemPagingControllerStateListener(int pageKey) async {
+  Future<LoadDataResult<PagingResult<ListItemControllerState>>> _wishlistMainMenuListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? listItemControllerStateList) async {
     LoadDataResult<PagingDataResult<Wishlist>> wishlistPagingLoadDataResult = await widget.wishlistMainMenuSubController.getWishlistPaging(
       WishlistPagingParameter(page: pageKey)
     );
-    return wishlistPagingLoadDataResult.map<PagingResult<ListItemControllerState>>(
-      (wishlistPagingDataResult) => wishlistPagingDataResult.map<ListItemControllerState>(
+    return wishlistPagingLoadDataResult.map<PagingResult<ListItemControllerState>>((wishlistPaging) {
+      List<ListItemControllerState> resultListItemControllerState = [];
+      Iterable<ListItemControllerState> verticalProductBrandListItemControllerStateList = wishlistPaging.map<ListItemControllerState>(
         (wishlist) {
           SupportWishlist supportWishlist = wishlist.supportWishlist;
           if (supportWishlist is ProductAppearanceData) {
             return VerticalProductListItemControllerState(
               productAppearanceData: supportWishlist as ProductAppearanceData,
-              onAddWishlist: (productAppearanceData) => widget.wishlistMainMenuSubController.wishlistAndCartControllerContentDelegate.addToWishlist(productAppearanceData as SupportWishlist),
               onRemoveWishlist: (productAppearanceData) => widget.wishlistMainMenuSubController.wishlistAndCartControllerContentDelegate.removeFromWishlist(productAppearanceData as SupportWishlist),
               onAddCart: (productAppearanceData) => widget.wishlistMainMenuSubController.wishlistAndCartControllerContentDelegate.addToCart(productAppearanceData as SupportCart),
             );
           } else if (supportWishlist is ProductBundle) {
-            return VerticalProductBundleListItemControllerState(
+            return SupportVerticalGridVerticalProductBundleListItemControllerState(
               productBundle: supportWishlist,
-              onAddWishlist: (productBundle) => widget.wishlistMainMenuSubController.wishlistAndCartControllerContentDelegate.addToWishlist(productBundle),
               onRemoveWishlist: (productBundle) => widget.wishlistMainMenuSubController.wishlistAndCartControllerContentDelegate.removeFromWishlist(productBundle),
               onAddCart: (productBundle) => widget.wishlistMainMenuSubController.wishlistAndCartControllerContentDelegate.addToCart(productBundle),
             );
           } else {
             throw MessageError(title: "Support wishlist is not valid");
           }
-        },
-      )
-    );
+        }
+      ).itemList;
+      int totalItem = wishlistPaging.totalItem;
+      if (pageKey == 1) {
+        totalItem = 2;
+        resultListItemControllerState = [
+          VerticalGridPaddingContentSubInterceptorSupportListItemControllerState(
+            childListItemControllerStateList: [
+              ...verticalProductBrandListItemControllerStateList
+            ]
+          )
+        ];
+      } else {
+        if (ListItemControllerStateHelper.checkListItemControllerStateList(listItemControllerStateList)) {
+          VerticalGridPaddingContentSubInterceptorSupportListItemControllerState verticalGridListItemControllerState = ListItemControllerStateHelper.parsePageKeyedListItemControllerState(
+            listItemControllerStateList![0]
+          ) as VerticalGridPaddingContentSubInterceptorSupportListItemControllerState;
+          verticalGridListItemControllerState.childListItemControllerStateList.addAll(
+            verticalProductBrandListItemControllerStateList
+          );
+        }
+      }
+      return PagingDataResult<ListItemControllerState>(
+        itemList: resultListItemControllerState,
+        page: wishlistPaging.page,
+        totalPage: wishlistPaging.totalPage,
+        totalItem: totalItem
+      );
+    });
   }
 
   void refreshWishlistMainMenu() {
