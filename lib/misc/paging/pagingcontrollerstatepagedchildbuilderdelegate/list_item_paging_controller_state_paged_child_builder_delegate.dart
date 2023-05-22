@@ -364,6 +364,14 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
             onRemoveCart: item.onRemoveCart,
           );
         }
+      } else if (item is SupportVerticalGridVerticalProductBundleListItemControllerState) {
+        return VerticalProductBundleItem(
+          productBundle: item.productBundle,
+          onAddWishlist: item.onAddWishlist,
+          onRemoveWishlist: item.onRemoveWishlist,
+          onAddCart: item.onAddCart,
+          onRemoveCart: item.onRemoveCart,
+        );
       } else {
         return Container();
       }
