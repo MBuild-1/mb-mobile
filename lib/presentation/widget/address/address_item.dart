@@ -18,6 +18,9 @@ abstract class AddressItem extends StatelessWidget {
   @protected
   double? get itemWidth;
 
+  @protected
+  bool get hasSingleLines => false;
+
   final Address address;
   final OnSelectAddress? onSelectAddress;
   final OnRemoveAddress? onRemoveAddress;
@@ -33,6 +36,8 @@ abstract class AddressItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    TextOverflow? textOverflow = hasSingleLines ? TextOverflow.ellipsis : null;
+    int? maxLines = hasSingleLines ? 1 : null;
     return SizedBox(
       width: itemWidth,
       child: Material(
@@ -45,6 +50,7 @@ abstract class AddressItem extends StatelessWidget {
         ),
         child: InkWell(
           onTap: onSelectAddress != null ? () => onSelectAddress!(address) : null,
+          borderRadius: BorderRadius.circular(16.0),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -52,17 +58,39 @@ abstract class AddressItem extends StatelessWidget {
               children: [
                 Text(
                   address.label,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
-                    fontWeight: FontWeight.bold
-                  )
+                    fontWeight: FontWeight.bold,
+                    overflow: textOverflow,
+                  ),
+                  maxLines: maxLines,
                 ),
                 const SizedBox(height: 15),
-                Text((address.addressUser != null ? address.addressUser!.name : null).toEmptyStringNonNull, style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text(
+                  (address.addressUser != null ? address.addressUser!.name : null).toEmptyStringNonNull,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    overflow: textOverflow,
+                  ),
+                  maxLines: maxLines
+                ),
                 const SizedBox(height: 4),
-                Text(address.phoneNumber, style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text(
+                  address.phoneNumber,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    overflow: textOverflow
+                  ),
+                  maxLines: maxLines
+                ),
                 const SizedBox(height: 15),
-                Text(address.address),
+                Text(
+                  address.address,
+                  style: TextStyle(
+                    overflow: textOverflow
+                  ),
+                  maxLines: maxLines
+                ),
                 if (canBeModified)
                   ...[
                     const SizedBox(height: 15),

@@ -145,11 +145,11 @@ class VerticalGridItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
 
   @override
   bool intercept(
-      int i,
-      ListItemControllerStateWrapper oldItemTypeWrapper,
-      List<ListItemControllerState> oldItemTypeList,
-      List<ListItemControllerState> newItemTypeList
-      ) {
+    int i,
+    ListItemControllerStateWrapper oldItemTypeWrapper,
+    List<ListItemControllerState> oldItemTypeList,
+    List<ListItemControllerState> newItemTypeList
+  ) {
     _i = i;
     ListItemControllerState oldItemType = oldItemTypeWrapper.listItemControllerState;
     if (oldItemType is VerticalGridPaddingContentSubInterceptorSupportListItemControllerState) {
