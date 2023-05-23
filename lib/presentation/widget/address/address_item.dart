@@ -67,7 +67,7 @@ abstract class AddressItem extends StatelessWidget {
                 ),
                 const SizedBox(height: 15),
                 Text(
-                  (address.addressUser != null ? address.addressUser!.name : null).toEmptyStringNonNull,
+                  address.name,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     overflow: textOverflow,

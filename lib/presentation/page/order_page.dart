@@ -27,6 +27,7 @@ import '../../misc/paging/pagingresult/paging_result.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import 'getx_page.dart';
+import 'order_detail_page.dart';
 
 class OrderPage extends RestorableGetxPage<_OrderPageRestoration> {
   late final ControllerMember<OrderController> _orderPageController = ControllerMember<OrderController>().addToControllerManager(controllerManager);
@@ -55,7 +56,7 @@ class OrderPage extends RestorableGetxPage<_OrderPageRestoration> {
   }
 }
 
-class _OrderPageRestoration extends MixableGetxPageRestoration with WebViewerPageRestorationMixin {
+class _OrderPageRestoration extends MixableGetxPageRestoration with WebViewerPageRestorationMixin, OrderDetailPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {

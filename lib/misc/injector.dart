@@ -100,6 +100,7 @@ import '../domain/usecase/get_homepage_contents_banner_use_case.dart';
 import '../domain/usecase/get_kitchen_contents_banner_use_case.dart';
 import '../domain/usecase/get_my_cart_use_case.dart';
 import '../domain/usecase/get_news_use_case.dart';
+import '../domain/usecase/get_order_based_id_use_case.dart';
 import '../domain/usecase/get_order_paging_use_case.dart';
 import '../domain/usecase/get_product_brand_detail_use_case.dart';
 import '../domain/usecase/get_product_brand_paging_use_case.dart';
@@ -456,6 +457,7 @@ class _Injector {
     locator.registerLazySingleton<GetProvinceMapUseCase>(() => GetProvinceMapUseCase(mapRepository: locator()));
     locator.registerLazySingleton<CreateOrderUseCase>(() => CreateOrderUseCase(orderRepository: locator()));
     locator.registerLazySingleton<GetOrderPagingUseCase>(() => GetOrderPagingUseCase(orderRepository: locator()));
+    locator.registerLazySingleton<GetOrderBasedIdUseCase>(() => GetOrderBasedIdUseCase(orderRepository: locator()));
     locator.registerLazySingleton<CheckRatesForVariousCountriesUseCase>(() => CheckRatesForVariousCountriesUseCase(cargoRepository: locator()));
     locator.registerLazySingleton<GetCountryListUseCase>(() => GetCountryListUseCase(addressRepository: locator()));
     locator.registerLazySingleton<GetCountryPagingUseCase>(() => GetCountryPagingUseCase(addressRepository: locator()));

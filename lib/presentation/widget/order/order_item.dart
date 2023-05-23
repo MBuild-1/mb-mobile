@@ -9,10 +9,13 @@ import '../../../domain/entity/order/support_order_product.dart';
 import '../../../misc/constant.dart';
 import '../../../misc/date_util.dart';
 import '../../../misc/multi_language_string.dart';
+import '../../../misc/page_restoration_helper.dart';
 import '../button/custombutton/sized_outline_gradient_button.dart';
+import '../colorful_chip.dart';
 import '../modified_divider.dart';
 import '../modified_svg_picture.dart';
 import '../modifiedcachednetworkimage/product_modified_cached_network_image.dart';
+import 'order_product_detail_item.dart';
 
 abstract class OrderItem extends StatelessWidget {
   final CombinedOrder order;
@@ -32,7 +35,7 @@ abstract class OrderItem extends StatelessWidget {
       child: Material(
         borderRadius: BorderRadius.circular(16.0),
         child: InkWell(
-          onTap: () {},
+          onTap: () => PageRestorationHelper.toOrderDetailPage(context, order.id),
           borderRadius: BorderRadius.circular(16.0),
           child: Container(
             padding: const EdgeInsets.all(16.0),
@@ -56,19 +59,10 @@ abstract class OrderItem extends StatelessWidget {
                         ]
                       ),
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 12.0),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8.0),
-                        color: Colors.grey.shade300,
-                      ),
-                      child: Text(
-                        order.status,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold
-                        ),
-                      ),
-                    )
+                    ColorfulChip(
+                      text: order.status,
+                      color: Colors.grey.shade300
+                    ),
                   ]
                 ),
                 const SizedBox(height: 12),
@@ -124,7 +118,9 @@ abstract class OrderItem extends StatelessWidget {
       ];
     }
     return [
-      _orderProductDetailWidget(orderProductDetailList.first),
+      OrderProductDetailItem(
+        orderProductDetail: orderProductDetailList.first
+      ),
       if (orderProductDetailList.length > 1)
         ...[
           const SizedBox(height: 12),
@@ -136,45 +132,5 @@ abstract class OrderItem extends StatelessWidget {
           )
         ]
     ];
-  }
-
-  Widget _orderProductDetailWidget(OrderProductDetail orderProductDetail) {
-    SupportOrderProduct supportOrderProduct = orderProductDetail.supportOrderProduct;
-    return Row(
-      children: [
-        SizedBox(
-          width: 70,
-          child: AspectRatio(
-            aspectRatio: 1.0,
-            child: ClipRRect(
-              child: ProductModifiedCachedNetworkImage(
-                imageUrl: supportOrderProduct.orderImageUrl,
-              )
-            )
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                supportOrderProduct.orderTitle,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  overflow: TextOverflow.ellipsis
-                )
-              ),
-              Text(
-                "${orderProductDetail.quantity} ${"Item".tr}",
-                style: const TextStyle(
-                  overflow: TextOverflow.ellipsis
-                )
-              )
-            ]
-          ),
-        ),
-      ]
-    );
   }
 }

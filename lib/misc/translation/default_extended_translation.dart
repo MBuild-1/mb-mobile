@@ -156,6 +156,7 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "To make your shopping experience better, choose an address first": "Biar pengalaman belanjamu lebih baik, pilih alamat dulu",
       "Shopping": "Belanja",
       "Transaction": "Transaksi",
+      "Transaction Detail": "Detail Transaksi",
       "Is Running": "Sedang Berjalan",
       "Waiting For Payment": "Menunggu Pembayaran",
       "Item": "Barang",
@@ -209,7 +210,13 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Cart Is Empty": "Keranjangnya Lagi Kosong",
       "Now cart is empty": "Untuk sekarang keranjangnya lagi kosong",
       "Select All": "Pilih Semua",
-      "Sustension": "Sustensi"
+      "Sustension": "Sustensi",
+      "Transaction Status": "Status Transaksi",
+      "Order Code": "Kode Pemesanan",
+      "No address": "Tidak ada alamat",
+      "Order List": "Daftar Pemesanan",
+      "Order Summary": "Ringkasan Pemesanan",
+      "No order summary": "Tidak ada ringkasan belanja"
     }
   };
 

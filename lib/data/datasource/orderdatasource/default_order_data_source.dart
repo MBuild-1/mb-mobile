@@ -11,8 +11,10 @@ import '../../../domain/entity/cart/support_cart.dart';
 import '../../../domain/entity/order/combined_order.dart';
 import '../../../domain/entity/order/create_order_parameter.dart';
 import '../../../domain/entity/order/order.dart';
+import '../../../domain/entity/order/order_based_id_parameter.dart';
 import '../../../domain/entity/order/order_paging_parameter.dart';
 import '../../../domain/entity/product/productbundle/product_bundle.dart';
+import '../../../misc/load_data_result.dart';
 import '../../../misc/option_builder.dart';
 import '../../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../../misc/processing/dio_http_client_processing.dart';
@@ -76,6 +78,14 @@ class DefaultOrderDataSource implements OrderDataSource {
       String pageParameterPath = "/?pageNumber=${orderPagingParameter.itemEachPageCount}&page=${orderPagingParameter.page}";
       return dio.get("/user/order$pageParameterPath", cancelToken: cancelToken)
         .map<PagingDataResult<CombinedOrder>>(onMap: (value) => value.wrapResponse().mapFromResponseToCombinedOrderPagingDataResult());
+    });
+  }
+
+  @override
+  FutureProcessing<CombinedOrder> orderBasedId(OrderBasedIdParameter orderBasedIdParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.get("/user/order/${orderBasedIdParameter.orderId}", cancelToken: cancelToken)
+        .map<CombinedOrder>(onMap: (value) => value.wrapResponse().mapFromResponseToCombinedOrder());
     });
   }
 }
