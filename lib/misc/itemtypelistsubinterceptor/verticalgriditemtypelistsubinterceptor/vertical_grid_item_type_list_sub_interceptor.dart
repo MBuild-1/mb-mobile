@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../controllerstate/listitemcontrollerstate/empty_container_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/row_container_list_item_controller_state.dart';
@@ -66,31 +67,13 @@ class VerticalGridItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
     }) {
       ListItemControllerState lastNewItemType = newItemTypeList[newItemTypeList.length - 1];
       if (lastNewItemType is RowContainerListItemControllerState) {
-        bool hasSpanCountRemaining = true;
-        int futureOldItemTypeListIndex = _i + 1;
-        if (!(futureOldItemTypeListIndex > listItemControllerStateList.length - 1)) {
-          ListItemControllerState futureOldItemType = listItemControllerStateList[futureOldItemTypeListIndex];
-          if (futureOldItemType is SupportVerticalGridListItemControllerStateMixin) {
-            int effectiveSpanCount = futureOldItemType.spanCount;
-            if (effectiveSpanCount < 1) {
-              effectiveSpanCount = _maxRow;
-            }
-            int spanRemaining =  _indexedMaxRow - _rowChildIndex;
-            int spanResult = spanRemaining - effectiveSpanCount;
-            if (spanResult < 0) {
-              hasSpanCountRemaining = false;
-            }
-          }
+        if (beforeCheckLastRowContainerListing != null) {
+          beforeCheckLastRowContainerListing(lastNewItemType);
         }
-        if (hasSpanCountRemaining) {
-          if (beforeCheckLastRowContainerListing != null) {
-            beforeCheckLastRowContainerListing(lastNewItemType);
-          }
-          if (afterCheckLastRowContainerListing != null) {
-            afterCheckLastRowContainerListing(lastNewItemType);
-          }
+        if (afterCheckLastRowContainerListing != null) {
+          afterCheckLastRowContainerListing(lastNewItemType);
         }
-        if (_i == listItemControllerStateList.length - 1 || !hasSpanCountRemaining) {
+        if (_i == listItemControllerStateList.length - 1) {
           if (_rowChildIndex < _indexedMaxRow) {
             int remaining = _indexedMaxRow - _rowChildIndex;
             int j = 0;
@@ -105,7 +88,7 @@ class VerticalGridItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
             }
           }
           void addBottomVirtualSpacing({double? bottom}) => newItemTypeList.add(
-            VirtualSpacingListItemControllerState(height: bottom ?? padding())
+              VirtualSpacingListItemControllerState(height: bottom ?? padding())
           );
           if (verticalGridPaddingContentSubInterceptorSupportParameter == null) {
             addBottomVirtualSpacing();
@@ -126,7 +109,7 @@ class VerticalGridItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
     _onAddFirstRowChildIndex = (oldItemType, verticalGridPaddingContentSubInterceptorSupportParameter) {
       _rowChildIndex = 0;
       void addTopVirtualSpacing({double? top}) => newItemTypeList.add(
-        VirtualSpacingListItemControllerState(height: top ?? padding())
+          VirtualSpacingListItemControllerState(height: top ?? padding())
       );
 
       if (_createdRowCount == 0) {
@@ -162,11 +145,11 @@ class VerticalGridItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
 
   @override
   bool intercept(
-    int i,
-    ListItemControllerStateWrapper oldItemTypeWrapper,
-    List<ListItemControllerState> oldItemTypeList,
-    List<ListItemControllerState> newItemTypeList
-  ) {
+      int i,
+      ListItemControllerStateWrapper oldItemTypeWrapper,
+      List<ListItemControllerState> oldItemTypeList,
+      List<ListItemControllerState> newItemTypeList
+      ) {
     _i = i;
     ListItemControllerState oldItemType = oldItemTypeWrapper.listItemControllerState;
     if (oldItemType is VerticalGridPaddingContentSubInterceptorSupportListItemControllerState) {

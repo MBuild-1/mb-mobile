@@ -63,6 +63,7 @@ import '../../../presentation/widget/productbrand/circleproductbrand/vertical_ci
 import '../../../presentation/widget/productbrand/horizontal_product_brand_item.dart';
 import '../../../presentation/widget/productbrand/vertical_product_brand_item.dart';
 import '../../../presentation/widget/productbundle/horizontal_product_bundle_item.dart';
+import '../../../presentation/widget/productbundle/support_vertical_grid_vertical_product_bundle_item.dart';
 import '../../../presentation/widget/productbundle/vertical_product_bundle_item.dart';
 import '../../../presentation/widget/productcategory/circleproductcategory/horizontal_circle_product_category_item.dart';
 import '../../../presentation/widget/productcategory/circleproductcategory/vertical_circle_product_category_item.dart';
@@ -368,7 +369,7 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
           );
         }
       } else if (item is SupportVerticalGridVerticalProductBundleListItemControllerState) {
-        return VerticalProductBundleItem(
+        return SupportVerticalGridVerticalProductBundleItem(
           productBundle: item.productBundle,
           onAddWishlist: item.onAddWishlist,
           onRemoveWishlist: item.onRemoveWishlist,
