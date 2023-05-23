@@ -106,7 +106,7 @@ dev_dependencies:
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/images/logo_superindo.png"
+  image_path: "assets/images/launcher_logo.png"
 
 dependency_overrides:
   fwfh_text_style: ^2.22.8+1

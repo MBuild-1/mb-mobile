@@ -19,7 +19,7 @@
     <uses-feature android:name="android.hardware.camera" />
 
     <application
-        android:label="masterbagasi"
+        android:label="Master Bagasi"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:allowBackup="false"
