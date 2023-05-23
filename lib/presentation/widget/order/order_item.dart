@@ -113,6 +113,16 @@ abstract class OrderItem extends StatelessWidget {
   }
 
   List<Widget> _allOrderProductDetailWidget(List<OrderProductDetail> orderProductDetailList) {
+    if (orderProductDetailList.isEmpty) {
+      return [
+        Text(
+          MultiLanguageString({
+            Constant.textEnUsLanguageKey: "No product.",
+            Constant.textInIdLanguageKey: "Tidak ada produk.",
+          }).toEmptyStringNonNull
+        )
+      ];
+    }
     return [
       _orderProductDetailWidget(orderProductDetailList.first),
       if (orderProductDetailList.length > 1)
