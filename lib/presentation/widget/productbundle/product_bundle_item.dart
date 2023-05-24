@@ -36,6 +36,7 @@ abstract class ProductBundleItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String soldCount = "No Sold Count".tr;
+    bool comingSoon = productBundle.price.isZeroResult.isZero;
     BorderRadius borderRadius = BorderRadius.circular(16.0);
     void onWishlist(void Function(ProductBundle)? onWishlistCallback) {
       if (onWishlistCallback != null) {
@@ -82,7 +83,7 @@ abstract class ProductBundleItem extends StatelessWidget {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  productBundle.price.toRupiah(),
+                                  comingSoon ? "Coming Soon".tr : productBundle.price.toRupiah(),
                                   style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold
@@ -115,7 +116,7 @@ abstract class ProductBundleItem extends StatelessWidget {
                                     SizedBox(width: 1.5.w),
                                     Expanded(
                                       child: SizedOutlineGradientButton(
-                                        onPressed: onAddCart != null ? () => onAddCart!(productBundle) : null,
+                                        onPressed: !comingSoon ? (onAddCart != null ? () => onAddCart!(productBundle) : null) : null,
                                         text: "+ ${"Cart".tr}",
                                         outlineGradientButtonType: OutlineGradientButtonType.outline,
                                         outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,

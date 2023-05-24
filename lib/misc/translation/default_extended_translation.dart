@@ -214,6 +214,7 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Transaction Status": "Status Transaksi",
       "Order Code": "Kode Pemesanan",
       "No address": "Tidak ada alamat",
+      "Coming Soon": "Segera Hadir",
       "Order List": "Daftar Pemesanan",
       "Order Summary": "Ringkasan Pemesanan",
       "No order summary": "Tidak ada ringkasan belanja",
