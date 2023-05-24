@@ -128,7 +128,7 @@ extension ProductBundleDetailEntityMappingExt on ResponseWrapper {
       name: response["name"],
       description: "",
       slug: response["slug"],
-      imageUrl: response["banner"],
+      imageUrl: response["banner_mobile"],
       price: ResponseWrapper(response["price"]).mapFromResponseToDouble()!,
       rating: 0.0,
       soldOut: response["sold"] ?? 0
@@ -141,7 +141,7 @@ extension ProductBundleDetailEntityMappingExt on ResponseWrapper {
       name: response["name"],
       description: "",
       slug: response["slug"],
-      imageUrl: response["banner"],
+      imageUrl: response["banner_mobile"],
       price: ResponseWrapper(response["price"]).mapFromResponseToDouble()!,
       rating: 0.0,
       productEntryList: response["bundling_list"].map<ProductEntry>(
