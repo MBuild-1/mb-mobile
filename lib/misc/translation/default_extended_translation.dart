@@ -216,7 +216,7 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "No address": "Tidak ada alamat",
       "Order List": "Daftar Pemesanan",
       "Order Summary": "Ringkasan Pemesanan",
-      "No order summary": "Tidak ada ringkasan belanja"
+      "No order summary": "Tidak ada ringkasan belanja",
     }
   };
 
