@@ -196,7 +196,7 @@ class VerticalGridItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
         interceptorChecking: (itemTypeListSubInterceptor) => itemTypeListSubInterceptor is! VerticalGridItemTypeListSubInterceptor
       );
       if (effectiveOldItemTypeList.isEmpty) {
-        throw MessageError(title: "Old item type must be min 1");
+        return false;
       }
       ListItemControllerState effectiveOldItemType = effectiveOldItemTypeList.first;
       if (checkingListItemControllerState(effectiveOldItemType)) {
