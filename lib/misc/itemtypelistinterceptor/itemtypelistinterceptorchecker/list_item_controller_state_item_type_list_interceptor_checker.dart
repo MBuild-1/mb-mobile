@@ -26,6 +26,7 @@ import '../../itemtypelistsubinterceptor/product_entry_header_item_type_list_sub
 import '../../itemtypelistsubinterceptor/profile_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/row_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/verticalgriditemtypelistsubinterceptor/vertical_grid_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/wishlist_item_type_list_sub_interceptor.dart';
 import '../../typedef.dart';
 import '../item_type_list_interceptor_parameter.dart';
 import '../item_type_list_interceptor_result.dart';
@@ -48,13 +49,22 @@ class ListItemControllerStateItemTypeInterceptorChecker extends ItemTypeListInte
     ListItemControllerStateWrapper oldItemTypeWrapper,
     List<ListItemControllerState> oldItemTypeList,
     List<ListItemControllerState> newItemTypeList,
+    {bool Function(ItemTypeListSubInterceptor)? interceptorChecking}
   ) {
+    bool hasAllowIntercept(ItemTypeListSubInterceptor itemTypeListSubInterceptor) {
+      if (interceptorChecking != null) {
+        return interceptorChecking(itemTypeListSubInterceptor);
+      }
+      return true;
+    }
     int j = 0;
     while (j < _cachedItemTypeListSubInterceptorList.length) {
       BaseItemTypeListSubInterceptor baseItemTypeListSubInterceptor = _cachedItemTypeListSubInterceptorList[j];
       if (baseItemTypeListSubInterceptor is ItemTypeListSubInterceptor) {
-        if (baseItemTypeListSubInterceptor.intercept(i, oldItemTypeWrapper, oldItemTypeList, newItemTypeList)) {
-          break;
+        if (hasAllowIntercept(baseItemTypeListSubInterceptor)) {
+          if (baseItemTypeListSubInterceptor.intercept(i, oldItemTypeWrapper, oldItemTypeList, newItemTypeList)) {
+            break;
+          }
         }
       } else if (baseItemTypeListSubInterceptor is ParameterizedItemTypeListSubInterceptor) {
         if (_cachedItemTypeListInterceptorParameter != null) {
@@ -201,6 +211,11 @@ class ListItemControllerStateItemTypeInterceptorChecker extends ItemTypeListInte
       listItemControllerStateItemTypeInterceptorChecker: this
     ),
     FavoriteProductBrandItemTypeListSubInterceptor(
+      padding: padding,
+      itemSpacing: itemSpacing,
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
+    WishlistItemTypeListSubInterceptor(
       padding: padding,
       itemSpacing: itemSpacing,
       listItemControllerStateItemTypeInterceptorChecker: this

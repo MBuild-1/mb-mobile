@@ -5,7 +5,9 @@ import '../../controllerstate/listitemcontrollerstate/list_item_controller_state
 import '../../controllerstate/listitemcontrollerstate/row_container_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/support_vertical_grid_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
+import '../../error/message_error.dart';
 import '../../itemtypelistinterceptor/itemtypelistinterceptorchecker/list_item_controller_state_item_type_list_interceptor_checker.dart';
+import '../../listitemcontrollerstatewrapperparameter/has_intercept_child_list_item_controller_state_wrapper_parameter.dart';
 import '../../listitemcontrollerstatewrapperparameter/list_item_controller_state_wrapper_parameter.dart';
 import '../../listitemcontrollerstatewrapperparameter/vertical_grid_list_item_controller_state_wrapper_parameter.dart';
 import '../../typedef.dart';
@@ -88,7 +90,7 @@ class VerticalGridItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
             }
           }
           void addBottomVirtualSpacing({double? bottom}) => newItemTypeList.add(
-              VirtualSpacingListItemControllerState(height: bottom ?? padding())
+            VirtualSpacingListItemControllerState(height: bottom ?? padding())
           );
           if (verticalGridPaddingContentSubInterceptorSupportParameter == null) {
             addBottomVirtualSpacing();
@@ -109,7 +111,7 @@ class VerticalGridItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
     _onAddFirstRowChildIndex = (oldItemType, verticalGridPaddingContentSubInterceptorSupportParameter) {
       _rowChildIndex = 0;
       void addTopVirtualSpacing({double? top}) => newItemTypeList.add(
-          VirtualSpacingListItemControllerState(height: top ?? padding())
+        VirtualSpacingListItemControllerState(height: top ?? padding())
       );
 
       if (_createdRowCount == 0) {
@@ -180,11 +182,28 @@ class VerticalGridItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
           verticalListItemControllerStateWrapperParameter = listItemControllerStateWrapperParameter;
         }
       }
-      if (checkingListItemControllerState(oldItemType)) {
+      List<ListItemControllerState> effectiveOldItemTypeList = [];
+      listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
+        _i,
+        ParameterizedListItemControllerStateWrapper(
+          oldItemType,
+          HasInterceptChildListItemControllerStateWrapperParameter(
+            interceptChild: false
+          )
+        ),
+        oldItemTypeList,
+        effectiveOldItemTypeList,
+        interceptorChecking: (itemTypeListSubInterceptor) => itemTypeListSubInterceptor is! VerticalGridItemTypeListSubInterceptor
+      );
+      if (effectiveOldItemTypeList.isEmpty) {
+        throw MessageError(title: "Old item type must be min 1");
+      }
+      ListItemControllerState effectiveOldItemType = effectiveOldItemTypeList.first;
+      if (checkingListItemControllerState(effectiveOldItemType)) {
         int indexedMaxRow = _maxRow - 1;
         if (_createdRowCount == 0 || _rowChildIndex >= indexedMaxRow) {
           _onAddFirstRowChildIndexAndCheckLastRowContainerListing(
-            oldItemType, oldItemTypeList, verticalListItemControllerStateWrapperParameter?.verticalGridPaddingContentSubInterceptorSupportParameter
+            effectiveOldItemType, oldItemTypeList, verticalListItemControllerStateWrapperParameter?.verticalGridPaddingContentSubInterceptorSupportParameter
           );
         } else {
           _onCheckLastRowContainerListing(
@@ -193,7 +212,7 @@ class VerticalGridItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
               listItemControllerState.rowChildListItemControllerState.addAll(
                 <ListItemControllerState>[
                   VirtualSpacingListItemControllerState(width: itemSpacing()),
-                  oldItemType,
+                  effectiveOldItemType,
                 ]
               );
             },

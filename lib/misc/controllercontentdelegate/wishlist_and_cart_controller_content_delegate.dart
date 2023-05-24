@@ -7,12 +7,14 @@ import '../../domain/entity/cart/add_to_cart_response.dart';
 import '../../domain/entity/cart/support_cart.dart';
 import '../../domain/entity/wishlist/add_wishlist_parameter.dart';
 import '../../domain/entity/wishlist/add_wishlist_response.dart';
+import '../../domain/entity/wishlist/remove_wishlist_based_product_parameter.dart';
 import '../../domain/entity/wishlist/remove_wishlist_parameter.dart';
 import '../../domain/entity/wishlist/remove_wishlist_response.dart';
 import '../../domain/entity/wishlist/support_wishlist.dart';
 import '../../domain/entity/wishlist/wishlist.dart';
 import '../../domain/usecase/add_to_cart_use_case.dart';
 import '../../domain/usecase/add_wishlist_use_case.dart';
+import '../../domain/usecase/remove_wishlist_based_product_use_case.dart';
 import '../../domain/usecase/remove_wishlist_use_case.dart';
 import '../dialog_helper.dart';
 import '../errorprovider/error_provider.dart';
@@ -25,6 +27,7 @@ import 'controller_content_delegate.dart';
 class WishlistAndCartControllerContentDelegate extends ControllerContentDelegate {
   final AddWishlistUseCase addWishlistUseCase;
   final RemoveWishlistUseCase removeWishlistUseCase;
+  final RemoveWishlistBasedProductUseCase removeWishlistBasedProductUseCase;
   final AddToCartUseCase addToCartUseCase;
 
   WishlistAndCartDelegate? _wishlistAndCartDelegate;
@@ -33,6 +36,7 @@ class WishlistAndCartControllerContentDelegate extends ControllerContentDelegate
   WishlistAndCartControllerContentDelegate({
     required this.addWishlistUseCase,
     required this.removeWishlistUseCase,
+    required this.removeWishlistBasedProductUseCase,
     required this.addToCartUseCase
   });
 
@@ -60,10 +64,10 @@ class WishlistAndCartControllerContentDelegate extends ControllerContentDelegate
       ApiRequestManager apiRequestManager = _onGetApiRequestManager!();
       _wishlistAndCartDelegate!.onUnfocusAllWidget();
       _wishlistAndCartDelegate!.onShowRemoveFromWishlistRequestProcessLoadingCallback();
-      LoadDataResult<RemoveWishlistResponse> removeWishlistResponseLoadDataResult = await removeWishlistUseCase.execute(
-        RemoveWishlistParameter(wishlistId: "")
+      LoadDataResult<RemoveWishlistResponse> removeWishlistResponseLoadDataResult = await removeWishlistBasedProductUseCase.execute(
+        RemoveWishlistBasedProductParameter(productEntryOrProductBundleId: supportWishlist.supportWishlistContentId)
       ).future(
-        parameter: apiRequestManager.addRequestToCancellationPart('remove-to-wishlist').value
+        parameter: apiRequestManager.addRequestToCancellationPart('remove-from-wishlist').value
       );
       _wishlistAndCartDelegate!.onBack();
       if (removeWishlistResponseLoadDataResult.isSuccess) {
@@ -73,6 +77,25 @@ class WishlistAndCartControllerContentDelegate extends ControllerContentDelegate
             supportWishlist: supportWishlist
           )
         );
+      } else {
+        _wishlistAndCartDelegate!.onShowRemoveFromWishlistRequestProcessFailedCallback(removeWishlistResponseLoadDataResult.resultIfFailed);
+      }
+    }
+  }
+
+  void removeFromWishlistDirectly(Wishlist wishlist) async {
+    if (_wishlistAndCartDelegate != null && _onGetApiRequestManager != null) {
+      ApiRequestManager apiRequestManager = _onGetApiRequestManager!();
+      _wishlistAndCartDelegate!.onUnfocusAllWidget();
+      _wishlistAndCartDelegate!.onShowRemoveFromWishlistRequestProcessLoadingCallback();
+      LoadDataResult<RemoveWishlistResponse> removeWishlistResponseLoadDataResult = await removeWishlistUseCase.execute(
+        RemoveWishlistParameter(wishlistId: wishlist.id)
+      ).future(
+        parameter: apiRequestManager.addRequestToCancellationPart('remove-from-wishlist-directly').value
+      );
+      _wishlistAndCartDelegate!.onBack();
+      if (removeWishlistResponseLoadDataResult.isSuccess) {
+        _wishlistAndCartDelegate!.onRemoveFromWishlistRequestProcessSuccessCallback(wishlist);
       } else {
         _wishlistAndCartDelegate!.onShowRemoveFromWishlistRequestProcessFailedCallback(removeWishlistResponseLoadDataResult.resultIfFailed);
       }

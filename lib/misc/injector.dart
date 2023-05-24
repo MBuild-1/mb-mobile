@@ -142,6 +142,7 @@ import '../domain/usecase/register_with_google_use_case.dart';
 import '../domain/usecase/remove_additional_item_use_case.dart';
 import '../domain/usecase/remove_address_use_case.dart';
 import '../domain/usecase/remove_from_cart_use_case.dart';
+import '../domain/usecase/remove_wishlist_based_product_use_case.dart';
 import '../domain/usecase/remove_wishlist_use_case.dart';
 import '../domain/usecase/take_friend_cart_use_case.dart';
 import '../domain/usecase/update_current_selected_address_use_case.dart';
@@ -372,7 +373,8 @@ class _Injector {
       () => WishlistAndCartControllerContentDelegate(
         addWishlistUseCase: locator(),
         removeWishlistUseCase: locator(),
-        addToCartUseCase: locator()
+        addToCartUseCase: locator(),
+        removeWishlistBasedProductUseCase: locator()
       )
     );
 
@@ -420,6 +422,7 @@ class _Injector {
     locator.registerLazySingleton<GetCoffeeAndTeaOriginIndonesiaListUseCase>(() => GetCoffeeAndTeaOriginIndonesiaListUseCase(productRepository: locator()));
     locator.registerLazySingleton<AddWishlistUseCase>(() => AddWishlistUseCase(productRepository: locator()));
     locator.registerLazySingleton<RemoveWishlistUseCase>(() => RemoveWishlistUseCase(productRepository: locator()));
+    locator.registerLazySingleton<RemoveWishlistBasedProductUseCase>(() => RemoveWishlistBasedProductUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetShortVideoUseCase>(() => GetShortVideoUseCase(feedRepository: locator()));
     locator.registerLazySingleton<GetDeliveryReviewUseCase>(() => GetDeliveryReviewUseCase(feedRepository: locator()));
     locator.registerLazySingleton<GetWaitingToBeReviewedDeliveryReviewPagingUseCase>(() => GetWaitingToBeReviewedDeliveryReviewPagingUseCase(feedRepository: locator()));

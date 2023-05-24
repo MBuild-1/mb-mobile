@@ -82,4 +82,7 @@ class ProductEntry implements ProductEntryAppearanceData, SupportCart, SupportWi
 
   @override
   double get price => sellingPrice.toDouble();
+
+  @override
+  String get supportWishlistContentId => productEntryId;
 }

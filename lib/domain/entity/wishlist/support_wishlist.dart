@@ -1,1 +1,3 @@
-abstract class SupportWishlist {}
+abstract class SupportWishlist {
+  String get supportWishlistContentId;
+}

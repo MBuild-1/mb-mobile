@@ -41,6 +41,7 @@ import '../../../domain/entity/product/product_with_condition_list_parameter.dar
 import '../../../domain/entity/product/product_with_condition_paging_parameter.dart';
 import '../../../domain/entity/wishlist/add_wishlist_parameter.dart';
 import '../../../domain/entity/wishlist/add_wishlist_response.dart';
+import '../../../domain/entity/wishlist/remove_wishlist_based_product_parameter.dart';
 import '../../../domain/entity/wishlist/remove_wishlist_parameter.dart';
 import '../../../domain/entity/wishlist/remove_wishlist_response.dart';
 import '../../../domain/entity/wishlist/support_wishlist.dart';
@@ -288,6 +289,14 @@ class DefaultProductDataSource implements ProductDataSource {
   FutureProcessing<RemoveWishlistResponse> removeWishlist(RemoveWishlistParameter removeWishlistParameter) {
     return DioHttpClientProcessing((cancelToken) {
       return dio.delete("/user/wishlist/${removeWishlistParameter.wishlistId}", cancelToken: cancelToken)
+        .map(onMap: (value) => value.wrapResponse().mapFromResponseToRemoveWishlistResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<RemoveWishlistResponse> removeWishlistBasedProduct(RemoveWishlistBasedProductParameter removeWishlistBasedProductParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.delete("/user/wishlist/product/${removeWishlistBasedProductParameter.productEntryOrProductBundleId}", cancelToken: cancelToken)
         .map(onMap: (value) => value.wrapResponse().mapFromResponseToRemoveWishlistResponse());
     });
   }

@@ -30,6 +30,9 @@ class ProductBundle implements SupportCart, SupportWishlist, SupportOrderProduct
   @override
   String get orderImageUrl => imageUrl;
 
+  @override
+  String get supportWishlistContentId => id;
+
   ProductBundle({
     required this.id,
     required this.name,

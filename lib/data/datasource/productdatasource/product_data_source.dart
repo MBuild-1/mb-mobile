@@ -30,6 +30,7 @@ import '../../../domain/entity/product/product_with_condition_list_parameter.dar
 import '../../../domain/entity/product/product_with_condition_paging_parameter.dart';
 import '../../../domain/entity/wishlist/add_wishlist_parameter.dart';
 import '../../../domain/entity/wishlist/add_wishlist_response.dart';
+import '../../../domain/entity/wishlist/remove_wishlist_based_product_parameter.dart';
 import '../../../domain/entity/wishlist/remove_wishlist_parameter.dart';
 import '../../../domain/entity/wishlist/remove_wishlist_response.dart';
 import '../../../domain/entity/wishlist/wishlist.dart';
@@ -61,5 +62,6 @@ abstract class ProductDataSource {
   FutureProcessing<PagingDataResult<Wishlist>> wishlistPaging(WishlistPagingParameter wishlistPagingParameter);
   FutureProcessing<AddWishlistResponse> addWishlist(AddWishlistParameter addWishlistParameter);
   FutureProcessing<RemoveWishlistResponse> removeWishlist(RemoveWishlistParameter removeWishlistParameter);
+  FutureProcessing<RemoveWishlistResponse> removeWishlistBasedProduct(RemoveWishlistBasedProductParameter removeWishlistBasedProductParameter);
   FutureProcessing<PagingDataResult<ProductBrand>> favoriteProductBrandPaging(FavoriteProductBrandPagingParameter favoriteProductBrandPagingParameter);
 }

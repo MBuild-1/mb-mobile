@@ -42,6 +42,7 @@ import '../../domain/entity/province/province_map.dart';
 import '../../domain/entity/province/province_map_detail_parameter.dart';
 import '../../domain/entity/wishlist/add_wishlist_parameter.dart';
 import '../../domain/entity/wishlist/add_wishlist_response.dart';
+import '../../domain/entity/wishlist/remove_wishlist_based_product_parameter.dart';
 import '../../domain/entity/wishlist/remove_wishlist_parameter.dart';
 import '../../domain/entity/wishlist/remove_wishlist_response.dart';
 import '../../domain/entity/wishlist/wishlist.dart';
@@ -246,6 +247,11 @@ class DefaultProductRepository implements ProductRepository {
   @override
   FutureProcessing<LoadDataResult<RemoveWishlistResponse>> removeWishlist(RemoveWishlistParameter removeWishlistParameter) {
     return productDataSource.removeWishlist(removeWishlistParameter).mapToLoadDataResult<RemoveWishlistResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<RemoveWishlistResponse>> removeWishlistBasedProduct(RemoveWishlistBasedProductParameter removeWishlistBasedProductParameter) {
+    return productDataSource.removeWishlistBasedProduct(removeWishlistBasedProductParameter).mapToLoadDataResult<RemoveWishlistResponse>();
   }
 
   @override
