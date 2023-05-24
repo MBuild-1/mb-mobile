@@ -1,4 +1,4 @@
-import '../domain/entity/order/combined_order.dart';
+import '../domain/entity/order/order.dart';
 import '../domain/entity/order/order_based_id_parameter.dart';
 import '../domain/usecase/get_order_based_id_use_case.dart';
 import '../misc/load_data_result.dart';
@@ -12,7 +12,7 @@ class OrderDetailController extends BaseGetxController {
     this.getOrderBasedIdUseCase,
   );
 
-  Future<LoadDataResult<CombinedOrder>> getOrderBasedId(OrderBasedIdParameter orderBasedIdParameter) {
+  Future<LoadDataResult<Order>> getOrderBasedId(OrderBasedIdParameter orderBasedIdParameter) {
     return getOrderBasedIdUseCase.execute(orderBasedIdParameter).future(
       parameter: apiRequestManager.addRequestToCancellationPart("order-detail").value
     );

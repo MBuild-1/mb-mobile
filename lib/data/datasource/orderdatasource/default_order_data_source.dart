@@ -82,10 +82,10 @@ class DefaultOrderDataSource implements OrderDataSource {
   }
 
   @override
-  FutureProcessing<CombinedOrder> orderBasedId(OrderBasedIdParameter orderBasedIdParameter) {
+  FutureProcessing<Order> orderBasedId(OrderBasedIdParameter orderBasedIdParameter) {
     return DioHttpClientProcessing((cancelToken) {
       return dio.get("/user/order/${orderBasedIdParameter.orderId}", cancelToken: cancelToken)
-        .map<CombinedOrder>(onMap: (value) => value.wrapResponse().mapFromResponseToCombinedOrder());
+        .map<Order>(onMap: (value) => value.wrapResponse().mapFromResponseToOrder());
     });
   }
 }

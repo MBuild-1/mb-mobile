@@ -1,15 +1,8 @@
-import '../coupon/coupon.dart';
+import '../summary/base_summary.dart';
 
-class OrderSummary {
-  String name;
-  String type;
-  dynamic value;
-  Coupon? coupon;
-
+class OrderSummary extends BaseSummary {
   OrderSummary({
-    required this.name,
-    required this.type,
-    required this.value,
-    this.coupon
+    required super.summaryValue,
+    required super.finalSummaryValue,
   });
 }

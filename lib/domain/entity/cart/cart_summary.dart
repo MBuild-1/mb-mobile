@@ -1,11 +1,8 @@
-import '../summaryvalue/summary_value.dart';
+import '../summary/base_summary.dart';
 
-class CartSummary {
-  List<SummaryValue> cartSummaryValue;
-  List<SummaryValue> finalCartSummaryValue;
-
+class CartSummary extends BaseSummary {
   CartSummary({
-    required this.cartSummaryValue,
-    required this.finalCartSummaryValue,
+    required super.summaryValue,
+    required super.finalSummaryValue,
   });
 }

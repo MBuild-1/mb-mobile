@@ -10,5 +10,5 @@ import '../entity/order/order_paging_parameter.dart';
 abstract class OrderRepository {
   FutureProcessing<LoadDataResult<Order>> createOrder(CreateOrderParameter createOrderParameter);
   FutureProcessing<LoadDataResult<PagingDataResult<CombinedOrder>>> orderPaging(OrderPagingParameter orderPagingParameter);
-  FutureProcessing<LoadDataResult<CombinedOrder>> orderBasedId(OrderBasedIdParameter orderBasedIdParameter);
+  FutureProcessing<LoadDataResult<Order>> orderBasedId(OrderBasedIdParameter orderBasedIdParameter);
 }

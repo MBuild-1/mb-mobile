@@ -6,7 +6,7 @@ import 'package:masterbagasi/presentation/page/web_viewer_page.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../controller/order_detail_controller.dart';
-import '../../domain/entity/order/combined_order.dart';
+import '../../domain/entity/order/order.dart';
 import '../../domain/entity/order/order_based_id_parameter.dart';
 import '../../domain/usecase/get_order_based_id_use_case.dart';
 import '../../misc/constant.dart';
@@ -204,7 +204,7 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _orderDetailListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? orderDetailListItemControllerStateList) async {
-    LoadDataResult<CombinedOrder> orderDetailLoadDataResult = await widget.orderDetailController.getOrderBasedId(
+    LoadDataResult<Order> orderDetailLoadDataResult = await widget.orderDetailController.getOrderBasedId(
       OrderBasedIdParameter(orderId: widget.orderId)
     );
     return orderDetailLoadDataResult.map<PagingResult<ListItemControllerState>>((orderDetail) {

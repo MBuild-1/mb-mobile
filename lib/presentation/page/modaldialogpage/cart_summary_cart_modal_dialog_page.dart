@@ -1,21 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/number_ext.dart';
-import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../controller/modaldialogcontroller/cart_summary_cart_modal_dialog_controller.dart';
 import '../../../domain/entity/cart/cart_summary.dart';
 import '../../../domain/entity/summaryvalue/summary_value.dart';
 import '../../../domain/usecase/get_cart_summary_use_case.dart';
-import '../../../misc/controllerstate/listitemcontrollerstate/divider_list_item_controller_state.dart';
-import '../../../misc/errorprovider/error_provider.dart';
 import '../../../misc/injector.dart';
 import '../../../misc/load_data_result.dart';
 import '../../widget/horizontal_justified_title_and_description.dart';
-import '../../widget/loaddataresultimplementer/load_data_result_implementer.dart';
-import '../../widget/modified_divider.dart';
 import '../../widget/rx_consumer.dart';
+import '../../widget/summary_widget.dart';
 import 'modal_dialog_page.dart';
 
 class CartSummaryCartModalDialogPage extends ModalDialogPage<CartSummaryCartModalDialogController> {
@@ -83,35 +79,7 @@ class _StatefulCartSummaryControllerMediatorWidgetState extends State<_StatefulC
                       ),
                     ),
                     const SizedBox(height: 10),
-                    Builder(
-                      builder: (BuildContext context) {
-                        return cartSummaryWidget(cartSummary.cartSummaryValue);
-                      }
-                    ),
-                    const SizedBox(height: 10),
-                    const ModifiedDivider(),
-                    const SizedBox(height: 10),
-                    Builder(
-                      builder: (BuildContext context) {
-                        return cartSummaryWidget(
-                          cartSummary.finalCartSummaryValue,
-                          onInterceptCartSummaryWidget: (name, description) {
-                            return HorizontalJustifiedTitleAndDescription(
-                              title: name,
-                              description: description,
-                              titleWidgetInterceptor: (title, widget) => Text(
-                                title.toStringNonNull,
-                                style: const TextStyle(fontWeight: FontWeight.bold)
-                              ),
-                              descriptionWidgetInterceptor: (description, widget) => Text(
-                                description.toStringNonNull,
-                                style: const TextStyle(fontWeight: FontWeight.bold)
-                              ),
-                            );
-                          }
-                        );
-                      }
-                    ),
+                    SummaryWidget(baseSummary: cartSummary)
                   ]
                 );
               }
@@ -119,39 +87,6 @@ class _StatefulCartSummaryControllerMediatorWidgetState extends State<_StatefulC
           ]
         )
       )
-    );
-  }
-
-  Widget cartSummaryWidget(List<SummaryValue> cartSummaryValueList, {Widget Function(String, String)? onInterceptCartSummaryWidget}) {
-    List<Widget> columnWidget = [];
-    for (int i = 0; i < cartSummaryValueList.length; i++) {
-      SummaryValue cartSummaryValue = cartSummaryValueList[i];
-      if (i > 0) {
-        columnWidget.add(const SizedBox(height: 10));
-      }
-      String cartSummaryValueDescription = "";
-      String cartSummaryValueType = cartSummaryValue.type;
-      if (cartSummaryValueType == "currency") {
-        if (cartSummaryValue.value is num) {
-          cartSummaryValueDescription = (cartSummaryValue.value as num).toRupiah();
-        } else {
-          cartSummaryValueDescription = double.parse(cartSummaryValue.value as String).toRupiah();
-        }
-      } else {
-        cartSummaryValueDescription = cartSummaryValue.value;
-      }
-      columnWidget.add(
-        onInterceptCartSummaryWidget != null ? onInterceptCartSummaryWidget(
-          cartSummaryValue.name,
-          cartSummaryValueDescription
-        ) : HorizontalJustifiedTitleAndDescription(
-          title: cartSummaryValue.name,
-          description: cartSummaryValueDescription
-        )
-      );
-    }
-    return Column(
-      children: columnWidget
     );
   }
 }

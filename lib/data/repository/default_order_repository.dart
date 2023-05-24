@@ -27,7 +27,7 @@ class DefaultOrderRepository implements OrderRepository {
   }
 
   @override
-  FutureProcessing<LoadDataResult<CombinedOrder>> orderBasedId(OrderBasedIdParameter orderBasedIdParameter) {
-    return orderDataSource.orderBasedId(orderBasedIdParameter).mapToLoadDataResult<CombinedOrder>();
+  FutureProcessing<LoadDataResult<Order>> orderBasedId(OrderBasedIdParameter orderBasedIdParameter) {
+    return orderDataSource.orderBasedId(orderBasedIdParameter).mapToLoadDataResult<Order>();
   }
 }

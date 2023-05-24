@@ -526,7 +526,7 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
                                       if (cartSummaryLoadDataResult.isLoading) {
                                         text = "Is Loading";
                                       } else if (cartSummaryLoadDataResult.isSuccess) {
-                                        SummaryValue finalCartSummaryValue = cartSummaryLoadDataResult.resultIfSuccess!.finalCartSummaryValue.first;
+                                        SummaryValue finalCartSummaryValue = cartSummaryLoadDataResult.resultIfSuccess!.finalSummaryValue.first;
                                         if (finalCartSummaryValue.type == "currency") {
                                           if (finalCartSummaryValue.value is num) {
                                             text = (finalCartSummaryValue.value as num).toRupiah();

@@ -10,5 +10,5 @@ import '../../../misc/processing/future_processing.dart';
 abstract class OrderDataSource {
   FutureProcessing<Order> createOrder(CreateOrderParameter createOrderParameter);
   FutureProcessing<PagingDataResult<CombinedOrder>> orderPaging(OrderPagingParameter orderPagingParameter);
-  FutureProcessing<CombinedOrder> orderBasedId(OrderBasedIdParameter orderBasedIdParameter);
+  FutureProcessing<Order> orderBasedId(OrderBasedIdParameter orderBasedIdParameter);
 }

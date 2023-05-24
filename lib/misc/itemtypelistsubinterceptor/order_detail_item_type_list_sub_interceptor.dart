@@ -1,16 +1,20 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../domain/entity/address/address.dart';
 import '../../domain/entity/order/combined_order.dart';
+import '../../domain/entity/order/order.dart';
 import '../../domain/entity/order/order_product_detail.dart';
 import '../../presentation/widget/address/horizontal_address_item.dart';
 import '../../presentation/widget/address/vertical_address_item.dart';
 import '../../presentation/widget/colorful_chip.dart';
 import '../../presentation/widget/order/order_product_detail_item.dart';
+import '../../presentation/widget/summary_widget.dart';
 import '../constant.dart';
+import '../controllerstate/listitemcontrollerstate/builder_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/cart_container_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/compound_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
@@ -21,6 +25,7 @@ import '../controllerstate/listitemcontrollerstate/title_and_description_list_it
 import '../controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/widget_substitution_list_item_controller_state.dart';
 import '../itemtypelistinterceptor/itemtypelistinterceptorchecker/list_item_controller_state_item_type_list_interceptor_checker.dart';
+import '../multi_language_string.dart';
 import '../typedef.dart';
 import 'item_type_list_sub_interceptor.dart';
 
@@ -63,7 +68,7 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
     List<ListItemControllerState> oldItemTypeList,
     List<ListItemControllerState> newListItemControllerState
   ) {
-    CombinedOrder order = orderDetailContainerListItemControllerState.order;
+    Order order = orderDetailContainerListItemControllerState.order;
     newListItemControllerState.add(
       VirtualSpacingListItemControllerState(height: padding())
     );
@@ -71,9 +76,9 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
       title: "Transaction Status".tr,
       description: "test",
       titleAndDescriptionItemInterceptor: (padding, title, titleWidget, description, descriptionWidget, titleAndDescriptionWidget, titleAndDescriptionWidgetList) {
-        titleAndDescriptionWidgetList[titleAndDescriptionWidgetList.length - 2] = SizedBox(height: 5);
+        titleAndDescriptionWidgetList[titleAndDescriptionWidgetList.length - 2] = const SizedBox(height: 5);
         titleAndDescriptionWidgetList[titleAndDescriptionWidgetList.length - 1] = ColorfulChip(
-          text: order.status,
+          text: order.combinedOrder.status,
           color: Colors.grey.shade300
         );
         return titleAndDescriptionWidget;
@@ -86,7 +91,7 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
     newListItemControllerState.add(VirtualSpacingListItemControllerState(height: 20));
     ListItemControllerState orderCodeListItemControllerState = TitleAndDescriptionListItemControllerState(
       title: "Order Code".tr,
-      description: order.orderCode,
+      description: order.combinedOrder.orderCode,
       padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
       verticalSpace: 5
     );
@@ -96,9 +101,9 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
     newListItemControllerState.add(VirtualSpacingListItemControllerState(height: 20));
     ListItemControllerState paymentTypeListItemControllerState = TitleAndDescriptionListItemControllerState(
       title: "Address".tr,
-      description: order.orderProduct.userAddress?.address,
+      description: order.combinedOrder.orderProduct.userAddress?.address,
       titleAndDescriptionItemInterceptor: (padding, title, titleWidget, description, descriptionWidget, titleAndDescriptionWidget, titleAndDescriptionWidgetList) {
-        Address? userAddress = order.orderProduct.userAddress;
+        Address? userAddress = order.combinedOrder.orderProduct.userAddress;
         titleAndDescriptionWidgetList[titleAndDescriptionWidgetList.length - 2] = const SizedBox(height: 5);
         titleAndDescriptionWidgetList[titleAndDescriptionWidgetList.length - 1] = userAddress != null ? SizedBox(
           width: double.infinity,
@@ -126,7 +131,7 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
     List<ListItemControllerState> oldItemTypeList,
     List<ListItemControllerState> newListItemControllerState
   ) {
-    CombinedOrder order = orderDetailContainerListItemControllerState.order;
+    CombinedOrder order = orderDetailContainerListItemControllerState.order.combinedOrder;
     List<OrderProductDetail> orderProductDetailList = order.orderProduct.orderProductDetailList;
     newListItemControllerState.add(
       VirtualSpacingListItemControllerState(height: padding())
@@ -141,21 +146,36 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
     newListItemControllerState.add(
       VirtualSpacingListItemControllerState(height: padding())
     );
+
     ListItemControllerState orderListItemControllerState = PaddingContainerListItemControllerState(
       padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-      paddingChildListItemControllerState: CompoundListItemControllerState(
-        listItemControllerState: orderProductDetailList.mapIndexed<ListItemControllerState>(
-          (index, orderProductDetail) => CompoundListItemControllerState(
-            listItemControllerState: [
-              if (index > 0) VirtualSpacingListItemControllerState(height: 10),
-              WidgetSubstitutionListItemControllerState(
-                widgetSubstitution: (context, index) => OrderProductDetailItem(
-                  orderProductDetail: orderProductDetail
-                )
+      paddingChildListItemControllerState: BuilderListItemControllerState(
+        buildListItemControllerState: () {
+          if (orderProductDetailList.isEmpty) {
+            return WidgetSubstitutionListItemControllerState(
+              widgetSubstitution: (context, index) => Text(
+                MultiLanguageString({
+                  Constant.textEnUsLanguageKey: "No product.",
+                  Constant.textInIdLanguageKey: "Tidak ada produk.",
+                }).toEmptyStringNonNull
               )
-            ]
-          )
-        ).toList()
+            );
+          }
+          return CompoundListItemControllerState(
+            listItemControllerState: orderProductDetailList.mapIndexed<ListItemControllerState>(
+              (index, orderProductDetail) => CompoundListItemControllerState(
+                listItemControllerState: [
+                  if (index > 0) VirtualSpacingListItemControllerState(height: 10),
+                  WidgetSubstitutionListItemControllerState(
+                    widgetSubstitution: (context, index) => OrderProductDetailItem(
+                      orderProductDetail: orderProductDetail
+                    )
+                  )
+                ]
+              )
+            ).toList()
+          );
+        }
       )
     );
     listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
@@ -172,8 +192,7 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
     List<ListItemControllerState> oldItemTypeList,
     List<ListItemControllerState> newListItemControllerState
   ) {
-    CombinedOrder order = orderDetailContainerListItemControllerState.order;
-    List<OrderProductDetail> orderProductDetailList = order.orderProduct.orderProductDetailList;
+    Order order = orderDetailContainerListItemControllerState.order;
     newListItemControllerState.add(
       VirtualSpacingListItemControllerState(height: padding())
     );
@@ -187,9 +206,11 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
     newListItemControllerState.add(
       VirtualSpacingListItemControllerState(height: padding())
     );
-    ListItemControllerState orderSummaryDetailTypeListItemControllerState = TitleAndDescriptionListItemControllerState(
-      description: "No order summary".tr,
-      padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem)
+    ListItemControllerState orderSummaryDetailTypeListItemControllerState = PaddingContainerListItemControllerState(
+      padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+      paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
+        widgetSubstitution: (BuildContext context, int index) => SummaryWidget(baseSummary: order.orderSummary)
+      )
     );
     listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
       i, ListItemControllerStateWrapper(orderSummaryDetailTypeListItemControllerState), oldItemTypeList, newListItemControllerState

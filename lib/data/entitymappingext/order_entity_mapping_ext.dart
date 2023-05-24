@@ -2,6 +2,7 @@ import 'package:masterbagasi/data/entitymappingext/additional_item_entity_mappin
 import 'package:masterbagasi/data/entitymappingext/address_entity_mapping_ext.dart';
 import 'package:masterbagasi/data/entitymappingext/coupon_entity_mapping_ext.dart';
 import 'package:masterbagasi/data/entitymappingext/product_entity_mapping_ext.dart';
+import 'package:masterbagasi/data/entitymappingext/summary_value_entity_mapping_ext.dart';
 import 'package:masterbagasi/data/entitymappingext/user_entity_mapping_ext.dart';
 import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
@@ -34,17 +35,15 @@ extension ProductEntityMappingExt on ResponseWrapper {
 extension OrderDetailEntityMappingExt on ResponseWrapper {
   Order mapFromResponseToOrder() {
     return Order(
-      orderSummary: ResponseWrapper(response["summary"]).mapFromResponseToOrderSummary(),
+      orderSummary: ResponseWrapper(response["detail"]).mapFromResponseToOrderSummary(),
       combinedOrder: ResponseWrapper(response["combined_order"]).mapFromResponseToCombinedOrder(),
     );
   }
 
   OrderSummary mapFromResponseToOrderSummary() {
     return OrderSummary(
-      name: response["name"],
-      type: response["type"],
-      value: response["value"],
-      coupon: response["coupon"] != null ? ResponseWrapper(response["coupon"]).mapFromResponseToCoupon() : null
+      summaryValue: ResponseWrapper(response["summary"]).mapFromResponseToSummaryValueList(),
+      finalSummaryValue: ResponseWrapper(response["final_summary"]).mapFromResponseToSummaryValueList(),
     );
   }
 
