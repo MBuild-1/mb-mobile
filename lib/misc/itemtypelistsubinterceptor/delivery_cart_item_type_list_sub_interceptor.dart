@@ -516,7 +516,8 @@ class DeliveryCartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
         }
       }
       if (deliveryCartContainerStateStorageListItemControllerState is DefaultDeliveryCartContainerStateStorageListItemControllerState) {
-        if (!deliveryCartContainerStateStorageListItemControllerState._enableSendAdditionalItems) {
+        if (!deliveryCartContainerStateStorageListItemControllerState._hasLoadAdditionalItem) {
+          deliveryCartContainerStateStorageListItemControllerState._hasLoadAdditionalItem = true;
           WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
             onLoadAdditionalItem();
           });
@@ -622,6 +623,7 @@ class DeliveryCartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
 class DefaultDeliveryCartContainerStateStorageListItemControllerState extends DeliveryCartContainerStateStorageListItemControllerState {
   int _lastSelectedCount = -1;
   int _lastCartCount = -1;
+  bool _hasLoadAdditionalItem = false;
   bool _enableSendAdditionalItems = false;
   bool _hasLoadingShippingAddress = false;
   LoadDataResult<List<AdditionalItem>> _additionalItemLoadDataResult = NoLoadDataResult<List<AdditionalItem>>();
