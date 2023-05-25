@@ -398,6 +398,7 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
   @override
   void dispose() {
     MainRouteObserver.onRefreshAddress = null;
+    MainRouteObserver.onRefreshCartInMainMenu = null;
     super.dispose();
   }
 }

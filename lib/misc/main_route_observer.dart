@@ -15,6 +15,7 @@ class _MainRouteObserver extends RouteObserver {
   Map<String, void Function()?> get controllerMediatorMap => _controllerMediatorMap;
   void Function(int)? onChangeMainMenuTap;
   void Function()? onRefreshAddress;
+  void Function()? onRefreshCartInMainMenu;
   RefreshDeliveryReview? onRefreshDeliveryReview;
 
   void applyNewRouteMapFromRouteKeyMap(Map<String, int> newRouteMap) {

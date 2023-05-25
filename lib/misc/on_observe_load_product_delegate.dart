@@ -16,12 +16,15 @@ import 'carouselbackground/carousel_background.dart';
 import 'constant.dart';
 import 'controllerstate/listitemcontrollerstate/carousel_list_item_controller_state.dart';
 import 'controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
+import 'entityandlistitemcontrollerstatemediator/horizontal_component_entity_parameterized_entity_and_list_item_controller_state_mediator.dart';
 import 'entityandlistitemcontrollerstatemediator/horizontal_entity_and_list_item_controller_state_mediator.dart';
 import 'injector.dart';
 import 'load_data_result.dart';
 import 'multi_language_string.dart';
 import 'parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/carousel_background_parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
 import 'parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/cart_delegate_parameterized_entity_and_list_item_controllere_state_mediator_parameter.dart';
+import 'parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/cart_refresh_delegate_parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
+import 'parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/compound_parameterized_entity_and_list_item_controller_state_mediator.dart';
 import 'parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
 import 'parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/wishlist_delegate_parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
 import 'shimmercarousellistitemgenerator/factory/cart_shimmer_carousel_list_item_generator_factory.dart';
@@ -280,6 +283,25 @@ class OnObserveLoadProductDelegateFactory {
           titleInterceptor = onInjectCarouselParameterizedEntity!(onObserveSuccessLoadCartCarouselParameter.data).titleInterceptor;
           carouselBackground = onInjectCarouselParameterizedEntity!(onObserveSuccessLoadCartCarouselParameter.data).carouselBackground;
         }
+        var parameter = onInjectLoadCartCarouselParameterizedEntity != null ? onInjectLoadCartCarouselParameterizedEntity!() : null;
+        List<ParameterizedEntityAndListItemControllerStateMediatorParameter> parameterList = [];
+        if (parameter is CompoundParameterizedEntityAndListItemControllerStateMediatorParameter) {
+          parameterList = parameter.parameterizedEntityAndListItemControllerStateMediatorParameterList;
+        } else if (parameter != null) {
+          parameterList.add(parameter);
+        }
+        CartRefreshDelegateParameterizedEntityAndListItemControllerStateMediatorParameter? cartRefreshDelegate;
+        for (var iteratedParameter in parameterList) {
+          if (iteratedParameter is CartRefreshDelegateParameterizedEntityAndListItemControllerStateMediatorParameter) {
+            cartRefreshDelegate = iteratedParameter;
+          }
+        }
+        if (cartRefreshDelegate != null) {
+          RepeatableDynamicItemCarouselAdditionalParameter? repeatableDynamicItemCarouselAdditionalParameter = onObserveSuccessLoadCartCarouselParameter.repeatableDynamicItemCarouselAdditionalParameter;
+          if (repeatableDynamicItemCarouselAdditionalParameter != null) {
+            cartRefreshDelegate.onGetRepeatableDynamicItemCarouselAdditionalParameter(repeatableDynamicItemCarouselAdditionalParameter);
+          }
+        }
         return CarouselListItemControllerState(
           title: onObserveSuccessLoadCartCarouselParameter.title.toEmptyStringNonNull,
           description: onObserveSuccessLoadCartCarouselParameter.description.toEmptyStringNonNull,
@@ -502,12 +524,14 @@ class OnObserveSuccessLoadCartCarouselParameter {
   MultiLanguageString? description;
   List<Cart> cartList;
   dynamic data;
+  RepeatableDynamicItemCarouselAdditionalParameter? repeatableDynamicItemCarouselAdditionalParameter;
 
   OnObserveSuccessLoadCartCarouselParameter({
     required this.title,
     required this.description,
     required this.cartList,
-    this.data
+    this.data,
+    this.repeatableDynamicItemCarouselAdditionalParameter
   });
 }
 

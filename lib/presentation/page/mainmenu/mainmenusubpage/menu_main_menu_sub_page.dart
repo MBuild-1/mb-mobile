@@ -282,7 +282,14 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
 
   @override
   Widget build(BuildContext context) {
-    OnObserveLoadProductDelegateFactory onObserveLoadProductDelegateFactory = Injector.locator<OnObserveLoadProductDelegateFactory>();
+    OnObserveLoadProductDelegateFactory onObserveLoadProductDelegateFactory = Injector.locator<OnObserveLoadProductDelegateFactory>()
+      ..onInjectLoadCartCarouselParameterizedEntity = (
+        () => CartRefreshDelegateParameterizedEntityAndListItemControllerStateMediatorParameter(
+          onGetRepeatableDynamicItemCarouselAdditionalParameter: (repeatableDynamicItemCarouselAdditionalParameter) {
+            MainRouteObserver.onRefreshCartInMainMenu = repeatableDynamicItemCarouselAdditionalParameter.onRepeatLoading;
+          }
+        )
+      );
     widget.menuMainMenuSubController.setMenuMainMenuSubDelegate(
       MenuMainMenuSubDelegate(
         onObserveLoadProductDelegate: onObserveLoadProductDelegateFactory.generateOnObserveLoadProductDelegate(),

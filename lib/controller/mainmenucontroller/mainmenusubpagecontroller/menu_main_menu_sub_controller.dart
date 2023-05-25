@@ -17,6 +17,7 @@ import '../../../domain/usecase/get_user_use_case.dart';
 import '../../../domain/usecase/logout_use_case.dart';
 import '../../../misc/constant.dart';
 import '../../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
+import '../../../misc/entityandlistitemcontrollerstatemediator/horizontal_component_entity_parameterized_entity_and_list_item_controller_state_mediator.dart';
 import '../../../misc/error/message_error.dart';
 import '../../../misc/errorprovider/error_provider.dart';
 import '../../../misc/getextended/get_extended.dart';
@@ -53,6 +54,7 @@ class MenuMainMenuSubController extends BaseGetxController {
   }
 
   IDynamicItemCarouselComponentEntity getMyCart() {
+    RepeatableDynamicItemCarouselAdditionalParameter repeatableDynamicItemCarouselAdditionalParameter = RepeatableDynamicItemCarouselAdditionalParameter();
     return DynamicItemCarouselComponentEntity(
       title: MultiLanguageString({
         Constant.textEnUsLanguageKey: "My Cart",
@@ -83,12 +85,14 @@ class MenuMainMenuSubController extends BaseGetxController {
             OnObserveSuccessLoadCartCarouselParameter(
               title: title,
               description: description,
-              cartList: cartList
+              cartList: cartList,
+              repeatableDynamicItemCarouselAdditionalParameter: repeatableDynamicItemCarouselAdditionalParameter
             )
           );
         }
         throw MessageError(title: "My cart delegate must be initialized");
       },
+      dynamicItemCarouselAdditionalParameter: repeatableDynamicItemCarouselAdditionalParameter
     );
   }
 
