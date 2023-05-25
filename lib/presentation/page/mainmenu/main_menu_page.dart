@@ -29,6 +29,7 @@ import '../address_page.dart';
 import '../cart_page.dart';
 import '../deliveryreview/delivery_review_page.dart';
 import '../favorite_product_brand_page.dart';
+import '../inbox_page.dart';
 import '../login_page.dart';
 import '../getx_page.dart';
 import '../order_page.dart';
@@ -144,7 +145,7 @@ class MainMenuPage extends RestorableGetxPage<_MainMenuPageRestoration> {
   }
 }
 
-class _MainMenuPageRestoration extends MixableGetxPageRestoration with MainMenuPageRestorationMixin, LoginPageRestorationMixin, ProductEntryPageRestorationMixin, ProductDetailPageRestorationMixin, ProductBrandDetailPageRestorationMixin, ProductCategoryDetailPageRestorationMixin, ProductBundlePageRestorationMixin, ProductBundleDetailPageRestorationMixin, CartPageRestorationMixin, ProductBrandPageRestorationMixin, WebViewerPageRestorationMixin, OrderPageRestorationMixin, DeliveryReviewPageRestorationMixin, FavoriteProductBrandPageRestorationMixin, ProductDiscussionPageRestorationMixin, MainMenuPageRestorationMixin, AddressPageRestorationMixin {
+class _MainMenuPageRestoration extends MixableGetxPageRestoration with MainMenuPageRestorationMixin, LoginPageRestorationMixin, ProductEntryPageRestorationMixin, ProductDetailPageRestorationMixin, ProductBrandDetailPageRestorationMixin, ProductCategoryDetailPageRestorationMixin, ProductBundlePageRestorationMixin, ProductBundleDetailPageRestorationMixin, CartPageRestorationMixin, ProductBrandPageRestorationMixin, WebViewerPageRestorationMixin, OrderPageRestorationMixin, DeliveryReviewPageRestorationMixin, FavoriteProductBrandPageRestorationMixin, ProductDiscussionPageRestorationMixin, MainMenuPageRestorationMixin, AddressPageRestorationMixin, InboxPageRestorationMixin {
   final RouteCompletionCallback<bool?>? _onCompleteAddressPage;
 
   _MainMenuPageRestoration({
@@ -399,6 +400,7 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
   void dispose() {
     MainRouteObserver.onRefreshAddress = null;
     MainRouteObserver.onRefreshCartInMainMenu = null;
+    MainRouteObserver.onRefreshWishlistInMainMenu = null;
     super.dispose();
   }
 }

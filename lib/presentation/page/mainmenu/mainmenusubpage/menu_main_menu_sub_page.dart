@@ -32,6 +32,7 @@ import '../../../../misc/paging/modified_paging_controller.dart';
 import '../../../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../../../misc/paging/pagingresult/paging_result.dart';
+import '../../../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/cart_refresh_delegate_parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../../../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/horizontal_dynamic_item_carousel_parametered_component_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../../../../misc/string_util.dart';
 import '../../../../misc/widget_helper.dart';
@@ -143,7 +144,7 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
           ProfileMenuListItemControllerState(
             onTap: (context) => PageRestorationHelper.toDeliveryReviewPage(context),
             icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorDeliveryShipping, width: 20.0),
-            title: 'Delivery Shipping'.tr,
+            title: 'Delivery Review'.tr,
           ),
           ProfileMenuListItemControllerState(
             onTap: (context) => PageRestorationHelper.toFavoriteProductBrandPage(context),
@@ -156,7 +157,7 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
             title: 'Product Discussion'.tr,
           ),
           ProfileMenuListItemControllerState(
-            onTap: (context) {},
+            onTap: (context) => PageRestorationHelper.toInboxPage(context),
             icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorInbox2, width: 20.0),
             title: 'Inbox'.tr,
           ),

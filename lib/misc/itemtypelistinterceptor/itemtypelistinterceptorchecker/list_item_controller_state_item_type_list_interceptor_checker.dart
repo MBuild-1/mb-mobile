@@ -14,6 +14,7 @@ import '../../itemtypelistsubinterceptor/delivery_cart_item_type_list_sub_interc
 import '../../itemtypelistsubinterceptor/delivery_review_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/dynamic_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/expandable_description_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/faq_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/favorite_product_brand_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/order_detail_item_type_list_sub_interceptor.dart';
@@ -216,6 +217,11 @@ class ListItemControllerStateItemTypeInterceptorChecker extends ItemTypeListInte
       listItemControllerStateItemTypeInterceptorChecker: this
     ),
     WishlistItemTypeListSubInterceptor(
+      padding: padding,
+      itemSpacing: itemSpacing,
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
+    FaqItemTypeListSubInterceptor(
       padding: padding,
       itemSpacing: itemSpacing,
       listItemControllerStateItemTypeInterceptorChecker: this

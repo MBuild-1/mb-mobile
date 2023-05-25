@@ -89,7 +89,6 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Trip Video": "Video Jalan - Jalan",
       "Transaction List": "Daftar Transaksi",
       "Wishlist": "Wishlist",
-      "Delivery Shipping": "Ulasan Pengiriman",
       "Favorite Brand": "Brand Favorit",
       "Product Discussion": "Diskusi Produk",
       "Inbox": "Inbox",
@@ -218,6 +217,10 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Order List": "Daftar Pemesanan",
       "Order Summary": "Ringkasan Pemesanan",
       "No order summary": "Tidak ada ringkasan belanja",
+      "Your private conversations": "Percakapan pribadi anda",
+      "Ask questions about the product": "Tanya jawab seputar produk",
+      "Please rate the shipping review": "Berikan penilaian ulasan pengiriman",
+      "Monitor the status of assistance from Master Bagasi": "Pantau status bantuan dari Master Bagasi"
     }
   };
 

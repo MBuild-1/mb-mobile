@@ -18,6 +18,8 @@ import '../data/datasource/cartdatasource/cart_data_source.dart';
 import '../data/datasource/cartdatasource/default_cart_data_source.dart';
 import '../data/datasource/coupondatasource/coupon_data_source.dart';
 import '../data/datasource/coupondatasource/default_coupon_data_source.dart';
+import '../data/datasource/faqdatasource/default_faq_data_source.dart';
+import '../data/datasource/faqdatasource/faq_data_source.dart';
 import '../data/datasource/feeddatasource/default_feed_data_source.dart';
 import '../data/datasource/feeddatasource/feed_data_source.dart';
 import '../data/datasource/mapdatasource/default_map_data_source.dart';
@@ -35,6 +37,7 @@ import '../data/repository/default_banner_repository.dart';
 import '../data/repository/default_cargo_repository.dart';
 import '../data/repository/default_cart_repository.dart';
 import '../data/repository/default_coupon_repository.dart';
+import '../data/repository/default_faq_repository.dart';
 import '../data/repository/default_feed_repository.dart';
 import '../data/repository/default_map_repository.dart';
 import '../data/repository/default_order_repository.dart';
@@ -63,6 +66,7 @@ import '../domain/repository/banner_repository.dart';
 import '../domain/repository/cargo_repository.dart';
 import '../domain/repository/cart_repository.dart';
 import '../domain/repository/coupon_repository.dart';
+import '../domain/repository/faq_repository.dart';
 import '../domain/repository/feed_repository.dart';
 import '../domain/repository/map_repository.dart';
 import '../domain/repository/order_repository.dart';
@@ -93,6 +97,7 @@ import '../domain/usecase/get_coupon_list_use_case.dart';
 import '../domain/usecase/get_coupon_paging_use_case.dart';
 import '../domain/usecase/get_current_selected_address_use_case.dart';
 import '../domain/usecase/get_delivery_review_use_case.dart';
+import '../domain/usecase/get_faq_list_use_case.dart';
 import '../domain/usecase/get_favorite_product_brand_use_case.dart';
 import '../domain/usecase/get_handycrafts_contents_banner_use_case.dart';
 import '../domain/usecase/get_history_delivery_review_paging_use_case.dart';
@@ -464,6 +469,7 @@ class _Injector {
     locator.registerLazySingleton<CheckRatesForVariousCountriesUseCase>(() => CheckRatesForVariousCountriesUseCase(cargoRepository: locator()));
     locator.registerLazySingleton<GetCountryListUseCase>(() => GetCountryListUseCase(addressRepository: locator()));
     locator.registerLazySingleton<GetCountryPagingUseCase>(() => GetCountryPagingUseCase(addressRepository: locator()));
+    locator.registerLazySingleton<GetFaqListUseCase>(() => GetFaqListUseCase(faqRepository: locator()));
 
     // Repository
     locator.registerLazySingleton<UserRepository>(() => DefaultUserRepository(userDataSource: locator()));
@@ -486,6 +492,7 @@ class _Injector {
     locator.registerLazySingleton<MapRepository>(() => DefaultMapRepository(mapDataSource: locator()));
     locator.registerLazySingleton<OrderRepository>(() => DefaultOrderRepository(orderDataSource: locator()));
     locator.registerLazySingleton<CargoRepository>(() => DefaultCargoRepository(cargoDataSource: locator()));
+    locator.registerLazySingleton<FaqRepository>(() => DefaultFaqRepository(faqDataSource: locator()));
 
     // Data Sources
     locator.registerLazySingleton<UserDataSource>(() => DefaultUserDataSource(dio: locator()));
@@ -511,6 +518,7 @@ class _Injector {
     locator.registerLazySingleton<MapDataSource>(() => DefaultMapDataSource(dio: locator()));
     locator.registerLazySingleton<OrderDataSource>(() => DefaultOrderDataSource(dio: locator()));
     locator.registerLazySingleton<CargoDataSource>(() => DefaultCargoDataSource(dio: locator()));
+    locator.registerLazySingleton<FaqDataSource>(() => DefaultFaqDataSource(dio: locator()));
 
     // Dio
     locator.registerLazySingleton<Dio>(() => DioHttpClient.of());

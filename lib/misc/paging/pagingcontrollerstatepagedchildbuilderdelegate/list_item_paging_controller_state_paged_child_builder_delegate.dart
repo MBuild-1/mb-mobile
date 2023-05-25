@@ -33,6 +33,8 @@ import '../../../presentation/widget/deliveryreview/deliveryreviewdetail/horizon
 import '../../../presentation/widget/deliveryreview/deliveryreviewdetail/vertical_delivery_review_detail_item.dart';
 import '../../../presentation/widget/deliveryreview/horizontal_delivery_review_item.dart';
 import '../../../presentation/widget/deliveryreview/vertical_delivery_review_item.dart';
+import '../../../presentation/widget/faq/faq_detail_item.dart';
+import '../../../presentation/widget/faq/faq_item.dart';
 import '../../../presentation/widget/host_cart_indicator.dart';
 import '../../../presentation/widget/icon_title_and_description_list_item.dart';
 import '../../../presentation/widget/menu_profile_header.dart';
@@ -117,6 +119,8 @@ import '../../controllerstate/listitemcontrollerstate/divider_list_item_controll
 import '../../controllerstate/listitemcontrollerstate/dynamic_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/empty_container_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/failed_prompt_indicator_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/faqlistitemcontrollerstate/faq_detail_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/faqlistitemcontrollerstate/faq_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/host_cart_indicator_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/icon_title_and_description_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
@@ -988,6 +992,16 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
       } else {
         return Container();
       }
+    } else if (item is FaqListItemControllerState) {
+      return FaqItem(
+        faq: item.faq,
+        onTap: item.onTap,
+        isExpand: item.isExpanded
+      );
+    } else if (item is FaqDetailListItemControllerState) {
+      return FaqDetailItem(
+        faq: item.faq
+      );
     } else {
       return Container();
     }

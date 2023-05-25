@@ -193,7 +193,7 @@ class _StatefulCheckRatesForVariousCountriesControllerMediatorWidgetState extend
                     const SizedBox(height: 20),
                     SizedOutlineGradientButton(
                       onPressed: () {},
-                      text: "Delivery Shipping".tr,
+                      text: "Delivery Review".tr,
                       outlineGradientButtonType: OutlineGradientButtonType.solid,
                       outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
                       customPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 9),

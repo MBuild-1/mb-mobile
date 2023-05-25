@@ -4,12 +4,15 @@ import 'package:sizer/sizer.dart';
 
 import 'icon_title_and_description_list_item.dart';
 import 'modified_svg_picture.dart';
+import 'titleanddescriptionitem/title_and_description_item.dart';
 
 class ProfileMenuItem extends StatelessWidget {
   final VoidCallback? onTap;
   final WidgetBuilder? icon;
   final String title;
+  final TitleInterceptor? titleInterceptor;
   final String? description;
+  final DescriptionInterceptor? descriptionInterceptor;
   final Color? color;
   final EdgeInsetsGeometry? padding;
 
@@ -18,7 +21,9 @@ class ProfileMenuItem extends StatelessWidget {
     this.onTap,
     this.icon,
     required this.title,
+    this.titleInterceptor,
     this.description,
+    this.descriptionInterceptor,
     this.color,
     this.padding
   }) : super(key: key);
@@ -41,13 +46,13 @@ class ProfileMenuItem extends StatelessWidget {
           child: IconTitleAndDescriptionListItem(
             title: title,
             description: description,
-            titleInterceptor: (title, titleTextStyle) {
+            titleInterceptor: titleInterceptor ?? (title, titleTextStyle) {
               return Text(
                 title,
                 style: const TextStyle(fontWeight: FontWeight.bold)
               );
             },
-            descriptionInterceptor: (description, descriptionTextStyle) {
+            descriptionInterceptor: descriptionInterceptor ?? (description, descriptionTextStyle) {
               return Text(
                 description,
                 style: const TextStyle(color: Colors.grey)

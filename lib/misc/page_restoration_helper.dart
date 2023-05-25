@@ -12,6 +12,7 @@ import '../presentation/page/delivery_page.dart';
 import '../presentation/page/deliveryreview/delivery_review_page.dart';
 import '../presentation/page/favorite_product_brand_page.dart';
 import '../presentation/page/getx_page.dart';
+import '../presentation/page/inbox_page.dart';
 import '../presentation/page/login_page.dart';
 import '../presentation/page/mainmenu/main_menu_page.dart';
 import '../presentation/page/modify_address_page.dart';
@@ -299,6 +300,17 @@ class _PageRestorationHelperImpl {
           restoration.modifyAddressPageRestorableRouteFuture.present(
             modifyAddressPageParameter.toEncodeBase64String()
           );
+        },
+        context: context
+      );
+    });
+  }
+
+  void toInboxPage(BuildContext context) {
+    LoginHelper.checkingLogin(context, () {
+      PageRestorationHelper.findPageRestorationMixin<InboxPageRestorationMixin>(
+        onGetxPageRestorationFound: (restoration) {
+          restoration.inboxPageRestorableRouteFuture.present();
         },
         context: context
       );

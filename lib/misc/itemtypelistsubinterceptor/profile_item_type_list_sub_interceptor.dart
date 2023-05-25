@@ -39,7 +39,9 @@ class ProfileItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListI
             onTap: oldItemType.onTap != null ? () => oldItemType.onTap!(context) : null,
             icon: oldItemType.icon,
             title: oldItemType.title,
+            titleInterceptor: oldItemType.titleInterceptor,
             description: oldItemType.description,
+            descriptionInterceptor: oldItemType.descriptionInterceptor,
             color: oldItemType.color
           )
         )
