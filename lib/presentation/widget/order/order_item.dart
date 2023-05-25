@@ -10,6 +10,7 @@ import '../../../misc/constant.dart';
 import '../../../misc/date_util.dart';
 import '../../../misc/multi_language_string.dart';
 import '../../../misc/page_restoration_helper.dart';
+import '../../../misc/string_util.dart';
 import '../button/custombutton/sized_outline_gradient_button.dart';
 import '../colorful_chip.dart';
 import '../modified_divider.dart';
@@ -90,8 +91,13 @@ abstract class OrderItem extends StatelessWidget {
                       ),
                     ),
                     SizedOutlineGradientButton(
-                      onPressed: () {},
-                      text: "Buy Again".tr,
+                      onPressed: () {
+                        Map<String, dynamic> webViewerParameter = <String, dynamic>{
+                          Constant.textEncodedUrlKey: StringUtil.encodeBase64String("https://app.midtrans.com/snap/v2/vtweb/${order.orderProduct.orderDetail.snapToken}")
+                        };
+                        PageRestorationHelper.toWebViewerPage(context, webViewerParameter);
+                      },
+                      text: "Pay".tr,
                       customPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
                       outlineGradientButtonType: OutlineGradientButtonType.solid,
                       outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
