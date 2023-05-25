@@ -183,6 +183,9 @@ class WishlistAndCartDelegateFactory {
       onShowAddToWishlistRequestProcessLoadingCallback: onShowAddToWishlistRequestProcessLoadingCallback ?? () async => DialogHelper.showLoadingDialog(onGetBuildContext()),
       onAddToWishlistRequestProcessSuccessCallback: onAddToWishlistRequestProcessSuccessCallback ?? () async {
         ToastHelper.showToast("${"Success add to wishlist".tr}.");
+        if (MainRouteObserver.onRefreshWishlistInMainMenu != null) {
+          MainRouteObserver.onRefreshWishlistInMainMenu!();
+        }
       },
       onShowAddToWishlistRequestProcessFailedCallback: onShowAddToWishlistRequestProcessFailedCallback ?? (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
         context: onGetBuildContext(),

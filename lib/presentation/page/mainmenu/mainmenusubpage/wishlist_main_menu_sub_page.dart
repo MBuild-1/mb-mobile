@@ -87,6 +87,7 @@ class _StatefulWishlistMainMenuSubControllerMediatorWidgetState extends State<_S
     );
     _wishlistMainMenuSubListItemPagingControllerState.isPagingControllerExist = true;
     MainRouteObserver.controllerMediatorMap[Constant.subPageKeyWishlistMainMenu] = refreshWishlistMainMenu;
+    MainRouteObserver.onRefreshWishlistInMainMenu = refreshWishlistMainMenu;
   }
 
   @override
