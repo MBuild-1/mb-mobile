@@ -19,6 +19,7 @@ import '../../domain/usecase/remove_wishlist_use_case.dart';
 import '../dialog_helper.dart';
 import '../errorprovider/error_provider.dart';
 import '../load_data_result.dart';
+import '../main_route_observer.dart';
 import '../manager/api_request_manager.dart';
 import '../toast_helper.dart';
 import '../typedef.dart';
@@ -171,7 +172,7 @@ class WishlistAndCartDelegateFactory {
     OnShowAddToWishlistRequestProcessFailedCallback? onShowAddToWishlistRequestProcessFailedCallback,
     OnShowRemoveFromWishlistRequestProcessLoadingCallback? onShowRemoveFromWishlistRequestProcessLoadingCallback,
     OnRemoveFromWishlistRequestProcessSuccessCallback? onRemoveFromWishlistRequestProcessSuccessCallback,
-    OnShowRemoveFromWishlistRequestProcessFailedCallback? onRemoveFromToWishlistRequestProcessFailedCallback,
+    OnShowRemoveFromWishlistRequestProcessFailedCallback? onRemoveFromWishlistRequestProcessFailedCallback,
     OnShowAddCartRequestProcessLoadingCallback? onShowAddCartRequestProcessLoadingCallback,
     OnAddCartRequestProcessSuccessCallback? onAddCartRequestProcessSuccessCallback,
     OnShowAddCartRequestProcessFailedCallback? onShowAddCartRequestProcessFailedCallback,
@@ -179,29 +180,32 @@ class WishlistAndCartDelegateFactory {
     return WishlistAndCartDelegate(
       onUnfocusAllWidget: () => FocusScope.of(onGetBuildContext()).unfocus(),
       onBack: () => Get.back(),
-      onShowAddToWishlistRequestProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(onGetBuildContext()),
-      onAddToWishlistRequestProcessSuccessCallback: () async {
+      onShowAddToWishlistRequestProcessLoadingCallback: onShowAddToWishlistRequestProcessLoadingCallback ?? () async => DialogHelper.showLoadingDialog(onGetBuildContext()),
+      onAddToWishlistRequestProcessSuccessCallback: onAddToWishlistRequestProcessSuccessCallback ?? () async {
         ToastHelper.showToast("${"Success add to wishlist".tr}.");
       },
-      onShowAddToWishlistRequestProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
+      onShowAddToWishlistRequestProcessFailedCallback: onShowAddToWishlistRequestProcessFailedCallback ?? (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
         context: onGetBuildContext(),
         errorProvider: onGetErrorProvider(),
         e: e
       ),
-      onShowRemoveFromWishlistRequestProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(onGetBuildContext()),
-      onRemoveFromWishlistRequestProcessSuccessCallback: (wishlist) async {
+      onShowRemoveFromWishlistRequestProcessLoadingCallback: onShowRemoveFromWishlistRequestProcessLoadingCallback ?? () async => DialogHelper.showLoadingDialog(onGetBuildContext()),
+      onRemoveFromWishlistRequestProcessSuccessCallback: onRemoveFromWishlistRequestProcessSuccessCallback ?? (wishlist) async {
         ToastHelper.showToast("${"Success remove to wishlist".tr}.");
       },
-      onShowRemoveFromWishlistRequestProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
+      onShowRemoveFromWishlistRequestProcessFailedCallback: onRemoveFromWishlistRequestProcessFailedCallback ?? (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
         context: onGetBuildContext(),
         errorProvider: onGetErrorProvider(),
         e: e
       ),
-      onShowAddCartRequestProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(onGetBuildContext()),
-      onAddCartRequestProcessSuccessCallback: () async {
+      onShowAddCartRequestProcessLoadingCallback: onShowAddCartRequestProcessLoadingCallback ?? () async => DialogHelper.showLoadingDialog(onGetBuildContext()),
+      onAddCartRequestProcessSuccessCallback: onAddCartRequestProcessSuccessCallback ?? () async {
+        if (MainRouteObserver.onRefreshCartInMainMenu != null) {
+          MainRouteObserver.onRefreshCartInMainMenu!();
+        }
         ToastHelper.showToast("${"Success add to cart".tr}.");
       },
-      onShowAddCartRequestProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
+      onShowAddCartRequestProcessFailedCallback: onShowAddCartRequestProcessFailedCallback ?? (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
         context: onGetBuildContext(),
         errorProvider: onGetErrorProvider(),
         e: e

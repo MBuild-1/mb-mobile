@@ -5,6 +5,7 @@ import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../domain/entity/product/product_appearance_data.dart';
+import '../../../domain/entity/wishlist/wishlist.dart';
 import '../../../misc/constant.dart';
 import '../../../misc/page_restoration_helper.dart';
 import '../../page/product_detail_page.dart';
@@ -18,6 +19,7 @@ import '../rating_indicator.dart';
 
 typedef OnAddWishlistWithProductAppearanceData = void Function(ProductAppearanceData);
 typedef OnRemoveWishlistWithProductAppearanceData = void Function(ProductAppearanceData);
+typedef OnRemoveWishlistWithWishlist = void Function(Wishlist);
 typedef OnAddCartWithProductAppearanceData = void Function(ProductAppearanceData);
 typedef OnRemoveCartWithProductAppearanceData = void Function(ProductAppearanceData);
 

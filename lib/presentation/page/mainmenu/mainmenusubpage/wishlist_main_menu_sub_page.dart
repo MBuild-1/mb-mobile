@@ -2,27 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:masterbagasi/misc/ext/error_provider_ext.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
-import 'package:masterbagasi/misc/ext/paging_ext.dart';
 
 import '../../../../controller/mainmenucontroller/mainmenusubpagecontroller/wishlist_main_menu_sub_controller.dart';
 import '../../../../domain/entity/cart/support_cart.dart';
-import '../../../../domain/entity/product/product_appearance_data.dart';
-import '../../../../domain/entity/product/productbundle/product_bundle.dart';
-import '../../../../domain/entity/wishlist/support_wishlist.dart';
 import '../../../../domain/entity/wishlist/wishlist.dart';
 import '../../../../domain/entity/wishlist/wishlist_paging_parameter.dart';
 import '../../../../misc/additionalloadingindicatorchecker/wishlist_sub_additional_paging_result_parameter_checker.dart';
 import '../../../../misc/constant.dart';
 import '../../../../misc/controllercontentdelegate/wishlist_and_cart_controller_content_delegate.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
-import '../../../../misc/controllerstate/listitemcontrollerstate/productbundlelistitemcontrollerstate/vertical_product_bundle_list_item_controller_state.dart';
-import '../../../../misc/controllerstate/listitemcontrollerstate/productlistitemcontrollerstate/vertical_product_list_item_controller_state.dart';
-import '../../../../misc/controllerstate/listitemcontrollerstate/wishlist_list_item_controller_state.dart';
+import '../../../../misc/controllerstate/listitemcontrollerstate/wishlistlistitemcontrollerstate/wishlist_container_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/paging_controller_state.dart';
-import '../../../../misc/error/message_error.dart';
 import '../../../../misc/errorprovider/error_provider.dart';
 import '../../../../misc/injector.dart';
-import '../../../../misc/itemtypelistsubinterceptor/verticalgriditemtypelistsubinterceptor/vertical_grid_item_type_list_sub_interceptor.dart';
+import '../../../../misc/itemtypelistsubinterceptor/wishlist_item_type_list_sub_interceptor.dart';
 import '../../../../misc/list_item_controller_state_helper.dart';
 import '../../../../misc/load_data_result.dart';
 import '../../../../misc/main_route_observer.dart';
@@ -35,7 +28,6 @@ import '../../../../misc/toast_helper.dart';
 import '../../../../misc/widget_helper.dart';
 import '../../../widget/background_app_bar_scaffold.dart';
 import '../../../widget/modified_paged_list_view.dart';
-import '../../../widget/modifiedappbar/default_search_app_bar.dart';
 import '../../../widget/modifiedappbar/main_menu_search_app_bar.dart';
 import '../../getx_page.dart';
 
@@ -73,7 +65,7 @@ class _StatefulWishlistMainMenuSubControllerMediatorWidgetState extends State<_S
   late AssetImage _wishlistAppBarBackgroundAssetImage;
   late final ModifiedPagingController<int, ListItemControllerState> _wishlistMainMenuSubListItemPagingController;
   late final PagingControllerState<int, ListItemControllerState> _wishlistMainMenuSubListItemPagingControllerState;
-  VerticalGridPaddingContentSubInterceptorSupportListItemControllerState? Function()? _onGetVerticalGrid;
+  DefaultWishlistContainerInterceptingActionListItemControllerState defaultWishlistContainerInterceptingActionListItemControllerState = DefaultWishlistContainerInterceptingActionListItemControllerState();
 
   @override
   void initState() {
@@ -104,62 +96,31 @@ class _StatefulWishlistMainMenuSubControllerMediatorWidgetState extends State<_S
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _wishlistMainMenuListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? listItemControllerStateList) async {
-    _onGetVerticalGrid = null;
     LoadDataResult<PagingDataResult<Wishlist>> wishlistPagingLoadDataResult = await widget.wishlistMainMenuSubController.getWishlistPaging(
       WishlistPagingParameter(page: pageKey)
     );
     return wishlistPagingLoadDataResult.map<PagingResult<ListItemControllerState>>((wishlistPaging) {
       List<ListItemControllerState> resultListItemControllerState = [];
-      Iterable<ListItemControllerState> verticalProductBrandListItemControllerStateList = wishlistPaging.map<ListItemControllerState>(
-        (wishlist) {
-          SupportWishlist supportWishlist = wishlist.supportWishlist;
-          ListItemControllerState? currentListItemControllerState;
-          if (supportWishlist is ProductAppearanceData) {
-            currentListItemControllerState = VerticalProductListItemControllerState(
-              productAppearanceData: supportWishlist as ProductAppearanceData,
-              onRemoveWishlist: (productAppearanceData) => widget.wishlistMainMenuSubController.wishlistAndCartControllerContentDelegate.removeFromWishlistDirectly(wishlist),
-              onAddCart: (productAppearanceData) => widget.wishlistMainMenuSubController.wishlistAndCartControllerContentDelegate.addToCart(productAppearanceData as SupportCart),
-            );
-          } else if (supportWishlist is ProductBundle) {
-            currentListItemControllerState = SupportVerticalGridVerticalProductBundleListItemControllerState(
-              productBundle: supportWishlist,
-              onRemoveWishlist: (productBundle) => widget.wishlistMainMenuSubController.wishlistAndCartControllerContentDelegate.removeFromWishlistDirectly(wishlist),
-              onAddCart: (productBundle) => widget.wishlistMainMenuSubController.wishlistAndCartControllerContentDelegate.addToCart(productBundle),
-            );
-          }
-          if (currentListItemControllerState != null) {
-            return WishlistListItemControllerState(
-              wishlist: wishlist,
-              childListItemControllerState: currentListItemControllerState
-            );
-          } else {
-            throw MessageError(title: "Support wishlist is not valid");
-          }
-        }
-      ).itemList;
       int totalItem = wishlistPaging.totalItem;
       if (pageKey == 1) {
         totalItem = 2;
         resultListItemControllerState = [
-          VerticalGridPaddingContentSubInterceptorSupportListItemControllerState(
-            childListItemControllerStateList: [
-              ...verticalProductBrandListItemControllerStateList
-            ]
+          WishlistContainerListItemControllerState(
+            wishlistList: wishlistPaging.itemList,
+            onUpdateState: () => setState(() {}),
+            onRemoveWishlistWithWishlist: (wishlist) => widget.wishlistMainMenuSubController.wishlistAndCartControllerContentDelegate.removeFromWishlistDirectly(wishlist),
+            onAddProductCart: (productAppearanceData) => widget.wishlistMainMenuSubController.wishlistAndCartControllerContentDelegate.addToCart(productAppearanceData as SupportCart),
+            onAddProductBundleCart: (productBundle) => widget.wishlistMainMenuSubController.wishlistAndCartControllerContentDelegate.addToCart(productBundle),
+            wishlistContainerInterceptingActionListItemControllerState: defaultWishlistContainerInterceptingActionListItemControllerState
           )
         ];
       } else {
-        _onGetVerticalGrid = () {
-          if (ListItemControllerStateHelper.checkListItemControllerStateList(listItemControllerStateList)) {
-            VerticalGridPaddingContentSubInterceptorSupportListItemControllerState verticalGridListItemControllerState = ListItemControllerStateHelper.parsePageKeyedListItemControllerState(
-              listItemControllerStateList![0]
-            ) as VerticalGridPaddingContentSubInterceptorSupportListItemControllerState;
-            return verticalGridListItemControllerState;
-          }
-          return null;
-        };
-        _onGetVerticalGrid!()?.childListItemControllerStateList.addAll(
-          verticalProductBrandListItemControllerStateList
-        );
+        if (ListItemControllerStateHelper.checkListItemControllerStateList(listItemControllerStateList)) {
+          WishlistContainerListItemControllerState wishlistContainerListItemControllerState = ListItemControllerStateHelper.parsePageKeyedListItemControllerState(
+            listItemControllerStateList![0]
+          ) as WishlistContainerListItemControllerState;
+          wishlistContainerListItemControllerState.wishlistList.addAll(wishlistPaging.itemList);
+        }
       }
       return PagingDataResult<ListItemControllerState>(
         itemList: resultListItemControllerState,
@@ -181,23 +142,11 @@ class _StatefulWishlistMainMenuSubControllerMediatorWidgetState extends State<_S
         onGetBuildContext: () => context,
         onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
         onRemoveFromWishlistRequestProcessSuccessCallback: (wishlist) async {
-          List<ListItemControllerState>? listItemControllerStateList = _onGetVerticalGrid!()?.childListItemControllerStateList;
-          if (listItemControllerStateList != null) {
-            int i = 0;
-            while(i < listItemControllerStateList.length) {
-              ListItemControllerState listItemControllerState = listItemControllerStateList[i];
-              if (listItemControllerState is WishlistListItemControllerState) {
-                if (listItemControllerState.wishlist.id == wishlist.id) {
-                  listItemControllerStateList.removeAt(i);
-                  break;
-                }
-              }
-              i++;
-            }
+          if (defaultWishlistContainerInterceptingActionListItemControllerState.removeWishlist != null) {
+            defaultWishlistContainerInterceptingActionListItemControllerState.removeWishlist!(wishlist);
           }
-          setState(() {});
         },
-        onRemoveFromToWishlistRequestProcessFailedCallback: (e) async {
+        onRemoveFromWishlistRequestProcessFailedCallback: (e) async {
           ErrorProvider errorProvider = Injector.locator<ErrorProvider>();
           ErrorProviderResult errorProviderResult = errorProvider.onGetErrorProviderResult(e).toErrorProviderResultNonNull();
           ToastHelper.showToast(errorProviderResult.message);

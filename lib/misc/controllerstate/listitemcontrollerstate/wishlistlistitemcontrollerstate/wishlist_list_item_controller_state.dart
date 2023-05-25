@@ -1,5 +1,6 @@
-import '../../../domain/entity/wishlist/wishlist.dart';
-import 'list_item_controller_state.dart';
+import '../../../../domain/entity/wishlist/wishlist.dart';
+import '../../../../presentation/widget/product/product_item.dart';
+import '../list_item_controller_state.dart';
 
 class WishlistListItemControllerState extends ListItemControllerState {
   Wishlist wishlist;
@@ -7,6 +8,6 @@ class WishlistListItemControllerState extends ListItemControllerState {
 
   WishlistListItemControllerState({
     required this.wishlist,
-    required this.childListItemControllerState
+    required this.childListItemControllerState,
   });
 }
