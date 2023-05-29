@@ -5,6 +5,7 @@ import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../controller/crop_picture_controller.dart';
 import '../presentation/page/address_page.dart';
+import '../presentation/page/affiliate_page.dart';
 import '../presentation/page/cart_page.dart';
 import '../presentation/page/coupon_page.dart';
 import '../presentation/page/crop_picture_page.dart';
@@ -311,6 +312,17 @@ class _PageRestorationHelperImpl {
       PageRestorationHelper.findPageRestorationMixin<InboxPageRestorationMixin>(
         onGetxPageRestorationFound: (restoration) {
           restoration.inboxPageRestorableRouteFuture.present();
+        },
+        context: context
+      );
+    });
+  }
+
+  void toAffiliatePage(BuildContext context) {
+    LoginHelper.checkingLogin(context, () {
+      PageRestorationHelper.findPageRestorationMixin<AffiliatePageRestorationMixin>(
+        onGetxPageRestorationFound: (restoration) {
+          restoration.affiliatePageRestorableRouteFuture.present();
         },
         context: context
       );

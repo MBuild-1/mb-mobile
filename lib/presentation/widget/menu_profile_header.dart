@@ -10,6 +10,7 @@ import '../../domain/entity/user/user.dart';
 import '../../misc/constant.dart';
 import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/load_data_result.dart';
+import '../../misc/page_restoration_helper.dart';
 import 'icon_title_and_description_list_item.dart';
 import 'modified_svg_picture.dart';
 import 'profile_picture_cache_network_image.dart';
@@ -112,7 +113,7 @@ class MenuProfileHeader extends StatelessWidget {
               child: Material(
                 borderRadius: BorderRadius.circular(8.0),
                 child: InkWell(
-                  onTap: () {},
+                  onTap: () => PageRestorationHelper.toAffiliatePage(context),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
                     child: Row(

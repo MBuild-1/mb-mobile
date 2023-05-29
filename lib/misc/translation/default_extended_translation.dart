@@ -220,7 +220,10 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Your private conversations": "Percakapan pribadi anda",
       "Ask questions about the product": "Tanya jawab seputar produk",
       "Please rate the shipping review": "Berikan penilaian ulasan pengiriman",
-      "Monitor the status of assistance from Master Bagasi": "Pantau status bantuan dari Master Bagasi"
+      "Monitor the status of assistance from Master Bagasi": "Pantau status bantuan dari Master Bagasi",
+      "Affiliate": "Affiliasi",
+      "Learn": "Pelajari",
+      "Register Now": "Daftar Sekarang"
     }
   };
 
