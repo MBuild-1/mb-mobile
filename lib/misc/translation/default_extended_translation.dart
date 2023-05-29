@@ -82,6 +82,8 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Something has internal server error": "Ada sesuatu kesalahan internal server",
       "Cart Summary": "Ringkasan Belanja",
       "Become a MSME Partner": "Jadi Mitra UMKM",
+      "Become Master Bagasi Partner": "Jadi Mitra Master Bagasi",
+      "MSME Partner": "Mitra UMKM",
       "Register MB Affiliation": "Daftar MB Afiliasi",
       "Interesting Short Videos For You": "Video Pendek Menarik Untukmu",
       "Look All": "Lihat Semua",

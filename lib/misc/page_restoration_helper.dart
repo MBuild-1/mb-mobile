@@ -17,6 +17,7 @@ import '../presentation/page/inbox_page.dart';
 import '../presentation/page/login_page.dart';
 import '../presentation/page/mainmenu/main_menu_page.dart';
 import '../presentation/page/modify_address_page.dart';
+import '../presentation/page/msme_partner_page.dart';
 import '../presentation/page/order_detail_page.dart';
 import '../presentation/page/order_page.dart';
 import '../presentation/page/product_brand_detail_page.dart';
@@ -323,6 +324,17 @@ class _PageRestorationHelperImpl {
       PageRestorationHelper.findPageRestorationMixin<AffiliatePageRestorationMixin>(
         onGetxPageRestorationFound: (restoration) {
           restoration.affiliatePageRestorableRouteFuture.present();
+        },
+        context: context
+      );
+    });
+  }
+
+  void toMsmePartnerPage(BuildContext context) {
+    LoginHelper.checkingLogin(context, () {
+      PageRestorationHelper.findPageRestorationMixin<MsmePartnerPageRestorationMixin>(
+        onGetxPageRestorationFound: (restoration) {
+          restoration.msmePartnerPageRestorableRouteFuture.present();
         },
         context: context
       );

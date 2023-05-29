@@ -40,6 +40,7 @@ class _ConstantImpl {
   String get imageProductViralBackground => _getImagesAssets("product_viral_background.jpeg");
   String get imageCoupon => _getImagesAssets("coupon.png");
   String get imageAffiliate => _getImagesAssets("affiliate.png");
+  String get imageMsmePartner => _getImagesAssets("msme_partner.png");
 
   String get baseVectorsAssetsPath => "assets/vectors/";
   String _getVectorsAssets(String vectorAssetsPath) => "$baseVectorsAssetsPath$vectorAssetsPath";
