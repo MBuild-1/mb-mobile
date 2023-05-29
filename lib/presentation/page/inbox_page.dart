@@ -14,6 +14,7 @@ import '../../misc/controllerstate/listitemcontrollerstate/faqlistitemcontroller
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/profilemenulistitemcontrollerstate/profile_menu_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
+import '../../misc/dialog_helper.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
@@ -193,7 +194,7 @@ class _StatefulInboxControllerMediatorWidgetState extends State<_StatefulInboxCo
       return PagingDataResult<ListItemControllerState>(
         itemList: [
           ProfileMenuListItemControllerState(
-            onTap: (context) => PageRestorationHelper.toDeliveryReviewPage(context),
+            onTap: (context) => DialogHelper.showPromptUnderConstruction(context),
             icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorChat, color: iconColor, width: 20.0),
             title: 'Chat'.tr,
             description: "Your private conversations".tr,
@@ -201,7 +202,7 @@ class _StatefulInboxControllerMediatorWidgetState extends State<_StatefulInboxCo
           ),
           DividerListItemControllerState(),
           ProfileMenuListItemControllerState(
-            onTap: (context) => PageRestorationHelper.toDeliveryReviewPage(context),
+            onTap: (context) => PageRestorationHelper.toProductDiscussionPage(context),
             icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorProductDiscussion2, color: iconColor, width: 20.0),
             title: 'Product Discussion'.tr,
             description: "Ask questions about the product".tr,
@@ -217,7 +218,7 @@ class _StatefulInboxControllerMediatorWidgetState extends State<_StatefulInboxCo
           ),
           DividerListItemControllerState(),
           ProfileMenuListItemControllerState(
-            onTap: (context) => PageRestorationHelper.toDeliveryReviewPage(context),
+            onTap: (context) => DialogHelper.showPromptUnderConstruction(context),
             icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorSupportMessage, color: iconColor, width: 20.0),
             title: 'Support Message'.tr,
             description: "Monitor the status of assistance from Master Bagasi".tr,
