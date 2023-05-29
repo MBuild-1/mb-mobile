@@ -8,6 +8,7 @@ import 'package:sizer/sizer.dart';
 
 import '../../domain/entity/user/user.dart';
 import '../../misc/constant.dart';
+import '../../misc/dialog_helper.dart';
 import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/page_restoration_helper.dart';
@@ -79,7 +80,7 @@ class MenuProfileHeader extends StatelessWidget {
               child: Material(
                 borderRadius: BorderRadius.circular(8.0),
                 child: InkWell(
-                  onTap: () {},
+                  onTap: () => DialogHelper.showPromptUnderConstruction(context),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
                     child: Row(

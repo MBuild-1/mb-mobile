@@ -162,7 +162,7 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
             title: 'Inbox'.tr,
           ),
           ProfileMenuListItemControllerState(
-            onTap: (context) {},
+            onTap: (context) => DialogHelper.showPromptUnderConstruction(context),
             icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorSupportMessage, width: 20.0),
             title: 'Support Message'.tr,
           ),
@@ -174,19 +174,19 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
             description: "${'Set the address for sending groceries'.tr}."
           ),
           ProfileMenuListItemControllerState(
-            onTap: (context) {},
+            onTap: (context) => DialogHelper.showPromptUnderConstruction(context),
             icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorAccountSecurity, width: 20.0),
             title: 'Account Security'.tr,
             description: "${'Password, PIN, and personal data verification'.tr}."
           ),
           ProfileMenuListItemControllerState(
-            onTap: (context) {},
+            onTap: (context) => DialogHelper.showPromptUnderConstruction(context),
             icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorNotificationConfiguration, width: 20.0),
             title: 'Notification Configuration'.tr,
             description: "${'Manage all kinds of notification messages'.tr}."
           ),
           ProfileMenuListItemControllerState(
-            onTap: (context) {},
+            onTap: (context) => DialogHelper.showPromptUnderConstruction(context),
             icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorAccountPrivacy, width: 20.0),
             title: 'Account Privation'.tr,
             description: "${'Manage data usage and connected accounts'.tr}."
