@@ -6,6 +6,10 @@ import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 
 import '../../../domain/entity/delivery/check_your_contribution_delivery_review_detail_parameter.dart';
 import '../../../domain/entity/delivery/check_your_contribution_delivery_review_detail_response.dart';
+import '../../../domain/entity/delivery/country_delivery_review.dart';
+import '../../../domain/entity/delivery/country_delivery_review_paging_parameter.dart';
+import '../../../domain/entity/delivery/countrydeliveryreviewmedia/country_delivery_review_media.dart';
+import '../../../domain/entity/delivery/countrydeliveryreviewmedia/country_delivery_review_media_paging_parameter.dart';
 import '../../../domain/entity/delivery/delivery_review.dart';
 import '../../../domain/entity/delivery/delivery_review_list_parameter.dart';
 import '../../../domain/entity/delivery/delivery_review_paging_parameter.dart';
@@ -261,6 +265,32 @@ class DefaultFeedDataSource implements FeedDataSource {
     return DummyFutureProcessing((cancelToken) async {
       await Future.delayed(const Duration(seconds: 1));
       return GiveReviewDeliveryReviewDetailResponse();
+    });
+  }
+
+  @override
+  FutureProcessing<PagingDataResult<CountryDeliveryReview>> countryDeliveryReviewPaging(CountryDeliveryReviewPagingParameter countryDeliveryReviewPagingParameter) {
+    return DummyFutureProcessing((cancelToken) async {
+      await Future.delayed(const Duration(seconds: 1));
+      return PagingDataResult<CountryDeliveryReview>(
+        page: 1,
+        totalPage: 1,
+        totalItem: 1,
+        itemList: []
+      );
+    });
+  }
+
+  @override
+  FutureProcessing<PagingDataResult<CountryDeliveryReviewMedia>> countryDeliveryReviewMediaPaging(CountryDeliveryReviewMediaPagingParameter countryDeliveryReviewMediaPagingParameter) {
+    return DummyFutureProcessing((cancelToken) async {
+      await Future.delayed(const Duration(seconds: 1));
+      return PagingDataResult<CountryDeliveryReviewMedia>(
+        page: 1,
+        totalPage: 1,
+        totalItem: 1,
+        itemList: []
+      );
     });
   }
 }

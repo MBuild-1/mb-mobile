@@ -90,6 +90,8 @@ import '../domain/usecase/get_bestseller_in_masterbagasi_list_use_case.dart';
 import '../domain/usecase/get_cart_summary_use_case.dart';
 import '../domain/usecase/get_check_your_contribution_delivery_review_detail_use_case.dart';
 import '../domain/usecase/get_coffee_and_tea_origin_indonesia_list_use_case.dart';
+import '../domain/usecase/get_country_delivery_review_media_paging_use_case.dart';
+import '../domain/usecase/get_country_delivery_review_paging_use_case.dart';
 import '../domain/usecase/get_country_list_use_case.dart';
 import '../domain/usecase/get_country_paging_use_case.dart';
 import '../domain/usecase/get_coupon_detail_use_case.dart';
@@ -434,6 +436,8 @@ class _Injector {
     locator.registerLazySingleton<GetHistoryDeliveryReviewPagingUseCase>(() => GetHistoryDeliveryReviewPagingUseCase(feedRepository: locator()));
     locator.registerLazySingleton<GetCheckYourContributionDeliveryReviewDetailUseCase>(() => GetCheckYourContributionDeliveryReviewDetailUseCase(feedRepository: locator()));
     locator.registerLazySingleton<GiveReviewDeliveryReviewDetailUseCase>(() => GiveReviewDeliveryReviewDetailUseCase(feedRepository: locator()));
+    locator.registerLazySingleton<GetCountryDeliveryReviewMediaPagingUseCase>(() => GetCountryDeliveryReviewMediaPagingUseCase(feedRepository: locator()));
+    locator.registerLazySingleton<GetCountryDeliveryReviewPagingUseCase>(() => GetCountryDeliveryReviewPagingUseCase(feedRepository: locator()));
     locator.registerLazySingleton<GetNewsUseCase>(() => GetNewsUseCase(feedRepository: locator()));
     locator.registerLazySingleton<GetTripDefaultVideoUseCase>(() => GetTripDefaultVideoUseCase(feedRepository: locator()));
     locator.registerLazySingleton<GetKitchenContentsBannerUseCase>(() => GetKitchenContentsBannerUseCase(bannerRepository: locator()));

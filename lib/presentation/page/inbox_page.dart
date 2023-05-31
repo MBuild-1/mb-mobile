@@ -29,7 +29,9 @@ import '../widget/modified_paged_list_view.dart';
 import '../widget/modified_svg_picture.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import '../widget/titleanddescriptionitem/title_and_description_item.dart';
+import 'deliveryreview/delivery_review_page.dart';
 import 'getx_page.dart';
+import 'product_discussion_page.dart';
 
 class InboxPage extends RestorableGetxPage<_InboxPageRestoration> {
   late final ControllerMember<InboxController> _inboxController = ControllerMember<InboxController>().addToControllerManager(controllerManager);
@@ -60,7 +62,7 @@ class InboxPage extends RestorableGetxPage<_InboxPageRestoration> {
   }
 }
 
-class _InboxPageRestoration extends MixableGetxPageRestoration with InboxPageRestorationMixin {
+class _InboxPageRestoration extends MixableGetxPageRestoration with InboxPageRestorationMixin, ProductDiscussionPageRestorationMixin, DeliveryReviewPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {

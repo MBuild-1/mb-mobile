@@ -1,5 +1,9 @@
 import '../../domain/entity/delivery/check_your_contribution_delivery_review_detail_parameter.dart';
 import '../../domain/entity/delivery/check_your_contribution_delivery_review_detail_response.dart';
+import '../../domain/entity/delivery/country_delivery_review.dart';
+import '../../domain/entity/delivery/country_delivery_review_paging_parameter.dart';
+import '../../domain/entity/delivery/countrydeliveryreviewmedia/country_delivery_review_media.dart';
+import '../../domain/entity/delivery/countrydeliveryreviewmedia/country_delivery_review_media_paging_parameter.dart';
 import '../../domain/entity/delivery/delivery_review.dart';
 import '../../domain/entity/delivery/delivery_review_list_parameter.dart';
 import '../../domain/entity/delivery/delivery_review_paging_parameter.dart';
@@ -73,5 +77,15 @@ class DefaultFeedRepository implements FeedRepository {
   @override
   FutureProcessing<LoadDataResult<GiveReviewDeliveryReviewDetailResponse>> giveReviewDeliveryReviewDetail(GiveReviewDeliveryReviewDetailParameter giveReviewDeliveryReviewDetailParameter) {
     return feedDataSource.giveReviewDeliveryReviewDetail(giveReviewDeliveryReviewDetailParameter).mapToLoadDataResult<GiveReviewDeliveryReviewDetailResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<PagingDataResult<CountryDeliveryReview>>> countryDeliveryReviewPaging(CountryDeliveryReviewPagingParameter countryDeliveryReviewPagingParameter) {
+    return feedDataSource.countryDeliveryReviewPaging(countryDeliveryReviewPagingParameter).mapToLoadDataResult<PagingDataResult<CountryDeliveryReview>>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<PagingDataResult<CountryDeliveryReviewMedia>>> countryDeliveryReviewMediaPaging(CountryDeliveryReviewMediaPagingParameter countryDeliveryReviewMediaPagingParameter) {
+    return feedDataSource.countryDeliveryReviewMediaPaging(countryDeliveryReviewMediaPagingParameter).mapToLoadDataResult<PagingDataResult<CountryDeliveryReviewMedia>>();
   }
 }
