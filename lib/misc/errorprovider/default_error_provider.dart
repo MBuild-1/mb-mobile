@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart' hide Response;
+import 'package:masterbagasi/misc/ext/error_provider_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../constant.dart';
@@ -8,6 +9,7 @@ import '../error/cart_empty_error.dart';
 import '../error/coming_soon_error.dart';
 import '../error/message_error.dart';
 import '../error/not_found_error.dart';
+import '../error/search_not_found_error.dart';
 import '../error/token_empty_error.dart';
 import '../error/validation_error.dart';
 import '../multi_language_string.dart';
@@ -38,8 +40,10 @@ class DefaultErrorProvider extends ErrorProvider {
         title: e.title.toStringNonNull,
         message: e.message.toStringNonNull
       );
-    } else if (e is CartEmptyError){
+    } else if (e is CartEmptyError) {
       return _cartIsEmptyErrorProvider();
+    } else if (e is SearchNotFoundError) {
+      return _searchNotFoundError();
     } else if (e is TokenEmptyError) {
       return ErrorProviderResult(
         title: "You Are Not Login".tr,
@@ -64,10 +68,33 @@ class DefaultErrorProvider extends ErrorProvider {
   }
 
   ErrorProviderResult _cartIsEmptyErrorProvider() {
-    return ErrorProviderResult(
-      title: "Cart Is Empty".tr,
-      message: "${"Now cart is empty".tr}."
-    );
+    return onGetErrorProviderResult(
+      MultiLanguageMessageError(
+        title: MultiLanguageString({
+          Constant.textEnUsLanguageKey: "Cart Is Empty",
+          Constant.textInIdLanguageKey: "Keranjang Kosong"
+        }),
+        message: MultiLanguageString({
+          Constant.textEnUsLanguageKey: "Now cart is empty.",
+          Constant.textInIdLanguageKey: "Untuk sekarang keranjangnya kosong."
+        }),
+      )
+    ).toErrorProviderResultNonNull();
+  }
+
+  ErrorProviderResult? _searchNotFoundError() {
+    return onGetErrorProviderResult(
+      MultiLanguageMessageError(
+        title: MultiLanguageString({
+          Constant.textEnUsLanguageKey: "Search Not Found",
+          Constant.textInIdLanguageKey: "Pencarian Tidak Ditemukan"
+        }),
+        message: MultiLanguageString({
+          Constant.textEnUsLanguageKey: "For now search not found.",
+          Constant.textInIdLanguageKey: "Untuk sekarang pencarian tidak ditemukan."
+        }),
+      )
+    ).toErrorProviderResultNonNull();
   }
 
   ErrorProviderResult _handlingDioError(DioError e) {

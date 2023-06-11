@@ -39,6 +39,7 @@ import '../widget/modifiedappbar/default_search_app_bar.dart';
 import 'getx_page.dart';
 import 'product_brand_detail_page.dart';
 import 'product_entry_page.dart';
+import 'search_page.dart';
 
 class FavoriteProductBrandPage extends RestorableGetxPage<_FavoriteProductBrandPageRestoration> {
   late final ControllerMember<FavoriteProductBrandController> _favoriteProductBrandController = ControllerMember<FavoriteProductBrandController>().addToControllerManager(controllerManager);
@@ -67,7 +68,7 @@ class FavoriteProductBrandPage extends RestorableGetxPage<_FavoriteProductBrandP
   }
 }
 
-class _FavoriteProductBrandPageRestoration extends MixableGetxPageRestoration with ProductEntryPageRestorationMixin {
+class _FavoriteProductBrandPageRestoration extends MixableGetxPageRestoration with ProductEntryPageRestorationMixin, SearchPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {

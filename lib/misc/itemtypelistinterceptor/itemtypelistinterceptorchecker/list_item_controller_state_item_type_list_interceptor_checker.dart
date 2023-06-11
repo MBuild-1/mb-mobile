@@ -26,6 +26,7 @@ import '../../itemtypelistsubinterceptor/product_discussion_container_item_type_
 import '../../itemtypelistsubinterceptor/product_entry_header_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/profile_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/row_container_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/search_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/verticalgriditemtypelistsubinterceptor/vertical_grid_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/wishlist_item_type_list_sub_interceptor.dart';
 import '../../typedef.dart';
@@ -217,6 +218,11 @@ class ListItemControllerStateItemTypeInterceptorChecker extends ItemTypeListInte
       listItemControllerStateItemTypeInterceptorChecker: this
     ),
     WishlistItemTypeListSubInterceptor(
+      padding: padding,
+      itemSpacing: itemSpacing,
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
+    SearchItemTypeListSubInterceptor(
       padding: padding,
       itemSpacing: itemSpacing,
       listItemControllerStateItemTypeInterceptorChecker: this

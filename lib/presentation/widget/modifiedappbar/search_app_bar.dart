@@ -20,6 +20,7 @@ abstract class SearchAppBar extends ModifiedAppBar {
   final TextEditingController? searchTextEditingController;
   final double value;
   final FocusNode? searchFocusNode;
+  final bool isSearchText;
 
   SearchAppBar({
     Key? key,
@@ -30,7 +31,8 @@ abstract class SearchAppBar extends ModifiedAppBar {
     this.onSearchTextFieldTapped,
     this.onSearch,
     this.searchTextEditingController,
-    this.searchFocusNode
+    this.searchFocusNode,
+    this.isSearchText = false
   }) : super(
     key: key,
     leading: leading,
@@ -48,30 +50,33 @@ abstract class SearchAppBar extends ModifiedAppBar {
   ActionTitleBuilder? get actionTitleBuilder => null;
 
   TextFieldBuilder get textFieldBuilder {
-    return (context) => IgnorePointer(
-      child: ExcludeFocus(
-        child: ModifiedTextField(
-          isError: false,
-          onEditingComplete: onSearch != null ? () {
-            if (searchTextEditingController != null) {
-              onSearch!(searchTextEditingController!.text);
-            }
-          } : null,
-          textInputAction: TextInputAction.done,
-          controller: searchTextEditingController,
-          focusNode: searchFocusNode,
-          decoration: searchTextFieldStyle(
-            context, DefaultInputDecoration(
-              hintText: "${"Search in MasterBagasi".tr}?",
-              filled: true,
-              fillColor: Colors.transparent,
-              prefixIcon: const Icon(Icons.search),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0)
-            )
+    return (context) {
+      Widget textField = ModifiedTextField(
+        isError: false,
+        onEditingComplete: onSearch != null ? () {
+          if (searchTextEditingController != null) {
+            onSearch!(searchTextEditingController!.text);
+          }
+        } : null,
+        textInputAction: TextInputAction.done,
+        controller: searchTextEditingController,
+        focusNode: searchFocusNode,
+        decoration: searchTextFieldStyle(
+          context, DefaultInputDecoration(
+            hintText: "Search in Masterbagasi".tr,
+            filled: true,
+            fillColor: Colors.transparent,
+            prefixIcon: const Icon(Icons.search),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0)
           )
         )
-      )
-    );
+      );
+      return !isSearchText ? IgnorePointer(
+        child: ExcludeFocus(
+          child: textField
+        )
+      ) : textField;
+    };
   }
 
   @override
@@ -90,7 +95,7 @@ abstract class SearchAppBar extends ModifiedAppBar {
                     effectiveOnSearchTextFieldTapped = onSearchTextFieldTapped!;
                   } else {
                     effectiveOnSearchTextFieldTapped = () {
-                      //PageRestorationHelper.toSearchPage(context);
+                      PageRestorationHelper.toSearchPage(context);
                     };
                   }
                   return InkWell(

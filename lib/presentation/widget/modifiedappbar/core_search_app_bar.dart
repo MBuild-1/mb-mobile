@@ -34,7 +34,8 @@ class CoreSearchAppBar extends SearchAppBar {
     onSearchTextFieldTapped: onSearchTextFieldTapped,
     onSearch: onSearch,
     searchTextEditingController: searchTextEditingController,
-    searchFocusNode: searchFocusNode
+    searchFocusNode: searchFocusNode,
+    isSearchText: true
   );
 
   @override
@@ -59,7 +60,7 @@ class CoreSearchAppBar extends SearchAppBar {
 
   @override
   TitleInterceptor? get titleInterceptor {
-    if (readOnly) {
+    if (!readOnly) {
       return super.titleInterceptor;
     }
     return (context, oldTitle) {

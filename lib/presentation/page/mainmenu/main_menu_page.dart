@@ -42,6 +42,7 @@ import '../product_bundle_page.dart';
 import '../product_category_detail_page.dart';
 import '../product_discussion_page.dart';
 import '../product_entry_page.dart';
+import '../search_page.dart';
 import '../web_viewer_page.dart';
 import 'mainmenusubpage/explore_nusantara_main_menu_page.dart';
 import 'mainmenusubpage/feed_main_menu_sub_page.dart';

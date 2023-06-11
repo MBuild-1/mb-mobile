@@ -26,6 +26,7 @@ import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/default_search_app_bar.dart';
 import 'getx_page.dart';
 import 'product_detail_page.dart';
+import 'search_page.dart';
 
 class ProductBundleDetailPage extends RestorableGetxPage<_ProductBundleDetailPageRestoration> {
   late final ControllerMember<ProductBundleDetailController> _productBundleDetailController = ControllerMember<ProductBundleDetailController>().addToControllerManager(controllerManager);
@@ -55,7 +56,7 @@ class ProductBundleDetailPage extends RestorableGetxPage<_ProductBundleDetailPag
   }
 }
 
-class _ProductBundleDetailPageRestoration extends MixableGetxPageRestoration with ProductDetailPageRestorationMixin, ProductBundleDetailPageRestorationMixin {
+class _ProductBundleDetailPageRestoration extends MixableGetxPageRestoration with ProductDetailPageRestorationMixin, ProductBundleDetailPageRestorationMixin, SearchPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {

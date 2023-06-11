@@ -171,9 +171,13 @@ class DefaultProductDataSource implements ProductDataSource {
       "pageNumber": productWithConditionPagingParameter.itemEachPageCount,
       ...productWithConditionPagingParameter.withCondition
     };
-    return DioHttpClientProcessing((cancelToken) {
-      return dio.get("/product/entry", queryParameters: queryParameters, cancelToken: cancelToken)
+    return DioHttpClientProcessing((cancelToken) async {
+      var productEntryResultPagingDataResult = await dio.get("/product/entry", queryParameters: queryParameters, cancelToken: cancelToken)
         .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductEntryPaging());
+      if (productWithConditionPagingParameter.onInterceptProductPagingDataResult != null) {{
+        return productWithConditionPagingParameter.onInterceptProductPagingDataResult!(productEntryResultPagingDataResult);
+      }}
+      return productEntryResultPagingDataResult;
     });
   }
 
