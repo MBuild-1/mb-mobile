@@ -14,7 +14,9 @@ class SearchController extends BaseGetxController {
     super.controllerManager,
     this.getProductEntryWithConditionPagingUseCase,
     this.wishlistAndCartControllerContentDelegate
-  );
+  ) {
+    wishlistAndCartControllerContentDelegate.setApiRequestManager(() => apiRequestManager);
+  }
 
   Future<LoadDataResult<PagingDataResult<ProductEntry>>> getProductEntrySearch(ProductWithConditionPagingParameter productWithConditionPagingParameter) {
     return getProductEntryWithConditionPagingUseCase.execute(productWithConditionPagingParameter).future(
