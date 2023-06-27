@@ -5,13 +5,15 @@ import '../list_item_controller_state.dart';
 class SearchContainerListItemControllerState extends ListItemControllerState {
   List<ProductEntry> productEntryList;
   void Function() onUpdateState;
-  OnRemoveWishlistWithWishlist onRemoveWishlistWithWishlist;
+  OnRemoveWishlistWithProductAppearanceData onRemoveWishlistWithProductAppearanceData;
+  OnAddWishlistWithProductAppearanceData onAddWishlistWithProductAppearanceData;
   OnAddCartWithProductAppearanceData onAddProductCart;
 
   SearchContainerListItemControllerState({
     required this.productEntryList,
     required this.onUpdateState,
-    required this.onRemoveWishlistWithWishlist,
+    required this.onRemoveWishlistWithProductAppearanceData,
+    required this.onAddWishlistWithProductAppearanceData,
     required this.onAddProductCart
   });
 }

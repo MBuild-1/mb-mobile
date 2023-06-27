@@ -77,6 +77,7 @@ import '../domain/usecase/add_additional_item_use_case.dart';
 import '../domain/usecase/add_address_use_case.dart';
 import '../domain/usecase/add_host_cart_use_case.dart';
 import '../domain/usecase/add_to_cart_use_case.dart';
+import '../domain/usecase/add_to_favorite_product_brand_use_case.dart';
 import '../domain/usecase/add_wishlist_use_case.dart';
 import '../domain/usecase/change_additional_item_use_case.dart';
 import '../domain/usecase/change_address_use_case.dart';
@@ -149,6 +150,7 @@ import '../domain/usecase/register_with_google_use_case.dart';
 import '../domain/usecase/remove_additional_item_use_case.dart';
 import '../domain/usecase/remove_address_use_case.dart';
 import '../domain/usecase/remove_from_cart_use_case.dart';
+import '../domain/usecase/remove_from_favorite_product_brand_use_case.dart';
 import '../domain/usecase/remove_wishlist_based_product_use_case.dart';
 import '../domain/usecase/remove_wishlist_use_case.dart';
 import '../domain/usecase/take_friend_cart_use_case.dart';
@@ -165,6 +167,7 @@ import 'additionalloadingindicatorchecker/product_category_detail_additional_pag
 import 'additionalloadingindicatorchecker/product_detail_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/take_friend_cart_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/wishlist_sub_additional_paging_result_parameter_checker.dart';
+import 'controllercontentdelegate/product_brand_favorite_controller_content_delegate.dart';
 import 'controllercontentdelegate/wishlist_and_cart_controller_content_delegate.dart';
 import 'defaultloaddataresultwidget/default_load_data_result_widget.dart';
 import 'defaultloaddataresultwidget/main_default_load_data_result_widget.dart';
@@ -384,10 +387,19 @@ class _Injector {
         removeWishlistBasedProductUseCase: locator()
       )
     );
+    locator.registerFactory<ProductBrandFavoriteControllerContentDelegate>(
+      () => ProductBrandFavoriteControllerContentDelegate(
+        addToFavoriteProductBrandUseCase: locator(),
+        removeFromFavoriteProductBrandUseCase: locator()
+      )
+    );
 
     // Controller Delegate Factory
     locator.registerLazySingleton<WishlistAndCartDelegateFactory>(
       () => WishlistAndCartDelegateFactory()
+    );
+    locator.registerLazySingleton<ProductBrandFavoriteDelegateFactory>(
+      () => ProductBrandFavoriteDelegateFactory()
     );
 
     // Default Load Data Result Widget
@@ -404,6 +416,8 @@ class _Injector {
     locator.registerLazySingleton<GetProductBrandPagingUseCase>(() => GetProductBrandPagingUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetFavoriteProductBrandPagingUseCase>(() => GetFavoriteProductBrandPagingUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductBrandDetailUseCase>(() => GetProductBrandDetailUseCase(productRepository: locator()));
+    locator.registerLazySingleton<AddToFavoriteProductBrandUseCase>(() => AddToFavoriteProductBrandUseCase(productRepository: locator()));
+    locator.registerLazySingleton<RemoveFromFavoriteProductBrandUseCase>(() => RemoveFromFavoriteProductBrandUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductListUseCase>(() => GetProductListUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductViralListUseCase>(() => GetProductViralListUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductViralPagingUseCase>(() => GetProductViralPagingUseCase(productRepository: locator()));

@@ -16,12 +16,16 @@ import '../../../domain/entity/product/product_detail_other_chosen_for_you_produ
 import '../../../domain/entity/product/product_detail_other_from_this_brand_product_entry_list_parameter.dart';
 import '../../../domain/entity/product/product_detail_other_in_this_category_product_entry_list_parameter.dart';
 import '../../../domain/entity/product/product_detail_other_interested_product_brand_list_parameter.dart';
+import '../../../domain/entity/product/productbrand/add_to_favorite_product_brand_parameter.dart';
+import '../../../domain/entity/product/productbrand/add_to_favorite_product_brand_response.dart';
 import '../../../domain/entity/product/productbrand/favorite_product_brand_paging_parameter.dart';
 import '../../../domain/entity/product/productbrand/product_brand.dart';
 import '../../../domain/entity/product/productbrand/product_brand_detail.dart';
 import '../../../domain/entity/product/productbrand/product_brand_detail_parameter.dart';
 import '../../../domain/entity/product/productbrand/product_brand_list_parameter.dart';
 import '../../../domain/entity/product/productbrand/product_brand_paging_parameter.dart';
+import '../../../domain/entity/product/productbrand/remove_from_favorite_product_brand_parameter.dart';
+import '../../../domain/entity/product/productbrand/remove_from_favorite_product_brand_response.dart';
 import '../../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../../domain/entity/product/productbundle/product_bundle_detail.dart';
 import '../../../domain/entity/product/productbundle/product_bundle_detail_parameter.dart';
@@ -309,8 +313,29 @@ class DefaultProductDataSource implements ProductDataSource {
   FutureProcessing<PagingDataResult<ProductBrand>> favoriteProductBrandPaging(FavoriteProductBrandPagingParameter favoriteProductBrandPagingParameter) {
     return DummyFutureProcessing((parameter) async {
       String pageParameterPath = "/?pageNumber=${favoriteProductBrandPagingParameter.itemEachPageCount}&page=${favoriteProductBrandPagingParameter.page}";
-      return dio.get("/product/brand$pageParameterPath", cancelToken: parameter)
-        .map<PagingDataResult<ProductBrand>>(onMap: (value) => value.wrapResponse().mapFromResponseToProductBrandPaging());
+      return dio.get("/user/brand-fav$pageParameterPath", cancelToken: parameter)
+        .map<PagingDataResult<ProductBrand>>(onMap: (value) => value.wrapResponse().mapFromResponseToFavoriteProductBrandPaging());
+    });
+  }
+
+  @override
+  FutureProcessing<AddToFavoriteProductBrandResponse> addToFavoriteProductBrand(AddToFavoriteProductBrandParameter addToFavoriteProductBrandParameter) {
+    return DummyFutureProcessing((parameter) async {
+      FormData formData = FormData.fromMap(
+        <String, dynamic> {
+          "product_brand_id": addToFavoriteProductBrandParameter.productBrand.id
+        }
+      );
+      return dio.post("/user/brand-fav", data: formData, cancelToken: parameter, options: OptionsBuilder.multipartData().build())
+        .map<AddToFavoriteProductBrandResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToAddToFavoriteProductBrandResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<RemoveFromFavoriteProductBrandResponse> removeFromFavoriteProductBrand(RemoveFromFavoriteProductBrandParameter removeFromFavoriteProductBrandParameter) {
+    return DummyFutureProcessing((parameter) async {
+      return dio.delete("/user/brand-fav/${removeFromFavoriteProductBrandParameter.productBrand.id}", cancelToken: parameter)
+        .map<RemoveFromFavoriteProductBrandResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToRemoveFromFavoriteProductBrandResponse());
     });
   }
 }

@@ -18,6 +18,7 @@ import '../../domain/usecase/get_product_entry_with_condition_paging_use_case.da
 import '../../domain/usecase/remove_wishlist_use_case.dart';
 import '../../misc/additionalloadingindicatorchecker/product_bundle_additional_paging_result_parameter_checker.dart';
 import '../../misc/constant.dart';
+import '../../misc/controllercontentdelegate/product_brand_favorite_controller_content_delegate.dart';
 import '../../misc/controllercontentdelegate/wishlist_and_cart_controller_content_delegate.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/load_data_result_dynamic_list_item_controller_state.dart';
@@ -64,7 +65,8 @@ class ProductEntryPage extends RestorableGetxPage<_ProductEntryPageRestoration> 
         controllerManager,
         Injector.locator<GetProductEntryWithConditionPagingUseCase>(),
         Injector.locator<GetProductEntryHeaderContentUseCase>(),
-        Injector.locator<WishlistAndCartControllerContentDelegate>()
+        Injector.locator<WishlistAndCartControllerContentDelegate>(),
+        Injector.locator<ProductBrandFavoriteControllerContentDelegate>()
       ),
       tag: pageName
     );
@@ -295,13 +297,23 @@ class _StatefulProductEntryControllerMediatorWidgetState extends State<_Stateful
         onGetErrorProvider: () => Injector.locator<ErrorProvider>()
       )
     );
+    widget.productEntryController.productBrandFavoriteControllerContentDelegate.setProductBrandFavoriteDelegate(
+      Injector.locator<ProductBrandFavoriteDelegateFactory>().generateProductBrandFavoriteDelegate(
+        onGetBuildContext: () => context,
+        onGetErrorProvider: () => Injector.locator<ErrorProvider>()
+      )
+    );
     widget.productEntryController.setProductEntryDelegate(
       ProductEntryDelegate(
         onObserveLoadProductEntryHeaderContentDirectly: (onObserveLoadProductEntryHeaderContentDirectlyParameter) {
           LoadDataResult<ProductEntryHeaderContentResponse> productEntryHeaderContentResponseLoadDataResult = onObserveLoadProductEntryHeaderContentDirectlyParameter.productEntryHeaderContentResponseLoadDataResult;
           return ProductEntryHeaderLoadDataResultListItemControllerState(
             productEntryHeaderContentResponseLoadDataResult: productEntryHeaderContentResponseLoadDataResult,
-            errorProvider: Injector.locator<ErrorProvider>()
+            errorProvider: Injector.locator<ErrorProvider>(),
+            onAddToFavoriteProductBrand: (productBrand) {
+              print("Added product brand to favorite");
+              widget.productEntryController.productBrandFavoriteControllerContentDelegate.addToFavoriteProductBrand(productBrand);
+            },
           );
         },
       )

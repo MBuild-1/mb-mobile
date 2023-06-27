@@ -5,12 +5,16 @@ import '../../../domain/entity/product/product_detail_other_chosen_for_you_produ
 import '../../../domain/entity/product/product_detail_other_from_this_brand_product_entry_list_parameter.dart';
 import '../../../domain/entity/product/product_detail_other_in_this_category_product_entry_list_parameter.dart';
 import '../../../domain/entity/product/product_detail_other_interested_product_brand_list_parameter.dart';
+import '../../../domain/entity/product/productbrand/add_to_favorite_product_brand_parameter.dart';
+import '../../../domain/entity/product/productbrand/add_to_favorite_product_brand_response.dart';
 import '../../../domain/entity/product/productbrand/favorite_product_brand_paging_parameter.dart';
 import '../../../domain/entity/product/productbrand/product_brand.dart';
 import '../../../domain/entity/product/productbrand/product_brand_detail.dart';
 import '../../../domain/entity/product/productbrand/product_brand_detail_parameter.dart';
 import '../../../domain/entity/product/productbrand/product_brand_list_parameter.dart';
 import '../../../domain/entity/product/productbrand/product_brand_paging_parameter.dart';
+import '../../../domain/entity/product/productbrand/remove_from_favorite_product_brand_parameter.dart';
+import '../../../domain/entity/product/productbrand/remove_from_favorite_product_brand_response.dart';
 import '../../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../../domain/entity/product/productbundle/product_bundle_detail.dart';
 import '../../../domain/entity/product/productbundle/product_bundle_detail_parameter.dart';
@@ -64,4 +68,6 @@ abstract class ProductDataSource {
   FutureProcessing<RemoveWishlistResponse> removeWishlist(RemoveWishlistParameter removeWishlistParameter);
   FutureProcessing<RemoveWishlistResponse> removeWishlistBasedProduct(RemoveWishlistBasedProductParameter removeWishlistBasedProductParameter);
   FutureProcessing<PagingDataResult<ProductBrand>> favoriteProductBrandPaging(FavoriteProductBrandPagingParameter favoriteProductBrandPagingParameter);
+  FutureProcessing<AddToFavoriteProductBrandResponse> addToFavoriteProductBrand(AddToFavoriteProductBrandParameter addToFavoriteProductBrandParameter);
+  FutureProcessing<RemoveFromFavoriteProductBrandResponse> removeFromFavoriteProductBrand(RemoveFromFavoriteProductBrandParameter removeFromFavoriteProductBrandParameter);
 }

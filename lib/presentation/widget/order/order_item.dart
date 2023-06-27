@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/number_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../domain/entity/order/combined_order.dart';
 import '../../../domain/entity/order/order_product_detail.dart';
 import '../../../domain/entity/order/support_order_product.dart';
 import '../../../misc/constant.dart';
 import '../../../misc/date_util.dart';
+import '../../../misc/dialog_helper.dart';
 import '../../../misc/multi_language_string.dart';
 import '../../../misc/page_restoration_helper.dart';
 import '../../../misc/string_util.dart';
@@ -91,11 +93,13 @@ abstract class OrderItem extends StatelessWidget {
                       ),
                     ),
                     SizedOutlineGradientButton(
-                      onPressed: () {
-                        Map<String, dynamic> webViewerParameter = <String, dynamic>{
-                          Constant.textEncodedUrlKey: StringUtil.encodeBase64String("https://app.midtrans.com/snap/v2/vtweb/${order.orderProduct.orderDetail.snapToken}")
-                        };
-                        PageRestorationHelper.toWebViewerPage(context, webViewerParameter);
+                      onPressed: () async {
+                        DialogHelper.showLoadingDialog(context);
+                        await launchUrl(
+                          Uri.parse("https://app.midtrans.com/snap/v2/vtweb/${order.orderProduct.orderDetail.snapToken}"),
+                          mode: LaunchMode.inAppWebView
+                        );
+                        Get.back();
                       },
                       text: "Pay".tr,
                       customPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),

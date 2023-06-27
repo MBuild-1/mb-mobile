@@ -90,6 +90,9 @@ abstract class SearchAppBar extends ModifiedAppBar {
               borderRadius: Constant.inputBorderRadius,
               child: Builder(
                 builder: (context) {
+                  if (isSearchText) {
+                    return textFieldBuilder(context);
+                  }
                   VoidCallback? effectiveOnSearchTextFieldTapped;
                   if (onSearchTextFieldTapped != null) {
                     effectiveOnSearchTextFieldTapped = onSearchTextFieldTapped!;

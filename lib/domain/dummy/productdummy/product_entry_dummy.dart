@@ -26,7 +26,8 @@ class ProductEntryDummy {
       productVariantList: [],
       imageUrlList: [],
       product: productDummy.generateShimmerDummy(),
-      soldCount: 0
+      soldCount: 0,
+      hasAddedToWishlist: false
     );
   }
 
@@ -48,7 +49,8 @@ class ProductEntryDummy {
       productVariantList: [],
       imageUrlList: [],
       product: productDummy.generateDefaultDummy(),
-      soldCount: 0
+      soldCount: 0,
+      hasAddedToWishlist: false
     );
   }
 }

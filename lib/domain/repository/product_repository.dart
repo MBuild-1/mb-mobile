@@ -8,12 +8,16 @@ import '../entity/product/product_detail_other_chosen_for_you_product_entry_list
 import '../entity/product/product_detail_other_from_this_brand_product_entry_list_parameter.dart';
 import '../entity/product/product_detail_other_in_this_category_product_entry_list_parameter.dart';
 import '../entity/product/product_detail_other_interested_product_brand_list_parameter.dart';
+import '../entity/product/productbrand/add_to_favorite_product_brand_parameter.dart';
+import '../entity/product/productbrand/add_to_favorite_product_brand_response.dart';
 import '../entity/product/productbrand/favorite_product_brand_paging_parameter.dart';
 import '../entity/product/productbrand/product_brand.dart';
 import '../entity/product/productbrand/product_brand_detail.dart';
 import '../entity/product/productbrand/product_brand_detail_parameter.dart';
 import '../entity/product/productbrand/product_brand_list_parameter.dart';
 import '../entity/product/productbrand/product_brand_paging_parameter.dart';
+import '../entity/product/productbrand/remove_from_favorite_product_brand_parameter.dart';
+import '../entity/product/productbrand/remove_from_favorite_product_brand_response.dart';
 import '../entity/product/productbundle/product_bundle.dart';
 import '../entity/product/productbundle/product_bundle_detail.dart';
 import '../entity/product/productbundle/product_bundle_detail_parameter.dart';
@@ -68,4 +72,6 @@ abstract class ProductRepository {
   FutureProcessing<LoadDataResult<RemoveWishlistResponse>> removeWishlist(RemoveWishlistParameter removeWishlistParameter);
   FutureProcessing<LoadDataResult<RemoveWishlistResponse>> removeWishlistBasedProduct(RemoveWishlistBasedProductParameter removeWishlistBasedProductParameter);
   FutureProcessing<LoadDataResult<PagingDataResult<ProductBrand>>> favoriteProductBrandPaging(FavoriteProductBrandPagingParameter favoriteProductBrandPagingParameter);
+  FutureProcessing<LoadDataResult<AddToFavoriteProductBrandResponse>> addToFavoriteProductBrand(AddToFavoriteProductBrandParameter addToFavoriteProductBrandParameter);
+  FutureProcessing<LoadDataResult<RemoveFromFavoriteProductBrandResponse>> removeFromFavoriteProductBrand(RemoveFromFavoriteProductBrandParameter removeFromFavoriteProductBrandParameter);
 }

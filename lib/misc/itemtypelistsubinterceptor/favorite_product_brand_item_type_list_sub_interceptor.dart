@@ -46,7 +46,8 @@ class FavoriteProductBrandItemTypeListSubInterceptor extends ItemTypeListSubInte
             listItemControllerState: [
               ProductDetailBrandListItemControllerState(
                 productBrand: productBrand,
-                onTapProductBrand: oldItemType.onTapProductBrand
+                onTapProductBrand: oldItemType.onTapProductBrand,
+                onRemoveFromFavoriteProductBrand: oldItemType.onRemoveFromFavoriteProductBrand,
               ),
               VirtualSpacingListItemControllerState(height: 16)
             ]

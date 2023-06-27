@@ -20,7 +20,6 @@ import '../presentation/page/modify_address_page.dart';
 import '../presentation/page/msme_partner_page.dart';
 import '../presentation/page/order_detail_page.dart';
 import '../presentation/page/order_page.dart';
-import '../presentation/page/product_brand_detail_page.dart';
 import '../presentation/page/product_brand_page.dart';
 import '../presentation/page/product_bundle_detail_page.dart';
 import '../presentation/page/product_bundle_page.dart';
@@ -142,15 +141,6 @@ class _PageRestorationHelperImpl {
     PageRestorationHelper.findPageRestorationMixin<ProductBrandPageRestorationMixin>(
       onGetxPageRestorationFound: (restoration) {
         restoration.productBrandPageRestorableRouteFuture.present();
-      },
-      context: context
-    );
-  }
-
-  void toProductBrandDetailPage(BuildContext context, String productBrandId) {
-    PageRestorationHelper.findPageRestorationMixin<ProductBrandDetailPageRestorationMixin>(
-      onGetxPageRestorationFound: (restoration) {
-        restoration.productBrandDetailPageRestorableRouteFuture.present(productBrandId);
       },
       context: context
     );

@@ -27,6 +27,7 @@ class ProductEntry implements ProductEntryAppearanceData, SupportCart, SupportWi
   List<ProductVariant> productVariantList;
   @override
   int soldCount;
+  bool _hasAddedToWishlist;
 
   @override
   String get cartTitle => name;
@@ -63,8 +64,9 @@ class ProductEntry implements ProductEntryAppearanceData, SupportCart, SupportWi
     required this.product,
     required this.productVariantList,
     required this.imageUrlList,
-    required this.soldCount
-  });
+    required this.soldCount,
+    required bool hasAddedToWishlist,
+  }) : _hasAddedToWishlist = hasAddedToWishlist;
 
   @override
   double? get discountPrice => product.discountPrice;
@@ -85,4 +87,7 @@ class ProductEntry implements ProductEntryAppearanceData, SupportCart, SupportWi
 
   @override
   String get supportWishlistContentId => productEntryId;
+
+  @override
+  bool get hasAddedToWishlist => _hasAddedToWishlist;
 }

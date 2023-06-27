@@ -7,6 +7,7 @@ import '../../domain/entity/wishlist/support_wishlist.dart';
 import '../controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/productbundlelistitemcontrollerstate/vertical_product_bundle_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/productlistitemcontrollerstate/vertical_product_list_item_controller_state.dart';
+import '../controllerstate/listitemcontrollerstate/searchlistitemcontrollerstate/search_container_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/title_and_description_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/wishlistlistitemcontrollerstate/wishlist_container_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/wishlistlistitemcontrollerstate/wishlist_list_item_controller_state.dart';
@@ -37,24 +38,17 @@ class SearchItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListIt
     List<ListItemControllerState> newItemTypeList
   ) {
     ListItemControllerState oldItemType = oldItemTypeWrapper.listItemControllerState;
-    if (oldItemType is WishlistContainerListItemControllerState) {
+    if (oldItemType is SearchContainerListItemControllerState) {
       List<ListItemControllerState> newListItemControllerStateList = [];
-      List<ListItemControllerState> wishlistListItemControllerStateList = oldItemType.wishlistList.map<ListItemControllerState>(
-        (wishlist) {
-          SupportWishlist supportWishlist = wishlist.supportWishlist;
-          ListItemControllerState? currentListItemControllerState;
-          if (supportWishlist is ProductAppearanceData) {
-            currentListItemControllerState = VerticalProductListItemControllerState(
-              productAppearanceData: supportWishlist as ProductAppearanceData,
-              onRemoveWishlist: (productAppearanceData) => oldItemType.onRemoveWishlistWithWishlist(wishlist),
-              onAddCart: oldItemType.onAddProductCart,
-            );
-          }
-          if (currentListItemControllerState != null) {
-            return currentListItemControllerState;
-          } else {
-            throw MessageError(title: "Support wishlist is not valid");
-          }
+      List<ListItemControllerState> wishlistListItemControllerStateList = oldItemType.productEntryList.map<ListItemControllerState>(
+        (productEntry) {
+          ListItemControllerState? currentListItemControllerState = VerticalProductListItemControllerState(
+            productAppearanceData: productEntry,
+            onRemoveWishlist: (productAppearanceData) => oldItemType.onRemoveWishlistWithProductAppearanceData(productAppearanceData),
+            onAddWishlist: (productAppearanceData) => oldItemType.onAddWishlistWithProductAppearanceData(productAppearanceData),
+            onAddCart: oldItemType.onAddProductCart,
+          );
+          return currentListItemControllerState;
         }
       ).toList();
       VerticalGridPaddingContentSubInterceptorSupportListItemControllerState verticalGridPaddingContentSubInterceptorSupportListItemControllerState = VerticalGridPaddingContentSubInterceptorSupportListItemControllerState(

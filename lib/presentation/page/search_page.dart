@@ -10,6 +10,7 @@ import '../../controller/search_controller.dart';
 import '../../domain/entity/cart/support_cart.dart';
 import '../../domain/entity/product/product_with_condition_paging_parameter.dart';
 import '../../domain/entity/product/productentry/product_entry.dart';
+import '../../domain/entity/wishlist/support_wishlist.dart';
 import '../../domain/usecase/get_product_entry_with_condition_paging_use_case.dart';
 import '../../misc/constant.dart';
 import '../../misc/controllercontentdelegate/wishlist_and_cart_controller_content_delegate.dart';
@@ -35,6 +36,7 @@ import '../widget/background_app_bar_scaffold.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/core_search_app_bar.dart';
 import 'getx_page.dart';
+import 'product_detail_page.dart';
 
 class SearchPage extends RestorableGetxPage<_SearchPageRestoration> {
   late final ControllerMember<SearchController> _searchController = ControllerMember<SearchController>().addToControllerManager(controllerManager);
@@ -69,7 +71,7 @@ class SearchPage extends RestorableGetxPage<_SearchPageRestoration> {
   }
 }
 
-class _SearchPageRestoration extends MixableGetxPageRestoration {
+class _SearchPageRestoration extends MixableGetxPageRestoration with ProductDetailPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
@@ -215,7 +217,7 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
     LoadDataResult<PagingDataResult<ProductEntry>> productEntryLoadDataResult = await widget.searchController.getProductEntrySearch(
       ProductWithConditionPagingParameter(
         page: pageKey,
-        withCondition: {"search": _searchTextEditingController.text},
+        withCondition: {"product": _searchTextEditingController.text},
         onInterceptProductPagingDataResult: (productEntryPagingDataResult) {
           if (productEntryPagingDataResult.itemList.isEmpty) {
             throw SearchNotFoundError();
@@ -233,7 +235,8 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
           SearchContainerListItemControllerState(
             productEntryList: productEntryPaging.itemList,
             onUpdateState: () => setState(() {}),
-            onRemoveWishlistWithWishlist: (wishlist) => widget.searchController.wishlistAndCartControllerContentDelegate.removeFromWishlistDirectly(wishlist),
+            onRemoveWishlistWithProductAppearanceData: (productAppearanceData) => widget.searchController.wishlistAndCartControllerContentDelegate.removeFromWishlist(productAppearanceData as SupportWishlist),
+            onAddWishlistWithProductAppearanceData: (productAppearanceData) => widget.searchController.wishlistAndCartControllerContentDelegate.addToWishlist(productAppearanceData as SupportWishlist),
             onAddProductCart: (productAppearanceData) => widget.searchController.wishlistAndCartControllerContentDelegate.addToCart(productAppearanceData as SupportCart),
           )
         ];
@@ -254,6 +257,12 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
 
   @override
   Widget build(BuildContext context) {
+    widget.searchController.wishlistAndCartControllerContentDelegate.setWishlistAndCartDelegate(
+      Injector.locator<WishlistAndCartDelegateFactory>().generateWishlistAndCartDelegate(
+        onGetBuildContext: () => context,
+        onGetErrorProvider: () => Injector.locator<ErrorProvider>()
+      )
+    );
     return BackgroundAppBarScaffold(
       backgroundAppBarImage: _searchAppBarBackgroundAssetImage,
       appBar: CoreSearchAppBar(

@@ -4,8 +4,10 @@ import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 
 import '../../domain/entity/product/product.dart';
 import '../../domain/entity/product/product_detail.dart';
+import '../../domain/entity/product/productbrand/add_to_favorite_product_brand_response.dart';
 import '../../domain/entity/product/productbrand/product_brand.dart';
 import '../../domain/entity/product/productbrand/product_brand_detail.dart';
+import '../../domain/entity/product/productbrand/remove_from_favorite_product_brand_response.dart';
 import '../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../domain/entity/product/productbundle/product_bundle_detail.dart';
 import '../../domain/entity/product/productcategory/product_category.dart';
@@ -164,9 +166,22 @@ extension ProductBrandDetailMappingExt on ResponseWrapper {
       ).toList()
     );
   }
+
+  PagingDataResult<ProductBrand> mapFromResponseToFavoriteProductBrandPaging() {
+    return ResponseWrapper(response).mapFromResponseToPagingDataResult(
+      (dataResponse) => dataResponse.map<ProductBrand>(
+        (productBrandResponse) => ResponseWrapper(productBrandResponse).mapFromResponseToFavoriteProductBrand()
+      ).toList()
+    );
+  }
 }
 
 extension ProductBrandDetailEntityMappingExt on ResponseWrapper {
+  ProductBrand mapFromResponseToFavoriteProductBrand() {
+    dynamic favoriteProductBrand = response["product_brand"];
+    return ResponseWrapper(favoriteProductBrand).mapFromResponseToProductBrand();
+  }
+
   ProductBrand mapFromResponseToProductBrand() {
     return ProductBrand(
       id: response["id"],
@@ -188,6 +203,14 @@ extension ProductBrandDetailEntityMappingExt on ResponseWrapper {
       bannerMobile: response["banner_mobile"],
       shortProductList: ResponseWrapper(response["product"]).mapFromResponseToShortProductList()
     );
+  }
+
+  AddToFavoriteProductBrandResponse mapFromResponseToAddToFavoriteProductBrandResponse() {
+    return AddToFavoriteProductBrandResponse();
+  }
+
+  RemoveFromFavoriteProductBrandResponse mapFromResponseToRemoveFromFavoriteProductBrandResponse() {
+    return RemoveFromFavoriteProductBrandResponse();
   }
 }
 
@@ -283,7 +306,8 @@ extension ProductEntryDetailEntityMappingExt on ResponseWrapper {
         (productVariantResponse) => ResponseWrapper(productVariantResponse).mapFromResponseToProductVariant()
       ).toList(),
       product: ResponseWrapper(response["product"]).mapFromResponseToProduct(),
-      soldCount: response["sold"]
+      soldCount: response["sold"],
+      hasAddedToWishlist: response["has_added_to_wishlist"] ?? false,
     );
   }
 }

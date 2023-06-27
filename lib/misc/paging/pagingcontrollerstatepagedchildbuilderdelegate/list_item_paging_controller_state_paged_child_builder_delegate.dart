@@ -781,7 +781,9 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
     } else if (item is ProductDetailBrandListItemControllerState) {
       return ProductDetailBrandListItem(
         productBrand: item.productBrand,
-        onTapProductBrand: item.onTapProductBrand
+        onTapProductBrand: item.onTapProductBrand,
+        onAddToFavoriteProductBrand: item.onAddToFavoriteProductBrand,
+        onRemoveFromFavoriteProductBrand: item.onRemoveFromFavoriteProductBrand,
       );
     } else if (item is ProductCategoryHeaderListItemControllerState) {
       return ProductCategoryHeaderListItem(

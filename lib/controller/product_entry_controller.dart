@@ -14,6 +14,7 @@ import '../domain/usecase/add_wishlist_use_case.dart';
 import '../domain/usecase/get_product_entry_header_content_use_case.dart';
 import '../domain/usecase/get_product_entry_with_condition_paging_use_case.dart';
 import '../domain/usecase/remove_wishlist_use_case.dart';
+import '../misc/controllercontentdelegate/product_brand_favorite_controller_content_delegate.dart';
 import '../misc/controllercontentdelegate/wishlist_and_cart_controller_content_delegate.dart';
 import '../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../misc/error/message_error.dart';
@@ -28,15 +29,18 @@ class ProductEntryController extends BaseGetxController {
   final GetProductEntryWithConditionPagingUseCase getProductEntryWithConditionPagingUseCase;
   final GetProductEntryHeaderContentUseCase getProductEntryHeaderContentUseCase;
   final WishlistAndCartControllerContentDelegate wishlistAndCartControllerContentDelegate;
+  final ProductBrandFavoriteControllerContentDelegate productBrandFavoriteControllerContentDelegate;
   ProductEntryDelegate? _productEntryDelegate;
 
   ProductEntryController(
     super.controllerManager,
     this.getProductEntryWithConditionPagingUseCase,
     this.getProductEntryHeaderContentUseCase,
-    this.wishlistAndCartControllerContentDelegate
+    this.wishlistAndCartControllerContentDelegate,
+    this.productBrandFavoriteControllerContentDelegate
   ) {
     wishlistAndCartControllerContentDelegate.setApiRequestManager(() => apiRequestManager);
+    productBrandFavoriteControllerContentDelegate.setApiRequestManager(() => apiRequestManager);
   }
 
   IComponentEntity getProductEntryHeader(ProductEntryHeaderContentParameter productEntryHeaderContentParameter) {

@@ -13,6 +13,8 @@ import '../../domain/usecase/get_favorite_product_brand_use_case.dart';
 import '../../domain/usecase/get_product_brand_paging_use_case.dart';
 import '../../misc/additionalloadingindicatorchecker/product_bundle_additional_paging_result_parameter_checker.dart';
 import '../../misc/constant.dart';
+import '../../misc/controllercontentdelegate/product_brand_favorite_controller_content_delegate.dart';
+import '../../misc/controllercontentdelegate/wishlist_and_cart_controller_content_delegate.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/compound_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/load_data_result_dynamic_list_item_controller_state.dart';
@@ -37,7 +39,6 @@ import '../../misc/paging/pagingresult/paging_result.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/default_search_app_bar.dart';
 import 'getx_page.dart';
-import 'product_brand_detail_page.dart';
 import 'product_entry_page.dart';
 import 'search_page.dart';
 
@@ -52,6 +53,7 @@ class FavoriteProductBrandPage extends RestorableGetxPage<_FavoriteProductBrandP
       FavoriteProductBrandController(
         controllerManager,
         Injector.locator<GetFavoriteProductBrandPagingUseCase>(),
+        Injector.locator<ProductBrandFavoriteControllerContentDelegate>()
       ),
       tag: pageName
     );
@@ -221,6 +223,9 @@ class _StatefulFavoriteProductBrandControllerMediatorWidgetState extends State<_
                 }
               )
             ),
+            onRemoveFromFavoriteProductBrand: (productBrand) {
+
+            }
           )
         ];
       } else {

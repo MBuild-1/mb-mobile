@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/navigator_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/misc/string_util.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../domain/entity/order/order.dart';
 import '../presentation/widget/material_ignore_pointer.dart';
 import 'constant.dart';
+import 'dialog_helper.dart';
 import 'main_route_observer.dart';
 import 'page_restoration_helper.dart';
 import 'routeargument/login_route_argument.dart';
@@ -37,15 +40,17 @@ class _NavigationHelperImpl {
                 MaterialIgnorePointer.of(context)?.ignoring = true;
                 String targetRouteName = (targetRoute.settings.name).toEmptyStringNonNull;
                 MainRouteObserver.disposingEventRouteMap[targetRouteName] = () {
-                  WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                  WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
                     BuildContext Function()? buildContextEventFunction = MainRouteObserver.buildContextEventRouteMap[mainMenuRouteKey];
                     if (buildContextEventFunction != null) {
                       BuildContext mainMenuBuildContext = buildContextEventFunction();
                       MaterialIgnorePointer.of(mainMenuBuildContext)?.ignoring = false;
-                      Map<String, dynamic> webViewerParameter = <String, dynamic>{
-                        Constant.textEncodedUrlKey: StringUtil.encodeBase64String("https://app.midtrans.com/snap/v2/vtweb/${order.combinedOrder.orderProduct.orderDetail.snapToken}")
-                      };
-                      PageRestorationHelper.toWebViewerPage(mainMenuBuildContext, webViewerParameter);
+                      DialogHelper.showLoadingDialog(mainMenuBuildContext);
+                      await launchUrl(
+                        Uri.parse("https://app.midtrans.com/snap/v2/vtweb/${order.combinedOrder.orderProduct.orderDetail.snapToken}"),
+                        mode: LaunchMode.inAppWebView
+                      );
+                      Get.back();
                     }
                     MainRouteObserver.disposingEventRouteMap[targetRouteName] = null;
                   });
