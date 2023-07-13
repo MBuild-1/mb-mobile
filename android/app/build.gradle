@@ -21,6 +21,13 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
+def flutterCompileVersion = localProperties.getProperty('flutter.compileSdkVersion')
+if (flutterCompileVersion == null) {
+    flutterCompileVersion = 33
+} else {
+    flutterCompileVersion = localProperties.getProperty('flutter.compileSdkVersion').toInteger()
+}
+
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
@@ -47,9 +54,9 @@ android {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.masterbagasi.masterbagasi"
         minSdkVersion 21
-        targetSdkVersion 32
-        versionCode 9
-        versionName "0.0.8"
+        targetSdkVersion flutterCompileVersion
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
     }
 
     buildTypes {
