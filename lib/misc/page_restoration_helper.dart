@@ -7,6 +7,7 @@ import '../controller/crop_picture_controller.dart';
 import '../presentation/page/address_page.dart';
 import '../presentation/page/affiliate_page.dart';
 import '../presentation/page/cart_page.dart';
+import '../presentation/page/country_delivery_review_page.dart';
 import '../presentation/page/coupon_page.dart';
 import '../presentation/page/crop_picture_page.dart';
 import '../presentation/page/delivery_page.dart';
@@ -326,6 +327,28 @@ class _PageRestorationHelperImpl {
       PageRestorationHelper.findPageRestorationMixin<MsmePartnerPageRestorationMixin>(
         onGetxPageRestorationFound: (restoration) {
           restoration.msmePartnerPageRestorableRouteFuture.present();
+        },
+        context: context
+      );
+    });
+  }
+
+  void toCountryDeliveryReviewPage(String countryId, BuildContext context) {
+    LoginHelper.checkingLogin(context, () {
+      PageRestorationHelper.findPageRestorationMixin<CountryDeliveryReviewPageRestorationMixin>(
+        onGetxPageRestorationFound: (restoration) {
+          restoration.countryDeliveryReviewPageRestorableRouteFuture.present(countryId);
+        },
+        context: context
+      );
+    });
+  }
+
+  void toSearchPage(BuildContext context) {
+    LoginHelper.checkingLogin(context, () {
+      PageRestorationHelper.findPageRestorationMixin<SearchPageRestorationMixin>(
+        onGetxPageRestorationFound: (restoration) {
+          restoration.searchPageRestorableRouteFuture.present();
         },
         context: context
       );

@@ -1,12 +1,15 @@
 import '../../../../domain/entity/delivery/countrydeliveryreviewmedia/country_delivery_review_media.dart';
-import '../../../load_data_result.dart';
 import '../../../paging/pagingresult/paging_data_result.dart';
 import '../list_item_controller_state.dart';
 
-class CountryDeliveryReviewMediaShortContentListItemControllerState extends ListItemControllerState {
-  LoadDataResult<PagingDataResult<CountryDeliveryReviewMedia>> countryDeliveryReviewMediaPagingLoadDataResult;
+abstract class BaseCountryDeliveryReviewMediaShortContentListItemControllerState extends ListItemControllerState {}
+
+class ShimmerCountryDeliveryReviewMediaShortContentListItemControllerState extends BaseCountryDeliveryReviewMediaShortContentListItemControllerState {}
+
+class CountryDeliveryReviewMediaShortContentListItemControllerState extends BaseCountryDeliveryReviewMediaShortContentListItemControllerState {
+  PagingDataResult<CountryDeliveryReviewMedia> countryDeliveryReviewMediaPaging;
 
   CountryDeliveryReviewMediaShortContentListItemControllerState({
-    required this.countryDeliveryReviewMediaPagingLoadDataResult
+    required this.countryDeliveryReviewMediaPaging
   });
 }

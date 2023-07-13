@@ -25,6 +25,8 @@ import '../../../presentation/widget/cart/shortcart/vertical_short_cart_item.dar
 import '../../../presentation/widget/cart/vertical_cart_item.dart';
 import '../../../presentation/widget/colorful_chip_tab_bar.dart';
 import '../../../presentation/widget/country/vertical_country_item.dart';
+import '../../../presentation/widget/countrydeliveryreview/country_delivery_review_header_item.dart';
+import '../../../presentation/widget/countrydeliveryreview/country_delivery_review_media_short_content_item.dart';
 import '../../../presentation/widget/coupon/horizontal_coupon_item.dart';
 import '../../../presentation/widget/coupon/vertical_coupon_item.dart';
 import '../../../presentation/widget/default_video_carousel_list_item.dart';
@@ -102,6 +104,8 @@ import '../../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstat
 import '../../controllerstate/listitemcontrollerstate/colorful_chip_tab_bar_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/colorful_divider_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/column_container_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/countrydeliveryreviewlistitemcontrollerstate/country_delivery_review_header_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/countrydeliveryreviewlistitemcontrollerstate/country_delivery_review_media_short_content_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/couponlistitemcontrollerstate/coupon_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/couponlistitemcontrollerstate/horizontal_coupon_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/couponlistitemcontrollerstate/vertical_coupon_list_item_controller_state.dart';
@@ -1004,6 +1008,22 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
       return FaqDetailItem(
         faq: item.faq
       );
+    } else if (item is BaseCountryDeliveryReviewHeaderListItemControllerState) {
+      if (item is ShimmerCountryDeliveryReviewHeaderListItemControllerState) {
+        return const ShimmerCountryDeliveryReviewHeaderItem();
+      } else if (item is CountryDeliveryReviewHeaderListItemControllerState) {
+        return const CountryDeliveryReviewHeaderItem();
+      } else {
+        return Container();
+      }
+    } else if (item is BaseCountryDeliveryReviewMediaShortContentListItemControllerState) {
+      if (item is ShimmerCountryDeliveryReviewMediaShortContentListItemControllerState) {
+        return const ShimmerCountryDeliveryReviewMediaShortContentItem();
+      } else if (item is CountryDeliveryReviewMediaShortContentListItemControllerState) {
+        return const CountryDeliveryReviewMediaShortContentItem();
+      } else {
+        return Container();
+      }
     } else {
       return Container();
     }

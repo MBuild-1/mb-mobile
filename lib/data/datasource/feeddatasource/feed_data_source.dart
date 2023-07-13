@@ -1,6 +1,8 @@
 import '../../../domain/entity/delivery/check_your_contribution_delivery_review_detail_parameter.dart';
 import '../../../domain/entity/delivery/check_your_contribution_delivery_review_detail_response.dart';
 import '../../../domain/entity/delivery/country_delivery_review.dart';
+import '../../../domain/entity/delivery/country_delivery_review_header_content.dart';
+import '../../../domain/entity/delivery/country_delivery_review_header_content_parameter.dart';
 import '../../../domain/entity/delivery/country_delivery_review_paging_parameter.dart';
 import '../../../domain/entity/delivery/countrydeliveryreviewmedia/country_delivery_review_media.dart';
 import '../../../domain/entity/delivery/countrydeliveryreviewmedia/country_delivery_review_media_paging_parameter.dart';
@@ -32,4 +34,5 @@ abstract class FeedDataSource {
   FutureProcessing<GiveReviewDeliveryReviewDetailResponse> giveReviewDeliveryReviewDetail(GiveReviewDeliveryReviewDetailParameter giveReviewDeliveryReviewDetailParameter);
   FutureProcessing<PagingDataResult<CountryDeliveryReview>> countryDeliveryReviewPaging(CountryDeliveryReviewPagingParameter countryDeliveryReviewPagingParameter);
   FutureProcessing<PagingDataResult<CountryDeliveryReviewMedia>> countryDeliveryReviewMediaPaging(CountryDeliveryReviewMediaPagingParameter countryDeliveryReviewMediaPagingParameter);
+  FutureProcessing<CountryDeliveryReviewHeaderContent> countryDeliveryReviewHeaderContent(CountryDeliveryReviewHeaderContentParameter countryDeliveryReviewHeaderContentParameter);
 }

@@ -453,7 +453,11 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
                       onTap: () async {
                         DialogHelper.showModalDialogPage<String, String>(
                           context: context,
-                          modalDialogPageBuilder: (context, parameter) => CheckRatesForVariousCountriesModalDialogPage(),
+                          modalDialogPageBuilder: (context, parameter) => CheckRatesForVariousCountriesModalDialogPage(
+                            onGotoCountryDeliveryReview: (countryId) => PageRestorationHelper.toCountryDeliveryReviewPage(
+                              countryId, context
+                            ),
+                          ),
                         );
                       },
                       child: Padding(

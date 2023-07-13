@@ -178,6 +178,7 @@ class _ConstantImpl {
   AspectRatioValue get aspectRatioValueTransparentBanner => AspectRatioValue(width: 2500.0, height: 986.0);
   AspectRatioValue get aspectRatioValueHomepageBanner => AspectRatioValue(width: 2126.0, height: 1181.0);
   AspectRatioValue get aspectRatioValueShippingPriceBanner => AspectRatioValue(width: 692.0, height: 456.0);
+  AspectRatioValue get aspectRatioValueCountryDeliveryReviewCountryBackground => AspectRatioValue(width: 360.0, height: 109.0);
 
   MultiLanguageString get multiLanguageStringIsViral => MultiLanguageString({
     textEnUsLanguageKey: "Is Viral",

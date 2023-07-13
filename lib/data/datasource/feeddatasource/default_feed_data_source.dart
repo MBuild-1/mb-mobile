@@ -7,9 +7,13 @@ import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 import '../../../domain/entity/delivery/check_your_contribution_delivery_review_detail_parameter.dart';
 import '../../../domain/entity/delivery/check_your_contribution_delivery_review_detail_response.dart';
 import '../../../domain/entity/delivery/country_delivery_review.dart';
+import '../../../domain/entity/delivery/country_delivery_review_header_content.dart';
+import '../../../domain/entity/delivery/country_delivery_review_header_content_parameter.dart';
 import '../../../domain/entity/delivery/country_delivery_review_paging_parameter.dart';
 import '../../../domain/entity/delivery/countrydeliveryreviewmedia/country_delivery_review_media.dart';
 import '../../../domain/entity/delivery/countrydeliveryreviewmedia/country_delivery_review_media_paging_parameter.dart';
+import '../../../domain/entity/delivery/countrydeliveryreviewmedia/photo_country_delivery_review_media.dart';
+import '../../../domain/entity/delivery/countrydeliveryreviewmedia/video_country_delivery_review_media.dart';
 import '../../../domain/entity/delivery/delivery_review.dart';
 import '../../../domain/entity/delivery/delivery_review_list_parameter.dart';
 import '../../../domain/entity/delivery/delivery_review_paging_parameter.dart';
@@ -289,7 +293,25 @@ class DefaultFeedDataSource implements FeedDataSource {
         page: 1,
         totalPage: 1,
         totalItem: 1,
-        itemList: []
+        itemList: [
+          PhotoCountryDeliveryReviewMedia(thumbnailUrl: ""),
+          PhotoCountryDeliveryReviewMedia(thumbnailUrl: ""),
+          VideoCountryDeliveryReviewMedia(thumbnailUrl: ""),
+          VideoCountryDeliveryReviewMedia(thumbnailUrl: ""),
+        ]
+      );
+    });
+  }
+
+  @override
+  FutureProcessing<CountryDeliveryReviewHeaderContent> countryDeliveryReviewHeaderContent(CountryDeliveryReviewHeaderContentParameter countryDeliveryReviewHeaderContentParameter) {
+    return DummyFutureProcessing((cancelToken) async {
+      await Future.delayed(const Duration(seconds: 1));
+      return CountryDeliveryReviewHeaderContent(
+        backgroundImageUrl: "",
+        rating: 5.0,
+        reviewCount: 1,
+        countryName: ""
       );
     });
   }

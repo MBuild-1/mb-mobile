@@ -14,6 +14,7 @@ import '../../../misc/dialog_helper.dart';
 import '../../../misc/errorprovider/error_provider.dart';
 import '../../../misc/injector.dart';
 import '../../../misc/load_data_result.dart';
+import '../../../misc/page_restoration_helper.dart';
 import '../../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../../widget/loaddataresultimplementer/load_data_result_implementer.dart';
 import '../../widget/rx_consumer.dart';
@@ -23,9 +24,11 @@ import 'select_countries_modal_dialog_page.dart';
 
 class CheckRatesForVariousCountriesModalDialogPage extends ModalDialogPage<CheckRatesForVariousCountriesModalDialogController> {
   CheckRatesForVariousCountriesModalDialogController get checkRatesForVariousCountriesModalDialogController => modalDialogController.controller;
+  final void Function(String) onGotoCountryDeliveryReview;
 
   CheckRatesForVariousCountriesModalDialogPage({
     Key? key,
+    required this.onGotoCountryDeliveryReview
   }) : super(key: key);
 
   @override
@@ -40,15 +43,18 @@ class CheckRatesForVariousCountriesModalDialogPage extends ModalDialogPage<Check
   Widget buildPage(BuildContext context) {
     return _StatefulCheckRatesForVariousCountriesControllerMediatorWidget(
       checkRatesForVariousCountriesModalDialogController: checkRatesForVariousCountriesModalDialogController,
+      onGotoCountryDeliveryReview: (countryId) => onGotoCountryDeliveryReview(countryId)
     );
   }
 }
 
 class _StatefulCheckRatesForVariousCountriesControllerMediatorWidget extends StatefulWidget {
   final CheckRatesForVariousCountriesModalDialogController checkRatesForVariousCountriesModalDialogController;
+  final void Function(String) onGotoCountryDeliveryReview;
 
   const _StatefulCheckRatesForVariousCountriesControllerMediatorWidget({
-    required this.checkRatesForVariousCountriesModalDialogController
+    required this.checkRatesForVariousCountriesModalDialogController,
+    required this.onGotoCountryDeliveryReview
   });
 
   @override
@@ -192,7 +198,11 @@ class _StatefulCheckRatesForVariousCountriesControllerMediatorWidgetState extend
                     ),
                     const SizedBox(height: 20),
                     SizedOutlineGradientButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        if (_selectedCountry != null) {
+                          widget.onGotoCountryDeliveryReview(_selectedCountry!.id);
+                        }
+                      },
                       text: "Delivery Review".tr,
                       outlineGradientButtonType: OutlineGradientButtonType.solid,
                       outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,

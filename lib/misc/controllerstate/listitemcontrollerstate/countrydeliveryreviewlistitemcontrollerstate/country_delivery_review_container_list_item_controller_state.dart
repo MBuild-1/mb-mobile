@@ -8,12 +8,16 @@ class CountryDeliveryReviewContainerListItemControllerState extends ListItemCont
   ErrorProvider errorProvider;
   ListItemControllerState Function() getCountryDeliveryReviewHeaderListItemControllerState;
   ListItemControllerState Function() getCountryDeliveryReviewMediaShortContentListItemControllerState;
+  CountryDeliveryReviewContainerStorageListItemControllerState countryDeliveryReviewContainerStorageListItemControllerState;
 
   CountryDeliveryReviewContainerListItemControllerState({
     required this.countryDeliveryReviewList,
     required this.onUpdateState,
     required this.errorProvider,
     required this.getCountryDeliveryReviewHeaderListItemControllerState,
-    required this.getCountryDeliveryReviewMediaShortContentListItemControllerState
+    required this.getCountryDeliveryReviewMediaShortContentListItemControllerState,
+    required this.countryDeliveryReviewContainerStorageListItemControllerState
   });
 }
+
+abstract class CountryDeliveryReviewContainerStorageListItemControllerState extends ListItemControllerState {}
