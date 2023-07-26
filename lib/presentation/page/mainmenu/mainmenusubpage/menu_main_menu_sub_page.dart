@@ -162,7 +162,7 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
             title: 'Inbox'.tr,
           ),
           ProfileMenuListItemControllerState(
-            onTap: (context) => DialogHelper.showPromptUnderConstruction(context),
+            onTap: (context) => PageRestorationHelper.toHelpPage(context),
             icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorSupportMessage, width: 20.0),
             title: 'Support Message'.tr,
           ),

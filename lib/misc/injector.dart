@@ -16,6 +16,8 @@ import '../data/datasource/cargodatasource/cargo_data_source.dart';
 import '../data/datasource/cargodatasource/default_cargo_data_source.dart';
 import '../data/datasource/cartdatasource/cart_data_source.dart';
 import '../data/datasource/cartdatasource/default_cart_data_source.dart';
+import '../data/datasource/chatdatasource/chat_data_source.dart';
+import '../data/datasource/chatdatasource/default_chat_data_source.dart';
 import '../data/datasource/coupondatasource/coupon_data_source.dart';
 import '../data/datasource/coupondatasource/default_coupon_data_source.dart';
 import '../data/datasource/faqdatasource/default_faq_data_source.dart';
@@ -36,6 +38,7 @@ import '../data/repository/default_address_repository.dart';
 import '../data/repository/default_banner_repository.dart';
 import '../data/repository/default_cargo_repository.dart';
 import '../data/repository/default_cart_repository.dart';
+import '../data/repository/default_chat_repository.dart';
 import '../data/repository/default_coupon_repository.dart';
 import '../data/repository/default_faq_repository.dart';
 import '../data/repository/default_feed_repository.dart';
@@ -65,6 +68,7 @@ import '../domain/repository/address_repository.dart';
 import '../domain/repository/banner_repository.dart';
 import '../domain/repository/cargo_repository.dart';
 import '../domain/repository/cart_repository.dart';
+import '../domain/repository/chat_repository.dart';
 import '../domain/repository/coupon_repository.dart';
 import '../domain/repository/faq_repository.dart';
 import '../domain/repository/feed_repository.dart';
@@ -79,9 +83,11 @@ import '../domain/usecase/add_host_cart_use_case.dart';
 import '../domain/usecase/add_to_cart_use_case.dart';
 import '../domain/usecase/add_to_favorite_product_brand_use_case.dart';
 import '../domain/usecase/add_wishlist_use_case.dart';
+import '../domain/usecase/answer_help_conversation_use_case.dart';
 import '../domain/usecase/change_additional_item_use_case.dart';
 import '../domain/usecase/change_address_use_case.dart';
 import '../domain/usecase/check_rates_for_various_countries_use_case.dart';
+import '../domain/usecase/create_help_conversation_use_case.dart';
 import '../domain/usecase/create_order_use_case.dart';
 import '../domain/usecase/get_additional_item_use_case.dart';
 import '../domain/usecase/get_address_based_id_use_case.dart';
@@ -104,6 +110,8 @@ import '../domain/usecase/get_delivery_review_use_case.dart';
 import '../domain/usecase/get_faq_list_use_case.dart';
 import '../domain/usecase/get_favorite_product_brand_use_case.dart';
 import '../domain/usecase/get_handycrafts_contents_banner_use_case.dart';
+import '../domain/usecase/get_help_message_by_conversation_use_case.dart';
+import '../domain/usecase/get_help_message_by_user_use_case.dart';
 import '../domain/usecase/get_history_delivery_review_paging_use_case.dart';
 import '../domain/usecase/get_homepage_contents_banner_use_case.dart';
 import '../domain/usecase/get_kitchen_contents_banner_use_case.dart';
@@ -156,6 +164,7 @@ import '../domain/usecase/remove_wishlist_based_product_use_case.dart';
 import '../domain/usecase/remove_wishlist_use_case.dart';
 import '../domain/usecase/take_friend_cart_use_case.dart';
 import '../domain/usecase/update_current_selected_address_use_case.dart';
+import '../domain/usecase/update_read_status_help_conversation_use_case.dart';
 import 'additionalloadingindicatorchecker/cart_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/coupon_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/feed_sub_additional_paging_result_parameter_checker.dart';
@@ -490,6 +499,11 @@ class _Injector {
     locator.registerLazySingleton<GetCountryListUseCase>(() => GetCountryListUseCase(addressRepository: locator()));
     locator.registerLazySingleton<GetCountryPagingUseCase>(() => GetCountryPagingUseCase(addressRepository: locator()));
     locator.registerLazySingleton<GetFaqListUseCase>(() => GetFaqListUseCase(faqRepository: locator()));
+    locator.registerLazySingleton<AnswerHelpConversationUseCase>(() => AnswerHelpConversationUseCase(chatRepository: locator()));
+    locator.registerLazySingleton<CreateHelpConversationUseCase>(() => CreateHelpConversationUseCase(chatRepository: locator()));
+    locator.registerLazySingleton<UpdateReadStatusHelpConversationUseCase>(() => UpdateReadStatusHelpConversationUseCase(chatRepository: locator()));
+    locator.registerLazySingleton<GetHelpMessageByUserUseCase>(() => GetHelpMessageByUserUseCase(chatRepository: locator()));
+    locator.registerLazySingleton<GetHelpMessageByConversationUseCase>(() => GetHelpMessageByConversationUseCase(chatRepository: locator()));
 
     // Repository
     locator.registerLazySingleton<UserRepository>(() => DefaultUserRepository(userDataSource: locator()));
@@ -513,6 +527,7 @@ class _Injector {
     locator.registerLazySingleton<OrderRepository>(() => DefaultOrderRepository(orderDataSource: locator()));
     locator.registerLazySingleton<CargoRepository>(() => DefaultCargoRepository(cargoDataSource: locator()));
     locator.registerLazySingleton<FaqRepository>(() => DefaultFaqRepository(faqDataSource: locator()));
+    locator.registerLazySingleton<ChatRepository>(() => DefaultChatRepository(chatDataSource: locator()));
 
     // Data Sources
     locator.registerLazySingleton<UserDataSource>(() => DefaultUserDataSource(dio: locator()));
@@ -539,6 +554,7 @@ class _Injector {
     locator.registerLazySingleton<OrderDataSource>(() => DefaultOrderDataSource(dio: locator()));
     locator.registerLazySingleton<CargoDataSource>(() => DefaultCargoDataSource(dio: locator()));
     locator.registerLazySingleton<FaqDataSource>(() => DefaultFaqDataSource(dio: locator()));
+    locator.registerLazySingleton<ChatDataSource>(() => DefaultChatDataSource(dio: locator()));
 
     // Dio
     locator.registerLazySingleton<Dio>(() => DioHttpClient.of());

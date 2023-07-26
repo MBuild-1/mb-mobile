@@ -14,6 +14,8 @@ import '../presentation/page/delivery_page.dart';
 import '../presentation/page/deliveryreview/delivery_review_page.dart';
 import '../presentation/page/favorite_product_brand_page.dart';
 import '../presentation/page/getx_page.dart';
+import '../presentation/page/help_chat_page.dart';
+import '../presentation/page/help_page.dart';
 import '../presentation/page/inbox_page.dart';
 import '../presentation/page/login_page.dart';
 import '../presentation/page/mainmenu/main_menu_page.dart';
@@ -349,6 +351,28 @@ class _PageRestorationHelperImpl {
       PageRestorationHelper.findPageRestorationMixin<SearchPageRestorationMixin>(
         onGetxPageRestorationFound: (restoration) {
           restoration.searchPageRestorableRouteFuture.present();
+        },
+        context: context
+      );
+    });
+  }
+
+  void toHelpPage(BuildContext context) {
+    LoginHelper.checkingLogin(context, () {
+      PageRestorationHelper.findPageRestorationMixin<HelpPageRestorationMixin>(
+        onGetxPageRestorationFound: (restoration) {
+          restoration.helpPageRestorableRouteFuture.present();
+        },
+        context: context
+      );
+    });
+  }
+
+  void toHelpChatPage(BuildContext context) {
+    LoginHelper.checkingLogin(context, () {
+      PageRestorationHelper.findPageRestorationMixin<HelpChatPageRestorationMixin>(
+        onGetxPageRestorationFound: (restoration) {
+          restoration.helpChatPageRestorableRouteFuture.present();
         },
         context: context
       );

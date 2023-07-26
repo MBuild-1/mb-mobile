@@ -31,6 +31,7 @@ import '../widget/modifiedappbar/modified_app_bar.dart';
 import '../widget/titleanddescriptionitem/title_and_description_item.dart';
 import 'deliveryreview/delivery_review_page.dart';
 import 'getx_page.dart';
+import 'help_page.dart';
 import 'product_discussion_page.dart';
 
 class InboxPage extends RestorableGetxPage<_InboxPageRestoration> {
@@ -62,7 +63,7 @@ class InboxPage extends RestorableGetxPage<_InboxPageRestoration> {
   }
 }
 
-class _InboxPageRestoration extends MixableGetxPageRestoration with InboxPageRestorationMixin, ProductDiscussionPageRestorationMixin, DeliveryReviewPageRestorationMixin {
+class _InboxPageRestoration extends MixableGetxPageRestoration with InboxPageRestorationMixin, ProductDiscussionPageRestorationMixin, DeliveryReviewPageRestorationMixin, HelpPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
@@ -220,7 +221,7 @@ class _StatefulInboxControllerMediatorWidgetState extends State<_StatefulInboxCo
           ),
           DividerListItemControllerState(),
           ProfileMenuListItemControllerState(
-            onTap: (context) => DialogHelper.showPromptUnderConstruction(context),
+            onTap: (context) => PageRestorationHelper.toHelpPage(context),
             icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorSupportMessage, color: iconColor, width: 20.0),
             title: 'Support Message'.tr,
             description: "Monitor the status of assistance from Master Bagasi".tr,

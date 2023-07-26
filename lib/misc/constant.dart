@@ -41,6 +41,7 @@ class _ConstantImpl {
   String get imageCoupon => _getImagesAssets("coupon.png");
   String get imageAffiliate => _getImagesAssets("affiliate.png");
   String get imageMsmePartner => _getImagesAssets("msme_partner.png");
+  String get imageHelpMessage => _getImagesAssets("help_message.png");
 
   String get baseVectorsAssetsPath => "assets/vectors/";
   String _getVectorsAssets(String vectorAssetsPath) => "$baseVectorsAssetsPath$vectorAssetsPath";
@@ -91,6 +92,7 @@ class _ConstantImpl {
   String get vectorChat => _getVectorsAssets("chat.svg");
   String get vectorDeliveryReview2 => _getVectorsAssets("delivery_review_2.svg");
   String get vectorProductDiscussion2 => _getVectorsAssets("product_discussion_2.svg");
+  String get vectorDirectChat => _getVectorsAssets("direct_chat.svg");
 
   Color get colorYellow => const Color.fromRGBO(244, 184, 43, 1);
   Color get colorLightRed => const Color.fromRGBO(255, 236, 230, 1);
