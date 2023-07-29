@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../presentation/widget/colorful_chip_tab_bar.dart';
+import '../controllerstate/listitemcontrollerstate/colorful_chip_tab_bar_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/compound_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/is_running_order_list_item_controller_state.dart';
@@ -37,34 +39,20 @@ class OrderItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListIte
       ).toList();
       List<ListItemControllerState> newListItemControllerState = [];
       newListItemControllerState.add(
-        VirtualSpacingListItemControllerState(height: padding())
-      );
-      ListItemControllerState waitingForPaymentOrderListItemControllerState = PaddingContainerListItemControllerState(
-        padding: EdgeInsets.symmetric(horizontal: padding()),
-        paddingChildListItemControllerState: WaitingForPaymentOrderListItemControllerState(
-          waitingForPaymentOrderCount: 0
-        )
-      );
-      listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
-        i, ListItemControllerStateWrapper(waitingForPaymentOrderListItemControllerState), oldItemTypeList, newListItemControllerState
+        ColorfulChipTabBarListItemControllerState(
+          colorfulChipTabBarController: oldItemType.orderTabColorfulChipTabBarController,
+          colorfulChipTabBarDataList: oldItemType.orderColorfulChipTabBarDataList,
+          isWrap: false
+        ),
       );
       newListItemControllerState.add(
-        VirtualSpacingListItemControllerState(height: itemSpacing())
-      );
-      ListItemControllerState isRunningOrderListItemControllerState = PaddingContainerListItemControllerState(
-        padding: EdgeInsets.symmetric(horizontal: padding()),
-        paddingChildListItemControllerState: IsRunningOrderListItemControllerState(
-          isRunningOrderCount: 0
-        )
-      );
-      listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
-        i, ListItemControllerStateWrapper(isRunningOrderListItemControllerState), oldItemTypeList, newListItemControllerState
+        VirtualSpacingListItemControllerState(height: padding())
       );
       int j = 0;
       while (j < verticalOrderListItemControllerStateList.length) {
         ListItemControllerState listItemControllerState = CompoundListItemControllerState(
           listItemControllerState: [
-            VirtualSpacingListItemControllerState(height: itemSpacing()),
+            if (j > 0) VirtualSpacingListItemControllerState(height: itemSpacing()),
             PaddingContainerListItemControllerState(
               padding: EdgeInsets.symmetric(horizontal: padding()),
               paddingChildListItemControllerState: verticalOrderListItemControllerStateList[j],

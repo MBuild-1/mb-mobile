@@ -23,7 +23,6 @@ class ProductBrandFavoriteControllerContentDelegate extends ControllerContentDel
   ApiRequestManager Function()? _onGetApiRequestManager;
 
   void addToFavoriteProductBrand(ProductBrand productBrand) async {
-    print("${_productBrandFavoriteDelegate}, ${_onGetApiRequestManager}");
     if (_productBrandFavoriteDelegate != null && _onGetApiRequestManager != null) {
       ApiRequestManager apiRequestManager = _onGetApiRequestManager!();
       _productBrandFavoriteDelegate!.onUnfocusAllWidget();

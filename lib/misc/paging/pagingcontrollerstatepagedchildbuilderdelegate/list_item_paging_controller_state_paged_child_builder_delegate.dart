@@ -527,6 +527,7 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
       return ColorfulChipTabBar(
         colorfulChipTabBarDataList: item.colorfulChipTabBarDataList,
         colorfulChipTabBarController: item.colorfulChipTabBarController,
+        isWrap: item.isWrap
       );
     } else if (item is ShimmerColorfulChipTabBarListItemControllerState) {
       return const ShimmerColorfulChipTabBar();

@@ -12,6 +12,8 @@ import '../../domain/entity/order/order.dart';
 import '../../domain/entity/order/order_detail.dart';
 import '../../domain/entity/order/order_product.dart';
 import '../../domain/entity/order/order_product_detail.dart';
+import '../../domain/entity/order/order_product_in_order_shipping.dart';
+import '../../domain/entity/order/order_shipping.dart';
 import '../../domain/entity/order/order_summary.dart';
 import '../../domain/entity/order/support_order_product.dart';
 import '../../misc/error/message_error.dart';
@@ -63,6 +65,7 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
       coupon: response["coupon"] != null ? ResponseWrapper(response["coupon"]).mapFromResponseToCoupon() : null,
       user: ResponseWrapper(response["user"]).mapFromResponseToUser(),
       orderProduct: ResponseWrapper(response["order_product"]).mapFromResponseToOrderProduct(),
+      orderShipping: response["order_shipping"] != null ? ResponseWrapper(response["order_shipping"]).mapFromResponseToOrderShipping() : null,
       createdAt: ResponseWrapper(response["created_at"]).mapFromResponseToDateTime()!
     );
   }
@@ -78,6 +81,32 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
         (orderProductDetailResponse) => ResponseWrapper(orderProductDetailResponse).mapFromResponseToOrderProductDetail()
       ).toList(),
       additionalItemList: ResponseWrapper(response["order_send_to_warehouse_list"]).mapFromResponseToAdditionalItemList()
+    );
+  }
+
+  OrderProductInOrderShipping mapFromResponseToOrderProductInOrderShipping() {
+    return OrderProductInOrderShipping(
+      id: response["id"],
+      orderId: response["order_id"],
+      userAddressId: response["user_address_id"],
+      userAddress: response["user_address"] != null ? ResponseWrapper(response["user_address"]).mapFromResponseToAddress() : null,
+      orderProductDetailList: response["order_product_list"].map<OrderProductDetail>(
+        (orderProductDetailResponse) => ResponseWrapper(orderProductDetailResponse).mapFromResponseToOrderProductDetail()
+      ).toList(),
+      additionalItemList: ResponseWrapper(response["order_send_to_warehouse_list"]).mapFromResponseToAdditionalItemList()
+    );
+  }
+
+  OrderShipping mapFromResponseToOrderShipping() {
+    return OrderShipping(
+      id: response["id"],
+      orderId: response["order_id"],
+      orderProductId: response["order_product_id"],
+      trackingNumber: response["tracking_number"],
+      status: response["status"],
+      notes: response["notes"],
+      orderDetail: ResponseWrapper(response["order"]).mapFromResponseToOrderDetail(),
+      orderProductInOrderShipping: ResponseWrapper(response["order_product"]).mapFromResponseToOrderProductInOrderShipping()
     );
   }
 

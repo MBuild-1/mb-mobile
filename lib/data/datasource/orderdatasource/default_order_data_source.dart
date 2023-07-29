@@ -76,7 +76,7 @@ class DefaultOrderDataSource implements OrderDataSource {
   FutureProcessing<PagingDataResult<CombinedOrder>> orderPaging(OrderPagingParameter orderPagingParameter) {
     return DioHttpClientProcessing((cancelToken) {
       String pageParameterPath = "/?pageNumber=${orderPagingParameter.itemEachPageCount}&page=${orderPagingParameter.page}";
-      return dio.get("/user/order$pageParameterPath", cancelToken: cancelToken)
+      return dio.get("/user/order$pageParameterPath", queryParameters: orderPagingParameter.status.isEmpty ? {} : {"status": orderPagingParameter.status}, cancelToken: cancelToken)
         .map<PagingDataResult<CombinedOrder>>(onMap: (value) => value.wrapResponse().mapFromResponseToCombinedOrderPagingDataResult());
     });
   }

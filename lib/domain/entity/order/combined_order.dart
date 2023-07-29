@@ -1,6 +1,7 @@
 import '../coupon/coupon.dart';
 import '../user/user.dart';
 import 'order_product.dart';
+import 'order_shipping.dart';
 
 class CombinedOrder {
   String id;
@@ -17,6 +18,7 @@ class CombinedOrder {
   Coupon? coupon;
   User user;
   OrderProduct orderProduct;
+  OrderShipping? orderShipping;
   DateTime createdAt;
 
   CombinedOrder({
@@ -34,6 +36,7 @@ class CombinedOrder {
     this.coupon,
     required this.user,
     required this.orderProduct,
+    required this.orderShipping,
     required this.createdAt
   });
 }
