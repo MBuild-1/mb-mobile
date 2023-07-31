@@ -1,57 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:masterbagasi/controller/help_chat_controller.dart';
-import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
-import 'package:masterbagasi/misc/getextended/get_extended.dart';
-import 'package:masterbagasi/misc/getextended/get_restorable_route_future.dart';
-import 'package:masterbagasi/misc/manager/controller_manager.dart';
-import 'package:masterbagasi/misc/paging/pagingresult/paging_data_result.dart';
-import 'package:masterbagasi/presentation/widget/modified_paged_list_view.dart';
-import 'package:masterbagasi/presentation/widget/modifiedappbar/modified_app_bar.dart';
 
-import '../../domain/entity/chat/help/get_help_message_by_user_parameter.dart';
-import '../../domain/entity/chat/help/get_help_message_by_user_response.dart';
-import '../../domain/usecase/get_help_message_by_user_use_case.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
+import '../../misc/getextended/get_extended.dart';
+import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
+import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
+import '../widget/modified_paged_list_view.dart';
+import '../widget/modifiedappbar/modified_app_bar.dart';
 import 'getx_page.dart';
 
-class HelpChatPage extends RestorableGetxPage<_HelpChatPageRestoration> {
-  late final ControllerMember<HelpChatController> _helpChatController = ControllerMember<HelpChatController>().addToControllerManager(controllerManager);
+class OrderChatPage extends RestorableGetxPage<_OrderChatPageRestoration> {
+  late final ControllerMember<OrderChatController> _orderChatController = ControllerMember<OrderChatController>().addToControllerManager(controllerManager);
 
-  HelpChatPage({Key? key}) : super(key: key, pageRestorationId: () => "help-chat-page");
+  OrderChatPage({Key? key}) : super(key: key, pageRestorationId: () => "order-chat-page");
 
   @override
   void onSetController() {
-    _helpChatController.controller = GetExtended.put<HelpChatController>(
-      HelpChatController(
-        controllerManager,
-        Injector.locator<GetHelpMessageByUserUseCase>(),
+    _orderChatController.controller = GetExtended.put<OrderChatController>(
+      OrderChatController(
+        controllerManager
       ),
       tag: pageName
     );
   }
 
   @override
-  _HelpChatPageRestoration createPageRestoration() => _HelpChatPageRestoration();
+  _OrderChatPageRestoration createPageRestoration() => _OrderChatPageRestoration();
 
   @override
   Widget buildPage(BuildContext context) {
     return Scaffold(
-      body: _StatefulHelpChatControllerMediatorWidget(
-        helpChatController: _helpChatController.controller,
+      body: _StatefuOrderChatControllerMediatorWidget(
+        helpChatController: _orderChatController.controller,
       ),
     );
   }
 }
 
-class _HelpChatPageRestoration extends MixableGetxPageRestoration with HelpChatPageRestorationMixin {
+class _OrderChatPageRestoration extends MixableGetxPageRestoration with OrderChatPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
@@ -71,40 +64,40 @@ class _HelpChatPageRestoration extends MixableGetxPageRestoration with HelpChatP
   }
 }
 
-class HelpChatPageGetPageBuilderAssistant extends GetPageBuilderAssistant {
+class OrderChatPageGetPageBuilderAssistant extends GetPageBuilderAssistant {
   @override
-  GetPageBuilder get pageBuilder => (() => HelpChatPage());
+  GetPageBuilder get pageBuilder => (() => OrderChatPage());
 
   @override
-  GetPageBuilder get pageWithOuterGetxBuilder => (() => GetxPageBuilder.buildRestorableGetxPage(HelpChatPage()));
+  GetPageBuilder get pageWithOuterGetxBuilder => (() => GetxPageBuilder.buildRestorableGetxPage(OrderChatPage()));
 }
 
-mixin HelpChatPageRestorationMixin on MixableGetxPageRestoration {
-  late HelpChatPageRestorableRouteFuture helpChatPageRestorableRouteFuture;
+mixin OrderChatPageRestorationMixin on MixableGetxPageRestoration {
+  late OrderChatPageRestorableRouteFuture orderChatPageRestorableRouteFuture;
 
   @override
   void initState() {
     super.initState();
-    helpChatPageRestorableRouteFuture = HelpChatPageRestorableRouteFuture(restorationId: restorationIdWithPageName('help-chat-route'));
+    orderChatPageRestorableRouteFuture = OrderChatPageRestorableRouteFuture(restorationId: restorationIdWithPageName('order-chat-route'));
   }
 
   @override
   void restoreState(Restorator restorator, RestorationBucket? oldBucket, bool initialRestore) {
     super.restoreState(restorator, oldBucket, initialRestore);
-    helpChatPageRestorableRouteFuture.restoreState(restorator, oldBucket, initialRestore);
+    orderChatPageRestorableRouteFuture.restoreState(restorator, oldBucket, initialRestore);
   }
 
   @override
   void dispose() {
     super.dispose();
-    helpChatPageRestorableRouteFuture.dispose();
+    orderChatPageRestorableRouteFuture.dispose();
   }
 }
 
-class HelpChatPageRestorableRouteFuture extends GetRestorableRouteFuture {
+class OrderChatPageRestorableRouteFuture extends GetRestorableRouteFuture {
   late RestorableRouteFuture<void> _pageRoute;
 
-  HelpChatPageRestorableRouteFuture({required String restorationId}) : super(restorationId: restorationId) {
+  OrderChatPageRestorableRouteFuture({required String restorationId}) : super(restorationId: restorationId) {
     _pageRoute = RestorableRouteFuture<void>(
       onPresent: (NavigatorState navigator, Object? arguments) {
         return navigator.restorablePush(_pageRouteBuilder, arguments: arguments);
@@ -114,7 +107,7 @@ class HelpChatPageRestorableRouteFuture extends GetRestorableRouteFuture {
 
   static Route<void>? _getRoute([Object? arguments]) {
     return GetExtended.toWithGetPageRouteReturnValue<void>(
-      GetxPageBuilder.buildRestorableGetxPageBuilder(HelpChatPageGetPageBuilderAssistant())
+      GetxPageBuilder.buildRestorableGetxPageBuilder(OrderChatPageGetPageBuilderAssistant())
     );
   }
 
@@ -140,40 +133,40 @@ class HelpChatPageRestorableRouteFuture extends GetRestorableRouteFuture {
   }
 }
 
-class _StatefulHelpChatControllerMediatorWidget extends StatefulWidget {
-  final HelpChatController helpChatController;
+class _StatefulOrderChatControllerMediatorWidget extends StatefulWidget {
+  final OrderChatController helpChatController;
 
-  const _StatefulHelpChatControllerMediatorWidget({
-    required this.helpChatController
+  const _StatefulOrderChatControllerMediatorWidget({
+    required this.orderChatController
   });
 
   @override
-  State<_StatefulHelpChatControllerMediatorWidget> createState() => _StatefulHelpChatControllerMediatorWidgetState();
+  State<_StatefulOrderChatControllerMediatorWidget> createState() => _StatefulOrderChatControllerMediatorWidgetState();
 }
 
-class _StatefulHelpChatControllerMediatorWidgetState extends State<_StatefulHelpChatControllerMediatorWidget> {
-  late final ScrollController _helpChatScrollController;
-  late final ModifiedPagingController<int, ListItemControllerState> _helpChatListItemPagingController;
-  late final PagingControllerState<int, ListItemControllerState> _helpChatListItemPagingControllerState;
+class _StatefulOrderChatControllerMediatorWidgetState extends State<_StatefulOrderChatControllerMediatorWidget> {
+  late final ScrollController _orderChatScrollController;
+  late final ModifiedPagingController<int, ListItemControllerState> _orderChatListItemPagingController;
+  late final PagingControllerState<int, ListItemControllerState> _orderChatListItemPagingControllerState;
 
   @override
   void initState() {
     super.initState();
-    _helpChatScrollController = ScrollController();
-    _helpChatListItemPagingController = ModifiedPagingController<int, ListItemControllerState>(
+    _orderChatScrollController = ScrollController();
+    _orderChatListItemPagingController = ModifiedPagingController<int, ListItemControllerState>(
       firstPageKey: 1,
       // ignore: invalid_use_of_protected_member
       apiRequestManager: widget.helpChatController.apiRequestManager
     );
-    _helpChatListItemPagingControllerState = PagingControllerState(
-      pagingController: _helpChatListItemPagingController,
+    _orderChatListItemPagingControllerState = PagingControllerState(
+      pagingController: _orderChatListItemPagingController,
       isPagingControllerExist: false
     );
-    _helpChatListItemPagingControllerState.pagingController.addPageRequestListenerWithItemListForLoadDataResult(
+    _orderChatListItemPagingControllerState.pagingController.addPageRequestListenerWithItemListForLoadDataResult(
       listener: _helpChatListItemPagingControllerStateListener,
       onPageKeyNext: (pageKey) => pageKey + 1
     );
-    _helpChatListItemPagingControllerState.isPagingControllerExist = true;
+    _orderChatListItemPagingControllerState.isPagingControllerExist = true;
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _helpChatListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? listItemControllerStateList) async {
@@ -205,7 +198,7 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<_StatefulHelp
           children: [
             Expanded(
               child: ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
-                pagingControllerState: _helpChatListItemPagingControllerState,
+                pagingControllerState: _orderChatListItemPagingControllerState,
                 onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
                   pagingControllerState: pagingControllerState!
                 ),

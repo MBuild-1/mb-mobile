@@ -8,6 +8,14 @@ import '../../domain/entity/chat/help/get_help_message_by_user_parameter.dart';
 import '../../domain/entity/chat/help/get_help_message_by_user_response.dart';
 import '../../domain/entity/chat/help/update_read_status_help_conversation_parameter.dart';
 import '../../domain/entity/chat/help/update_read_status_help_conversation_response.dart';
+import '../../domain/entity/chat/order/answer_order_conversation_parameter.dart';
+import '../../domain/entity/chat/order/answer_order_conversation_response.dart';
+import '../../domain/entity/chat/order/get_order_message_by_conversation_parameter.dart';
+import '../../domain/entity/chat/order/get_order_message_by_conversation_response.dart';
+import '../../domain/entity/chat/order/get_order_message_by_user_parameter.dart';
+import '../../domain/entity/chat/order/get_order_message_by_user_response.dart';
+import '../../domain/entity/chat/order/update_read_status_order_conversation_parameter.dart';
+import '../../domain/entity/chat/order/update_read_status_order_conversation_response.dart';
 import '../../domain/repository/chat_repository.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/processing/future_processing.dart';
@@ -43,5 +51,30 @@ class DefaultChatRepository implements ChatRepository {
   @override
   FutureProcessing<LoadDataResult<GetHelpMessageByUserResponse>> getHelpMessageByUser(GetHelpMessageByUserParameter getHelpMessageByUserParameter) {
     return chatDataSource.getHelpMessageByUserResponse(getHelpMessageByUserParameter).mapToLoadDataResult<GetHelpMessageByUserResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<CreateHelpConversationResponse>> createOrderConversation(CreateHelpConversationParameter createHelpConversationParameter) {
+    return chatDataSource.createOrderConversation(createHelpConversationParameter).mapToLoadDataResult<CreateHelpConversationResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<UpdateReadStatusOrderConversationResponse>> updateReadStatusOrderConversation(UpdateReadStatusOrderConversationParameter updateReadStatusOrderConversationParameter) {
+    return chatDataSource.updateReadStatusOrderConversation(updateReadStatusOrderConversationParameter).mapToLoadDataResult<CreateHelpConversationResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<AnswerOrderConversationResponse>> answerOrderConversation(AnswerOrderConversationParameter answerOrderConversationParameter) {
+    return chatDataSource.answerOrderConversation(answerOrderConversationParameter).mapToLoadDataResult<AnswerOrderConversationResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<GetOrderMessageByConversationResponse>> getOrderMessageByConversation(GetOrderMessageByConversationParameter getOrderMessageByConversationParameter) {
+    return chatDataSource.getOrderMessageByConversation(getOrderMessageByConversationParameter).mapToLoadDataResult<AnswerOrderConversationResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<GetOrderMessageByUserResponse>> getOrderMessageByUser(GetOrderMessageByUserParameter getOrderMessageByUserParameter) {
+    return chatDataSource.getOrderMessageByUser(getOrderMessageByUserParameter).mapToLoadDataResult<AnswerOrderConversationResponse>();
   }
 }
