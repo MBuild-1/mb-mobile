@@ -58,6 +58,7 @@ import '../../../../misc/parameterizedcomponententityandlistitemcontrollerstatem
 import '../../../../misc/shimmercarousellistitemgenerator/factory/product_bundle_shimmer_carousel_list_item_generator_factory.dart';
 import '../../../../misc/shimmercarousellistitemgenerator/type/product_bundle_shimmer_carousel_list_item_generator_type.dart';
 import '../../../widget/background_app_bar_scaffold.dart';
+import '../../../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../../../widget/modified_paged_list_view.dart';
 import '../../../widget/modifiedappbar/main_menu_search_app_bar.dart';
 import '../../../widget/modifiedcachednetworkimage/transparent_banner_modified_cached_network_image.dart';
@@ -448,22 +449,25 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
                   aspectRatioValue: Constant.aspectRatioValueShippingPriceBanner
                 ),
                 WidgetSubstitutionListItemControllerState(
-                  widgetSubstitution: (BuildContext context, int index) => Material(
-                    child: InkWell(
-                      onTap: () async {
-                        DialogHelper.showModalDialogPage<String, String>(
-                          context: context,
-                          modalDialogPageBuilder: (context, parameter) => CheckRatesForVariousCountriesModalDialogPage(
-                            onGotoCountryDeliveryReview: (countryId) => PageRestorationHelper.toCountryDeliveryReviewPage(
-                              countryId, context
+                  widgetSubstitution: (BuildContext context, int index) => Padding(
+                    padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem, vertical: 10),
+                    child: Align(
+                      child: SizedOutlineGradientButton(
+                        width: double.infinity,
+                        outlineGradientButtonType: OutlineGradientButtonType.solid,
+                        onPressed: () async {
+                          DialogHelper.showModalDialogPage<String, String>(
+                            context: context,
+                            modalDialogPageBuilder: (context, parameter) => CheckRatesForVariousCountriesModalDialogPage(
+                              onGotoCountryDeliveryReview: (countryId) => PageRestorationHelper.toCountryDeliveryReviewPage(
+                                countryId, context
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem, vertical: 10),
-                        child: Align(child: Text("Check Rates to Other Countries".tr), alignment: Alignment.topLeft)
-                      )
+                          );
+                        },
+                        text: "Check Rates to Other Countries".tr,
+                      ),
+                      alignment: Alignment.topLeft
                     )
                   )
                 )
