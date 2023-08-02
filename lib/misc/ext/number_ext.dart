@@ -32,7 +32,7 @@ extension NumExt on num? {
     if (zeroResult.isZero) {
       return "Free".tr;
     } else {
-      return NumberFormat.currency(locale: "id", symbol: "Rp").format(zeroResult.effectiveNum);
+      return NumberFormat.currency(locale: "id", symbol: "Rp", decimalDigits: 0).format(zeroResult.effectiveNum);
     }
   }
 }
