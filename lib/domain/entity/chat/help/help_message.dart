@@ -1,4 +1,5 @@
 import '../../user/user.dart';
+import '../user_chat.dart';
 
 class HelpMessage {
   String id;
@@ -9,7 +10,7 @@ class HelpMessage {
   DateTime? createdAt;
   DateTime? updatedAt;
   DateTime? deletedAt;
-  User user;
+  UserChat userChat;
 
   HelpMessage({
     required this.id,
@@ -20,6 +21,6 @@ class HelpMessage {
     required this.createdAt,
     required this.updatedAt,
     required this.deletedAt,
-    required this.user
+    required this.userChat
   });
 }

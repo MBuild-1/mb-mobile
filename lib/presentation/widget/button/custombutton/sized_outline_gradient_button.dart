@@ -18,6 +18,7 @@ class SizedOutlineGradientButton extends StatelessWidget {
   final double? height;
   final VoidCallback? onPressed;
   final Widget? child;
+  final Widget Function(TextStyle?)? childInterceptor;
   final String? text;
   final VoidCallback? onLongPress;
   final ValueChanged<bool>? onHover;
@@ -35,6 +36,7 @@ class SizedOutlineGradientButton extends StatelessWidget {
     this.height,
     required this.onPressed,
     this.child,
+    this.childInterceptor,
     required this.text,
     this.onLongPress,
     this.onHover,
@@ -63,6 +65,7 @@ class SizedOutlineGradientButton extends StatelessWidget {
       stops: const [1],
       colors: [disabledBackgroundColor],
     );
+    TextStyle? textStyle = onPressed != null ? gradientButtonVariation.textStyle : disabledTextStyle;
     return SizedBox(
       width: width,
       height: height,
@@ -79,12 +82,14 @@ class SizedOutlineGradientButton extends StatelessWidget {
         onFocusChange: onFocusChange,
         focusNode: focusNode,
         autofocus: autofocus,
-        child: child != null ? child! : Center(
-          child: Text(
-            text.toEmptyStringNonNull,
-            style: onPressed != null ? gradientButtonVariation.textStyle : disabledTextStyle,
+        child: childInterceptor != null ? childInterceptor!(textStyle) : (
+          child != null ? child! : Center(
+            child: Text(
+              text.toEmptyStringNonNull,
+              style: textStyle,
+            )
           )
-        ),
+        )
       )
     );
   }

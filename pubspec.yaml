@@ -77,7 +77,7 @@ dependencies:
   image: ^4.0.15
   touchable: ^1.0.2
   svg_path_parser: ^1.1.1
-  google_sign_in: ^6.1.0
+  google_sign_in: ^6.1.4
   add_2_calendar: ^2.1.2
   encrypt: ^5.0.1
   tuple: ^2.0.1

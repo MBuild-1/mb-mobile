@@ -12,6 +12,6 @@ class GetOrderMessageByUserUseCase {
   });
 
   FutureProcessing<LoadDataResult<GetOrderMessageByUserResponse>> execute(GetOrderMessageByUserParameter getOrderMessageByUserParameter) {
-    return chatRepository.get(getHelpMessageByUserParameter);
+    return chatRepository.getOrderMessageByUser(getOrderMessageByUserParameter);
   }
 }

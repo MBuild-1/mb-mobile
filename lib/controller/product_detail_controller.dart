@@ -351,6 +351,10 @@ class ProductDetailController extends BaseGetxController {
       }
     }
   }
+
+  void chatProduct() async {
+
+  }
 }
 
 class ProductDetailMainMenuDelegate {

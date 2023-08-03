@@ -23,6 +23,7 @@ import '../../../presentation/widget/cart/horizontal_cart_item.dart';
 import '../../../presentation/widget/cart/shortcart/horizontal_short_cart_item.dart';
 import '../../../presentation/widget/cart/shortcart/vertical_short_cart_item.dart';
 import '../../../presentation/widget/cart/vertical_cart_item.dart';
+import '../../../presentation/widget/chat/chat_bubble.dart';
 import '../../../presentation/widget/colorful_chip_tab_bar.dart';
 import '../../../presentation/widget/country/vertical_country_item.dart';
 import '../../../presentation/widget/countrydeliveryreview/country_delivery_review_header_item.dart';
@@ -101,6 +102,7 @@ import '../../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstat
 import '../../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/shortcartlistitemcontrollerstate/short_cart_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/shortcartlistitemcontrollerstate/vertical_short_cart_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/vertical_cart_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/chatlistitemcontrollerstate/chat_bubble_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/colorful_chip_tab_bar_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/colorful_divider_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/column_container_list_item_controller_state.dart';
@@ -1025,6 +1027,10 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
       } else {
         return Container();
       }
+    } else if (item is ChatBubbleListItemControllerState) {
+      return ChatBubble(
+        helpMessage: item.helpMessage
+      );
     } else {
       return Container();
     }

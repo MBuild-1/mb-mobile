@@ -8,6 +8,7 @@ import '../../../misc/constant.dart';
 import '../../../misc/page_restoration_helper.dart';
 import '../button/add_or_remove_wishlist_button.dart';
 import '../button/custombutton/sized_outline_gradient_button.dart';
+import '../modified_svg_picture.dart';
 import '../modified_vertical_divider.dart';
 import '../modifiedcachednetworkimage/product_bundle_modified_cached_network_image.dart';
 import '../rating_indicator.dart';
@@ -120,6 +121,17 @@ abstract class ProductBundleItem extends StatelessWidget {
                                         text: "+ ${"Cart".tr}",
                                         outlineGradientButtonType: OutlineGradientButtonType.outline,
                                         outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
+                                        childInterceptor: (textStyle) {
+                                          return Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              ModifiedSvgPicture.asset(
+                                                Constant.vectorCart,
+                                                color: Colors.grey.shade600,
+                                              )
+                                            ],
+                                          );
+                                        },
                                       )
                                     )
                                   ],

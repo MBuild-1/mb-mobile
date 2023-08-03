@@ -13,6 +13,7 @@ import 'package:masterbagasi/presentation/widget/modifiedappbar/modified_app_bar
 import '../../domain/entity/chat/help/get_help_message_by_user_parameter.dart';
 import '../../domain/entity/chat/help/get_help_message_by_user_response.dart';
 import '../../domain/usecase/get_help_message_by_user_use_case.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/chatlistitemcontrollerstate/chat_bubble_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
 import '../../misc/injector.dart';
@@ -182,7 +183,11 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<_StatefulHelp
     );
     return getHelpMessageByUserResponseLoadDataResult.map<PagingResult<ListItemControllerState>>((getHelpMessageByUserResponse) {
       return PagingDataResult<ListItemControllerState>(
-        itemList: [],
+        itemList: getHelpMessageByUserResponse.helpMessageList.map<ListItemControllerState>(
+          (helpMessage) => ChatBubbleListItemControllerState(
+            helpMessage: helpMessage
+          )
+        ).toList(),
         page: 1,
         totalPage: 1,
         totalItem: 1

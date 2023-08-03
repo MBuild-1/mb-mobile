@@ -21,6 +21,7 @@ import '../../../domain/entity/address/remove_address_parameter.dart';
 import '../../../domain/entity/address/remove_address_response.dart';
 import '../../../domain/entity/address/update_current_selected_address_parameter.dart';
 import '../../../domain/entity/address/update_current_selected_address_response.dart';
+import '../../../misc/constant.dart';
 import '../../../misc/option_builder.dart';
 import '../../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../../misc/processing/dio_http_client_processing.dart';
@@ -39,13 +40,41 @@ class DefaultAddressDataSource implements AddressDataSource {
 
   @override
   FutureProcessing<CurrentSelectedAddressResponse> currentSelectedAddress(CurrentSelectedAddressParameter currentSelectedAddressParameter) {
-    return DioHttpClientProcessing((cancelToken) {
-      return dio.get("/user/address", queryParameters: {"isPrimary": 1}, cancelToken: cancelToken)
-        .map<CurrentSelectedAddressResponse>(
-          onMap: (value) => CurrentSelectedAddressResponse(
-            address: value.wrapResponse().mapFromResponseToAddress()
-          )
+    return DioHttpClientProcessing((cancelToken) async {
+      try {
+        return await (
+          dio.get("/user/address", queryParameters: {"isPrimary": 1}, cancelToken: cancelToken)
+            .map<CurrentSelectedAddressResponse>(
+              onMap: (value) => CurrentSelectedAddressResponse(
+                address: value.wrapResponse().mapFromResponseToAddress()
+              )
+            )
         );
+      } on DioError catch (e) {
+        Response<dynamic>? newResponse = e.response;
+        if (newResponse != null) {
+          Map<String, dynamic> newResponseData = newResponse.data;
+          dynamic message = newResponseData["meta"]["message"];
+          if (message is String) {
+            String messageString = message;
+            if (messageString.toLowerCase().contains("please login first")) {
+              newResponseData["meta"]["message"] = {
+                Constant.textEnUsLanguageKey: messageString,
+                Constant.textInIdLanguageKey: "Silahkan Login Terlebih Dahulu!"
+              };
+            }
+          }
+        }
+        DioError newDioError = DioError(
+          requestOptions: e.requestOptions,
+          response: e.response,
+          type: e.type,
+          error: e.error
+        );
+        throw newDioError;
+      } catch (e) {
+        rethrow;
+      }
     });
   }
 

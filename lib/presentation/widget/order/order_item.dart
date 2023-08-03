@@ -120,7 +120,6 @@ abstract class OrderItem extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 15),
                 Builder(
                   builder: (context) {
                     bool showOrderShippingPayment = false;
@@ -133,6 +132,7 @@ abstract class OrderItem extends StatelessWidget {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          const SizedBox(height: 15),
                           Builder(
                             builder: (context) {
                               return Container(

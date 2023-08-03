@@ -616,6 +616,17 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
                 padding: const EdgeInsets.all(16.0),
                 child: Row(
                   children: [
+                    SizedBox(
+                      width: 50,
+                      child: SizedOutlineGradientButton(
+                        text: '',
+                        width: double.infinity,
+                        outlineGradientButtonType: OutlineGradientButtonType.outline,
+                        onPressed: widget.productDetailController.chatProduct,
+                        child: const Icon(Icons.chat, size: 16)
+                      ),
+                    ),
+                    const SizedBox(width: 10),
                     Expanded(
                       child: SizedOutlineGradientButton(
                         width: double.infinity,

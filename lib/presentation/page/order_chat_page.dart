@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 
+import '../../controller/order_chat_controller.dart';
+import '../../domain/entity/chat/order/get_order_message_by_user_parameter.dart';
+import '../../domain/entity/chat/order/get_order_message_by_user_response.dart';
+import '../../domain/usecase/get_order_message_by_user_use_case.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
 import '../../misc/load_data_result.dart';
+import '../../misc/manager/controller_manager.dart';
 import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
@@ -25,7 +31,8 @@ class OrderChatPage extends RestorableGetxPage<_OrderChatPageRestoration> {
   void onSetController() {
     _orderChatController.controller = GetExtended.put<OrderChatController>(
       OrderChatController(
-        controllerManager
+        controllerManager,
+        Injector.locator<GetOrderMessageByUserUseCase>()
       ),
       tag: pageName
     );
@@ -37,8 +44,8 @@ class OrderChatPage extends RestorableGetxPage<_OrderChatPageRestoration> {
   @override
   Widget buildPage(BuildContext context) {
     return Scaffold(
-      body: _StatefuOrderChatControllerMediatorWidget(
-        helpChatController: _orderChatController.controller,
+      body: _StatefulOrderChatControllerMediatorWidget(
+        orderChatController: _orderChatController.controller,
       ),
     );
   }
@@ -134,7 +141,7 @@ class OrderChatPageRestorableRouteFuture extends GetRestorableRouteFuture {
 }
 
 class _StatefulOrderChatControllerMediatorWidget extends StatefulWidget {
-  final OrderChatController helpChatController;
+  final OrderChatController orderChatController;
 
   const _StatefulOrderChatControllerMediatorWidget({
     required this.orderChatController
@@ -156,7 +163,7 @@ class _StatefulOrderChatControllerMediatorWidgetState extends State<_StatefulOrd
     _orderChatListItemPagingController = ModifiedPagingController<int, ListItemControllerState>(
       firstPageKey: 1,
       // ignore: invalid_use_of_protected_member
-      apiRequestManager: widget.helpChatController.apiRequestManager
+      apiRequestManager: widget.orderChatController.apiRequestManager
     );
     _orderChatListItemPagingControllerState = PagingControllerState(
       pagingController: _orderChatListItemPagingController,
@@ -170,10 +177,10 @@ class _StatefulOrderChatControllerMediatorWidgetState extends State<_StatefulOrd
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _helpChatListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? listItemControllerStateList) async {
-    LoadDataResult<GetHelpMessageByUserResponse> getHelpMessageByUserResponseLoadDataResult = await widget.helpChatController.getHelpMessageByUser(
-      GetHelpMessageByUserParameter()
+    LoadDataResult<GetOrderMessageByUserResponse> getOrderMessageByUserResponseLoadDataResult = await widget.orderChatController.getOrderMessageByUser(
+      GetOrderMessageByUserParameter()
     );
-    return getHelpMessageByUserResponseLoadDataResult.map<PagingResult<ListItemControllerState>>((getHelpMessageByUserResponse) {
+    return getOrderMessageByUserResponseLoadDataResult.map<PagingResult<ListItemControllerState>>((getHelpMessageByUserResponse) {
       return PagingDataResult<ListItemControllerState>(
         itemList: [],
         page: 1,

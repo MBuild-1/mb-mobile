@@ -10,6 +10,8 @@ import '../../domain/entity/chat/help/update_read_status_help_conversation_param
 import '../../domain/entity/chat/help/update_read_status_help_conversation_response.dart';
 import '../../domain/entity/chat/order/answer_order_conversation_parameter.dart';
 import '../../domain/entity/chat/order/answer_order_conversation_response.dart';
+import '../../domain/entity/chat/order/create_order_conversation_parameter.dart';
+import '../../domain/entity/chat/order/create_order_conversation_response.dart';
 import '../../domain/entity/chat/order/get_order_message_by_conversation_parameter.dart';
 import '../../domain/entity/chat/order/get_order_message_by_conversation_response.dart';
 import '../../domain/entity/chat/order/get_order_message_by_user_parameter.dart';
@@ -54,13 +56,13 @@ class DefaultChatRepository implements ChatRepository {
   }
 
   @override
-  FutureProcessing<LoadDataResult<CreateHelpConversationResponse>> createOrderConversation(CreateHelpConversationParameter createHelpConversationParameter) {
-    return chatDataSource.createOrderConversation(createHelpConversationParameter).mapToLoadDataResult<CreateHelpConversationResponse>();
+  FutureProcessing<LoadDataResult<CreateOrderConversationResponse>> createOrderConversation(CreateOrderConversationParameter createOrderConversationParameter) {
+    return chatDataSource.createOrderConversation(createOrderConversationParameter).mapToLoadDataResult<CreateOrderConversationResponse>();
   }
 
   @override
   FutureProcessing<LoadDataResult<UpdateReadStatusOrderConversationResponse>> updateReadStatusOrderConversation(UpdateReadStatusOrderConversationParameter updateReadStatusOrderConversationParameter) {
-    return chatDataSource.updateReadStatusOrderConversation(updateReadStatusOrderConversationParameter).mapToLoadDataResult<CreateHelpConversationResponse>();
+    return chatDataSource.updateReadStatusOrderConversation(updateReadStatusOrderConversationParameter).mapToLoadDataResult<UpdateReadStatusOrderConversationResponse>();
   }
 
   @override
@@ -70,11 +72,11 @@ class DefaultChatRepository implements ChatRepository {
 
   @override
   FutureProcessing<LoadDataResult<GetOrderMessageByConversationResponse>> getOrderMessageByConversation(GetOrderMessageByConversationParameter getOrderMessageByConversationParameter) {
-    return chatDataSource.getOrderMessageByConversation(getOrderMessageByConversationParameter).mapToLoadDataResult<AnswerOrderConversationResponse>();
+    return chatDataSource.getOrderMessageByConversation(getOrderMessageByConversationParameter).mapToLoadDataResult<GetOrderMessageByConversationResponse>();
   }
 
   @override
   FutureProcessing<LoadDataResult<GetOrderMessageByUserResponse>> getOrderMessageByUser(GetOrderMessageByUserParameter getOrderMessageByUserParameter) {
-    return chatDataSource.getOrderMessageByUser(getOrderMessageByUserParameter).mapToLoadDataResult<AnswerOrderConversationResponse>();
+    return chatDataSource.getOrderMessageByUser(getOrderMessageByUserParameter).mapToLoadDataResult<GetOrderMessageByUserResponse>();
   }
 }
