@@ -9,11 +9,19 @@ import 'package:masterbagasi/misc/manager/controller_manager.dart';
 import 'package:masterbagasi/misc/paging/pagingresult/paging_data_result.dart';
 import 'package:masterbagasi/presentation/widget/modified_paged_list_view.dart';
 import 'package:masterbagasi/presentation/widget/modifiedappbar/modified_app_bar.dart';
+import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 
+import '../../domain/entity/chat/help/create_help_conversation_parameter.dart';
 import '../../domain/entity/chat/help/get_help_message_by_user_parameter.dart';
 import '../../domain/entity/chat/help/get_help_message_by_user_response.dart';
+import '../../domain/entity/user/getuser/get_user_parameter.dart';
+import '../../domain/entity/user/getuser/get_user_response.dart';
+import '../../domain/usecase/answer_help_conversation_use_case.dart';
+import '../../domain/usecase/create_help_conversation_use_case.dart';
 import '../../domain/usecase/get_help_message_by_user_use_case.dart';
-import '../../misc/controllerstate/listitemcontrollerstate/chatlistitemcontrollerstate/chat_bubble_list_item_controller_state.dart';
+import '../../domain/usecase/get_user_use_case.dart';
+import '../../misc/constant.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/chatlistitemcontrollerstate/chat_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
 import '../../misc/injector.dart';
@@ -21,6 +29,8 @@ import '../../misc/load_data_result.dart';
 import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
+import '../widget/modified_svg_picture.dart';
+import '../widget/tap_area.dart';
 import 'getx_page.dart';
 
 class HelpChatPage extends RestorableGetxPage<_HelpChatPageRestoration> {
@@ -34,6 +44,9 @@ class HelpChatPage extends RestorableGetxPage<_HelpChatPageRestoration> {
       HelpChatController(
         controllerManager,
         Injector.locator<GetHelpMessageByUserUseCase>(),
+        Injector.locator<CreateHelpConversationUseCase>(),
+        Injector.locator<AnswerHelpConversationUseCase>(),
+        Injector.locator<GetUserUseCase>()
       ),
       tag: pageName
     );
@@ -156,6 +169,9 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<_StatefulHelp
   late final ScrollController _helpChatScrollController;
   late final ModifiedPagingController<int, ListItemControllerState> _helpChatListItemPagingController;
   late final PagingControllerState<int, ListItemControllerState> _helpChatListItemPagingControllerState;
+  PusherChannelsFlutter _pusher = PusherChannelsFlutter.getInstance();
+
+  final TextEditingController _helpTextEditingController = TextEditingController();
 
   @override
   void initState() {
@@ -178,16 +194,35 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<_StatefulHelp
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _helpChatListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? listItemControllerStateList) async {
+    LoadDataResult<GetUserResponse> getUserResponse = await widget.helpChatController.getUser(
+      GetUserParameter()
+    );
+    if (getUserResponse.isFailed) {
+      Future<LoadDataResult<PagingResult<ListItemControllerState>>> returnUserLoadFailed() async {
+        return getUserResponse.map<PagingResult<ListItemControllerState>>(
+          // This is for required argument purposes only, not will be used for further process
+          (_) => PagingDataResult<ListItemControllerState>(
+            itemList: [],
+            page: 1,
+            totalPage: 1,
+            totalItem: 1
+          )
+        );
+      }
+      return returnUserLoadFailed();
+    }
     LoadDataResult<GetHelpMessageByUserResponse> getHelpMessageByUserResponseLoadDataResult = await widget.helpChatController.getHelpMessageByUser(
       GetHelpMessageByUserParameter()
     );
+    await _connectToPusher();
     return getHelpMessageByUserResponseLoadDataResult.map<PagingResult<ListItemControllerState>>((getHelpMessageByUserResponse) {
       return PagingDataResult<ListItemControllerState>(
-        itemList: getHelpMessageByUserResponse.helpMessageList.map<ListItemControllerState>(
-          (helpMessage) => ChatBubbleListItemControllerState(
-            helpMessage: helpMessage
+        itemList: [
+          ChatContainerListItemControllerState(
+            helpMessageList: getHelpMessageByUserResponse.helpMessageList,
+            loggedUser: getUserResponse.resultIfSuccess!.user
           )
-        ).toList(),
+        ],
         page: 1,
         totalPage: 1,
         totalItem: 1
@@ -216,10 +251,81 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<_StatefulHelp
                 ),
                 pullToRefresh: true
               ),
+            ),
+            Container(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                padding: const EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                  color: Constant.colorGrey4
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _helpTextEditingController,
+                        decoration: InputDecoration.collapsed(
+                          hintText: "Type Chat".tr,
+                        ),
+                        keyboardType: TextInputType.multiline,
+                        textInputAction: TextInputAction.newline,
+                        minLines: 1,
+                        maxLines: 5
+                      ),
+                    ),
+                    TapArea(
+                      onTap: () => widget.helpChatController.createHelpConversation(
+                        CreateHelpConversationParameter(message: _helpTextEditingController.text)
+                      ),
+                      child: ModifiedSvgPicture.asset(Constant.vectorSendMessage, overrideDefaultColorWithSingleColor: false),
+                    )
+                  ],
+                )
+              )
             )
           ]
         )
       ),
     );
+  }
+
+  Future<void> _connectToPusher() async {
+    try {
+      await _pusher.init(
+        apiKey: "aec3cf529553db66701a",
+        cluster: "ap1",
+        onConnectionStateChange: _onConnectionStateChange,
+        onError: _onError,
+        onEvent: _onEvent,
+        onDecryptionFailure: _onDecryptionFailure,
+      );
+      await _pusher.subscribe(channelName: "masterbagasi.com-development");
+      await _pusher.connect();
+    } catch (e) {
+      print("ERROR: $e");
+    }
+  }
+
+  void _onConnectionStateChange(dynamic currentState, dynamic previousState) {
+    print("Connection: $currentState");
+  }
+
+  void _onError(String message, int? code, dynamic e) {
+    print("onError: $message code: $code exception: $e");
+  }
+
+  void _onEvent(PusherEvent event) {
+    print("onEvent: $event");
+  }
+
+  void _onDecryptionFailure(String event, String reason) {
+    print("onDecryptionFailure: $event reason: $reason");
+  }
+
+  @override
+  void dispose() {
+    _helpTextEditingController.dispose();
+    _pusher.disconnect();
+    super.dispose();
   }
 }

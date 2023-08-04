@@ -82,6 +82,7 @@ dependencies:
   encrypt: ^5.0.1
   tuple: ^2.0.1
   flag: ^6.0.0
+  pusher_channels_flutter: ^2.1.2
 
   url_launcher:
   flutter_localizations:

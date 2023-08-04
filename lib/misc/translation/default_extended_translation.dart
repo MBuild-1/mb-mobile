@@ -225,7 +225,8 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Monitor the status of assistance from Master Bagasi": "Pantau status bantuan dari Master Bagasi",
       "Affiliate": "Affiliasi",
       "Learn": "Pelajari",
-      "Register Now": "Daftar Sekarang"
+      "Register Now": "Daftar Sekarang",
+      "Type Chat": "Ketikan Chat"
     }
   };
 

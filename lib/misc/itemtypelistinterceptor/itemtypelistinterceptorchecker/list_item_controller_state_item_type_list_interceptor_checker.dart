@@ -5,6 +5,7 @@ import '../../itemtypelistsubinterceptor/builder_item_type_list_sub_interceptor.
 import '../../itemtypelistsubinterceptor/card_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/carousel_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/cart_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/chat_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/column_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/compound_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/country_delivery_review_item_type_list_sub_interceptor.dart';
@@ -234,6 +235,11 @@ class ListItemControllerStateItemTypeInterceptorChecker extends ItemTypeListInte
       listItemControllerStateItemTypeInterceptorChecker: this
     ),
     FaqItemTypeListSubInterceptor(
+      padding: padding,
+      itemSpacing: itemSpacing,
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
+    ChatItemTypeListSubInterceptor(
       padding: padding,
       itemSpacing: itemSpacing,
       listItemControllerStateItemTypeInterceptorChecker: this

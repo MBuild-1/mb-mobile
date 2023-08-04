@@ -1029,7 +1029,8 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
       }
     } else if (item is ChatBubbleListItemControllerState) {
       return ChatBubble(
-        helpMessage: item.helpMessage
+        helpMessage: item.helpMessage,
+        loggedUser: item.loggedUser,
       );
     } else {
       return Container();
