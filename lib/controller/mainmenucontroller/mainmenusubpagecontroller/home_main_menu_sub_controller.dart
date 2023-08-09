@@ -19,9 +19,11 @@ import '../../../domain/entity/product/productentry/product_entry.dart';
 import '../../../domain/entity/product/product_with_condition_paging_parameter.dart';
 import '../../../domain/entity/product/productentry/product_entry_header_content_response.dart';
 import '../../../domain/usecase/add_wishlist_use_case.dart';
+import '../../../domain/usecase/get_beauty_product_indonesia_list_use_case.dart';
 import '../../../domain/usecase/get_bestseller_in_masterbagasi_list_use_case.dart';
 import '../../../domain/usecase/get_coffee_and_tea_origin_indonesia_list_use_case.dart';
 import '../../../domain/usecase/get_current_selected_address_use_case.dart';
+import '../../../domain/usecase/get_fashion_product_indonesia_list_use_case.dart';
 import '../../../domain/usecase/get_handycrafts_contents_banner_use_case.dart';
 import '../../../domain/usecase/get_homepage_contents_banner_use_case.dart';
 import '../../../domain/usecase/get_kitchen_contents_banner_use_case.dart';
@@ -53,6 +55,8 @@ class HomeMainMenuSubController extends BaseGetxController {
   final GetSnackForLyingAroundListUseCase getSnackForLyingAroundListUseCase;
   final GetBestsellerInMasterbagasiListUseCase getBestsellerInMasterbagasiListUseCase;
   final GetCoffeeAndTeaOriginIndonesiaListUseCase getCoffeeAndTeaOriginIndonesiaListUseCase;
+  final GetBeautyProductIndonesiaListUseCase getBeautyProductIndonesiaListUseCase;
+  final GetFashionProductIndonesiaListUseCase getFashionProductIndonesiaListUseCase;
   final GetHandycraftsContentsBannerUseCase getHandycraftsContentsBannerUseCase;
   final GetKitchenContentsBannerUseCase getKitchenContentsBannerUseCase;
   final GetHomepageContentsBannerUseCase getHomepageContentsBannerUseCase;
@@ -73,6 +77,8 @@ class HomeMainMenuSubController extends BaseGetxController {
     this.getSnackForLyingAroundListUseCase,
     this.getBestsellerInMasterbagasiListUseCase,
     this.getCoffeeAndTeaOriginIndonesiaListUseCase,
+    this.getBeautyProductIndonesiaListUseCase,
+    this.getFashionProductIndonesiaListUseCase,
     this.getHandycraftsContentsBannerUseCase,
     this.getKitchenContentsBannerUseCase,
     this.getHomepageContentsBannerUseCase,
@@ -544,6 +550,84 @@ class HomeMainMenuSubController extends BaseGetxController {
           throw MessageError(title: "Home main menu delegate must be initialized");
         },
       ),
+      DynamicItemCarouselHomeMainMenuComponentEntity(
+        title: MultiLanguageString({
+          Constant.textEnUsLanguageKey: "Indonesian Beauty Products",
+          Constant.textInIdLanguageKey: "Produk Kecantikan Indonesia"
+        }),
+        onDynamicItemAction: (title, description, observer) async {
+          observer(title, description, IsLoadingLoadDataResult<List<ProductEntry>>());
+          LoadDataResult<List<ProductEntry>> productEntryPagingDataResult = await getBeautyProductIndonesiaListUseCase.execute().future(
+            parameter: apiRequestManager.addRequestToCancellationPart("beauty-product-indonesia").value
+          );
+          if (productEntryPagingDataResult.isFailedBecauseCancellation) {
+            return;
+          }
+          observer(title, description, productEntryPagingDataResult.map<List<ProductEntry>>(
+            (trainingPagingDataResult) => trainingPagingDataResult
+          ));
+        },
+        onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
+          if (_homeMainMenuDelegate != null) {
+            return _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductEntryCarousel(
+              OnObserveLoadingLoadProductEntryCarouselParameter()
+            );
+          }
+        },
+        onObserveSuccessDynamicItemActionState: (title, description, loadDataResult) {
+          List<ProductEntry> productEntryList = loadDataResult.resultIfSuccess!;
+          if (_homeMainMenuDelegate != null) {
+            return _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveSuccessLoadProductEntryCarousel(
+              OnObserveSuccessLoadProductEntryCarouselParameter(
+                title: title,
+                description: description,
+                productEntryList: productEntryList,
+                data: Constant.carouselKeyBeautyProductIndonesia
+              )
+            );
+          }
+          throw MessageError(title: "Home main menu delegate must be initialized");
+        },
+      ),
+      DynamicItemCarouselHomeMainMenuComponentEntity(
+        title: MultiLanguageString({
+          Constant.textEnUsLanguageKey: "Indonesian Fashion Products",
+          Constant.textInIdLanguageKey: "Produk Fesyen Indonesia"
+        }),
+        onDynamicItemAction: (title, description, observer) async {
+          observer(title, description, IsLoadingLoadDataResult<List<ProductEntry>>());
+          LoadDataResult<List<ProductEntry>> productEntryPagingDataResult = await getFashionProductIndonesiaListUseCase.execute().future(
+            parameter: apiRequestManager.addRequestToCancellationPart("fashiion-product-indonesia").value
+          );
+          if (productEntryPagingDataResult.isFailedBecauseCancellation) {
+            return;
+          }
+          observer(title, description, productEntryPagingDataResult.map<List<ProductEntry>>(
+            (trainingPagingDataResult) => trainingPagingDataResult
+          ));
+        },
+        onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
+          if (_homeMainMenuDelegate != null) {
+            return _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductEntryCarousel(
+              OnObserveLoadingLoadProductEntryCarouselParameter()
+            );
+          }
+        },
+        onObserveSuccessDynamicItemActionState: (title, description, loadDataResult) {
+          List<ProductEntry> productEntryList = loadDataResult.resultIfSuccess!;
+          if (_homeMainMenuDelegate != null) {
+            return _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveSuccessLoadProductEntryCarousel(
+              OnObserveSuccessLoadProductEntryCarouselParameter(
+                title: title,
+                description: description,
+                productEntryList: productEntryList,
+                data: Constant.carouselKeyFashionProductIndonesia
+              )
+            );
+          }
+          throw MessageError(title: "Home main menu delegate must be initialized");
+        },
+      )
     ];
   }
 
@@ -561,6 +645,8 @@ class HomeMainMenuSubControllerInjectionFactory {
   final GetSnackForLyingAroundListUseCase getSnackForLyingAroundListUseCase;
   final GetBestsellerInMasterbagasiListUseCase getBestsellerInMasterbagasiListUseCase;
   final GetCoffeeAndTeaOriginIndonesiaListUseCase getCoffeeAndTeaOriginIndonesiaListUseCase;
+  final GetBeautyProductIndonesiaListUseCase getBeautyProductIndonesiaListUseCase;
+  final GetFashionProductIndonesiaListUseCase getFashionProductIndonesiaListUseCase;
   final GetHandycraftsContentsBannerUseCase getHandycraftsContentsBannerUseCase;
   final GetKitchenContentsBannerUseCase getKitchenContentsBannerUseCase;
   final GetHomepageContentsBannerUseCase getHomepageContentsBannerUseCase;
@@ -578,6 +664,8 @@ class HomeMainMenuSubControllerInjectionFactory {
     required this.getSnackForLyingAroundListUseCase,
     required this.getBestsellerInMasterbagasiListUseCase,
     required this.getCoffeeAndTeaOriginIndonesiaListUseCase,
+    required this.getBeautyProductIndonesiaListUseCase,
+    required this.getFashionProductIndonesiaListUseCase,
     required this.getHandycraftsContentsBannerUseCase,
     required this.getKitchenContentsBannerUseCase,
     required this.getHomepageContentsBannerUseCase,
@@ -600,6 +688,8 @@ class HomeMainMenuSubControllerInjectionFactory {
         getSnackForLyingAroundListUseCase,
         getBestsellerInMasterbagasiListUseCase,
         getCoffeeAndTeaOriginIndonesiaListUseCase,
+        getBeautyProductIndonesiaListUseCase,
+        getFashionProductIndonesiaListUseCase,
         getHandycraftsContentsBannerUseCase,
         getKitchenContentsBannerUseCase,
         getHomepageContentsBannerUseCase,

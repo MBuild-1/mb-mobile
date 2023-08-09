@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:masterbagasi/data/entitymappingext/delivery_review_entity_mapping_ext.dart';
 import 'package:masterbagasi/data/entitymappingext/news_entity_mapping_ext.dart';
 import 'package:masterbagasi/data/entitymappingext/video_entity_mapping_ext.dart';
 import 'package:masterbagasi/misc/ext/future_ext.dart';
@@ -62,43 +63,9 @@ class DefaultFeedDataSource implements FeedDataSource {
 
   @override
   FutureProcessing<List<DeliveryReview>> deliveryReviewList(DeliveryReviewListParameter deliveryReviewListParameter) {
-    return DummyFutureProcessing((cancelToken) async {
-      await Future.delayed(const Duration(seconds: 1));
-      return <DeliveryReview>[
-        DeliveryReview(
-          id: "1",
-          userName: "Ciya",
-          userProfilePicture: "",
-          productImageUrl: "",
-          productName: "",
-          rating: 5.0,
-          country: "Korea Selatan",
-          review: "Review 1",
-          reviewDate: DateTime.now(),
-        ),
-        DeliveryReview(
-          id: "2",
-          userName: "Dandi",
-          userProfilePicture: "",
-          productImageUrl: "",
-          productName: "",
-          rating: 5.0,
-          country: "Turki",
-          review: "Review 2",
-          reviewDate: DateTime.now(),
-        ),
-        DeliveryReview(
-          id: "3",
-          userName: "Naufal",
-          userProfilePicture: "",
-          productImageUrl: "",
-          productName: "",
-          rating: 5.0,
-          country: "Jepang",
-          review: "Review 3",
-          reviewDate: DateTime.now(),
-        )
-      ];
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.get("/shipping-review", cancelToken: cancelToken)
+        .map<List<DeliveryReview>>(onMap: (value) => value.wrapResponse().mapFromResponseToDeliveryReviewList());
     });
   }
 

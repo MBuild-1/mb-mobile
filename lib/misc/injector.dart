@@ -85,16 +85,19 @@ import '../domain/usecase/add_to_favorite_product_brand_use_case.dart';
 import '../domain/usecase/add_wishlist_use_case.dart';
 import '../domain/usecase/answer_help_conversation_use_case.dart';
 import '../domain/usecase/answer_order_conversation_use_case.dart';
+import '../domain/usecase/answer_product_conversation_use_case.dart';
 import '../domain/usecase/change_additional_item_use_case.dart';
 import '../domain/usecase/change_address_use_case.dart';
 import '../domain/usecase/check_rates_for_various_countries_use_case.dart';
 import '../domain/usecase/create_help_conversation_use_case.dart';
 import '../domain/usecase/create_order_conversation_use_case.dart';
 import '../domain/usecase/create_order_use_case.dart';
+import '../domain/usecase/create_product_conversation_use_case.dart';
 import '../domain/usecase/get_additional_item_use_case.dart';
 import '../domain/usecase/get_address_based_id_use_case.dart';
 import '../domain/usecase/get_address_list_use_case.dart';
 import '../domain/usecase/get_address_paging_use_case.dart';
+import '../domain/usecase/get_beauty_product_indonesia_list_use_case.dart';
 import '../domain/usecase/get_bestseller_in_masterbagasi_list_use_case.dart';
 import '../domain/usecase/get_cart_summary_use_case.dart';
 import '../domain/usecase/get_check_your_contribution_delivery_review_detail_use_case.dart';
@@ -110,6 +113,7 @@ import '../domain/usecase/get_coupon_paging_use_case.dart';
 import '../domain/usecase/get_current_selected_address_use_case.dart';
 import '../domain/usecase/get_delivery_review_use_case.dart';
 import '../domain/usecase/get_faq_list_use_case.dart';
+import '../domain/usecase/get_fashion_product_indonesia_list_use_case.dart';
 import '../domain/usecase/get_favorite_product_brand_use_case.dart';
 import '../domain/usecase/get_handycrafts_contents_banner_use_case.dart';
 import '../domain/usecase/get_help_message_by_conversation_use_case.dart';
@@ -143,6 +147,9 @@ import '../domain/usecase/get_product_discussion_paging_use_case.dart';
 import '../domain/usecase/get_product_entry_header_content_use_case.dart';
 import '../domain/usecase/get_product_entry_with_condition_paging_use_case.dart';
 import '../domain/usecase/get_product_list_use_case.dart';
+import '../domain/usecase/get_product_message_by_conversation_use_case.dart';
+import '../domain/usecase/get_product_message_by_product_use_case.dart';
+import '../domain/usecase/get_product_message_by_user_use_case.dart';
 import '../domain/usecase/get_product_viral_list_use_case.dart';
 import '../domain/usecase/get_product_viral_paging_use_case.dart';
 import '../domain/usecase/get_province_map_use_case.dart';
@@ -170,6 +177,7 @@ import '../domain/usecase/take_friend_cart_use_case.dart';
 import '../domain/usecase/update_current_selected_address_use_case.dart';
 import '../domain/usecase/update_read_status_help_conversation_use_case.dart';
 import '../domain/usecase/update_read_status_order_conversation_use_case.dart';
+import '../domain/usecase/update_read_status_product_conversation_use_case.dart';
 import 'additionalloadingindicatorchecker/cart_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/coupon_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/feed_sub_additional_paging_result_parameter_checker.dart';
@@ -216,6 +224,8 @@ class _Injector {
         getSnackForLyingAroundListUseCase: locator(),
         getBestsellerInMasterbagasiListUseCase: locator(),
         getCoffeeAndTeaOriginIndonesiaListUseCase: locator(),
+        getBeautyProductIndonesiaListUseCase: locator(),
+        getFashionProductIndonesiaListUseCase: locator(),
         getHandycraftsContentsBannerUseCase: locator(),
         getKitchenContentsBannerUseCase: locator(),
         addWishlistUseCase: locator(),
@@ -456,6 +466,8 @@ class _Injector {
     locator.registerLazySingleton<GetSnackForLyingAroundListUseCase>(() => GetSnackForLyingAroundListUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetBestsellerInMasterbagasiListUseCase>(() => GetBestsellerInMasterbagasiListUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetCoffeeAndTeaOriginIndonesiaListUseCase>(() => GetCoffeeAndTeaOriginIndonesiaListUseCase(productRepository: locator()));
+    locator.registerLazySingleton<GetBeautyProductIndonesiaListUseCase>(() => GetBeautyProductIndonesiaListUseCase(productRepository: locator()));
+    locator.registerLazySingleton<GetFashionProductIndonesiaListUseCase>(() => GetFashionProductIndonesiaListUseCase(productRepository: locator()));
     locator.registerLazySingleton<AddWishlistUseCase>(() => AddWishlistUseCase(productRepository: locator()));
     locator.registerLazySingleton<RemoveWishlistUseCase>(() => RemoveWishlistUseCase(productRepository: locator()));
     locator.registerLazySingleton<RemoveWishlistBasedProductUseCase>(() => RemoveWishlistBasedProductUseCase(productRepository: locator()));
@@ -514,6 +526,12 @@ class _Injector {
     locator.registerLazySingleton<UpdateReadStatusOrderConversationUseCase>(() => UpdateReadStatusOrderConversationUseCase(chatRepository: locator()));
     locator.registerLazySingleton<GetOrderMessageByUserUseCase>(() => GetOrderMessageByUserUseCase(chatRepository: locator()));
     locator.registerLazySingleton<GetOrderMessageByConversationUseCase>(() => GetOrderMessageByConversationUseCase(chatRepository: locator()));
+    locator.registerLazySingleton<AnswerProductConversationUseCase>(() => AnswerProductConversationUseCase(chatRepository: locator()));
+    locator.registerLazySingleton<CreateProductConversationUseCase>(() => CreateProductConversationUseCase(chatRepository: locator()));
+    locator.registerLazySingleton<UpdateReadStatusProductConversationUseCase>(() => UpdateReadStatusProductConversationUseCase(chatRepository: locator()));
+    locator.registerLazySingleton<GetProductMessageByUserUseCase>(() => GetProductMessageByUserUseCase(chatRepository: locator()));
+    locator.registerLazySingleton<GetProductMessageByConversationUseCase>(() => GetProductMessageByConversationUseCase(chatRepository: locator()));
+    locator.registerLazySingleton<GetProductMessageByProductUseCase>(() => GetProductMessageByProductUseCase(chatRepository: locator()));
 
     // Repository
     locator.registerLazySingleton<UserRepository>(() => DefaultUserRepository(userDataSource: locator()));

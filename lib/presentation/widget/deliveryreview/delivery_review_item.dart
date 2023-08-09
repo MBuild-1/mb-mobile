@@ -19,6 +19,7 @@ abstract class DeliveryReviewItem extends StatelessWidget {
     BorderRadius borderRadius = BorderRadius.circular(8.0);
     return SizedBox(
       width: itemWidth,
+      height: 185,
       child: Padding(
         // Use padding widget for avoiding shadow elevation overlap.
         padding: const EdgeInsets.only(top: 1.0, bottom: 5.0),
@@ -33,8 +34,9 @@ abstract class DeliveryReviewItem extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: borderRadius
               ),
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   ProfilePictureCacheNetworkImage(
@@ -42,7 +44,7 @@ abstract class DeliveryReviewItem extends StatelessWidget {
                     dimension: 50.0,
                   ),
                   const SizedBox(height: 10),
-                  Text(deliveryReview.review),
+                  Text(deliveryReview.review, maxLines: 3, overflow: TextOverflow.ellipsis),
                   const SizedBox(height: 10),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
@@ -52,6 +54,8 @@ abstract class DeliveryReviewItem extends StatelessWidget {
                     ),
                     child: Text(
                       "${deliveryReview.userName} - ${deliveryReview.country}",
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         color: Colors.white
                       ),

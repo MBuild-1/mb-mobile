@@ -25,6 +25,7 @@ import '../../misc/controllerstate/listitemcontrollerstate/chatlistitemcontrolle
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
 import '../../misc/injector.dart';
+import '../../misc/itemtypelistsubinterceptor/chat_item_type_list_sub_interceptor.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
@@ -172,6 +173,7 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<_StatefulHelp
   PusherChannelsFlutter _pusher = PusherChannelsFlutter.getInstance();
 
   final TextEditingController _helpTextEditingController = TextEditingController();
+  final DefaultChatContainerInterceptingActionListItemControllerState _defaultChatContainerInterceptingActionListItemControllerState = DefaultChatContainerInterceptingActionListItemControllerState();
 
   @override
   void initState() {
@@ -219,8 +221,10 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<_StatefulHelp
       return PagingDataResult<ListItemControllerState>(
         itemList: [
           ChatContainerListItemControllerState(
-            helpMessageList: getHelpMessageByUserResponse.helpMessageList,
-            loggedUser: getUserResponse.resultIfSuccess!.user
+            userMessageList: getHelpMessageByUserResponse.helpMessageList,
+            loggedUser: getUserResponse.resultIfSuccess!.user,
+            chatContainerInterceptingActionListItemControllerState: _defaultChatContainerInterceptingActionListItemControllerState,
+            onUpdateState: () => setState(() {})
           )
         ],
         page: 1,

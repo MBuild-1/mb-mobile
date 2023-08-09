@@ -710,7 +710,7 @@ class _StatelessTile extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       mainAxisSize: MainAxisSize.min,
-      children: <Widget>[if (iconVisible) icon, if (labelVisible) label],
+      children: <Widget>[if (iconVisible) icon, const SizedBox(height: 5), if (labelVisible) label],
     );
   }
 }
@@ -750,7 +750,7 @@ class _Tile extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       mainAxisSize: MainAxisSize.min,
-      children: <Widget>[if (iconVisible) icon, if (labelVisible) label],
+      children: <Widget>[if (iconVisible) icon, const SizedBox(height: 5), if (labelVisible) label],
     );
   }
 }

@@ -67,6 +67,7 @@ import '../widget/modified_divider.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/default_search_app_bar.dart';
 import 'getx_page.dart';
+import 'product_chat_page.dart';
 import 'product_entry_page.dart';
 import 'search_page.dart';
 
@@ -116,7 +117,7 @@ class ProductDetailPage extends RestorableGetxPage<_ProductDetailPageRestoration
   }
 }
 
-class _ProductDetailPageRestoration extends MixableGetxPageRestoration with ProductDetailPageRestorationMixin, ProductEntryPageRestorationMixin, SearchPageRestorationMixin {
+class _ProductDetailPageRestoration extends MixableGetxPageRestoration with ProductDetailPageRestorationMixin, ProductEntryPageRestorationMixin, SearchPageRestorationMixin, ProductChatPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
@@ -622,7 +623,7 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
                         text: '',
                         width: double.infinity,
                         outlineGradientButtonType: OutlineGradientButtonType.outline,
-                        onPressed: widget.productDetailController.chatProduct,
+                        onPressed: () => PageRestorationHelper.toProductChatPage(widget.productId, context),
                         child: const Icon(Icons.chat, size: 16)
                       ),
                     ),

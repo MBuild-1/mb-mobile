@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../domain/entity/chat/user_message.dart';
 import '../../domain/entity/user/user.dart';
 import '../controllerstate/listitemcontrollerstate/chatlistitemcontrollerstate/chat_bubble_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/chatlistitemcontrollerstate/chat_container_list_item_controller_state.dart';
@@ -32,9 +33,20 @@ class ChatItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
     ListItemControllerState oldItemType = oldItemTypeWrapper.listItemControllerState;
     List<ListItemControllerState> newChildListItemControllerState = [];
     if (oldItemType is ChatContainerListItemControllerState) {
+      ChatContainerInterceptingActionListItemControllerState chatContainerInterceptingActionListItemControllerState = oldItemType.chatContainerInterceptingActionListItemControllerState;
+      if (chatContainerInterceptingActionListItemControllerState is DefaultChatContainerInterceptingActionListItemControllerState) {
+        chatContainerInterceptingActionListItemControllerState._onUpdateUserMessage = (userMessageList) {
+          oldItemType.userMessageList = userMessageList;
+          oldItemType.onUpdateState();
+        };
+        chatContainerInterceptingActionListItemControllerState._onAddUserMessage = (userMessage) {
+          oldItemType.userMessageList.add(userMessage);
+          oldItemType.onUpdateState();
+        };
+      }
       User loggedUser = oldItemType.loggedUser;
-      List<ChatBubbleListItemControllerState> chatBubbleListItemControllerStateList = oldItemType.helpMessageList.map<ChatBubbleListItemControllerState>(
-        (helpMessage) => ChatBubbleListItemControllerState(helpMessage: helpMessage, loggedUser: loggedUser)
+      List<ChatBubbleListItemControllerState> chatBubbleListItemControllerStateList = oldItemType.userMessageList.map<ChatBubbleListItemControllerState>(
+        (userMessage) => ChatBubbleListItemControllerState(userMessage: userMessage, loggedUser: loggedUser)
       ).toList();
       int j = 0;
       while (j < chatBubbleListItemControllerStateList.length) {
@@ -58,4 +70,15 @@ class ChatItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
     }
     return false;
   }
+}
+
+class DefaultChatContainerInterceptingActionListItemControllerState extends ChatContainerInterceptingActionListItemControllerState {
+  void Function(List<UserMessage>)? _onUpdateUserMessage;
+  void Function(UserMessage)? _onAddUserMessage;
+
+  @override
+  void Function(List<UserMessage>)? get onUpdateUserMessage => _onUpdateUserMessage ?? (throw UnimplementedError());
+
+  @override
+  void Function(UserMessage)? get onAddUserMessage => _onAddUserMessage ?? (throw UnimplementedError());
 }

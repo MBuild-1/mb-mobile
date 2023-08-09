@@ -21,12 +21,14 @@ import '../presentation/page/login_page.dart';
 import '../presentation/page/mainmenu/main_menu_page.dart';
 import '../presentation/page/modify_address_page.dart';
 import '../presentation/page/msme_partner_page.dart';
+import '../presentation/page/order_chat_page.dart';
 import '../presentation/page/order_detail_page.dart';
 import '../presentation/page/order_page.dart';
 import '../presentation/page/product_brand_page.dart';
 import '../presentation/page/product_bundle_detail_page.dart';
 import '../presentation/page/product_bundle_page.dart';
 import '../presentation/page/product_category_detail_page.dart';
+import '../presentation/page/product_chat_page.dart';
 import '../presentation/page/product_detail_page.dart';
 import '../presentation/page/product_discussion_page.dart';
 import '../presentation/page/product_entry_page.dart';
@@ -373,6 +375,28 @@ class _PageRestorationHelperImpl {
       PageRestorationHelper.findPageRestorationMixin<HelpChatPageRestorationMixin>(
         onGetxPageRestorationFound: (restoration) {
           restoration.helpChatPageRestorableRouteFuture.present();
+        },
+        context: context
+      );
+    });
+  }
+
+  void toOrderChatPage(BuildContext context) {
+    LoginHelper.checkingLogin(context, () {
+      PageRestorationHelper.findPageRestorationMixin<OrderChatPageRestorationMixin>(
+        onGetxPageRestorationFound: (restoration) {
+          restoration.orderChatPageRestorableRouteFuture.present();
+        },
+        context: context
+      );
+    });
+  }
+
+  void toProductChatPage(String productId, BuildContext context) {
+    LoginHelper.checkingLogin(context, () {
+      PageRestorationHelper.findPageRestorationMixin<ProductChatPageRestorationMixin>(
+        onGetxPageRestorationFound: (restoration) {
+          restoration.productChatPageRestorableRouteFuture.present(productId);
         },
         context: context
       );

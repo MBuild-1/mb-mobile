@@ -1,10 +1,10 @@
 import '../user_chat.dart';
 import '../user_message.dart';
 
-class OrderMessage extends UserMessage {
-  OrderMessage({
+class ProductMessage extends UserMessage {
+  ProductMessage({
     required String id,
-    required String orderConversationId,
+    required String productConversationId,
     required String userId,
     required String message,
     required int readStatus,
@@ -14,7 +14,7 @@ class OrderMessage extends UserMessage {
     required UserChat userChat
   }) : super(
     id: id,
-    conversationId: orderConversationId,
+    conversationId: productConversationId,
     userId: userId,
     message: message,
     readStatus: readStatus,

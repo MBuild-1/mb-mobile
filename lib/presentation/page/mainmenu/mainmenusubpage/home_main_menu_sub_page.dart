@@ -358,6 +358,32 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
                 )
               ),
             );
+          } else if (data == Constant.carouselKeyBeautyProductIndonesia) {
+            carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternBlue);
+            titleInterceptor = (text, style) => titleArea(
+              title: Text(text.toStringNonNull, style: style?.copyWith(color: Colors.white)),
+              onTapMore: () => PageRestorationHelper.toProductEntryPage(
+                context,
+                ProductEntryPageParameter(
+                  productEntryParameterMap: {
+                    "category": "produk-kecantikan-indonesia"
+                  }
+                )
+              ),
+            );
+          } else if (data == Constant.carouselKeyFashionProductIndonesia) {
+            carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternBlue);
+            titleInterceptor = (text, style) => titleArea(
+              title: Text(text.toStringNonNull, style: style?.copyWith(color: Colors.white)),
+              onTapMore: () => PageRestorationHelper.toProductEntryPage(
+                context,
+                ProductEntryPageParameter(
+                  productEntryParameterMap: {
+                    "category": "produk-fesyen-indonesia"
+                  }
+                )
+              ),
+            );
           } else {
             carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternGrey);
           }

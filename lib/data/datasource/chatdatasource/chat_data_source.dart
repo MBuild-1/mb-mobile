@@ -18,6 +18,18 @@ import '../../../domain/entity/chat/order/get_order_message_by_user_parameter.da
 import '../../../domain/entity/chat/order/get_order_message_by_user_response.dart';
 import '../../../domain/entity/chat/order/update_read_status_order_conversation_parameter.dart';
 import '../../../domain/entity/chat/order/update_read_status_order_conversation_response.dart';
+import '../../../domain/entity/chat/product/answer_product_conversation_parameter.dart';
+import '../../../domain/entity/chat/product/answer_product_conversation_response.dart';
+import '../../../domain/entity/chat/product/create_product_conversation_parameter.dart';
+import '../../../domain/entity/chat/product/create_product_conversation_response.dart';
+import '../../../domain/entity/chat/product/get_product_message_by_conversation_parameter.dart';
+import '../../../domain/entity/chat/product/get_product_message_by_conversation_response.dart';
+import '../../../domain/entity/chat/product/get_product_message_by_product_parameter.dart';
+import '../../../domain/entity/chat/product/get_product_message_by_product_response.dart';
+import '../../../domain/entity/chat/product/get_product_message_by_user_parameter.dart';
+import '../../../domain/entity/chat/product/get_product_message_by_user_response.dart';
+import '../../../domain/entity/chat/product/update_read_status_product_conversation_parameter.dart';
+import '../../../domain/entity/chat/product/update_read_status_product_conversation_response.dart';
 import '../../../misc/processing/future_processing.dart';
 
 abstract class ChatDataSource {
@@ -31,4 +43,10 @@ abstract class ChatDataSource {
   FutureProcessing<AnswerOrderConversationResponse> answerOrderConversation(AnswerOrderConversationParameter answerOrderConversationParameter);
   FutureProcessing<GetOrderMessageByConversationResponse> getOrderMessageByConversation(GetOrderMessageByConversationParameter getOrderMessageByConversationParameter);
   FutureProcessing<GetOrderMessageByUserResponse> getOrderMessageByUser(GetOrderMessageByUserParameter getOrderMessageByUserParameter);
+  FutureProcessing<CreateProductConversationResponse> createProductConversation(CreateProductConversationParameter createProductConversationParameter);
+  FutureProcessing<UpdateReadStatusProductConversationResponse> updateReadStatusProductConversation(UpdateReadStatusProductConversationParameter updateReadStatusProductConversationParameter);
+  FutureProcessing<AnswerProductConversationResponse> answerProductConversation(AnswerProductConversationParameter answerProductConversationParameter);
+  FutureProcessing<GetProductMessageByConversationResponse> getProductMessageByConversation(GetProductMessageByConversationParameter getProductMessageByConversationParameter);
+  FutureProcessing<GetProductMessageByUserResponse> getProductMessageByUser(GetProductMessageByUserParameter getProductMessageByUserParameter);
+  FutureProcessing<GetProductMessageByProductResponse> getProductMessageByProduct(GetProductMessageByProductParameter getProductMessageByUserParameter);
 }

@@ -208,6 +208,8 @@ class _ConstantImpl {
   String get carouselKeyProductBundleHighlight => "carousel_key_product_bundle_highlight";
   String get carouselKeyBestSellingInMasterBagasi => "carousel_key_best_selling_in_master_bagasi";
   String get carouselKeyCoffeeAndTeaOriginIndonesia => "carousel_key_coffee_and_tea_origin_indonesia";
+  String get carouselKeyBeautyProductIndonesia => "carousel_key_beauty_product_indonesia";
+  String get carouselKeyFashionProductIndonesia => "carousel_key_fashion_product_indonesia";
 
   String get transparentBannerKeyKitchenContents => "transparent_banner_key_kitchen_contents";
   String get transparentBannerKeyHandycrafts => "transparent_banner_key_handycrafts";

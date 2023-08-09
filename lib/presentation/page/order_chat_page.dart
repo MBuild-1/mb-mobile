@@ -6,7 +6,10 @@ import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 import '../../controller/order_chat_controller.dart';
 import '../../domain/entity/chat/order/get_order_message_by_user_parameter.dart';
 import '../../domain/entity/chat/order/get_order_message_by_user_response.dart';
+import '../../domain/usecase/answer_order_conversation_use_case.dart';
+import '../../domain/usecase/create_order_conversation_use_case.dart';
 import '../../domain/usecase/get_order_message_by_user_use_case.dart';
+import '../../domain/usecase/get_user_use_case.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
 import '../../misc/getextended/get_extended.dart';
@@ -32,7 +35,10 @@ class OrderChatPage extends RestorableGetxPage<_OrderChatPageRestoration> {
     _orderChatController.controller = GetExtended.put<OrderChatController>(
       OrderChatController(
         controllerManager,
-        Injector.locator<GetOrderMessageByUserUseCase>()
+        Injector.locator<GetOrderMessageByUserUseCase>(),
+        Injector.locator<CreateOrderConversationUseCase>(),
+        Injector.locator<AnswerOrderConversationUseCase>(),
+        Injector.locator<GetUserUseCase>(),
       ),
       tag: pageName
     );
@@ -196,7 +202,7 @@ class _StatefulOrderChatControllerMediatorWidgetState extends State<_StatefulOrd
       appBar: ModifiedAppBar(
         titleInterceptor: (context, title) => Row(
           children: [
-            Text("Mista".tr),
+            Text("Order Chat".tr),
           ],
         ),
       ),
