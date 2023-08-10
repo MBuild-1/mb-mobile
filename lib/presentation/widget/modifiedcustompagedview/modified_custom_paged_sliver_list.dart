@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 import '../../../misc/itemtypelistinterceptor/item_type_list_interceptor.dart';
+import '../../../misc/itemtypelistinterceptor/item_type_list_interceptor_result.dart';
 import 'modified_custom_appended_sliver_child_builder_delegate.dart';
 import 'modified_custom_paged_sliver_builder.dart';
 
@@ -19,7 +20,7 @@ class ModifiedCustomPagedSliverList<PageKeyType, ItemType> extends PagedSliverLi
     SemanticIndexCallback? semanticIndexCallback,
     bool shrinkWrapFirstPageIndicators = false,
     Key? key,
-    required this.itemTypeListInterceptorList
+    required this.itemTypeListInterceptorList,
   }) : _separatorBuilder = null,
       super(
         pagingController: pagingController,
@@ -44,7 +45,7 @@ class ModifiedCustomPagedSliverList<PageKeyType, ItemType> extends PagedSliverLi
     SemanticIndexCallback? semanticIndexCallback,
     bool shrinkWrapFirstPageIndicators = false,
     Key? key,
-    required this.itemTypeListInterceptorList
+    required this.itemTypeListInterceptorList,
   }) : _separatorBuilder = null,
       super(
         pagingController: pagingController,

@@ -105,6 +105,7 @@ class _ConstantImpl {
   Color get colorGrey4 => const Color.fromRGBO(244, 244, 244, 1);
   Color get colorGrey5 => const Color.fromRGBO(235, 235, 235, 1);
   Color get colorGrey6 => const Color.fromRGBO(209, 211, 217, 1);
+  Color get colorGrey7 => const Color.fromRGBO(110, 110, 110, 1);
   Color get colorSurfaceGrey => const Color.fromRGBO(247, 247, 247, 1);
   Color get colorDarkGrey => const Color.fromRGBO(105, 105, 105, 1);
   Color get colorBrown => const Color.fromRGBO(191, 105, 25, 1);
@@ -154,6 +155,11 @@ class _ConstantImpl {
   Gradient get buttonGradient2 => SweepGradient(
     stops: const [0, 0.25, 0.25, 0.5, 0.5, 1],
     colors: [Constant.colorButtonGradient1, Constant.colorButtonGradient1, Constant.colorButtonGradient3, Constant.colorButtonGradient3, Constant.colorButtonGradient2, Constant.colorButtonGradient2],
+  );
+
+  Gradient get buttonGradient3 => LinearGradient(
+    stops: const [1],
+    colors: [Constant.colorGrey7]
   );
 
   double get heightSpacingListItem => 1.h;

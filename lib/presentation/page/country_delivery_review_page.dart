@@ -1,18 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:masterbagasi/domain/dummy/addressdummy/country_dummy.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../../controller/country_delivery_review_controller.dart';
+import '../../domain/entity/address/country.dart';
+import '../../domain/entity/address/zone.dart';
 import '../../domain/entity/delivery/country_delivery_review.dart';
+import '../../domain/entity/delivery/country_delivery_review_based_country_parameter.dart';
+import '../../domain/entity/delivery/country_delivery_review_header_content.dart';
 import '../../domain/entity/delivery/country_delivery_review_paging_parameter.dart';
-import '../../domain/usecase/get_country_delivery_review_header_content_use_case.dart';
-import '../../domain/usecase/get_country_delivery_review_media_paging_use_case.dart';
-import '../../domain/usecase/get_country_delivery_review_paging_use_case.dart';
+import '../../domain/entity/delivery/country_delivery_review_response.dart';
+import '../../domain/entity/delivery/countrydeliveryreviewmedia/country_delivery_review_media.dart';
+import '../../domain/usecase/get_country_delivery_review_use_case.dart';
 import '../../misc/constant.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/countrydeliveryreviewlistitemcontrollerstate/country_delivery_review_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/countrydeliveryreviewlistitemcontrollerstate/country_delivery_review_header_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/countrydeliveryreviewlistitemcontrollerstate/country_delivery_review_media_short_content_list_item_controller_state.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/countrydeliveryreviewlistitemcontrollerstate/country_delivery_review_select_country_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/load_data_result_dynamic_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/no_content_list_item_controller_state.dart';
@@ -33,7 +40,6 @@ import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
 import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/horizontal_dynamic_item_carousel_parametered_component_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../widget/background_app_bar_scaffold.dart';
-import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/main_menu_search_app_bar.dart';
 import 'getx_page.dart';
@@ -56,9 +62,7 @@ class CountryDeliveryReviewPage extends RestorableGetxPage<_CountryDeliveryRevie
     _countryDeliveryReviewController.controller = GetExtended.put<CountryDeliveryReviewController>(
       CountryDeliveryReviewController(
         controllerManager,
-        Injector.locator<GetCountryDeliveryReviewPagingUseCase>(),
-        Injector.locator<GetCountryDeliveryReviewMediaPagingUseCase>(),
-        Injector.locator<GetCountryDeliveryReviewHeaderContentUseCase>()
+        Injector.locator<GetCountryDeliveryReviewUseCase>()
       ),
       tag: pageName
     );
@@ -205,11 +209,13 @@ class _StatefulCountryDeliveryReviewControllerMediatorWidgetState extends State<
   late AssetImage _countryDeliveryReviewAppBarBackgroundAssetImage;
   late final ModifiedPagingController<int, ListItemControllerState> _countryDeliveryReviewListItemPagingController;
   late final PagingControllerState<int, ListItemControllerState> _countryDeliveryReviewListItemPagingControllerState;
-  final List<BaseLoadDataResultDynamicListItemControllerState> _dynamicItemLoadDataResultDynamicListItemControllerStateList = [];
+
+  late String _currentSelectedCountryId;
 
   @override
   void initState() {
     super.initState();
+    _currentSelectedCountryId = widget.countryId;
     _countryDeliveryReviewAppBarBackgroundAssetImage = AssetImage(Constant.imagePatternFeedMainMenuAppBar);
     _countryDeliveryReviewListItemPagingController = ModifiedPagingController<int, ListItemControllerState>(
       firstPageKey: 1,
@@ -234,79 +240,53 @@ class _StatefulCountryDeliveryReviewControllerMediatorWidgetState extends State<
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _countryDeliveryReviewListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? listItemControllerStateList) async {
-    HorizontalComponentEntityParameterizedEntityAndListItemControllerStateMediator componentEntityMediator = Injector.locator<HorizontalComponentEntityParameterizedEntityAndListItemControllerStateMediator>();
-    HorizontalDynamicItemCarouselParameterizedEntityAndListItemControllerStateMediatorParameter carouselParameterizedEntityMediator = HorizontalDynamicItemCarouselParameterizedEntityAndListItemControllerStateMediatorParameter(
-      onSetState: () => setState(() {}),
-      dynamicItemLoadDataResultDynamicListItemControllerStateList: _dynamicItemLoadDataResultDynamicListItemControllerStateList
-    );
-    _dynamicItemLoadDataResultDynamicListItemControllerStateList.clear();
-    LoadDataResult<PagingDataResult<CountryDeliveryReview>> countryDeliveryReviewLoadDataResult = await widget.countryDeliveryReviewController.getCountryDeliveryReview(
-      CountryDeliveryReviewPagingParameter(
-        page: pageKey
+    LoadDataResult<CountryDeliveryReviewResponse> countryDeliveryReviewResponseLoadDataResult = await widget.countryDeliveryReviewController.getCountryDeliveryReview(
+      CountryDeliveryReviewBasedCountryParameter(
+        countryId: _currentSelectedCountryId
       )
     );
-    return countryDeliveryReviewLoadDataResult.map<PagingResult<ListItemControllerState>>((countryDeliveryReviewPaging) {
-      List<ListItemControllerState> resultListItemControllerState = [];
-      int totalItem = countryDeliveryReviewPaging.totalItem;
-      if (pageKey == 1) {
-        totalItem = 1;
-        resultListItemControllerState = [
+    return countryDeliveryReviewResponseLoadDataResult.map<PagingResult<ListItemControllerState>>((countryDeliveryReviewResponse) {
+      return PagingDataResult<ListItemControllerState>(
+        itemList: [
           CountryDeliveryReviewContainerListItemControllerState(
-            countryDeliveryReviewList: countryDeliveryReviewPaging.itemList,
+            countryDeliveryReviewList: countryDeliveryReviewResponse.countryDeliveryReviewList,
             onUpdateState: () => setState(() {}),
             errorProvider: Injector.locator<ErrorProvider>(),
-            getCountryDeliveryReviewHeaderListItemControllerState: () => componentEntityMediator.mapWithParameter(
-              widget.countryDeliveryReviewController.getCountryDeliveryReviewHeader(widget.countryId),
-              parameter: carouselParameterizedEntityMediator
+            getCountryDeliveryReviewHeaderListItemControllerState: () => CountryDeliveryReviewHeaderListItemControllerState(
+              countryDeliveryReviewHeaderContent: CountryDeliveryReviewHeaderContent(
+                countryName: countryDeliveryReviewResponse.name,
+                rating: countryDeliveryReviewResponse.avgRating,
+                reviewCount: countryDeliveryReviewResponse.countryDeliveryReviewList.length,
+                backgroundImageUrl: countryDeliveryReviewResponse.image.toEmptyStringNonNull
+              )
             ),
-            getCountryDeliveryReviewMediaShortContentListItemControllerState: () => componentEntityMediator.mapWithParameter(
-              widget.countryDeliveryReviewController.getCountryDeliveryReviewMediaShortContent(widget.countryId),
-              parameter: carouselParameterizedEntityMediator
+            getCountryDeliveryReviewMediaShortContentListItemControllerState: () => CountryDeliveryReviewMediaShortContentListItemControllerState(
+              countryDeliveryReviewMediaList: () {
+                List<CountryDeliveryReviewMedia> countryDeliveryReviewMediaList = [];
+                for (var countryDeliveryReview in countryDeliveryReviewResponse.countryDeliveryReviewList) {
+                  countryDeliveryReviewMediaList.addAll(countryDeliveryReview.countryDeliveryReviewMedia);
+                }
+                return countryDeliveryReviewMediaList;
+              }()
             ),
-            countryDeliveryReviewContainerStorageListItemControllerState: DefaultCountryDeliveryReviewContainerStorageListItemControllerState()
+            getCountryDeliveryReviewSelectCountryListItemControllerState: () => CountryDeliveryReviewSelectCountryListItemControllerState(
+              selectedCountry: Injector.locator<CountryDummy>().generateDefaultDummy()..id = _currentSelectedCountryId,
+              onSelectCountry: (country) {
+                _currentSelectedCountryId = country.id;
+                _countryDeliveryReviewListItemPagingController.refresh();
+              }
+            )
           )
-        ];
-      } else {
-        if (ListItemControllerStateHelper.checkListItemControllerStateList(listItemControllerStateList)) {
-          CountryDeliveryReviewContainerListItemControllerState countryDeliveryReviewContainerListItemControllerState = ListItemControllerStateHelper.parsePageKeyedListItemControllerState(listItemControllerStateList![0]) as CountryDeliveryReviewContainerListItemControllerState;
-          countryDeliveryReviewContainerListItemControllerState.countryDeliveryReviewList.addAll(countryDeliveryReviewPaging.itemList);
-        }
-      }
-      return PagingDataResult<ListItemControllerState>(
-        itemList: resultListItemControllerState,
-        page: countryDeliveryReviewPaging.page,
-        totalPage: countryDeliveryReviewPaging.totalPage,
-        totalItem: totalItem
+        ],
+        page: 1,
+        totalPage: 1,
+        totalItem: 1
       );
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    widget.countryDeliveryReviewController.setCountryDeliveryReviewSubDelegate(
-      CountryDeliveryReviewSubDelegate(
-        onObserveLoadCountryDeliveryReviewHeader: (onObserveLoadCountryDeliveryReviewHeaderParameter) {
-          return LoadDataResultDynamicListItemControllerState(
-            loadDataResult: onObserveLoadCountryDeliveryReviewHeaderParameter.countryDeliveryReviewHeaderContentLoadDataResult,
-            errorProvider: Injector.locator<ErrorProvider>(),
-            isLoadingListItemControllerState: (_) => ShimmerCountryDeliveryReviewHeaderListItemControllerState(),
-            successListItemControllerState: (countryDeliveryReviewHeaderContent) => CountryDeliveryReviewHeaderListItemControllerState(
-              countryDeliveryReviewHeaderContent: countryDeliveryReviewHeaderContent
-            )
-          );
-        },
-        onObserveLoadCountryDeliveryReviewMediaShortContent: (onObserveLoadCountryDeliveryReviewMediaShortContentParameter) {
-          return LoadDataResultDynamicListItemControllerState(
-            loadDataResult: onObserveLoadCountryDeliveryReviewMediaShortContentParameter.countryDeliveryReviewMediaPagingLoadDataResult,
-            errorProvider: Injector.locator<ErrorProvider>(),
-            isLoadingListItemControllerState: (_) => ShimmerCountryDeliveryReviewMediaShortContentListItemControllerState(),
-            successListItemControllerState: (countryDeliveryReviewMediaShortContent) => CountryDeliveryReviewMediaShortContentListItemControllerState(
-              countryDeliveryReviewMediaPaging: countryDeliveryReviewMediaShortContent
-            )
-          );
-        }
-      )
-    );
     return BackgroundAppBarScaffold(
       backgroundAppBarImage: _countryDeliveryReviewAppBarBackgroundAssetImage,
       appBar: MainMenuSearchAppBar(value: 0.0),

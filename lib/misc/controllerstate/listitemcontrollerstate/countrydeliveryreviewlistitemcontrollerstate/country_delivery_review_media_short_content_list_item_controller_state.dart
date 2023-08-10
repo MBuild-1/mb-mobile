@@ -7,9 +7,9 @@ abstract class BaseCountryDeliveryReviewMediaShortContentListItemControllerState
 class ShimmerCountryDeliveryReviewMediaShortContentListItemControllerState extends BaseCountryDeliveryReviewMediaShortContentListItemControllerState {}
 
 class CountryDeliveryReviewMediaShortContentListItemControllerState extends BaseCountryDeliveryReviewMediaShortContentListItemControllerState {
-  PagingDataResult<CountryDeliveryReviewMedia> countryDeliveryReviewMediaPaging;
+  List<CountryDeliveryReviewMedia> countryDeliveryReviewMediaList;
 
   CountryDeliveryReviewMediaShortContentListItemControllerState({
-    required this.countryDeliveryReviewMediaPaging
+    required this.countryDeliveryReviewMediaList
   });
 }

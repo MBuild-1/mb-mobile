@@ -18,7 +18,7 @@ class ModifiedPagedListView<PageKeyType, ItemType> extends StatefulWidget {
   final bool pullToRefresh;
   final PagingControllerState<PageKeyType, ItemType>? pagingControllerState;
   final OnProvidePagedChildBuilderDelegate<PageKeyType, ItemType> onProvidePagedChildBuilderDelegate;
-  late final PagedListView<PageKeyType, ItemType> pagedListView;
+  late final ModifiedCustomPagedListView<PageKeyType, ItemType> pagedListView;
   final List<ItemTypeListInterceptor<ItemType>> itemTypeListInterceptorList = <ItemTypeListInterceptor<ItemType>>[
     DefaultItemTypeListInterceptor(
       padding: () => Constant.paddingListItem,
@@ -77,57 +77,6 @@ class ModifiedPagedListView<PageKeyType, ItemType> extends StatefulWidget {
     );
   }
 
-  ModifiedPagedListView.separated({
-    Key? key,
-    required this.visible,
-    this.pullToRefresh = true,
-    required PagingController<PageKeyType, ItemType> pagingController,
-    required this.onProvidePagedChildBuilderDelegate,
-    required IndexedWidgetBuilder separatorBuilder,
-    ScrollController? scrollController,
-    Axis scrollDirection = Axis.vertical,
-    bool reverse = false,
-    bool? primary,
-    ScrollPhysics? physics,
-    bool shrinkWrap = false,
-    EdgeInsetsGeometry? padding,
-    double? itemExtent,
-    bool addAutomaticKeepAlives = true,
-    bool addRepaintBoundaries = true,
-    bool addSemanticIndexes = true,
-    double? cacheExtent,
-    DragStartBehavior dragStartBehavior = DragStartBehavior.start,
-    ScrollViewKeyboardDismissBehavior keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
-    String? restorationId,
-    Clip clipBehavior = Clip.hardEdge,
-    List<ItemTypeListInterceptor<ItemType>> itemTypeListInterceptorList = const []
-  }) : pagingControllerState = null, super(key: key) {
-    this.itemTypeListInterceptorList.addAll(itemTypeListInterceptorList);
-    pagedListView = ModifiedCustomPagedListView.separated(
-      key: key,
-      pagingController: pagingController,
-      builderDelegate: onProvidePagedChildBuilderDelegate(null),
-      separatorBuilder: separatorBuilder,
-      scrollController: scrollController,
-      scrollDirection: scrollDirection,
-      reverse: reverse,
-      primary: primary,
-      physics: physics,
-      shrinkWrap: shrinkWrap,
-      padding: padding,
-      itemExtent: itemExtent,
-      addAutomaticKeepAlives: addAutomaticKeepAlives,
-      addRepaintBoundaries: addRepaintBoundaries,
-      addSemanticIndexes: addSemanticIndexes,
-      cacheExtent: cacheExtent,
-      dragStartBehavior: dragStartBehavior,
-      keyboardDismissBehavior: keyboardDismissBehavior,
-      restorationId: restorationId,
-      clipBehavior: clipBehavior,
-      itemTypeListInterceptorList: this.itemTypeListInterceptorList
-    );
-  }
-
   ModifiedPagedListView.fromPagingControllerState({
     Key? key,
     this.pullToRefresh = true,
@@ -159,59 +108,6 @@ class ModifiedPagedListView<PageKeyType, ItemType> extends StatefulWidget {
       key: key,
       pagingController: pagingControllerState.pagingController,
       builderDelegate: onProvidePagedChildBuilderDelegate(pagingControllerState),
-      scrollController: pagingControllerState.scrollController,
-      scrollDirection: scrollDirection,
-      reverse: reverse,
-      primary: primary,
-      physics: physics,
-      shrinkWrap: shrinkWrap,
-      padding: padding,
-      itemExtent: itemExtent,
-      addAutomaticKeepAlives: addAutomaticKeepAlives,
-      addRepaintBoundaries: addRepaintBoundaries,
-      addSemanticIndexes: addSemanticIndexes,
-      cacheExtent: cacheExtent,
-      dragStartBehavior: dragStartBehavior,
-      keyboardDismissBehavior: keyboardDismissBehavior,
-      restorationId: restorationId,
-      clipBehavior: clipBehavior,
-      itemTypeListInterceptorList: this.itemTypeListInterceptorList
-    );
-  }
-
-  ModifiedPagedListView.separatedFromPagingControllerState({
-    Key? key,
-    this.pullToRefresh = true,
-    required PagingControllerState<PageKeyType, ItemType> pagingControllerState,
-    required this.onProvidePagedChildBuilderDelegate,
-    required IndexedWidgetBuilder separatorBuilder,
-    Axis scrollDirection = Axis.vertical,
-    bool reverse = false,
-    bool? primary,
-    ScrollPhysics? physics,
-    bool shrinkWrap = false,
-    EdgeInsetsGeometry? padding,
-    double? itemExtent,
-    bool addAutomaticKeepAlives = true,
-    bool addRepaintBoundaries = true,
-    bool addSemanticIndexes = true,
-    double? cacheExtent,
-    DragStartBehavior dragStartBehavior = DragStartBehavior.start,
-    ScrollViewKeyboardDismissBehavior keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
-    String? restorationId,
-    Clip clipBehavior = Clip.hardEdge,
-    List<ItemTypeListInterceptor<ItemType>> itemTypeListInterceptorList = const []
-  }) : visible = pagingControllerState.isPagingControllerExist,
-    // ignore: prefer_initializing_formals
-    pagingControllerState = pagingControllerState,
-    super(key: key)
-  {
-    this.itemTypeListInterceptorList.addAll(itemTypeListInterceptorList);
-    pagedListView = ModifiedCustomPagedListView.separated(
-      key: key,
-      pagingController: pagingControllerState.pagingController,
-      builderDelegate: onProvidePagedChildBuilderDelegate(pagingControllerState),
-      separatorBuilder: separatorBuilder,
       scrollController: pagingControllerState.scrollController,
       scrollDirection: scrollDirection,
       reverse: reverse,

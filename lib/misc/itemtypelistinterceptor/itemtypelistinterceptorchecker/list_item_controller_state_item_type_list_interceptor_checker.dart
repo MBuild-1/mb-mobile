@@ -244,6 +244,9 @@ class ListItemControllerStateItemTypeInterceptorChecker extends ItemTypeListInte
       itemSpacing: itemSpacing,
       listItemControllerStateItemTypeInterceptorChecker: this
     ),
+    PaddingContainerItemTypeListSubInterceptor(
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
     DynamicItemTypeListSubInterceptor(
       listItemControllerStateItemTypeInterceptorChecker: this
     ),

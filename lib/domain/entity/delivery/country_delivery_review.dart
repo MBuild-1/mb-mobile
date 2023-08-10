@@ -4,7 +4,6 @@ class CountryDeliveryReview {
   String id;
   String? userProfilePicture;
   String userName;
-  int userReviewCount;
   double rating;
   String review;
   DateTime reviewDate;
@@ -14,7 +13,6 @@ class CountryDeliveryReview {
     required this.id,
     required this.userProfilePicture,
     required this.userName,
-    required this.userReviewCount,
     required this.rating,
     required this.review,
     required this.reviewDate,

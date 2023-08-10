@@ -226,7 +226,9 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Affiliate": "Affiliasi",
       "Learn": "Pelajari",
       "Register Now": "Daftar Sekarang",
-      "Type Chat": "Ketikan Chat"
+      "Type Chat": "Ketikan Chat",
+      "Foto & Video MBestie Review": "Foto & Video Ulasan MBestie",
+      "Select More Country Reviews": "Pilih Ulasan Negara Lainnya"
     }
   };
 

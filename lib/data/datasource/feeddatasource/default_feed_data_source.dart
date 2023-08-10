@@ -8,9 +8,11 @@ import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 import '../../../domain/entity/delivery/check_your_contribution_delivery_review_detail_parameter.dart';
 import '../../../domain/entity/delivery/check_your_contribution_delivery_review_detail_response.dart';
 import '../../../domain/entity/delivery/country_delivery_review.dart';
+import '../../../domain/entity/delivery/country_delivery_review_based_country_parameter.dart';
 import '../../../domain/entity/delivery/country_delivery_review_header_content.dart';
 import '../../../domain/entity/delivery/country_delivery_review_header_content_parameter.dart';
 import '../../../domain/entity/delivery/country_delivery_review_paging_parameter.dart';
+import '../../../domain/entity/delivery/country_delivery_review_response.dart';
 import '../../../domain/entity/delivery/countrydeliveryreviewmedia/country_delivery_review_media.dart';
 import '../../../domain/entity/delivery/countrydeliveryreviewmedia/country_delivery_review_media_paging_parameter.dart';
 import '../../../domain/entity/delivery/countrydeliveryreviewmedia/photo_country_delivery_review_media.dart';
@@ -240,46 +242,10 @@ class DefaultFeedDataSource implements FeedDataSource {
   }
 
   @override
-  FutureProcessing<PagingDataResult<CountryDeliveryReview>> countryDeliveryReviewPaging(CountryDeliveryReviewPagingParameter countryDeliveryReviewPagingParameter) {
-    return DummyFutureProcessing((cancelToken) async {
-      await Future.delayed(const Duration(seconds: 1));
-      return PagingDataResult<CountryDeliveryReview>(
-        page: 1,
-        totalPage: 1,
-        totalItem: 1,
-        itemList: []
-      );
-    });
-  }
-
-  @override
-  FutureProcessing<PagingDataResult<CountryDeliveryReviewMedia>> countryDeliveryReviewMediaPaging(CountryDeliveryReviewMediaPagingParameter countryDeliveryReviewMediaPagingParameter) {
-    return DummyFutureProcessing((cancelToken) async {
-      await Future.delayed(const Duration(seconds: 1));
-      return PagingDataResult<CountryDeliveryReviewMedia>(
-        page: 1,
-        totalPage: 1,
-        totalItem: 1,
-        itemList: [
-          PhotoCountryDeliveryReviewMedia(thumbnailUrl: ""),
-          PhotoCountryDeliveryReviewMedia(thumbnailUrl: ""),
-          VideoCountryDeliveryReviewMedia(thumbnailUrl: ""),
-          VideoCountryDeliveryReviewMedia(thumbnailUrl: ""),
-        ]
-      );
-    });
-  }
-
-  @override
-  FutureProcessing<CountryDeliveryReviewHeaderContent> countryDeliveryReviewHeaderContent(CountryDeliveryReviewHeaderContentParameter countryDeliveryReviewHeaderContentParameter) {
-    return DummyFutureProcessing((cancelToken) async {
-      await Future.delayed(const Duration(seconds: 1));
-      return CountryDeliveryReviewHeaderContent(
-        backgroundImageUrl: "",
-        rating: 5.0,
-        reviewCount: 1,
-        countryName: ""
-      );
+  FutureProcessing<CountryDeliveryReviewResponse> countryDeliveryReview(CountryDeliveryReviewBasedCountryParameter countryDeliveryReviewBasedCountryParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.get("/shipping-review/country/${countryDeliveryReviewBasedCountryParameter.countryId}", cancelToken: cancelToken)
+        .map<CountryDeliveryReviewResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToCountryDeliveryReviewResponse());
     });
   }
 }
