@@ -26,6 +26,8 @@ import '../data/datasource/feeddatasource/default_feed_data_source.dart';
 import '../data/datasource/feeddatasource/feed_data_source.dart';
 import '../data/datasource/mapdatasource/default_map_data_source.dart';
 import '../data/datasource/mapdatasource/map_data_source.dart';
+import '../data/datasource/notificationdatasource/default_notification_data_source.dart';
+import '../data/datasource/notificationdatasource/notification_data_source.dart';
 import '../data/datasource/orderdatasource/default_order_data_source.dart';
 import '../data/datasource/orderdatasource/order_data_source.dart';
 import '../data/datasource/productdatasource/default_product_data_source.dart';
@@ -43,6 +45,7 @@ import '../data/repository/default_coupon_repository.dart';
 import '../data/repository/default_faq_repository.dart';
 import '../data/repository/default_feed_repository.dart';
 import '../data/repository/default_map_repository.dart';
+import '../data/repository/default_notification_repository.dart';
 import '../data/repository/default_order_repository.dart';
 import '../data/repository/default_product_discussion_repository.dart';
 import '../data/repository/default_product_repository.dart';
@@ -73,6 +76,7 @@ import '../domain/repository/coupon_repository.dart';
 import '../domain/repository/faq_repository.dart';
 import '../domain/repository/feed_repository.dart';
 import '../domain/repository/map_repository.dart';
+import '../domain/repository/notification_repository.dart';
 import '../domain/repository/order_repository.dart';
 import '../domain/repository/product_discussion_repository.dart';
 import '../domain/repository/product_repository.dart';
@@ -121,6 +125,7 @@ import '../domain/usecase/get_homepage_contents_banner_use_case.dart';
 import '../domain/usecase/get_kitchen_contents_banner_use_case.dart';
 import '../domain/usecase/get_my_cart_use_case.dart';
 import '../domain/usecase/get_news_use_case.dart';
+import '../domain/usecase/get_notification_by_user_paging_use_case.dart';
 import '../domain/usecase/get_order_based_id_use_case.dart';
 import '../domain/usecase/get_order_message_by_conversation_use_case.dart';
 import '../domain/usecase/get_order_message_by_user_use_case.dart';
@@ -155,6 +160,7 @@ import '../domain/usecase/get_shipping_price_contents_banner_use_case.dart';
 import '../domain/usecase/get_short_my_cart_use_case.dart';
 import '../domain/usecase/get_short_video_use_case.dart';
 import '../domain/usecase/get_snack_for_lying_around_list_use_case.dart';
+import '../domain/usecase/get_transaction_notification_detail_use_case.dart';
 import '../domain/usecase/get_trip_default_video_use_case.dart';
 import '../domain/usecase/get_user_use_case.dart';
 import '../domain/usecase/get_waiting_to_be_reviewed_delivery_review_paging_use_case.dart';
@@ -528,6 +534,8 @@ class _Injector {
     locator.registerLazySingleton<GetProductMessageByUserUseCase>(() => GetProductMessageByUserUseCase(chatRepository: locator()));
     locator.registerLazySingleton<GetProductMessageByConversationUseCase>(() => GetProductMessageByConversationUseCase(chatRepository: locator()));
     locator.registerLazySingleton<GetProductMessageByProductUseCase>(() => GetProductMessageByProductUseCase(chatRepository: locator()));
+    locator.registerLazySingleton<GetNotificationByUserPagingUseCase>(() => GetNotificationByUserPagingUseCase(notificationRepository: locator()));
+    locator.registerLazySingleton<GetTransactionNotificationDetailUseCase>(() => GetTransactionNotificationDetailUseCase(notificationRepository: locator()));
 
     // Repository
     locator.registerLazySingleton<UserRepository>(() => DefaultUserRepository(userDataSource: locator()));
@@ -552,6 +560,7 @@ class _Injector {
     locator.registerLazySingleton<CargoRepository>(() => DefaultCargoRepository(cargoDataSource: locator()));
     locator.registerLazySingleton<FaqRepository>(() => DefaultFaqRepository(faqDataSource: locator()));
     locator.registerLazySingleton<ChatRepository>(() => DefaultChatRepository(chatDataSource: locator()));
+    locator.registerLazySingleton<NotificationRepository>(() => DefaultNotificationRepository(notificationDataSource: locator()));
 
     // Data Sources
     locator.registerLazySingleton<UserDataSource>(() => DefaultUserDataSource(dio: locator()));
@@ -579,6 +588,7 @@ class _Injector {
     locator.registerLazySingleton<CargoDataSource>(() => DefaultCargoDataSource(dio: locator()));
     locator.registerLazySingleton<FaqDataSource>(() => DefaultFaqDataSource(dio: locator()));
     locator.registerLazySingleton<ChatDataSource>(() => DefaultChatDataSource(dio: locator()));
+    locator.registerLazySingleton<NotificationDataSource>(() => DefaultNotificationDataSource(dio: locator()));
 
     // Dio
     locator.registerLazySingleton<Dio>(() => DioHttpClient.of());

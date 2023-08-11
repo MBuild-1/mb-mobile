@@ -40,9 +40,12 @@ class MainMenuSearchAppBar extends SearchAppBar {
           const SizedBox(width: 10),
           Text("Search in Masterbagasi".tr, style: TextStyle(color: Colors.grey.shade600)),
           const Spacer(),
-          SvgPicture.asset(
-            Constant.vectorNotification,
-            color: Colors.grey.shade600,
+          TapArea(
+            onTap: () => PageRestorationHelper.toNotificationPage(context),
+            child: SvgPicture.asset(
+              Constant.vectorNotification,
+              color: Colors.grey.shade600,
+            ),
           ),
           const SizedBox(width: 10),
           SvgPicture.asset(

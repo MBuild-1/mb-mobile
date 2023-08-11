@@ -22,6 +22,7 @@ import '../presentation/page/login_page.dart';
 import '../presentation/page/mainmenu/main_menu_page.dart';
 import '../presentation/page/modify_address_page.dart';
 import '../presentation/page/msme_partner_page.dart';
+import '../presentation/page/notification_page.dart';
 import '../presentation/page/order_chat_page.dart';
 import '../presentation/page/order_detail_page.dart';
 import '../presentation/page/order_page.dart';
@@ -411,6 +412,17 @@ class _PageRestorationHelperImpl {
           restoration.countryDeliveryReviewMediaViewPageRestorableRouteFuture.present(
             countryDeliveryReviewMediaViewPageParameter.toEncodeBase64String()
           );
+        },
+        context: context
+      );
+    });
+  }
+
+  void toNotificationPage(BuildContext context) {
+    LoginHelper.checkingLogin(context, () {
+      PageRestorationHelper.findPageRestorationMixin<NotificationPageRestorationMixin>(
+        onGetxPageRestorationFound: (restoration) {
+          restoration.notificationPageRestorableRouteFuture.present();
         },
         context: context
       );
