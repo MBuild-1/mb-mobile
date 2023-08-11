@@ -3,7 +3,10 @@ import 'package:get/get.dart';
 
 import '../../../domain/entity/delivery/countrydeliveryreviewmedia/country_delivery_review_media.dart';
 import '../../../misc/constant.dart';
+import '../../../misc/dialog_helper.dart';
+import '../../page/modaldialogpage/country_delivery_review_media_detail_modal_dialog_page.dart';
 import '../modified_shimmer.dart';
+import '../tap_area.dart';
 import 'country_delivery_review_media_short_content_detail_item.dart';
 
 class ShimmerCountryDeliveryReviewMediaShortContentItem extends StatelessWidget {
@@ -101,13 +104,27 @@ class CountryDeliveryReviewMediaShortContentItem extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 10),
-              Text(
-                "More".tr,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: Constant.colorMain
-                )
+              TapArea(
+                onTap: () async {
+                  await DialogHelper.showModalDialogPage<void, List<CountryDeliveryReviewMedia>>(
+                    context: context,
+                    modalDialogPageBuilder: (context, parameter) => CountryDeliveryReviewMediaDetailModalDialogPage(
+                      countryDeliveryReviewMediaList: parameter!,
+                      contextForOpeningMediaView: () {
+                        return context;
+                      },
+                    ),
+                    parameter: countryDeliveryReviewMediaList,
+                  );
+                },
+                child: Text(
+                  "More".tr,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Constant.colorMain
+                  )
+                ),
               ),
             ],
           ),

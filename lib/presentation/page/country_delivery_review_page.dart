@@ -6,12 +6,8 @@ import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../../controller/country_delivery_review_controller.dart';
-import '../../domain/entity/address/country.dart';
-import '../../domain/entity/address/zone.dart';
-import '../../domain/entity/delivery/country_delivery_review.dart';
 import '../../domain/entity/delivery/country_delivery_review_based_country_parameter.dart';
 import '../../domain/entity/delivery/country_delivery_review_header_content.dart';
-import '../../domain/entity/delivery/country_delivery_review_paging_parameter.dart';
 import '../../domain/entity/delivery/country_delivery_review_response.dart';
 import '../../domain/entity/delivery/countrydeliveryreviewmedia/country_delivery_review_media.dart';
 import '../../domain/usecase/get_country_delivery_review_use_case.dart';
@@ -21,27 +17,22 @@ import '../../misc/controllerstate/listitemcontrollerstate/countrydeliveryreview
 import '../../misc/controllerstate/listitemcontrollerstate/countrydeliveryreviewlistitemcontrollerstate/country_delivery_review_media_short_content_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/countrydeliveryreviewlistitemcontrollerstate/country_delivery_review_select_country_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
-import '../../misc/controllerstate/listitemcontrollerstate/load_data_result_dynamic_list_item_controller_state.dart';
-import '../../misc/controllerstate/listitemcontrollerstate/no_content_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
-import '../../misc/entityandlistitemcontrollerstatemediator/horizontal_component_entity_parameterized_entity_and_list_item_controller_state_mediator.dart';
 import '../../misc/error/message_error.dart';
 import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
-import '../../misc/itemtypelistsubinterceptor/country_delivery_review_item_type_list_sub_interceptor.dart';
-import '../../misc/list_item_controller_state_helper.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/controller_manager.dart';
 import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
-import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/horizontal_dynamic_item_carousel_parametered_component_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../widget/background_app_bar_scaffold.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/main_menu_search_app_bar.dart';
+import 'country_delivery_review_media_view_page.dart';
 import 'getx_page.dart';
 
 class CountryDeliveryReviewPage extends RestorableGetxPage<_CountryDeliveryReviewPageRestoration> {
@@ -80,7 +71,7 @@ class CountryDeliveryReviewPage extends RestorableGetxPage<_CountryDeliveryRevie
   }
 }
 
-class _CountryDeliveryReviewPageRestoration extends MixableGetxPageRestoration with CountryDeliveryReviewPageRestorationMixin {
+class _CountryDeliveryReviewPageRestoration extends MixableGetxPageRestoration with CountryDeliveryReviewPageRestorationMixin, CountryDeliveryReviewMediaViewPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {

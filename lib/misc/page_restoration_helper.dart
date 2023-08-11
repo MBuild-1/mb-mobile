@@ -7,6 +7,7 @@ import '../controller/crop_picture_controller.dart';
 import '../presentation/page/address_page.dart';
 import '../presentation/page/affiliate_page.dart';
 import '../presentation/page/cart_page.dart';
+import '../presentation/page/country_delivery_review_media_view_page.dart';
 import '../presentation/page/country_delivery_review_page.dart';
 import '../presentation/page/coupon_page.dart';
 import '../presentation/page/crop_picture_page.dart';
@@ -397,6 +398,19 @@ class _PageRestorationHelperImpl {
       PageRestorationHelper.findPageRestorationMixin<ProductChatPageRestorationMixin>(
         onGetxPageRestorationFound: (restoration) {
           restoration.productChatPageRestorableRouteFuture.present(productId);
+        },
+        context: context
+      );
+    });
+  }
+
+  void toCountryDeliveryReviewMediaViewPage(BuildContext context, CountryDeliveryReviewMediaViewPageParameter countryDeliveryReviewMediaViewPageParameter) {
+    LoginHelper.checkingLogin(context, () {
+      PageRestorationHelper.findPageRestorationMixin<CountryDeliveryReviewMediaViewPageRestorationMixin>(
+        onGetxPageRestorationFound: (restoration) {
+          restoration.countryDeliveryReviewMediaViewPageRestorableRouteFuture.present(
+            countryDeliveryReviewMediaViewPageParameter.toEncodeBase64String()
+          );
         },
         context: context
       );

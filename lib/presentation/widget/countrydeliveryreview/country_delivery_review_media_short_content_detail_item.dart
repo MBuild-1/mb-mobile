@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../../../domain/entity/delivery/countrydeliveryreviewmedia/country_delivery_review_media.dart';
 import '../../../misc/constant.dart';
-import '../modifiedcachednetworkimage/country_delivery_review_modified_cached_network_image.dart';
+import 'country_delivery_review_media_detail_item.dart';
 
 class CountryDeliveryReviewMediaShortContentDetailItem extends StatelessWidget {
   final List<CountryDeliveryReviewMedia> countryDeliveryReviewMediaList;
@@ -30,16 +29,12 @@ class CountryDeliveryReviewMediaShortContentDetailItem extends StatelessWidget {
               (value) {
                 double totalGapWidth = 8 * (length - 1) + Constant.paddingListItem * 2;
                 double size = (MediaQuery.of(context).size.width - totalGapWidth) / length;
-                return Container(
+                return SizedBox(
                   width: size,
                   height: size,
-                  clipBehavior: Clip.antiAlias,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8.0)
-                  ),
-                  child: CountryDeliveryReviewModifiedCachedNetworkImage(
-                    imageUrl: value.thumbnailUrl.toEmptyStringNonNull,
-                  ),
+                  child: CountryDeliveryReviewMediaDetailItem(
+                    countryDeliveryReviewMedia: value,
+                  )
                 );
               }
             )

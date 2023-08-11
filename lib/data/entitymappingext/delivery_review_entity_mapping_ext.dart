@@ -2,12 +2,16 @@ import 'package:masterbagasi/data/entitymappingext/address_entity_mapping_ext.da
 import 'package:masterbagasi/data/entitymappingext/user_entity_mapping_ext.dart';
 import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
+import 'package:get/get_utils/get_utils.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 
 import '../../domain/entity/address/country.dart';
 import '../../domain/entity/delivery/country_delivery_review.dart';
 import '../../domain/entity/delivery/country_delivery_review_response.dart';
 import '../../domain/entity/delivery/countrydeliveryreviewmedia/country_delivery_review_media.dart';
+import '../../domain/entity/delivery/countrydeliveryreviewmedia/other_country_delivery_review_media.dart';
 import '../../domain/entity/delivery/countrydeliveryreviewmedia/photo_country_delivery_review_media.dart';
+import '../../domain/entity/delivery/countrydeliveryreviewmedia/video_country_delivery_review_media.dart';
 import '../../domain/entity/delivery/delivery_review.dart';
 import '../../domain/entity/user/user.dart';
 import '../../misc/response_wrapper.dart';
@@ -59,10 +63,25 @@ extension DeliveryReviewDetailEntityMappingExt on ResponseWrapper {
 
   CountryDeliveryReviewMedia mapFromResponseToCountryDeliveryReviewMedia() {
     String? shippingReviewId = response["shipping_review_id"] ?? response["dummy_shipping_review_id"];
-    return PhotoCountryDeliveryReviewMedia(
-      id: response["id"],
+    String effectiveId = response["id"];
+    String effectivePath = response["path"] ?? "";
+    if (GetUtils.isImage(effectivePath)) {
+      return PhotoCountryDeliveryReviewMedia(
+        id: effectiveId,
+        shippingReviewId: shippingReviewId,
+        thumbnailUrl: effectivePath
+      );
+    } else if (GetUtils.isVideo(effectivePath)) {
+      return VideoCountryDeliveryReviewMedia(
+        id: effectiveId,
+        shippingReviewId: shippingReviewId,
+        thumbnailUrl: effectivePath
+      );
+    }
+    return OtherCountryDeliveryReviewMedia(
+      id: effectiveId,
       shippingReviewId: shippingReviewId,
-      thumbnailUrl: response["path"]
+      thumbnailUrl: effectivePath
     );
   }
 

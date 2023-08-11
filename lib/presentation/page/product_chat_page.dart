@@ -252,9 +252,7 @@ class _StatefulProductChatControllerMediatorWidgetState extends State<_StatefulP
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _helpChatListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? listItemControllerStateList) async {
-    print("Test 1");
     UserMessageResponseWrapper<GetProductMessageByProductResponse> getProductMessageByProductResponseLoadDataResult = await getProductMessageByProduct();
-    print("Test 2");
     if (getProductMessageByProductResponseLoadDataResult.valueLoadDataResult.isFailed) {
       dynamic e = getProductMessageByProductResponseLoadDataResult.valueLoadDataResult.resultIfFailed;
       if (e is EmptyChatError) {

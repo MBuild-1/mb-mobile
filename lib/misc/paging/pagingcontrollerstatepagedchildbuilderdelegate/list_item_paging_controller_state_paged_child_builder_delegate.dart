@@ -26,6 +26,7 @@ import '../../../presentation/widget/colorful_chip_tab_bar.dart';
 import '../../../presentation/widget/country/vertical_country_item.dart';
 import '../../../presentation/widget/countrydeliveryreview/country_delivery_review_header_item.dart';
 import '../../../presentation/widget/countrydeliveryreview/country_delivery_review_item.dart';
+import '../../../presentation/widget/countrydeliveryreview/country_delivery_review_media_detail_item.dart';
 import '../../../presentation/widget/countrydeliveryreview/country_delivery_review_media_short_content_item.dart';
 import '../../../presentation/widget/countrydeliveryreview/country_delivery_review_select_country_item.dart';
 import '../../../presentation/widget/coupon/horizontal_coupon_item.dart';
@@ -108,6 +109,7 @@ import '../../controllerstate/listitemcontrollerstate/colorful_divider_list_item
 import '../../controllerstate/listitemcontrollerstate/column_container_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/countrydeliveryreviewlistitemcontrollerstate/country_delivery_review_header_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/countrydeliveryreviewlistitemcontrollerstate/country_delivery_review_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/countrydeliveryreviewlistitemcontrollerstate/country_delivery_review_media_detail_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/countrydeliveryreviewlistitemcontrollerstate/country_delivery_review_media_short_content_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/countrydeliveryreviewlistitemcontrollerstate/country_delivery_review_select_country_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/couponlistitemcontrollerstate/coupon_list_item_controller_state.dart';
@@ -1042,6 +1044,11 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
       return CountryDeliveryReviewSelectCountryItem(
         selectedCountry: item.selectedCountry,
         onSelectCountry: item.onSelectCountry
+      );
+    } else if (item is CountryDeliveryReviewMediaDetailListItemControllerState) {
+      return CountryDeliveryReviewMediaDetailItem(
+        countryDeliveryReviewMedia: item.countryDeliveryReviewMedia,
+        contextForOpeningMediaView: item.contextForOpeningMediaView
       );
     } else if (item is ChatBubbleListItemControllerState) {
       return ChatBubble(

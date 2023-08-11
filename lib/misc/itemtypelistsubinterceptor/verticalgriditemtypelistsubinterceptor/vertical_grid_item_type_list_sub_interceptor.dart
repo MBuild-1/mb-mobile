@@ -40,7 +40,7 @@ class VerticalGridItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
 
   late int _i;
   late int _maxRow;
-  late int _indexedMaxRow;
+  late int Function() _indexedMaxRow;
   late int _rowChildIndex;
   late int _createdRowCount;
 
@@ -55,7 +55,7 @@ class VerticalGridItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
   }) {
     _i = 0;
     _maxRow = 2;
-    _indexedMaxRow = _maxRow - 1;
+    _indexedMaxRow = () => _maxRow - 1;
     _rowChildIndex = 0;
     _createdRowCount = 0;
   }
@@ -79,8 +79,8 @@ class VerticalGridItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
           afterCheckLastRowContainerListing(lastNewItemType);
         }
         if (_i == listItemControllerStateList.length - 1) {
-          if (_rowChildIndex < _indexedMaxRow) {
-            int remaining = _indexedMaxRow - _rowChildIndex;
+          if (_rowChildIndex < _indexedMaxRow()) {
+            int remaining = _indexedMaxRow() - _rowChildIndex;
             int j = 0;
             while (j < remaining) {
               lastNewItemType.rowChildListItemControllerState.addAll(
@@ -206,6 +206,7 @@ class VerticalGridItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
       }
       ListItemControllerState effectiveOldItemType = effectiveOldItemTypeList.first;
       if (checkingListItemControllerState(effectiveOldItemType)) {
+        _maxRow = (effectiveOldItemType as SupportVerticalGridListItemControllerStateMixin).maxRow;
         int indexedMaxRow = _maxRow - 1;
         if (_createdRowCount == 0 || _rowChildIndex >= indexedMaxRow) {
           _onAddFirstRowChildIndexAndCheckLastRowContainerListing(
