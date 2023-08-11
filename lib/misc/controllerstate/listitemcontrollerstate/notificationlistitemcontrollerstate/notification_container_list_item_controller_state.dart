@@ -1,9 +1,10 @@
 import '../../../../domain/entity/notification/notification.dart';
+import '../../../../domain/entity/notification/short_notification.dart';
 import '../../../../presentation/widget/colorful_chip_tab_bar.dart';
 import '../list_item_controller_state.dart';
 
 class NotificationContainerListItemControllerState extends ListItemControllerState {
-  List<Notification> notificationList;
+  List<ShortNotification> notificationList;
   void Function() onUpdateState;
   void Function(Notification) onNotificationTap;
   ColorfulChipTabBarController notificationTabColorfulChipTabBarController;

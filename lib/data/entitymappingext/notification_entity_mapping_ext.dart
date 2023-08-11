@@ -8,10 +8,10 @@ import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/response_wrapper.dart';
 
 extension NotificationEntityMappingExt on ResponseWrapper {
-  PagingDataResult<Notification> mapFromResponseToNotificationPagingDataResult() {
+  PagingDataResult<ShortNotification> mapFromResponseToShortNotificationPagingDataResult() {
     return ResponseWrapper(response).mapFromResponseToPagingDataResult(
-      (dataResponse) => dataResponse.map<Notification>(
-        (notificationResponse) => ResponseWrapper(notificationResponse).mapFromResponseToNotification()
+      (dataResponse) => dataResponse.map<ShortNotification>(
+        (notificationResponse) => ResponseWrapper(notificationResponse).mapFromResponseToShortNotification()
       ).toList()
     );
   }

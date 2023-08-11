@@ -7,6 +7,7 @@ import 'package:masterbagasi/misc/ext/string_ext.dart';
 import '../../controller/notification_controller.dart';
 import '../../domain/entity/notification/notification.dart';
 import '../../domain/entity/notification/notification_by_user_paging_parameter.dart';
+import '../../domain/entity/notification/short_notification.dart';
 import '../../domain/usecase/get_notification_by_user_paging_use_case.dart';
 import '../../domain/usecase/get_transaction_notification_detail_use_case.dart';
 import '../../misc/constant.dart';
@@ -190,16 +191,6 @@ class _StatefulNotificationControllerMediatorWidgetState extends State<_Stateful
         title: "Transaksi",
         data: "transaction"
       ),
-      ColorfulChipTabBarData(
-        color: Constant.colorMain,
-        title: "Promo",
-        data: "promo"
-      ),
-      ColorfulChipTabBarData(
-        color: Constant.colorMain,
-        title: "Info",
-        data: "Sedang Dikirim"
-      ),
     ];
     _notificationTabColorfulChipTabBarController.addListener(() {
       _status = (_notificationColorfulChipTabBarDataList[_notificationTabColorfulChipTabBarController.value].data as String).toEmptyStringNonNull;
@@ -229,10 +220,10 @@ class _StatefulNotificationControllerMediatorWidgetState extends State<_Stateful
       );
     } else {
       int effectivePageKey = pageKey - 1;
-      LoadDataResult<PagingDataResult<Notification>> notificationPagingLoadDataResult = await widget.notificationController.getNotificationByUser(
+      LoadDataResult<PagingDataResult<ShortNotification>> shortNotificationPagingLoadDataResult = await widget.notificationController.getNotificationByUser(
         NotificationByUserPagingParameter(page: effectivePageKey)
       );
-      return notificationPagingLoadDataResult.map<PagingResult<ListItemControllerState>>((notificationPaging) {
+      return shortNotificationPagingLoadDataResult.map<PagingResult<ListItemControllerState>>((notificationPaging) {
         if (ListItemControllerStateHelper.checkListItemControllerStateList(notificationListItemControllerStateList)) {
           NotificationContainerListItemControllerState notificationContainerListItemControllerState = ListItemControllerStateHelper.parsePageKeyedListItemControllerState(notificationListItemControllerStateList![0]) as NotificationContainerListItemControllerState;
           notificationContainerListItemControllerState.notificationList.addAll(notificationPaging.itemList);

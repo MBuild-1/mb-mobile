@@ -5,6 +5,7 @@ import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 
 import '../../../domain/entity/notification/notification.dart';
 import '../../../domain/entity/notification/notification_by_user_paging_parameter.dart';
+import '../../../domain/entity/notification/short_notification.dart';
 import '../../../domain/entity/notification/transaction_notification_detail_parameter.dart';
 import '../../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../../misc/processing/dio_http_client_processing.dart';
@@ -19,10 +20,10 @@ class DefaultNotificationDataSource implements NotificationDataSource {
   });
 
   @override
-  FutureProcessing<PagingDataResult<Notification>> notificationByUserPaging(NotificationByUserPagingParameter notificationByUserPagingParameter) {
+  FutureProcessing<PagingDataResult<ShortNotification>> notificationByUserPaging(NotificationByUserPagingParameter notificationByUserPagingParameter) {
     return DioHttpClientProcessing((cancelToken) {
       return dio.get("/notification", queryParameters: {"page": notificationByUserPagingParameter.page, "pageNumber": notificationByUserPagingParameter.itemEachPageCount}, cancelToken: cancelToken)
-        .map<PagingDataResult<Notification>>(onMap: (value) => value.wrapResponse().mapFromResponseToNotificationPagingDataResult());
+        .map<PagingDataResult<ShortNotification>>(onMap: (value) => value.wrapResponse().mapFromResponseToShortNotificationPagingDataResult());
     });
   }
 

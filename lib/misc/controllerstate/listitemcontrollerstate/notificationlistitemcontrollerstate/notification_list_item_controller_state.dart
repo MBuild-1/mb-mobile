@@ -1,10 +1,10 @@
-import '../../../../domain/entity/notification/notification.dart';
+import '../../../../domain/entity/notification/short_notification.dart';
 import '../list_item_controller_state.dart';
 
 class NotificationListItemControllerState extends ListItemControllerState {
-  Notification notification;
+  ShortNotification shortNotification;
 
   NotificationListItemControllerState({
-    required this.notification
+    required this.shortNotification
   });
 }

@@ -1,5 +1,6 @@
 import '../../domain/entity/notification/notification.dart';
 import '../../domain/entity/notification/notification_by_user_paging_parameter.dart';
+import '../../domain/entity/notification/short_notification.dart';
 import '../../domain/entity/notification/transaction_notification_detail_parameter.dart';
 import '../../domain/repository/notification_repository.dart';
 import '../../misc/load_data_result.dart';
@@ -15,8 +16,8 @@ class DefaultNotificationRepository implements NotificationRepository {
   });
 
   @override
-  FutureProcessing<LoadDataResult<PagingDataResult<Notification>>> notificationByUserPaging(NotificationByUserPagingParameter notificationByUserPagingParameter) {
-    return notificationDataSource.notificationByUserPaging(notificationByUserPagingParameter).mapToLoadDataResult<PagingDataResult<Notification>>();
+  FutureProcessing<LoadDataResult<PagingDataResult<ShortNotification>>> notificationByUserPaging(NotificationByUserPagingParameter notificationByUserPagingParameter) {
+    return notificationDataSource.notificationByUserPaging(notificationByUserPagingParameter).mapToLoadDataResult<PagingDataResult<ShortNotification>>();
   }
 
   @override

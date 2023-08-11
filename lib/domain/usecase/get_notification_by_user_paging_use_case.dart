@@ -1,8 +1,8 @@
 import '../../misc/load_data_result.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/processing/future_processing.dart';
-import '../entity/notification/notification.dart';
 import '../entity/notification/notification_by_user_paging_parameter.dart';
+import '../entity/notification/short_notification.dart';
 import '../repository/notification_repository.dart';
 
 class GetNotificationByUserPagingUseCase {
@@ -12,7 +12,7 @@ class GetNotificationByUserPagingUseCase {
     required this.notificationRepository
   });
 
-  FutureProcessing<LoadDataResult<PagingDataResult<Notification>>> execute(NotificationByUserPagingParameter notificationByUserPagingParameter) {
+  FutureProcessing<LoadDataResult<PagingDataResult<ShortNotification>>> execute(NotificationByUserPagingParameter notificationByUserPagingParameter) {
     return notificationRepository.notificationByUserPaging(notificationByUserPagingParameter);
   }
 }
