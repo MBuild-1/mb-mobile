@@ -62,6 +62,7 @@ import '../../../notifier/wishlist_notifier.dart';
 import '../../../widget/background_app_bar_scaffold.dart';
 import '../../../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../../../widget/modified_paged_list_view.dart';
+import '../../../widget/modified_shimmer.dart';
 import '../../../widget/modifiedappbar/main_menu_search_app_bar.dart';
 import '../../../widget/modifiedcachednetworkimage/transparent_banner_modified_cached_network_image.dart';
 import '../../../widget/tap_area.dart';
@@ -589,12 +590,18 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
           );
         },
         onObserveLoadingLoadTransparentBanner: (onObserveLoadingLoadTransparentBannerParameter) {
-          return ShimmerCarouselListItemControllerState<ProductBundleShimmerCarouselListItemGeneratorType>(
-            padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-            showTitleShimmer: true,
-            showDescriptionShimmer: false,
-            showItemShimmer: true,
-            shimmerCarouselListItemGenerator: Injector.locator<ProductBundleShimmerCarouselListItemGeneratorFactory>().getShimmerCarouselListItemGeneratorType()
+          return WidgetSubstitutionListItemControllerState(
+            widgetSubstitution: (context, index) {
+              AspectRatioValue aspectRatioValue = Constant.aspectRatioValueHomepageBanner;
+              double height = MediaQuery.of(context).size.width * aspectRatioValue.height / aspectRatioValue.width;
+              return ModifiedShimmer.fromColors(
+                child: Container(
+                  color: Colors.grey,
+                  width: double.infinity,
+                  height: height,
+                ),
+              );
+            }
           );
         },
         onObserveLoadCurrentAddress: (onObserveLoadCurrentAddressParameter) {

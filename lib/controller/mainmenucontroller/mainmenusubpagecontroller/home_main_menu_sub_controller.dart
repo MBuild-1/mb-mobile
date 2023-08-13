@@ -1,3 +1,5 @@
+import 'package:masterbagasi/misc/controllerstate/listitemcontrollerstate/spacing_list_item_controller_state.dart';
+import 'package:masterbagasi/misc/controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
 import 'package:masterbagasi/misc/ext/future_ext.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 
@@ -36,6 +38,7 @@ import '../../../domain/usecase/get_shipping_price_contents_banner_use_case.dart
 import '../../../domain/usecase/get_snack_for_lying_around_list_use_case.dart';
 import '../../../misc/constant.dart';
 import '../../../misc/controllercontentdelegate/wishlist_and_cart_controller_content_delegate.dart';
+import '../../../misc/controllerstate/listitemcontrollerstate/compound_list_item_controller_state.dart';
 import '../../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../../misc/entityandlistitemcontrollerstatemediator/horizontal_component_entity_parameterized_entity_and_list_item_controller_state_mediator.dart';
 import '../../../misc/error/message_error.dart';
@@ -187,8 +190,13 @@ class HomeMainMenuSubController extends BaseGetxController {
         },
         onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
           if (_homeMainMenuDelegate != null) {
-            return _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductCategoryCarousel(
-              OnObserveLoadingLoadProductCategoryCarouselParameter()
+            return CompoundListItemControllerState(
+              listItemControllerState: [
+                VirtualSpacingListItemControllerState(height: 16),
+                _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductCategoryCarousel(
+                  OnObserveLoadingLoadProductCategoryCarouselParameter()
+                )
+              ]
             );
           }
         },
@@ -226,8 +234,13 @@ class HomeMainMenuSubController extends BaseGetxController {
         },
         onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
           if (_homeMainMenuDelegate != null) {
-            return _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductBrandCarousel(
-              OnObserveLoadingLoadProductBrandCarouselParameter()
+            return CompoundListItemControllerState(
+              listItemControllerState: [
+                VirtualSpacingListItemControllerState(height: 16),
+                _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductCategoryCarousel(
+                  OnObserveLoadingLoadProductCategoryCarouselParameter()
+                )
+              ]
             );
           }
         },
@@ -262,8 +275,13 @@ class HomeMainMenuSubController extends BaseGetxController {
         },
         onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
           if (_homeMainMenuDelegate != null) {
-            return _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductEntryCarousel(
-              OnObserveLoadingLoadProductEntryCarouselParameter()
+            return CompoundListItemControllerState(
+              listItemControllerState: [
+                VirtualSpacingListItemControllerState(height: 16),
+                _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductCategoryCarousel(
+                  OnObserveLoadingLoadProductCategoryCarouselParameter()
+                )
+              ]
             );
           }
         },
@@ -299,8 +317,13 @@ class HomeMainMenuSubController extends BaseGetxController {
         },
         onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
           if (_homeMainMenuDelegate != null) {
-            return _homeMainMenuDelegate!.onObserveLoadingLoadTransparentBanner(
-              _OnObserveLoadingLoadTransparentBannerParameter()
+            return CompoundListItemControllerState(
+              listItemControllerState: [
+                VirtualSpacingListItemControllerState(height: 16),
+                _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductCategoryCarousel(
+                  OnObserveLoadingLoadProductCategoryCarouselParameter()
+                )
+              ]
             );
           }
         },
@@ -336,8 +359,13 @@ class HomeMainMenuSubController extends BaseGetxController {
         },
         onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
           if (_homeMainMenuDelegate != null) {
-            return _homeMainMenuDelegate!.onObserveLoadingLoadTransparentBanner(
-              _OnObserveLoadingLoadTransparentBannerParameter()
+            return CompoundListItemControllerState(
+              listItemControllerState: [
+                VirtualSpacingListItemControllerState(height: 16),
+                _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductCategoryCarousel(
+                  OnObserveLoadingLoadProductCategoryCarouselParameter()
+                )
+              ]
             );
           }
         },
@@ -375,8 +403,13 @@ class HomeMainMenuSubController extends BaseGetxController {
         },
         onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
           if (_homeMainMenuDelegate != null) {
-            return _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductEntryCarousel(
-              OnObserveLoadingLoadProductEntryCarouselParameter()
+            return CompoundListItemControllerState(
+              listItemControllerState: [
+                VirtualSpacingListItemControllerState(height: 16),
+                _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductCategoryCarousel(
+                  OnObserveLoadingLoadProductCategoryCarouselParameter()
+                )
+              ]
             );
           }
         },
@@ -416,8 +449,13 @@ class HomeMainMenuSubController extends BaseGetxController {
         },
         onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
           if (_homeMainMenuDelegate != null) {
-            return _homeMainMenuDelegate!.onObserveLoadingLoadProductBundleHighlight(
-              _OnObserveLoadingLoadProductBundleHighlightParameter()
+            return CompoundListItemControllerState(
+              listItemControllerState: [
+                VirtualSpacingListItemControllerState(height: 16),
+                _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductCategoryCarousel(
+                  OnObserveLoadingLoadProductCategoryCarouselParameter()
+                )
+              ]
             );
           }
         },
@@ -454,8 +492,13 @@ class HomeMainMenuSubController extends BaseGetxController {
         },
         onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
           if (_homeMainMenuDelegate != null) {
-            return _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductEntryCarousel(
-              OnObserveLoadingLoadProductEntryCarouselParameter()
+            return CompoundListItemControllerState(
+              listItemControllerState: [
+                VirtualSpacingListItemControllerState(height: 16),
+                _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductCategoryCarousel(
+                  OnObserveLoadingLoadProductCategoryCarouselParameter()
+                )
+              ]
             );
           }
         },
@@ -491,8 +534,13 @@ class HomeMainMenuSubController extends BaseGetxController {
         },
         onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
           if (_homeMainMenuDelegate != null) {
-            return _homeMainMenuDelegate!.onObserveLoadingLoadTransparentBanner(
-              _OnObserveLoadingLoadTransparentBannerParameter()
+            return CompoundListItemControllerState(
+              listItemControllerState: [
+                VirtualSpacingListItemControllerState(height: 16),
+                _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductCategoryCarousel(
+                  OnObserveLoadingLoadProductCategoryCarouselParameter()
+                )
+              ]
             );
           }
         },
@@ -530,8 +578,13 @@ class HomeMainMenuSubController extends BaseGetxController {
         },
         onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
           if (_homeMainMenuDelegate != null) {
-            return _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductEntryCarousel(
-              OnObserveLoadingLoadProductEntryCarouselParameter()
+            return CompoundListItemControllerState(
+              listItemControllerState: [
+                VirtualSpacingListItemControllerState(height: 16),
+                _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductCategoryCarousel(
+                  OnObserveLoadingLoadProductCategoryCarouselParameter()
+                )
+              ]
             );
           }
         },
@@ -569,8 +622,13 @@ class HomeMainMenuSubController extends BaseGetxController {
         },
         onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
           if (_homeMainMenuDelegate != null) {
-            return _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductEntryCarousel(
-              OnObserveLoadingLoadProductEntryCarouselParameter()
+            return CompoundListItemControllerState(
+              listItemControllerState: [
+                VirtualSpacingListItemControllerState(height: 16),
+                _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductCategoryCarousel(
+                  OnObserveLoadingLoadProductCategoryCarouselParameter()
+                )
+              ]
             );
           }
         },
@@ -608,8 +666,13 @@ class HomeMainMenuSubController extends BaseGetxController {
         },
         onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
           if (_homeMainMenuDelegate != null) {
-            return _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductEntryCarousel(
-              OnObserveLoadingLoadProductEntryCarouselParameter()
+            return CompoundListItemControllerState(
+              listItemControllerState: [
+                VirtualSpacingListItemControllerState(height: 16),
+                _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductCategoryCarousel(
+                  OnObserveLoadingLoadProductCategoryCarouselParameter()
+                )
+              ]
             );
           }
         },
