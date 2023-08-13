@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../controllerstate/listitemcontrollerstate/colorful_chip_tab_bar_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/compound_list_item_controller_state.dart';
+import '../controllerstate/listitemcontrollerstate/divider_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/notificationlistitemcontrollerstate/notification_container_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/notificationlistitemcontrollerstate/notification_list_item_controller_state.dart';
@@ -49,7 +50,14 @@ class NotificationItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
       while (j < notificationListItemControllerStateList.length) {
         ListItemControllerState listItemControllerState = CompoundListItemControllerState(
           listItemControllerState: [
-            if (j > 0) VirtualSpacingListItemControllerState(height: itemSpacing()),
+            if (j > 0) ...[
+              VirtualSpacingListItemControllerState(height: padding()),
+              PaddingContainerListItemControllerState(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                paddingChildListItemControllerState: DividerListItemControllerState(),
+              ),
+              VirtualSpacingListItemControllerState(height: padding()),
+            ],
             PaddingContainerListItemControllerState(
               padding: EdgeInsets.symmetric(horizontal: padding()),
               paddingChildListItemControllerState: notificationListItemControllerStateList[j],

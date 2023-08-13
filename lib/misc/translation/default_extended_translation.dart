@@ -228,7 +228,8 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Register Now": "Daftar Sekarang",
       "Type Chat": "Ketikan Chat",
       "Foto & Video MBestie Review": "Foto & Video Ulasan MBestie",
-      "Select More Country Reviews": "Pilih Ulasan Negara Lainnya"
+      "Select More Country Reviews": "Pilih Ulasan Negara Lainnya",
+      "Notification": "Notifikasi"
     }
   };
 
