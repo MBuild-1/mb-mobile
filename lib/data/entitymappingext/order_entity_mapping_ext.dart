@@ -135,9 +135,9 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
     dynamic productEntry = response["product_entry"];
     dynamic bundling = response["bundling"];
     if (productEntry != null) {
-      return ResponseWrapper(productEntry).mapFromResponseToProductEntry();
+      return ResponseWrapper(productEntry).mapFromResponseToProductEntry([]);
     } else if (bundling != null) {
-      return ResponseWrapper(bundling).mapFromResponseToProductBundle();
+      return ResponseWrapper(bundling).mapFromResponseToProductBundle([]);
     } else {
       throw MessageError(message: "Support order product not suitable");
     }

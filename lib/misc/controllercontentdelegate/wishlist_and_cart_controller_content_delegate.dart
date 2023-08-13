@@ -51,12 +51,28 @@ class WishlistAndCartControllerContentDelegate extends ControllerContentDelegate
       ).future(
         parameter: apiRequestManager.addRequestToCancellationPart('add-to-wishlist').value
       );
-      _wishlistAndCartDelegate!.onBack();
       if (addWishlistResponseLoadDataResult.isSuccess) {
+        supportWishlist.hasAddedToWishlist = true;
         _wishlistAndCartDelegate!.onAddToWishlistRequestProcessSuccessCallback();
       } else {
-        _wishlistAndCartDelegate!.onShowAddToWishlistRequestProcessFailedCallback(addWishlistResponseLoadDataResult.resultIfFailed);
+        LoadDataResult<RemoveWishlistResponse> removeWishlistResponseLoadDataResult = await removeWishlistBasedProductUseCase.execute(
+          RemoveWishlistBasedProductParameter(productEntryOrProductBundleId: supportWishlist.supportWishlistContentId)
+        ).future(
+          parameter: apiRequestManager.addRequestToCancellationPart('remove-from-wishlist').value
+        );
+        if (removeWishlistResponseLoadDataResult.isSuccess) {
+          supportWishlist.hasAddedToWishlist = false;
+          _wishlistAndCartDelegate!.onRemoveFromWishlistRequestProcessSuccessCallback(
+            Wishlist(
+              id: "",
+              supportWishlist: supportWishlist
+            )
+          );
+        } else {
+          _wishlistAndCartDelegate!.onShowRemoveFromWishlistRequestProcessFailedCallback(removeWishlistResponseLoadDataResult.resultIfFailed);
+        }
       }
+      _wishlistAndCartDelegate!.onBack();
     }
   }
 
@@ -72,6 +88,7 @@ class WishlistAndCartControllerContentDelegate extends ControllerContentDelegate
       );
       _wishlistAndCartDelegate!.onBack();
       if (removeWishlistResponseLoadDataResult.isSuccess) {
+        supportWishlist.hasAddedToWishlist = false;
         _wishlistAndCartDelegate!.onRemoveFromWishlistRequestProcessSuccessCallback(
           Wishlist(
             id: "",

@@ -116,6 +116,7 @@ class SupportVerticalGridVerticalProductBundleItem extends ProductBundleItem {
                             AddOrRemoveWishlistButton(
                               onAddWishlist: onAddWishlist != null ? () => onWishlist(onAddWishlist) : null,
                               onRemoveWishlist: onRemoveWishlist != null ? () => onWishlist(onRemoveWishlist) : null,
+                              isAddToWishlist: productBundle.hasAddedToWishlist
                             ),
                             SizedBox(width: 1.5.w),
                             Expanded(

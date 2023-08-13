@@ -3,6 +3,7 @@ import 'package:masterbagasi/misc/aspect_ratio_value.dart';
 
 import '../controller/base_getx_controller.dart';
 import '../domain/entity/cart/cart.dart';
+import '../domain/entity/wishlist/support_wishlist.dart';
 import '../domain/entity/wishlist/wishlist.dart';
 import 'validation/validation_result.dart';
 import 'validation/validator/validator.dart';

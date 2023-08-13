@@ -78,7 +78,8 @@ class ProductDetailShortHeader extends StatelessWidget {
           AddOrRemoveWishlistButton(
             onAddWishlist: onAddWishlist != null ? () => onWishlist(onAddWishlist) : null,
             onRemoveWishlist: onRemoveWishlist != null ? () => onWishlist(onRemoveWishlist) : null,
-            isTransparent: true
+            isTransparent: true,
+            isAddToWishlist: selectedProductEntry.hasAddedToWishlist,
           ),
         ]
       ) : Container()

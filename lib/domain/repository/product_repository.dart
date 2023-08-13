@@ -43,6 +43,7 @@ import '../entity/wishlist/remove_wishlist_based_product_parameter.dart';
 import '../entity/wishlist/remove_wishlist_parameter.dart';
 import '../entity/wishlist/remove_wishlist_response.dart';
 import '../entity/wishlist/wishlist.dart';
+import '../entity/wishlist/wishlist_list_parameter.dart';
 import '../entity/wishlist/wishlist_paging_parameter.dart';
 
 abstract class ProductRepository {
@@ -67,6 +68,7 @@ abstract class ProductRepository {
   FutureProcessing<LoadDataResult<List<ProductEntry>>> productDetailOtherFromThisBrandProductEntryList(ProductDetailOtherFromThisBrandProductEntryListParameter productDetailOtherFromThisBrandProductEntryListParameter);
   FutureProcessing<LoadDataResult<List<ProductEntry>>> productDetailOtherInThisCategoryProductEntryList(ProductDetailOtherInThisCategoryProductEntryListParameter productDetailOtherInThisCategoryProductEntryListParameter);
   FutureProcessing<LoadDataResult<List<ProductBrand>>> productDetailOtherInterestedProductBrandListParameter(ProductDetailOtherInterestedProductBrandListParameter productDetailOtherInterestedProductBrandListParameter);
+  FutureProcessing<LoadDataResult<List<Wishlist>>> wishlistList(WishlistListParameter wishlistListParameter);
   FutureProcessing<LoadDataResult<PagingDataResult<Wishlist>>> wishlistPaging(WishlistPagingParameter wishlistPagingParameter);
   FutureProcessing<LoadDataResult<AddWishlistResponse>> addWishlist(AddWishlistParameter addWishlistParameter);
   FutureProcessing<LoadDataResult<RemoveWishlistResponse>> removeWishlist(RemoveWishlistParameter removeWishlistParameter);

@@ -4,9 +4,11 @@ import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/misc/getextended/get_extended.dart';
 import 'package:masterbagasi/presentation/widget/something_counter.dart';
+import 'package:provider/provider.dart';
 
 import '../../misc/main_route_observer.dart';
 import '../../misc/manager/controller_manager.dart';
+import '../notifier/wishlist_notifier.dart';
 
 typedef OnCreateRestorationCallback<T extends GetxPageRestoration> = T Function();
 typedef PageRestorationStringId = String Function();
@@ -152,7 +154,9 @@ abstract class GetxPage extends StatelessWidget {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: _systemUiOverlayStyle,
       child: OrientationBuilder(
-        builder: (BuildContext context, Orientation orientation) => _rawBuildPage(context),
+        builder: (BuildContext context, Orientation orientation) => Consumer<WishlistNotifier>(
+          builder: (context, _, __) => _rawBuildPage(context)
+        ),
       )
     );
   }

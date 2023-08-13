@@ -50,6 +50,7 @@ import '../../../domain/entity/wishlist/remove_wishlist_parameter.dart';
 import '../../../domain/entity/wishlist/remove_wishlist_response.dart';
 import '../../../domain/entity/wishlist/support_wishlist.dart';
 import '../../../domain/entity/wishlist/wishlist.dart';
+import '../../../domain/entity/wishlist/wishlist_list_parameter.dart';
 import '../../../domain/entity/wishlist/wishlist_paging_parameter.dart';
 import '../../../misc/error/not_found_error.dart';
 import '../../../misc/paging/pagingresult/paging_data_result.dart';
@@ -74,9 +75,10 @@ class DefaultProductDataSource implements ProductDataSource {
 
   @override
   FutureProcessing<List<ProductBundle>> productBundleList(ProductBundleListParameter productBundleListParameter) {
-    return DioHttpClientProcessing((cancelToken) {
-      return dio.get("/product/bundle", cancelToken: cancelToken)
-        .map<List<ProductBundle>>(onMap: (value) => value.wrapResponse().mapFromResponseToProductBundleList());
+    return DioHttpClientProcessing((cancelToken) async {
+      List<Wishlist> wishlistListResult = await wishlistList(WishlistListParameter()).future(parameter: cancelToken);
+      return await dio.get("/product/bundle", cancelToken: cancelToken)
+        .map<List<ProductBundle>>(onMap: (value) => value.wrapResponse().mapFromResponseToProductBundleList(wishlistListResult));
     });
   }
 
@@ -106,10 +108,11 @@ class DefaultProductDataSource implements ProductDataSource {
 
   @override
   FutureProcessing<List<ProductEntry>> productWithConditionList(ProductWithConditionListParameter productWithConditionListParameter) {
-    return DioHttpClientProcessing((cancelToken) {
+    return DioHttpClientProcessing((cancelToken) async {
+      List<Wishlist> wishlistListResult = await wishlistList(WishlistListParameter()).future(parameter: cancelToken);
       String withConditionParameterPath = productWithConditionListParameter.withCondition.isNotEmptyString ? "/${productWithConditionListParameter.withCondition}" : "";
-      return dio.get("/product$withConditionParameterPath", cancelToken: cancelToken)
-        .map<List<ProductEntry>>(onMap: (value) => value.wrapResponse().mapFromResponseToProductEntryList());
+      return await dio.get("/product$withConditionParameterPath", cancelToken: cancelToken)
+        .map<List<ProductEntry>>(onMap: (value) => value.wrapResponse().mapFromResponseToProductEntryList(wishlistListResult));
     });
   }
 
@@ -146,19 +149,21 @@ class DefaultProductDataSource implements ProductDataSource {
 
   @override
   FutureProcessing<PagingDataResult<ProductBundle>> productBundlePaging(ProductBundlePagingParameter productBundlePagingParameter) {
-    return DioHttpClientProcessing((cancelToken) {
+    return DioHttpClientProcessing((cancelToken) async {
+      List<Wishlist> wishlistListResult = await wishlistList(WishlistListParameter()).future(parameter: cancelToken);
       String pageParameterPath = "/?pageNumber=${productBundlePagingParameter.itemEachPageCount}&page=${productBundlePagingParameter.page}";
-      return dio.get("/bundling$pageParameterPath", cancelToken: cancelToken)
-        .map<PagingDataResult<ProductBundle>>(onMap: (value) => value.wrapResponse().mapFromResponseToProductBundlePaging());
+      return await dio.get("/bundling$pageParameterPath", cancelToken: cancelToken)
+        .map<PagingDataResult<ProductBundle>>(onMap: (value) => value.wrapResponse().mapFromResponseToProductBundlePaging(wishlistListResult));
     });
   }
 
   @override
   FutureProcessing<ProductBundle> productBundleHighlight(ProductBundleHighlightParameter productBundleHighlightParameter) {
-    return DioHttpClientProcessing((cancelToken) {
+    return DioHttpClientProcessing((cancelToken) async {
+      List<Wishlist> wishlistListResult = await wishlistList(WishlistListParameter()).future(parameter: cancelToken);
       String pageParameterPath = "/?pageNumber=1&page=1";
-      return dio.get("/bundling$pageParameterPath", cancelToken: cancelToken)
-        .map<PagingDataResult<ProductBundle>>(onMap: (value) => value.wrapResponse().mapFromResponseToProductBundlePaging())
+      return await dio.get("/bundling$pageParameterPath", cancelToken: cancelToken)
+        .map<PagingDataResult<ProductBundle>>(onMap: (value) => value.wrapResponse().mapFromResponseToProductBundlePaging(wishlistListResult))
         .map<ProductBundle>(onMap: (value) {
           if (value.itemList.isEmpty) {
             throw NotFoundError();
@@ -176,8 +181,9 @@ class DefaultProductDataSource implements ProductDataSource {
       ...productWithConditionPagingParameter.withCondition
     };
     return DioHttpClientProcessing((cancelToken) async {
+      List<Wishlist> wishlistListResult = await wishlistList(WishlistListParameter()).future(parameter: cancelToken);
       var productEntryResultPagingDataResult = await dio.get("/product/entry", queryParameters: queryParameters, cancelToken: cancelToken)
-        .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductEntryPaging());
+        .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductEntryPaging(wishlistListResult));
       if (productWithConditionPagingParameter.onInterceptProductPagingDataResult != null) {{
         return productWithConditionPagingParameter.onInterceptProductPagingDataResult!(productEntryResultPagingDataResult);
       }}
@@ -187,9 +193,10 @@ class DefaultProductDataSource implements ProductDataSource {
 
   @override
   FutureProcessing<ProductDetail> productDetail(ProductDetailParameter productDetailParameter) {
-    return DioHttpClientProcessing((cancelToken) {
-      return dio.get("/product/${productDetailParameter.productId}", cancelToken: cancelToken)
-        .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductDetail());
+    return DioHttpClientProcessing((cancelToken) async {
+      List<Wishlist> wishlistListResult = await wishlistList(WishlistListParameter()).future(parameter: cancelToken);
+      return await dio.get("/product/${productDetailParameter.productId}", cancelToken: cancelToken)
+        .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductDetail(wishlistListResult));
     });
   }
 
@@ -223,41 +230,46 @@ class DefaultProductDataSource implements ProductDataSource {
 
   @override
   FutureProcessing<ProductBundleDetail> productBundleDetail(ProductBundleDetailParameter productBundleDetailParameter) {
-    return DioHttpClientProcessing((cancelToken) {
-      return dio.get("/bundling/${productBundleDetailParameter.productBundleId}", cancelToken: cancelToken)
-        .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductBundleDetail());
+    return DioHttpClientProcessing((cancelToken) async {
+      List<Wishlist> wishlistListResult = await wishlistList(WishlistListParameter()).future(parameter: cancelToken);
+      return await dio.get("/bundling/${productBundleDetailParameter.productBundleId}", cancelToken: cancelToken)
+        .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductBundleDetail(wishlistListResult));
     });
   }
 
   @override
   FutureProcessing<List<ProductEntry>> productDetailFromYourSearchProductEntryList(ProductDetailFromYourSearchProductEntryListParameter productDetailFromYourSearchProductEntryListParameter) {
-    return DioHttpClientProcessing((cancelToken) {
-      return dio.get("/product/entry", queryParameters: {"fyp": true, "page": 1, "pageNumber": 10}, cancelToken: cancelToken)
-        .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductEntryPaging().itemList);
+    return DioHttpClientProcessing((cancelToken) async {
+      List<Wishlist> wishlistListResult = await wishlistList(WishlistListParameter()).future(parameter: cancelToken);
+      return await dio.get("/product/entry", queryParameters: {"fyp": true, "page": 1, "pageNumber": 10}, cancelToken: cancelToken)
+        .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductEntryPaging(wishlistListResult).itemList);
     });
   }
 
   @override
   FutureProcessing<List<ProductEntry>> productDetailOtherChosenForYouProductEntryList(ProductDetailOtherChosenForYouProductEntryListParameter productDetailOtherChosenForYouProductEntryListParameter) {
-    return DioHttpClientProcessing((cancelToken) {
+    return DioHttpClientProcessing((cancelToken) async {
+      List<Wishlist> wishlistListResult = await wishlistList(WishlistListParameter()).future(parameter: cancelToken);
       return dio.get("/product/entry", queryParameters: {"fyp": true, "page": 1, "pageNumber": 10}, cancelToken: cancelToken)
-        .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductEntryPaging().itemList);
+        .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductEntryPaging(wishlistListResult).itemList);
     });
   }
 
   @override
   FutureProcessing<List<ProductEntry>> productDetailOtherFromThisBrandProductEntryList(ProductDetailOtherFromThisBrandProductEntryListParameter productDetailOtherFromThisBrandProductEntryListParameter) {
-    return DioHttpClientProcessing((cancelToken) {
-      return dio.get("/product/entry", queryParameters: {"brand": productDetailOtherFromThisBrandProductEntryListParameter.brandSlug, "page": 1, "pageNumber": 10}, cancelToken: cancelToken)
-        .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductEntryPaging().itemList);
+    return DioHttpClientProcessing((cancelToken) async {
+      List<Wishlist> wishlistListResult = await wishlistList(WishlistListParameter()).future(parameter: cancelToken);
+      return await dio.get("/product/entry", queryParameters: {"brand": productDetailOtherFromThisBrandProductEntryListParameter.brandSlug, "page": 1, "pageNumber": 10}, cancelToken: cancelToken)
+        .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductEntryPaging(wishlistListResult).itemList);
     });
   }
 
   @override
   FutureProcessing<List<ProductEntry>> productDetailOtherInThisCategoryProductEntryList(ProductDetailOtherInThisCategoryProductEntryListParameter productDetailOtherInThisCategoryProductEntryListParameter) {
-    return DioHttpClientProcessing((cancelToken) {
+    return DioHttpClientProcessing((cancelToken) async {
+      List<Wishlist> wishlistListResult = await wishlistList(WishlistListParameter()).future(parameter: cancelToken);
       return dio.get("/product/entry", queryParameters: {"category": productDetailOtherInThisCategoryProductEntryListParameter.categorySlug, "page": 1, "pageNumber": 10}, cancelToken: cancelToken)
-        .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductEntryPaging().itemList);
+        .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductEntryPaging(wishlistListResult).itemList);
     });
   }
 
@@ -266,6 +278,14 @@ class DefaultProductDataSource implements ProductDataSource {
     return DioHttpClientProcessing((cancelToken) {
       return dio.get("/product/brand", cancelToken: cancelToken)
         .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductBrandList());
+    });
+  }
+
+  @override
+  FutureProcessing<List<Wishlist>> wishlistList(WishlistListParameter wishlistListParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.get("/user/wishlist", cancelToken: cancelToken)
+        .map(onMap: (value) => value.wrapResponse().mapFromResponseToWishlistList());
     });
   }
 

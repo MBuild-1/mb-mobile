@@ -139,6 +139,7 @@ class _ConstantImpl {
   Color get colorBarBackground => colorGrey4;
   Color get colorWishlistButton => colorGrey4;
   Color get colorWishlistIcon => colorGrey3;
+  Color get colorActiveWishlistIcon => colorMain;
   Color get colorFeedbackDateText => colorGrey;
   Color get colorLike => colorRed;
   Color get colorDiscount => colorBrown;

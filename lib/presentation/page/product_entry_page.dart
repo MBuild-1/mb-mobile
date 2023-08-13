@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_ext.dart';
+import 'package:provider/provider.dart';
 
 import '../../controller/product_entry_controller.dart';
 import '../../domain/entity/cart/support_cart.dart';
@@ -45,6 +46,7 @@ import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediato
 import '../../misc/productentryheaderbackground/asset_product_entry_header_background.dart';
 import '../../misc/string_util.dart';
 import '../../misc/toast_helper.dart';
+import '../notifier/wishlist_notifier.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/default_search_app_bar.dart';
 import 'getx_page.dart';
@@ -294,7 +296,9 @@ class _StatefulProductEntryControllerMediatorWidgetState extends State<_Stateful
     widget.productEntryController.wishlistAndCartControllerContentDelegate.setWishlistAndCartDelegate(
       Injector.locator<WishlistAndCartDelegateFactory>().generateWishlistAndCartDelegate(
         onGetBuildContext: () => context,
-        onGetErrorProvider: () => Injector.locator<ErrorProvider>()
+        onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
+        onAddToWishlistRequestProcessSuccessCallback: () async => context.read<WishlistNotifier>().updateWishlist(),
+        onRemoveFromWishlistRequestProcessSuccessCallback: (wishlist) async => context.read<WishlistNotifier>().updateWishlist(),
       )
     );
     widget.productEntryController.productBrandFavoriteControllerContentDelegate.setProductBrandFavoriteDelegate(

@@ -50,6 +50,7 @@ import '../../domain/entity/wishlist/remove_wishlist_based_product_parameter.dar
 import '../../domain/entity/wishlist/remove_wishlist_parameter.dart';
 import '../../domain/entity/wishlist/remove_wishlist_response.dart';
 import '../../domain/entity/wishlist/wishlist.dart';
+import '../../domain/entity/wishlist/wishlist_list_parameter.dart';
 import '../../domain/entity/wishlist/wishlist_paging_parameter.dart';
 import '../../domain/repository/product_repository.dart';
 import '../../misc/constant.dart';
@@ -236,6 +237,11 @@ class DefaultProductRepository implements ProductRepository {
   @override
   FutureProcessing<LoadDataResult<List<ProductBrand>>> productDetailOtherInterestedProductBrandListParameter(ProductDetailOtherInterestedProductBrandListParameter productDetailOtherInterestedProductBrandListParameter) {
     return productDataSource.productDetailOtherInterestedProductBrandListParameter(productDetailOtherInterestedProductBrandListParameter).mapToLoadDataResult<List<ProductBrand>>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<List<Wishlist>>> wishlistList(WishlistListParameter wishlistListParameter) {
+    return productDataSource.wishlistList(wishlistListParameter).mapToLoadDataResult<List<Wishlist>>();
   }
 
   @override

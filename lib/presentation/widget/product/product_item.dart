@@ -97,6 +97,7 @@ abstract class ProductItem extends StatelessWidget {
     );
     String weight = "${productAppearanceData.weight.toString()} Kg";
     String soldCount = "No Sold Count".tr;
+    bool isAddToWishlist = false;
     void onWishlist(void Function(ProductAppearanceData)? onWishlistCallback) {
       if (onWishlistCallback != null) {
         if (productAppearanceData is ProductEntryAppearanceData) {
@@ -108,6 +109,7 @@ abstract class ProductItem extends StatelessWidget {
     }
     if (productAppearanceData is ProductEntryAppearanceData) {
       soldCount = "${"sold".tr} ${(productAppearanceData as ProductEntryAppearanceData).soldCount}";
+      isAddToWishlist = (productAppearanceData as ProductEntryAppearanceData).hasAddedToWishlist;
     }
     return SizedBox(
       width: itemWidth,
@@ -190,6 +192,7 @@ abstract class ProductItem extends StatelessWidget {
                             AddOrRemoveWishlistButton(
                               onAddWishlist: onAddWishlist != null ? () => onWishlist(onAddWishlist) : null,
                               onRemoveWishlist: onRemoveWishlist != null ? () => onWishlist(onRemoveWishlist) : null,
+                              isAddToWishlist: isAddToWishlist,
                             ),
                             SizedBox(width: 1.5.w),
                             Expanded(

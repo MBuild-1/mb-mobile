@@ -11,4 +11,5 @@ abstract class ProductEntryAppearanceData extends ProductAppearanceData {
   String get productEntryId;
   int get soldCount;
   bool get hasAddedToWishlist;
+  set hasAddedToWishlist(bool value);
 }

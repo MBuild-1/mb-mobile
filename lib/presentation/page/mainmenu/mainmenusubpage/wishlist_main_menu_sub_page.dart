@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:masterbagasi/misc/ext/error_provider_ext.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../controller/mainmenucontroller/mainmenusubpagecontroller/wishlist_main_menu_sub_controller.dart';
 import '../../../../domain/entity/cart/support_cart.dart';
@@ -26,6 +27,7 @@ import '../../../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../../../misc/paging/pagingresult/paging_result.dart';
 import '../../../../misc/toast_helper.dart';
 import '../../../../misc/widget_helper.dart';
+import '../../../notifier/wishlist_notifier.dart';
 import '../../../widget/background_app_bar_scaffold.dart';
 import '../../../widget/modified_paged_list_view.dart';
 import '../../../widget/modifiedappbar/main_menu_search_app_bar.dart';
@@ -146,11 +148,13 @@ class _StatefulWishlistMainMenuSubControllerMediatorWidgetState extends State<_S
           if (defaultWishlistContainerInterceptingActionListItemControllerState.removeWishlist != null) {
             defaultWishlistContainerInterceptingActionListItemControllerState.removeWishlist!(wishlist);
           }
+          context.read<WishlistNotifier>().updateWishlist(withRefreshWishlistInMainMenu: false);
         },
         onRemoveFromWishlistRequestProcessFailedCallback: (e) async {
           ErrorProvider errorProvider = Injector.locator<ErrorProvider>();
           ErrorProviderResult errorProviderResult = errorProvider.onGetErrorProviderResult(e).toErrorProviderResultNonNull();
           ToastHelper.showToast(errorProviderResult.message);
+          context.read<WishlistNotifier>().updateWishlist(withRefreshWishlistInMainMenu: false);
         }
       )
     );

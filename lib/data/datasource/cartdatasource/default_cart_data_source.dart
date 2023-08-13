@@ -56,7 +56,7 @@ class DefaultCartDataSource implements CartDataSource {
     return DioHttpClientProcessing((cancelToken) {
       String pageParameterPath = "/?pageNumber=${cartPagingParameter.itemEachPageCount}&page=${cartPagingParameter.page}";
       return dio.get("/user/cart$pageParameterPath", cancelToken: cancelToken)
-        .map<PagingDataResult<Cart>>(onMap: (value) => value.wrapResponse().mapFromResponseToCartPaging());
+        .map<PagingDataResult<Cart>>(onMap: (value) => value.wrapResponse().mapFromResponseToCartPaging([]));
     });
   }
 
@@ -64,7 +64,7 @@ class DefaultCartDataSource implements CartDataSource {
   FutureProcessing<List<Cart>> cartList(CartListParameter cartListParameter) {
     return DioHttpClientProcessing((cancelToken) {
       return dio.get("/user/cart", cancelToken: cancelToken)
-        .map<List<Cart>>(onMap: (value) => value.wrapResponse().mapFromResponseToCartList());
+        .map<List<Cart>>(onMap: (value) => value.wrapResponse().mapFromResponseToCartList([]));
     });
   }
 

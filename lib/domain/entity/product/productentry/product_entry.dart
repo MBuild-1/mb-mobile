@@ -90,4 +90,7 @@ class ProductEntry implements ProductEntryAppearanceData, SupportCart, SupportWi
 
   @override
   bool get hasAddedToWishlist => _hasAddedToWishlist;
+
+  @override
+  set hasAddedToWishlist(bool value) => _hasAddedToWishlist = value;
 }

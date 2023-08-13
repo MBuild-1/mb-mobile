@@ -17,6 +17,7 @@ import 'misc/injector.dart';
 import 'misc/login_helper.dart';
 import 'misc/main_route_observer.dart';
 import 'presentation/notifier/login_notifier.dart';
+import 'presentation/notifier/wishlist_notifier.dart';
 import 'presentation/page/introduction_page.dart';
 import 'presentation/page/mainmenu/main_menu_page.dart';
 
@@ -46,8 +47,15 @@ class MyApp extends StatelessWidget {
       headline3: textTheme.headline3?.copyWith(color: Constant.colorTitle),
       headline4: textTheme.headline4?.copyWith(color: Constant.colorTitle),
     );
-    return ChangeNotifierProvider<LoginNotifier>(
-      create: (_) => LoginNotifier(Injector.locator<GetUserUseCase>()),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<LoginNotifier>(
+          create: (_) => LoginNotifier(Injector.locator<GetUserUseCase>()),
+        ),
+        ChangeNotifierProvider<WishlistNotifier>(
+          create: (_) => WishlistNotifier(),
+        )
+      ],
       child: Sizer(
         builder: (context, orientation, deviceType) => ExtendedGetMaterialApp(
           navigatorObservers: [MainRouteObserver],

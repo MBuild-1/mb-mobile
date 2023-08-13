@@ -13,7 +13,8 @@ class ProductBundleDetail extends ProductBundle {
     required double price,
     required double rating,
     required this.productEntryList,
-    required int soldOut
+    required int soldOut,
+    required bool hasAddedToWishlist
   }) : super(
     id: id,
     name: name,
@@ -22,6 +23,7 @@ class ProductBundleDetail extends ProductBundle {
     imageUrl: imageUrl,
     price: price,
     rating: rating,
-    soldOut: soldOut
+    soldOut: soldOut,
+    hasAddedToWishlist: hasAddedToWishlist
   );
 }
