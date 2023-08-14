@@ -36,6 +36,7 @@ import '../../../domain/usecase/get_product_category_list_use_case.dart';
 import '../../../domain/usecase/get_product_viral_list_use_case.dart';
 import '../../../domain/usecase/get_shipping_price_contents_banner_use_case.dart';
 import '../../../domain/usecase/get_snack_for_lying_around_list_use_case.dart';
+import '../../../domain/usecase/get_sponsor_contents_banner_use_case.dart';
 import '../../../misc/constant.dart';
 import '../../../misc/controllercontentdelegate/wishlist_and_cart_controller_content_delegate.dart';
 import '../../../misc/controllerstate/listitemcontrollerstate/compound_list_item_controller_state.dart';
@@ -64,6 +65,8 @@ class HomeMainMenuSubController extends BaseGetxController {
   final GetKitchenContentsBannerUseCase getKitchenContentsBannerUseCase;
   final GetHomepageContentsBannerUseCase getHomepageContentsBannerUseCase;
   final GetShippingPriceContentsBannerUseCase getShippingPriceContentsBannerUseCase;
+  final GetSponsorContentsBannerUseCase getSponsorContentsBannerUseCase;
+
   final AddWishlistUseCase addWishlistUseCase;
   final GetCurrentSelectedAddressUseCase getCurrentSelectedAddressUseCase;
   final WishlistAndCartControllerContentDelegate wishlistAndCartControllerContentDelegate;
@@ -86,6 +89,7 @@ class HomeMainMenuSubController extends BaseGetxController {
     this.getKitchenContentsBannerUseCase,
     this.getHomepageContentsBannerUseCase,
     this.getShippingPriceContentsBannerUseCase,
+    this.getSponsorContentsBannerUseCase,
     this.getCurrentSelectedAddressUseCase,
     this.wishlistAndCartControllerContentDelegate
   ) : super(controllerManager, initLater: true) {
@@ -342,6 +346,97 @@ class HomeMainMenuSubController extends BaseGetxController {
           throw MessageError(title: "Home main menu delegate must be initialized");
         },
       ),
+      DynamicItemCarouselHomeMainMenuComponentEntity(
+        title: MultiLanguageString({
+          Constant.textEnUsLanguageKey: "Sponsor Banner",
+          Constant.textInIdLanguageKey: "Sponsor Banner"
+        }),
+        onDynamicItemAction: (title, description, observer) async {
+          observer(title, description, IsLoadingLoadDataResult<List<TransparentBanner>>());
+          LoadDataResult<List<TransparentBanner>> bannerLoadDataResult = await getSponsorContentsBannerUseCase.execute().future(
+            parameter: apiRequestManager.addRequestToCancellationPart("sponsor-banner-highlight").value
+          );
+          if (bannerLoadDataResult.isFailedBecauseCancellation) {
+            return;
+          }
+          observer(title, description, bannerLoadDataResult);
+        },
+        onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
+          if (_homeMainMenuDelegate != null) {
+            return CompoundListItemControllerState(
+              listItemControllerState: [
+                VirtualSpacingListItemControllerState(height: 16),
+                _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductCategoryCarousel(
+                  OnObserveLoadingLoadProductCategoryCarouselParameter()
+                )
+              ]
+            );
+          }
+        },
+        onObserveSuccessDynamicItemActionState: (title, description, loadDataResult) {
+          List<TransparentBanner> transparentBannerList = loadDataResult.resultIfSuccess!;
+          if (_homeMainMenuDelegate != null) {
+            return _homeMainMenuDelegate!.onObserveSuccessLoadMultipleTransparentBanner(
+              _OnObserveSuccessLoadMultipleTransparentBannerParameter(
+                title: title,
+                description: description,
+                transparentBannerList: transparentBannerList,
+                data: Constant.transparentBannerKeySponsor
+              )
+            );
+          }
+          throw MessageError(title: "Home main menu delegate must be initialized");
+        },
+      ),
+      // DynamicItemCarouselHomeMainMenuComponentEntity(
+      //   title: MultiLanguageString({
+      //     Constant.textEnUsLanguageKey: "Product Sponsor Content",
+      //     Constant.textInIdLanguageKey: "Konten Produk Sponsor"
+      //   }),
+      //   onDynamicItemAction: (title, description, observer) async {
+      //     observer(title, description, IsLoadingLoadDataResult<List<ProductEntry>>());
+      //     LoadDataResult<List<ProductEntry>> productEntryPagingDataResult = await getBestsellerInMasterbagasiListUseCase.execute().future(
+      //       parameter: apiRequestManager.addRequestToCancellationPart("product-sponsor").value
+      //     );
+      //     if (productEntryPagingDataResult.isFailedBecauseCancellation) {
+      //       return;
+      //     }
+      //     observer(title, description, productEntryPagingDataResult.map<List<ProductEntry>>(
+      //       (trainingPagingDataResult) => trainingPagingDataResult
+      //     ));
+      //   },
+      //   onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
+      //     if (_homeMainMenuDelegate != null) {
+      //       return CompoundListItemControllerState(
+      //         listItemControllerState: [
+      //           VirtualSpacingListItemControllerState(height: 16),
+      //           _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductCategoryCarousel(
+      //             OnObserveLoadingLoadProductCategoryCarouselParameter()
+      //           ),
+      //         ]
+      //       );
+      //     }
+      //   },
+      //   onObserveSuccessDynamicItemActionState: (title, description, loadDataResult) {
+      //     List<ProductEntry> productEntryList = loadDataResult.resultIfSuccess!;
+      //     if (_homeMainMenuDelegate != null) {
+      //       return CompoundListItemControllerState(
+      //         listItemControllerState: [
+      //           _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveSuccessLoadProductEntryCarousel(
+      //             OnObserveSuccessLoadProductEntryCarouselParameter(
+      //               title: title,
+      //               description: description,
+      //               productEntryList: productEntryList,
+      //               data: Constant.carouselKeyProductSponsor
+      //             )
+      //           ),
+      //           VirtualSpacingListItemControllerState(height: 16),
+      //         ]
+      //       );
+      //     }
+      //     throw MessageError(title: "Home main menu delegate must be initialized");
+      //   },
+      // ),
       DynamicItemCarouselHomeMainMenuComponentEntity(
         title: MultiLanguageString({
           Constant.textEnUsLanguageKey: "Indonesia Kitchen Contents",
@@ -714,6 +809,7 @@ class HomeMainMenuSubControllerInjectionFactory {
   final GetKitchenContentsBannerUseCase getKitchenContentsBannerUseCase;
   final GetHomepageContentsBannerUseCase getHomepageContentsBannerUseCase;
   final GetShippingPriceContentsBannerUseCase getShippingPriceContentsBannerUseCase;
+  final GetSponsorContentsBannerUseCase getSponsorContentsBannerUseCase;
   final AddWishlistUseCase addWishlistUseCase;
   final GetCurrentSelectedAddressUseCase getCurrentSelectedAddressUseCase;
   final WishlistAndCartControllerContentDelegate wishlistAndCartControllerContentDelegate;
@@ -733,6 +829,7 @@ class HomeMainMenuSubControllerInjectionFactory {
     required this.getKitchenContentsBannerUseCase,
     required this.getHomepageContentsBannerUseCase,
     required this.getShippingPriceContentsBannerUseCase,
+    required this.getSponsorContentsBannerUseCase,
     required this.addWishlistUseCase,
     required this.getCurrentSelectedAddressUseCase,
     required this.wishlistAndCartControllerContentDelegate
@@ -757,6 +854,7 @@ class HomeMainMenuSubControllerInjectionFactory {
         getKitchenContentsBannerUseCase,
         getHomepageContentsBannerUseCase,
         getShippingPriceContentsBannerUseCase,
+        getSponsorContentsBannerUseCase,
         getCurrentSelectedAddressUseCase,
         wishlistAndCartControllerContentDelegate
       ),

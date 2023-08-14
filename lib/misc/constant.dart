@@ -188,6 +188,7 @@ class _ConstantImpl {
   AspectRatioValue get aspectRatioValueTransparentBanner => AspectRatioValue(width: 2500.0, height: 986.0);
   AspectRatioValue get aspectRatioValueHomepageBanner => AspectRatioValue(width: 2126.0, height: 1181.0);
   AspectRatioValue get aspectRatioValueShippingPriceBanner => AspectRatioValue(width: 692.0, height: 456.0);
+  AspectRatioValue get aspectRatioValueSponsorBanner => AspectRatioValue(width: 782.0, height: 376.0);
   AspectRatioValue get aspectRatioValueCountryDeliveryReviewCountryBackground => AspectRatioValue(width: 360.0, height: 109.0);
 
   MultiLanguageString get multiLanguageStringIsViral => MultiLanguageString({
@@ -211,6 +212,7 @@ class _ConstantImpl {
   String get carouselKeyIndonesianCategoryProduct => "carousel_key_indonesian_category_product";
   String get carouselKeyIndonesianOriginalBrand => "carousel_key_indonesian_original_brand";
   String get carouselKeyIsViral => "carousel_key_is_viral";
+  String get carouselKeyProductSponsor => "carousel_key_product_sponsor";
   String get carouselKeySnackForLyingAround => "carousel_key_snack_for_lying_around";
   String get carouselKeyProductBundleHighlight => "carousel_key_product_bundle_highlight";
   String get carouselKeyBestSellingInMasterBagasi => "carousel_key_best_selling_in_master_bagasi";
@@ -222,6 +224,7 @@ class _ConstantImpl {
   String get transparentBannerKeyHandycrafts => "transparent_banner_key_handycrafts";
   String get transparentBannerKeyMultipleHomepage => "transparent_banner_key_multiple_homepage";
   String get transparentBannerKeyMultipleShippingPrice => "transparent_banner_key_multiple_shipping_price";
+  String get transparentBannerKeySponsor => "transparent_banner_key_sponsor";
 
   String get subPageKeyHomeMainMenu => "sub_page_key_home_main_menu";
   String get subPageKeyFeedMainMenu => "sub_page_key_feed_main_menu";

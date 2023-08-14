@@ -39,6 +39,7 @@ import '../../domain/entity/product/productentry/product_entry_header_content_pa
 import '../../domain/entity/product/productentry/product_entry_header_content_response.dart';
 import '../../domain/entity/product/productentry/productentryheaderresponsevalue/brand_product_entry_header_content_response_value.dart';
 import '../../domain/entity/product/productentry/productentryheaderresponsevalue/category_product_entry_header_content_response_value.dart';
+import '../../domain/entity/product/productentry/productentryheaderresponsevalue/network_product_entry_header_content_response_value.dart';
 import '../../domain/entity/product/productentry/productentryheaderresponsevalue/product_entry_header_content_response_value.dart';
 import '../../domain/entity/product/productentry/productentryheaderresponsevalue/province_map_product_entry_header_content_response_value.dart';
 import '../../domain/entity/product/productentry/productentryheaderresponsevalue/static_product_entry_header_content_response_value.dart';
@@ -114,6 +115,12 @@ class DefaultProductRepository implements ProductRepository {
         ProductCategoryDetail productCategoryDetail = productCategoryDetailLoadDataResult.resultIfSuccess!;
         productEntryHeaderContentResponseValue = CategoryProductEntryHeaderContentResponseValue(
           productCategory: productCategoryDetail
+        );
+      } else if (parameterMap.containsKey("sponsor_image_url") && parameterMap.containsKey("sponsor_title")) {
+        productEntryHeaderContentResponseValue = NetworkProductEntryHeaderContentResponseValue(
+          networkImageUrl: parameterMap["sponsor_image_url"],
+          title: parameterMap["sponsor_title"],
+          aspectRatio: parameterMap["sponsor_aspect_ratio"]
         );
       } else if (parameterMap.containsKey("brand_id") || parameterMap.containsKey("brand")) {
         LoadDataResult<ProductBrandDetail> productBrandDetailLoadDataResult = await productDataSource.productBrandDetail(

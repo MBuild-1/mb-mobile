@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/error_provider_ext.dart';
 
 import '../../domain/entity/product/productentry/product_entry_header_content_response.dart';
+import '../../domain/entity/product/productentry/productentryheaderresponsevalue/network_product_entry_header_content_response_value.dart';
 import '../../domain/entity/product/productentry/productentryheaderresponsevalue/product_entry_header_content_response_value.dart';
 import '../../domain/entity/product/productentry/productentryheaderresponsevalue/static_product_entry_header_content_response_value.dart';
 import '../../misc/constant.dart';
@@ -23,12 +24,14 @@ class ProductEntryHeader extends StatelessWidget {
   final Widget Function(TextStyle) title;
   final OnProductEntryTitleTap? onProductEntryTitleTap;
   final ProductEntryHeaderBackground productEntryHeaderBackground;
+  final double? aspectRatio;
 
   const ProductEntryHeader({
     super.key,
     required this.title,
     this.onProductEntryTitleTap,
-    required this.productEntryHeaderBackground
+    required this.productEntryHeaderBackground,
+    this.aspectRatio
   });
 
   @override
@@ -42,7 +45,7 @@ class ProductEntryHeader extends StatelessWidget {
     return SizedBox(
       width: MediaQuery.of(context).size.width,
       child: AspectRatio(
-        aspectRatio: Constant.aspectRatioValueProductEntryHeader.toDouble(),
+        aspectRatio: aspectRatio ?? Constant.aspectRatioValueProductEntryHeader.toDouble(),
         child: Stack(
           children: [
             Builder(
@@ -136,18 +139,31 @@ class ProductEntryHeaderLoadDataResult extends StatelessWidget {
       ),
       onSuccessLoadDataResultWidget: (productEntryHeaderContentResponse) {
         ProductEntryHeaderContentResponseValue productEntryHeaderContentResponseValue = productEntryHeaderContentResponse.productEntryHeaderContentResponseValue;
+        late ProductEntryHeaderBackground productEntryHeaderBackground;
+        double? aspectRatio;
+        if (productEntryHeaderContentResponseValue is NetworkProductEntryHeaderContentResponseValue) {
+          aspectRatio = productEntryHeaderContentResponseValue.aspectRatio;
+          productEntryHeaderBackground = NetworkProductEntryHeaderBackground(
+            imageUrl: productEntryHeaderContentResponseValue.networkImageUrl
+          );
+        } else {
+          productEntryHeaderBackground = AssetProductEntryHeaderBackground(
+            assetImageName: productEntryHeaderContentResponseValue is StaticProductEntryHeaderContentResponseValue ? productEntryHeaderContentResponseValue.bannerAssetImageUrl : Constant.imageProductViralBackground
+          );
+        }
         return ProductEntryHeader(
           title: (textStyle) {
             if (productEntryHeaderContentResponseValue is StaticProductEntryHeaderContentResponseValue) {
+              return Text(productEntryHeaderContentResponseValue.title, style: textStyle);
+            } else if (productEntryHeaderContentResponseValue is NetworkProductEntryHeaderContentResponseValue) {
               return Text(productEntryHeaderContentResponseValue.title, style: textStyle);
             } else {
               return Text("Unknown Result".tr, style: textStyle);
             }
           },
           onProductEntryTitleTap: null,
-          productEntryHeaderBackground: AssetProductEntryHeaderBackground(
-            assetImageName: productEntryHeaderContentResponseValue is StaticProductEntryHeaderContentResponseValue ? productEntryHeaderContentResponseValue.bannerAssetImageUrl : Constant.imageProductViralBackground
-          ),
+          productEntryHeaderBackground: productEntryHeaderBackground,
+          aspectRatio: aspectRatio,
         );
       },
       onFailedLoadDataResultWidget: (errorProviderValue, e, widget) {

@@ -34,6 +34,7 @@ import '../../../../misc/controllerstate/listitemcontrollerstate/no_content_list
 import '../../../../misc/controllerstate/listitemcontrollerstate/padding_container_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/product_bundle_highlight_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/single_banner_list_item_controller_state.dart';
+import '../../../../misc/controllerstate/listitemcontrollerstate/stack_container_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/title_and_description_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/widget_substitution_list_item_controller_state.dart';
@@ -46,6 +47,7 @@ import '../../../../misc/injector.dart';
 import '../../../../misc/load_data_result.dart';
 import '../../../../misc/main_route_observer.dart';
 import '../../../../misc/manager/controller_manager.dart';
+import '../../../../misc/multi_language_string.dart';
 import '../../../../misc/on_observe_load_product_delegate.dart';
 import '../../../../misc/page_restoration_helper.dart';
 import '../../../../misc/paging/modified_paging_controller.dart';
@@ -290,7 +292,7 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
               ],
             );
           }
-          late CarouselBackground carouselBackground;
+          late CarouselBackground? carouselBackground;
           TitleInterceptor? titleInterceptor;
           if (data == Constant.carouselKeyIndonesianCategoryProduct) {
             carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternGrey);
@@ -389,6 +391,9 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
                 )
               ),
             );
+          } else if (data == Constant.carouselKeyProductSponsor) {
+            carouselBackground = null;
+            titleInterceptor = (text, style) => Container();
           } else {
             carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternGrey);
           }
@@ -467,7 +472,7 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
               ).toList(),
               aspectRatioValue: Constant.aspectRatioValueHomepageBanner
             );
-          } else if (data == Constant.transparentBannerKeyMultipleShippingPrice){
+          } else if (data == Constant.transparentBannerKeyMultipleShippingPrice) {
             return CompoundListItemControllerState(
               listItemControllerState: [
                 MultiBannerListItemControllerState(
@@ -502,6 +507,59 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
                     )
                   )
                 )
+              ]
+            );
+          } else if (data == Constant.transparentBannerKeySponsor) {
+            return StackContainerListItemControllerState(
+              childListItemControllerStateList: [
+                MultiBannerListItemControllerState(
+                  bannerList: onObserveSuccessLoadMultipleTransparentBannerParameter.transparentBannerList.map(
+                    (transparentBanner) => Banner(
+                      id: transparentBanner.id,
+                      imageUrl: transparentBanner.imageUrl,
+                      data: transparentBanner.title
+                    )
+                  ).toList(),
+                  aspectRatioValue: Constant.aspectRatioValueSponsorBanner,
+                  onTapBanner: (banner) => PageRestorationHelper.toProductEntryPage(
+                    context,
+                    ProductEntryPageParameter(
+                      productEntryParameterMap: {
+                        "type": "sponsor",
+                        "brand": (banner.data as String).toLowerCase(),
+                        "sponsor_image_url": banner.imageUrl,
+                        "sponsor_title": banner.data as String,
+                        "sponsor_aspect_ratio": Constant.aspectRatioValueSponsorBanner.toDouble()
+                      }
+                    )
+                  )
+                ),
+                WidgetSubstitutionListItemControllerState(
+                  widgetSubstitution: (BuildContext context, int index) {
+                    return Positioned(
+                      top: 10,
+                      left: 10,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.white),
+                          borderRadius: BorderRadius.circular(8.0)
+                        ),
+                        child: Text(
+                          MultiLanguageString({
+                            Constant.textEnUsLanguageKey: "Product Sponsor",
+                            Constant.textInIdLanguageKey: "Produk Sponsor"
+                          }).toEmptyStringNonNull,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold
+                          ),
+                        )
+                      )
+                    );
+                  }
+                ),
               ]
             );
           } else {

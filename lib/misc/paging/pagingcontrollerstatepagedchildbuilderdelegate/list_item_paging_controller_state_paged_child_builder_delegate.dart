@@ -186,6 +186,7 @@ import '../../controllerstate/listitemcontrollerstate/row_container_list_item_co
 import '../../controllerstate/listitemcontrollerstate/selectcountrieslistitemcontrollerstate/country_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/selectcountrieslistitemcontrollerstate/vertical_country_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/shipping_address_indicator_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/stack_container_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/videocarousellistitemcontrollerstate/default_video_carousel_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/videocarousellistitemcontrollerstate/short_video_carousel_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/single_banner_list_item_controller_state.dart';
@@ -584,6 +585,14 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
         padding: item.padding,
         child: _itemBuilder(context, item.paddingChildListItemControllerState, index)
       );
+    } else if (item is StackContainerListItemControllerState) {
+      List<Widget> result = [];
+      for (var childListItemControllerState in item.childListItemControllerStateList) {
+        result.add(_itemBuilder(context, childListItemControllerState, index));
+      }
+      return Stack(
+        children: result
+      );
     } else if (item is DecoratedContainerListItemControllerState) {
       return Container(
         padding: item.padding,
@@ -620,9 +629,12 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
           children: [
             AspectRatio(
               aspectRatio: item.aspectRatioValue.toDouble(),
-              child: ClipRect(
-                child: ProductModifiedCachedNetworkImage(
-                  imageUrl: item.bannerList[itemIndex].imageUrl,
+              child: TapArea(
+                onTap: item.onTapBanner != null ? () => item.onTapBanner!(item.bannerList[itemIndex]) : null,
+                child: ClipRect(
+                  child: ProductModifiedCachedNetworkImage(
+                    imageUrl: item.bannerList[itemIndex].imageUrl,
+                  ),
                 ),
               )
             ),

@@ -160,6 +160,7 @@ import '../domain/usecase/get_shipping_price_contents_banner_use_case.dart';
 import '../domain/usecase/get_short_my_cart_use_case.dart';
 import '../domain/usecase/get_short_video_use_case.dart';
 import '../domain/usecase/get_snack_for_lying_around_list_use_case.dart';
+import '../domain/usecase/get_sponsor_contents_banner_use_case.dart';
 import '../domain/usecase/get_transaction_notification_detail_use_case.dart';
 import '../domain/usecase/get_trip_default_video_use_case.dart';
 import '../domain/usecase/get_user_use_case.dart';
@@ -232,6 +233,7 @@ class _Injector {
         getFashionProductIndonesiaListUseCase: locator(),
         getHandycraftsContentsBannerUseCase: locator(),
         getKitchenContentsBannerUseCase: locator(),
+        getSponsorContentsBannerUseCase: locator(),
         addWishlistUseCase: locator(),
         getCurrentSelectedAddressUseCase: locator(),
         getHomepageContentsBannerUseCase: locator(),
@@ -488,6 +490,7 @@ class _Injector {
     locator.registerLazySingleton<GetHandycraftsContentsBannerUseCase>(() => GetHandycraftsContentsBannerUseCase(bannerRepository: locator()));
     locator.registerLazySingleton<GetHomepageContentsBannerUseCase>(() => GetHomepageContentsBannerUseCase(bannerRepository: locator()));
     locator.registerLazySingleton<GetShippingPriceContentsBannerUseCase>(() => GetShippingPriceContentsBannerUseCase(bannerRepository: locator()));
+    locator.registerLazySingleton<GetSponsorContentsBannerUseCase>(() => GetSponsorContentsBannerUseCase(bannerRepository: locator()));
     locator.registerLazySingleton<GetCouponPagingUseCase>(() => GetCouponPagingUseCase(couponRepository: locator()));
     locator.registerLazySingleton<GetCouponListUseCase>(() => GetCouponListUseCase(couponRepository: locator()));
     locator.registerLazySingleton<GetCouponDetailUseCase>(() => GetCouponDetailUseCase(couponRepository: locator()));
