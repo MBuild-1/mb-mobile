@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:masterbagasi/misc/ext/error_provider_ext.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
@@ -37,7 +38,7 @@ class WishlistMainMenuSubPage extends DefaultGetxPage {
   late final ControllerMember<WishlistMainMenuSubController> _wishlistMainMenuSubController = ControllerMember<WishlistMainMenuSubController>().addToControllerManager(controllerManager);
   final String ancestorPageName;
 
-  WishlistMainMenuSubPage({Key? key, required this.ancestorPageName}) : super(key: key);
+  WishlistMainMenuSubPage({Key? key, required this.ancestorPageName}) : super(key: key, systemUiOverlayStyle: SystemUiOverlayStyle.light);
 
   @override
   void onSetController() {
