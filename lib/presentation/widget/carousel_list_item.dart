@@ -180,6 +180,7 @@ class _InnerCarouselListItemState<T> extends State<_InnerCarouselListItem<T>> wi
             if (!widget.title.isEmptyString || !widget.description.isEmptyString)
               SizedBox(height: verticalSpace ?? Constant.paddingListItem),
             SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
               scrollDirection: Axis.horizontal,
               padding: EdgeInsets.only(
                 left: left ?? Constant.paddingListItem,

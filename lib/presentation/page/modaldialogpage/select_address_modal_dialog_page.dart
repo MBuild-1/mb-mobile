@@ -183,14 +183,13 @@ class _StatefulSelectAddressControllerMediatorWidgetState extends State<_Statefu
           primary: false,
         ),
         SizedBox(
-          height: 170,
           child: ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
             padding: EdgeInsets.zero,
             pagingControllerState: _selectAddressListItemPagingControllerState,
             onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
               pagingControllerState: pagingControllerState!
             ),
-            shrinkWrap: false,
+            shrinkWrap: true,
           )
         )
       ]
