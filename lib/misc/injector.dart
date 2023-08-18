@@ -221,6 +221,7 @@ class _Injector {
     // Controller Injection Factory
     locator.registerLazySingleton<HomeMainMenuSubControllerInjectionFactory>(
       () => HomeMainMenuSubControllerInjectionFactory(
+        getProductEntryWithConditionPagingUseCase: locator(),
         getProductViralListUseCase: locator(),
         getProductCategoryListUseCase: locator(),
         getProductBrandListUseCase: locator(),

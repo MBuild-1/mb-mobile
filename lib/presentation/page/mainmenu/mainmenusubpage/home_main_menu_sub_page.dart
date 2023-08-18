@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide Banner;
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:masterbagasi/misc/controllerstate/listitemcontrollerstate/builder_list_item_controller_state.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/wishlist_delegate_parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
@@ -108,6 +109,7 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
   final List<BaseLoadDataResultDynamicListItemControllerState> _dynamicItemLoadDataResultDynamicListItemControllerStateList = [];
 
   late AssetImage _homeAppBarBackgroundAssetImage;
+  Banner? _banner;
 
   @override
   void initState() {
@@ -470,7 +472,7 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
                   imageUrl: transparentBanner.imageUrl
                 )
               ).toList(),
-              aspectRatioValue: Constant.aspectRatioValueHomepageBanner
+              aspectRatioValue: Constant.aspectRatioValueHomepageBanner,
             );
           } else if (data == Constant.transparentBannerKeyMultipleShippingPrice) {
             return CompoundListItemControllerState(
@@ -509,58 +511,100 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
                 )
               ]
             );
-          } else if (data == Constant.transparentBannerKeySponsor) {
-            return StackContainerListItemControllerState(
-              childListItemControllerStateList: [
-                MultiBannerListItemControllerState(
-                  bannerList: onObserveSuccessLoadMultipleTransparentBannerParameter.transparentBannerList.map(
-                    (transparentBanner) => Banner(
-                      id: transparentBanner.id,
-                      imageUrl: transparentBanner.imageUrl,
-                      data: transparentBanner.title
-                    )
-                  ).toList(),
-                  aspectRatioValue: Constant.aspectRatioValueSponsorBanner,
-                  onTapBanner: (banner) => PageRestorationHelper.toProductEntryPage(
-                    context,
-                    ProductEntryPageParameter(
-                      productEntryParameterMap: {
-                        "type": "sponsor",
-                        "brand": (banner.data as String).toLowerCase(),
-                        "sponsor_image_url": banner.imageUrl,
-                        "sponsor_title": banner.data as String,
-                        "sponsor_aspect_ratio": Constant.aspectRatioValueSponsorBanner.toDouble()
-                      }
-                    )
-                  )
-                ),
-                WidgetSubstitutionListItemControllerState(
-                  widgetSubstitution: (BuildContext context, int index) {
-                    return Positioned(
-                      top: 10,
-                      left: 10,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.white),
-                          borderRadius: BorderRadius.circular(8.0)
-                        ),
-                        child: Text(
-                          MultiLanguageString({
-                            Constant.textEnUsLanguageKey: "Product Sponsor",
-                            Constant.textInIdLanguageKey: "Produk Sponsor"
-                          }).toEmptyStringNonNull,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold
-                          ),
-                        )
-                      )
-                    );
+          } else if (data is ProductSponsorTransparentBannerParameterData) {
+            List<Banner> bannerList = onObserveSuccessLoadMultipleTransparentBannerParameter.transparentBannerList.map(
+              (transparentBanner) => Banner(
+                id: transparentBanner.id,
+                imageUrl: transparentBanner.imageUrl,
+                data: transparentBanner.title
+              )
+            ).toList();
+            void toProductEntryPage(Banner? banner) {
+              PageRestorationHelper.toProductEntryPage(
+                context,
+                ProductEntryPageParameter(
+                  productEntryParameterMap: {
+                    "type": "sponsor",
+                    "brand": (banner?.data as String).toLowerCase(),
+                    "sponsor_image_url": banner?.imageUrl ?? "",
+                    "sponsor_title": banner?.data as String,
+                    "sponsor_aspect_ratio": Constant.aspectRatioValueSponsorBanner.toDouble()
                   }
-                ),
-              ]
+                )
+              );
+            }
+            return BuilderListItemControllerState(
+              buildListItemControllerState: () {
+                return StackContainerListItemControllerState(
+                  childListItemControllerStateList: [
+                    MultiBannerListItemControllerState(
+                      bannerList: bannerList,
+                      aspectRatioValue: Constant.aspectRatioValueSponsorBanner,
+                      onTapBanner: (banner) => toProductEntryPage(banner),
+                      onPageChanged: (index, reason) {
+                        _banner = bannerList[index];
+                        data.repeatableDynamicItemCarouselAdditionalParameter?.onRepeatLoading();
+                      },
+                      isAutoSwipe: false,
+                    ),
+                    WidgetSubstitutionListItemControllerState(
+                      widgetSubstitution: (BuildContext context, int index) {
+                        return Positioned(
+                          top: 10,
+                          left: 10,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.white),
+                              borderRadius: BorderRadius.circular(8.0)
+                            ),
+                            child: Text(
+                              MultiLanguageString({
+                                Constant.textEnUsLanguageKey: "Product Sponsor",
+                                Constant.textInIdLanguageKey: "Produk Sponsor"
+                              }).toEmptyStringNonNull,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold
+                              ),
+                            )
+                          )
+                        );
+                      }
+                    ),
+                    WidgetSubstitutionListItemControllerState(
+                      widgetSubstitution: (BuildContext context, int index) {
+                        return Positioned(
+                          top: 10,
+                          right: 10,
+                          child: TapArea(
+                            onTap: () => toProductEntryPage(_banner),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8.0),
+                                color: Constant.colorMain
+                              ),
+                              child: Text(
+                                MultiLanguageString({
+                                  Constant.textEnUsLanguageKey: "Look More",
+                                  Constant.textInIdLanguageKey: "Lihat Selengkapnya"
+                                }).toEmptyStringNonNull,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold
+                                ),
+                              )
+                            )
+                          )
+                        );
+                      }
+                    ),
+                  ]
+                );
+              }
             );
           } else {
             return NoContentListItemControllerState();
@@ -671,7 +715,9 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
               onObserveLoadCurrentAddressParameter.repeatableDynamicItemCarouselAdditionalParameter.onRepeatLoading();
             }
           );
-        }
+        },
+        getBannerData: () => _banner?.data ?? "",
+        setBanner: (bannerData) => _banner = bannerData
       )
     );
     return BackgroundAppBarScaffold(

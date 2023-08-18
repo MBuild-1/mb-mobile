@@ -1,12 +1,16 @@
+import 'dart:async';
+
 import 'package:masterbagasi/misc/controllerstate/listitemcontrollerstate/spacing_list_item_controller_state.dart';
 import 'package:masterbagasi/misc/controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
 import 'package:masterbagasi/misc/ext/future_ext.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
+import 'package:masterbagasi/misc/processing/future_processing.dart';
 
 import '../../../domain/entity/address/address.dart';
 import '../../../domain/entity/address/current_selected_address_parameter.dart';
 import '../../../domain/entity/banner/banner.dart';
 import '../../../domain/entity/banner/transparent_banner.dart';
+import '../../../domain/entity/componententity/dynamicitemcarouseladditionalparameter/dynamic_item_carousel_additional_parameter.dart';
 import '../../../domain/entity/homemainmenucomponententity/dynamic_item_carousel_directly_home_main_menu_component_entity.dart';
 import '../../../domain/entity/homemainmenucomponententity/dynamic_item_carousel_home_main_menu_component_entity.dart';
 import '../../../domain/entity/homemainmenucomponententity/home_main_menu_component_entity.dart';
@@ -33,6 +37,7 @@ import '../../../domain/usecase/get_product_brand_use_case.dart';
 import '../../../domain/usecase/get_product_bundle_highlight_use_case.dart';
 import '../../../domain/usecase/get_product_bundle_list_use_case.dart';
 import '../../../domain/usecase/get_product_category_list_use_case.dart';
+import '../../../domain/usecase/get_product_entry_with_condition_paging_use_case.dart';
 import '../../../domain/usecase/get_product_viral_list_use_case.dart';
 import '../../../domain/usecase/get_shipping_price_contents_banner_use_case.dart';
 import '../../../domain/usecase/get_snack_for_lying_around_list_use_case.dart';
@@ -51,6 +56,7 @@ import '../../../misc/on_observe_load_product_delegate.dart';
 import '../../base_getx_controller.dart';
 
 class HomeMainMenuSubController extends BaseGetxController {
+  final GetProductEntryWithConditionPagingUseCase getProductEntryWithConditionPagingUseCase;
   final GetProductBrandListUseCase getProductBrandListUseCase;
   final GetProductViralListUseCase getProductViralListUseCase;
   final GetProductCategoryListUseCase getProductCategoryListUseCase;
@@ -72,8 +78,12 @@ class HomeMainMenuSubController extends BaseGetxController {
   final WishlistAndCartControllerContentDelegate wishlistAndCartControllerContentDelegate;
   HomeMainMenuDelegate? _homeMainMenuDelegate;
 
+  RepeatableDynamicItemCarouselAdditionalParameter? _productSponsorRepeatableDynamicItemCarouselAdditionalParameter;
+  Completer? _productSponsorBannerCompleter;
+
   HomeMainMenuSubController(
     ControllerManager? controllerManager,
+    this.getProductEntryWithConditionPagingUseCase,
     this.getProductBrandListUseCase,
     this.getProductViralListUseCase,
     this.getProductCategoryListUseCase,
@@ -174,6 +184,13 @@ class HomeMainMenuSubController extends BaseGetxController {
   }
 
   List<HomeMainMenuComponentEntity> getHomeMainMenuComponentEntity() {
+    _productSponsorRepeatableDynamicItemCarouselAdditionalParameter = RepeatableDynamicItemCarouselAdditionalParameter();
+    if (_productSponsorBannerCompleter != null) {
+      if (!_productSponsorBannerCompleter!.isCompleted) {
+        _productSponsorBannerCompleter!.completeError(Exception());
+      }
+    }
+    _productSponsorBannerCompleter = Completer();
     return [
       DynamicItemCarouselHomeMainMenuComponentEntity(
         title: MultiLanguageString({
@@ -199,7 +216,8 @@ class HomeMainMenuSubController extends BaseGetxController {
                 VirtualSpacingListItemControllerState(height: 16),
                 _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductCategoryCarousel(
                   OnObserveLoadingLoadProductCategoryCarouselParameter()
-                )
+                ),
+                VirtualSpacingListItemControllerState(height: 16),
               ]
             );
           }
@@ -243,7 +261,8 @@ class HomeMainMenuSubController extends BaseGetxController {
                 VirtualSpacingListItemControllerState(height: 16),
                 _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductCategoryCarousel(
                   OnObserveLoadingLoadProductCategoryCarouselParameter()
-                )
+                ),
+                VirtualSpacingListItemControllerState(height: 16),
               ]
             );
           }
@@ -284,7 +303,8 @@ class HomeMainMenuSubController extends BaseGetxController {
                 VirtualSpacingListItemControllerState(height: 16),
                 _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductCategoryCarousel(
                   OnObserveLoadingLoadProductCategoryCarouselParameter()
-                )
+                ),
+                VirtualSpacingListItemControllerState(height: 16),
               ]
             );
           }
@@ -326,7 +346,8 @@ class HomeMainMenuSubController extends BaseGetxController {
                 VirtualSpacingListItemControllerState(height: 16),
                 _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductCategoryCarousel(
                   OnObserveLoadingLoadProductCategoryCarouselParameter()
-                )
+                ),
+                VirtualSpacingListItemControllerState(height: 16),
               ]
             );
           }
@@ -359,6 +380,19 @@ class HomeMainMenuSubController extends BaseGetxController {
           if (bannerLoadDataResult.isFailedBecauseCancellation) {
             return;
           }
+          if (bannerLoadDataResult.isSuccess) {
+            List<TransparentBanner> transparentBannerList = bannerLoadDataResult.resultIfSuccess!;
+            if (transparentBannerList.isNotEmpty) {
+              TransparentBanner transparentBanner = transparentBannerList.first;
+              Banner banner = Banner(
+                id: transparentBanner.id,
+                imageUrl: transparentBanner.imageUrl,
+                data: transparentBanner.title
+              );
+              _homeMainMenuDelegate?.setBanner(banner);
+            }
+          }
+          _productSponsorBannerCompleter?.complete();
           observer(title, description, bannerLoadDataResult);
         },
         onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
@@ -368,7 +402,8 @@ class HomeMainMenuSubController extends BaseGetxController {
                 VirtualSpacingListItemControllerState(height: 16),
                 _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductCategoryCarousel(
                   OnObserveLoadingLoadProductCategoryCarouselParameter()
-                )
+                ),
+                VirtualSpacingListItemControllerState(height: 16),
               ]
             );
           }
@@ -376,67 +411,93 @@ class HomeMainMenuSubController extends BaseGetxController {
         onObserveSuccessDynamicItemActionState: (title, description, loadDataResult) {
           List<TransparentBanner> transparentBannerList = loadDataResult.resultIfSuccess!;
           if (_homeMainMenuDelegate != null) {
-            return _homeMainMenuDelegate!.onObserveSuccessLoadMultipleTransparentBanner(
+            ListItemControllerState result = _homeMainMenuDelegate!.onObserveSuccessLoadMultipleTransparentBanner(
               _OnObserveSuccessLoadMultipleTransparentBannerParameter(
                 title: title,
                 description: description,
                 transparentBannerList: transparentBannerList,
-                data: Constant.transparentBannerKeySponsor
+                data: ProductSponsorTransparentBannerParameterData(
+                  repeatableDynamicItemCarouselAdditionalParameter: _productSponsorRepeatableDynamicItemCarouselAdditionalParameter
+                )
               )
             );
+            return result;
           }
           throw MessageError(title: "Home main menu delegate must be initialized");
         },
       ),
-      // DynamicItemCarouselHomeMainMenuComponentEntity(
-      //   title: MultiLanguageString({
-      //     Constant.textEnUsLanguageKey: "Product Sponsor Content",
-      //     Constant.textInIdLanguageKey: "Konten Produk Sponsor"
-      //   }),
-      //   onDynamicItemAction: (title, description, observer) async {
-      //     observer(title, description, IsLoadingLoadDataResult<List<ProductEntry>>());
-      //     LoadDataResult<List<ProductEntry>> productEntryPagingDataResult = await getBestsellerInMasterbagasiListUseCase.execute().future(
-      //       parameter: apiRequestManager.addRequestToCancellationPart("product-sponsor").value
-      //     );
-      //     if (productEntryPagingDataResult.isFailedBecauseCancellation) {
-      //       return;
-      //     }
-      //     observer(title, description, productEntryPagingDataResult.map<List<ProductEntry>>(
-      //       (trainingPagingDataResult) => trainingPagingDataResult
-      //     ));
-      //   },
-      //   onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
-      //     if (_homeMainMenuDelegate != null) {
-      //       return CompoundListItemControllerState(
-      //         listItemControllerState: [
-      //           VirtualSpacingListItemControllerState(height: 16),
-      //           _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductCategoryCarousel(
-      //             OnObserveLoadingLoadProductCategoryCarouselParameter()
-      //           ),
-      //         ]
-      //       );
-      //     }
-      //   },
-      //   onObserveSuccessDynamicItemActionState: (title, description, loadDataResult) {
-      //     List<ProductEntry> productEntryList = loadDataResult.resultIfSuccess!;
-      //     if (_homeMainMenuDelegate != null) {
-      //       return CompoundListItemControllerState(
-      //         listItemControllerState: [
-      //           _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveSuccessLoadProductEntryCarousel(
-      //             OnObserveSuccessLoadProductEntryCarouselParameter(
-      //               title: title,
-      //               description: description,
-      //               productEntryList: productEntryList,
-      //               data: Constant.carouselKeyProductSponsor
-      //             )
-      //           ),
-      //           VirtualSpacingListItemControllerState(height: 16),
-      //         ]
-      //       );
-      //     }
-      //     throw MessageError(title: "Home main menu delegate must be initialized");
-      //   },
-      // ),
+      DynamicItemCarouselHomeMainMenuComponentEntity(
+        title: MultiLanguageString({
+          Constant.textEnUsLanguageKey: "Product Sponsor Content",
+          Constant.textInIdLanguageKey: "Konten Produk Sponsor"
+        }),
+        onDynamicItemAction: (title, description, observer) async {
+          observer(title, description, IsLoadingLoadDataResult<List<ProductEntry>>());
+          String bannerData = "";
+          Future<dynamic>? productSponsorLoadingFuture = _productSponsorBannerCompleter?.future;
+          if (productSponsorLoadingFuture != null) {
+            try {
+              await productSponsorLoadingFuture;
+              if (_homeMainMenuDelegate != null) {
+                bannerData = _homeMainMenuDelegate!.getBannerData();
+              }
+              LoadDataResult<List<ProductEntry>> productEntryPagingDataResult = await getProductEntryWithConditionPagingUseCase.execute(
+                ProductWithConditionPagingParameter(
+                  page: 1,
+                  itemEachPageCount: 10,
+                  withCondition: {
+                    "type": "sponsor",
+                    "brand": bannerData.toLowerCase(),
+                  }
+                )
+              ).future(
+                parameter: apiRequestManager.addRequestToCancellationPart("product-sponsor").value
+              ).map((value) => value.itemList);
+              if (productEntryPagingDataResult.isFailedBecauseCancellation) {
+                return;
+              }
+              observer(title, description, productEntryPagingDataResult.map<List<ProductEntry>>(
+                (productEntryPagingDataResult) => productEntryPagingDataResult
+              ));
+            } catch (e) {
+              // No catch error
+            }
+          }
+        },
+        onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
+          if (_homeMainMenuDelegate != null) {
+            return CompoundListItemControllerState(
+              listItemControllerState: [
+                VirtualSpacingListItemControllerState(height: 16),
+                _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductCategoryCarousel(
+                  OnObserveLoadingLoadProductCategoryCarouselParameter()
+                ),
+                VirtualSpacingListItemControllerState(height: 16),
+              ]
+            );
+          }
+        },
+        onObserveSuccessDynamicItemActionState: (title, description, loadDataResult) {
+          List<ProductEntry> productEntryList = loadDataResult.resultIfSuccess!;
+          if (_homeMainMenuDelegate != null) {
+            return CompoundListItemControllerState(
+              listItemControllerState: [
+                _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveSuccessLoadProductEntryCarousel(
+                  OnObserveSuccessLoadProductEntryCarouselParameter(
+                    title: title,
+                    description: description,
+                    productEntryList: productEntryList,
+                    data: Constant.carouselKeyProductSponsor
+                  )
+                ),
+                VirtualSpacingListItemControllerState(height: 16),
+              ]
+            );
+          }
+          throw MessageError(title: "Home main menu delegate must be initialized");
+        },
+        dynamicItemCarouselAdditionalParameter: _productSponsorRepeatableDynamicItemCarouselAdditionalParameter,
+      ),
       DynamicItemCarouselHomeMainMenuComponentEntity(
         title: MultiLanguageString({
           Constant.textEnUsLanguageKey: "Indonesia Kitchen Contents",
@@ -459,7 +520,8 @@ class HomeMainMenuSubController extends BaseGetxController {
                 VirtualSpacingListItemControllerState(height: 16),
                 _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductCategoryCarousel(
                   OnObserveLoadingLoadProductCategoryCarouselParameter()
-                )
+                ),
+                VirtualSpacingListItemControllerState(height: 16),
               ]
             );
           }
@@ -503,7 +565,8 @@ class HomeMainMenuSubController extends BaseGetxController {
                 VirtualSpacingListItemControllerState(height: 16),
                 _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductCategoryCarousel(
                   OnObserveLoadingLoadProductCategoryCarouselParameter()
-                )
+                ),
+                VirtualSpacingListItemControllerState(height: 16),
               ]
             );
           }
@@ -549,7 +612,8 @@ class HomeMainMenuSubController extends BaseGetxController {
                 VirtualSpacingListItemControllerState(height: 16),
                 _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductCategoryCarousel(
                   OnObserveLoadingLoadProductCategoryCarouselParameter()
-                )
+                ),
+                VirtualSpacingListItemControllerState(height: 16),
               ]
             );
           }
@@ -592,7 +656,8 @@ class HomeMainMenuSubController extends BaseGetxController {
                 VirtualSpacingListItemControllerState(height: 16),
                 _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductCategoryCarousel(
                   OnObserveLoadingLoadProductCategoryCarouselParameter()
-                )
+                ),
+                VirtualSpacingListItemControllerState(height: 16),
               ]
             );
           }
@@ -634,7 +699,8 @@ class HomeMainMenuSubController extends BaseGetxController {
                 VirtualSpacingListItemControllerState(height: 16),
                 _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductCategoryCarousel(
                   OnObserveLoadingLoadProductCategoryCarouselParameter()
-                )
+                ),
+                VirtualSpacingListItemControllerState(height: 16),
               ]
             );
           }
@@ -678,7 +744,8 @@ class HomeMainMenuSubController extends BaseGetxController {
                 VirtualSpacingListItemControllerState(height: 16),
                 _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductCategoryCarousel(
                   OnObserveLoadingLoadProductCategoryCarouselParameter()
-                )
+                ),
+                VirtualSpacingListItemControllerState(height: 16),
               ]
             );
           }
@@ -722,7 +789,8 @@ class HomeMainMenuSubController extends BaseGetxController {
                 VirtualSpacingListItemControllerState(height: 16),
                 _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductCategoryCarousel(
                   OnObserveLoadingLoadProductCategoryCarouselParameter()
-                )
+                ),
+                VirtualSpacingListItemControllerState(height: 16),
               ]
             );
           }
@@ -766,7 +834,8 @@ class HomeMainMenuSubController extends BaseGetxController {
                 VirtualSpacingListItemControllerState(height: 16),
                 _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductCategoryCarousel(
                   OnObserveLoadingLoadProductCategoryCarouselParameter()
-                )
+                ),
+                VirtualSpacingListItemControllerState(height: 16),
               ]
             );
           }
@@ -795,6 +864,7 @@ class HomeMainMenuSubController extends BaseGetxController {
 }
 
 class HomeMainMenuSubControllerInjectionFactory {
+  final GetProductEntryWithConditionPagingUseCase getProductEntryWithConditionPagingUseCase;
   final GetProductBrandListUseCase getProductBrandListUseCase;
   final GetProductViralListUseCase getProductViralListUseCase;
   final GetProductCategoryListUseCase getProductCategoryListUseCase;
@@ -815,6 +885,7 @@ class HomeMainMenuSubControllerInjectionFactory {
   final WishlistAndCartControllerContentDelegate wishlistAndCartControllerContentDelegate;
 
   HomeMainMenuSubControllerInjectionFactory({
+    required this.getProductEntryWithConditionPagingUseCase,
     required this.getProductBrandListUseCase,
     required this.getProductViralListUseCase,
     required this.getProductCategoryListUseCase,
@@ -839,6 +910,7 @@ class HomeMainMenuSubControllerInjectionFactory {
     return GetExtended.put<HomeMainMenuSubController>(
       HomeMainMenuSubController(
         controllerManager,
+        getProductEntryWithConditionPagingUseCase,
         getProductBrandListUseCase,
         getProductViralListUseCase,
         getProductCategoryListUseCase,
@@ -871,6 +943,8 @@ class HomeMainMenuDelegate {
   ListItemControllerState Function(_OnObserveSuccessLoadTransparentBannerParameter) onObserveSuccessLoadTransparentBanner;
   ListItemControllerState Function(_OnObserveLoadingLoadTransparentBannerParameter) onObserveLoadingLoadTransparentBanner;
   ListItemControllerState Function(_OnObserveLoadCurrentAddressParameter) onObserveLoadCurrentAddress;
+  String Function() getBannerData;
+  void Function(Banner) setBanner;
 
   HomeMainMenuDelegate({
     required this.onObserveLoadProductDelegate,
@@ -880,6 +954,8 @@ class HomeMainMenuDelegate {
     required this.onObserveSuccessLoadTransparentBanner,
     required this.onObserveLoadingLoadTransparentBanner,
     required this.onObserveLoadCurrentAddress,
+    required this.getBannerData,
+    required this.setBanner
   });
 }
 
@@ -933,6 +1009,14 @@ class _OnObserveLoadCurrentAddressParameter {
 
   _OnObserveLoadCurrentAddressParameter({
     required this.addressLoadDataResult,
+    required this.repeatableDynamicItemCarouselAdditionalParameter
+  });
+}
+
+class ProductSponsorTransparentBannerParameterData {
+  RepeatableDynamicItemCarouselAdditionalParameter? repeatableDynamicItemCarouselAdditionalParameter;
+
+  ProductSponsorTransparentBannerParameterData({
     required this.repeatableDynamicItemCarouselAdditionalParameter
   });
 }
