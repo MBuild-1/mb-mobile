@@ -33,7 +33,7 @@ import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_it
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
 import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/horizontal_dynamic_item_carousel_parametered_component_entity_and_list_item_controller_state_mediator_parameter.dart';
-import '../notifier/wishlist_notifier.dart';
+import '../notifier/component_notifier.dart';
 import '../widget/background_app_bar_scaffold.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/core_search_app_bar.dart';
@@ -263,8 +263,8 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
       Injector.locator<WishlistAndCartDelegateFactory>().generateWishlistAndCartDelegate(
         onGetBuildContext: () => context,
         onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
-        onAddToWishlistRequestProcessSuccessCallback: () async => context.read<WishlistNotifier>().updateWishlist(),
-        onRemoveFromWishlistRequestProcessSuccessCallback: (wishlist) async => context.read<WishlistNotifier>().updateWishlist(),
+        onAddToWishlistRequestProcessSuccessCallback: () async => context.read<ComponentNotifier>().updateWishlist(),
+        onRemoveFromWishlistRequestProcessSuccessCallback: (wishlist) async => context.read<ComponentNotifier>().updateWishlist(),
       )
     );
     return BackgroundAppBarScaffold(

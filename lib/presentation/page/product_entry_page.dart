@@ -46,7 +46,7 @@ import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediato
 import '../../misc/productentryheaderbackground/asset_product_entry_header_background.dart';
 import '../../misc/string_util.dart';
 import '../../misc/toast_helper.dart';
-import '../notifier/wishlist_notifier.dart';
+import '../notifier/component_notifier.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/default_search_app_bar.dart';
 import 'getx_page.dart';
@@ -297,8 +297,8 @@ class _StatefulProductEntryControllerMediatorWidgetState extends State<_Stateful
       Injector.locator<WishlistAndCartDelegateFactory>().generateWishlistAndCartDelegate(
         onGetBuildContext: () => context,
         onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
-        onAddToWishlistRequestProcessSuccessCallback: () async => context.read<WishlistNotifier>().updateWishlist(),
-        onRemoveFromWishlistRequestProcessSuccessCallback: (wishlist) async => context.read<WishlistNotifier>().updateWishlist(),
+        onAddToWishlistRequestProcessSuccessCallback: () async => context.read<ComponentNotifier>().updateWishlist(),
+        onRemoveFromWishlistRequestProcessSuccessCallback: (wishlist) async => context.read<ComponentNotifier>().updateWishlist(),
       )
     );
     widget.productEntryController.productBrandFavoriteControllerContentDelegate.setProductBrandFavoriteDelegate(
@@ -306,10 +306,10 @@ class _StatefulProductEntryControllerMediatorWidgetState extends State<_Stateful
         onGetBuildContext: () => context,
         onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
         onAddToFavoriteProductBrandRequestProcessSuccessCallback: () async {
-          context.read<WishlistNotifier>().updateWishlist();
+          context.read<ComponentNotifier>().updateFavorite();
         },
         onRemoveFromFavoriteProductBrandRequestProcessSuccessCallback: (favoriteProductBrand) async {
-          context.read<WishlistNotifier>().updateWishlist();
+          context.read<ComponentNotifier>().updateFavorite();
         }
       ),
     );

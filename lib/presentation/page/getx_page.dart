@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 
 import '../../misc/main_route_observer.dart';
 import '../../misc/manager/controller_manager.dart';
-import '../notifier/wishlist_notifier.dart';
+import '../notifier/component_notifier.dart';
 
 typedef OnCreateRestorationCallback<T extends GetxPageRestoration> = T Function();
 typedef PageRestorationStringId = String Function();
@@ -154,7 +154,7 @@ abstract class GetxPage extends StatelessWidget {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: _systemUiOverlayStyle,
       child: OrientationBuilder(
-        builder: (BuildContext context, Orientation orientation) => Consumer<WishlistNotifier>(
+        builder: (BuildContext context, Orientation orientation) => Consumer<ComponentNotifier>(
           builder: (context, _, __) => _rawBuildPage(context)
         ),
       )

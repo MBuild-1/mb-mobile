@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../misc/main_route_observer.dart';
 
-class WishlistNotifier extends ChangeNotifier {
+class ComponentNotifier extends ChangeNotifier {
   void updateWishlist({bool withRefreshWishlistInMainMenu = true}) {
     notifyListeners();
     if (withRefreshWishlistInMainMenu) {
@@ -10,5 +10,9 @@ class WishlistNotifier extends ChangeNotifier {
         MainRouteObserver.onRefreshWishlistInMainMenu!();
       }
     }
+  }
+
+  void updateFavorite() {
+    notifyListeners();
   }
 }

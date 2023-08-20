@@ -17,7 +17,7 @@ import 'misc/injector.dart';
 import 'misc/login_helper.dart';
 import 'misc/main_route_observer.dart';
 import 'presentation/notifier/login_notifier.dart';
-import 'presentation/notifier/wishlist_notifier.dart';
+import 'presentation/notifier/component_notifier.dart';
 import 'presentation/page/introduction_page.dart';
 import 'presentation/page/mainmenu/main_menu_page.dart';
 
@@ -52,8 +52,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<LoginNotifier>(
           create: (_) => LoginNotifier(Injector.locator<GetUserUseCase>()),
         ),
-        ChangeNotifierProvider<WishlistNotifier>(
-          create: (_) => WishlistNotifier(),
+        ChangeNotifierProvider<ComponentNotifier>(
+          create: (_) => ComponentNotifier(),
         )
       ],
       child: Sizer(

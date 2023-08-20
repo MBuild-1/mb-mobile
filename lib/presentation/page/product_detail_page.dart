@@ -63,7 +63,7 @@ import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediato
 import '../../misc/product_helper.dart';
 import '../../misc/string_util.dart';
 import '../../misc/toast_helper.dart';
-import '../notifier/wishlist_notifier.dart';
+import '../notifier/component_notifier.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/colorful_chip_tab_bar.dart';
 import '../widget/modified_divider.dart';
@@ -606,8 +606,8 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
       Injector.locator<WishlistAndCartDelegateFactory>().generateWishlistAndCartDelegate(
         onGetBuildContext: () => context,
         onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
-        onAddToWishlistRequestProcessSuccessCallback: () async => context.read<WishlistNotifier>().updateWishlist(),
-        onRemoveFromWishlistRequestProcessSuccessCallback: (wishlist) async => context.read<WishlistNotifier>().updateWishlist(),
+        onAddToWishlistRequestProcessSuccessCallback: () async => context.read<ComponentNotifier>().updateWishlist(),
+        onRemoveFromWishlistRequestProcessSuccessCallback: (wishlist) async => context.read<ComponentNotifier>().updateWishlist(),
       )
     );
     widget.productDetailController.productBrandFavoriteControllerContentDelegate.setProductBrandFavoriteDelegate(
@@ -615,10 +615,10 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
         onGetBuildContext: () => context,
         onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
         onAddToFavoriteProductBrandRequestProcessSuccessCallback: () async {
-          context.read<WishlistNotifier>().updateWishlist();
+          context.read<ComponentNotifier>().updateFavorite();
         },
         onRemoveFromFavoriteProductBrandRequestProcessSuccessCallback: (favoriteProductBrand) async {
-          context.read<WishlistNotifier>().updateWishlist();
+          context.read<ComponentNotifier>().updateFavorite();
         }
       ),
     );
