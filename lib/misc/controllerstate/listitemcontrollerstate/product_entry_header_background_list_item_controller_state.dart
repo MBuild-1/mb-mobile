@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../domain/entity/product/productbrand/favorite_product_brand.dart';
 import '../../../domain/entity/product/productbrand/product_brand.dart';
 import '../../../domain/entity/product/productentry/product_entry_header_content_response.dart';
 import '../../../presentation/widget/product_entry_header.dart';
@@ -24,10 +25,12 @@ class ProductEntryHeaderLoadDataResultListItemControllerState extends ListItemCo
   LoadDataResult<ProductEntryHeaderContentResponse> productEntryHeaderContentResponseLoadDataResult;
   ErrorProvider errorProvider;
   void Function(ProductBrand) onAddToFavoriteProductBrand;
+  void Function(ProductBrand) onRemoveFromFavoriteProductBrand;
 
   ProductEntryHeaderLoadDataResultListItemControllerState({
     required this.productEntryHeaderContentResponseLoadDataResult,
     required this.errorProvider,
-    required this.onAddToFavoriteProductBrand
+    required this.onAddToFavoriteProductBrand,
+    required this.onRemoveFromFavoriteProductBrand
   });
 }

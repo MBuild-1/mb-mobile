@@ -116,6 +116,7 @@ import '../domain/usecase/get_current_selected_address_use_case.dart';
 import '../domain/usecase/get_delivery_review_use_case.dart';
 import '../domain/usecase/get_faq_list_use_case.dart';
 import '../domain/usecase/get_fashion_product_indonesia_list_use_case.dart';
+import '../domain/usecase/get_favorite_product_brand_list_use_case.dart';
 import '../domain/usecase/get_favorite_product_brand_use_case.dart';
 import '../domain/usecase/get_handycrafts_contents_banner_use_case.dart';
 import '../domain/usecase/get_help_message_by_conversation_use_case.dart';
@@ -130,7 +131,6 @@ import '../domain/usecase/get_order_based_id_use_case.dart';
 import '../domain/usecase/get_order_message_by_conversation_use_case.dart';
 import '../domain/usecase/get_order_message_by_user_use_case.dart';
 import '../domain/usecase/get_order_paging_use_case.dart';
-import '../domain/usecase/get_product_brand_detail_use_case.dart';
 import '../domain/usecase/get_product_brand_paging_use_case.dart';
 import '../domain/usecase/get_product_brand_use_case.dart';
 import '../domain/usecase/get_product_bundle_detail_use_case.dart';
@@ -422,7 +422,8 @@ class _Injector {
     locator.registerFactory<ProductBrandFavoriteControllerContentDelegate>(
       () => ProductBrandFavoriteControllerContentDelegate(
         addToFavoriteProductBrandUseCase: locator(),
-        removeFromFavoriteProductBrandUseCase: locator()
+        removeFromFavoriteProductBrandUseCase: locator(),
+        getFavoriteProductBrandListUseCase: locator(),
       )
     );
 
@@ -447,7 +448,7 @@ class _Injector {
     locator.registerLazySingleton<GetProductBrandListUseCase>(() => GetProductBrandListUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductBrandPagingUseCase>(() => GetProductBrandPagingUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetFavoriteProductBrandPagingUseCase>(() => GetFavoriteProductBrandPagingUseCase(productRepository: locator()));
-    locator.registerLazySingleton<GetProductBrandDetailUseCase>(() => GetProductBrandDetailUseCase(productRepository: locator()));
+    locator.registerLazySingleton<GetFavoriteProductBrandListUseCase>(() => GetFavoriteProductBrandListUseCase(productRepository: locator()));
     locator.registerLazySingleton<AddToFavoriteProductBrandUseCase>(() => AddToFavoriteProductBrandUseCase(productRepository: locator()));
     locator.registerLazySingleton<RemoveFromFavoriteProductBrandUseCase>(() => RemoveFromFavoriteProductBrandUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductListUseCase>(() => GetProductListUseCase(productRepository: locator()));

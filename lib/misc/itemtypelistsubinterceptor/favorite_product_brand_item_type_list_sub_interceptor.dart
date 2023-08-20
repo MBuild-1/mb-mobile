@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:masterbagasi/domain/entity/product/productbrand/product_brand.dart';
 import 'package:masterbagasi/misc/controllerstate/listitemcontrollerstate/decorated_container_list_item_controller_state.dart';
 
+import '../../domain/entity/product/productbrand/favorite_product_brand.dart';
 import '../controllerstate/listitemcontrollerstate/card_container_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/compound_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
@@ -39,15 +41,22 @@ class FavoriteProductBrandItemTypeListSubInterceptor extends ItemTypeListSubInte
   ) {
     ListItemControllerState oldItemType = oldItemTypeWrapper.listItemControllerState;
     if (oldItemType is FavoriteProductBrandContainerListItemControllerState) {
-      List<ListItemControllerState> favoriteProductBrandListItemControllerStateList = oldItemType.productBrandList.map<ListItemControllerState>(
-        (productBrand) => CardContainerListItemControllerState(
+      FavoriteProductBrandContainerInterceptingActionListItemControllerState favoriteProductBrandContainerInterceptingActionListItemControllerState = oldItemType.favoriteProductBrandContainerInterceptingActionListItemControllerState;
+      if (favoriteProductBrandContainerInterceptingActionListItemControllerState is DefaultFavoriteProductBrandContainerInterceptingActionListItemControllerState) {
+        favoriteProductBrandContainerInterceptingActionListItemControllerState._onRemoveFavoriteProductBrand = (favoriteProductBrand) {
+          oldItemType.favoriteProductBrandList.remove(favoriteProductBrand);
+          oldItemType.onUpdateState();
+        };
+      }
+      List<ListItemControllerState> favoriteProductBrandListItemControllerStateList = oldItemType.favoriteProductBrandList.map<ListItemControllerState>(
+        (favoriteProductBrand) => CardContainerListItemControllerState(
           borderRadius: BorderRadius.circular(8.0),
           cardContainerChildListItemControllerState: CompoundListItemControllerState(
             listItemControllerState: [
               ProductDetailBrandListItemControllerState(
-                productBrand: productBrand,
-                onTapProductBrand: oldItemType.onTapProductBrand,
-                onRemoveFromFavoriteProductBrand: oldItemType.onRemoveFromFavoriteProductBrand,
+                productBrand: favoriteProductBrand.productBrand,
+                onTapProductBrand: oldItemType.onTapFavoriteProductBrand,
+                onRemoveFromFavoriteProductBrand: (productBrand) => oldItemType.onRemoveFromFavoriteProductBrand(favoriteProductBrand),
               ),
               VirtualSpacingListItemControllerState(height: 16)
             ]
@@ -89,4 +98,11 @@ class FavoriteProductBrandItemTypeListSubInterceptor extends ItemTypeListSubInte
     }
     return false;
   }
+}
+
+class DefaultFavoriteProductBrandContainerInterceptingActionListItemControllerState extends FavoriteProductBrandContainerInterceptingActionListItemControllerState {
+  void Function(FavoriteProductBrand)? _onRemoveFavoriteProductBrand;
+
+  @override
+  void Function(FavoriteProductBrand)? get onRemoveFavoriteProductBrand => _onRemoveFavoriteProductBrand ?? (throw UnimplementedError());
 }

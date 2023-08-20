@@ -5,6 +5,7 @@ class ProductBrand {
   String? icon;
   String? bannerDesktop;
   String? bannerMobile;
+  bool isAddedToFavorite;
 
   ProductBrand({
     required this.id,
@@ -12,6 +13,7 @@ class ProductBrand {
     required this.slug,
     required this.icon,
     required this.bannerDesktop,
-    required this.bannerMobile
+    required this.bannerMobile,
+    this.isAddedToFavorite = false
   });
 }

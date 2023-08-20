@@ -10,6 +10,8 @@ import '../../domain/entity/product/product_detail_other_in_this_category_produc
 import '../../domain/entity/product/product_detail_other_interested_product_brand_list_parameter.dart';
 import '../../domain/entity/product/productbrand/add_to_favorite_product_brand_parameter.dart';
 import '../../domain/entity/product/productbrand/add_to_favorite_product_brand_response.dart';
+import '../../domain/entity/product/productbrand/favorite_product_brand.dart';
+import '../../domain/entity/product/productbrand/favorite_product_brand_list_parameter.dart';
 import '../../domain/entity/product/productbrand/favorite_product_brand_paging_parameter.dart';
 import '../../domain/entity/product/productbrand/product_brand.dart';
 import '../../domain/entity/product/productbrand/product_brand_detail.dart';
@@ -207,11 +209,6 @@ class DefaultProductRepository implements ProductRepository {
   }
 
   @override
-  FutureProcessing<LoadDataResult<ProductBrandDetail>> productBrandDetail(ProductBrandDetailParameter productBrandDetailParameter) {
-    return productDataSource.productBrandDetail(productBrandDetailParameter).mapToLoadDataResult<ProductBrandDetail>();
-  }
-
-  @override
   FutureProcessing<LoadDataResult<ProductCategoryDetail>> productCategoryDetail(ProductCategoryDetailParameter productCategoryDetailParameter) {
     return productDataSource.productCategoryDetail(productCategoryDetailParameter).mapToLoadDataResult<ProductCategoryDetail>();
   }
@@ -272,8 +269,13 @@ class DefaultProductRepository implements ProductRepository {
   }
 
   @override
-  FutureProcessing<LoadDataResult<PagingDataResult<ProductBrand>>> favoriteProductBrandPaging(FavoriteProductBrandPagingParameter favoriteProductBrandPagingParameter) {
-    return productDataSource.favoriteProductBrandPaging(favoriteProductBrandPagingParameter).mapToLoadDataResult<PagingDataResult<ProductBrand>>();
+  FutureProcessing<LoadDataResult<PagingDataResult<FavoriteProductBrand>>> favoriteProductBrandPaging(FavoriteProductBrandPagingParameter favoriteProductBrandPagingParameter) {
+    return productDataSource.favoriteProductBrandPaging(favoriteProductBrandPagingParameter).mapToLoadDataResult<PagingDataResult<FavoriteProductBrand>>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<List<FavoriteProductBrand>>> favoriteProductBrandList(FavoriteProductBrandListParameter favoriteProductBrandListParameter) {
+    return productDataSource.favoriteProductBrandList(favoriteProductBrandListParameter).mapToLoadDataResult<List<FavoriteProductBrand>>();
   }
 
   @override

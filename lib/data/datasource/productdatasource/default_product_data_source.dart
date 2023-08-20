@@ -18,6 +18,8 @@ import '../../../domain/entity/product/product_detail_other_in_this_category_pro
 import '../../../domain/entity/product/product_detail_other_interested_product_brand_list_parameter.dart';
 import '../../../domain/entity/product/productbrand/add_to_favorite_product_brand_parameter.dart';
 import '../../../domain/entity/product/productbrand/add_to_favorite_product_brand_response.dart';
+import '../../../domain/entity/product/productbrand/favorite_product_brand.dart';
+import '../../../domain/entity/product/productbrand/favorite_product_brand_list_parameter.dart';
 import '../../../domain/entity/product/productbrand/favorite_product_brand_paging_parameter.dart';
 import '../../../domain/entity/product/productbrand/product_brand.dart';
 import '../../../domain/entity/product/productbrand/product_brand_detail.dart';
@@ -84,9 +86,10 @@ class DefaultProductDataSource implements ProductDataSource {
 
   @override
   FutureProcessing<List<ProductBrand>> productBrandList(ProductBrandListParameter productBrandListParameter) {
-    return DioHttpClientProcessing((cancelToken) {
-      return dio.get("/product/brand", cancelToken: cancelToken)
-        .map<List<ProductBrand>>(onMap: (value) => value.wrapResponse().mapFromResponseToProductBrandList());
+    return DioHttpClientProcessing((cancelToken) async {
+      List<FavoriteProductBrand> favoriteProductBrandListResult = await favoriteProductBrandList(FavoriteProductBrandListParameter()).future(parameter: cancelToken);
+      return await dio.get("/product/brand", cancelToken: cancelToken)
+        .map<List<ProductBrand>>(onMap: (value) => value.wrapResponse().mapFromResponseToProductBrandList(favoriteProductBrandListResult));
     });
   }
 
@@ -100,9 +103,10 @@ class DefaultProductDataSource implements ProductDataSource {
 
   @override
   FutureProcessing<List<Product>> productList(ProductListParameter productListParameter) {
-    return DioHttpClientProcessing((cancelToken) {
-      return dio.get("/product", cancelToken: cancelToken)
-        .map<List<Product>>(onMap: (value) => value.wrapResponse().mapFromResponseToProductList());
+    return DioHttpClientProcessing((cancelToken) async {
+      List<FavoriteProductBrand> favoriteProductBrandListResult = await favoriteProductBrandList(FavoriteProductBrandListParameter()).future(parameter: cancelToken);
+      return await dio.get("/product", cancelToken: cancelToken)
+        .map<List<Product>>(onMap: (value) => value.wrapResponse().mapFromResponseToProductList(favoriteProductBrandListResult));
     });
   }
 
@@ -118,12 +122,13 @@ class DefaultProductDataSource implements ProductDataSource {
 
   @override
   FutureProcessing<PagingDataResult<Product>> productPaging(ProductPagingParameter productPagingParameter) {
-    return DioHttpClientProcessing((cancelToken) {
+    return DioHttpClientProcessing((cancelToken) async {
+      List<FavoriteProductBrand> favoriteProductBrandListResult = await favoriteProductBrandList(FavoriteProductBrandListParameter()).future(parameter: cancelToken);
       String pageParameterPath = "/?pageNumber=${productPagingParameter.itemEachPageCount}&page=${productPagingParameter.page}";
-      return dio.get("/product$pageParameterPath", cancelToken: cancelToken)
+      return await dio.get("/product$pageParameterPath", cancelToken: cancelToken)
         .map<PagingDataResult<Product>>(onMap: (value) => value.wrapResponse().mapFromResponseToPagingDataResult(
           (dataResponse) => dataResponse.map<Product>(
-            (productResponse) => ResponseWrapper(productResponse).mapFromResponseToProduct()
+            (productResponse) => ResponseWrapper(productResponse).mapFromResponseToProduct(favoriteProductBrandListResult)
           ).toList()
         ));
     });
@@ -131,10 +136,11 @@ class DefaultProductDataSource implements ProductDataSource {
 
   @override
   FutureProcessing<PagingDataResult<ProductBrand>> productBrandPaging(ProductBrandPagingParameter productBrandPagingParameter) {
-    return DioHttpClientProcessing((cancelToken) {
+    return DioHttpClientProcessing((cancelToken) async {
+      List<FavoriteProductBrand> favoriteProductBrandListResult = await favoriteProductBrandList(FavoriteProductBrandListParameter()).future(parameter: cancelToken);
       String pageParameterPath = "/?pageNumber=${productBrandPagingParameter.itemEachPageCount}&page=${productBrandPagingParameter.page}";
-      return dio.get("/product/brand$pageParameterPath", cancelToken: cancelToken)
-        .map<PagingDataResult<ProductBrand>>(onMap: (value) => value.wrapResponse().mapFromResponseToProductBrandPaging());
+      return await dio.get("/product/brand$pageParameterPath", cancelToken: cancelToken)
+        .map<PagingDataResult<ProductBrand>>(onMap: (value) => value.wrapResponse().mapFromResponseToProductBrandPaging(favoriteProductBrandListResult));
     });
   }
 
@@ -194,23 +200,25 @@ class DefaultProductDataSource implements ProductDataSource {
   @override
   FutureProcessing<ProductDetail> productDetail(ProductDetailParameter productDetailParameter) {
     return DioHttpClientProcessing((cancelToken) async {
+      List<FavoriteProductBrand> favoriteProductBrandListResult = await favoriteProductBrandList(FavoriteProductBrandListParameter()).future(parameter: cancelToken);
       List<Wishlist> wishlistListResult = await wishlistList(WishlistListParameter()).future(parameter: cancelToken);
       return await dio.get("/product/${productDetailParameter.productId}", cancelToken: cancelToken)
-        .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductDetail(wishlistListResult));
+        .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductDetail(wishlistListResult, favoriteProductBrandListResult));
     });
   }
 
   @override
   FutureProcessing<ProductBrandDetail> productBrandDetail(ProductBrandDetailParameter productBrandDetailParameter) {
-    return DioHttpClientProcessing((cancelToken) {
+    return DioHttpClientProcessing((cancelToken) async {
+      List<FavoriteProductBrand> favoriteProductBrandListResult = await favoriteProductBrandList(FavoriteProductBrandListParameter()).future(parameter: cancelToken);
       late String lastPathEndpoint;
       if (productBrandDetailParameter.productBrandDetailParameterType == ProductCategoryDetailParameterType.slug) {
         lastPathEndpoint = "slug/${productBrandDetailParameter.productBrandId}";
       } else {
         lastPathEndpoint = productBrandDetailParameter.productBrandId;
       }
-      return dio.get("/product/brand/$lastPathEndpoint", cancelToken: cancelToken)
-        .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductBrandDetail());
+      return await dio.get("/product/brand/$lastPathEndpoint", cancelToken: cancelToken)
+        .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductBrandDetail(favoriteProductBrandListResult));
     });
   }
 
@@ -275,9 +283,10 @@ class DefaultProductDataSource implements ProductDataSource {
 
   @override
   FutureProcessing<List<ProductBrand>> productDetailOtherInterestedProductBrandListParameter(ProductDetailOtherInterestedProductBrandListParameter productDetailOtherInterestedProductBrandListParameter) {
-    return DioHttpClientProcessing((cancelToken) {
-      return dio.get("/product/brand", cancelToken: cancelToken)
-        .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductBrandList());
+    return DioHttpClientProcessing((cancelToken) async {
+      List<FavoriteProductBrand> favoriteProductBrandListResult = await favoriteProductBrandList(FavoriteProductBrandListParameter()).future(parameter: cancelToken);
+      return await dio.get("/product/brand", cancelToken: cancelToken)
+        .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductBrandList(favoriteProductBrandListResult));
     });
   }
 
@@ -330,11 +339,19 @@ class DefaultProductDataSource implements ProductDataSource {
   }
 
   @override
-  FutureProcessing<PagingDataResult<ProductBrand>> favoriteProductBrandPaging(FavoriteProductBrandPagingParameter favoriteProductBrandPagingParameter) {
-    return DummyFutureProcessing((parameter) async {
+  FutureProcessing<PagingDataResult<FavoriteProductBrand>> favoriteProductBrandPaging(FavoriteProductBrandPagingParameter favoriteProductBrandPagingParameter) {
+    return DioHttpClientProcessing((cancelToken) async {
       String pageParameterPath = "/?pageNumber=${favoriteProductBrandPagingParameter.itemEachPageCount}&page=${favoriteProductBrandPagingParameter.page}";
-      return dio.get("/user/brand-fav$pageParameterPath", cancelToken: parameter)
-        .map<PagingDataResult<ProductBrand>>(onMap: (value) => value.wrapResponse().mapFromResponseToFavoriteProductBrandPaging());
+      return await dio.get("/user/brand-fav$pageParameterPath", cancelToken: cancelToken)
+        .map<PagingDataResult<FavoriteProductBrand>>(onMap: (value) => value.wrapResponse().mapFromResponseToFavoriteProductBrandPaging());
+    });
+  }
+
+  @override
+  FutureProcessing<List<FavoriteProductBrand>> favoriteProductBrandList(FavoriteProductBrandListParameter favoriteProductBrandListParameter) {
+    return DioHttpClientProcessing((cancelToken) async {
+      return await dio.get("/user/brand-fav", cancelToken: cancelToken)
+        .map<List<FavoriteProductBrand>>(onMap: (value) => value.wrapResponse().mapFromResponseToFavoriteProductBrandList());
     });
   }
 
@@ -354,7 +371,7 @@ class DefaultProductDataSource implements ProductDataSource {
   @override
   FutureProcessing<RemoveFromFavoriteProductBrandResponse> removeFromFavoriteProductBrand(RemoveFromFavoriteProductBrandParameter removeFromFavoriteProductBrandParameter) {
     return DummyFutureProcessing((parameter) async {
-      return dio.delete("/user/brand-fav/${removeFromFavoriteProductBrandParameter.productBrand.id}", cancelToken: parameter)
+      return dio.delete("/user/brand-fav/${removeFromFavoriteProductBrandParameter.favoriteProductBrand.id}", cancelToken: parameter)
         .map<RemoveFromFavoriteProductBrandResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToRemoveFromFavoriteProductBrandResponse());
     });
   }

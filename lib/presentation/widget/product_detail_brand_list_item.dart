@@ -78,13 +78,17 @@ class ProductDetailBrandListItem extends StatelessWidget {
                       children: [
                         SizedOutlineGradientButton(
                           onPressed: () {
-                            if (onAddToFavoriteProductBrand != null) {
-                              return onAddToFavoriteProductBrand!(productBrand);
-                            } else if (onRemoveFromFavoriteProductBrand != null) {
-                              return onRemoveFromFavoriteProductBrand!(productBrand);
+                            if (!productBrand.isAddedToFavorite) {
+                              if (onAddToFavoriteProductBrand != null) {
+                                onAddToFavoriteProductBrand!(productBrand);
+                              }
+                            } else {
+                              if (onRemoveFromFavoriteProductBrand != null) {
+                                onRemoveFromFavoriteProductBrand!(productBrand);
+                              }
                             }
                           },
-                          text: onAddToFavoriteProductBrand != null ? "Favoritkan" : "Hapus Dari Favorit",
+                          text: !productBrand.isAddedToFavorite ? "Favoritkan" : "Hapus Dari Favorit",
                           outlineGradientButtonType: OutlineGradientButtonType.solid,
                           outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
                         ),

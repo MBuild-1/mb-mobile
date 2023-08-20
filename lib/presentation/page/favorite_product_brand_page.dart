@@ -6,6 +6,7 @@ import 'package:masterbagasi/misc/ext/paging_ext.dart';
 
 import '../../controller/favorite_product_brand_controller.dart';
 import '../../controller/product_brand_controller.dart';
+import '../../domain/entity/product/productbrand/favorite_product_brand.dart';
 import '../../domain/entity/product/productbrand/favorite_product_brand_paging_parameter.dart';
 import '../../domain/entity/product/productbrand/product_brand.dart';
 import '../../domain/entity/product/productbrand/product_brand_paging_parameter.dart';
@@ -24,9 +25,11 @@ import '../../misc/controllerstate/listitemcontrollerstate/productbrandlistitemc
 import '../../misc/controllerstate/listitemcontrollerstate/title_and_description_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
+import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
+import '../../misc/itemtypelistsubinterceptor/favorite_product_brand_item_type_list_sub_interceptor.dart';
 import '../../misc/itemtypelistsubinterceptor/verticalgriditemtypelistsubinterceptor/vertical_grid_item_type_list_sub_interceptor.dart';
 import '../../misc/list_item_controller_state_helper.dart';
 import '../../misc/load_data_result.dart';
@@ -179,6 +182,8 @@ class _StatefulFavoriteProductBrandControllerMediatorWidgetState extends State<_
   late final PagingControllerState<int, ListItemControllerState> _favoriteProductBrandListItemPagingControllerState;
   final List<BaseLoadDataResultDynamicListItemControllerState> _dynamicItemLoadDataResultDynamicListItemControllerStateList = [];
 
+  final FavoriteProductBrandContainerInterceptingActionListItemControllerState _favoriteProductBrandContainerInterceptingActionListItemControllerState = DefaultFavoriteProductBrandContainerInterceptingActionListItemControllerState();
+
   @override
   void initState() {
     super.initState();
@@ -200,7 +205,7 @@ class _StatefulFavoriteProductBrandControllerMediatorWidgetState extends State<_
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _favoriteProductBrandListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? listItemControllerStateList) async {
-    LoadDataResult<PagingDataResult<ProductBrand>> favoriteProductBrandLoadDataResult = await widget.favoriteProductBrandController.getFavoriteProductBrandPaging(
+    LoadDataResult<PagingDataResult<FavoriteProductBrand>> favoriteProductBrandLoadDataResult = await widget.favoriteProductBrandController.getFavoriteProductBrandPaging(
       FavoriteProductBrandPagingParameter(
         page: pageKey,
         itemEachPageCount: 10
@@ -213,8 +218,8 @@ class _StatefulFavoriteProductBrandControllerMediatorWidgetState extends State<_
         totalItem = 2;
         resultListItemControllerState = [
           FavoriteProductBrandContainerListItemControllerState(
-            productBrandList: productBrandPaging.itemList,
-            onTapProductBrand: (productBrand) => PageRestorationHelper.toProductEntryPage(
+            favoriteProductBrandList: productBrandPaging.itemList,
+            onTapFavoriteProductBrand: (productBrand) => PageRestorationHelper.toProductEntryPage(
               context,
               ProductEntryPageParameter(
                 productEntryParameterMap: {
@@ -223,9 +228,11 @@ class _StatefulFavoriteProductBrandControllerMediatorWidgetState extends State<_
                 }
               )
             ),
-            onRemoveFromFavoriteProductBrand: (productBrand) {
-
-            }
+            onRemoveFromFavoriteProductBrand: (favoriteProductBrand) {
+              widget.favoriteProductBrandController.productBrandFavoriteControllerContentDelegate.removeFromFavoriteProductBrand(favoriteProductBrand);
+            },
+            onUpdateState: () => setState(() {}),
+            favoriteProductBrandContainerInterceptingActionListItemControllerState: _favoriteProductBrandContainerInterceptingActionListItemControllerState
           )
         ];
       } else {
@@ -233,7 +240,7 @@ class _StatefulFavoriteProductBrandControllerMediatorWidgetState extends State<_
           FavoriteProductBrandContainerListItemControllerState favoriteProductBrandContainerListItemControllerState = ListItemControllerStateHelper.parsePageKeyedListItemControllerState(
             listItemControllerStateList![0]
           ) as FavoriteProductBrandContainerListItemControllerState;
-          favoriteProductBrandContainerListItemControllerState.productBrandList.addAll(productBrandPaging.itemList);
+          favoriteProductBrandContainerListItemControllerState.favoriteProductBrandList.addAll(productBrandPaging.itemList);
         }
       }
       return PagingDataResult<ListItemControllerState>(
@@ -247,6 +254,17 @@ class _StatefulFavoriteProductBrandControllerMediatorWidgetState extends State<_
 
   @override
   Widget build(BuildContext context) {
+    widget.favoriteProductBrandController.productBrandFavoriteControllerContentDelegate.setProductBrandFavoriteDelegate(
+      Injector.locator<ProductBrandFavoriteDelegateFactory>().generateProductBrandFavoriteDelegate(
+        onGetBuildContext: () => context,
+        onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
+        onRemoveFromFavoriteProductBrandRequestProcessSuccessCallback: (favoriteProductBrand) async {
+          if (_favoriteProductBrandContainerInterceptingActionListItemControllerState.onRemoveFavoriteProductBrand != null) {
+            _favoriteProductBrandContainerInterceptingActionListItemControllerState.onRemoveFavoriteProductBrand!(favoriteProductBrand);
+          }
+        }
+      )
+    );
     return Scaffold(
       appBar: DefaultSearchAppBar(),
       body: SafeArea(

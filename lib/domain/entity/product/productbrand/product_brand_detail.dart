@@ -11,7 +11,8 @@ class ProductBrandDetail extends ProductBrand {
     String? icon,
     String? bannerDesktop,
     String? bannerMobile,
-    required this.shortProductList
+    required this.shortProductList,
+    bool isAddedToFavorite = false
   }) : super(
     id: id,
     name: name,
@@ -19,5 +20,6 @@ class ProductBrandDetail extends ProductBrand {
     icon: icon,
     bannerDesktop: bannerDesktop,
     bannerMobile: bannerMobile,
+    isAddedToFavorite: isAddedToFavorite
   );
 }

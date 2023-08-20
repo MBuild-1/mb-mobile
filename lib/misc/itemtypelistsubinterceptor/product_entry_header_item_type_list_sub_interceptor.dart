@@ -41,7 +41,8 @@ class ProductEntryHeaderItemTypeListSubInterceptor extends ItemTypeListSubInterc
           newItemTypeList.add(
             ProductDetailBrandListItemControllerState(
               productBrand: productEntryHeaderContentResponseValue.productBrand,
-              onAddToFavoriteProductBrand: oldItemType.onAddToFavoriteProductBrand
+              onAddToFavoriteProductBrand: oldItemType.onAddToFavoriteProductBrand,
+              onRemoveFromFavoriteProductBrand: oldItemType.onRemoveFromFavoriteProductBrand
             )
           );
           return true;

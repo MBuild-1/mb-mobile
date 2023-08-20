@@ -3,6 +3,7 @@ import 'package:masterbagasi/misc/aspect_ratio_value.dart';
 
 import '../controller/base_getx_controller.dart';
 import '../domain/entity/cart/cart.dart';
+import '../domain/entity/product/productbrand/favorite_product_brand.dart';
 import '../domain/entity/wishlist/support_wishlist.dart';
 import '../domain/entity/wishlist/wishlist.dart';
 import 'validation/validation_result.dart';
@@ -42,5 +43,5 @@ typedef OnShowAddToFavoriteProductBrandRequestProcessLoadingCallback = Future<vo
 typedef OnAddToFavoriteProductBrandRequestProcessSuccessCallback = Future<void> Function();
 typedef OnShowAddToFavoriteProductBrandProcessFailedCallback = Future<void> Function(dynamic e);
 typedef OnShowRemoveFromFavoriteProductBrandRequestProcessLoadingCallback = Future<void> Function();
-typedef OnRemoveFromFavoriteProductBrandRequestProcessSuccessCallback = Future<void> Function();
+typedef OnRemoveFromFavoriteProductBrandRequestProcessSuccessCallback = Future<void> Function(FavoriteProductBrand);
 typedef OnShowRemoveFromFavoriteProductBrandProcessFailedCallback = Future<void> Function(dynamic e);

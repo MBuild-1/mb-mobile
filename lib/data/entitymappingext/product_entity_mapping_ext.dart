@@ -5,6 +5,7 @@ import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 import '../../domain/entity/product/product.dart';
 import '../../domain/entity/product/product_detail.dart';
 import '../../domain/entity/product/productbrand/add_to_favorite_product_brand_response.dart';
+import '../../domain/entity/product/productbrand/favorite_product_brand.dart';
 import '../../domain/entity/product/productbrand/product_brand.dart';
 import '../../domain/entity/product/productbrand/product_brand_detail.dart';
 import '../../domain/entity/product/productbrand/remove_from_favorite_product_brand_response.dart';
@@ -35,12 +36,12 @@ extension ShortProductEntityMappingExt on ResponseWrapper {
 }
 
 extension ProductEntityMappingExt on ResponseWrapper {
-  List<Product> mapFromResponseToProductList() {
-    return response.map<Product>((productResponse) => ResponseWrapper(productResponse).mapFromResponseToProduct()).toList();
+  List<Product> mapFromResponseToProductList(List<FavoriteProductBrand> favoriteProductBrandList) {
+    return response.map<Product>((productResponse) => ResponseWrapper(productResponse).mapFromResponseToProduct(favoriteProductBrandList)).toList();
   }
 
-  PagingDataResult<Product> mapFromResponseToProductPagingDataResult() {
-    return response.map<Product>((productResponse) => ResponseWrapper(productResponse).mapFromResponseToProduct()).toList();
+  PagingDataResult<Product> mapFromResponseToProductPagingDataResult(List<FavoriteProductBrand> favoriteProductBrandList) {
+    return response.map<Product>((productResponse) => ResponseWrapper(productResponse).mapFromResponseToProduct(favoriteProductBrandList)).toList();
   }
 }
 
@@ -64,7 +65,7 @@ extension ShortProductDetailEntityMappingExt on ResponseWrapper {
 }
 
 extension ProductDetailEntityMappingExt on ResponseWrapper {
-  Product mapFromResponseToProduct() {
+  Product mapFromResponseToProduct(List<FavoriteProductBrand> favoriteProductBrandList) {
     return Product(
       id: response["id"],
       userId: response["user_id"],
@@ -78,15 +79,15 @@ extension ProductDetailEntityMappingExt on ResponseWrapper {
       discountPrice: null,
       rating: 5.0,
       imageUrl: "",
-      productBrand: ResponseWrapper(response["product_brand"]).mapFromResponseToProductBrand(),
+      productBrand: ResponseWrapper(response["product_brand"]).mapFromResponseToProductBrand(favoriteProductBrandList),
       productCategory: ResponseWrapper(response["product_category"]).mapFromResponseToProductCategory(),
       province: response["province"] != null ? ResponseWrapper(response["province"]).mapFromResponseToProvince() : null,
       productCertificationList: response["product_certification"] != null ? ResponseWrapper(response["product_certification"]).mapFromResponseToProductCertificationList() : [],
     );
   }
 
-  ProductDetail mapFromResponseToProductDetail(List<Wishlist> wishlistList) {
-    Product product = ResponseWrapper(response).mapFromResponseToProduct();
+  ProductDetail mapFromResponseToProductDetail(List<Wishlist> wishlistList, List<FavoriteProductBrand> favoriteProductBrandList) {
+    Product product = ResponseWrapper(response).mapFromResponseToProduct(favoriteProductBrandList);
     return ProductDetail(
       id: product.id,
       userId: product.userId,
@@ -169,53 +170,68 @@ extension ProductBundleDetailEntityMappingExt on ResponseWrapper {
 }
 
 extension ProductBrandDetailMappingExt on ResponseWrapper {
-  List<ProductBrand> mapFromResponseToProductBrandList() {
-    return response.map<ProductBrand>((productBrandResponse) => ResponseWrapper(productBrandResponse).mapFromResponseToProductBrand()).toList();
+  List<ProductBrand> mapFromResponseToProductBrandList(List<FavoriteProductBrand> favoriteProductBrandList) {
+    return response.map<ProductBrand>((productBrandResponse) => ResponseWrapper(productBrandResponse).mapFromResponseToProductBrand(favoriteProductBrandList)).toList();
   }
 
-  PagingDataResult<ProductBrand> mapFromResponseToProductBrandPaging() {
+  PagingDataResult<ProductBrand> mapFromResponseToProductBrandPaging(List<FavoriteProductBrand> favoriteProductBrandList) {
     return ResponseWrapper(response).mapFromResponseToPagingDataResult(
       (dataResponse) => dataResponse.map<ProductBrand>(
-        (productBrandResponse) => ResponseWrapper(productBrandResponse).mapFromResponseToProductBrand()
+        (productBrandResponse) => ResponseWrapper(productBrandResponse).mapFromResponseToProductBrand(favoriteProductBrandList)
       ).toList()
     );
   }
 
-  PagingDataResult<ProductBrand> mapFromResponseToFavoriteProductBrandPaging() {
+  List<FavoriteProductBrand> mapFromResponseToFavoriteProductBrandList() {
+    return response.map<FavoriteProductBrand>((favoriteProductBrandResponse) => ResponseWrapper(favoriteProductBrandResponse).mapFromResponseToFavoriteProductBrand()).toList();
+  }
+
+  PagingDataResult<FavoriteProductBrand> mapFromResponseToFavoriteProductBrandPaging() {
     return ResponseWrapper(response).mapFromResponseToPagingDataResult(
-      (dataResponse) => dataResponse.map<ProductBrand>(
-        (productBrandResponse) => ResponseWrapper(productBrandResponse).mapFromResponseToFavoriteProductBrand()
+      (dataResponse) => dataResponse.map<FavoriteProductBrand>(
+        (favoriteProductBrandResponse) => ResponseWrapper(favoriteProductBrandResponse).mapFromResponseToFavoriteProductBrand()
       ).toList()
     );
   }
 }
 
 extension ProductBrandDetailEntityMappingExt on ResponseWrapper {
-  ProductBrand mapFromResponseToFavoriteProductBrand() {
+  ProductBrand mapFromResponseToFavoriteProductBrandDetail() {
     dynamic favoriteProductBrand = response["product_brand"];
-    return ResponseWrapper(favoriteProductBrand).mapFromResponseToProductBrand();
+    return ResponseWrapper(favoriteProductBrand).mapFromResponseToProductBrand([], isAddedToFavorite: true);
   }
 
-  ProductBrand mapFromResponseToProductBrand() {
-    return ProductBrand(
+  FavoriteProductBrand mapFromResponseToFavoriteProductBrand() {
+    return FavoriteProductBrand(
       id: response["id"],
-      name: response["name"],
-      slug: response["slug"],
-      icon: response["icon"],
-      bannerDesktop: response["banner_desktop"],
-      bannerMobile: response["banner_mobile"]
+      productBrand: ResponseWrapper(response).mapFromResponseToFavoriteProductBrandDetail()
     );
   }
 
-  ProductBrandDetail mapFromResponseToProductBrandDetail() {
-    return ProductBrandDetail(
-      id: response["id"],
+  ProductBrand mapFromResponseToProductBrand(List<FavoriteProductBrand> favoriteProductBrandList, {bool? isAddedToFavorite}) {
+    String productBrandId = response["id"];
+    return ProductBrand(
+      id: productBrandId,
       name: response["name"],
       slug: response["slug"],
       icon: response["icon"],
       bannerDesktop: response["banner_desktop"],
       bannerMobile: response["banner_mobile"],
-      shortProductList: ResponseWrapper(response["product"]).mapFromResponseToShortProductList()
+      isAddedToFavorite: isAddedToFavorite ?? favoriteProductBrandList.where((favoriteProductBrand) => favoriteProductBrand.productBrand.id == productBrandId).isNotEmpty
+    );
+  }
+
+  ProductBrandDetail mapFromResponseToProductBrandDetail(List<FavoriteProductBrand> favoriteProductBrandList) {
+    String productBrandId = response["id"];
+    return ProductBrandDetail(
+      id: productBrandId,
+      name: response["name"],
+      slug: response["slug"],
+      icon: response["icon"],
+      bannerDesktop: response["banner_desktop"],
+      bannerMobile: response["banner_mobile"],
+      shortProductList: ResponseWrapper(response["product"]).mapFromResponseToShortProductList(),
+      isAddedToFavorite: favoriteProductBrandList.where((favoriteProductBrand) => favoriteProductBrand.productBrand.id == productBrandId).isNotEmpty
     );
   }
 
@@ -320,7 +336,7 @@ extension ProductEntryDetailEntityMappingExt on ResponseWrapper {
       productVariantList: response["product_variant"].map<ProductVariant>(
         (productVariantResponse) => ResponseWrapper(productVariantResponse).mapFromResponseToProductVariant()
       ).toList(),
-      product: ResponseWrapper(response["product"]).mapFromResponseToProduct(),
+      product: ResponseWrapper(response["product"]).mapFromResponseToProduct([]),
       soldCount: response["sold"],
       hasAddedToWishlist: response["has_added_to_wishlist"] ?? wishlistList.where((wishlist) {
         if (wishlist.supportWishlist is ProductEntry) {

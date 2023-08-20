@@ -10,6 +10,8 @@ import '../entity/product/product_detail_other_in_this_category_product_entry_li
 import '../entity/product/product_detail_other_interested_product_brand_list_parameter.dart';
 import '../entity/product/productbrand/add_to_favorite_product_brand_parameter.dart';
 import '../entity/product/productbrand/add_to_favorite_product_brand_response.dart';
+import '../entity/product/productbrand/favorite_product_brand.dart';
+import '../entity/product/productbrand/favorite_product_brand_list_parameter.dart';
 import '../entity/product/productbrand/favorite_product_brand_paging_parameter.dart';
 import '../entity/product/productbrand/product_brand.dart';
 import '../entity/product/productbrand/product_brand_detail.dart';
@@ -60,7 +62,6 @@ abstract class ProductRepository {
   FutureProcessing<LoadDataResult<ProductBundle>> productBundleHighlight(ProductBundleHighlightParameter productBundleHighlightParameter);
   FutureProcessing<LoadDataResult<PagingDataResult<ProductEntry>>> productWithConditionPaging(ProductWithConditionPagingParameter productWithConditionPagingParameter);
   FutureProcessing<LoadDataResult<ProductDetail>> productDetail(ProductDetailParameter productDetailParameter);
-  FutureProcessing<LoadDataResult<ProductBrandDetail>> productBrandDetail(ProductBrandDetailParameter productBrandDetailParameter);
   FutureProcessing<LoadDataResult<ProductCategoryDetail>> productCategoryDetail(ProductCategoryDetailParameter productCategoryDetailParameter);
   FutureProcessing<LoadDataResult<ProductBundleDetail>> productBundleDetail(ProductBundleDetailParameter productBundleDetailParameter);
   FutureProcessing<LoadDataResult<List<ProductEntry>>> productDetailFromYourSearchProductEntryList(ProductDetailFromYourSearchProductEntryListParameter productDetailFromYourSearchProductEntryListParameter);
@@ -73,7 +74,8 @@ abstract class ProductRepository {
   FutureProcessing<LoadDataResult<AddWishlistResponse>> addWishlist(AddWishlistParameter addWishlistParameter);
   FutureProcessing<LoadDataResult<RemoveWishlistResponse>> removeWishlist(RemoveWishlistParameter removeWishlistParameter);
   FutureProcessing<LoadDataResult<RemoveWishlistResponse>> removeWishlistBasedProduct(RemoveWishlistBasedProductParameter removeWishlistBasedProductParameter);
-  FutureProcessing<LoadDataResult<PagingDataResult<ProductBrand>>> favoriteProductBrandPaging(FavoriteProductBrandPagingParameter favoriteProductBrandPagingParameter);
+  FutureProcessing<LoadDataResult<PagingDataResult<FavoriteProductBrand>>> favoriteProductBrandPaging(FavoriteProductBrandPagingParameter favoriteProductBrandPagingParameter);
+  FutureProcessing<LoadDataResult<List<FavoriteProductBrand>>> favoriteProductBrandList(FavoriteProductBrandListParameter favoriteProductBrandListParameter);
   FutureProcessing<LoadDataResult<AddToFavoriteProductBrandResponse>> addToFavoriteProductBrand(AddToFavoriteProductBrandParameter addToFavoriteProductBrandParameter);
   FutureProcessing<LoadDataResult<RemoveFromFavoriteProductBrandResponse>> removeFromFavoriteProductBrand(RemoveFromFavoriteProductBrandParameter removeFromFavoriteProductBrandParameter);
 }

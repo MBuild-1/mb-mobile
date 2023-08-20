@@ -304,8 +304,14 @@ class _StatefulProductEntryControllerMediatorWidgetState extends State<_Stateful
     widget.productEntryController.productBrandFavoriteControllerContentDelegate.setProductBrandFavoriteDelegate(
       Injector.locator<ProductBrandFavoriteDelegateFactory>().generateProductBrandFavoriteDelegate(
         onGetBuildContext: () => context,
-        onGetErrorProvider: () => Injector.locator<ErrorProvider>()
-      )
+        onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
+        onAddToFavoriteProductBrandRequestProcessSuccessCallback: () async {
+          context.read<WishlistNotifier>().updateWishlist();
+        },
+        onRemoveFromFavoriteProductBrandRequestProcessSuccessCallback: (favoriteProductBrand) async {
+          context.read<WishlistNotifier>().updateWishlist();
+        }
+      ),
     );
     widget.productEntryController.setProductEntryDelegate(
       ProductEntryDelegate(
@@ -315,8 +321,10 @@ class _StatefulProductEntryControllerMediatorWidgetState extends State<_Stateful
             productEntryHeaderContentResponseLoadDataResult: productEntryHeaderContentResponseLoadDataResult,
             errorProvider: Injector.locator<ErrorProvider>(),
             onAddToFavoriteProductBrand: (productBrand) {
-              print("Added product brand to favorite");
               widget.productEntryController.productBrandFavoriteControllerContentDelegate.addToFavoriteProductBrand(productBrand);
+            },
+            onRemoveFromFavoriteProductBrand: (favoriteProductBrand) {
+              widget.productEntryController.productBrandFavoriteControllerContentDelegate.removeFromFavoriteProductBrandBasedProductBrand(favoriteProductBrand);
             },
           );
         },

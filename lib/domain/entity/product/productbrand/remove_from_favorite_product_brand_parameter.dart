@@ -1,9 +1,9 @@
-import 'product_brand.dart';
+import 'favorite_product_brand.dart';
 
 class RemoveFromFavoriteProductBrandParameter {
-  ProductBrand productBrand;
+  FavoriteProductBrand favoriteProductBrand;
 
   RemoveFromFavoriteProductBrandParameter({
-    required this.productBrand
+    required this.favoriteProductBrand
   });
 }

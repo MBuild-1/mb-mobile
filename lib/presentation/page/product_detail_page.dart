@@ -27,6 +27,7 @@ import '../../domain/usecase/get_product_detail_other_interested_product_brand_l
 import '../../domain/usecase/get_product_detail_use_case.dart';
 import '../../misc/additionalloadingindicatorchecker/product_detail_additional_paging_result_parameter_checker.dart';
 import '../../misc/constant.dart';
+import '../../misc/controllercontentdelegate/product_brand_favorite_controller_content_delegate.dart';
 import '../../misc/controllercontentdelegate/wishlist_and_cart_controller_content_delegate.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/builder_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/colorful_chip_tab_bar_list_item_controller_state.dart';
@@ -98,7 +99,8 @@ class ProductDetailPage extends RestorableGetxPage<_ProductDetailPageRestoration
         Injector.locator<GetProductDetailFromYourSearchProductEntryListUseCase>(),
         Injector.locator<GetProductDetailOtherInterestedProductBrandListUseCase>(),
         Injector.locator<AddToCartUseCase>(),
-        Injector.locator<WishlistAndCartControllerContentDelegate>()
+        Injector.locator<WishlistAndCartControllerContentDelegate>(),
+        Injector.locator<ProductBrandFavoriteControllerContentDelegate>()
       ),
       tag: pageName
     );
@@ -504,7 +506,13 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
                   "brand": productBrand.slug
                 }
               )
-            )
+            ),
+            onAddToFavoriteProductBrand: (productBrand) {
+              widget.productDetailController.productBrandFavoriteControllerContentDelegate.addToFavoriteProductBrand(productBrand);
+            },
+            onRemoveFromFavoriteProductBrand: (favoriteProductBrand) {
+              widget.productDetailController.productBrandFavoriteControllerContentDelegate.removeFromFavoriteProductBrandBasedProductBrand(favoriteProductBrand);
+            },
           ),
           VirtualSpacingListItemControllerState(height: 4.h),
           componentEntityMediator.mapWithParameter(
@@ -601,6 +609,18 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
         onAddToWishlistRequestProcessSuccessCallback: () async => context.read<WishlistNotifier>().updateWishlist(),
         onRemoveFromWishlistRequestProcessSuccessCallback: (wishlist) async => context.read<WishlistNotifier>().updateWishlist(),
       )
+    );
+    widget.productDetailController.productBrandFavoriteControllerContentDelegate.setProductBrandFavoriteDelegate(
+      Injector.locator<ProductBrandFavoriteDelegateFactory>().generateProductBrandFavoriteDelegate(
+        onGetBuildContext: () => context,
+        onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
+        onAddToFavoriteProductBrandRequestProcessSuccessCallback: () async {
+          context.read<WishlistNotifier>().updateWishlist();
+        },
+        onRemoveFromFavoriteProductBrandRequestProcessSuccessCallback: (favoriteProductBrand) async {
+          context.read<WishlistNotifier>().updateWishlist();
+        }
+      ),
     );
     return Scaffold(
       appBar: DefaultSearchAppBar(),

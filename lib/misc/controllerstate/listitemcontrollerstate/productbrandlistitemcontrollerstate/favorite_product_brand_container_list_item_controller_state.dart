@@ -1,14 +1,23 @@
+import '../../../../domain/entity/product/productbrand/favorite_product_brand.dart';
 import '../../../../domain/entity/product/productbrand/product_brand.dart';
 import '../list_item_controller_state.dart';
 
 class FavoriteProductBrandContainerListItemControllerState extends ListItemControllerState {
-  List<ProductBrand> productBrandList;
-  void Function(ProductBrand)? onTapProductBrand;
-  void Function(ProductBrand) onRemoveFromFavoriteProductBrand;
+  List<FavoriteProductBrand> favoriteProductBrandList;
+  void Function(ProductBrand)? onTapFavoriteProductBrand;
+  void Function(FavoriteProductBrand) onRemoveFromFavoriteProductBrand;
+  void Function() onUpdateState;
+  FavoriteProductBrandContainerInterceptingActionListItemControllerState favoriteProductBrandContainerInterceptingActionListItemControllerState;
 
   FavoriteProductBrandContainerListItemControllerState({
-    required this.productBrandList,
-    this.onTapProductBrand,
-    required this.onRemoveFromFavoriteProductBrand
+    required this.favoriteProductBrandList,
+    this.onTapFavoriteProductBrand,
+    required this.onRemoveFromFavoriteProductBrand,
+    required this.onUpdateState,
+    required this.favoriteProductBrandContainerInterceptingActionListItemControllerState
   });
+}
+
+abstract class FavoriteProductBrandContainerInterceptingActionListItemControllerState extends ListItemControllerState {
+  void Function(FavoriteProductBrand)? get onRemoveFavoriteProductBrand;
 }
