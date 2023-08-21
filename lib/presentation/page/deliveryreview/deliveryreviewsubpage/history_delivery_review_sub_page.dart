@@ -4,6 +4,7 @@ import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 
 import '../../../../controller/deliveryreviewcontroller/deliveryreviewsubpagecontroller/history_delivery_review_sub_controller.dart';
 import '../../../../domain/entity/delivery/delivery_review.dart';
+import '../../../../domain/entity/delivery/delivery_review_list_parameter.dart';
 import '../../../../domain/entity/delivery/delivery_review_paging_parameter.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/deliveryreviewlistitemcontrollerstate/deliveryreviewdetaillistitemcontrollerstate/history_delivery_review_detail_container_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
@@ -85,31 +86,21 @@ class _StatefulHistoryDeliveryReviewSubControllerMediatorWidgetState extends Sta
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _historyDeliveryReviewListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? orderListItemControllerStateList) async {
-    LoadDataResult<PagingDataResult<DeliveryReview>> deliveryReviewPagingLoadDataResult = await widget.historyDeliveryReviewSubController.getHistoryDeliveryReviewPaging(
-      DeliveryReviewPagingParameter(page: pageKey)
+    LoadDataResult<List<DeliveryReview>> deliveryReviewPagingLoadDataResult = await widget.historyDeliveryReviewSubController.getHistoryDeliveryReviewList(
+      DeliveryReviewListParameter()
     );
-    return deliveryReviewPagingLoadDataResult.map<PagingResult<ListItemControllerState>>((deliveryReviewPaging) {
-      List<ListItemControllerState> resultListItemControllerState = [];
-      int totalItem = deliveryReviewPaging.totalItem;
-      if (pageKey == 1) {
-        totalItem = 1;
-        resultListItemControllerState = [
-          HistoryDeliveryReviewDetailContainerListItemControllerState(
-            deliveryReviewList: deliveryReviewPaging.itemList,
-            onUpdateState: () => setState(() {})
-          )
-        ];
-      } else {
-        if (ListItemControllerStateHelper.checkListItemControllerStateList(orderListItemControllerStateList)) {
-          HistoryDeliveryReviewDetailContainerListItemControllerState historyDeliveryReviewDetailContainerListItemControllerState = ListItemControllerStateHelper.parsePageKeyedListItemControllerState(orderListItemControllerStateList![0]) as HistoryDeliveryReviewDetailContainerListItemControllerState;
-          historyDeliveryReviewDetailContainerListItemControllerState.deliveryReviewList.addAll(deliveryReviewPaging.itemList);
-        }
-      }
+    return deliveryReviewPagingLoadDataResult.map<PagingResult<ListItemControllerState>>((deliveryReviewList) {
+      List<ListItemControllerState> resultListItemControllerState = [
+        HistoryDeliveryReviewDetailContainerListItemControllerState(
+          deliveryReviewList: deliveryReviewList,
+          onUpdateState: () => setState(() {})
+        )
+      ];
       return PagingDataResult<ListItemControllerState>(
         itemList: resultListItemControllerState,
-        page: deliveryReviewPaging.page,
-        totalPage: deliveryReviewPaging.totalPage,
-        totalItem: totalItem
+        page: 1,
+        totalPage: 1,
+        totalItem: 1
       );
     });
   }

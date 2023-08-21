@@ -52,31 +52,6 @@ class DeliveryReviewItemTypeListSubInterceptor extends ItemTypeListSubIntercepto
     List<ListItemControllerState> newListItemControllerStateList = [];
     int j = 0;
     WaitingToBeReviewedDeliveryReviewDetailContainerListItemControllerState oldItemType = oldItemTypeWrapper.listItemControllerState as WaitingToBeReviewedDeliveryReviewDetailContainerListItemControllerState;
-    if (oldItemType.waitingToBeReviewedDeliveryReviewDetailContainerInterceptingActionListItemControllerState is DefaultWaitingToBeReviewedDeliveryReviewDetailContainerInterceptingActionListItemControllerState) {
-      var waitingToBeReviewedDeliveryReviewDetailContainer = oldItemType.waitingToBeReviewedDeliveryReviewDetailContainerInterceptingActionListItemControllerState as DefaultWaitingToBeReviewedDeliveryReviewDetailContainerInterceptingActionListItemControllerState;
-      waitingToBeReviewedDeliveryReviewDetailContainer._onImplementUserLoadDataResult = (userLoadDataResult) {
-        return CompoundListItemControllerState(
-          listItemControllerState: [
-            VirtualSpacingListItemControllerState(height: padding()),
-            PaddingContainerListItemControllerState(
-              padding: EdgeInsets.symmetric(horizontal: padding()),
-              paddingChildListItemControllerState: CheckYourContributionDeliveryReviewDetailListItemControllerState(
-                userLoadDataResult: userLoadDataResult,
-                errorProvider: oldItemType.errorProvider,
-                onTap: oldItemType.onTapCheckYourContribution
-              )
-            )
-          ]
-        );
-      };
-      if (oldItemType.waitingToBeReviewedDeliveryReviewDetailContainerStorageListItemControllerState is DefaultWaitingToBeReviewedDeliveryReviewDetailContainerStorageListItemControllerState) {
-        var waitingToBeReviewedDeliveryReviewDetailContainerStorage = oldItemType.waitingToBeReviewedDeliveryReviewDetailContainerStorageListItemControllerState as DefaultWaitingToBeReviewedDeliveryReviewDetailContainerStorageListItemControllerState;
-        waitingToBeReviewedDeliveryReviewDetailContainerStorage._checkYourContributionDeliveryReviewDetailListItemControllerState ??= oldItemType.getCheckYourContributionDeliveryReviewDetailListItemControllerState();
-        listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
-          i, ListItemControllerStateWrapper(waitingToBeReviewedDeliveryReviewDetailContainerStorage._checkYourContributionDeliveryReviewDetailListItemControllerState!), oldItemTypeList, newListItemControllerStateList
-        );
-      }
-    }
     while (j < oldItemType.deliveryReviewList.length) {
       DeliveryReview deliveryReview = oldItemType.deliveryReviewList[j];
       ListItemControllerState verticalDeliveryReviewDetailListItemControllerState = CompoundListItemControllerState(

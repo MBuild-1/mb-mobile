@@ -14,11 +14,20 @@ import '../../domain/entity/delivery/countrydeliveryreviewmedia/photo_country_de
 import '../../domain/entity/delivery/countrydeliveryreviewmedia/video_country_delivery_review_media.dart';
 import '../../domain/entity/delivery/delivery_review.dart';
 import '../../domain/entity/user/user.dart';
+import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/response_wrapper.dart';
 
 extension DeliveryReviewEntityMappingExt on ResponseWrapper {
   List<DeliveryReview> mapFromResponseToDeliveryReviewList() {
     return response.map<DeliveryReview>((deliveryReviewResponse) => ResponseWrapper(deliveryReviewResponse).mapFromResponseToDeliveryReview()).toList();
+  }
+
+  PagingDataResult<DeliveryReview> mapFromResponseToDeliveryReviewPaging() {
+    return ResponseWrapper(response).mapFromResponseToPagingDataResult(
+      (dataResponse) => dataResponse.map<DeliveryReview>(
+        (additionalItemResponse) => ResponseWrapper(additionalItemResponse).mapFromResponseToDeliveryReview()
+      ).toList()
+    );
   }
 }
 

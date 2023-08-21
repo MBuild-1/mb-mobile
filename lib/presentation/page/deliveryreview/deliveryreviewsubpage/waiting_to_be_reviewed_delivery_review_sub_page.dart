@@ -3,19 +3,12 @@ import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 
 import '../../../../controller/deliveryreviewcontroller/deliveryreviewsubpagecontroller/waiting_to_be_reviewed_delivery_review_sub_controller.dart';
-import '../../../../domain/entity/delivery/delivery_review.dart';
-import '../../../../domain/entity/delivery/delivery_review_paging_parameter.dart';
-import '../../../../domain/entity/user/user.dart';
-import '../../../../misc/controllerstate/listitemcontrollerstate/deliveryreviewlistitemcontrollerstate/deliveryreviewdetaillistitemcontrollerstate/waiting_to_be_reviewed_delivery_review_detail_container_list_item_controller_state.dart';
+import '../../../../domain/entity/order/combined_order.dart';
+import '../../../../domain/entity/order/order_paging_parameter.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
-import '../../../../misc/controllerstate/listitemcontrollerstate/load_data_result_dynamic_list_item_controller_state.dart';
-import '../../../../misc/controllerstate/listitemcontrollerstate/no_content_list_item_controller_state.dart';
+import '../../../../misc/controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/order_container_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/paging_controller_state.dart';
-import '../../../../misc/dialog_helper.dart';
-import '../../../../misc/entityandlistitemcontrollerstatemediator/horizontal_component_entity_parameterized_entity_and_list_item_controller_state_mediator.dart';
-import '../../../../misc/errorprovider/error_provider.dart';
 import '../../../../misc/injector.dart';
-import '../../../../misc/itemtypelistsubinterceptor/delivery_review_item_type_list_sub_interceptor.dart';
 import '../../../../misc/list_item_controller_state_helper.dart';
 import '../../../../misc/load_data_result.dart';
 import '../../../../misc/main_route_observer.dart';
@@ -24,11 +17,9 @@ import '../../../../misc/paging/modified_paging_controller.dart';
 import '../../../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../../../misc/paging/pagingresult/paging_result.dart';
-import '../../../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/horizontal_dynamic_item_carousel_parametered_component_entity_and_list_item_controller_state_mediator_parameter.dart';
+import '../../../widget/colorful_chip_tab_bar.dart';
 import '../../../widget/modified_paged_list_view.dart';
 import '../../getx_page.dart';
-import '../../modaldialogpage/check_your_contribution_delivery_review_detail_modal_dialog_page.dart';
-import '../../modaldialogpage/give_review_delivery_review_detail_modal_dialog_page.dart';
 
 class WaitingToBeReviewedDeliveryReviewSubPage extends DefaultGetxPage {
   late final ControllerMember<WaitingToBeReviewedDeliveryReviewSubController> _waitingToBeReviewedDeliveryReviewSubController;
@@ -60,7 +51,7 @@ class _StatefulWaitingToBeReviewedDeliveryReviewSubControllerMediatorWidget exte
   final WaitingToBeReviewedDeliveryReviewSubController waitingToBeReviewedDeliveryReviewSubController;
 
   const _StatefulWaitingToBeReviewedDeliveryReviewSubControllerMediatorWidget({
-    required this.waitingToBeReviewedDeliveryReviewSubController
+    required this.waitingToBeReviewedDeliveryReviewSubController,
   });
 
   @override
@@ -68,118 +59,86 @@ class _StatefulWaitingToBeReviewedDeliveryReviewSubControllerMediatorWidget exte
 }
 
 class _StatefulWaitingToBeReviewedDeliveryReviewSubControllerMediatorWidgetState extends State<_StatefulWaitingToBeReviewedDeliveryReviewSubControllerMediatorWidget> {
-  late final ScrollController _waitingToBeReviewedDeliveryScrollController;
-  late final ModifiedPagingController<int, ListItemControllerState> _waitingToBeReviewedDeliveryReviewSubListItemPagingController;
-  late final PagingControllerState<int, ListItemControllerState> _waitingToBeReviewedDeliveryReviewSubListItemPagingControllerState;
-  final WaitingToBeReviewedDeliveryReviewDetailContainerInterceptingActionListItemControllerState _waitingToBeReviewedDeliveryReviewDetailContainerInterceptingActionListItemControllerState = DefaultWaitingToBeReviewedDeliveryReviewDetailContainerInterceptingActionListItemControllerState();
-  final List<BaseLoadDataResultDynamicListItemControllerState> _dynamicItemLoadDataResultDynamicListItemControllerStateList = [];
+  late final ScrollController _orderScrollController;
+  late final ModifiedPagingController<int, ListItemControllerState> _orderListItemPagingController;
+  late final PagingControllerState<int, ListItemControllerState> _orderListItemPagingControllerState;
+  late ColorfulChipTabBarController _orderTabColorfulChipTabBarController;
+  late List<ColorfulChipTabBarData> _orderColorfulChipTabBarDataList;
+
+  final String _status = "Sampai Tujuan";
 
   @override
   void initState() {
     super.initState();
-    _waitingToBeReviewedDeliveryScrollController = ScrollController();
-    _waitingToBeReviewedDeliveryReviewSubListItemPagingController = ModifiedPagingController<int, ListItemControllerState>(
+    _orderScrollController = ScrollController();
+    _orderListItemPagingController = ModifiedPagingController<int, ListItemControllerState>(
       firstPageKey: 1,
       // ignore: invalid_use_of_protected_member
       apiRequestManager: widget.waitingToBeReviewedDeliveryReviewSubController.apiRequestManager,
     );
-    _waitingToBeReviewedDeliveryReviewSubListItemPagingControllerState = PagingControllerState(
-      pagingController: _waitingToBeReviewedDeliveryReviewSubListItemPagingController,
-      scrollController: _waitingToBeReviewedDeliveryScrollController,
+    _orderListItemPagingControllerState = PagingControllerState(
+      pagingController: _orderListItemPagingController,
+      scrollController: _orderScrollController,
       isPagingControllerExist: false
     );
-    _waitingToBeReviewedDeliveryReviewSubListItemPagingControllerState.pagingController.addPageRequestListenerWithItemListForLoadDataResult(
-      listener: _waitingToBeReviewedDeliveryReviewListItemPagingControllerStateListener,
+    _orderListItemPagingControllerState.pagingController.addPageRequestListenerWithItemListForLoadDataResult(
+      listener: _orderListItemPagingControllerStateListener,
       onPageKeyNext: (pageKey) => pageKey + 1
     );
-    _waitingToBeReviewedDeliveryReviewSubListItemPagingControllerState.isPagingControllerExist = true;
-    MainRouteObserver.onRefreshDeliveryReview?.onRefreshWaitingToBeReviewedDeliveryReview = () => _waitingToBeReviewedDeliveryReviewSubListItemPagingController.refresh();
+    _orderListItemPagingControllerState.isPagingControllerExist = true;
+    MainRouteObserver.onRefreshDeliveryReview?.onRefreshWaitingToBeReviewedDeliveryReview = () => _orderListItemPagingController.refresh();
+    _orderTabColorfulChipTabBarController = ColorfulChipTabBarController(0);
+    _orderColorfulChipTabBarDataList = <ColorfulChipTabBarData>[];
   }
 
-  Future<LoadDataResult<PagingResult<ListItemControllerState>>> _waitingToBeReviewedDeliveryReviewListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? orderListItemControllerStateList) async {
-    HorizontalComponentEntityParameterizedEntityAndListItemControllerStateMediator componentEntityMediator = Injector.locator<HorizontalComponentEntityParameterizedEntityAndListItemControllerStateMediator>();
-    HorizontalDynamicItemCarouselParameterizedEntityAndListItemControllerStateMediatorParameter carouselParameterizedEntityMediator = HorizontalDynamicItemCarouselParameterizedEntityAndListItemControllerStateMediatorParameter(
-      onSetState: () => setState(() {}),
-      dynamicItemLoadDataResultDynamicListItemControllerStateList: _dynamicItemLoadDataResultDynamicListItemControllerStateList
-    );
-    _dynamicItemLoadDataResultDynamicListItemControllerStateList.clear();
-    LoadDataResult<PagingDataResult<DeliveryReview>> deliveryReviewPagingLoadDataResult = await widget.waitingToBeReviewedDeliveryReviewSubController.getWaitingToBeReviewedDeliveryReviewPaging(
-      DeliveryReviewPagingParameter(page: pageKey)
-    );
-    return deliveryReviewPagingLoadDataResult.map<PagingResult<ListItemControllerState>>((deliveryReviewPaging) {
-      List<ListItemControllerState> resultListItemControllerState = [];
-      int totalItem = deliveryReviewPaging.totalItem;
-      if (pageKey == 1) {
-        totalItem = 1;
-        resultListItemControllerState = [
-          WaitingToBeReviewedDeliveryReviewDetailContainerListItemControllerState(
-            deliveryReviewList: deliveryReviewPaging.itemList,
-            onUpdateState: () => setState(() {}),
-            errorProvider: Injector.locator<ErrorProvider>(),
-            waitingToBeReviewedDeliveryReviewDetailContainerInterceptingActionListItemControllerState: _waitingToBeReviewedDeliveryReviewDetailContainerInterceptingActionListItemControllerState,
-            waitingToBeReviewedDeliveryReviewDetailContainerStorageListItemControllerState: DefaultWaitingToBeReviewedDeliveryReviewDetailContainerStorageListItemControllerState(),
-            onWaitingToBeReviewedDeliveryReviewTap: (deliveryReview, selectedRating) async {
-              dynamic result = await DialogHelper.showModalBottomDialogPage<bool, GiveReviewDeliveryReviewDetailModalDialogPageParameter>(
-                context: context,
-                modalDialogPageBuilder: (context, parameter) => GiveReviewDeliveryReviewDetailModalDialogPage(
-                  selectedRating: selectedRating,
-                  deliveryReview: deliveryReview,
-                ),
-                parameter: GiveReviewDeliveryReviewDetailModalDialogPageParameter(
-                  selectedRating: selectedRating,
-                  deliveryReview: deliveryReview
-                )
-              );
-              if (result is bool) {
-                MainRouteObserver.onRefreshDeliveryReview?.refresh();
-              }
-            },
-            onTapCheckYourContribution: () async {
-              await DialogHelper.showModalBottomDialogPage<bool, String>(
-                context: context,
-                modalDialogPageBuilder: (context, parameter) => CheckYourContributionDeliveryReviewDetailModalDialogPage(),
-              );
-            },
-            getCheckYourContributionDeliveryReviewDetailListItemControllerState: () => componentEntityMediator.mapWithParameter(
-              widget.waitingToBeReviewedDeliveryReviewSubController.getUserProfile(),
-              parameter: carouselParameterizedEntityMediator
-            ),
-          )
-        ];
-      } else {
-        if (ListItemControllerStateHelper.checkListItemControllerStateList(orderListItemControllerStateList)) {
-          WaitingToBeReviewedDeliveryReviewDetailContainerListItemControllerState waitingToBeReviewedDeliveryReviewDetailContainerListItemControllerState = ListItemControllerStateHelper.parsePageKeyedListItemControllerState(orderListItemControllerStateList![0]) as WaitingToBeReviewedDeliveryReviewDetailContainerListItemControllerState;
-          waitingToBeReviewedDeliveryReviewDetailContainerListItemControllerState.deliveryReviewList.addAll(deliveryReviewPaging.itemList);
-        }
-      }
-      return PagingDataResult<ListItemControllerState>(
-        itemList: resultListItemControllerState,
-        page: deliveryReviewPaging.page,
-        totalPage: deliveryReviewPaging.totalPage,
-        totalItem: totalItem
+  Future<LoadDataResult<PagingResult<ListItemControllerState>>> _orderListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? orderListItemControllerStateList) async {
+    List<ListItemControllerState> resultListItemControllerState = [];
+    if (pageKey == 1) {
+      resultListItemControllerState = [
+        OrderContainerListItemControllerState(
+          orderList: [],
+          onOrderTap: (order) {},
+          onBuyAgainTap: (order) {},
+          onUpdateState: () => setState(() {}),
+          orderTabColorfulChipTabBarController: _orderTabColorfulChipTabBarController,
+          orderColorfulChipTabBarDataList: _orderColorfulChipTabBarDataList
+        )
+      ];
+      return SuccessLoadDataResult<PagingDataResult<ListItemControllerState>>(
+        value: PagingDataResult<ListItemControllerState>(
+          itemList: resultListItemControllerState,
+          page: 1,
+          totalPage: 2,
+          totalItem: 0
+        )
       );
-    });
+    } else {
+      int effectivePageKey = pageKey - 1;
+      LoadDataResult<PagingDataResult<CombinedOrder>> orderPagingLoadDataResult = await widget.waitingToBeReviewedDeliveryReviewSubController.getOrderPaging(
+        OrderPagingParameter(page: effectivePageKey, status: _status)
+      );
+      return orderPagingLoadDataResult.map<PagingResult<ListItemControllerState>>((orderPaging) {
+        if (ListItemControllerStateHelper.checkListItemControllerStateList(orderListItemControllerStateList)) {
+          OrderContainerListItemControllerState orderContainerListItemControllerState = ListItemControllerStateHelper.parsePageKeyedListItemControllerState(orderListItemControllerStateList![0]) as OrderContainerListItemControllerState;
+          orderContainerListItemControllerState.orderList.addAll(orderPaging.itemList);
+        }
+        return PagingDataResult<ListItemControllerState>(
+          itemList: resultListItemControllerState,
+          page: orderPaging.page,
+          totalPage: orderPaging.totalPage,
+          totalItem: orderPaging.totalItem
+        );
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    widget.waitingToBeReviewedDeliveryReviewSubController.setWaitingToBeReviewedDeliveryReviewSubDelegate(
-      WaitingToBeReviewedDeliveryReviewSubDelegate(
-        onObserveLoadUserDirectly: (onObserveLoadUserDirectlyParameter) {
-          ListItemControllerState Function(LoadDataResult<User>)? onImplementUserLoadDataResult = _waitingToBeReviewedDeliveryReviewDetailContainerInterceptingActionListItemControllerState.onImplementUserLoadDataResult;
-          if (onImplementUserLoadDataResult != null) {
-            return onImplementUserLoadDataResult(onObserveLoadUserDirectlyParameter.userLoadDataResult);
-          } else {
-            return NoContentListItemControllerState();
-          }
-        }
-      )
-    );
     return Column(
       children: [
         Expanded(
           child: ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
-            pagingControllerState: _waitingToBeReviewedDeliveryReviewSubListItemPagingControllerState,
+            pagingControllerState: _orderListItemPagingControllerState,
             onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
               pagingControllerState: pagingControllerState!
             ),

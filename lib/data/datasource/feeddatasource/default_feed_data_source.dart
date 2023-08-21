@@ -7,16 +7,8 @@ import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 
 import '../../../domain/entity/delivery/check_your_contribution_delivery_review_detail_parameter.dart';
 import '../../../domain/entity/delivery/check_your_contribution_delivery_review_detail_response.dart';
-import '../../../domain/entity/delivery/country_delivery_review.dart';
 import '../../../domain/entity/delivery/country_delivery_review_based_country_parameter.dart';
-import '../../../domain/entity/delivery/country_delivery_review_header_content.dart';
-import '../../../domain/entity/delivery/country_delivery_review_header_content_parameter.dart';
-import '../../../domain/entity/delivery/country_delivery_review_paging_parameter.dart';
 import '../../../domain/entity/delivery/country_delivery_review_response.dart';
-import '../../../domain/entity/delivery/countrydeliveryreviewmedia/country_delivery_review_media.dart';
-import '../../../domain/entity/delivery/countrydeliveryreviewmedia/country_delivery_review_media_paging_parameter.dart';
-import '../../../domain/entity/delivery/countrydeliveryreviewmedia/photo_country_delivery_review_media.dart';
-import '../../../domain/entity/delivery/countrydeliveryreviewmedia/video_country_delivery_review_media.dart';
 import '../../../domain/entity/delivery/delivery_review.dart';
 import '../../../domain/entity/delivery/delivery_review_list_parameter.dart';
 import '../../../domain/entity/delivery/delivery_review_paging_parameter.dart';
@@ -24,6 +16,7 @@ import '../../../domain/entity/delivery/give_review_delivery_review_detail_param
 import '../../../domain/entity/delivery/give_review_delivery_review_detail_response.dart';
 import '../../../domain/entity/news/news.dart';
 import '../../../domain/entity/news/news_paging_parameter.dart';
+import '../../../domain/entity/order/combined_order.dart';
 import '../../../domain/entity/video/defaultvideo/default_video.dart';
 import '../../../domain/entity/video/defaultvideo/default_video_list_parameter.dart';
 import '../../../domain/entity/video/shortvideo/short_video.dart';
@@ -167,48 +160,18 @@ class DefaultFeedDataSource implements FeedDataSource {
 
   @override
   FutureProcessing<PagingDataResult<DeliveryReview>> historyDeliveryReviewPaging(DeliveryReviewPagingParameter deliveryReviewPagingParameter) {
-    return DummyFutureProcessing((cancelToken) async {
-      await Future.delayed(const Duration(seconds: 1));
-      return PagingDataResult<DeliveryReview>(
-        page: 1,
-        totalPage: 1,
-        totalItem: 1,
-        itemList: [
-          DeliveryReview(
-            id: "1",
-            userName: "Ciya",
-            userProfilePicture: "",
-            productImageUrl: "",
-            productName: "",
-            rating: 5.0,
-            country: "Korea Selatan",
-            review: "Review 1",
-            reviewDate: DateTime.now(),
-          ),
-          DeliveryReview(
-            id: "2",
-            userName: "Dandi",
-            userProfilePicture: "",
-            productImageUrl: "",
-            productName: "",
-            rating: 5.0,
-            country: "Turki",
-            review: "Review 2",
-            reviewDate: DateTime.now(),
-          ),
-          DeliveryReview(
-            id: "3",
-            userName: "Naufal",
-            userProfilePicture: "",
-            productImageUrl: "",
-            productName: "",
-            rating: 5.0,
-            country: "Jepang",
-            review: "Review 3",
-            reviewDate: DateTime.now(),
-          )
-        ]
-      );
+    return DioHttpClientProcessing((cancelToken) {
+      String pageParameterPath = "/?pageNumber=${deliveryReviewPagingParameter.itemEachPageCount}&page=${deliveryReviewPagingParameter.page}";
+      return dio.get("/shipping-review/user$pageParameterPath", cancelToken: cancelToken)
+        .map<PagingDataResult<DeliveryReview>>(onMap: (value) => value.wrapResponse().mapFromResponseToDeliveryReviewPaging());
+    });
+  }
+
+  @override
+  FutureProcessing<List<DeliveryReview>> historyDeliveryReviewList(DeliveryReviewListParameter deliveryReviewListParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.get("/shipping-review/user", cancelToken: cancelToken)
+        .map<List<DeliveryReview>>(onMap: (value) => value.wrapResponse().mapFromResponseToDeliveryReviewList());
     });
   }
 

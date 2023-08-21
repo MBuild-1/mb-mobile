@@ -121,7 +121,7 @@ import '../domain/usecase/get_favorite_product_brand_use_case.dart';
 import '../domain/usecase/get_handycrafts_contents_banner_use_case.dart';
 import '../domain/usecase/get_help_message_by_conversation_use_case.dart';
 import '../domain/usecase/get_help_message_by_user_use_case.dart';
-import '../domain/usecase/get_history_delivery_review_paging_use_case.dart';
+import '../domain/usecase/get_history_delivery_review_list_use_case.dart';
 import '../domain/usecase/get_homepage_contents_banner_use_case.dart';
 import '../domain/usecase/get_kitchen_contents_banner_use_case.dart';
 import '../domain/usecase/get_my_cart_use_case.dart';
@@ -273,12 +273,13 @@ class _Injector {
     locator.registerLazySingleton<WaitingToBeReviewedDeliveryReviewSubControllerInjectionFactory>(
       () => WaitingToBeReviewedDeliveryReviewSubControllerInjectionFactory(
         getWaitingToBeReviewedDeliveryReviewPagingUseCase: locator(),
-        getUserUseCase: locator()
+        getUserUseCase: locator(),
+        getOrderPagingUseCase: locator(),
       )
     );
     locator.registerLazySingleton<HistoryDeliveryReviewSubControllerInjectionFactory>(
       () => HistoryDeliveryReviewSubControllerInjectionFactory(
-        getHistoryDeliveryReviewPagingUseCase: locator()
+        getHistoryDeliveryReviewListUseCase: locator()
       )
     );
 
@@ -482,7 +483,7 @@ class _Injector {
     locator.registerLazySingleton<GetShortVideoUseCase>(() => GetShortVideoUseCase(feedRepository: locator()));
     locator.registerLazySingleton<GetDeliveryReviewUseCase>(() => GetDeliveryReviewUseCase(feedRepository: locator()));
     locator.registerLazySingleton<GetWaitingToBeReviewedDeliveryReviewPagingUseCase>(() => GetWaitingToBeReviewedDeliveryReviewPagingUseCase(feedRepository: locator()));
-    locator.registerLazySingleton<GetHistoryDeliveryReviewPagingUseCase>(() => GetHistoryDeliveryReviewPagingUseCase(feedRepository: locator()));
+    locator.registerLazySingleton<GetHistoryDeliveryReviewListUseCase>(() => GetHistoryDeliveryReviewListUseCase(feedRepository: locator()));
     locator.registerLazySingleton<GetCheckYourContributionDeliveryReviewDetailUseCase>(() => GetCheckYourContributionDeliveryReviewDetailUseCase(feedRepository: locator()));
     locator.registerLazySingleton<GiveReviewDeliveryReviewDetailUseCase>(() => GiveReviewDeliveryReviewDetailUseCase(feedRepository: locator()));
     locator.registerLazySingleton<GetCountryDeliveryReviewUseCase>(() => GetCountryDeliveryReviewUseCase(feedRepository: locator()));

@@ -5,8 +5,11 @@ import '../../../domain/entity/componententity/dynamic_item_carousel_directly_co
 import '../../../domain/entity/componententity/i_component_entity.dart';
 import '../../../domain/entity/delivery/delivery_review.dart';
 import '../../../domain/entity/delivery/delivery_review_paging_parameter.dart';
+import '../../../domain/entity/order/combined_order.dart';
+import '../../../domain/entity/order/order_paging_parameter.dart';
 import '../../../domain/entity/user/getuser/get_user_parameter.dart';
 import '../../../domain/entity/user/user.dart';
+import '../../../domain/usecase/get_order_paging_use_case.dart';
 import '../../../domain/usecase/get_user_use_case.dart';
 import '../../../domain/usecase/get_waiting_to_be_reviewed_delivery_review_paging_use_case.dart';
 import '../../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
@@ -21,49 +24,19 @@ import '../../base_getx_controller.dart';
 class WaitingToBeReviewedDeliveryReviewSubController extends BaseGetxController {
   final GetWaitingToBeReviewedDeliveryReviewPagingUseCase getWaitingToBeReviewedDeliveryReviewPagingUseCase;
   final GetUserUseCase getUserUseCase;
+  final GetOrderPagingUseCase getOrderPagingUseCase;
   WaitingToBeReviewedDeliveryReviewSubDelegate? _waitingToBeReviewedDeliveryReviewSubDelegate;
 
   WaitingToBeReviewedDeliveryReviewSubController(
     super.controllerManager,
     this.getWaitingToBeReviewedDeliveryReviewPagingUseCase,
-    this.getUserUseCase
+    this.getUserUseCase,
+    this.getOrderPagingUseCase,
   );
 
-  Future<LoadDataResult<PagingDataResult<DeliveryReview>>> getWaitingToBeReviewedDeliveryReviewPaging(DeliveryReviewPagingParameter deliveryReviewPagingParameter) {
-    return getWaitingToBeReviewedDeliveryReviewPagingUseCase.execute(deliveryReviewPagingParameter).future(
-      parameter: apiRequestManager.addRequestToCancellationPart("waiting-to-be-reviewed-delivery-review").value
-    );
-  }
-
-  IComponentEntity getUserProfile() {
-    return DynamicItemCarouselDirectlyComponentEntity(
-      title: MultiLanguageString(""),
-      onDynamicItemAction: (title, description, observer) async {
-        observer(title, description, IsLoadingLoadDataResult<User>());
-        LoadDataResult<User> userLoadDataResult = await getUserUseCase.execute(
-          GetUserParameter()
-        ).future(
-          parameter: apiRequestManager.addRequestToCancellationPart("logged-user-profile").value
-        ).map<User>(
-          (getUserResponse) => getUserResponse.user
-        );
-        if (userLoadDataResult.isFailedBecauseCancellation) {
-          return;
-        }
-        observer(title, description, userLoadDataResult);
-      },
-      observeDynamicItemActionStateDirectly: (title, description, itemLoadDataResult, errorProvider) {
-        LoadDataResult<User> userLoadDataResult = itemLoadDataResult.castFromDynamic<User>();
-        if (_waitingToBeReviewedDeliveryReviewSubDelegate != null) {
-          return _waitingToBeReviewedDeliveryReviewSubDelegate!.onObserveLoadUserDirectly(
-            _OnObserveLoadUserDirectlyParameter(
-              userLoadDataResult: userLoadDataResult
-            )
-          );
-        } else {
-          throw MessageError(title: "Waiting to be reviewed delivery review sub delegate must be not null");
-        }
-      },
+  Future<LoadDataResult<PagingDataResult<CombinedOrder>>> getOrderPaging(OrderPagingParameter orderPagingParameter) {
+    return getOrderPagingUseCase.execute(orderPagingParameter).future(
+      parameter: apiRequestManager.addRequestToCancellationPart("cart").value
     );
   }
 
@@ -76,10 +49,12 @@ class WaitingToBeReviewedDeliveryReviewSubController extends BaseGetxController 
 class WaitingToBeReviewedDeliveryReviewSubControllerInjectionFactory {
   final GetWaitingToBeReviewedDeliveryReviewPagingUseCase getWaitingToBeReviewedDeliveryReviewPagingUseCase;
   final GetUserUseCase getUserUseCase;
+  final GetOrderPagingUseCase getOrderPagingUseCase;
 
   WaitingToBeReviewedDeliveryReviewSubControllerInjectionFactory({
     required this.getWaitingToBeReviewedDeliveryReviewPagingUseCase,
-    required this.getUserUseCase
+    required this.getUserUseCase,
+    required this.getOrderPagingUseCase,
   });
 
   WaitingToBeReviewedDeliveryReviewSubController inject(ControllerManager controllerManager, String pageName) {
@@ -87,25 +62,12 @@ class WaitingToBeReviewedDeliveryReviewSubControllerInjectionFactory {
       WaitingToBeReviewedDeliveryReviewSubController(
         controllerManager,
         getWaitingToBeReviewedDeliveryReviewPagingUseCase,
-        getUserUseCase
+        getUserUseCase,
+        getOrderPagingUseCase
       ),
       tag: pageName
     );
   }
 }
 
-class WaitingToBeReviewedDeliveryReviewSubDelegate {
-  ListItemControllerState Function(_OnObserveLoadUserDirectlyParameter) onObserveLoadUserDirectly;
-
-  WaitingToBeReviewedDeliveryReviewSubDelegate({
-    required this.onObserveLoadUserDirectly
-  });
-}
-
-class _OnObserveLoadUserDirectlyParameter {
-  LoadDataResult<User> userLoadDataResult;
-
-  _OnObserveLoadUserDirectlyParameter({
-    required this.userLoadDataResult
-  });
-}
+class WaitingToBeReviewedDeliveryReviewSubDelegate {}

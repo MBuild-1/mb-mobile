@@ -1,3 +1,4 @@
+import 'package:flag/flag_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
@@ -56,14 +57,10 @@ abstract class DeliveryReviewDetailItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(
-                    width: 70,
+                    width: 30,
                     child: AspectRatio(
-                      aspectRatio: 1.0,
-                      child: ClipRRect(
-                        child: ProductModifiedCachedNetworkImage(
-                          imageUrl: deliveryReview.productImageUrl.toEmptyStringNonNull,
-                        )
-                      )
+                      aspectRatio: 4 / 3,
+                      child: Flag.fromString(deliveryReview.countryCode)
                     ),
                   ),
                   const SizedBox(width: 20),
@@ -72,8 +69,6 @@ abstract class DeliveryReviewDetailItem extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(DateUtil.standardDateFormat4.format(deliveryReview.reviewDate), style: const TextStyle(fontSize: 12)),
-                        const SizedBox(height: 5),
-                        Text(deliveryReview.productName.toStringNonNull, style: const TextStyle(fontWeight: FontWeight.bold)),
                         const SizedBox(height: 10),
                         RatingIndicator(
                           rating: deliveryReview.rating

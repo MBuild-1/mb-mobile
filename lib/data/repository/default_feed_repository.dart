@@ -69,6 +69,11 @@ class DefaultFeedRepository implements FeedRepository {
   }
 
   @override
+  FutureProcessing<LoadDataResult<List<DeliveryReview>>> historyDeliveryReviewList(DeliveryReviewListParameter deliveryReviewListParameter) {
+    return feedDataSource.historyDeliveryReviewList(deliveryReviewListParameter).mapToLoadDataResult<List<DeliveryReview>>();
+  }
+
+  @override
   FutureProcessing<LoadDataResult<PagingDataResult<News>>> newsPaging(NewsPagingParameter newsPagingParameter) {
     return feedDataSource.newsPaging(newsPagingParameter).mapToLoadDataResult<PagingDataResult<News>>();
   }
