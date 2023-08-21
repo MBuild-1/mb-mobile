@@ -233,7 +233,7 @@ you can only use widgets and widget functions here''';
       routeName ??= "/${page.runtimeType}";
     }
     routeName = cleanRouteName(routeName);
-    if (preventDuplicates && routeName == Get.currentRoute) {
+    if (preventDuplicates && routeName == MainRouteObserver.getCurrentRoute()) {
       return null;
     }
     return ExtendedGetPageRoute<T>(

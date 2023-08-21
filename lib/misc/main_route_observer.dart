@@ -124,6 +124,10 @@ class _MainRouteObserver extends RouteObserver {
   bool checkRouteNameExists(String routeName) {
     return _routeMap.containsKey(routeName);
   }
+
+  String getCurrentRoute() {
+    return _routeMap.isNotEmpty ? _routeMap.keys.last : "";
+  }
 }
 
 // ignore: library_private_types_in_public_api, non_constant_identifier_names
