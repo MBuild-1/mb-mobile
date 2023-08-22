@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:sizer/sizer.dart';
 
 import '../../../misc/constant.dart';
-import '../../../misc/inputdecoration/default_input_decoration.dart';
 import '../../../misc/page_restoration_helper.dart';
-import '../modified_text_field.dart';
 import '../tap_area.dart';
 import 'search_app_bar.dart';
 
@@ -45,14 +42,16 @@ class MainMenuSearchAppBar extends SearchAppBar {
             child: SvgPicture.asset(
               Constant.vectorNotification,
               color: Colors.grey.shade600,
+              height: 25,
             ),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 15),
           SvgPicture.asset(
             Constant.vectorInbox,
             color: Colors.grey.shade600,
+            height: 18,
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 15),
           TapArea(
             onTap: () {
               PageRestorationHelper.toCartPage(context);
@@ -60,6 +59,7 @@ class MainMenuSearchAppBar extends SearchAppBar {
             child: SvgPicture.asset(
               Constant.vectorCart,
               color: Colors.grey.shade600,
+              height: 18,
             ),
           ),
         ]
