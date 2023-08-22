@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import '../../../misc/constant.dart';
 import '../../../misc/inputdecoration/default_input_decoration.dart';
 import '../../../misc/page_restoration_helper.dart';
+import '../../../misc/search_text_field_helper.dart';
 import '../../page/getx_page.dart';
 //import '../../page/search/search_page.dart';
 import 'modified_app_bar.dart';
@@ -61,7 +62,7 @@ abstract class SearchAppBar extends ModifiedAppBar {
         textInputAction: TextInputAction.done,
         controller: searchTextEditingController,
         focusNode: searchFocusNode,
-        decoration: searchTextFieldStyle(
+        decoration: SearchTextFieldHelper.searchTextFieldStyle(
           context, DefaultInputDecoration(
             hintText: "Search in Masterbagasi".tr,
             filled: true,
@@ -119,20 +120,5 @@ abstract class SearchAppBar extends ModifiedAppBar {
   @override
   SystemOverlayStyleInterceptor get systemOverlayStyleInterceptor {
     return (context, oldSystemUiOverlayStyle) => value > 0.5 ? null : SystemUiOverlayStyle.light;
-  }
-
-  InputDecoration searchTextFieldStyle(BuildContext context, InputDecoration decoration) {
-    final ThemeData themeData = Theme.of(context);
-    final DefaultTextStyle defaultTextStyle = DefaultTextStyle.of(context);
-    TextStyle style = TextStyle(
-      color: decoration.enabled ? themeData.hintColor : themeData.disabledColor,
-    );
-    if (style.inherit) {
-      style = defaultTextStyle.style.merge(style);
-    }
-    if (MediaQuery.boldTextOverride(context)) {
-      style = style.merge(const TextStyle(fontWeight: FontWeight.bold));
-    }
-    return decoration.copyWith(hintStyle: style);
   }
 }

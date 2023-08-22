@@ -229,7 +229,8 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Type Chat": "Ketikan Chat",
       "Foto & Video MBestie Review": "Foto & Video Ulasan MBestie",
       "Select More Country Reviews": "Pilih Ulasan Negara Lainnya",
-      "Notification": "Notifikasi"
+      "Notification": "Notifikasi",
+      "Search Country": "Cari Negara"
     }
   };
 

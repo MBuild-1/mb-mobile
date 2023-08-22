@@ -5,20 +5,25 @@ import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 
 import '../../../controller/modaldialogcontroller/select_countries_modal_dialog_controller.dart';
 import '../../../domain/entity/address/country.dart';
+import '../../../domain/entity/address/country_list_parameter.dart';
 import '../../../domain/entity/address/country_paging_parameter.dart';
-import '../../../domain/usecase/get_country_paging_use_case.dart';
+import '../../../domain/usecase/get_country_list_use_case.dart';
+import '../../../misc/constant.dart';
 import '../../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../../misc/controllerstate/listitemcontrollerstate/selectcountrieslistitemcontrollerstate/country_container_list_item_controller_state.dart';
 import '../../../misc/controllerstate/paging_controller_state.dart';
 import '../../../misc/injector.dart';
+import '../../../misc/inputdecoration/default_input_decoration.dart';
 import '../../../misc/list_item_controller_state_helper.dart';
 import '../../../misc/load_data_result.dart';
 import '../../../misc/paging/modified_paging_controller.dart';
 import '../../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../../misc/paging/pagingresult/paging_result.dart';
+import '../../../misc/search_text_field_helper.dart';
 import '../../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../../widget/modified_paged_list_view.dart';
+import '../../widget/modified_text_field.dart';
 import '../../widget/modifiedappbar/modified_app_bar.dart';
 import 'modal_dialog_page.dart';
 
@@ -36,7 +41,7 @@ class SelectCountriesModalDialogPage extends ModalDialogPage<SelectCountriesModa
   SelectCountriesModalDialogController onCreateModalDialogController() {
     return SelectCountriesModalDialogController(
       controllerManager,
-      Injector.locator<GetCountryPagingUseCase>()
+      Injector.locator<GetCountryListUseCase>()
     );
   }
 
@@ -66,7 +71,10 @@ class _StatefulCheckRatesForVariousCountriesControllerMediatorWidgetState extend
   late final ScrollController _selectCountriesScrollController;
   late final ModifiedPagingController<int, ListItemControllerState> _selectCountriesListItemPagingController;
   late final PagingControllerState<int, ListItemControllerState> _selectCountriesListItemPagingControllerState;
+  final TextEditingController _searchCountryTextEditingController = TextEditingController();
   Country? _selectedCountry;
+  List<Country> _originalCountryList = [];
+  List<Country> _currentCountryList = [];
 
   @override
   void initState() {
@@ -86,22 +94,38 @@ class _StatefulCheckRatesForVariousCountriesControllerMediatorWidgetState extend
       listener: _selectCountriesListItemPagingControllerStateListener,
       onPageKeyNext: (pageKey) => pageKey + 1
     );
+    _searchCountryTextEditingController.addListener(_listenSearchCountryTextEditing);
     _selectCountriesListItemPagingControllerState.isPagingControllerExist = true;
     _selectedCountry = widget.selectedCountry;
   }
 
+  void _listenSearchCountryTextEditing() {
+    _currentCountryList.clear();
+    if (_searchCountryTextEditingController.text.trim().isEmpty) {
+      _currentCountryList.addAll(_originalCountryList);
+    } else {
+      _currentCountryList.addAll(
+        _originalCountryList.where(
+          (country) => country.name.toLowerCase().contains(
+            _searchCountryTextEditingController.text.toLowerCase()
+          )
+        )
+      );
+    }
+    setState(() {});
+  }
+
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _selectCountriesListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? listItemControllerStateList) async {
-    LoadDataResult<PagingDataResult<Country>> countryPagingDataResult = await widget.selectCountriesModalDialogController.getCountryPaging(
-      CountryPagingParameter(page: pageKey)
+    LoadDataResult<List<Country>> countryList = await widget.selectCountriesModalDialogController.getCountryList(
+      CountryListParameter()
     );
-    return countryPagingDataResult.map<PagingResult<ListItemControllerState>>((countryPaging) {
-      List<ListItemControllerState> resultListItemControllerState = [];
-      int totalItem = countryPaging.totalItem;
-      if (pageKey == 1) {
-        totalItem = 2;
-        resultListItemControllerState.add(
+    return countryList.map<PagingResult<ListItemControllerState>>((countryList) {
+      _originalCountryList = List.of(countryList);
+      _currentCountryList = List.of(countryList);
+      return PagingDataResult<ListItemControllerState>(
+        itemList: [
           CountryContainerListItemControllerState(
-            country: countryPaging.itemList,
+            country: _currentCountryList,
             onSelectCountry: (country) {
               setState(() {
                 _selectedCountry = country;
@@ -110,18 +134,10 @@ class _StatefulCheckRatesForVariousCountriesControllerMediatorWidgetState extend
             onGetSelectCountry: () => _selectedCountry,
             onUpdateState: () => setState(() {})
           )
-        );
-      } else {
-        if (ListItemControllerStateHelper.checkListItemControllerStateList(listItemControllerStateList)) {
-          CountryContainerListItemControllerState countryContainerListItemControllerState = ListItemControllerStateHelper.parsePageKeyedListItemControllerState(listItemControllerStateList![0]) as CountryContainerListItemControllerState;
-          countryContainerListItemControllerState.country.addAll(countryPaging.itemList);
-        }
-      }
-      return PagingDataResult<ListItemControllerState>(
-        itemList: resultListItemControllerState,
-        page: countryPaging.page,
-        totalPage: countryPaging.totalPage,
-        totalItem: totalItem
+        ],
+        page: 1,
+        totalPage: 1,
+        totalItem: countryList.length
       );
     });
   }
@@ -135,6 +151,26 @@ class _StatefulCheckRatesForVariousCountriesControllerMediatorWidgetState extend
             children: [
               Text("Select Country".tr),
             ],
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem, vertical: 12),
+          child: SizedBox(
+            height: 40,
+            child: ModifiedTextField(
+              controller: _searchCountryTextEditingController,
+              isError: false,
+              textInputAction: TextInputAction.done,
+              decoration: SearchTextFieldHelper.searchTextFieldStyle(
+                context, DefaultInputDecoration(
+                  hintText: "Search Country".tr,
+                  filled: true,
+                  fillColor: Colors.transparent,
+                  prefixIcon: const Icon(Icons.search),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0)
+                )
+              )
+            ),
           ),
         ),
         Expanded(
@@ -163,5 +199,11 @@ class _StatefulCheckRatesForVariousCountriesControllerMediatorWidgetState extend
           )
       ]
     );
+  }
+
+  @override
+  void dispose() {
+    _searchCountryTextEditingController.dispose();
+    super.dispose();
   }
 }

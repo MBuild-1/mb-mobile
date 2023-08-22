@@ -1,21 +1,20 @@
 import '../../domain/entity/address/country.dart';
-import '../../domain/entity/address/country_paging_parameter.dart';
-import '../../domain/usecase/get_country_paging_use_case.dart';
+import '../../domain/entity/address/country_list_parameter.dart';
+import '../../domain/usecase/get_country_list_use_case.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/controller_manager.dart';
-import '../../misc/paging/pagingresult/paging_data_result.dart';
 import 'modal_dialog_controller.dart';
 
 class SelectCountriesModalDialogController extends ModalDialogController {
-  final GetCountryPagingUseCase getCountryPagingUseCase;
+  final GetCountryListUseCase getCountryListUseCase;
 
   SelectCountriesModalDialogController(
     ControllerManager? controllerManager,
-    this.getCountryPagingUseCase
+    this.getCountryListUseCase
   ) : super(controllerManager);
 
-  Future<LoadDataResult<PagingDataResult<Country>>> getCountryPaging(CountryPagingParameter countryPagingParameter) {
-    return getCountryPagingUseCase.execute(countryPagingParameter).future(
+  Future<LoadDataResult<List<Country>>> getCountryList(CountryListParameter countryListParameter) {
+    return getCountryListUseCase.execute(countryListParameter).future(
       parameter: apiRequestManager.addRequestToCancellationPart("country").value
     );
   }

@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flag/flag_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/number_ext.dart';
 import 'package:sizer/sizer.dart';
 
@@ -94,123 +95,127 @@ class _StatefulCheckRatesForVariousCountriesControllerMediatorWidgetState extend
           ),
           RxConsumer<LoadDataResultWrapper<List<Cargo>>>(
             rxValue: widget.checkRatesForVariousCountriesModalDialogController.cargoLoadDataResultWrapperRx,
-            onConsumeValue: (context, value) => LoadDataResultImplementer<List<Cargo>>(
-              loadDataResult: value.loadDataResult,
-              errorProvider: Injector.locator<ErrorProvider>(),
-              onSuccessLoadDataResultWidget: (cargoList) {
-                EdgeInsetsGeometry cellPadding = const EdgeInsets.symmetric(vertical: 6.0, horizontal: 8.0);
-                return Column(
-                  children: [
-                    const SizedBox(height: 10),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                      decoration: const BoxDecoration(
-                        color: Colors.grey
-                      ),
-                      child: Center(
-                        child: Text(
-                          "The price of air delivery is listed /Kg".tr,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold
-                          ),
-                        )
-                      )
-                    ),
-                    const SizedBox(height: 10),
-                    Table(
+            onConsumeValue: (context, value) => Column(
+              children: [
+                if (!value.loadDataResult.isNotLoading) const SizedBox(height: 10),
+                LoadDataResultImplementer<List<Cargo>>(
+                  loadDataResult: value.loadDataResult,
+                  errorProvider: Injector.locator<ErrorProvider>(),
+                  onSuccessLoadDataResultWidget: (cargoList) {
+                    EdgeInsetsGeometry cellPadding = const EdgeInsets.symmetric(vertical: 6.0, horizontal: 8.0);
+                    return Column(
                       children: [
-                        TableRow(
-                          children: [
-                            Center(
-                              child: Padding(
-                                padding: cellPadding,
-                                child: Text(
-                                  "${"Weight".tr} (${"Min".tr})",
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold
-                                  )
-                                ),
-                              )
-                            ),
-                            Center(
-                              child: Padding(
-                                padding: cellPadding,
-                                child: Text(
-                                  "${"Weight".tr} (${"Max".tr})",
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold
-                                  )
-                                ),
-                              )
-                            ),
-                            Center(
-                              child: Padding(
-                                padding: cellPadding,
-                                child: Text(
-                                  "Price".tr,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold
-                                  )
-                                ),
-                              )
-                            ),
-                          ]
-                        ),
-                        ...cargoList.mapIndexed<TableRow>(
-                          (index, cargo) => TableRow(
-                            decoration: BoxDecoration(
-                              color: (index + 1) % 2 != 0 ? Colors.grey.shade200 : null,
-                            ),
-                            children: [
-                              Center(
-                                child: Padding(
-                                  padding: cellPadding,
-                                  child: Text(
-                                    "${cargo.minWeight} Kg",
-                                    style: TextStyle()
-                                  ),
-                                )
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                          decoration: const BoxDecoration(
+                            color: Colors.grey
+                          ),
+                          child: Center(
+                            child: Text(
+                              "The price of air delivery is listed /Kg".tr,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold
                               ),
-                              Center(
-                                child: Padding(
-                                  padding: cellPadding,
-                                  child: Text(
-                                    "${cargo.maxWeight} Kg",
-                                    style: TextStyle()
-                                  ),
-                                )
-                              ),
-                              Center(
-                                child: Padding(
-                                  padding: cellPadding,
-                                  child: Text(
-                                    cargo.price.toRupiah(),
-                                    style: TextStyle()
-                                  ),
-                                ),
-                              ),
-                            ]
+                            )
                           )
-                        ).toList()
+                        ),
+                        const SizedBox(height: 10),
+                        Table(
+                          children: [
+                            TableRow(
+                              children: [
+                                Center(
+                                  child: Padding(
+                                    padding: cellPadding,
+                                    child: Text(
+                                      "${"Weight".tr} (${"Min".tr})",
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold
+                                      )
+                                    ),
+                                  )
+                                ),
+                                Center(
+                                  child: Padding(
+                                    padding: cellPadding,
+                                    child: Text(
+                                      "${"Weight".tr} (${"Max".tr})",
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold
+                                      )
+                                    ),
+                                  )
+                                ),
+                                Center(
+                                  child: Padding(
+                                    padding: cellPadding,
+                                    child: Text(
+                                      "Price".tr,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold
+                                      )
+                                    ),
+                                  )
+                                ),
+                              ]
+                            ),
+                            ...cargoList.mapIndexed<TableRow>(
+                              (index, cargo) => TableRow(
+                                decoration: BoxDecoration(
+                                  color: (index + 1) % 2 != 0 ? Colors.grey.shade200 : null,
+                                ),
+                                children: [
+                                  Center(
+                                    child: Padding(
+                                      padding: cellPadding,
+                                      child: Text(
+                                        "${cargo.minWeight} Kg",
+                                        style: TextStyle()
+                                      ),
+                                    )
+                                  ),
+                                  Center(
+                                    child: Padding(
+                                      padding: cellPadding,
+                                      child: Text(
+                                        "${cargo.maxWeight} Kg",
+                                        style: TextStyle()
+                                      ),
+                                    )
+                                  ),
+                                  Center(
+                                    child: Padding(
+                                      padding: cellPadding,
+                                      child: Text(
+                                        cargo.price.toRupiah(),
+                                        style: TextStyle()
+                                      ),
+                                    ),
+                                  ),
+                                ]
+                              )
+                            ).toList()
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        SizedOutlineGradientButton(
+                          onPressed: () {
+                            if (_selectedCountry != null) {
+                              widget.onGotoCountryDeliveryReview(_selectedCountry!.id);
+                            }
+                          },
+                          text: "Delivery Review".tr,
+                          outlineGradientButtonType: OutlineGradientButtonType.solid,
+                          outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
+                          customPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 9),
+                        ),
                       ],
-                    ),
-                    const SizedBox(height: 20),
-                    SizedOutlineGradientButton(
-                      onPressed: () {
-                        if (_selectedCountry != null) {
-                          widget.onGotoCountryDeliveryReview(_selectedCountry!.id);
-                        }
-                      },
-                      text: "Delivery Review".tr,
-                      outlineGradientButtonType: OutlineGradientButtonType.solid,
-                      outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
-                      customPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 9),
-                    ),
-                  ],
-                );
-              }
+                    );
+                  }
+                ),
+              ],
             )
           )
         ]
