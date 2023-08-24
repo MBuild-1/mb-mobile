@@ -5,6 +5,7 @@ import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 import '../../../../controller/deliveryreviewcontroller/deliveryreviewsubpagecontroller/waiting_to_be_reviewed_delivery_review_sub_controller.dart';
 import '../../../../domain/entity/order/combined_order.dart';
 import '../../../../domain/entity/order/order_paging_parameter.dart';
+import '../../../../domain/entity/order/shipping_review_order_list_parameter.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/order_container_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/paging_controller_state.dart';
@@ -92,44 +93,26 @@ class _StatefulWaitingToBeReviewedDeliveryReviewSubControllerMediatorWidgetState
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _orderListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? orderListItemControllerStateList) async {
-    List<ListItemControllerState> resultListItemControllerState = [];
-    if (pageKey == 1) {
-      resultListItemControllerState = [
-        OrderContainerListItemControllerState(
-          orderList: [],
-          onOrderTap: (order) {},
-          onBuyAgainTap: (order) {},
-          onUpdateState: () => setState(() {}),
-          orderTabColorfulChipTabBarController: _orderTabColorfulChipTabBarController,
-          orderColorfulChipTabBarDataList: _orderColorfulChipTabBarDataList
-        )
-      ];
-      return SuccessLoadDataResult<PagingDataResult<ListItemControllerState>>(
-        value: PagingDataResult<ListItemControllerState>(
-          itemList: resultListItemControllerState,
-          page: 1,
-          totalPage: 2,
-          totalItem: 0
-        )
+    LoadDataResult<List<CombinedOrder>> orderPagingLoadDataResult = await widget.waitingToBeReviewedDeliveryReviewSubController.getShippingReviewOrderList(
+      ShippingReviewOrderListParameter()
+    );
+    return orderPagingLoadDataResult.map<PagingResult<ListItemControllerState>>((orderList) {
+      return PagingDataResult<ListItemControllerState>(
+        itemList: [
+          OrderContainerListItemControllerState(
+            orderList: orderList,
+            onOrderTap: (order) {},
+            onBuyAgainTap: (order) {},
+            onUpdateState: () => setState(() {}),
+            orderTabColorfulChipTabBarController: _orderTabColorfulChipTabBarController,
+            orderColorfulChipTabBarDataList: _orderColorfulChipTabBarDataList
+          )
+        ],
+        page: 1,
+        totalPage: 1,
+        totalItem: 0
       );
-    } else {
-      int effectivePageKey = pageKey - 1;
-      LoadDataResult<PagingDataResult<CombinedOrder>> orderPagingLoadDataResult = await widget.waitingToBeReviewedDeliveryReviewSubController.getOrderPaging(
-        OrderPagingParameter(page: effectivePageKey, status: _status)
-      );
-      return orderPagingLoadDataResult.map<PagingResult<ListItemControllerState>>((orderPaging) {
-        if (ListItemControllerStateHelper.checkListItemControllerStateList(orderListItemControllerStateList)) {
-          OrderContainerListItemControllerState orderContainerListItemControllerState = ListItemControllerStateHelper.parsePageKeyedListItemControllerState(orderListItemControllerStateList![0]) as OrderContainerListItemControllerState;
-          orderContainerListItemControllerState.orderList.addAll(orderPaging.itemList);
-        }
-        return PagingDataResult<ListItemControllerState>(
-          itemList: resultListItemControllerState,
-          page: orderPaging.page,
-          totalPage: orderPaging.totalPage,
-          totalItem: orderPaging.totalItem
-        );
-      });
-    }
+    });
   }
 
   @override

@@ -157,6 +157,7 @@ import '../domain/usecase/get_product_viral_list_use_case.dart';
 import '../domain/usecase/get_product_viral_paging_use_case.dart';
 import '../domain/usecase/get_province_map_use_case.dart';
 import '../domain/usecase/get_shipping_price_contents_banner_use_case.dart';
+import '../domain/usecase/get_shipping_review_order_list_use_case.dart';
 import '../domain/usecase/get_short_my_cart_use_case.dart';
 import '../domain/usecase/get_short_video_use_case.dart';
 import '../domain/usecase/get_snack_for_lying_around_list_use_case.dart';
@@ -274,7 +275,7 @@ class _Injector {
       () => WaitingToBeReviewedDeliveryReviewSubControllerInjectionFactory(
         getWaitingToBeReviewedDeliveryReviewPagingUseCase: locator(),
         getUserUseCase: locator(),
-        getOrderPagingUseCase: locator(),
+        getShippingReviewOrderListUseCase: locator(),
       )
     );
     locator.registerLazySingleton<HistoryDeliveryReviewSubControllerInjectionFactory>(
@@ -519,6 +520,7 @@ class _Injector {
     locator.registerLazySingleton<GetProvinceMapUseCase>(() => GetProvinceMapUseCase(mapRepository: locator()));
     locator.registerLazySingleton<CreateOrderUseCase>(() => CreateOrderUseCase(orderRepository: locator()));
     locator.registerLazySingleton<GetOrderPagingUseCase>(() => GetOrderPagingUseCase(orderRepository: locator()));
+    locator.registerLazySingleton<GetShippingReviewOrderListUseCase>(() => GetShippingReviewOrderListUseCase(orderRepository: locator()));
     locator.registerLazySingleton<GetOrderBasedIdUseCase>(() => GetOrderBasedIdUseCase(orderRepository: locator()));
     locator.registerLazySingleton<CheckRatesForVariousCountriesUseCase>(() => CheckRatesForVariousCountriesUseCase(cargoRepository: locator()));
     locator.registerLazySingleton<GetCountryListUseCase>(() => GetCountryListUseCase(addressRepository: locator()));
