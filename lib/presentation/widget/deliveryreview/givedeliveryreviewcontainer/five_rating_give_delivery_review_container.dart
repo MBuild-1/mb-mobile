@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
@@ -7,6 +8,8 @@ import '../../../../controller/deliveryreviewcontroller/givedeliveryreviewcontai
 import '../../../../domain/entity/delivery/givedeliveryreviewvalue/five_rating_give_delivery_review_value.dart';
 import '../../../../domain/entity/delivery/givedeliveryreviewvalue/give_delivery_review_value.dart';
 import '../../../../misc/constant.dart';
+import '../../../../misc/dialog_helper.dart';
+import '../../../../misc/general_give_delivery_review_container_parameter.dart';
 import '../../../../misc/getextended/get_extended.dart';
 import '../../../../misc/give_delivery_review_container_submit_callback.dart';
 import '../../../../misc/inputdecoration/default_input_decoration.dart';
@@ -18,7 +21,9 @@ import '../../field.dart';
 import '../../modified_svg_picture.dart';
 import '../../modified_text_field.dart';
 import '../../rx_consumer.dart';
+import '../../tap_area.dart';
 import '../give_delivery_review_check_list.dart';
+import '../givedeliveryreviewattachment/give_delivery_review_attachment_section.dart';
 
 class FiveRatingGiveDeliveryReviewContainer extends DefaultGetxPage {
   late final ControllerMember<FiveRatingGiveDeliveryReviewContainerController> _fiveRatingGiveDeliveryReviewContainerController;
@@ -27,6 +32,7 @@ class FiveRatingGiveDeliveryReviewContainer extends DefaultGetxPage {
   final FiveRatingGiveDeliveryReviewContainerSubmitCallback fiveRatingGiveDeliveryReviewContainerSubmitCallback;
   final void Function(GiveDeliveryReviewValue?) giveDeliveryReviewValueCallback;
   final ControllerMember<FiveRatingGiveDeliveryReviewContainerController> Function() onAddControllerMember;
+  final GeneralGiveDeliveryReviewContainerParameter generalGiveDeliveryReviewContainerParameter;
 
   FiveRatingGiveDeliveryReviewContainer({
     super.key,
@@ -34,7 +40,8 @@ class FiveRatingGiveDeliveryReviewContainer extends DefaultGetxPage {
     required this.fiveRatingGiveDeliveryReviewContainerData,
     required this.fiveRatingGiveDeliveryReviewContainerSubmitCallback,
     required this.giveDeliveryReviewValueCallback,
-    required this.onAddControllerMember
+    required this.onAddControllerMember,
+    required this.generalGiveDeliveryReviewContainerParameter
   }) {
     _fiveRatingGiveDeliveryReviewContainerController = onAddControllerMember();
   }
@@ -56,6 +63,7 @@ class FiveRatingGiveDeliveryReviewContainer extends DefaultGetxPage {
       fiveRatingGiveDeliveryReviewContainerData: fiveRatingGiveDeliveryReviewContainerData,
       fiveRatingGiveDeliveryReviewContainerSubmitCallback: fiveRatingGiveDeliveryReviewContainerSubmitCallback,
       giveDeliveryReviewValueCallback: giveDeliveryReviewValueCallback,
+      generalGiveDeliveryReviewContainerParameter: generalGiveDeliveryReviewContainerParameter
     );
   }
 }
@@ -65,13 +73,15 @@ class _StatefulFiveRatingGiveDeliveryReviewContainerControllerMediatorWidget ext
   final FiveRatingGiveDeliveryReviewContainerData fiveRatingGiveDeliveryReviewContainerData;
   final FiveRatingGiveDeliveryReviewContainerSubmitCallback fiveRatingGiveDeliveryReviewContainerSubmitCallback;
   final void Function(GiveDeliveryReviewValue?) giveDeliveryReviewValueCallback;
+  final GeneralGiveDeliveryReviewContainerParameter generalGiveDeliveryReviewContainerParameter;
 
   const _StatefulFiveRatingGiveDeliveryReviewContainerControllerMediatorWidget({
     super.key,
     required this.fiveRatingGiveDeliveryReviewContainerController,
     required this.fiveRatingGiveDeliveryReviewContainerData,
     required this.fiveRatingGiveDeliveryReviewContainerSubmitCallback,
-    required this.giveDeliveryReviewValueCallback
+    required this.giveDeliveryReviewValueCallback,
+    required this.generalGiveDeliveryReviewContainerParameter
   });
 
   @override
@@ -96,12 +106,17 @@ class _StatefulFiveRatingGiveDeliveryReviewContainerControllerMediatorWidgetStat
         onGetVerySatisfiedFeedbackInput: () => _feedbackTextEditingController.text,
         onSubmit: () => widget.giveDeliveryReviewValueCallback(
           FiveRatingGiveDeliveryReviewValue(
-            satisfiedFeedback: _feedbackTextEditingController.text,
+            verySatisfiedFeedback: _feedbackTextEditingController.text,
+            combinedOrderId: widget.generalGiveDeliveryReviewContainerParameter.combinedOrderId,
+            countryId: widget.generalGiveDeliveryReviewContainerParameter.countryId,
             hasServiceQuality: widget.fiveRatingGiveDeliveryReviewContainerData._hasServiceQuality,
             hasPackagingQuality: widget.fiveRatingGiveDeliveryReviewContainerData._hasPackagingQuality,
             hasPriceQuality: widget.fiveRatingGiveDeliveryReviewContainerData._hasPriceQuality,
             hasItemQuality: widget.fiveRatingGiveDeliveryReviewContainerData._hasItemQuality,
-            hasDeliveryQuality: widget.fiveRatingGiveDeliveryReviewContainerData._hasDeliveryQuality
+            hasDeliveryQuality: widget.fiveRatingGiveDeliveryReviewContainerData._hasDeliveryQuality,
+            attachmentFilePath: widget.fiveRatingGiveDeliveryReviewContainerData._platformFile.map<String>(
+              (platformFile) => platformFile.path.toEmptyStringNonNull
+            ).toList()
           )
         )
       )
@@ -136,73 +151,88 @@ class _StatefulFiveRatingGiveDeliveryReviewContainerControllerMediatorWidgetStat
           ),
         ),
         const SizedBox(height: 10),
-        Container(
-          width: double.infinity,
-          child: Center(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ModifiedSvgPicture.asset(
-                  Constant.vectorCameraOutline,
-                  overrideDefaultColorWithSingleColor: false
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  "Love to see a photo or video of the item".tr,
-                  style: const TextStyle(fontWeight: FontWeight.bold)
-                ),
-              ],
+        TapArea(
+          onTap: () async {
+            FilePickerResult? filePickerResult = await DialogHelper.showChooseFileOrTakePhoto(
+              allowMultipleSelectFiles: true
+            );
+            if (filePickerResult != null) {
+              widget.fiveRatingGiveDeliveryReviewContainerData._platformFile.addAll(filePickerResult.files);
+              setState(() {});
+            }
+          },
+          child: Container(
+            width: double.infinity,
+            child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ModifiedSvgPicture.asset(
+                    Constant.vectorCameraOutline,
+                    overrideDefaultColorWithSingleColor: false
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    "Love to see a photo or video of the item".tr,
+                    style: const TextStyle(fontWeight: FontWeight.bold)
+                  ),
+                ],
+              ),
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16.0),
+              color: Colors.grey.shade400
             ),
           ),
-          padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16.0),
-            color: Colors.grey.shade400
-          ),
         ),
-        const SizedBox(height: 10),
-        GiveDeliveryReviewCheckList(
-          hasServiceQuality: widget.fiveRatingGiveDeliveryReviewContainerData._hasServiceQuality,
-          onHasServiceQualityChanged: (value) {
-            if (value != null) {
-              setState(() {
-                widget.fiveRatingGiveDeliveryReviewContainerData._hasServiceQuality = value;
-              });
-            }
-          },
-          hasPackagingQuality: widget.fiveRatingGiveDeliveryReviewContainerData._hasPackagingQuality,
-          onHasPackagingQualityChanged: (value) {
-            if (value != null) {
-              setState(() {
-                widget.fiveRatingGiveDeliveryReviewContainerData._hasPackagingQuality = value;
-              });
-            }
-          },
-          hasPriceQuality: widget.fiveRatingGiveDeliveryReviewContainerData._hasPriceQuality,
-          onHasPriceQualityChanged: (value) {
-            if (value != null) {
-              setState(() {
-                widget.fiveRatingGiveDeliveryReviewContainerData._hasPriceQuality = value;
-              });
-            }
-          },
-          hasItemQuality: widget.fiveRatingGiveDeliveryReviewContainerData._hasItemQuality,
-          onHasItemQualityChanged: (value) {
-            if (value != null) {
-              setState(() {
-                widget.fiveRatingGiveDeliveryReviewContainerData._hasItemQuality = value;
-              });
-            }
-          },
-          hasDeliveryQuality: widget.fiveRatingGiveDeliveryReviewContainerData._hasDeliveryQuality,
-          onHasDeliveryQualityChanged: (value) {
-            if (value != null) {
-              setState(() {
-                widget.fiveRatingGiveDeliveryReviewContainerData._hasDeliveryQuality = value;
-              });
-            }
-          },
+        GiveDeliveryReviewAttachmentSection(
+          onGetPlatformFileList: () => widget.fiveRatingGiveDeliveryReviewContainerData._platformFile,
+          onSetState: () => setState(() {})
         )
+        // const SizedBox(height: 10),
+        // GiveDeliveryReviewCheckList(
+        //   hasServiceQuality: widget.fiveRatingGiveDeliveryReviewContainerData._hasServiceQuality,
+        //   onHasServiceQualityChanged: (value) {
+        //     if (value != null) {
+        //       setState(() {
+        //         widget.fiveRatingGiveDeliveryReviewContainerData._hasServiceQuality = value;
+        //       });
+        //     }
+        //   },
+        //   hasPackagingQuality: widget.fiveRatingGiveDeliveryReviewContainerData._hasPackagingQuality,
+        //   onHasPackagingQualityChanged: (value) {
+        //     if (value != null) {
+        //       setState(() {
+        //         widget.fiveRatingGiveDeliveryReviewContainerData._hasPackagingQuality = value;
+        //       });
+        //     }
+        //   },
+        //   hasPriceQuality: widget.fiveRatingGiveDeliveryReviewContainerData._hasPriceQuality,
+        //   onHasPriceQualityChanged: (value) {
+        //     if (value != null) {
+        //       setState(() {
+        //         widget.fiveRatingGiveDeliveryReviewContainerData._hasPriceQuality = value;
+        //       });
+        //     }
+        //   },
+        //   hasItemQuality: widget.fiveRatingGiveDeliveryReviewContainerData._hasItemQuality,
+        //   onHasItemQualityChanged: (value) {
+        //     if (value != null) {
+        //       setState(() {
+        //         widget.fiveRatingGiveDeliveryReviewContainerData._hasItemQuality = value;
+        //       });
+        //     }
+        //   },
+        //   hasDeliveryQuality: widget.fiveRatingGiveDeliveryReviewContainerData._hasDeliveryQuality,
+        //   onHasDeliveryQualityChanged: (value) {
+        //     if (value != null) {
+        //       setState(() {
+        //         widget.fiveRatingGiveDeliveryReviewContainerData._hasDeliveryQuality = value;
+        //       });
+        //     }
+        //   },
+        // )
       ]
     );
   }
@@ -215,6 +245,7 @@ class FiveRatingGiveDeliveryReviewContainerData {
   bool _hasPriceQuality = false;
   bool _hasItemQuality = false;
   bool _hasDeliveryQuality = false;
+  final List<PlatformFile> _platformFile = [];
 }
 
 class FiveRatingGiveDeliveryReviewContainerSubmitCallback extends GiveDeliveryReviewContainerSubmitCallback {

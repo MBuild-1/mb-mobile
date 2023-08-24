@@ -28,6 +28,7 @@ import '../widget/colorful_chip_tab_bar.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import 'getx_page.dart';
+import 'order_page.dart';
 
 class NotificationPage extends RestorableGetxPage<_NotificationPageRestoration> {
   late final ControllerMember<NotificationController> _notificationController = ControllerMember<NotificationController>().addToControllerManager(controllerManager);
@@ -57,7 +58,7 @@ class NotificationPage extends RestorableGetxPage<_NotificationPageRestoration> 
   }
 }
 
-class _NotificationPageRestoration extends MixableGetxPageRestoration {
+class _NotificationPageRestoration extends MixableGetxPageRestoration with OrderPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {

@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
@@ -7,6 +8,8 @@ import '../../../../controller/deliveryreviewcontroller/givedeliveryreviewcontai
 import '../../../../domain/entity/delivery/givedeliveryreviewvalue/give_delivery_review_value.dart';
 import '../../../../domain/entity/delivery/givedeliveryreviewvalue/three_rating_give_delivery_review_value.dart';
 import '../../../../misc/constant.dart';
+import '../../../../misc/dialog_helper.dart';
+import '../../../../misc/general_give_delivery_review_container_parameter.dart';
 import '../../../../misc/getextended/get_extended.dart';
 import '../../../../misc/give_delivery_review_container_submit_callback.dart';
 import '../../../../misc/inputdecoration/default_input_decoration.dart';
@@ -18,6 +21,8 @@ import '../../field.dart';
 import '../../modified_svg_picture.dart';
 import '../../modified_text_field.dart';
 import '../../rx_consumer.dart';
+import '../../tap_area.dart';
+import '../givedeliveryreviewattachment/give_delivery_review_attachment_section.dart';
 
 class ThreeRatingGiveDeliveryReviewContainer extends DefaultGetxPage {
   late final ControllerMember<ThreeRatingGiveDeliveryReviewContainerController> _threeRatingGiveDeliveryReviewContainerController;
@@ -26,6 +31,7 @@ class ThreeRatingGiveDeliveryReviewContainer extends DefaultGetxPage {
   final ThreeRatingGiveDeliveryReviewContainerSubmitCallback threeRatingGiveDeliveryReviewContainerSubmitCallback;
   final void Function(GiveDeliveryReviewValue?) giveDeliveryReviewValueCallback;
   final ControllerMember<ThreeRatingGiveDeliveryReviewContainerController> Function() onAddControllerMember;
+  final GeneralGiveDeliveryReviewContainerParameter generalGiveDeliveryReviewContainerParameter;
 
   ThreeRatingGiveDeliveryReviewContainer({
     super.key,
@@ -33,7 +39,8 @@ class ThreeRatingGiveDeliveryReviewContainer extends DefaultGetxPage {
     required this.threeRatingGiveDeliveryReviewContainerData,
     required this.threeRatingGiveDeliveryReviewContainerSubmitCallback,
     required this.giveDeliveryReviewValueCallback,
-    required this.onAddControllerMember
+    required this.onAddControllerMember,
+    required this.generalGiveDeliveryReviewContainerParameter
   }) {
     _threeRatingGiveDeliveryReviewContainerController = onAddControllerMember();
   }
@@ -55,6 +62,7 @@ class ThreeRatingGiveDeliveryReviewContainer extends DefaultGetxPage {
       threeRatingGiveDeliveryReviewContainerData: threeRatingGiveDeliveryReviewContainerData,
       threeRatingGiveDeliveryReviewContainerSubmitCallback: threeRatingGiveDeliveryReviewContainerSubmitCallback,
       giveDeliveryReviewValueCallback: giveDeliveryReviewValueCallback,
+      generalGiveDeliveryReviewContainerParameter: generalGiveDeliveryReviewContainerParameter,
     );
   }
 }
@@ -64,13 +72,15 @@ class _StatefulThreeRatingGiveDeliveryReviewContainerControllerMediatorWidget ex
   final ThreeRatingGiveDeliveryReviewContainerData threeRatingGiveDeliveryReviewContainerData;
   final ThreeRatingGiveDeliveryReviewContainerSubmitCallback threeRatingGiveDeliveryReviewContainerSubmitCallback;
   final void Function(GiveDeliveryReviewValue?) giveDeliveryReviewValueCallback;
+  final GeneralGiveDeliveryReviewContainerParameter generalGiveDeliveryReviewContainerParameter;
 
   const _StatefulThreeRatingGiveDeliveryReviewContainerControllerMediatorWidget({
     super.key,
     required this.threeRatingGiveDeliveryReviewContainerController,
     required this.threeRatingGiveDeliveryReviewContainerData,
     required this.threeRatingGiveDeliveryReviewContainerSubmitCallback,
-    required this.giveDeliveryReviewValueCallback
+    required this.giveDeliveryReviewValueCallback,
+    required this.generalGiveDeliveryReviewContainerParameter
   });
 
   @override
@@ -95,7 +105,12 @@ class _StatefulThreeRatingGiveDeliveryReviewContainerControllerMediatorWidgetSta
         onGetUnsatisfiedFeedbackInput: () => _feedbackTextEditingController.text,
         onSubmit: () => widget.giveDeliveryReviewValueCallback(
           ThreeRatingGiveDeliveryReviewValue(
-            unsatisfiedFeedback: _feedbackTextEditingController.text
+            unsatisfiedFeedback: _feedbackTextEditingController.text,
+            combinedOrderId: widget.generalGiveDeliveryReviewContainerParameter.combinedOrderId,
+            countryId: widget.generalGiveDeliveryReviewContainerParameter.countryId,
+            attachmentFilePath: widget.threeRatingGiveDeliveryReviewContainerData._platformFile.map<String>(
+              (platformFile) => platformFile.path.toEmptyStringNonNull
+            ).toList()
           )
         )
       )
@@ -130,30 +145,45 @@ class _StatefulThreeRatingGiveDeliveryReviewContainerControllerMediatorWidgetSta
           ),
         ),
         const SizedBox(height: 10),
-        Container(
-          width: double.infinity,
-          child: Center(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ModifiedSvgPicture.asset(
-                  Constant.vectorCameraOutline,
-                  overrideDefaultColorWithSingleColor: false
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  "Love to see a photo or video of the item".tr,
-                  style: const TextStyle(fontWeight: FontWeight.bold)
-                ),
-              ],
+        TapArea(
+          onTap: () async {
+            FilePickerResult? filePickerResult = await DialogHelper.showChooseFileOrTakePhoto(
+              allowMultipleSelectFiles: true
+            );
+            if (filePickerResult != null) {
+              widget.threeRatingGiveDeliveryReviewContainerData._platformFile.addAll(filePickerResult.files);
+              setState(() {});
+            }
+          },
+          child: Container(
+            width: double.infinity,
+            child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ModifiedSvgPicture.asset(
+                    Constant.vectorCameraOutline,
+                    overrideDefaultColorWithSingleColor: false
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    "Love to see a photo or video of the item".tr,
+                    style: const TextStyle(fontWeight: FontWeight.bold)
+                  ),
+                ],
+              ),
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16.0),
+              color: Colors.grey.shade400
             ),
           ),
-          padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16.0),
-            color: Colors.grey.shade400
-          ),
         ),
+        GiveDeliveryReviewAttachmentSection(
+          onGetPlatformFileList: () => widget.threeRatingGiveDeliveryReviewContainerData._platformFile,
+          onSetState: () => setState(() {})
+        )
       ]
     );
   }
@@ -161,6 +191,7 @@ class _StatefulThreeRatingGiveDeliveryReviewContainerControllerMediatorWidgetSta
 
 class ThreeRatingGiveDeliveryReviewContainerData {
   final TextEditingController _feedbackTextEditingController = TextEditingController();
+  final List<PlatformFile> _platformFile = [];
 }
 
 class ThreeRatingGiveDeliveryReviewContainerSubmitCallback extends GiveDeliveryReviewContainerSubmitCallback {

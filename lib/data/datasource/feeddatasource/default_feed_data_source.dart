@@ -14,6 +14,7 @@ import '../../../domain/entity/delivery/delivery_review_list_parameter.dart';
 import '../../../domain/entity/delivery/delivery_review_paging_parameter.dart';
 import '../../../domain/entity/delivery/give_review_delivery_review_detail_parameter.dart';
 import '../../../domain/entity/delivery/give_review_delivery_review_detail_response.dart';
+import '../../../domain/entity/delivery/givedeliveryreviewvalue/give_delivery_review_value.dart';
 import '../../../domain/entity/news/news.dart';
 import '../../../domain/entity/news/news_paging_parameter.dart';
 import '../../../domain/entity/order/combined_order.dart';
@@ -22,6 +23,7 @@ import '../../../domain/entity/video/defaultvideo/default_video_list_parameter.d
 import '../../../domain/entity/video/shortvideo/short_video.dart';
 import '../../../domain/entity/video/shortvideo/short_video_list_parameter.dart';
 import '../../../domain/entity/video/shortvideo/short_video_paging_parameter.dart';
+import '../../../misc/option_builder.dart';
 import '../../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../../misc/processing/dio_http_client_processing.dart';
 import '../../../misc/processing/dummy_future_processing.dart';
@@ -198,9 +200,22 @@ class DefaultFeedDataSource implements FeedDataSource {
 
   @override
   FutureProcessing<GiveReviewDeliveryReviewDetailResponse> giveReviewDeliveryReviewDetail(GiveReviewDeliveryReviewDetailParameter giveReviewDeliveryReviewDetailParameter) {
-    return DummyFutureProcessing((cancelToken) async {
-      await Future.delayed(const Duration(seconds: 1));
-      return GiveReviewDeliveryReviewDetailResponse();
+    return DioHttpClientProcessing((cancelToken) async {
+      GiveDeliveryReviewValue giveDeliveryReviewValue = giveReviewDeliveryReviewDetailParameter.giveDeliveryReviewValue;
+      Map<String, dynamic> formDataMap = <String, dynamic> {
+        "combined_order_id": giveDeliveryReviewValue.combinedOrderId,
+        "country_id": giveDeliveryReviewValue.countryId,
+        "rating": giveDeliveryReviewValue.rating,
+        "review": giveDeliveryReviewValue.review,
+      };
+      int i = 0;
+      for (String attachmentFilePath in giveDeliveryReviewValue.attachmentFilePath) {
+        formDataMap["attachments[$i]"] = await MultipartFile.fromFile(attachmentFilePath) ;
+        i++;
+      }
+      FormData formData = FormData.fromMap(formDataMap);
+      return dio.post("/shipping-review", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+        .map<GiveReviewDeliveryReviewDetailResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToGiveReviewDeliveryReviewDetailResponse());
     });
   }
 

@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
@@ -7,6 +8,8 @@ import '../../../../controller/deliveryreviewcontroller/givedeliveryreviewcontai
 import '../../../../domain/entity/delivery/givedeliveryreviewvalue/give_delivery_review_value.dart';
 import '../../../../domain/entity/delivery/givedeliveryreviewvalue/one_rating_give_delivery_review_value.dart';
 import '../../../../misc/constant.dart';
+import '../../../../misc/dialog_helper.dart';
+import '../../../../misc/general_give_delivery_review_container_parameter.dart';
 import '../../../../misc/getextended/get_extended.dart';
 import '../../../../misc/give_delivery_review_container_submit_callback.dart';
 import '../../../../misc/inputdecoration/default_input_decoration.dart';
@@ -18,6 +21,10 @@ import '../../field.dart';
 import '../../modified_svg_picture.dart';
 import '../../modified_text_field.dart';
 import '../../rx_consumer.dart';
+import '../../tap_area.dart';
+import '../givedeliveryreviewattachment/give_delivery_review_attachment_carousel.dart';
+import '../givedeliveryreviewattachment/give_delivery_review_attachment_item.dart';
+import '../givedeliveryreviewattachment/give_delivery_review_attachment_section.dart';
 
 class OneRatingGiveDeliveryReviewContainer extends DefaultGetxPage {
   late final ControllerMember<OneRatingGiveDeliveryReviewContainerController> _oneRatingGiveDeliveryReviewContainerController;
@@ -26,6 +33,7 @@ class OneRatingGiveDeliveryReviewContainer extends DefaultGetxPage {
   final String ancestorPageName;
   final void Function(GiveDeliveryReviewValue?) giveDeliveryReviewValueCallback;
   final ControllerMember<OneRatingGiveDeliveryReviewContainerController> Function() onAddControllerMember;
+  final GeneralGiveDeliveryReviewContainerParameter generalGiveDeliveryReviewContainerParameter;
 
   OneRatingGiveDeliveryReviewContainer({
     super.key,
@@ -33,7 +41,8 @@ class OneRatingGiveDeliveryReviewContainer extends DefaultGetxPage {
     required this.oneRatingGiveDeliveryReviewContainerSubmitCallback,
     required this.ancestorPageName,
     required this.giveDeliveryReviewValueCallback,
-    required this.onAddControllerMember
+    required this.onAddControllerMember,
+    required this.generalGiveDeliveryReviewContainerParameter
   }) {
     _oneRatingGiveDeliveryReviewContainerController = onAddControllerMember();
   }
@@ -55,6 +64,7 @@ class OneRatingGiveDeliveryReviewContainer extends DefaultGetxPage {
       oneRatingGiveDeliveryReviewContainerSubmitCallback: oneRatingGiveDeliveryReviewContainerSubmitCallback,
       oneRatingGiveDeliveryReviewContainerData: oneRatingGiveDeliveryReviewContainerData,
       giveDeliveryReviewValueCallback: giveDeliveryReviewValueCallback,
+      generalGiveDeliveryReviewContainerParameter: generalGiveDeliveryReviewContainerParameter,
     );
   }
 }
@@ -64,13 +74,15 @@ class _StatefulOneRatingGiveDeliveryReviewContainerControllerMediatorWidget exte
   final OneRatingGiveDeliveryReviewContainerData oneRatingGiveDeliveryReviewContainerData;
   final OneRatingGiveDeliveryReviewContainerSubmitCallback oneRatingGiveDeliveryReviewContainerSubmitCallback;
   final void Function(GiveDeliveryReviewValue?) giveDeliveryReviewValueCallback;
+  final GeneralGiveDeliveryReviewContainerParameter generalGiveDeliveryReviewContainerParameter;
 
   const _StatefulOneRatingGiveDeliveryReviewContainerControllerMediatorWidget({
     super.key,
     required this.oneRatingGiveDeliveryReviewContainerController,
     required this.oneRatingGiveDeliveryReviewContainerData,
     required this.oneRatingGiveDeliveryReviewContainerSubmitCallback,
-    required this.giveDeliveryReviewValueCallback
+    required this.giveDeliveryReviewValueCallback,
+    required this.generalGiveDeliveryReviewContainerParameter
   });
 
   @override
@@ -95,7 +107,12 @@ class _StatefulOneRatingGiveDeliveryReviewContainerControllerMediatorWidgetState
         onGetDisappointedFeedbackInput: () => _feedbackTextEditingController.text,
         onSubmit: () => widget.giveDeliveryReviewValueCallback(
           OneRatingGiveDeliveryReviewValue(
-            disappointedFeedback: _feedbackTextEditingController.text
+            disappointedFeedback: _feedbackTextEditingController.text,
+            combinedOrderId: widget.generalGiveDeliveryReviewContainerParameter.combinedOrderId,
+            countryId: widget.generalGiveDeliveryReviewContainerParameter.countryId,
+            attachmentFilePath: widget.oneRatingGiveDeliveryReviewContainerData._platformFile.map<String>(
+              (platformFile) => platformFile.path.toEmptyStringNonNull
+            ).toList()
           )
         )
       )
@@ -130,30 +147,45 @@ class _StatefulOneRatingGiveDeliveryReviewContainerControllerMediatorWidgetState
           ),
         ),
         const SizedBox(height: 10),
-        Container(
-          width: double.infinity,
-          child: Center(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ModifiedSvgPicture.asset(
-                  Constant.vectorCameraOutline,
-                  overrideDefaultColorWithSingleColor: false
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  "Love to see a photo or video of the item".tr,
-                  style: const TextStyle(fontWeight: FontWeight.bold)
-                ),
-              ],
+        TapArea(
+          onTap: () async {
+            FilePickerResult? filePickerResult = await DialogHelper.showChooseFileOrTakePhoto(
+              allowMultipleSelectFiles: true
+            );
+            if (filePickerResult != null) {
+              widget.oneRatingGiveDeliveryReviewContainerData._platformFile.addAll(filePickerResult.files);
+              setState(() {});
+            }
+          },
+          child: Container(
+            width: double.infinity,
+            child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ModifiedSvgPicture.asset(
+                    Constant.vectorCameraOutline,
+                    overrideDefaultColorWithSingleColor: false
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    "Love to see a photo or video of the item".tr,
+                    style: const TextStyle(fontWeight: FontWeight.bold)
+                  ),
+                ],
+              ),
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16.0),
+              color: Colors.grey.shade400
             ),
           ),
-          padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16.0),
-            color: Colors.grey.shade400
-          ),
         ),
+        GiveDeliveryReviewAttachmentSection(
+          onGetPlatformFileList: () => widget.oneRatingGiveDeliveryReviewContainerData._platformFile,
+          onSetState: () => setState(() {})
+        )
       ]
     );
   }
@@ -161,6 +193,7 @@ class _StatefulOneRatingGiveDeliveryReviewContainerControllerMediatorWidgetState
 
 class OneRatingGiveDeliveryReviewContainerData {
   final TextEditingController _feedbackTextEditingController = TextEditingController();
+  final List<PlatformFile> _platformFile = [];
 }
 
 class OneRatingGiveDeliveryReviewContainerSubmitCallback extends GiveDeliveryReviewContainerSubmitCallback {

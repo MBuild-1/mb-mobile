@@ -14,6 +14,7 @@ import '../../../domain/entity/delivery/givedeliveryreviewvalue/give_delivery_re
 import '../../../domain/usecase/give_review_delivery_review_detail_use_case.dart';
 import '../../../misc/dialog_helper.dart';
 import '../../../misc/errorprovider/error_provider.dart';
+import '../../../misc/general_give_delivery_review_container_parameter.dart';
 import '../../../misc/injector.dart';
 import '../../../misc/manager/controller_manager.dart';
 import '../../../misc/toast_helper.dart';
@@ -32,13 +33,11 @@ class GiveReviewDeliveryReviewDetailModalDialogPage extends ModalDialogPage<Give
 
   late final List<List<dynamic>> _giveReviewDeliveryReviewSubControllerList;
 
-  final int selectedRating;
-  final DeliveryReview deliveryReview;
+  final GiveReviewDeliveryReviewDetailModalDialogPageParameter giveReviewDeliveryReviewDetailModalDialogPageParameter;
 
   GiveReviewDeliveryReviewDetailModalDialogPage({
     super.key,
-    required this.selectedRating,
-    required this.deliveryReview
+    required this.giveReviewDeliveryReviewDetailModalDialogPageParameter,
   }) {
     _giveReviewDeliveryReviewSubControllerList = [
       [
@@ -112,8 +111,7 @@ class GiveReviewDeliveryReviewDetailModalDialogPage extends ModalDialogPage<Give
     return _StatefulGiveReviewDeliveryReviewDetailControllerMediatorWidget(
       giveReviewDeliveryReviewDetailModalDialogController: giveReviewDeliveryReviewDetailModalDialogController,
       giveReviewDeliveryReviewSubControllerList: _giveReviewDeliveryReviewSubControllerList,
-      selectedRating: selectedRating,
-      deliveryReview: deliveryReview
+      giveReviewDeliveryReviewDetailModalDialogPageParameter: giveReviewDeliveryReviewDetailModalDialogPageParameter,
     );
   }
 }
@@ -121,14 +119,12 @@ class GiveReviewDeliveryReviewDetailModalDialogPage extends ModalDialogPage<Give
 class _StatefulGiveReviewDeliveryReviewDetailControllerMediatorWidget extends StatefulWidget {
   final GiveReviewDeliveryReviewDetailModalDialogController giveReviewDeliveryReviewDetailModalDialogController;
   final List<List<dynamic>> giveReviewDeliveryReviewSubControllerList;
-  final int selectedRating;
-  final DeliveryReview deliveryReview;
+  final GiveReviewDeliveryReviewDetailModalDialogPageParameter giveReviewDeliveryReviewDetailModalDialogPageParameter;
 
   const _StatefulGiveReviewDeliveryReviewDetailControllerMediatorWidget({
     required this.giveReviewDeliveryReviewDetailModalDialogController,
     required this.giveReviewDeliveryReviewSubControllerList,
-    required this.selectedRating,
-    required this.deliveryReview
+    required this.giveReviewDeliveryReviewDetailModalDialogPageParameter,
   });
 
   @override
@@ -155,7 +151,7 @@ class _StatefulGiveReviewDeliveryReviewDetailControllerMediatorWidgetState exten
   @override
   void initState() {
     super.initState();
-    _selectedRating = widget.selectedRating;
+    _selectedRating = widget.giveReviewDeliveryReviewDetailModalDialogPageParameter.selectedRating;
     _giveDeliveryReviewValueCallback = (giveDeliveryReviewValue) {
       _giveDeliveryReviewValue = giveDeliveryReviewValue;
       if (giveDeliveryReviewValue != null) {
@@ -189,29 +185,7 @@ class _StatefulGiveReviewDeliveryReviewDetailControllerMediatorWidgetState exten
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    width: 70,
-                    child: AspectRatio(
-                      aspectRatio: 1.0,
-                      child: ClipRRect(
-                        child: ProductModifiedCachedNetworkImage(
-                          imageUrl: widget.deliveryReview.productImageUrl.toEmptyStringNonNull,
-                        )
-                      )
-                    ),
-                  ),
-                  const SizedBox(width: 20),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(widget.deliveryReview.productName.toStringNonNull, style: const TextStyle(fontWeight: FontWeight.bold)),
-                    ],
-                  )
-                ],
-              ),
+              Text(widget.giveReviewDeliveryReviewDetailModalDialogPageParameter.orderCode.toStringNonNull, style: const TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 10),
               Center(
                 child: RatingIndicator(
@@ -226,6 +200,10 @@ class _StatefulGiveReviewDeliveryReviewDetailControllerMediatorWidgetState exten
               const SizedBox(height: 15),
               Builder(
                 builder: (context) {
+                  GeneralGiveDeliveryReviewContainerParameter generalGiveDeliveryReviewContainerParameter = GeneralGiveDeliveryReviewContainerParameter(
+                    combinedOrderId: widget.giveReviewDeliveryReviewDetailModalDialogPageParameter.combinedOrderId,
+                    countryId: widget.giveReviewDeliveryReviewDetailModalDialogPageParameter.countryId
+                  );
                   if (_selectedRating == 1) {
                     return OneRatingGiveDeliveryReviewContainer(
                       oneRatingGiveDeliveryReviewContainerData: _oneRatingGiveDeliveryReviewContainerData,
@@ -233,6 +211,7 @@ class _StatefulGiveReviewDeliveryReviewDetailControllerMediatorWidgetState exten
                       ancestorPageName: pageName,
                       giveDeliveryReviewValueCallback: _giveDeliveryReviewValueCallback,
                       onAddControllerMember: () => widget.giveReviewDeliveryReviewSubControllerList[0][2]() as ControllerMember<OneRatingGiveDeliveryReviewContainerController>,
+                      generalGiveDeliveryReviewContainerParameter: generalGiveDeliveryReviewContainerParameter
                     );
                   } else if (_selectedRating == 2) {
                     return TwoRatingGiveDeliveryReviewContainer(
@@ -241,6 +220,7 @@ class _StatefulGiveReviewDeliveryReviewDetailControllerMediatorWidgetState exten
                       ancestorPageName: pageName,
                       giveDeliveryReviewValueCallback: _giveDeliveryReviewValueCallback,
                       onAddControllerMember: () => widget.giveReviewDeliveryReviewSubControllerList[1][2]() as ControllerMember<TwoRatingGiveDeliveryReviewContainerController>,
+                      generalGiveDeliveryReviewContainerParameter: generalGiveDeliveryReviewContainerParameter
                     );
                   } else if (_selectedRating == 3) {
                     return ThreeRatingGiveDeliveryReviewContainer(
@@ -249,6 +229,7 @@ class _StatefulGiveReviewDeliveryReviewDetailControllerMediatorWidgetState exten
                       ancestorPageName: pageName,
                       giveDeliveryReviewValueCallback: _giveDeliveryReviewValueCallback,
                       onAddControllerMember: () => widget.giveReviewDeliveryReviewSubControllerList[2][2]() as ControllerMember<ThreeRatingGiveDeliveryReviewContainerController>,
+                      generalGiveDeliveryReviewContainerParameter: generalGiveDeliveryReviewContainerParameter
                     );
                   } else if (_selectedRating == 4) {
                     return FourRatingGiveDeliveryReviewContainer(
@@ -257,6 +238,7 @@ class _StatefulGiveReviewDeliveryReviewDetailControllerMediatorWidgetState exten
                       ancestorPageName: pageName,
                       giveDeliveryReviewValueCallback: _giveDeliveryReviewValueCallback,
                       onAddControllerMember: () => widget.giveReviewDeliveryReviewSubControllerList[3][2]() as ControllerMember<FourRatingGiveDeliveryReviewContainerController>,
+                      generalGiveDeliveryReviewContainerParameter: generalGiveDeliveryReviewContainerParameter
                     );
                   } else if (_selectedRating == 5) {
                     return FiveRatingGiveDeliveryReviewContainer(
@@ -265,6 +247,7 @@ class _StatefulGiveReviewDeliveryReviewDetailControllerMediatorWidgetState exten
                       ancestorPageName: pageName,
                       giveDeliveryReviewValueCallback: _giveDeliveryReviewValueCallback,
                       onAddControllerMember: () => widget.giveReviewDeliveryReviewSubControllerList[4][2]() as ControllerMember<FiveRatingGiveDeliveryReviewContainerController>,
+                      generalGiveDeliveryReviewContainerParameter: generalGiveDeliveryReviewContainerParameter
                     );
                   } else {
                     return Container();
@@ -301,10 +284,14 @@ class _StatefulGiveReviewDeliveryReviewDetailControllerMediatorWidgetState exten
 
 class GiveReviewDeliveryReviewDetailModalDialogPageParameter {
   final int selectedRating;
-  final DeliveryReview deliveryReview;
+  final String combinedOrderId;
+  final String countryId;
+  final String orderCode;
 
   const GiveReviewDeliveryReviewDetailModalDialogPageParameter({
     required this.selectedRating,
-    required this.deliveryReview
+    required this.combinedOrderId,
+    required this.countryId,
+    required this.orderCode
   });
 }

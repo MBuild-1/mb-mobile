@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
@@ -7,6 +8,8 @@ import '../../../../controller/deliveryreviewcontroller/givedeliveryreviewcontai
 import '../../../../domain/entity/delivery/givedeliveryreviewvalue/four_rating_give_delivery_review_value.dart';
 import '../../../../domain/entity/delivery/givedeliveryreviewvalue/give_delivery_review_value.dart';
 import '../../../../misc/constant.dart';
+import '../../../../misc/dialog_helper.dart';
+import '../../../../misc/general_give_delivery_review_container_parameter.dart';
 import '../../../../misc/getextended/get_extended.dart';
 import '../../../../misc/give_delivery_review_container_submit_callback.dart';
 import '../../../../misc/inputdecoration/default_input_decoration.dart';
@@ -18,7 +21,9 @@ import '../../field.dart';
 import '../../modified_svg_picture.dart';
 import '../../modified_text_field.dart';
 import '../../rx_consumer.dart';
+import '../../tap_area.dart';
 import '../give_delivery_review_check_list.dart';
+import '../givedeliveryreviewattachment/give_delivery_review_attachment_section.dart';
 
 class FourRatingGiveDeliveryReviewContainer extends DefaultGetxPage {
   late final ControllerMember<FourRatingGiveDeliveryReviewContainerController> _fourRatingGiveDeliveryReviewContainerController;
@@ -27,6 +32,7 @@ class FourRatingGiveDeliveryReviewContainer extends DefaultGetxPage {
   final FourRatingGiveDeliveryReviewContainerSubmitCallback fourRatingGiveDeliveryReviewContainerSubmitCallback;
   final void Function(GiveDeliveryReviewValue?) giveDeliveryReviewValueCallback;
   final ControllerMember<FourRatingGiveDeliveryReviewContainerController> Function() onAddControllerMember;
+  final GeneralGiveDeliveryReviewContainerParameter generalGiveDeliveryReviewContainerParameter;
 
   FourRatingGiveDeliveryReviewContainer({
     super.key,
@@ -34,7 +40,8 @@ class FourRatingGiveDeliveryReviewContainer extends DefaultGetxPage {
     required this.fourRatingGiveDeliveryReviewContainerData,
     required this.fourRatingGiveDeliveryReviewContainerSubmitCallback,
     required this.giveDeliveryReviewValueCallback,
-    required this.onAddControllerMember
+    required this.onAddControllerMember,
+    required this.generalGiveDeliveryReviewContainerParameter
   }) {
     _fourRatingGiveDeliveryReviewContainerController = onAddControllerMember();
   }
@@ -56,6 +63,7 @@ class FourRatingGiveDeliveryReviewContainer extends DefaultGetxPage {
       fourRatingGiveDeliveryReviewContainerData: fourRatingGiveDeliveryReviewContainerData,
       fourRatingGiveDeliveryReviewContainerSubmitCallback: fourRatingGiveDeliveryReviewContainerSubmitCallback,
       giveDeliveryReviewValueCallback: giveDeliveryReviewValueCallback,
+      generalGiveDeliveryReviewContainerParameter: generalGiveDeliveryReviewContainerParameter
     );
   }
 }
@@ -65,13 +73,15 @@ class _StatefulFourRatingGiveDeliveryReviewContainerControllerMediatorWidget ext
   final FourRatingGiveDeliveryReviewContainerData fourRatingGiveDeliveryReviewContainerData;
   final FourRatingGiveDeliveryReviewContainerSubmitCallback fourRatingGiveDeliveryReviewContainerSubmitCallback;
   final void Function(GiveDeliveryReviewValue?) giveDeliveryReviewValueCallback;
+  final GeneralGiveDeliveryReviewContainerParameter generalGiveDeliveryReviewContainerParameter;
 
   const _StatefulFourRatingGiveDeliveryReviewContainerControllerMediatorWidget({
     super.key,
     required this.fourRatingGiveDeliveryReviewContainerController,
     required this.fourRatingGiveDeliveryReviewContainerData,
     required this.fourRatingGiveDeliveryReviewContainerSubmitCallback,
-    required this.giveDeliveryReviewValueCallback
+    required this.giveDeliveryReviewValueCallback,
+    required this.generalGiveDeliveryReviewContainerParameter
   });
 
   @override
@@ -97,11 +107,16 @@ class _StatefulFourRatingGiveDeliveryReviewContainerControllerMediatorWidgetStat
         onSubmit: () => widget.giveDeliveryReviewValueCallback(
           FourRatingGiveDeliveryReviewValue(
             satisfiedFeedback: _feedbackTextEditingController.text,
+            combinedOrderId: widget.generalGiveDeliveryReviewContainerParameter.combinedOrderId,
+            countryId: widget.generalGiveDeliveryReviewContainerParameter.countryId,
             hasServiceQuality: widget.fourRatingGiveDeliveryReviewContainerData._hasServiceQuality,
             hasPackagingQuality: widget.fourRatingGiveDeliveryReviewContainerData._hasPackagingQuality,
             hasPriceQuality: widget.fourRatingGiveDeliveryReviewContainerData._hasPriceQuality,
             hasItemQuality: widget.fourRatingGiveDeliveryReviewContainerData._hasItemQuality,
-            hasDeliveryQuality: widget.fourRatingGiveDeliveryReviewContainerData._hasDeliveryQuality
+            hasDeliveryQuality: widget.fourRatingGiveDeliveryReviewContainerData._hasDeliveryQuality,
+            attachmentFilePath: widget.fourRatingGiveDeliveryReviewContainerData._platformFile.map<String>(
+              (platformFile) => platformFile.path.toEmptyStringNonNull
+            ).toList()
           )
         )
       )
@@ -136,73 +151,88 @@ class _StatefulFourRatingGiveDeliveryReviewContainerControllerMediatorWidgetStat
           ),
         ),
         const SizedBox(height: 10),
-        Container(
-          width: double.infinity,
-          child: Center(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ModifiedSvgPicture.asset(
-                  Constant.vectorCameraOutline,
-                  overrideDefaultColorWithSingleColor: false
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  "Love to see a photo or video of the item".tr,
-                  style: const TextStyle(fontWeight: FontWeight.bold)
-                ),
-              ],
+        TapArea(
+          onTap: () async {
+            FilePickerResult? filePickerResult = await DialogHelper.showChooseFileOrTakePhoto(
+              allowMultipleSelectFiles: true
+            );
+            if (filePickerResult != null) {
+              widget.fourRatingGiveDeliveryReviewContainerData._platformFile.addAll(filePickerResult.files);
+              setState(() {});
+            }
+          },
+          child: Container(
+            width: double.infinity,
+            child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ModifiedSvgPicture.asset(
+                    Constant.vectorCameraOutline,
+                    overrideDefaultColorWithSingleColor: false
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    "Love to see a photo or video of the item".tr,
+                    style: const TextStyle(fontWeight: FontWeight.bold)
+                  ),
+                ],
+              ),
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16.0),
+              color: Colors.grey.shade400
             ),
           ),
-          padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16.0),
-            color: Colors.grey.shade400
-          ),
         ),
-        const SizedBox(height: 10),
-        GiveDeliveryReviewCheckList(
-          hasServiceQuality: widget.fourRatingGiveDeliveryReviewContainerData._hasServiceQuality,
-          onHasServiceQualityChanged: (value) {
-            if (value != null) {
-              setState(() {
-                widget.fourRatingGiveDeliveryReviewContainerData._hasServiceQuality = value;
-              });
-            }
-          },
-          hasPackagingQuality: widget.fourRatingGiveDeliveryReviewContainerData._hasPackagingQuality,
-          onHasPackagingQualityChanged: (value) {
-            if (value != null) {
-              setState(() {
-                widget.fourRatingGiveDeliveryReviewContainerData._hasPackagingQuality = value;
-              });
-            }
-          },
-          hasPriceQuality: widget.fourRatingGiveDeliveryReviewContainerData._hasPriceQuality,
-          onHasPriceQualityChanged: (value) {
-            if (value != null) {
-              setState(() {
-                widget.fourRatingGiveDeliveryReviewContainerData._hasPriceQuality = value;
-              });
-            }
-          },
-          hasItemQuality: widget.fourRatingGiveDeliveryReviewContainerData._hasItemQuality,
-          onHasItemQualityChanged: (value) {
-            if (value != null) {
-              setState(() {
-                widget.fourRatingGiveDeliveryReviewContainerData._hasItemQuality = value;
-              });
-            }
-          },
-          hasDeliveryQuality: widget.fourRatingGiveDeliveryReviewContainerData._hasDeliveryQuality,
-          onHasDeliveryQualityChanged: (value) {
-            if (value != null) {
-              setState(() {
-                widget.fourRatingGiveDeliveryReviewContainerData._hasDeliveryQuality = value;
-              });
-            }
-          },
+        GiveDeliveryReviewAttachmentSection(
+          onGetPlatformFileList: () => widget.fourRatingGiveDeliveryReviewContainerData._platformFile,
+          onSetState: () => setState(() {})
         )
+        // const SizedBox(height: 10),
+        // GiveDeliveryReviewCheckList(
+        //   hasServiceQuality: widget.fourRatingGiveDeliveryReviewContainerData._hasServiceQuality,
+        //   onHasServiceQualityChanged: (value) {
+        //     if (value != null) {
+        //       setState(() {
+        //         widget.fourRatingGiveDeliveryReviewContainerData._hasServiceQuality = value;
+        //       });
+        //     }
+        //   },
+        //   hasPackagingQuality: widget.fourRatingGiveDeliveryReviewContainerData._hasPackagingQuality,
+        //   onHasPackagingQualityChanged: (value) {
+        //     if (value != null) {
+        //       setState(() {
+        //         widget.fourRatingGiveDeliveryReviewContainerData._hasPackagingQuality = value;
+        //       });
+        //     }
+        //   },
+        //   hasPriceQuality: widget.fourRatingGiveDeliveryReviewContainerData._hasPriceQuality,
+        //   onHasPriceQualityChanged: (value) {
+        //     if (value != null) {
+        //       setState(() {
+        //         widget.fourRatingGiveDeliveryReviewContainerData._hasPriceQuality = value;
+        //       });
+        //     }
+        //   },
+        //   hasItemQuality: widget.fourRatingGiveDeliveryReviewContainerData._hasItemQuality,
+        //   onHasItemQualityChanged: (value) {
+        //     if (value != null) {
+        //       setState(() {
+        //         widget.fourRatingGiveDeliveryReviewContainerData._hasItemQuality = value;
+        //       });
+        //     }
+        //   },
+        //   hasDeliveryQuality: widget.fourRatingGiveDeliveryReviewContainerData._hasDeliveryQuality,
+        //   onHasDeliveryQualityChanged: (value) {
+        //     if (value != null) {
+        //       setState(() {
+        //         widget.fourRatingGiveDeliveryReviewContainerData._hasDeliveryQuality = value;
+        //       });
+        //     }
+        //   },
+        // )
       ]
     );
   }
@@ -215,6 +245,7 @@ class FourRatingGiveDeliveryReviewContainerData {
   bool _hasPriceQuality = false;
   bool _hasItemQuality = false;
   bool _hasDeliveryQuality = false;
+  final List<PlatformFile> _platformFile = [];
 }
 
 class FourRatingGiveDeliveryReviewContainerSubmitCallback extends GiveDeliveryReviewContainerSubmitCallback {

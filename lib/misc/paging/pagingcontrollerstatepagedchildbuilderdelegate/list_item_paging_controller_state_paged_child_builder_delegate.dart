@@ -54,6 +54,7 @@ import '../../../presentation/widget/modifiedcachednetworkimage/product_modified
 import '../../../presentation/widget/news/horizontal_news_item.dart';
 import '../../../presentation/widget/news/vertical_news_item.dart';
 import '../../../presentation/widget/notification/notification_item.dart';
+import '../../../presentation/widget/notification/purchase_section_notification_item.dart';
 import '../../../presentation/widget/order/is_running_order_item.dart';
 import '../../../presentation/widget/order/vertical_order_item.dart';
 import '../../../presentation/widget/order/waiting_for_payment_order_item.dart';
@@ -145,6 +146,7 @@ import '../../controllerstate/listitemcontrollerstate/newslistitemcontrollerstat
 import '../../controllerstate/listitemcontrollerstate/non_expanded_item_in_row_child_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/non_expanded_item_in_row_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/notificationlistitemcontrollerstate/notification_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/notificationlistitemcontrollerstate/purchase_section_notification_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/base_order_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/is_running_order_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/vertical_order_list_item_controller_state.dart';
@@ -1074,6 +1076,8 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
       return NotificationItem(
         shortNotification: item.shortNotification,
       );
+    } else if (item is PurchaseSectionNotificationListItemControllerState) {
+      return const PurchaseSectionNotificationItem();
     } else {
       return Container();
     }

@@ -94,6 +94,11 @@ class _ConstantImpl {
   String get vectorProductDiscussion2 => _getVectorsAssets("product_discussion_2.svg");
   String get vectorDirectChat => _getVectorsAssets("direct_chat.svg");
   String get vectorSendMessage => _getVectorsAssets("send_message.svg");
+  String get vectorStep1WaitingConfirmation => _getVectorsAssets("step_1_waiting_confirmation.svg");
+  String get vectorStep2IsBeingProcessed => _getVectorsAssets("step_2_is_being_processed.svg");
+  String get vectorStep3ReadyToSend => _getVectorsAssets("step_3_ready_to_send.svg");
+  String get vectorStep4IsSending => _getVectorsAssets("step_4_is_sending.svg");
+  String get vectorStep5IsArrived => _getVectorsAssets("step_5_is_arrived.svg");
 
   Color get colorYellow => const Color.fromRGBO(244, 184, 43, 1);
   Color get colorLightRed => const Color.fromRGBO(255, 236, 230, 1);

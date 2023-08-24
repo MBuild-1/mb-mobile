@@ -13,6 +13,7 @@ import '../../domain/entity/delivery/countrydeliveryreviewmedia/other_country_de
 import '../../domain/entity/delivery/countrydeliveryreviewmedia/photo_country_delivery_review_media.dart';
 import '../../domain/entity/delivery/countrydeliveryreviewmedia/video_country_delivery_review_media.dart';
 import '../../domain/entity/delivery/delivery_review.dart';
+import '../../domain/entity/delivery/give_review_delivery_review_detail_response.dart';
 import '../../domain/entity/user/user.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/response_wrapper.dart';
@@ -148,5 +149,9 @@ extension DeliveryReviewDetailEntityMappingExt on ResponseWrapper {
       review: response["message"],
       reviewDate: ResponseWrapper(response["created_at"]).mapFromResponseToDateTime()!,
     );
+  }
+
+  GiveReviewDeliveryReviewDetailResponse mapFromResponseToGiveReviewDeliveryReviewDetailResponse() {
+    return GiveReviewDeliveryReviewDetailResponse();
   }
 }

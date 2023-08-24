@@ -11,6 +11,7 @@ import '../../domain/entity/order/order_product_detail.dart';
 import '../../presentation/widget/address/horizontal_address_item.dart';
 import '../../presentation/widget/address/vertical_address_item.dart';
 import '../../presentation/widget/colorful_chip.dart';
+import '../../presentation/widget/order/order_conclusion_item.dart';
 import '../../presentation/widget/order/order_product_detail_item.dart';
 import '../../presentation/widget/summary_widget.dart';
 import '../constant.dart';
@@ -214,6 +215,18 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
     );
     listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
       i, ListItemControllerStateWrapper(orderSummaryDetailTypeListItemControllerState), oldItemTypeList, newListItemControllerState
+    );
+    ListItemControllerState orderConclusionItemListItemControllerState = PaddingContainerListItemControllerState(
+      padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+      paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
+        widgetSubstitution: (BuildContext context, int index) => OrderConclusionItem(
+          order: order.combinedOrder,
+          inOrderDetail: true,
+        )
+      )
+    );
+    listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
+      i, ListItemControllerStateWrapper(orderConclusionItemListItemControllerState), oldItemTypeList, newListItemControllerState
     );
     newListItemControllerState.add(
       VirtualSpacingListItemControllerState(height: padding())

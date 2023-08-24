@@ -230,7 +230,10 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Foto & Video MBestie Review": "Foto & Video Ulasan MBestie",
       "Select More Country Reviews": "Pilih Ulasan Negara Lainnya",
       "Notification": "Notifikasi",
-      "Search Country": "Cari Negara"
+      "Search Country": "Cari Negara",
+      "Purchase": "Pembelian",
+      "Give Shipping Review": "Beri Ulasan Pengiriman",
+      "Remove": "Hapus"
     }
   };
 
