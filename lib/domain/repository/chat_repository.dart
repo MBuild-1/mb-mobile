@@ -14,6 +14,8 @@ import '../entity/chat/order/answer_order_conversation_parameter.dart';
 import '../entity/chat/order/answer_order_conversation_response.dart';
 import '../entity/chat/order/create_order_conversation_parameter.dart';
 import '../entity/chat/order/create_order_conversation_response.dart';
+import '../entity/chat/order/get_order_message_by_combined_order_parameter.dart';
+import '../entity/chat/order/get_order_message_by_combined_order_response.dart';
 import '../entity/chat/order/get_order_message_by_conversation_parameter.dart';
 import '../entity/chat/order/get_order_message_by_conversation_response.dart';
 import '../entity/chat/order/get_order_message_by_user_parameter.dart';
@@ -44,6 +46,7 @@ abstract class ChatRepository {
   FutureProcessing<LoadDataResult<AnswerOrderConversationResponse>> answerOrderConversation(AnswerOrderConversationParameter answerOrderConversationParameter);
   FutureProcessing<LoadDataResult<GetOrderMessageByConversationResponse>> getOrderMessageByConversation(GetOrderMessageByConversationParameter getOrderMessageByConversationParameter);
   FutureProcessing<LoadDataResult<GetOrderMessageByUserResponse>> getOrderMessageByUser(GetOrderMessageByUserParameter getOrderMessageByUserParameter);
+  FutureProcessing<LoadDataResult<GetOrderMessageByCombinedOrderResponse>> getOrderMessageByCombinedOrder(GetOrderMessageByCombinedOrderParameter getOrderMessageByCombinedOrderParameter);
   FutureProcessing<LoadDataResult<CreateProductConversationResponse>> createProductConversation(CreateProductConversationParameter createProductConversationParameter);
   FutureProcessing<LoadDataResult<UpdateReadStatusProductConversationResponse>> updateReadStatusProductConversation(UpdateReadStatusProductConversationParameter updateReadStatusProductConversationParameter);
   FutureProcessing<LoadDataResult<AnswerProductConversationResponse>> answerProductConversation(AnswerProductConversationParameter answerProductConversationParameter);

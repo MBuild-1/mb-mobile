@@ -2,15 +2,15 @@ import '../user_chat_wrapper.dart';
 import 'combined_order_from_message.dart';
 import 'order_message.dart';
 
-class GetOrderMessageByUserResponse {
-  List<GetOrderMessageByUserResponseMember> getOrderMessageByUserResponseMemberList;
+class GetOrderMessageByCombinedOrderResponse {
+  GetOrderMessageByCombinedOrderResponseMember getOrderMessageByCombinedOrderResponseMember;
 
-  GetOrderMessageByUserResponse({
-    required this.getOrderMessageByUserResponseMemberList,
+  GetOrderMessageByCombinedOrderResponse({
+    required this.getOrderMessageByCombinedOrderResponseMember,
   });
 }
 
-class GetOrderMessageByUserResponseMember {
+class GetOrderMessageByCombinedOrderResponseMember {
   String id;
   UserChatWrapper? userOne;
   UserChatWrapper? userTwo;
@@ -18,7 +18,7 @@ class GetOrderMessageByUserResponseMember {
   CombinedOrderFromMessage order;
   List<OrderMessage> orderMessageList;
 
-  GetOrderMessageByUserResponseMember({
+  GetOrderMessageByCombinedOrderResponseMember({
     required this.id,
     required this.userOne,
     required this.userTwo,

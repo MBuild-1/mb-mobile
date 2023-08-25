@@ -8,7 +8,9 @@ import '../../domain/entity/chat/help/get_help_message_by_conversation_response.
 import '../../domain/entity/chat/help/help_message.dart';
 import '../../domain/entity/chat/help/update_read_status_help_conversation_response.dart';
 import '../../domain/entity/chat/order/answer_order_conversation_response.dart';
+import '../../domain/entity/chat/order/combined_order_from_message.dart';
 import '../../domain/entity/chat/order/create_order_conversation_response.dart';
+import '../../domain/entity/chat/order/get_order_message_by_combined_order_response.dart';
 import '../../domain/entity/chat/order/get_order_message_by_conversation_response.dart';
 import '../../domain/entity/chat/order/get_order_message_by_user_response.dart';
 import '../../domain/entity/chat/order/order_message.dart';
@@ -18,6 +20,7 @@ import '../../domain/entity/chat/product/create_product_conversation_response.da
 import '../../domain/entity/chat/product/get_product_message_by_conversation_response.dart';
 import '../../domain/entity/chat/product/get_product_message_by_product_response.dart';
 import '../../domain/entity/chat/product/get_product_message_by_user_response.dart';
+import '../../domain/entity/chat/product/product_from_message.dart';
 import '../../domain/entity/chat/product/product_message.dart';
 import '../../domain/entity/chat/product/update_read_status_product_conversation_response.dart';
 import '../../domain/entity/chat/user_chat.dart';
@@ -90,6 +93,9 @@ extension HelpChatDetailEntityMappingExt on ResponseWrapper {
   GetHelpMessageByConversationResponse mapFromResponseToGetHelpMessageByConversationResponse() {
     dynamic userOne = response["user_one"];
     dynamic userTwo = response["user_two"];
+    List<HelpMessage> helpMessageList = response["help_messages"].map<HelpMessage>((helpMessageResponse) {
+      return ResponseWrapper(helpMessageResponse).mapFromResponseToHelpMessage();
+    }).toList();
     return GetHelpMessageByConversationResponse(
       id: response["id"],
       userOne: userOne != null ? UserChatWrapper(
@@ -100,9 +106,7 @@ extension HelpChatDetailEntityMappingExt on ResponseWrapper {
         user: ResponseWrapper(userTwo).mapFromResponseToUser(),
         userChatStatus: ResponseWrapper(userTwo).mapFromResponseToUserChatStatus()
       ) : null,
-      helpMessageList: response["help_messages"].map<HelpMessage>((helpMessageResponse) {
-        return ResponseWrapper(helpMessageResponse).mapFromResponseToHelpMessage();
-      }).toList(),
+      helpMessageList: helpMessageList.reversed.toList()
     );
   }
 
@@ -111,6 +115,9 @@ extension HelpChatDetailEntityMappingExt on ResponseWrapper {
     dynamic helpResponse = helpResponseList.first;
     dynamic userOne = helpResponse["user_one"];
     dynamic userTwo = helpResponse["user_two"];
+    List<HelpMessage> helpMessageList = helpResponse["help_messages"].map<HelpMessage>((helpMessageResponse) {
+      return ResponseWrapper(helpMessageResponse).mapFromResponseToHelpMessage();
+    }).toList();
     return GetHelpMessageByUserResponse(
       id: helpResponse["id"],
       userOne: userOne != null ? UserChatWrapper(
@@ -122,9 +129,7 @@ extension HelpChatDetailEntityMappingExt on ResponseWrapper {
         userChatStatus: ResponseWrapper(userTwo).mapFromResponseToUserChatStatus()
       ) : null,
       unreadMessagesCount: helpResponse["unread_messages_count"],
-      helpMessageList: helpResponse["help_messages"].map<HelpMessage>((helpMessageResponse) {
-        return ResponseWrapper(helpMessageResponse).mapFromResponseToHelpMessage();
-      }).toList(),
+      helpMessageList: helpMessageList.reversed.toList(),
     );
   }
 
@@ -192,6 +197,9 @@ extension HelpChatDetailEntityMappingExt on ResponseWrapper {
   GetOrderMessageByConversationResponse mapFromResponseToGetOrderMessageByConversationResponse() {
     dynamic userOne = response["user_one"];
     dynamic userTwo = response["user_two"];
+    List<OrderMessage> orderMessageList = response["order_messages"].map<OrderMessage>((orderMessageResponse) {
+      return ResponseWrapper(orderMessageResponse).mapFromResponseToOrderMessage();
+    }).toList();
     return GetOrderMessageByConversationResponse(
       id: response["id"],
       userOne: userOne != null ? UserChatWrapper(
@@ -202,16 +210,34 @@ extension HelpChatDetailEntityMappingExt on ResponseWrapper {
         user: ResponseWrapper(userTwo).mapFromResponseToUser(),
         userChatStatus: ResponseWrapper(userTwo).mapFromResponseToUserChatStatus()
       ) : null,
-      orderMessageList: response["order_messages"].map<OrderMessage>((orderMessageResponse) {
-        return ResponseWrapper(orderMessageResponse).mapFromResponseToOrderMessage();
-      }).toList(),
+      orderMessageList: orderMessageList.reversed.toList(),
     );
   }
 
   GetOrderMessageByUserResponse mapFromResponseToGetOrderMessageByUserResponse() {
+    return GetOrderMessageByUserResponse(
+      getOrderMessageByUserResponseMemberList: response.map<GetOrderMessageByUserResponseMember>(
+        (getOrderMessageByUserResponseMemberValue) => ResponseWrapper(getOrderMessageByUserResponseMemberValue).mapFromResponseToGetOrderMessageByUserResponseMember()
+      ).toList()
+    );
+  }
+
+  GetOrderMessageByCombinedOrderResponse mapFromResponseToGetOrderMessageByCombinedOrderResponse() {
+    if (response == null) {
+      throw EmptyChatError();
+    }
+    return GetOrderMessageByCombinedOrderResponse(
+      getOrderMessageByCombinedOrderResponseMember: ResponseWrapper(response).mapFromResponseToGetOrderMessageByCombinedOrderResponseMember()
+    );
+  }
+
+  GetOrderMessageByUserResponseMember mapFromResponseToGetOrderMessageByUserResponseMember() {
     dynamic userOne = response["user_one"];
     dynamic userTwo = response["user_two"];
-    return GetOrderMessageByUserResponse(
+    List<OrderMessage> orderMessageList = response["order_messages"].map<OrderMessage>((orderMessageResponse) {
+      return ResponseWrapper(orderMessageResponse).mapFromResponseToOrderMessage();
+    }).toList();
+    return GetOrderMessageByUserResponseMember(
       id: response["id"],
       userOne: userOne != null ? UserChatWrapper(
         user: ResponseWrapper(userOne).mapFromResponseToUser(),
@@ -221,10 +247,28 @@ extension HelpChatDetailEntityMappingExt on ResponseWrapper {
         user: ResponseWrapper(userTwo).mapFromResponseToUser(),
         userChatStatus: ResponseWrapper(userTwo).mapFromResponseToUserChatStatus()
       ) : null,
-      unreadMessagesCount: response["unread_messages_count"],
-      orderMessageList: response["order_messages"].map<OrderMessage>((orderMessageResponse) {
-        return ResponseWrapper(orderMessageResponse).mapFromResponseToOrderMessage();
-      }).toList(),
+      unreadMessagesCount: 0,
+      order: ResponseWrapper(response["combined_order"]).mapFromResponseToCombinedOrderFromMessage(),
+      orderMessageList: orderMessageList.reversed.toList(),
+    );
+  }
+
+  GetOrderMessageByCombinedOrderResponseMember mapFromResponseToGetOrderMessageByCombinedOrderResponseMember() {
+    GetOrderMessageByUserResponseMember getOrderMessageByUserResponseMember = ResponseWrapper(response).mapFromResponseToGetOrderMessageByUserResponseMember();
+    return GetOrderMessageByCombinedOrderResponseMember(
+      id: getOrderMessageByUserResponseMember.id,
+      userOne: getOrderMessageByUserResponseMember.userOne,
+      userTwo: getOrderMessageByUserResponseMember.userTwo,
+      unreadMessagesCount: getOrderMessageByUserResponseMember.unreadMessagesCount,
+      order: getOrderMessageByUserResponseMember.order,
+      orderMessageList: getOrderMessageByUserResponseMember.orderMessageList
+    );
+  }
+
+  CombinedOrderFromMessage mapFromResponseToCombinedOrderFromMessage() {
+    return CombinedOrderFromMessage(
+      id: response["id"],
+      orderCode: response["order_code"]
     );
   }
 
@@ -281,6 +325,9 @@ extension HelpChatDetailEntityMappingExt on ResponseWrapper {
   GetProductMessageByConversationResponse mapFromResponseToGetProductMessageByConversationResponse() {
     dynamic userOne = response["user_one"];
     dynamic userTwo = response["user_two"];
+    List<ProductMessage> productMessageList = response["product_messages"].map<ProductMessage>((productMessageResponse) {
+      return ResponseWrapper(productMessageResponse).mapFromResponseToProductMessage();
+    }).toList();
     return GetProductMessageByConversationResponse(
       id: response["id"],
       productId: response["product_id"],
@@ -292,17 +339,27 @@ extension HelpChatDetailEntityMappingExt on ResponseWrapper {
         user: ResponseWrapper(userTwo).mapFromResponseToUser(),
         userChatStatus: ResponseWrapper(userTwo).mapFromResponseToUserChatStatus()
       ) : null,
-      productMessageList: response["product_messages"].map<ProductMessage>((productMessageResponse) {
-        return ResponseWrapper(productMessageResponse).mapFromResponseToProductMessage();
-      }).toList(),
+      productMessageList: productMessageList.reversed.toList(),
     );
   }
 
   GetProductMessageByUserResponse mapFromResponseToGetProductMessageByUserResponse() {
+    return GetProductMessageByUserResponse(
+      getProductMessageByUserResponseMemberList: response.map<GetProductMessageByUserResponseMember>(
+        (getProductMessageByUserResponseMemberValue) => ResponseWrapper(getProductMessageByUserResponseMemberValue).mapFromResponseToGetProductMessageByUserResponseMember()
+      ).toList()
+    );
+  }
+
+  GetProductMessageByUserResponseMember mapFromResponseToGetProductMessageByUserResponseMember() {
     dynamic userOne = response["user_one"];
     dynamic userTwo = response["user_two"];
-    return GetProductMessageByUserResponse(
+    List<ProductMessage> productMessageList = response["product_messages"].map<ProductMessage>((productMessageResponse) {
+      return ResponseWrapper(productMessageResponse).mapFromResponseToProductMessage();
+    }).toList();
+    return GetProductMessageByUserResponseMember(
       id: response["id"],
+      productId: response["product_id"],
       userOne: userOne != null ? UserChatWrapper(
         user: ResponseWrapper(userOne).mapFromResponseToUser(),
         userChatStatus: ResponseWrapper(userOne).mapFromResponseToUserChatStatus()
@@ -312,9 +369,21 @@ extension HelpChatDetailEntityMappingExt on ResponseWrapper {
         userChatStatus: ResponseWrapper(userTwo).mapFromResponseToUserChatStatus()
       ) : null,
       unreadMessagesCount: response["unread_messages_count"],
-      productMessageList: response["product_messages"].map<ProductMessage>((productMessageResponse) {
-        return ResponseWrapper(productMessageResponse).mapFromResponseToProductMessage();
-      }).toList(),
+      productFromMessage: ResponseWrapper(response["product"]).mapFromResponseToProductFromMessage(),
+      productMessageList: productMessageList.reversed.toList(),
+    );
+  }
+
+  ProductFromMessage mapFromResponseToProductFromMessage() {
+    return ProductFromMessage(
+      id: response["id"],
+      userId: response["user_id"],
+      productBrandId: response["product_brand_id"],
+      name: response["name"],
+      slug: response["slug"],
+      description: response["description"],
+      productCategoryId: response["product_category_id"],
+      provinceId: response["province_id"]
     );
   }
 
@@ -324,6 +393,9 @@ extension HelpChatDetailEntityMappingExt on ResponseWrapper {
     }
     dynamic userOne = response["user_one"];
     dynamic userTwo = response["user_two"];
+    List<ProductMessage> productMessageList = response["product_messages"].map<ProductMessage>((productMessageResponse) {
+      return ResponseWrapper(productMessageResponse).mapFromResponseToProductMessage();
+    }).toList();
     return GetProductMessageByProductResponse(
       id: response["id"],
       userOne: userOne != null ? UserChatWrapper(
@@ -335,9 +407,7 @@ extension HelpChatDetailEntityMappingExt on ResponseWrapper {
         userChatStatus: ResponseWrapper(userTwo).mapFromResponseToUserChatStatus()
       ) : null,
       unreadMessagesCount: response["unread_messages_count"] ?? 0,
-      productMessageList: response["product_messages"].map<ProductMessage>((productMessageResponse) {
-        return ResponseWrapper(productMessageResponse).mapFromResponseToProductMessage();
-      }).toList(),
+      productMessageList: productMessageList.reversed.toList(),
     );
   }
 

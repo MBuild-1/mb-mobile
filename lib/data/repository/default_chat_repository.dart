@@ -12,6 +12,8 @@ import '../../domain/entity/chat/order/answer_order_conversation_parameter.dart'
 import '../../domain/entity/chat/order/answer_order_conversation_response.dart';
 import '../../domain/entity/chat/order/create_order_conversation_parameter.dart';
 import '../../domain/entity/chat/order/create_order_conversation_response.dart';
+import '../../domain/entity/chat/order/get_order_message_by_combined_order_parameter.dart';
+import '../../domain/entity/chat/order/get_order_message_by_combined_order_response.dart';
 import '../../domain/entity/chat/order/get_order_message_by_conversation_parameter.dart';
 import '../../domain/entity/chat/order/get_order_message_by_conversation_response.dart';
 import '../../domain/entity/chat/order/get_order_message_by_user_parameter.dart';
@@ -90,6 +92,11 @@ class DefaultChatRepository implements ChatRepository {
   @override
   FutureProcessing<LoadDataResult<GetOrderMessageByUserResponse>> getOrderMessageByUser(GetOrderMessageByUserParameter getOrderMessageByUserParameter) {
     return chatDataSource.getOrderMessageByUser(getOrderMessageByUserParameter).mapToLoadDataResult<GetOrderMessageByUserResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<GetOrderMessageByCombinedOrderResponse>> getOrderMessageByCombinedOrder(GetOrderMessageByCombinedOrderParameter getOrderMessageByCombinedOrderParameter) {
+    return chatDataSource.getOrderMessageByCombinedOrder(getOrderMessageByCombinedOrderParameter).mapToLoadDataResult<GetOrderMessageByCombinedOrderResponse>();
   }
 
   @override

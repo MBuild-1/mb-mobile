@@ -1,6 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
+import '../controller/chathistorycontroller/chathistorysubpagecontroller/help_chat_history_sub_controller.dart';
+import '../controller/chathistorycontroller/chathistorysubpagecontroller/order_chat_history_sub_controller.dart';
+import '../controller/chathistorycontroller/chathistorysubpagecontroller/product_chat_history_sub_controller.dart';
 import '../controller/deliveryreviewcontroller/deliveryreviewsubpagecontroller/history_delivery_review_sub_controller.dart';
 import '../controller/deliveryreviewcontroller/deliveryreviewsubpagecontroller/waiting_to_be_reviewed_delivery_review_sub_controller.dart';
 import '../controller/mainmenucontroller/mainmenusubpagecontroller/explore_nusantara_main_menu_sub_controller.dart';
@@ -128,6 +131,7 @@ import '../domain/usecase/get_my_cart_use_case.dart';
 import '../domain/usecase/get_news_use_case.dart';
 import '../domain/usecase/get_notification_by_user_paging_use_case.dart';
 import '../domain/usecase/get_order_based_id_use_case.dart';
+import '../domain/usecase/get_order_message_by_combined_order_use_case.dart';
 import '../domain/usecase/get_order_message_by_conversation_use_case.dart';
 import '../domain/usecase/get_order_message_by_user_use_case.dart';
 import '../domain/usecase/get_order_paging_use_case.dart';
@@ -281,6 +285,19 @@ class _Injector {
     locator.registerLazySingleton<HistoryDeliveryReviewSubControllerInjectionFactory>(
       () => HistoryDeliveryReviewSubControllerInjectionFactory(
         getHistoryDeliveryReviewListUseCase: locator()
+      )
+    );
+    locator.registerLazySingleton<HelpChatHistorySubControllerInjectionFactory>(
+      () => HelpChatHistorySubControllerInjectionFactory()
+    );
+    locator.registerLazySingleton<ProductChatHistorySubControllerInjectionFactory>(
+      () => ProductChatHistorySubControllerInjectionFactory(
+        getProductMessageByUserUseCase: locator()
+      )
+    );
+    locator.registerLazySingleton<OrderChatHistorySubControllerInjectionFactory>(
+      () => OrderChatHistorySubControllerInjectionFactory(
+        getOrderMessageByUserUseCase: locator()
       )
     );
 
@@ -536,6 +553,7 @@ class _Injector {
     locator.registerLazySingleton<UpdateReadStatusOrderConversationUseCase>(() => UpdateReadStatusOrderConversationUseCase(chatRepository: locator()));
     locator.registerLazySingleton<GetOrderMessageByUserUseCase>(() => GetOrderMessageByUserUseCase(chatRepository: locator()));
     locator.registerLazySingleton<GetOrderMessageByConversationUseCase>(() => GetOrderMessageByConversationUseCase(chatRepository: locator()));
+    locator.registerLazySingleton<GetOrderMessageByCombinedOrderUseCase>(() => GetOrderMessageByCombinedOrderUseCase(chatRepository: locator()));
     locator.registerLazySingleton<AnswerProductConversationUseCase>(() => AnswerProductConversationUseCase(chatRepository: locator()));
     locator.registerLazySingleton<CreateProductConversationUseCase>(() => CreateProductConversationUseCase(chatRepository: locator()));
     locator.registerLazySingleton<UpdateReadStatusProductConversationUseCase>(() => UpdateReadStatusProductConversationUseCase(chatRepository: locator()));

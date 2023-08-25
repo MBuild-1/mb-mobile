@@ -7,6 +7,7 @@ import '../controller/crop_picture_controller.dart';
 import '../presentation/page/address_page.dart';
 import '../presentation/page/affiliate_page.dart';
 import '../presentation/page/cart_page.dart';
+import '../presentation/page/chathistory/chat_history_page.dart';
 import '../presentation/page/country_delivery_review_media_view_page.dart';
 import '../presentation/page/country_delivery_review_page.dart';
 import '../presentation/page/coupon_page.dart';
@@ -383,11 +384,11 @@ class _PageRestorationHelperImpl {
     });
   }
 
-  void toOrderChatPage(BuildContext context) {
+  void toOrderChatPage(String combinedOrderId, BuildContext context) {
     LoginHelper.checkingLogin(context, () {
       PageRestorationHelper.findPageRestorationMixin<OrderChatPageRestorationMixin>(
         onGetxPageRestorationFound: (restoration) {
-          restoration.orderChatPageRestorableRouteFuture.present();
+          restoration.orderChatPageRestorableRouteFuture.present(combinedOrderId);
         },
         context: context
       );
@@ -423,6 +424,17 @@ class _PageRestorationHelperImpl {
       PageRestorationHelper.findPageRestorationMixin<NotificationPageRestorationMixin>(
         onGetxPageRestorationFound: (restoration) {
           restoration.notificationPageRestorableRouteFuture.present();
+        },
+        context: context
+      );
+    });
+  }
+
+  void toChatHistoryPage(BuildContext context) {
+    LoginHelper.checkingLogin(context, () {
+      PageRestorationHelper.findPageRestorationMixin<ChatHistoryPageRestorationMixin>(
+        onGetxPageRestorationFound: (restoration) {
+          restoration.chatHistoryPageRestorableRouteFuture.present();
         },
         context: context
       );

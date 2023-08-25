@@ -198,6 +198,7 @@ class _StatefulProductChatControllerMediatorWidgetState extends State<_StatefulP
 
   final TextEditingController _productChatTextEditingController = TextEditingController();
   bool _isFirstEmpty = false;
+  String _productConversationId = "";
 
   final DefaultChatContainerInterceptingActionListItemControllerState _defaultChatContainerInterceptingActionListItemControllerState = DefaultChatContainerInterceptingActionListItemControllerState();
 
@@ -276,6 +277,7 @@ class _StatefulProductChatControllerMediatorWidgetState extends State<_StatefulP
       }
     }
     return getProductMessageByProductResponseLoadDataResult.valueLoadDataResult.map<PagingResult<ListItemControllerState>>((getProductMessageByUserResponse) {
+      _productConversationId = getProductMessageByUserResponse.id;
       User user = getProductMessageByProductResponseLoadDataResult.userLoadDataResult.resultIfSuccess!;
       return PagingDataResult<ListItemControllerState>(
         itemList: [
@@ -357,7 +359,7 @@ class _StatefulProductChatControllerMediatorWidgetState extends State<_StatefulP
                         } else {
                           widget.productChatController.answerProductConversation(
                             AnswerProductConversationParameter(
-                              productConversationId: "",
+                              productConversationId: _productConversationId,
                               message: _productChatTextEditingController.text
                             )
                           );

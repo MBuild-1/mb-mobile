@@ -29,6 +29,7 @@ import '../widget/modified_paged_list_view.dart';
 import '../widget/modified_svg_picture.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import '../widget/titleanddescriptionitem/title_and_description_item.dart';
+import 'chathistory/chat_history_page.dart';
 import 'deliveryreview/delivery_review_page.dart';
 import 'getx_page.dart';
 import 'help_page.dart';
@@ -63,7 +64,7 @@ class InboxPage extends RestorableGetxPage<_InboxPageRestoration> {
   }
 }
 
-class _InboxPageRestoration extends MixableGetxPageRestoration with InboxPageRestorationMixin, ProductDiscussionPageRestorationMixin, DeliveryReviewPageRestorationMixin, HelpPageRestorationMixin {
+class _InboxPageRestoration extends MixableGetxPageRestoration with InboxPageRestorationMixin, ProductDiscussionPageRestorationMixin, DeliveryReviewPageRestorationMixin, HelpPageRestorationMixin, ChatHistoryPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
@@ -197,7 +198,7 @@ class _StatefulInboxControllerMediatorWidgetState extends State<_StatefulInboxCo
       return PagingDataResult<ListItemControllerState>(
         itemList: [
           ProfileMenuListItemControllerState(
-            onTap: (context) => DialogHelper.showPromptUnderConstruction(context),
+            onTap: (context) => PageRestorationHelper.toChatHistoryPage(context),
             icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorChat, color: iconColor, width: 20.0),
             title: 'Chat'.tr,
             description: "Your private conversations".tr,

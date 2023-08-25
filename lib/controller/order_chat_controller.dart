@@ -2,12 +2,15 @@ import '../domain/entity/chat/order/answer_order_conversation_parameter.dart';
 import '../domain/entity/chat/order/answer_order_conversation_response.dart';
 import '../domain/entity/chat/order/create_order_conversation_parameter.dart';
 import '../domain/entity/chat/order/create_order_conversation_response.dart';
+import '../domain/entity/chat/order/get_order_message_by_combined_order_parameter.dart';
+import '../domain/entity/chat/order/get_order_message_by_combined_order_response.dart';
 import '../domain/entity/chat/order/get_order_message_by_user_parameter.dart';
 import '../domain/entity/chat/order/get_order_message_by_user_response.dart';
 import '../domain/entity/user/getuser/get_user_parameter.dart';
 import '../domain/entity/user/getuser/get_user_response.dart';
 import '../domain/usecase/answer_order_conversation_use_case.dart';
 import '../domain/usecase/create_order_conversation_use_case.dart';
+import '../domain/usecase/get_order_message_by_combined_order_use_case.dart';
 import '../domain/usecase/get_order_message_by_user_use_case.dart';
 import '../domain/usecase/get_user_use_case.dart';
 import '../misc/load_data_result.dart';
@@ -15,6 +18,7 @@ import 'base_getx_controller.dart';
 
 class OrderChatController extends BaseGetxController {
   final GetOrderMessageByUserUseCase getOrderMessageByUserUseCase;
+  final GetOrderMessageByCombinedOrderUseCase getOrderMessageByCombinedOrderUseCase;
   final CreateOrderConversationUseCase createOrderConversationUseCase;
   final AnswerOrderConversationUseCase answerOrderConversationUseCase;
   final GetUserUseCase getUserUseCase;
@@ -22,6 +26,7 @@ class OrderChatController extends BaseGetxController {
   OrderChatController(
     super.controllerManager,
     this.getOrderMessageByUserUseCase,
+    this.getOrderMessageByCombinedOrderUseCase,
     this.createOrderConversationUseCase,
     this.answerOrderConversationUseCase,
     this.getUserUseCase
@@ -30,6 +35,12 @@ class OrderChatController extends BaseGetxController {
   Future<LoadDataResult<GetOrderMessageByUserResponse>> getOrderMessageByUser(GetOrderMessageByUserParameter getOrderMessageByUserParameter) {
     return getOrderMessageByUserUseCase.execute(getOrderMessageByUserParameter).future(
       parameter: apiRequestManager.addRequestToCancellationPart("order-message-by-user").value
+    );
+  }
+
+  Future<LoadDataResult<GetOrderMessageByCombinedOrderResponse>> getOrderMessageByCombinedOrder(GetOrderMessageByCombinedOrderParameter getOrderMessageByCombinedOrderParameter) {
+    return getOrderMessageByCombinedOrderUseCase.execute(getOrderMessageByCombinedOrderParameter).future(
+      parameter: apiRequestManager.addRequestToCancellationPart("order-message-by-combined-order").value
     );
   }
 

@@ -17,6 +17,8 @@ import '../../../domain/entity/chat/order/answer_order_conversation_parameter.da
 import '../../../domain/entity/chat/order/answer_order_conversation_response.dart';
 import '../../../domain/entity/chat/order/create_order_conversation_parameter.dart';
 import '../../../domain/entity/chat/order/create_order_conversation_response.dart';
+import '../../../domain/entity/chat/order/get_order_message_by_combined_order_parameter.dart';
+import '../../../domain/entity/chat/order/get_order_message_by_combined_order_response.dart';
 import '../../../domain/entity/chat/order/get_order_message_by_conversation_parameter.dart';
 import '../../../domain/entity/chat/order/get_order_message_by_conversation_response.dart';
 import '../../../domain/entity/chat/order/get_order_message_by_user_parameter.dart';
@@ -145,6 +147,14 @@ class DefaultChatDataSource implements ChatDataSource {
     return DioHttpClientProcessing((cancelToken) {
       return dio.get("/chat-order/user", cancelToken: cancelToken)
         .map<GetOrderMessageByUserResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToGetOrderMessageByUserResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<GetOrderMessageByCombinedOrderResponse> getOrderMessageByCombinedOrder(GetOrderMessageByCombinedOrderParameter getOrderMessageByCombinedOrderParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.get("/chat-order/order/${getOrderMessageByCombinedOrderParameter.combinedOrderId}", cancelToken: cancelToken)
+        .map<GetOrderMessageByCombinedOrderResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToGetOrderMessageByCombinedOrderResponse());
     });
   }
 

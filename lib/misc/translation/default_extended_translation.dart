@@ -233,7 +233,12 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Search Country": "Cari Negara",
       "Purchase": "Pembelian",
       "Give Shipping Review": "Beri Ulasan Pengiriman",
-      "Remove": "Hapus"
+      "Remove": "Hapus",
+      "Chat History": "Histori Chat",
+      "Help": "Bantuan",
+      "Product": "Produk",
+      "Order": "Pesanan",
+      "Please Start Conversation": "Silahkan Memulai Percakapan"
     }
   };
 

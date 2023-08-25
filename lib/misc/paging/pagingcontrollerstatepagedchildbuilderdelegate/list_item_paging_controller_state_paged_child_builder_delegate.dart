@@ -22,6 +22,8 @@ import '../../../presentation/widget/cart/shortcart/horizontal_short_cart_item.d
 import '../../../presentation/widget/cart/shortcart/vertical_short_cart_item.dart';
 import '../../../presentation/widget/cart/vertical_cart_item.dart';
 import '../../../presentation/widget/chat/chat_bubble.dart';
+import '../../../presentation/widget/chathistory/order_chat_history_item.dart';
+import '../../../presentation/widget/chathistory/product_chat_history_item.dart';
 import '../../../presentation/widget/colorful_chip_tab_bar.dart';
 import '../../../presentation/widget/country/vertical_country_item.dart';
 import '../../../presentation/widget/countrydeliveryreview/country_delivery_review_header_item.dart';
@@ -105,6 +107,8 @@ import '../../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstat
 import '../../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/shortcartlistitemcontrollerstate/short_cart_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/shortcartlistitemcontrollerstate/vertical_short_cart_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/vertical_cart_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/chathistorylistitemcontrollerstate/order_chat_history_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/chathistorylistitemcontrollerstate/product_chat_history_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/chatlistitemcontrollerstate/chat_bubble_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/colorful_chip_tab_bar_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/colorful_divider_list_item_controller_state.dart';
@@ -1078,6 +1082,16 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
       );
     } else if (item is PurchaseSectionNotificationListItemControllerState) {
       return const PurchaseSectionNotificationItem();
+    } else if (item is ProductChatHistoryListItemControllerState) {
+      return ProductChatHistoryItem(
+        getProductMessageByUserResponseMember: item.getProductMessageByUserResponseMember,
+        onTap: item.onTap
+      );
+    } else if (item is OrderChatHistoryListItemControllerState) {
+      return OrderChatHistoryItem(
+        getOrderMessageByUserResponseMember: item.getOrderMessageByUserResponseMember,
+        onTap: item.onTap
+      );
     } else {
       return Container();
     }
