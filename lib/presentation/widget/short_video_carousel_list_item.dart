@@ -1,14 +1,15 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
-import 'package:masterbagasi/presentation/widget/video/short_video_item.dart';
-import 'package:sizer/sizer.dart';
 
 import '../../domain/entity/video/shortvideo/short_video.dart';
 import '../../misc/constant.dart';
 import '../../misc/load_data_result.dart';
+import 'video/short_video_item.dart';
 
-class ShortVideoCarouselListItem extends StatelessWidget {
+class ShortVideoCarouselListItem extends StatefulWidget {
   final LoadDataResult<List<ShortVideo>> shortVideoListLoadDataResult;
 
   const ShortVideoCarouselListItem({
@@ -17,12 +18,35 @@ class ShortVideoCarouselListItem extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<ShortVideoCarouselListItem> createState() => ShortVideoCarouselListItemState();
+}
+
+class ShortVideoCarouselListItemState extends State<ShortVideoCarouselListItem> with AutomaticKeepAliveClientMixin {
+  late PageController _pageController;
+  bool _isInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      double shortVideoWidth = 200;
+      _pageController = PageController(viewportFraction: shortVideoWidth / MediaQuery.of(context).size.width);
+      _isInitialized = true;
+      setState(() {});
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
+    if (!_isInitialized) {
+      return Container();
+    }
     return Stack(
       children: [
         Container(
           color: Colors.black,
-          height: 390,
+          height: 410,
         ),
         Column(
           children: [
@@ -50,38 +74,42 @@ class ShortVideoCarouselListItem extends StatelessWidget {
                 ]
               )
             ),
-            if (shortVideoListLoadDataResult.isSuccess)
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                padding: EdgeInsets.only(
-                  left: Constant.paddingListItem,
-                  right: Constant.paddingListItem,
-                ),
-                child: Builder(
-                  builder: (context) {
-                    List<Widget> itemMap = [];
-                    int i = 0;
-                    List<ShortVideo> shortVideoList = shortVideoListLoadDataResult.resultIfSuccess!;
-                    while (i < shortVideoList.length) {
-                      if (i > 0) {
-                        itemMap.add(SizedBox(width: 3.w));
-                      }
-                      itemMap.add(
-                        ShortVideoItem(shortVideo: shortVideoList[i])
-                      );
-                      i++;
+            if (widget.shortVideoListLoadDataResult.isSuccess)
+              SizedBox(
+                height: 390,
+                child: PageView.builder(
+                  controller: _pageController,
+                  clipBehavior: Clip.none,
+                  itemCount: widget.shortVideoListLoadDataResult.resultIfSuccess!.length,
+                  itemBuilder: (_, index) {
+                    if (!_pageController.position.haveDimensions) {
+                      return const SizedBox();
                     }
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: itemMap,
+                    ShortVideo shortVideo = widget.shortVideoListLoadDataResult.resultIfSuccess![index];
+                    Widget shortVideoItem = ShortVideoItem(shortVideo: shortVideo);
+                    return AnimatedBuilder(
+                      animation: _pageController,
+                      builder: (_, __) {
+                        double value = (1 - (_pageController.page! - index).abs() / 2);
+                        return Transform.scale(
+                          scale: max(0.8, value),
+                          origin: const Offset(0, -(390 / 2)),
+                          child: Opacity(
+                            opacity: max(0, value),
+                            child: shortVideoItem
+                          ),
+                        );
+                      },
                     );
                   },
-                )
+                ),
               ),
           ]
         )
       ],
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
