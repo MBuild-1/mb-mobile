@@ -376,6 +376,8 @@ class HomeMainMenuSubController extends BaseGetxController {
           observer(title, description, IsLoadingLoadDataResult<List<TransparentBanner>>());
           LoadDataResult<List<TransparentBanner>> bannerLoadDataResult = await getSponsorContentsBannerUseCase.execute().future(
             parameter: apiRequestManager.addRequestToCancellationPart("sponsor-banner-highlight").value
+          ).map(
+            (transparentBannerList) => transparentBannerList.take(1).toList()
           );
           if (bannerLoadDataResult.isFailedBecauseCancellation) {
             return;
