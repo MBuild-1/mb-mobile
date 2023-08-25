@@ -1,5 +1,4 @@
 import 'package:collection/collection.dart';
-import 'package:flag/flag_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
@@ -9,19 +8,18 @@ import 'package:sizer/sizer.dart';
 import '../../../controller/modaldialogcontroller/check_rates_for_various_countries_modal_dialog_controller.dart';
 import '../../../domain/entity/address/country.dart';
 import '../../../domain/entity/cargo/cargo.dart';
+import '../../../domain/entity/delivery/country_delivery_review_response.dart';
 import '../../../domain/usecase/check_rates_for_various_countries_use_case.dart';
+import '../../../domain/usecase/get_country_delivery_review_use_case.dart';
 import '../../../misc/constant.dart';
-import '../../../misc/dialog_helper.dart';
 import '../../../misc/errorprovider/error_provider.dart';
 import '../../../misc/injector.dart';
 import '../../../misc/load_data_result.dart';
-import '../../../misc/page_restoration_helper.dart';
 import '../../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../../widget/loaddataresultimplementer/load_data_result_implementer.dart';
 import '../../widget/rx_consumer.dart';
 import '../../widget/select_country_indicator.dart';
 import 'modal_dialog_page.dart';
-import 'select_countries_modal_dialog_page.dart';
 
 class CheckRatesForVariousCountriesModalDialogPage extends ModalDialogPage<CheckRatesForVariousCountriesModalDialogController> {
   CheckRatesForVariousCountriesModalDialogController get checkRatesForVariousCountriesModalDialogController => modalDialogController.controller;
@@ -36,7 +34,8 @@ class CheckRatesForVariousCountriesModalDialogPage extends ModalDialogPage<Check
   CheckRatesForVariousCountriesModalDialogController onCreateModalDialogController() {
     return CheckRatesForVariousCountriesModalDialogController(
       controllerManager,
-      Injector.locator<CheckRatesForVariousCountriesUseCase>()
+      Injector.locator<CheckRatesForVariousCountriesUseCase>(),
+      Injector.locator<GetCountryDeliveryReviewUseCase>(),
     );
   }
 
@@ -91,130 +90,219 @@ class _StatefulCheckRatesForVariousCountriesControllerMediatorWidgetState extend
             onSelectCountry: (country) {
               setState(() => _selectedCountry = country);
               widget.checkRatesForVariousCountriesModalDialogController.loadCargo();
+              widget.checkRatesForVariousCountriesModalDialogController.loadCountryDeliveryReview();
             }
           ),
-          RxConsumer<LoadDataResultWrapper<List<Cargo>>>(
-            rxValue: widget.checkRatesForVariousCountriesModalDialogController.cargoLoadDataResultWrapperRx,
+          RxConsumer<CheckRatesForVariousCountriesResult>(
+            rxValue: widget.checkRatesForVariousCountriesModalDialogController.checkRatesForVariousCountriesResultRx,
             onConsumeValue: (context, value) => Column(
               children: [
-                if (!value.loadDataResult.isNotLoading) const SizedBox(height: 10),
-                LoadDataResultImplementer<List<Cargo>>(
-                  loadDataResult: value.loadDataResult,
-                  errorProvider: Injector.locator<ErrorProvider>(),
-                  onSuccessLoadDataResultWidget: (cargoList) {
-                    EdgeInsetsGeometry cellPadding = const EdgeInsets.symmetric(vertical: 6.0, horizontal: 8.0);
-                    return Column(
-                      children: [
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                          decoration: const BoxDecoration(
-                            color: Colors.grey
-                          ),
-                          child: Center(
-                            child: Text(
-                              "The price of air delivery is listed /Kg".tr,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold
-                              ),
+                if (value.countryDeliveryReviewLoadDataResult.isNotLoading && value.cargoLoadDataResult.isNotLoading) const SizedBox(height: 10),
+                ...[
+                  if (!value.cargoLoadDataResult.isNotLoading) const SizedBox(height: 5),
+                  LoadDataResultImplementer<CountryDeliveryReviewResponse>(
+                    loadDataResult: value.countryDeliveryReviewLoadDataResult,
+                    errorProvider: Injector.locator<ErrorProvider>(),
+                    onSuccessLoadDataResultWidget: (countryDeliveryReviewResponse) {
+                      return Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: FittedBox(
+                              child: Image.asset(Constant.imageStar),
                             )
-                          )
-                        ),
-                        const SizedBox(height: 10),
-                        Table(
-                          children: [
-                            TableRow(
-                              children: [
-                                Center(
-                                  child: Padding(
-                                    padding: cellPadding,
-                                    child: Text(
-                                      "${"Weight".tr} (${"Min".tr})",
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold
-                                      )
-                                    ),
-                                  )
-                                ),
-                                Center(
-                                  child: Padding(
-                                    padding: cellPadding,
-                                    child: Text(
-                                      "${"Weight".tr} (${"Max".tr})",
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold
-                                      )
-                                    ),
-                                  )
-                                ),
-                                Center(
-                                  child: Padding(
-                                    padding: cellPadding,
-                                    child: Text(
-                                      "Price".tr,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold
-                                      )
-                                    ),
-                                  )
-                                ),
-                              ]
+                          ),
+                          const SizedBox(width: 5),
+                          Text(
+                            "${countryDeliveryReviewResponse.avgRating}",
+                            style: const TextStyle(
+                              height: 2,
+                              fontWeight: FontWeight.bold
                             ),
-                            ...cargoList.mapIndexed<TableRow>(
-                              (index, cargo) => TableRow(
-                                decoration: BoxDecoration(
-                                  color: (index + 1) % 2 != 0 ? Colors.grey.shade200 : null,
+                          ),
+                        ],
+                      );
+                    }
+                  ),
+                  if (!value.cargoLoadDataResult.isNotLoading) const SizedBox(height: 10),
+                  LoadDataResultImplementer<List<Cargo>>(
+                    loadDataResult: value.cargoLoadDataResult,
+                    errorProvider: Injector.locator<ErrorProvider>(),
+                    onSuccessLoadDataResultWidget: (cargoList) {
+                      EdgeInsetsGeometry cellPadding = const EdgeInsets.symmetric(vertical: 6.0, horizontal: 8.0);
+                      EdgeInsetsGeometry cellHeaderPadding = const EdgeInsets.symmetric(vertical: 10.0, horizontal: 8.0);
+                      return Column(
+                        children: [
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                            decoration: const BoxDecoration(
+                              color: Colors.grey
+                            ),
+                            child: Center(
+                              child: Text(
+                                "The price of air delivery is listed /Kg".tr,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold
                                 ),
+                              )
+                            )
+                          ),
+                          const SizedBox(height: 10),
+                          Table(
+                            children: [
+                              TableRow(
                                 children: [
                                   Center(
                                     child: Padding(
-                                      padding: cellPadding,
+                                      padding: cellHeaderPadding,
                                       child: Text(
-                                        "${cargo.minWeight} Kg",
-                                        style: TextStyle()
+                                        "${"Weight".tr} (${"Min".tr})",
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold
+                                        )
                                       ),
                                     )
                                   ),
                                   Center(
                                     child: Padding(
-                                      padding: cellPadding,
+                                      padding: cellHeaderPadding,
                                       child: Text(
-                                        "${cargo.maxWeight} Kg",
-                                        style: TextStyle()
+                                        "${"Weight".tr} (${"Max".tr})",
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold
+                                        )
                                       ),
                                     )
                                   ),
                                   Center(
                                     child: Padding(
-                                      padding: cellPadding,
+                                      padding: cellHeaderPadding,
                                       child: Text(
-                                        cargo.price.toRupiah(),
-                                        style: TextStyle()
+                                        "Price".tr,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold
+                                        )
                                       ),
-                                    ),
+                                    )
                                   ),
                                 ]
-                              )
-                            ).toList()
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-                        SizedOutlineGradientButton(
-                          onPressed: () {
-                            if (_selectedCountry != null) {
-                              widget.onGotoCountryDeliveryReview(_selectedCountry!.id);
-                            }
-                          },
-                          text: "Delivery Review".tr,
-                          outlineGradientButtonType: OutlineGradientButtonType.solid,
-                          outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
-                          customPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 9),
-                        ),
-                      ],
-                    );
-                  }
-                ),
+                              ),
+                              ...cargoList.mapIndexed<TableRow>(
+                                (index, cargo) {
+                                  Widget firstLine(Color color) {
+                                    return Container(
+                                      height: 2,
+                                      color: color
+                                    );
+                                  }
+                                  Widget kgText(double kgValue) {
+                                    return Text.rich(
+                                      TextSpan(
+                                        children: [
+                                          TextSpan(
+                                            text: kgValue.toDecimalStringIfHasDecimalValue(),
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold
+                                            )
+                                          ),
+                                          const WidgetSpan(child: SizedBox(width: 0.6)),
+                                          const TextSpan(
+                                            text: "Kg",
+                                            style: TextStyle(
+                                              fontSize: 11
+                                            )
+                                          )
+                                        ]
+                                      )
+                                    );
+                                  }
+                                  Widget rupiahText(int rupiahValue) {
+                                    String rupiahTextResult = rupiahValue.toRupiah();
+                                    return Text.rich(
+                                      TextSpan(
+                                        children: [
+                                          const TextSpan(
+                                            text: "Rp",
+                                            style: TextStyle(
+                                              fontSize: 11
+                                            )
+                                          ),
+                                          const WidgetSpan(child: SizedBox(width: 0.6)),
+                                          TextSpan(
+                                            text: rupiahTextResult.substring(2, rupiahTextResult.length),
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold
+                                            )
+                                          ),
+                                        ]
+                                      )
+                                    );
+                                  }
+                                  return TableRow(
+                                    decoration: BoxDecoration(
+                                      color: (index + 1) % 2 != 0 ? Colors.grey.shade200 : null,
+                                    ),
+                                    children: [
+                                      Center(
+                                        child: Column(
+                                          children: [
+                                            if (index == 0) firstLine(Constant.colorButtonGradient3),
+                                            Padding(
+                                              padding: cellPadding,
+                                              child: kgText(cargo.minWeight)
+                                            ),
+                                          ],
+                                        )
+                                      ),
+                                      Center(
+                                        child: Column(
+                                          children: [
+                                            if (index == 0) firstLine(Constant.colorButtonGradient1),
+                                            Padding(
+                                              padding: cellPadding,
+                                              child: kgText(cargo.maxWeight)
+                                            ),
+                                          ],
+                                        )
+                                      ),
+                                      Center(
+                                        child: Column(
+                                          children: [
+                                            if (index == 0) firstLine(Constant.colorButtonGradient2),
+                                            Padding(
+                                              padding: cellPadding,
+                                              child: rupiahText(cargo.price),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ]
+                                  );
+                                }
+                              ).toList()
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+                          SizedOutlineGradientButton(
+                            onPressed: () {
+                              if (_selectedCountry != null) {
+                                widget.onGotoCountryDeliveryReview(_selectedCountry!.id);
+                              }
+                            },
+                            text: "Delivery Review".tr,
+                            outlineGradientButtonType: OutlineGradientButtonType.solid,
+                            outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
+                            customPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 9),
+                          ),
+                        ],
+                      );
+                    }
+                  ),
+                ]
               ],
             )
           )

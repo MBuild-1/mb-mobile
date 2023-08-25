@@ -35,6 +35,19 @@ extension NumExt on num? {
       return NumberFormat.currency(locale: "id", symbol: "Rp", decimalDigits: 0).format(zeroResult.effectiveNum);
     }
   }
+
+  bool hasDecimal() {
+    return this != this?.floorToDouble();
+  }
+
+  String toDecimalStringIfHasDecimalValue() {
+    bool hasDecimalResult = hasDecimal();
+    if (hasDecimalResult) {
+      return toString();
+    } else {
+      return this!.toInt().toString();
+    }
+  }
 }
 
 class IsZeroResult {
