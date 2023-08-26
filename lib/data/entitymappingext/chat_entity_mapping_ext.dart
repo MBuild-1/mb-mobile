@@ -210,7 +210,7 @@ extension HelpChatDetailEntityMappingExt on ResponseWrapper {
         user: ResponseWrapper(userTwo).mapFromResponseToUser(),
         userChatStatus: ResponseWrapper(userTwo).mapFromResponseToUserChatStatus()
       ) : null,
-      orderMessageList: orderMessageList.reversed.toList(),
+      orderMessageList: orderMessageList.toList(),
     );
   }
 
@@ -249,7 +249,7 @@ extension HelpChatDetailEntityMappingExt on ResponseWrapper {
       ) : null,
       unreadMessagesCount: 0,
       order: ResponseWrapper(response["combined_order"]).mapFromResponseToCombinedOrderFromMessage(),
-      orderMessageList: orderMessageList.reversed.toList(),
+      orderMessageList: orderMessageList.toList(),
     );
   }
 
@@ -339,7 +339,7 @@ extension HelpChatDetailEntityMappingExt on ResponseWrapper {
         user: ResponseWrapper(userTwo).mapFromResponseToUser(),
         userChatStatus: ResponseWrapper(userTwo).mapFromResponseToUserChatStatus()
       ) : null,
-      productMessageList: productMessageList.reversed.toList(),
+      productMessageList: productMessageList.toList(),
     );
   }
 
@@ -370,7 +370,7 @@ extension HelpChatDetailEntityMappingExt on ResponseWrapper {
       ) : null,
       unreadMessagesCount: response["unread_messages_count"],
       productFromMessage: ResponseWrapper(response["product"]).mapFromResponseToProductFromMessage(),
-      productMessageList: productMessageList.reversed.toList(),
+      productMessageList: productMessageList.toList(),
     );
   }
 
@@ -407,7 +407,7 @@ extension HelpChatDetailEntityMappingExt on ResponseWrapper {
         userChatStatus: ResponseWrapper(userTwo).mapFromResponseToUserChatStatus()
       ) : null,
       unreadMessagesCount: response["unread_messages_count"] ?? 0,
-      productMessageList: productMessageList.reversed.toList(),
+      productMessageList: productMessageList.toList(),
     );
   }
 
