@@ -49,6 +49,7 @@ import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
 import '../../misc/load_data_result.dart';
+import '../../misc/login_helper.dart';
 import '../../misc/manager/controller_manager.dart';
 import '../../misc/on_observe_load_product_delegate.dart';
 import '../../misc/page_restoration_helper.dart';
@@ -70,6 +71,7 @@ import '../widget/modified_divider.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/default_search_app_bar.dart';
 import 'getx_page.dart';
+import 'login_page.dart';
 import 'product_chat_page.dart';
 import 'product_entry_page.dart';
 import 'search_page.dart';
@@ -121,7 +123,7 @@ class ProductDetailPage extends RestorableGetxPage<_ProductDetailPageRestoration
   }
 }
 
-class _ProductDetailPageRestoration extends MixableGetxPageRestoration with ProductDetailPageRestorationMixin, ProductEntryPageRestorationMixin, SearchPageRestorationMixin, ProductChatPageRestorationMixin {
+class _ProductDetailPageRestoration extends MixableGetxPageRestoration with ProductDetailPageRestorationMixin, ProductEntryPageRestorationMixin, SearchPageRestorationMixin, ProductChatPageRestorationMixin, LoginPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
@@ -656,7 +658,9 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
                       child: SizedOutlineGradientButton(
                         width: double.infinity,
                         outlineGradientButtonType: OutlineGradientButtonType.outline,
-                        onPressed: widget.productDetailController.buyDirectly,
+                        onPressed: () => LoginHelper.checkingLogin(context, () {
+                          widget.productDetailController.buyDirectly();
+                        }),
                         text: "Buy Directly".tr,
                       ),
                     ),
@@ -666,16 +670,18 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
                         width: double.infinity,
                         outlineGradientButtonType: OutlineGradientButtonType.solid,
                         onPressed: () {
-                          if (_productDetailLoadDataResult.isSuccess) {
-                            ProductDetail productDetail = _productDetailLoadDataResult.resultIfSuccess!;
-                            int productEntryIndex = _productVariantColorfulChipTabBarController.value;
-                            ProductEntry? productEntry = ProductHelper.getSelectedProductEntry(
-                              productDetail.productEntry, productEntryIndex
-                            );
-                            if (productEntry != null) {
-                              widget.productDetailController.wishlistAndCartControllerContentDelegate.addToCart(productEntry);
+                          LoginHelper.checkingLogin(context, () {
+                            if (_productDetailLoadDataResult.isSuccess) {
+                              ProductDetail productDetail = _productDetailLoadDataResult.resultIfSuccess!;
+                              int productEntryIndex = _productVariantColorfulChipTabBarController.value;
+                              ProductEntry? productEntry = ProductHelper.getSelectedProductEntry(
+                                productDetail.productEntry, productEntryIndex
+                              );
+                              if (productEntry != null) {
+                                widget.productDetailController.wishlistAndCartControllerContentDelegate.addToCart(productEntry);
+                              }
                             }
-                          }
+                          });
                         },
                         text: "+ ${"Cart".tr}",
                       ),
