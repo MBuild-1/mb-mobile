@@ -1,6 +1,8 @@
+import 'package:flag/flag_widget.dart';
 import 'package:flutter/material.dart';
 
 import '../../../domain/entity/delivery/delivery_review.dart';
+import '../../../misc/constant.dart';
 import '../profile_picture_cache_network_image.dart';
 
 abstract class DeliveryReviewItem extends StatelessWidget {
@@ -19,7 +21,7 @@ abstract class DeliveryReviewItem extends StatelessWidget {
     BorderRadius borderRadius = BorderRadius.circular(8.0);
     return SizedBox(
       width: itemWidth,
-      height: 185,
+      height: 240,
       child: Padding(
         // Use padding widget for avoiding shadow elevation overlap.
         padding: const EdgeInsets.only(top: 1.0, bottom: 5.0),
@@ -39,9 +41,64 @@ abstract class DeliveryReviewItem extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  ProfilePictureCacheNetworkImage(
-                    profileImageUrl: deliveryReview.userProfilePicture,
-                    dimension: 50.0,
+                  SizedBox(
+                    width: 170,
+                    height: 100,
+                    child: Stack(
+                      children: [
+                        Center(
+                          child: ProfilePictureCacheNetworkImage(
+                            profileImageUrl: deliveryReview.userProfilePicture,
+                            dimension: 100.0,
+                          ),
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          child: Container(
+                            width: 50,
+                            height: 50,
+                            clipBehavior: Clip.antiAlias,
+                            decoration: const BoxDecoration(
+                              color: Colors.amber,
+                              shape: BoxShape.circle
+                            ),
+                            child: FittedBox(
+                              fit: BoxFit.cover,
+                              child: SizedBox(
+                                child: Flag.fromString(
+                                  deliveryReview.countryCode
+                                )
+                              ),
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: FittedBox(
+                                  child: Image.asset(Constant.imageStar),
+                                )
+                              ),
+                              const SizedBox(width: 5),
+                              Text(
+                                "${deliveryReview.rating}",
+                                style: const TextStyle(
+                                  height: 1.5,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold
+                                ),
+                              ),
+                            ],
+                          )
+                        )
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 10),
                   Text(deliveryReview.review, maxLines: 3, overflow: TextOverflow.ellipsis),
