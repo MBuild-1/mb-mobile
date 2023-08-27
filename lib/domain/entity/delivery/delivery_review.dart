@@ -6,6 +6,7 @@ class DeliveryReview {
   String productName;
   double rating;
   String country;
+  String countryId;
   String countryCode;
   String review;
   DateTime reviewDate;
@@ -18,6 +19,7 @@ class DeliveryReview {
     required this.productName,
     required this.rating,
     required this.country,
+    required this.countryId,
     this.countryCode = "",
     required this.review,
     required this.reviewDate

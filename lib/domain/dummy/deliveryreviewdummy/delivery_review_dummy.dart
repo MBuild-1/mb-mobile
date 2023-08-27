@@ -12,6 +12,7 @@ class DeliveryReviewDummy {
       productName: "",
       review: "",
       country: "",
+      countryId: "",
       rating: 5.0,
       reviewDate: DateTime.now(),
     );
@@ -26,6 +27,7 @@ class DeliveryReviewDummy {
       productName: "",
       review: "",
       country: "",
+      countryId: "",
       rating: 5.0,
       reviewDate: DateTime.now(),
     );

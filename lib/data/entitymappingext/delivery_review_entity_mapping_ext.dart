@@ -145,6 +145,7 @@ extension DeliveryReviewDetailEntityMappingExt on ResponseWrapper {
       productName: "",
       rating: ResponseWrapper(response["rating"]).mapFromResponseToDouble()!,
       country: countryName,
+      countryId: countryId,
       countryCode: countryCode,
       review: response["message"],
       reviewDate: ResponseWrapper(response["created_at"]).mapFromResponseToDateTime()!,

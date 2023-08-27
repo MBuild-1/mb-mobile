@@ -5,6 +5,7 @@ import 'package:masterbagasi/misc/ext/string_ext.dart';
 import '../../../../domain/entity/delivery/delivery_review.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/deliveryreviewlistitemcontrollerstate/deliveryreviewdetaillistitemcontrollerstate/delivery_review_detail_list_item_controller_state.dart';
 import '../../../../misc/date_util.dart';
+import '../../../../misc/page_restoration_helper.dart';
 import '../../modifiedcachednetworkimage/product_modified_cached_network_image.dart';
 import '../../profile_picture_cache_network_image.dart';
 import '../../rating_indicator.dart';
@@ -46,6 +47,7 @@ abstract class DeliveryReviewDetailItem extends StatelessWidget {
           borderRadius: borderRadius,
           elevation: 3,
           child: InkWell(
+            onTap: () => PageRestorationHelper.toCountryDeliveryReviewPage(deliveryReview.countryId, context),
             borderRadius: borderRadius,
             child: Container(
               clipBehavior: Clip.antiAlias,

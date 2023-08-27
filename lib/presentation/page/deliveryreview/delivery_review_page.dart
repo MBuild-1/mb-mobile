@@ -12,6 +12,7 @@ import '../../../misc/main_route_observer.dart';
 import '../../../misc/refresh_delivery_review.dart';
 import '../../widget/modified_tab_bar.dart';
 import '../../widget/modifiedappbar/modified_app_bar.dart';
+import '../country_delivery_review_page.dart';
 import '../getx_page.dart';
 import 'deliveryreviewsubpage/history_delivery_review_sub_page.dart';
 import 'deliveryreviewsubpage/waiting_to_be_reviewed_delivery_review_sub_page.dart';
@@ -70,7 +71,7 @@ class DeliveryReviewPage extends RestorableGetxPage<_DeliveryReviewPageRestorati
   }
 }
 
-class _DeliveryReviewPageRestoration extends MixableGetxPageRestoration {
+class _DeliveryReviewPageRestoration extends MixableGetxPageRestoration with CountryDeliveryReviewPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
