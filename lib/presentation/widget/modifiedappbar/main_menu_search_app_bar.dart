@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 
 import '../../../misc/constant.dart';
 import '../../../misc/page_restoration_helper.dart';
+import '../notification_icon_indicator.dart';
+import '../notification_number_indicator.dart';
 import '../tap_area.dart';
 import 'search_app_bar.dart';
 
@@ -37,26 +39,37 @@ class MainMenuSearchAppBar extends SearchAppBar {
           const SizedBox(width: 10),
           Text("Search in Masterbagasi".tr, style: TextStyle(color: Colors.grey.shade600)),
           const Spacer(),
-          TapArea(
+          NotificationIconIndicator(
+            notificationNumber: 10,
             onTap: () => PageRestorationHelper.toNotificationPage(context),
-            child: SvgPicture.asset(
-              Constant.vectorNotification,
-              color: Colors.grey.shade600,
-              height: 25,
+            icon: Row(
+              children: [
+                const SizedBox(
+                  width: 3
+                ),
+                SvgPicture.asset(
+                  Constant.vectorNotification,
+                  color: Colors.grey.shade600,
+                  height: 22,
+                ),
+              ],
             ),
           ),
-          const SizedBox(width: 15),
-          SvgPicture.asset(
-            Constant.vectorInbox,
-            color: Colors.grey.shade600,
-            height: 18,
+          const SizedBox(width: 13),
+          NotificationIconIndicator(
+            notificationNumber: 20,
+            onTap: () => PageRestorationHelper.toInboxPage(context),
+            icon: SvgPicture.asset(
+              Constant.vectorInbox,
+              color: Colors.grey.shade600,
+              height: 18,
+            ),
           ),
-          const SizedBox(width: 15),
-          TapArea(
-            onTap: () {
-              PageRestorationHelper.toCartPage(context);
-            },
-            child: SvgPicture.asset(
+          const SizedBox(width: 10),
+          NotificationIconIndicator(
+            notificationNumber: 30,
+            onTap: () => PageRestorationHelper.toCartPage(context),
+            icon: SvgPicture.asset(
               Constant.vectorCart,
               color: Colors.grey.shade600,
               height: 18,
