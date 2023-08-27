@@ -151,6 +151,7 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "The price of air delivery is listed /Kg": "Harga Pengiriman Udara Tertera /Kg",
       "Weight": "Berat",
       "Price": "Harga",
+      "Price Together": "Harga Bersama",
       "Min": "Min",
       "Max": "Maks",
       "Where do you want it sent": "Mau dikirim ke mana",
