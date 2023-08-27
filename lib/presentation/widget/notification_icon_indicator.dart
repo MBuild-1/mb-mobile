@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 
-import '../../misc/page_restoration_helper.dart';
 import 'notification_number_indicator.dart';
 import 'tap_area.dart';
 
 class NotificationIconIndicator extends StatelessWidget {
-  final void Function() onTap;
+  final void Function()? onTap;
   final Widget icon;
   final int notificationNumber;
 
   const NotificationIconIndicator({
     super.key,
-    required this.onTap,
+    this.onTap,
     required this.icon,
     required this.notificationNumber
   });
@@ -19,7 +18,7 @@ class NotificationIconIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TapArea(
-      onTap: () => PageRestorationHelper.toInboxPage(context),
+      onTap: onTap,
       child: SizedBox(
         width: 30,
         height: 25,

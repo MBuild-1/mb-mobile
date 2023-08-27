@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../misc/constant.dart';
 import '../../../misc/page_restoration_helper.dart';
+import '../modified_vertical_divider.dart';
+import '../tap_area.dart';
 import 'modified_app_bar.dart';
 import 'search_app_bar.dart';
 
@@ -15,7 +18,7 @@ class CoreSearchAppBar extends SearchAppBar {
   CoreSearchAppBar({
     Key? key,
     Widget? leading,
-    bool automaticallyImplyLeading = true,
+    bool automaticallyImplyLeading = false,
     PreferredSizeWidget? bottom,
     double value = 1.0,
     VoidCallback? onSearchTextFieldTapped,
@@ -56,6 +59,64 @@ class CoreSearchAppBar extends SearchAppBar {
         )
       ]
     );
+  }
+
+  @override
+  TextFieldBuilder get textFieldBuilder {
+    return (context) {
+      final ModalRoute<dynamic>? parentRoute = ModalRoute.of(context);
+      final bool canPop = parentRoute?.canPop ?? false;
+      return Container(
+        padding: const EdgeInsets.symmetric(
+          vertical: 8.0,
+          horizontal: 12.0
+        ),
+        child: Row(
+          children: [
+            if (canPop) ...[
+              TapArea(
+                onTap: () => Navigator.maybePop(context),
+                child: IconTheme(
+                  data: IconThemeData(
+                    color: Colors.grey.shade600
+                  ),
+                  child: const BackButtonIcon(),
+                ),
+              ),
+              const SizedBox(width: 8),
+              ModifiedVerticalDivider(
+                lineWidth: 1,
+                lineHeight: 25,
+                lineColor: Colors.grey.shade600,
+              ),
+              const SizedBox(width: 8),
+            ],
+            Icon(Icons.search, color: Colors.grey.shade600),
+            const SizedBox(width: 5),
+            Expanded(
+              child: TextField(
+                controller: searchTextEditingController,
+                decoration: InputDecoration.collapsed(
+                  hintText: "Search in Masterbagasi".tr,
+                ).copyWith(
+                  contentPadding: const EdgeInsets.symmetric(vertical: 4),
+                ),
+                onEditingComplete: onSearch != null ? () {
+                  if (searchTextEditingController != null) {
+                    onSearch!(searchTextEditingController!.text);
+                  }
+                } : null,
+                textInputAction: TextInputAction.done,
+                style: TextStyle(
+                  color: Colors.grey.shade600,
+                  fontSize: 14
+                ),
+              ),
+            ),
+          ]
+        )
+      );
+    };
   }
 
   @override

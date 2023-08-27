@@ -32,8 +32,11 @@ import '../../misc/paging/pagingresult/paging_result.dart';
 import '../widget/background_app_bar_scaffold.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/main_menu_search_app_bar.dart';
+import 'cart_page.dart';
 import 'country_delivery_review_media_view_page.dart';
 import 'getx_page.dart';
+import 'inbox_page.dart';
+import 'notification_page.dart';
 
 class CountryDeliveryReviewPage extends RestorableGetxPage<_CountryDeliveryReviewPageRestoration> {
   final String countryId;
@@ -71,7 +74,7 @@ class CountryDeliveryReviewPage extends RestorableGetxPage<_CountryDeliveryRevie
   }
 }
 
-class _CountryDeliveryReviewPageRestoration extends MixableGetxPageRestoration with CountryDeliveryReviewPageRestorationMixin, CountryDeliveryReviewMediaViewPageRestorationMixin {
+class _CountryDeliveryReviewPageRestoration extends MixableGetxPageRestoration with CountryDeliveryReviewPageRestorationMixin, CountryDeliveryReviewMediaViewPageRestorationMixin, NotificationPageRestorationMixin, CartPageRestorationMixin, InboxPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
