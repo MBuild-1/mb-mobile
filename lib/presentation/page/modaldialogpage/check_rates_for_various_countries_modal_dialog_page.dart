@@ -97,7 +97,6 @@ class _StatefulCheckRatesForVariousCountriesControllerMediatorWidgetState extend
             rxValue: widget.checkRatesForVariousCountriesModalDialogController.checkRatesForVariousCountriesResultRx,
             onConsumeValue: (context, value) => Column(
               children: [
-                if (value.countryDeliveryReviewLoadDataResult.isNotLoading && value.cargoLoadDataResult.isNotLoading) const SizedBox(height: 10),
                 ...[
                   if (!value.cargoLoadDataResult.isNotLoading) const SizedBox(height: 5),
                   LoadDataResultImplementer<CountryDeliveryReviewResponse>(
