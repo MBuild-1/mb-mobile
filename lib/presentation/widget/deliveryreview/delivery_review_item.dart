@@ -101,7 +101,12 @@ abstract class DeliveryReviewItem extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  Text(deliveryReview.review, maxLines: 3, overflow: TextOverflow.ellipsis),
+                  Text(
+                    deliveryReview.review,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center
+                  ),
                   const SizedBox(height: 10),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
