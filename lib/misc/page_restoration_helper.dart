@@ -341,14 +341,12 @@ class _PageRestorationHelperImpl {
   }
 
   void toCountryDeliveryReviewPage(String countryId, BuildContext context) {
-    LoginHelper.checkingLogin(context, () {
-      PageRestorationHelper.findPageRestorationMixin<CountryDeliveryReviewPageRestorationMixin>(
-        onGetxPageRestorationFound: (restoration) {
-          restoration.countryDeliveryReviewPageRestorableRouteFuture.present(countryId);
-        },
-        context: context
-      );
-    });
+    PageRestorationHelper.findPageRestorationMixin<CountryDeliveryReviewPageRestorationMixin>(
+      onGetxPageRestorationFound: (restoration) {
+        restoration.countryDeliveryReviewPageRestorableRouteFuture.present(countryId);
+      },
+      context: context
+    );
   }
 
   void toSearchPage(BuildContext context) {
@@ -407,16 +405,14 @@ class _PageRestorationHelperImpl {
   }
 
   void toCountryDeliveryReviewMediaViewPage(BuildContext context, CountryDeliveryReviewMediaViewPageParameter countryDeliveryReviewMediaViewPageParameter) {
-    LoginHelper.checkingLogin(context, () {
-      PageRestorationHelper.findPageRestorationMixin<CountryDeliveryReviewMediaViewPageRestorationMixin>(
-        onGetxPageRestorationFound: (restoration) {
-          restoration.countryDeliveryReviewMediaViewPageRestorableRouteFuture.present(
-            countryDeliveryReviewMediaViewPageParameter.toEncodeBase64String()
-          );
-        },
-        context: context
-      );
-    });
+    PageRestorationHelper.findPageRestorationMixin<CountryDeliveryReviewMediaViewPageRestorationMixin>(
+      onGetxPageRestorationFound: (restoration) {
+        restoration.countryDeliveryReviewMediaViewPageRestorableRouteFuture.present(
+          countryDeliveryReviewMediaViewPageParameter.toEncodeBase64String()
+        );
+      },
+      context: context
+    );
   }
 
   void toNotificationPage(BuildContext context) {
