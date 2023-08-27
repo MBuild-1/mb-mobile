@@ -150,7 +150,7 @@ class _StatefulCheckRatesForVariousCountriesControllerMediatorWidgetState extend
                               )
                             )
                           ),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 8),
                           Table(
                             children: [
                               TableRow(
@@ -162,6 +162,7 @@ class _StatefulCheckRatesForVariousCountriesControllerMediatorWidgetState extend
                                         "${"Weight".tr} (${"Min".tr})",
                                         style: const TextStyle(
                                           fontWeight: FontWeight.bold,
+                                          fontSize: 12
                                         ),
                                         textAlign: TextAlign.center,
                                       ),
@@ -173,7 +174,8 @@ class _StatefulCheckRatesForVariousCountriesControllerMediatorWidgetState extend
                                       child: Text(
                                         "${"Weight".tr} (${"Max".tr})",
                                         style: const TextStyle(
-                                          fontWeight: FontWeight.bold
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12
                                         ),
                                         textAlign: TextAlign.center,
                                       ),
@@ -183,9 +185,10 @@ class _StatefulCheckRatesForVariousCountriesControllerMediatorWidgetState extend
                                     child: Padding(
                                       padding: cellHeaderPadding,
                                       child: Text(
-                                        "Price".tr,
+                                        "Price Individual".tr,
                                         style: const TextStyle(
-                                          fontWeight: FontWeight.bold
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12
                                         ),
                                         textAlign: TextAlign.center,
                                       ),
@@ -197,7 +200,8 @@ class _StatefulCheckRatesForVariousCountriesControllerMediatorWidgetState extend
                                       child: Text(
                                         "Price Together".tr,
                                         style: const TextStyle(
-                                          fontWeight: FontWeight.bold
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12
                                         ),
                                         textAlign: TextAlign.center,
                                       ),
