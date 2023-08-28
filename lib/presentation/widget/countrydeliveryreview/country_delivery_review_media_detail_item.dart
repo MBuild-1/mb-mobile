@@ -70,13 +70,23 @@ class _CountryDeliveryReviewMediaDetailItemState extends State<CountryDeliveryRe
                 imageUrl: widget.countryDeliveryReviewMedia.thumbnailUrl.toEmptyStringNonNull,
               );
             } else if (widget.countryDeliveryReviewMedia is VideoCountryDeliveryReviewMedia) {
-              return Container(
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: _videoFileName != null ? FileImage(File(_videoFileName!)) as ImageProvider<Object> : AssetImage(Constant.imageProductPlaceholder),
-                    fit: BoxFit.cover,
+              return Stack(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: _videoFileName != null ? FileImage(File(_videoFileName!)) as ImageProvider<Object> : AssetImage(Constant.imageProductPlaceholder),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
-                ),
+                  const Center(
+                    child: Icon(
+                      Icons.play_arrow,
+                      color: Colors.white
+                    )
+                  )
+                ],
               );
             } else {
               return CountryDeliveryReviewModifiedCachedNetworkImage(
