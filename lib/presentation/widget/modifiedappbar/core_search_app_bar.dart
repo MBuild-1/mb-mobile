@@ -98,8 +98,6 @@ class CoreSearchAppBar extends SearchAppBar {
                 controller: searchTextEditingController,
                 decoration: InputDecoration.collapsed(
                   hintText: "Search in Masterbagasi".tr,
-                ).copyWith(
-                  contentPadding: const EdgeInsets.symmetric(vertical: 4),
                 ),
                 onEditingComplete: onSearch != null ? () {
                   if (searchTextEditingController != null) {

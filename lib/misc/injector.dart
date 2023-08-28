@@ -175,6 +175,7 @@ import '../domain/usecase/give_review_delivery_review_detail_use_case.dart';
 import '../domain/usecase/login_use_case.dart';
 import '../domain/usecase/login_with_google_use_case.dart';
 import '../domain/usecase/logout_use_case.dart';
+import '../domain/usecase/purchase_direct_use_case.dart';
 import '../domain/usecase/register_use_case.dart';
 import '../domain/usecase/register_with_google_use_case.dart';
 import '../domain/usecase/remove_additional_item_use_case.dart';
@@ -536,6 +537,7 @@ class _Injector {
     locator.registerLazySingleton<RemoveAdditionalItemUseCase>(() => RemoveAdditionalItemUseCase(cartRepository: locator()));
     locator.registerLazySingleton<GetProvinceMapUseCase>(() => GetProvinceMapUseCase(mapRepository: locator()));
     locator.registerLazySingleton<CreateOrderUseCase>(() => CreateOrderUseCase(orderRepository: locator()));
+    locator.registerLazySingleton<PurchaseDirectUseCase>(() => PurchaseDirectUseCase(orderRepository: locator()));
     locator.registerLazySingleton<GetOrderPagingUseCase>(() => GetOrderPagingUseCase(orderRepository: locator()));
     locator.registerLazySingleton<GetShippingReviewOrderListUseCase>(() => GetShippingReviewOrderListUseCase(orderRepository: locator()));
     locator.registerLazySingleton<GetOrderBasedIdUseCase>(() => GetOrderBasedIdUseCase(orderRepository: locator()));

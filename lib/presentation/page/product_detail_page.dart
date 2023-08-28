@@ -25,6 +25,7 @@ import '../../domain/usecase/get_product_detail_other_from_this_brand_product_en
 import '../../domain/usecase/get_product_detail_other_in_this_category_product_entry_list_use_case.dart';
 import '../../domain/usecase/get_product_detail_other_interested_product_brand_list_use_case.dart';
 import '../../domain/usecase/get_product_detail_use_case.dart';
+import '../../domain/usecase/purchase_direct_use_case.dart';
 import '../../misc/additionalloadingindicatorchecker/product_detail_additional_paging_result_parameter_checker.dart';
 import '../../misc/constant.dart';
 import '../../misc/controllercontentdelegate/product_brand_favorite_controller_content_delegate.dart';
@@ -51,6 +52,7 @@ import '../../misc/injector.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/login_helper.dart';
 import '../../misc/manager/controller_manager.dart';
+import '../../misc/navigation_helper.dart';
 import '../../misc/on_observe_load_product_delegate.dart';
 import '../../misc/page_restoration_helper.dart';
 import '../../misc/paging/modified_paging_controller.dart';
@@ -100,6 +102,7 @@ class ProductDetailPage extends RestorableGetxPage<_ProductDetailPageRestoration
         Injector.locator<GetProductDetailOtherInThisCategoryProductEntryListUseCase>(),
         Injector.locator<GetProductDetailFromYourSearchProductEntryListUseCase>(),
         Injector.locator<GetProductDetailOtherInterestedProductBrandListUseCase>(),
+        Injector.locator<PurchaseDirectUseCase>(),
         Injector.locator<AddToCartUseCase>(),
         Injector.locator<WishlistAndCartControllerContentDelegate>(),
         Injector.locator<ProductBrandFavoriteControllerContentDelegate>()
@@ -580,9 +583,15 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
         onUnfocusAllWidget: () => FocusScope.of(context).unfocus(),
         onObserveLoadProductDelegate: onObserveLoadProductDelegateFactory.generateOnObserveLoadProductDelegate(),
         onGetSupportCart: () {
-          return _productDetailLoadDataResult.isSuccess
-            ? _productDetailLoadDataResult.resultIfSuccess!.productEntry as SupportCart
-            : null;
+          if (_productDetailLoadDataResult.isSuccess) {
+            ProductDetail productDetail = _productDetailLoadDataResult.resultIfSuccess!;
+            int productEntryIndex = _productVariantColorfulChipTabBarController.value;
+            ProductEntry? productEntry = ProductHelper.getSelectedProductEntry(
+              productDetail.productEntry, productEntryIndex
+            );
+            return productEntry;
+          }
+          return null;
         },
         onShowAddToCartRequestProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
         onShowAddToCartRequestProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
@@ -599,9 +608,10 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
           errorProvider: Injector.locator<ErrorProvider>(),
           e: e
         ),
-        onBuyDirectlyRequestProcessSuccessCallback: () async {
-
-        }
+        onBuyDirectlyRequestProcessSuccessCallback: (order) async {
+          NavigationHelper.navigationAfterPurchaseProcess(context, order);
+        },
+        onBack: () => Get.back()
       )
     );
     widget.productDetailController.wishlistAndCartControllerContentDelegate.setWishlistAndCartDelegate(
@@ -671,16 +681,7 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
                         outlineGradientButtonType: OutlineGradientButtonType.solid,
                         onPressed: () {
                           LoginHelper.checkingLogin(context, () {
-                            if (_productDetailLoadDataResult.isSuccess) {
-                              ProductDetail productDetail = _productDetailLoadDataResult.resultIfSuccess!;
-                              int productEntryIndex = _productVariantColorfulChipTabBarController.value;
-                              ProductEntry? productEntry = ProductHelper.getSelectedProductEntry(
-                                productDetail.productEntry, productEntryIndex
-                              );
-                              if (productEntry != null) {
-                                widget.productDetailController.wishlistAndCartControllerContentDelegate.addToCart(productEntry);
-                              }
-                            }
+                            widget.productDetailController.addToCart();
                           });
                         },
                         text: "+ ${"Cart".tr}",

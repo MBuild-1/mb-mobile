@@ -5,6 +5,8 @@ import '../domain/entity/cart/add_to_cart_response.dart';
 import '../domain/entity/cart/support_cart.dart';
 import '../domain/entity/componententity/dynamic_item_carousel_component_entity.dart';
 import '../domain/entity/componententity/i_dynamic_item_carousel_component_entity.dart';
+import '../domain/entity/order/order.dart';
+import '../domain/entity/order/purchase_direct_parameter.dart';
 import '../domain/entity/product/product.dart';
 import '../domain/entity/product/product_detail.dart';
 import '../domain/entity/product/product_detail_from_your_search_product_entry_list_parameter.dart';
@@ -28,6 +30,7 @@ import '../domain/usecase/get_product_detail_other_from_this_brand_product_entry
 import '../domain/usecase/get_product_detail_other_in_this_category_product_entry_list_use_case.dart';
 import '../domain/usecase/get_product_detail_other_interested_product_brand_list_use_case.dart';
 import '../domain/usecase/get_product_detail_use_case.dart';
+import '../domain/usecase/purchase_direct_use_case.dart';
 import '../misc/constant.dart';
 import '../misc/controllercontentdelegate/product_brand_favorite_controller_content_delegate.dart';
 import '../misc/controllercontentdelegate/wishlist_and_cart_controller_content_delegate.dart';
@@ -43,7 +46,7 @@ typedef _OnShowAddToCartRequestProcessLoadingCallback = Future<void> Function();
 typedef _OnAddToCartRequestProcessSuccessCallback = Future<void> Function();
 typedef _OnShowAddToCartRequestProcessFailedCallback = Future<void> Function(dynamic e);
 typedef _OnShowBuyDirectlyRequestProcessLoadingCallback = Future<void> Function();
-typedef _OnBuyDirectlyRequestProcessSuccessCallback = Future<void> Function();
+typedef _OnBuyDirectlyRequestProcessSuccessCallback = Future<void> Function(Order order);
 typedef _OnShowBuyDirectlyRequestProcessFailedCallback = Future<void> Function(dynamic e);
 
 class ProductDetailController extends BaseGetxController {
@@ -54,6 +57,7 @@ class ProductDetailController extends BaseGetxController {
   final GetProductDetailOtherInThisCategoryProductEntryListUseCase getProductDetailOtherInThisCategoryProductEntryListUseCase;
   final GetProductDetailFromYourSearchProductEntryListUseCase getProductDetailFromYourSearchProductEntryListUseCase;
   final GetProductDetailOtherInterestedProductBrandListUseCase getProductDetailOtherInterestedProductBrandListUseCase;
+  final PurchaseDirectUseCase purchaseDirectUseCase;
   final AddToCartUseCase addToCartUseCase;
   final WishlistAndCartControllerContentDelegate wishlistAndCartControllerContentDelegate;
   final ProductBrandFavoriteControllerContentDelegate productBrandFavoriteControllerContentDelegate;
@@ -68,6 +72,7 @@ class ProductDetailController extends BaseGetxController {
     this.getProductDetailOtherInThisCategoryProductEntryListUseCase,
     this.getProductDetailFromYourSearchProductEntryListUseCase,
     this.getProductDetailOtherInterestedProductBrandListUseCase,
+    this.purchaseDirectUseCase,
     this.addToCartUseCase,
     this.wishlistAndCartControllerContentDelegate,
     this.productBrandFavoriteControllerContentDelegate
@@ -310,24 +315,12 @@ class ProductDetailController extends BaseGetxController {
     _productDetailMainMenuDelegate = productDetailMainMenuDelegate;
   }
 
-  void addToCart() async {
+  void addToCart() {
     if (_productDetailMainMenuDelegate != null) {
       SupportCart? supportCart = _productDetailMainMenuDelegate!.onGetSupportCart();
       if (supportCart != null) {
-        _productDetailMainMenuDelegate!.onUnfocusAllWidget();
-        _productDetailMainMenuDelegate!.onShowAddToCartRequestProcessLoadingCallback();
-        LoadDataResult<AddToCartResponse> addToCartLoadDataResult = await addToCartUseCase.execute(
-          AddToCartParameter(
-            supportCart: supportCart,
-            quantity: 1
-          )
-        ).future(
-          parameter: apiRequestManager.addRequestToCancellationPart("add-to-cart").value
-        );
-        if (addToCartLoadDataResult.isSuccess) {
-          _productDetailMainMenuDelegate!.onAddToCartRequestProcessSuccessCallback();
-        } else {
-          _productDetailMainMenuDelegate!.onShowAddToCartRequestProcessFailedCallback(addToCartLoadDataResult.resultIfFailed);
+        if (supportCart is ProductEntry) {
+          wishlistAndCartControllerContentDelegate.addToCart(supportCart);
         }
       }
     }
@@ -337,27 +330,26 @@ class ProductDetailController extends BaseGetxController {
     if (_productDetailMainMenuDelegate != null) {
       SupportCart? supportCart = _productDetailMainMenuDelegate!.onGetSupportCart();
       if (supportCart != null) {
-        _productDetailMainMenuDelegate!.onUnfocusAllWidget();
-        _productDetailMainMenuDelegate!.onShowAddToCartRequestProcessLoadingCallback();
-        LoadDataResult<AddToCartResponse> addToCartLoadDataResult = await addToCartUseCase.execute(
-          AddToCartParameter(
-            supportCart: supportCart,
-            quantity: 1
-          )
-        ).future(
-          parameter: apiRequestManager.addRequestToCancellationPart("add-to-cart").value
-        );
-        if (addToCartLoadDataResult.isSuccess) {
-          _productDetailMainMenuDelegate!.onAddToCartRequestProcessSuccessCallback();
-        } else {
-          _productDetailMainMenuDelegate!.onShowAddToCartRequestProcessFailedCallback(addToCartLoadDataResult.resultIfFailed);
+        if (supportCart is ProductEntry) {
+          _productDetailMainMenuDelegate!.onUnfocusAllWidget();
+          _productDetailMainMenuDelegate!.onShowBuyDirectlyRequestProcessLoadingCallback();
+          PurchaseDirectParameter purchaseDirectParameter = PurchaseDirectParameter(
+            productEntryId: supportCart.productEntryId,
+            quantity: 1,
+            notes: ""
+          );
+          LoadDataResult<Order> orderLoadDataResult = await purchaseDirectUseCase.execute(purchaseDirectParameter).future(
+            parameter: apiRequestManager.addRequestToCancellationPart("purchase-direct").value
+          );
+          _productDetailMainMenuDelegate!.onBack();
+          if (orderLoadDataResult.isSuccess) {
+            _productDetailMainMenuDelegate!.onBuyDirectlyRequestProcessSuccessCallback(orderLoadDataResult.resultIfSuccess!);
+          } else {
+            _productDetailMainMenuDelegate!.onShowBuyDirectlyRequestProcessFailedCallback(orderLoadDataResult.resultIfFailed);
+          }
         }
       }
     }
-  }
-
-  void chatProduct() async {
-
   }
 }
 
@@ -371,6 +363,7 @@ class ProductDetailMainMenuDelegate {
   _OnShowBuyDirectlyRequestProcessLoadingCallback onShowBuyDirectlyRequestProcessLoadingCallback;
   _OnBuyDirectlyRequestProcessSuccessCallback onBuyDirectlyRequestProcessSuccessCallback;
   _OnShowBuyDirectlyRequestProcessFailedCallback onShowBuyDirectlyRequestProcessFailedCallback;
+  void Function() onBack;
 
   ProductDetailMainMenuDelegate({
     required this.onObserveLoadProductDelegate,
@@ -381,6 +374,7 @@ class ProductDetailMainMenuDelegate {
     required this.onShowAddToCartRequestProcessFailedCallback,
     required this.onShowBuyDirectlyRequestProcessLoadingCallback,
     required this.onBuyDirectlyRequestProcessSuccessCallback,
-    required this.onShowBuyDirectlyRequestProcessFailedCallback
+    required this.onShowBuyDirectlyRequestProcessFailedCallback,
+    required this.onBack
   });
 }

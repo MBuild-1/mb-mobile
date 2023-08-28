@@ -48,7 +48,7 @@ class _NavigationHelperImpl {
                       DialogHelper.showLoadingDialog(mainMenuBuildContext);
                       await launchUrl(
                         Uri.parse("https://app.midtrans.com/snap/v2/vtweb/${order.combinedOrder.orderProduct.orderDetail.snapToken}"),
-                        mode: LaunchMode.inAppWebView
+                        mode: LaunchMode.externalApplication
                       );
                       Get.back();
                     }

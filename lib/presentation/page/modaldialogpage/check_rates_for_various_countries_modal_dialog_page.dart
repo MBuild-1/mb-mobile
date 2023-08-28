@@ -152,6 +152,12 @@ class _StatefulCheckRatesForVariousCountriesControllerMediatorWidgetState extend
                           ),
                           const SizedBox(height: 8),
                           Table(
+                            columnWidths: const {
+                              0: FlexColumnWidth(0.7),
+                              1: FlexColumnWidth(0.7),
+                              2: FlexColumnWidth(),
+                              3: FlexColumnWidth()
+                            },
                             children: [
                               TableRow(
                                 children: [
@@ -224,14 +230,15 @@ class _StatefulCheckRatesForVariousCountriesControllerMediatorWidgetState extend
                                           TextSpan(
                                             text: kgValue.toDecimalStringIfHasDecimalValue(),
                                             style: const TextStyle(
-                                              fontWeight: FontWeight.bold
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 12
                                             )
                                           ),
                                           const WidgetSpan(child: SizedBox(width: 0.6)),
                                           const TextSpan(
                                             text: "Kg",
                                             style: TextStyle(
-                                              fontSize: 11
+                                              fontSize: 9
                                             )
                                           )
                                         ]
@@ -246,14 +253,15 @@ class _StatefulCheckRatesForVariousCountriesControllerMediatorWidgetState extend
                                           const TextSpan(
                                             text: "Rp",
                                             style: TextStyle(
-                                              fontSize: 11
+                                              fontSize: 9
                                             )
                                           ),
                                           const WidgetSpan(child: SizedBox(width: 0.6)),
                                           TextSpan(
                                             text: rupiahTextResult.substring(2, rupiahTextResult.length),
                                             style: const TextStyle(
-                                              fontWeight: FontWeight.bold
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 12
                                             )
                                           ),
                                         ]

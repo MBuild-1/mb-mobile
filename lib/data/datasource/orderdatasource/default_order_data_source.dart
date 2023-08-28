@@ -13,6 +13,7 @@ import '../../../domain/entity/order/create_order_parameter.dart';
 import '../../../domain/entity/order/order.dart';
 import '../../../domain/entity/order/order_based_id_parameter.dart';
 import '../../../domain/entity/order/order_paging_parameter.dart';
+import '../../../domain/entity/order/purchase_direct_parameter.dart';
 import '../../../domain/entity/order/shipping_review_order_list_parameter.dart';
 import '../../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../../misc/load_data_result.dart';
@@ -69,6 +70,19 @@ class DefaultOrderDataSource implements OrderDataSource {
         "order_send_to_warehouse_list": sendToWarehouseList
       };
       return dio.post("/user/order", data: data, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+        .map<Order>(onMap: (value) => value.wrapResponse().mapFromResponseToOrder());
+    });
+  }
+
+  @override
+  FutureProcessing<Order> purchaseDirect(PurchaseDirectParameter purchaseDirectParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      dynamic data = {
+        "product_entry_id": purchaseDirectParameter.productEntryId,
+        "quantity": purchaseDirectParameter.quantity,
+        "notes": purchaseDirectParameter.quantity,
+      };
+      return dio.post("/user/order/purchase-direct", data: data, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
         .map<Order>(onMap: (value) => value.wrapResponse().mapFromResponseToOrder());
     });
   }

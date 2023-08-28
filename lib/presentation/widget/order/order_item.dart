@@ -108,7 +108,7 @@ abstract class OrderItem extends StatelessWidget {
                               DialogHelper.showLoadingDialog(context);
                               await launchUrl(
                                 Uri.parse("https://app.midtrans.com/snap/v2/vtweb/${order.orderProduct.orderDetail.snapToken}"),
-                                mode: LaunchMode.inAppWebView
+                                mode: LaunchMode.externalApplication
                               );
                               Get.back();
                             },
