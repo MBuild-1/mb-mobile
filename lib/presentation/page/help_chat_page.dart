@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/controller/help_chat_controller.dart';
+import 'package:masterbagasi/domain/entity/chat/user_message.dart';
+import 'package:masterbagasi/misc/ext/future_ext.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 import 'package:masterbagasi/misc/getextended/get_extended.dart';
@@ -11,11 +13,16 @@ import 'package:masterbagasi/presentation/widget/modified_paged_list_view.dart';
 import 'package:masterbagasi/presentation/widget/modifiedappbar/modified_app_bar.dart';
 import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 
+import '../../domain/entity/chat/help/answer_help_conversation_parameter.dart';
 import '../../domain/entity/chat/help/create_help_conversation_parameter.dart';
 import '../../domain/entity/chat/help/get_help_message_by_user_parameter.dart';
 import '../../domain/entity/chat/help/get_help_message_by_user_response.dart';
+import '../../domain/entity/chat/help/help_message.dart';
+import '../../domain/entity/chat/user_chat.dart';
+import '../../domain/entity/chat/user_message_response_wrapper.dart';
 import '../../domain/entity/user/getuser/get_user_parameter.dart';
 import '../../domain/entity/user/getuser/get_user_response.dart';
+import '../../domain/entity/user/user.dart';
 import '../../domain/usecase/answer_help_conversation_use_case.dart';
 import '../../domain/usecase/create_help_conversation_use_case.dart';
 import '../../domain/usecase/get_help_message_by_user_use_case.dart';
@@ -24,12 +31,14 @@ import '../../misc/constant.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/chatlistitemcontrollerstate/chat_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
+import '../../misc/error/empty_chat_error.dart';
 import '../../misc/injector.dart';
 import '../../misc/itemtypelistsubinterceptor/chat_item_type_list_sub_interceptor.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
+import '../../misc/response_wrapper.dart';
 import '../widget/modified_svg_picture.dart';
 import '../widget/tap_area.dart';
 import 'getx_page.dart';
@@ -173,7 +182,15 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<_StatefulHelp
   PusherChannelsFlutter _pusher = PusherChannelsFlutter.getInstance();
 
   final TextEditingController _helpTextEditingController = TextEditingController();
+  bool _isFirstEmpty = false;
+  String _helpConversationId = "";
   final DefaultChatContainerInterceptingActionListItemControllerState _defaultChatContainerInterceptingActionListItemControllerState = DefaultChatContainerInterceptingActionListItemControllerState();
+
+  void _scrollToDown() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _helpChatScrollController.jumpTo(0);
+    });
+  }
 
   @override
   void initState() {
@@ -186,6 +203,7 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<_StatefulHelp
     );
     _helpChatListItemPagingControllerState = PagingControllerState(
       pagingController: _helpChatListItemPagingController,
+      scrollController: _helpChatScrollController,
       isPagingControllerExist: false
     );
     _helpChatListItemPagingControllerState.pagingController.addPageRequestListenerWithItemListForLoadDataResult(
@@ -195,34 +213,72 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<_StatefulHelp
     _helpChatListItemPagingControllerState.isPagingControllerExist = true;
   }
 
-  Future<LoadDataResult<PagingResult<ListItemControllerState>>> _helpChatListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? listItemControllerStateList) async {
-    LoadDataResult<GetUserResponse> getUserResponse = await widget.helpChatController.getUser(
+  Future<UserMessageResponseWrapper<GetHelpMessageByUserResponse>> getHelpMessageByUser() async {
+    LoadDataResult<User> getUserLoadDataResult = await widget.helpChatController.getUser(
       GetUserParameter()
-    );
-    if (getUserResponse.isFailed) {
-      Future<LoadDataResult<PagingResult<ListItemControllerState>>> returnUserLoadFailed() async {
-        return getUserResponse.map<PagingResult<ListItemControllerState>>(
+    ).map<User>((value) => value.user);
+    if (getUserLoadDataResult.isFailed) {
+      Future<LoadDataResult<GetHelpMessageByUserResponse>> returnUserLoadFailed() async {
+        return getUserLoadDataResult.map<GetHelpMessageByUserResponse>(
           // This is for required argument purposes only, not will be used for further process
-          (_) => PagingDataResult<ListItemControllerState>(
-            itemList: [],
+          (_) => GetHelpMessageByUserResponse(
+            id: "",
+            userOne: null,
+            userTwo: null,
+            unreadMessagesCount: 1,
+            helpMessageList: []
+          )
+        );
+      }
+      return UserMessageResponseWrapper(
+        userLoadDataResult: getUserLoadDataResult,
+        valueLoadDataResult: await returnUserLoadFailed()
+      );
+    }
+    return UserMessageResponseWrapper(
+      userLoadDataResult: getUserLoadDataResult,
+      valueLoadDataResult: await widget.helpChatController.getHelpMessageByUser(
+        GetHelpMessageByUserParameter()
+      )
+    );
+  }
+
+  Future<LoadDataResult<PagingResult<ListItemControllerState>>> _helpChatListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? listItemControllerStateList) async {
+    UserMessageResponseWrapper<GetHelpMessageByUserResponse> getHelpMessageByUserResponseLoadDataResult = await getHelpMessageByUser();
+    if (getHelpMessageByUserResponseLoadDataResult.valueLoadDataResult.isFailed) {
+      dynamic e = getHelpMessageByUserResponseLoadDataResult.valueLoadDataResult.resultIfFailed;
+      if (e is EmptyChatError) {
+        _isFirstEmpty = true;
+        User user = getHelpMessageByUserResponseLoadDataResult.userLoadDataResult.resultIfSuccess!;
+        return SuccessLoadDataResult(
+          value: PagingDataResult<ListItemControllerState>(
+            itemList: [
+              ChatContainerListItemControllerState(
+                userMessageList: [],
+                loggedUser: user,
+                chatContainerInterceptingActionListItemControllerState: _defaultChatContainerInterceptingActionListItemControllerState,
+                onUpdateState: () => setState(() {})
+              )
+            ],
             page: 1,
             totalPage: 1,
             totalItem: 1
           )
         );
       }
-      return returnUserLoadFailed();
     }
-    LoadDataResult<GetHelpMessageByUserResponse> getHelpMessageByUserResponseLoadDataResult = await widget.helpChatController.getHelpMessageByUser(
-      GetHelpMessageByUserParameter()
-    );
-    await _connectToPusher();
-    return getHelpMessageByUserResponseLoadDataResult.map<PagingResult<ListItemControllerState>>((getHelpMessageByUserResponse) {
+    if (getHelpMessageByUserResponseLoadDataResult.valueLoadDataResult.isSuccess) {
+      await _connectToPusher(getHelpMessageByUserResponseLoadDataResult.valueLoadDataResult.resultIfSuccess!.id);
+    }
+    return getHelpMessageByUserResponseLoadDataResult.valueLoadDataResult.map<PagingResult<ListItemControllerState>>((getHelpMessageByUserResponse) {
+      _helpConversationId = getHelpMessageByUserResponse.id;
+      User user = getHelpMessageByUserResponseLoadDataResult.userLoadDataResult.resultIfSuccess!;
+      _scrollToDown();
       return PagingDataResult<ListItemControllerState>(
         itemList: [
           ChatContainerListItemControllerState(
             userMessageList: getHelpMessageByUserResponse.helpMessageList,
-            loggedUser: getUserResponse.resultIfSuccess!.user,
+            loggedUser: user,
             chatContainerInterceptingActionListItemControllerState: _defaultChatContainerInterceptingActionListItemControllerState,
             onUpdateState: () => setState(() {})
           )
@@ -249,11 +305,12 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<_StatefulHelp
           children: [
             Expanded(
               child: ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
+                reverse: true,
                 pagingControllerState: _helpChatListItemPagingControllerState,
                 onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
                   pagingControllerState: pagingControllerState!
                 ),
-                pullToRefresh: true
+                pullToRefresh: false
               ),
             ),
             Container(
@@ -278,9 +335,26 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<_StatefulHelp
                       ),
                     ),
                     TapArea(
-                      onTap: () => widget.helpChatController.createHelpConversation(
-                        CreateHelpConversationParameter(message: _helpTextEditingController.text)
-                      ),
+                      onTap: () async {
+                        if (_isFirstEmpty) {
+                          await widget.helpChatController.createHelpConversation(
+                            CreateHelpConversationParameter(
+                              message: _helpTextEditingController.text
+                            )
+                          );
+                          _isFirstEmpty = false;
+                        } else {
+                          widget.helpChatController.answerHelpConversation(
+                            AnswerHelpConversationParameter(
+                              helpConversationId: _helpConversationId,
+                              message: _helpTextEditingController.text
+                            )
+                          );
+                        }
+                        await _refreshChat();
+                        _helpTextEditingController.clear();
+                        _scrollToDown();
+                      },
                       child: ModifiedSvgPicture.asset(Constant.vectorSendMessage, overrideDefaultColorWithSingleColor: false),
                     )
                   ],
@@ -293,17 +367,32 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<_StatefulHelp
     );
   }
 
-  Future<void> _connectToPusher() async {
+  Future<void> _refreshChat() async {
+    var productResponse = await getHelpMessageByUser();
+    if (productResponse.valueLoadDataResult.isSuccess) {
+      if (_defaultChatContainerInterceptingActionListItemControllerState.onUpdateUserMessage != null) {
+        _defaultChatContainerInterceptingActionListItemControllerState.onUpdateUserMessage!(
+          productResponse.valueLoadDataResult.resultIfSuccess!.helpMessageList
+        );
+      }
+    }
+  }
+
+  Future<void> _connectToPusher(String conversationId) async {
     try {
       await _pusher.init(
         apiKey: "aec3cf529553db66701a",
         cluster: "ap1",
         onConnectionStateChange: _onConnectionStateChange,
         onError: _onError,
-        onEvent: _onEvent,
         onDecryptionFailure: _onDecryptionFailure,
+        onEvent: _onEvent,
       );
-      await _pusher.subscribe(channelName: "masterbagasi.com-development");
+      print("Subscribe");
+      await _pusher.subscribe(
+        channelName: "help-messages.$conversationId"
+      );
+      print("Connect");
       await _pusher.connect();
     } catch (e) {
       print("ERROR: $e");
@@ -319,7 +408,21 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<_StatefulHelp
   }
 
   void _onEvent(PusherEvent event) {
-    print("onEvent: $event");
+    _refreshChat();
+    // print(event);
+    // if (_defaultChatContainerInterceptingActionListItemControllerState.onAddUserMessage != null) {
+    //   dynamic messageResponse = event.data["message"];
+    //   _defaultChatContainerInterceptingActionListItemControllerState.onAddUserMessage!(
+    //     HelpMessage(
+    //       id: messageResponse["id"],
+    //       helpConversationId: messageResponse["help_conversation_id"],
+    //       userId: messageResponse["user_id"],
+    //       message: messageResponse["message"],
+    //       readStatus: messageResponse["read_status"],
+    //       userChat: ResponseWrapper(messageResponse["userChat"]).mapFromResponseToUserChat
+    //     )
+    //   );
+    // }
   }
 
   void _onDecryptionFailure(String event, String reason) {

@@ -46,6 +46,7 @@ class ModifiedCustomPagedListView<PageKeyType, ItemType> extends CustomScrollVie
       _shrinkWrapFirstPageIndicators = shrinkWrap,
       super(
         scrollDirection: scrollDirection,
+        controller: scrollController,
         reverse: reverse,
         primary: primary,
         physics: physics,
