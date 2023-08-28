@@ -307,7 +307,6 @@ class DefaultProductDataSource implements ProductDataSource {
         return await wishlistList(wishlistListParameter).future(parameter: cancelToken);
       } on DioError catch (e) {
         Error error = ErrorHelper.generatePleaseLoginFirstError(e);
-        print("Kena error kan: $error");
         if (error is PleaseLoginFirstError) {
           return [];
         }

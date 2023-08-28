@@ -80,7 +80,7 @@ class DefaultOrderDataSource implements OrderDataSource {
       dynamic data = {
         "product_entry_id": purchaseDirectParameter.productEntryId,
         "quantity": purchaseDirectParameter.quantity,
-        "notes": purchaseDirectParameter.quantity,
+        "notes": "",
       };
       return dio.post("/user/order/purchase-direct", data: data, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
         .map<Order>(onMap: (value) => value.wrapResponse().mapFromResponseToOrder());
