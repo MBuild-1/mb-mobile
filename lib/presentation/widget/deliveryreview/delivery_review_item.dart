@@ -4,6 +4,7 @@ import 'package:masterbagasi/misc/ext/number_ext.dart';
 
 import '../../../domain/entity/delivery/delivery_review.dart';
 import '../../../misc/constant.dart';
+import '../../../misc/page_restoration_helper.dart';
 import '../profile_picture_cache_network_image.dart';
 
 abstract class DeliveryReviewItem extends StatelessWidget {
@@ -28,6 +29,7 @@ abstract class DeliveryReviewItem extends StatelessWidget {
         child: Material(
           borderRadius: borderRadius,
           child: InkWell(
+            onTap: () => PageRestorationHelper.toCountryDeliveryReviewPage(deliveryReview.countryId, context),
             borderRadius: borderRadius,
             child: Container(
               clipBehavior: Clip.antiAlias,
