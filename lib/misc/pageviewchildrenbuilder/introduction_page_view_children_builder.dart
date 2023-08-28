@@ -31,27 +31,27 @@ class IntroductionPageViewChildrenBuilder extends PreloadPageViewChildrenBuilder
           key: _pageViewContentGlobalKeyList[0],
           context: context,
           image: introductionImageList[0],
-          titleTop: "E-commerce Indonesia",
+          titleTop: "E-commerce pertama karya anak bangsa",
           titleBottom: "untuk pasar dunia",
-          description: "E-commerce karya anak bangsa pertama di dunia. Berbelanja produk asli Indonesia, bisa dikirim ke seluruh negara di dunia.",
+          description: "Berbelanja produk asli Indonesia di Negara mana pun Anda berada.",
           top: topMarginForPageViewContent
         ),
         _buildIntroductionPage(
           key: _pageViewContentGlobalKeyList[1],
           context: context,
           image: introductionImageList[1],
-          titleTop: "Kirim barang",
+          titleTop: "Pengiriman barang dari Indonesia",
           titleBottom: "Ke seluruh dunia",
-          description: "Siapkan sendiri barang yang Anda butuhkan, kirim ke warehouse Master Bagasi, kami packing rapi, kami bantu kirim ke alamat Anda di seluruh dunia.",
+          description: "Siapkan barang yang Anda butuhkan lalu kirim ke Warehouse Master Bagasi, kami bantu packing dan kirim ke alamat Anda di seluruh dunia.",
           top: topMarginForPageViewContent
         ),
         _buildIntroductionPage(
           key: _pageViewContentGlobalKeyList[2],
           context: context,
           image: introductionImageList[2],
-          titleTop: "Belanja di mana pun",
+          titleTop: "Belanja di mana pun,",
           titleBottom: "Kami yang kirim",
-          description: "Berbelanja di E-commerce Indonesia (Tokopedia, Shopee, Bukalapak, Dll) langsung kirim ke warehouse Master Bagasi, kami kumpulkan, kami packing rapi, kami bantu kirim ke alamat Anda di seluruh dunia.",
+          description: "Berbelanja di E-commerce Indonesia (Tokopedia, Shopee, Bukalapak, Dll) dengan menggunakan alamat Warehouse Master Bagasi. Kami kumpulkan belanjaannya, kami re-packing dan kami kirim ke alamat Anda di seluruh dunia.",
           top: topMarginForPageViewContent
         ),
         _buildLastIntroductionPage(
