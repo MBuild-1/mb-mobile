@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/future_ext.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
+import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 
 import '../../controller/product_chat_controller.dart';
 import '../../domain/entity/chat/product/answer_product_conversation_parameter.dart';
@@ -12,6 +14,8 @@ import '../../domain/entity/chat/product/get_product_message_by_product_paramete
 import '../../domain/entity/chat/product/get_product_message_by_product_response.dart';
 import '../../domain/entity/chat/product/get_product_message_by_user_parameter.dart';
 import '../../domain/entity/chat/product/get_product_message_by_user_response.dart';
+import '../../domain/entity/chat/product/product_message.dart';
+import '../../domain/entity/chat/user_chat.dart';
 import '../../domain/entity/chat/user_message_response_wrapper.dart';
 import '../../domain/entity/user/getuser/get_user_parameter.dart';
 import '../../domain/entity/user/getuser/get_user_response.dart';
@@ -25,6 +29,7 @@ import '../../misc/constant.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/chatlistitemcontrollerstate/chat_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
+import '../../misc/dialog_helper.dart';
 import '../../misc/error/empty_chat_error.dart';
 import '../../misc/error/message_error.dart';
 import '../../misc/getextended/get_extended.dart';
@@ -38,7 +43,10 @@ import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
+import '../../misc/pusher_helper.dart';
+import '../widget/modified_loading_indicator.dart';
 import '../widget/modified_paged_list_view.dart';
+import '../widget/modified_shimmer.dart';
 import '../widget/modified_svg_picture.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import '../widget/tap_area.dart';
@@ -195,12 +203,20 @@ class _StatefulProductChatControllerMediatorWidgetState extends State<_StatefulP
   late final ScrollController _productChatScrollController;
   late final ModifiedPagingController<int, ListItemControllerState> _productChatListItemPagingController;
   late final PagingControllerState<int, ListItemControllerState> _productChatListItemPagingControllerState;
+  final PusherChannelsFlutter _pusher = PusherChannelsFlutter.getInstance();
 
   final TextEditingController _productChatTextEditingController = TextEditingController();
   bool _isFirstEmpty = false;
+  bool _showLoadingIndicatorInTextField = false;
   String _productConversationId = "";
-
+  User? _loggedUser;
   final DefaultChatContainerInterceptingActionListItemControllerState _defaultChatContainerInterceptingActionListItemControllerState = DefaultChatContainerInterceptingActionListItemControllerState();
+
+  void _scrollToDown() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _productChatScrollController.jumpTo(0);
+    });
+  }
 
   @override
   void initState() {
@@ -213,6 +229,7 @@ class _StatefulProductChatControllerMediatorWidgetState extends State<_StatefulP
     );
     _productChatListItemPagingControllerState = PagingControllerState(
       pagingController: _productChatListItemPagingController,
+      scrollController: _productChatScrollController,
       isPagingControllerExist: false
     );
     _productChatListItemPagingControllerState.pagingController.addPageRequestListenerWithItemListForLoadDataResult(
@@ -259,6 +276,7 @@ class _StatefulProductChatControllerMediatorWidgetState extends State<_StatefulP
       if (e is EmptyChatError) {
         _isFirstEmpty = true;
         User user = getProductMessageByProductResponseLoadDataResult.userLoadDataResult.resultIfSuccess!;
+        _loggedUser = user;
         return SuccessLoadDataResult(
           value: PagingDataResult<ListItemControllerState>(
             itemList: [
@@ -276,9 +294,19 @@ class _StatefulProductChatControllerMediatorWidgetState extends State<_StatefulP
         );
       }
     }
+    if (getProductMessageByProductResponseLoadDataResult.valueLoadDataResult.isSuccess) {
+      await PusherHelper.connectChatPusherChannel(
+        pusherChannelsFlutter: _pusher,
+        onEvent: _onEvent,
+        chatPusherChannelType: ChatPusherChannelType.product,
+        conversationId: getProductMessageByProductResponseLoadDataResult.valueLoadDataResult.resultIfSuccess!.id,
+      );
+    }
     return getProductMessageByProductResponseLoadDataResult.valueLoadDataResult.map<PagingResult<ListItemControllerState>>((getProductMessageByUserResponse) {
       _productConversationId = getProductMessageByUserResponse.id;
       User user = getProductMessageByProductResponseLoadDataResult.userLoadDataResult.resultIfSuccess!;
+      _loggedUser = user;
+      _scrollToDown();
       return PagingDataResult<ListItemControllerState>(
         itemList: [
           ChatContainerListItemControllerState(
@@ -310,11 +338,12 @@ class _StatefulProductChatControllerMediatorWidgetState extends State<_StatefulP
           children: [
             Expanded(
               child: ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
+                reverse: true,
                 pagingControllerState: _productChatListItemPagingControllerState,
                 onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
                   pagingControllerState: pagingControllerState!
                 ),
-                pullToRefresh: true
+                pullToRefresh: false
               ),
             ),
             Container(
@@ -338,34 +367,65 @@ class _StatefulProductChatControllerMediatorWidgetState extends State<_StatefulP
                         maxLines: 5
                       ),
                     ),
-                    TapArea(
-                      onTap: () async {
-                        if (_isFirstEmpty) {
-                          await widget.productChatController.createChatConversation(
-                            CreateProductConversationParameter(
-                              productId: widget.productId,
-                              message: _productChatTextEditingController.text
-                            )
-                          );
-                          _isFirstEmpty = false;
-                          var productResponse = await getProductMessageByProduct();
-                          if (productResponse.valueLoadDataResult.isSuccess) {
-                            if (_defaultChatContainerInterceptingActionListItemControllerState.onUpdateUserMessage != null) {
-                              _defaultChatContainerInterceptingActionListItemControllerState.onUpdateUserMessage!(
-                                productResponse.valueLoadDataResult.resultIfSuccess!.productMessageList
-                              );
+                    SizedBox(
+                      width: 23,
+                      height: 23,
+                      child: _showLoadingIndicatorInTextField ? const ModifiedLoadingIndicator() : TapArea(
+                        onTap: () async {
+                          if (_isFirstEmpty) {
+                            setState(() => _showLoadingIndicatorInTextField = true);
+                            LoadDataResult<CreateProductConversationResponse> createProductConversationResponseLoadDataResult = await widget.productChatController.createChatConversation(
+                              CreateProductConversationParameter(
+                                productId: widget.productId,
+                                message: _productChatTextEditingController.text
+                              )
+                            );
+                            if (createProductConversationResponseLoadDataResult.isSuccess) {
+                              _productConversationId = createProductConversationResponseLoadDataResult.resultIfSuccess!.productConversationId;
                             }
+                            await PusherHelper.connectChatPusherChannel(
+                              pusherChannelsFlutter: _pusher,
+                              onEvent: _onEvent,
+                              chatPusherChannelType: ChatPusherChannelType.product,
+                              conversationId: _productConversationId,
+                            );
+                            _isFirstEmpty = false;
+                            setState(() => _showLoadingIndicatorInTextField = false);
+                          } else {
+                            widget.productChatController.answerProductConversation(
+                              AnswerProductConversationParameter(
+                                productConversationId: _productConversationId,
+                                message: _productChatTextEditingController.text
+                              )
+                            );
                           }
-                        } else {
-                          widget.productChatController.answerProductConversation(
-                            AnswerProductConversationParameter(
-                              productConversationId: _productConversationId,
-                              message: _productChatTextEditingController.text
-                            )
-                          );
-                        }
-                      },
-                      child: ModifiedSvgPicture.asset(Constant.vectorSendMessage, overrideDefaultColorWithSingleColor: false),
+                          if (_defaultChatContainerInterceptingActionListItemControllerState.onAddUserMessage != null) {
+                            _defaultChatContainerInterceptingActionListItemControllerState.onAddUserMessage!(
+                              ProductMessage(
+                                id: "-1",
+                                productConversationId: _productConversationId,
+                                userId: (_loggedUser?.id).toEmptyStringNonNull,
+                                message: _productChatTextEditingController.text, //_helpTextEditingController.text,
+                                readStatus: 1,
+                                createdAt: DateTime.now(),
+                                updatedAt: DateTime.now(),
+                                deletedAt: DateTime.now(),
+                                userChat: UserChat(
+                                  id: "",
+                                  name: "",
+                                  role: 1,
+                                  email: ""
+                                ),
+                                isLoading: true
+                              )
+                            );
+                          }
+                          _refreshChat();
+                          _productChatTextEditingController.clear();
+                          _scrollToDown();
+                        },
+                        child: ModifiedSvgPicture.asset(Constant.vectorSendMessage, overrideDefaultColorWithSingleColor: false),
+                      )
                     )
                   ],
                 )
@@ -375,5 +435,27 @@ class _StatefulProductChatControllerMediatorWidgetState extends State<_StatefulP
         )
       ),
     );
+  }
+
+  Future<void> _refreshChat() async {
+    var productResponse = await getProductMessageByProduct();
+    if (productResponse.valueLoadDataResult.isSuccess) {
+      if (_defaultChatContainerInterceptingActionListItemControllerState.onUpdateUserMessage != null) {
+        _defaultChatContainerInterceptingActionListItemControllerState.onUpdateUserMessage!(
+          productResponse.valueLoadDataResult.resultIfSuccess!.productMessageList
+        );
+      }
+    }
+  }
+
+  void _onEvent(PusherEvent event) {
+    _refreshChat();
+  }
+
+  @override
+  void dispose() {
+    _productChatTextEditingController.dispose();
+    _pusher.disconnect();
+    super.dispose();
   }
 }

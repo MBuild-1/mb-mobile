@@ -3,14 +3,20 @@ import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/future_ext.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
+import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 
 import '../../controller/order_chat_controller.dart';
 import '../../domain/entity/chat/order/answer_order_conversation_parameter.dart';
 import '../../domain/entity/chat/order/combined_order_from_message.dart';
+import '../../domain/entity/chat/order/create_order_conversation_parameter.dart';
+import '../../domain/entity/chat/order/create_order_conversation_response.dart';
 import '../../domain/entity/chat/order/get_order_message_by_combined_order_parameter.dart';
 import '../../domain/entity/chat/order/get_order_message_by_combined_order_response.dart';
 import '../../domain/entity/chat/order/get_order_message_by_user_parameter.dart';
 import '../../domain/entity/chat/order/get_order_message_by_user_response.dart';
+import '../../domain/entity/chat/order/order_message.dart';
+import '../../domain/entity/chat/user_chat.dart';
 import '../../domain/entity/chat/user_message_response_wrapper.dart';
 import '../../domain/entity/user/getuser/get_user_parameter.dart';
 import '../../domain/entity/user/user.dart';
@@ -35,6 +41,8 @@ import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
+import '../../misc/pusher_helper.dart';
+import '../widget/modified_loading_indicator.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modified_svg_picture.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
@@ -192,12 +200,20 @@ class _StatefulOrderChatControllerMediatorWidgetState extends State<_StatefulOrd
   late final ScrollController _orderChatScrollController;
   late final ModifiedPagingController<int, ListItemControllerState> _orderChatListItemPagingController;
   late final PagingControllerState<int, ListItemControllerState> _orderChatListItemPagingControllerState;
+  final PusherChannelsFlutter _pusher = PusherChannelsFlutter.getInstance();
 
   final TextEditingController _orderChatTextEditingController = TextEditingController();
   bool _isFirstEmpty = false;
+  bool _showLoadingIndicatorInTextField = false;
   String _orderConversationId = "";
-
+  User? _loggedUser;
   final DefaultChatContainerInterceptingActionListItemControllerState _defaultChatContainerInterceptingActionListItemControllerState = DefaultChatContainerInterceptingActionListItemControllerState();
+
+  void _scrollToDown() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _orderChatScrollController.jumpTo(0);
+    });
+  }
 
   @override
   void initState() {
@@ -262,6 +278,7 @@ class _StatefulOrderChatControllerMediatorWidgetState extends State<_StatefulOrd
       if (e is EmptyChatError) {
         _isFirstEmpty = true;
         User user = getOrderMessageByCombinedOrderResponseLoadDataResult.userLoadDataResult.resultIfSuccess!;
+        _loggedUser = user;
         return SuccessLoadDataResult(
           value: PagingDataResult<ListItemControllerState>(
             itemList: [
@@ -279,9 +296,19 @@ class _StatefulOrderChatControllerMediatorWidgetState extends State<_StatefulOrd
         );
       }
     }
+    if (getOrderMessageByCombinedOrderResponseLoadDataResult.valueLoadDataResult.isSuccess) {
+      await PusherHelper.connectChatPusherChannel(
+        pusherChannelsFlutter: _pusher,
+        onEvent: _onEvent,
+        chatPusherChannelType: ChatPusherChannelType.order,
+        conversationId: getOrderMessageByCombinedOrderResponseLoadDataResult.valueLoadDataResult.resultIfSuccess!.getOrderMessageByCombinedOrderResponseMember.id,
+      );
+    }
     return getOrderMessageByCombinedOrderResponseLoadDataResult.valueLoadDataResult.map<PagingResult<ListItemControllerState>>((getOrderMessageByUserResponse) {
       _orderConversationId = getOrderMessageByUserResponse.getOrderMessageByCombinedOrderResponseMember.id;
       User user = getOrderMessageByCombinedOrderResponseLoadDataResult.userLoadDataResult.resultIfSuccess!;
+      _loggedUser = user;
+      _scrollToDown();
       return PagingDataResult<ListItemControllerState>(
         itemList: [
           ChatContainerListItemControllerState(
@@ -313,11 +340,12 @@ class _StatefulOrderChatControllerMediatorWidgetState extends State<_StatefulOrd
           children: [
             Expanded(
               child: ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
+                reverse: true,
                 pagingControllerState: _orderChatListItemPagingControllerState,
                 onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
                   pagingControllerState: pagingControllerState!
                 ),
-                pullToRefresh: true
+                pullToRefresh: false
               ),
             ),
             Container(
@@ -341,28 +369,48 @@ class _StatefulOrderChatControllerMediatorWidgetState extends State<_StatefulOrd
                         maxLines: 5
                       ),
                     ),
-                    TapArea(
-                      onTap: () async {
-                        if (_isFirstEmpty) {
-                          _isFirstEmpty = false;
-                          var productResponse = await getOrderMessageByCombinedOrder();
-                          if (productResponse.valueLoadDataResult.isSuccess) {
-                            if (_defaultChatContainerInterceptingActionListItemControllerState.onUpdateUserMessage != null) {
-                              _defaultChatContainerInterceptingActionListItemControllerState.onUpdateUserMessage!(
-                                productResponse.valueLoadDataResult.resultIfSuccess!.getOrderMessageByCombinedOrderResponseMember.orderMessageList
-                              );
-                            }
+                    SizedBox(
+                      width: 23,
+                      height: 23,
+                      child: _showLoadingIndicatorInTextField ? const ModifiedLoadingIndicator() : TapArea(
+                        onTap: () async {
+                          if (_isFirstEmpty) {
+                            // For now there is not case if response is null, except only because has different of combined_order_id
+                          } else {
+                            widget.orderChatController.answerOrderConversation(
+                              AnswerOrderConversationParameter(
+                                orderConversationId: _orderConversationId,
+                                message: _orderChatTextEditingController.text
+                              )
+                            );
                           }
-                        } else {
-                          widget.orderChatController.answerOrderConversation(
-                            AnswerOrderConversationParameter(
-                              orderConversationId: _orderConversationId,
-                              message: _orderChatTextEditingController.text
-                            )
-                          );
-                        }
-                      },
-                      child: ModifiedSvgPicture.asset(Constant.vectorSendMessage, overrideDefaultColorWithSingleColor: false),
+                          if (_defaultChatContainerInterceptingActionListItemControllerState.onAddUserMessage != null) {
+                            _defaultChatContainerInterceptingActionListItemControllerState.onAddUserMessage!(
+                              OrderMessage(
+                                id: "-1",
+                                orderConversationId: _orderConversationId,
+                                userId: (_loggedUser?.id).toEmptyStringNonNull,
+                                message: _orderChatTextEditingController.text, //_helpTextEditingController.text,
+                                readStatus: 1,
+                                createdAt: DateTime.now(),
+                                updatedAt: DateTime.now(),
+                                deletedAt: DateTime.now(),
+                                userChat: UserChat(
+                                  id: "",
+                                  name: "",
+                                  role: 1,
+                                  email: ""
+                                ),
+                                isLoading: true
+                              )
+                            );
+                          }
+                          _refreshChat();
+                          _orderChatTextEditingController.clear();
+                          _scrollToDown();
+                        },
+                        child: ModifiedSvgPicture.asset(Constant.vectorSendMessage, overrideDefaultColorWithSingleColor: false),
+                      ),
                     )
                   ]
                 )
@@ -372,5 +420,27 @@ class _StatefulOrderChatControllerMediatorWidgetState extends State<_StatefulOrd
         )
       ),
     );
+  }
+
+  Future<void> _refreshChat() async {
+    var orderResponse = await getOrderMessageByCombinedOrder();
+    if (orderResponse.valueLoadDataResult.isSuccess) {
+      if (_defaultChatContainerInterceptingActionListItemControllerState.onUpdateUserMessage != null) {
+        _defaultChatContainerInterceptingActionListItemControllerState.onUpdateUserMessage!(
+          orderResponse.valueLoadDataResult.resultIfSuccess!.getOrderMessageByCombinedOrderResponseMember.orderMessageList
+        );
+      }
+    }
+  }
+
+  void _onEvent(PusherEvent event) {
+    _refreshChat();
+  }
+
+  @override
+  void dispose() {
+    _orderChatTextEditingController.dispose();
+    _pusher.disconnect();
+    super.dispose();
   }
 }
