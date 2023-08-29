@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/presentation/page/web_viewer_page.dart';
 import 'package:sizer/sizer.dart';
 
@@ -20,14 +21,17 @@ import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/controller_manager.dart';
+import '../../misc/page_restoration_helper.dart';
 import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
+import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/colorful_chip.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import 'getx_page.dart';
+import 'order_chat_page.dart';
 
 class OrderDetailPage extends RestorableGetxPage<_OrderDetailPageRestoration> {
   late final ControllerMember<OrderDetailController> _orderDetailController = ControllerMember<OrderDetailController>().addToControllerManager(controllerManager);
@@ -62,7 +66,7 @@ class OrderDetailPage extends RestorableGetxPage<_OrderDetailPageRestoration> {
   }
 }
 
-class _OrderDetailPageRestoration extends MixableGetxPageRestoration with WebViewerPageRestorationMixin {
+class _OrderDetailPageRestoration extends MixableGetxPageRestoration with WebViewerPageRestorationMixin, OrderChatPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
@@ -181,6 +185,7 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
   late final ScrollController _orderDetailScrollController;
   late final ModifiedPagingController<int, ListItemControllerState> _orderDetailListItemPagingController;
   late final PagingControllerState<int, ListItemControllerState> _orderDetailListItemPagingControllerState;
+  String? _combinedOrderId;
 
   @override
   void initState() {
@@ -207,6 +212,12 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
     LoadDataResult<Order> orderDetailLoadDataResult = await widget.orderDetailController.getOrderBasedId(
       OrderBasedIdParameter(orderId: widget.orderId)
     );
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (orderDetailLoadDataResult.isSuccess) {
+        _combinedOrderId = orderDetailLoadDataResult.resultIfSuccess!.combinedOrder.id;
+        setState(() {});
+      }
+    });
     return orderDetailLoadDataResult.map<PagingResult<ListItemControllerState>>((orderDetail) {
       return PagingDataResult<ListItemControllerState>(
         itemList: <ListItemControllerState>[
@@ -244,6 +255,34 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
                 pullToRefresh: true
               ),
             ),
+            if (_combinedOrderId.isNotEmptyString) ...[
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: SizedOutlineGradientButton(
+                        text: '',
+                        width: double.infinity,
+                        outlineGradientButtonType: OutlineGradientButtonType.solid,
+                        onPressed: () => PageRestorationHelper.toOrderChatPage(_combinedOrderId!, context),
+                        childInterceptor: (style) => Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.chat, size: 16, color: Colors.white),
+                            const SizedBox(width: 10),
+                            Text(
+                              "Order Chat".tr,
+                              style: style,
+                            )
+                          ],
+                        )
+                      ),
+                    ),
+                  ],
+                )
+              )
+            ]
           ]
         )
       ),
