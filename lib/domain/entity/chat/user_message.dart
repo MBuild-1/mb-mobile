@@ -10,6 +10,7 @@ abstract class UserMessage {
   DateTime? updatedAt;
   DateTime? deletedAt;
   UserChat userChat;
+  bool isLoading;
 
   UserMessage({
     required this.id,
@@ -20,6 +21,7 @@ abstract class UserMessage {
     required this.createdAt,
     required this.updatedAt,
     required this.deletedAt,
-    required this.userChat
+    required this.userChat,
+    this.isLoading = false
   });
 }

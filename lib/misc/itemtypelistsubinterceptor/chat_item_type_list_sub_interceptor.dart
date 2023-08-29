@@ -40,7 +40,7 @@ class ChatItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
           oldItemType.onUpdateState();
         };
         chatContainerInterceptingActionListItemControllerState._onAddUserMessage = (userMessage) {
-          oldItemType.userMessageList.add(userMessage);
+          oldItemType.userMessageList.insert(0, userMessage);
           oldItemType.onUpdateState();
         };
       }

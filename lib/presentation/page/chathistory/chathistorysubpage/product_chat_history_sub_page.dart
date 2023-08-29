@@ -93,8 +93,6 @@ class _StatefulProductChatHistorySubControllerMediatorWidgetState extends State<
           (value) => ProductChatHistoryListItemControllerState(
             getProductMessageByUserResponseMember: value,
             onTap: (getProductMessageByUserResponse) {
-              print("HAAAA");
-              print(getProductMessageByUserResponse.id);
               PageRestorationHelper.toProductChatPage(
                 getProductMessageByUserResponse.productId.toEmptyStringNonNull, context
               );

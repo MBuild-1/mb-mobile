@@ -11,7 +11,8 @@ class OrderMessage extends UserMessage {
     required DateTime? createdAt,
     required DateTime? updatedAt,
     required DateTime? deletedAt,
-    required UserChat userChat
+    required UserChat userChat,
+    bool isLoading = false
   }) : super(
     id: id,
     conversationId: orderConversationId,
@@ -21,6 +22,7 @@ class OrderMessage extends UserMessage {
     createdAt: createdAt,
     updatedAt: updatedAt,
     deletedAt: deletedAt,
-    userChat: userChat
+    userChat: userChat,
+    isLoading: isLoading
   );
 }

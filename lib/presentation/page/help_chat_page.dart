@@ -5,6 +5,7 @@ import 'package:masterbagasi/domain/entity/chat/user_message.dart';
 import 'package:masterbagasi/misc/ext/future_ext.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/misc/getextended/get_extended.dart';
 import 'package:masterbagasi/misc/getextended/get_restorable_route_future.dart';
 import 'package:masterbagasi/misc/manager/controller_manager.dart';
@@ -184,6 +185,7 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<_StatefulHelp
   final TextEditingController _helpTextEditingController = TextEditingController();
   bool _isFirstEmpty = false;
   String _helpConversationId = "";
+  User? _loggedUser;
   final DefaultChatContainerInterceptingActionListItemControllerState _defaultChatContainerInterceptingActionListItemControllerState = DefaultChatContainerInterceptingActionListItemControllerState();
 
   void _scrollToDown() {
@@ -273,6 +275,7 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<_StatefulHelp
     return getHelpMessageByUserResponseLoadDataResult.valueLoadDataResult.map<PagingResult<ListItemControllerState>>((getHelpMessageByUserResponse) {
       _helpConversationId = getHelpMessageByUserResponse.id;
       User user = getHelpMessageByUserResponseLoadDataResult.userLoadDataResult.resultIfSuccess!;
+      _loggedUser = user;
       _scrollToDown();
       return PagingDataResult<ListItemControllerState>(
         itemList: [
@@ -351,7 +354,28 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<_StatefulHelp
                             )
                           );
                         }
-                        await _refreshChat();
+                        if (_defaultChatContainerInterceptingActionListItemControllerState.onAddUserMessage != null) {
+                          _defaultChatContainerInterceptingActionListItemControllerState.onAddUserMessage!(
+                            HelpMessage(
+                              id: "-1",
+                              helpConversationId: _helpConversationId,
+                              userId: (_loggedUser?.id).toEmptyStringNonNull,
+                              message: _helpTextEditingController.text, //_helpTextEditingController.text,
+                              readStatus: 1,
+                              createdAt: DateTime.now(),
+                              updatedAt: DateTime.now(),
+                              deletedAt: DateTime.now(),
+                              userChat: UserChat(
+                                id: "",
+                                name: "",
+                                role: 1,
+                                email: ""
+                              ),
+                              isLoading: true
+                            )
+                          );
+                        }
+                        _refreshChat();
                         _helpTextEditingController.clear();
                         _scrollToDown();
                       },
@@ -383,50 +407,19 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<_StatefulHelp
       await _pusher.init(
         apiKey: "aec3cf529553db66701a",
         cluster: "ap1",
-        onConnectionStateChange: _onConnectionStateChange,
-        onError: _onError,
-        onDecryptionFailure: _onDecryptionFailure,
         onEvent: _onEvent,
       );
-      print("Subscribe");
       await _pusher.subscribe(
         channelName: "help-messages.$conversationId"
       );
-      print("Connect");
       await _pusher.connect();
     } catch (e) {
       print("ERROR: $e");
     }
   }
 
-  void _onConnectionStateChange(dynamic currentState, dynamic previousState) {
-    print("Connection: $currentState");
-  }
-
-  void _onError(String message, int? code, dynamic e) {
-    print("onError: $message code: $code exception: $e");
-  }
-
   void _onEvent(PusherEvent event) {
     _refreshChat();
-    // print(event);
-    // if (_defaultChatContainerInterceptingActionListItemControllerState.onAddUserMessage != null) {
-    //   dynamic messageResponse = event.data["message"];
-    //   _defaultChatContainerInterceptingActionListItemControllerState.onAddUserMessage!(
-    //     HelpMessage(
-    //       id: messageResponse["id"],
-    //       helpConversationId: messageResponse["help_conversation_id"],
-    //       userId: messageResponse["user_id"],
-    //       message: messageResponse["message"],
-    //       readStatus: messageResponse["read_status"],
-    //       userChat: ResponseWrapper(messageResponse["userChat"]).mapFromResponseToUserChat
-    //     )
-    //   );
-    // }
-  }
-
-  void _onDecryptionFailure(String event, String reason) {
-    print("onDecryptionFailure: $event reason: $reason");
   }
 
   @override
