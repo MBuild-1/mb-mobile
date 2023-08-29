@@ -39,6 +39,7 @@ import '../../misc/load_data_result.dart';
 import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
+import '../../misc/pusher_helper.dart';
 import '../../misc/response_wrapper.dart';
 import '../widget/modified_svg_picture.dart';
 import '../widget/tap_area.dart';
@@ -180,7 +181,7 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<_StatefulHelp
   late final ScrollController _helpChatScrollController;
   late final ModifiedPagingController<int, ListItemControllerState> _helpChatListItemPagingController;
   late final PagingControllerState<int, ListItemControllerState> _helpChatListItemPagingControllerState;
-  PusherChannelsFlutter _pusher = PusherChannelsFlutter.getInstance();
+  final PusherChannelsFlutter _pusher = PusherChannelsFlutter.getInstance();
 
   final TextEditingController _helpTextEditingController = TextEditingController();
   bool _isFirstEmpty = false;
@@ -270,7 +271,12 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<_StatefulHelp
       }
     }
     if (getHelpMessageByUserResponseLoadDataResult.valueLoadDataResult.isSuccess) {
-      await _connectToPusher(getHelpMessageByUserResponseLoadDataResult.valueLoadDataResult.resultIfSuccess!.id);
+      await PusherHelper.connectChatPusherChannel(
+        pusherChannelsFlutter: _pusher,
+        onEvent: _onEvent,
+        chatPusherChannelType: ChatPusherChannelType.help,
+        conversationId: getHelpMessageByUserResponseLoadDataResult.valueLoadDataResult.resultIfSuccess!.id,
+      );
     }
     return getHelpMessageByUserResponseLoadDataResult.valueLoadDataResult.map<PagingResult<ListItemControllerState>>((getHelpMessageByUserResponse) {
       _helpConversationId = getHelpMessageByUserResponse.id;
@@ -399,22 +405,6 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<_StatefulHelp
           productResponse.valueLoadDataResult.resultIfSuccess!.helpMessageList
         );
       }
-    }
-  }
-
-  Future<void> _connectToPusher(String conversationId) async {
-    try {
-      await _pusher.init(
-        apiKey: "aec3cf529553db66701a",
-        cluster: "ap1",
-        onEvent: _onEvent,
-      );
-      await _pusher.subscribe(
-        channelName: "help-messages.$conversationId"
-      );
-      await _pusher.connect();
-    } catch (e) {
-      print("ERROR: $e");
     }
   }
 
