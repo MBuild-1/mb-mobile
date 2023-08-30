@@ -11,11 +11,13 @@ import '../../domain/entity/order/order.dart';
 import '../../domain/entity/order/order_based_id_parameter.dart';
 import '../../domain/usecase/get_order_based_id_use_case.dart';
 import '../../misc/constant.dart';
+import '../../misc/controllercontentdelegate/repurchase_controller_content_delegate.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/order_detail_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/title_and_description_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
 import '../../misc/date_util.dart';
+import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
@@ -48,7 +50,8 @@ class OrderDetailPage extends RestorableGetxPage<_OrderDetailPageRestoration> {
     _orderDetailController.controller = GetExtended.put<OrderDetailController>(
       OrderDetailController(
         controllerManager,
-        Injector.locator<GetOrderBasedIdUseCase>()
+        Injector.locator<GetOrderBasedIdUseCase>(),
+        Injector.locator<RepurchaseControllerContentDelegate>()
       ),
       tag: pageName
     );
@@ -223,6 +226,9 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
         itemList: <ListItemControllerState>[
           OrderDetailContainerListItemControllerState(
             order: orderDetail,
+            onBuyAgainTap: (order) {
+              widget.orderDetailController.repurchaseControllerContentDelegate.repurchase(order.id);
+            },
             onUpdateState: () => setState(() {})
           )
         ],
@@ -235,6 +241,12 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
 
   @override
   Widget build(BuildContext context) {
+    widget.orderDetailController.repurchaseControllerContentDelegate.setRepurchaseDelegate(
+      Injector.locator<RepurchaseDelegateFactory>().generateRepurchaseDelegate(
+        onGetBuildContext: () => context,
+        onGetErrorProvider: () => Injector.locator<ErrorProvider>()
+      )
+    );
     return Scaffold(
       appBar: ModifiedAppBar(
         titleInterceptor: (context, title) => Row(

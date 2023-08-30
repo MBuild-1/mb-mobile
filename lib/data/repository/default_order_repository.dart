@@ -4,6 +4,7 @@ import '../../domain/entity/order/order.dart';
 import '../../domain/entity/order/order_based_id_parameter.dart';
 import '../../domain/entity/order/order_paging_parameter.dart';
 import '../../domain/entity/order/purchase_direct_parameter.dart';
+import '../../domain/entity/order/repurchase_parameter.dart';
 import '../../domain/entity/order/shipping_review_order_list_parameter.dart';
 import '../../domain/repository/order_repository.dart';
 import '../../misc/load_data_result.dart';
@@ -26,6 +27,11 @@ class DefaultOrderRepository implements OrderRepository {
   @override
   FutureProcessing<LoadDataResult<Order>> purchaseDirect(PurchaseDirectParameter purchaseDirectParameter) {
     return orderDataSource.purchaseDirect(purchaseDirectParameter).mapToLoadDataResult<Order>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<Order>> repurchase(RepurchaseParameter repurchaseParameter) {
+    return orderDataSource.repurchase(repurchaseParameter).mapToLoadDataResult<Order>();
   }
 
   @override

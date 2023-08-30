@@ -968,7 +968,8 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
     } else if (item is BaseOrderListItemControllerState) {
       if (item is VerticalOrderListItemControllerState) {
         return VerticalOrderItem(
-          order: item.order
+          order: item.order,
+          onBuyAgainTap: item.onBuyAgainTap,
         );
       } else if (item is IsRunningOrderListItemControllerState) {
         return IsRunningOrderItem(

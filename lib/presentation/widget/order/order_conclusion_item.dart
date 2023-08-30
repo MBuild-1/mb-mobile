@@ -13,11 +13,13 @@ import '../button/custombutton/sized_outline_gradient_button.dart';
 class OrderConclusionItem extends StatelessWidget {
   final CombinedOrder order;
   final bool inOrderDetail;
+  final void Function(CombinedOrder) onBuyAgainTap;
 
   const OrderConclusionItem({
     super.key,
     required this.order,
-    this.inOrderDetail = false
+    this.inOrderDetail = false,
+    required this.onBuyAgainTap
   });
 
   @override
@@ -123,14 +125,7 @@ class OrderConclusionItem extends StatelessWidget {
                       SizedBox(
                         width: 100,
                         child: SizedOutlineGradientButton(
-                          onPressed: () async {
-                            DialogHelper.showLoadingDialog(context);
-                            await launchUrl(
-                              Uri.parse("https://app.midtrans.com/snap/v2/vtweb/${order.orderShipping!.orderDetail.snapToken}"),
-                              mode: LaunchMode.externalApplication
-                            );
-                            Get.back();
-                          },
+                          onPressed: () => onBuyAgainTap(order),
                           text: "Buy Again".tr,
                           customPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
                           outlineGradientButtonType: OutlineGradientButtonType.outline,

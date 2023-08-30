@@ -222,6 +222,7 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
         widgetSubstitution: (BuildContext context, int index) => OrderConclusionItem(
           order: order.combinedOrder,
           inOrderDetail: true,
+          onBuyAgainTap: orderDetailContainerListItemControllerState.onBuyAgainTap,
         )
       )
     );

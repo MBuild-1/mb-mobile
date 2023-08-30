@@ -26,13 +26,15 @@ import 'order_product_detail_item.dart';
 
 abstract class OrderItem extends StatelessWidget {
   final CombinedOrder order;
+  final void Function(CombinedOrder) onBuyAgainTap;
 
   @protected
   double? get itemWidth;
 
   const OrderItem({
     super.key,
-    required this.order
+    required this.order,
+    required this.onBuyAgainTap
   });
 
   @override
@@ -124,7 +126,10 @@ abstract class OrderItem extends StatelessWidget {
                     ),
                   ],
                 ),
-                OrderConclusionItem(order: order)
+                OrderConclusionItem(
+                  order: order,
+                  onBuyAgainTap: onBuyAgainTap,
+                )
               ],
             )
           )

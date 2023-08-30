@@ -14,6 +14,7 @@ import '../../../domain/entity/order/order.dart';
 import '../../../domain/entity/order/order_based_id_parameter.dart';
 import '../../../domain/entity/order/order_paging_parameter.dart';
 import '../../../domain/entity/order/purchase_direct_parameter.dart';
+import '../../../domain/entity/order/repurchase_parameter.dart';
 import '../../../domain/entity/order/shipping_review_order_list_parameter.dart';
 import '../../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../../misc/load_data_result.dart';
@@ -83,6 +84,17 @@ class DefaultOrderDataSource implements OrderDataSource {
         "notes": "",
       };
       return dio.post("/user/order/purchase-direct", data: data, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+        .map<Order>(onMap: (value) => value.wrapResponse().mapFromResponseToOrder());
+    });
+  }
+
+  @override
+  FutureProcessing<Order> repurchase(RepurchaseParameter repurchaseParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      dynamic data = {
+        "combined_order_id": repurchaseParameter.combinedOrderId,
+      };
+      return dio.post("/user/order/repurchase", data: data, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
         .map<Order>(onMap: (value) => value.wrapResponse().mapFromResponseToOrder());
     });
   }

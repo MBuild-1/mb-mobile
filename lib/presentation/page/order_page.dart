@@ -11,11 +11,13 @@ import '../../domain/entity/order/order.dart';
 import '../../domain/entity/order/order_paging_parameter.dart';
 import '../../domain/usecase/get_order_paging_use_case.dart';
 import '../../misc/constant.dart';
+import '../../misc/controllercontentdelegate/repurchase_controller_content_delegate.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/order_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/order_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/vertical_order_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
+import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
@@ -42,7 +44,8 @@ class OrderPage extends RestorableGetxPage<_OrderPageRestoration> {
     _orderPageController.controller = GetExtended.put<OrderController>(
       OrderController(
         controllerManager,
-        Injector.locator<GetOrderPagingUseCase>()
+        Injector.locator<GetOrderPagingUseCase>(),
+        Injector.locator<RepurchaseControllerContentDelegate>()
       ),
       tag: pageName
     );
@@ -227,7 +230,7 @@ class _StatefulOrderControllerMediatorWidgetState extends State<_StatefulOrderCo
         OrderContainerListItemControllerState(
           orderList: [],
           onOrderTap: (order) {},
-          onBuyAgainTap: (order) {},
+          onBuyAgainTap: (order) => widget.orderController.repurchaseControllerContentDelegate.repurchase(order.id),
           onUpdateState: () => setState(() {}),
           orderTabColorfulChipTabBarController: _orderTabColorfulChipTabBarController,
           orderColorfulChipTabBarDataList: _orderColorfulChipTabBarDataList
@@ -263,6 +266,12 @@ class _StatefulOrderControllerMediatorWidgetState extends State<_StatefulOrderCo
 
   @override
   Widget build(BuildContext context) {
+    widget.orderController.repurchaseControllerContentDelegate.setRepurchaseDelegate(
+      Injector.locator<RepurchaseDelegateFactory>().generateRepurchaseDelegate(
+        onGetBuildContext: () => context,
+        onGetErrorProvider: () => Injector.locator<ErrorProvider>()
+      )
+    );
     return Scaffold(
       appBar: ModifiedAppBar(
         titleInterceptor: (context, title) => Row(

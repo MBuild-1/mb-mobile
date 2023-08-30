@@ -184,6 +184,7 @@ import '../domain/usecase/remove_from_cart_use_case.dart';
 import '../domain/usecase/remove_from_favorite_product_brand_use_case.dart';
 import '../domain/usecase/remove_wishlist_based_product_use_case.dart';
 import '../domain/usecase/remove_wishlist_use_case.dart';
+import '../domain/usecase/repurchase_use_case.dart';
 import '../domain/usecase/take_friend_cart_use_case.dart';
 import '../domain/usecase/update_current_selected_address_use_case.dart';
 import '../domain/usecase/update_read_status_help_conversation_use_case.dart';
@@ -202,6 +203,7 @@ import 'additionalloadingindicatorchecker/product_detail_additional_paging_resul
 import 'additionalloadingindicatorchecker/take_friend_cart_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/wishlist_sub_additional_paging_result_parameter_checker.dart';
 import 'controllercontentdelegate/product_brand_favorite_controller_content_delegate.dart';
+import 'controllercontentdelegate/repurchase_controller_content_delegate.dart';
 import 'controllercontentdelegate/wishlist_and_cart_controller_content_delegate.dart';
 import 'defaultloaddataresultwidget/default_load_data_result_widget.dart';
 import 'defaultloaddataresultwidget/main_default_load_data_result_widget.dart';
@@ -446,6 +448,11 @@ class _Injector {
         getFavoriteProductBrandListUseCase: locator(),
       )
     );
+    locator.registerFactory<RepurchaseControllerContentDelegate>(
+      () => RepurchaseControllerContentDelegate(
+        repurchaseUseCase: locator()
+      )
+    );
 
     // Controller Delegate Factory
     locator.registerLazySingleton<WishlistAndCartDelegateFactory>(
@@ -453,6 +460,9 @@ class _Injector {
     );
     locator.registerLazySingleton<ProductBrandFavoriteDelegateFactory>(
       () => ProductBrandFavoriteDelegateFactory()
+    );
+    locator.registerLazySingleton<RepurchaseDelegateFactory>(
+      () => RepurchaseDelegateFactory()
     );
 
     // Default Load Data Result Widget
@@ -538,6 +548,7 @@ class _Injector {
     locator.registerLazySingleton<GetProvinceMapUseCase>(() => GetProvinceMapUseCase(mapRepository: locator()));
     locator.registerLazySingleton<CreateOrderUseCase>(() => CreateOrderUseCase(orderRepository: locator()));
     locator.registerLazySingleton<PurchaseDirectUseCase>(() => PurchaseDirectUseCase(orderRepository: locator()));
+    locator.registerLazySingleton<RepurchaseUseCase>(() => RepurchaseUseCase(orderRepository: locator()));
     locator.registerLazySingleton<GetOrderPagingUseCase>(() => GetOrderPagingUseCase(orderRepository: locator()));
     locator.registerLazySingleton<GetShippingReviewOrderListUseCase>(() => GetShippingReviewOrderListUseCase(orderRepository: locator()));
     locator.registerLazySingleton<GetOrderBasedIdUseCase>(() => GetOrderBasedIdUseCase(orderRepository: locator()));

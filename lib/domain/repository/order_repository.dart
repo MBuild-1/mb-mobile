@@ -7,11 +7,13 @@ import '../entity/order/order.dart';
 import '../entity/order/order_based_id_parameter.dart';
 import '../entity/order/order_paging_parameter.dart';
 import '../entity/order/purchase_direct_parameter.dart';
+import '../entity/order/repurchase_parameter.dart';
 import '../entity/order/shipping_review_order_list_parameter.dart';
 
 abstract class OrderRepository {
   FutureProcessing<LoadDataResult<Order>> createOrder(CreateOrderParameter createOrderParameter);
   FutureProcessing<LoadDataResult<Order>> purchaseDirect(PurchaseDirectParameter purchaseDirectParameter);
+  FutureProcessing<LoadDataResult<Order>> repurchase(RepurchaseParameter repurchaseParameter);
   FutureProcessing<LoadDataResult<List<CombinedOrder>>> shippingReviewOrderList(ShippingReviewOrderListParameter shippingReviewOrderListParameter);
   FutureProcessing<LoadDataResult<PagingDataResult<CombinedOrder>>> orderPaging(OrderPagingParameter orderPagingParameter);
   FutureProcessing<LoadDataResult<Order>> orderBasedId(OrderBasedIdParameter orderBasedIdParameter);
