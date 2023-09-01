@@ -26,11 +26,13 @@ class WaitingToBeReviewedDeliveryReviewSubPage extends DefaultGetxPage {
   late final ControllerMember<WaitingToBeReviewedDeliveryReviewSubController> _waitingToBeReviewedDeliveryReviewSubController;
   final String ancestorPageName;
   final ControllerMember<WaitingToBeReviewedDeliveryReviewSubController> Function() onAddControllerMember;
+  final void Function(CombinedOrder) onBuyAgainTap;
 
   WaitingToBeReviewedDeliveryReviewSubPage({
     Key? key,
     required this.ancestorPageName,
-    required this.onAddControllerMember
+    required this.onAddControllerMember,
+    required this.onBuyAgainTap
   }) : super(key: key) {
     _waitingToBeReviewedDeliveryReviewSubController = onAddControllerMember();
   }
@@ -43,16 +45,19 @@ class WaitingToBeReviewedDeliveryReviewSubPage extends DefaultGetxPage {
   @override
   Widget buildPage(BuildContext context) {
     return _StatefulWaitingToBeReviewedDeliveryReviewSubControllerMediatorWidget(
-      waitingToBeReviewedDeliveryReviewSubController: _waitingToBeReviewedDeliveryReviewSubController.controller
+      waitingToBeReviewedDeliveryReviewSubController: _waitingToBeReviewedDeliveryReviewSubController.controller,
+      onBuyAgainTap: onBuyAgainTap
     );
   }
 }
 
 class _StatefulWaitingToBeReviewedDeliveryReviewSubControllerMediatorWidget extends StatefulWidget {
   final WaitingToBeReviewedDeliveryReviewSubController waitingToBeReviewedDeliveryReviewSubController;
+  final void Function(CombinedOrder) onBuyAgainTap;
 
   const _StatefulWaitingToBeReviewedDeliveryReviewSubControllerMediatorWidget({
     required this.waitingToBeReviewedDeliveryReviewSubController,
+    required this.onBuyAgainTap
   });
 
   @override
@@ -102,7 +107,7 @@ class _StatefulWaitingToBeReviewedDeliveryReviewSubControllerMediatorWidgetState
           OrderContainerListItemControllerState(
             orderList: orderList,
             onOrderTap: (order) {},
-            onBuyAgainTap: (order) {},
+            onBuyAgainTap: widget.onBuyAgainTap,
             onUpdateState: () => setState(() {}),
             orderTabColorfulChipTabBarController: _orderTabColorfulChipTabBarController,
             orderColorfulChipTabBarDataList: _orderColorfulChipTabBarDataList

@@ -7,6 +7,8 @@ import '../../../../misc/getextended/get_restorable_route_future.dart';
 import '../../../../misc/manager/controller_manager.dart';
 import '../../../controller/deliveryreviewcontroller/deliveryreviewsubpagecontroller/history_delivery_review_sub_controller.dart';
 import '../../../controller/deliveryreviewcontroller/deliveryreviewsubpagecontroller/waiting_to_be_reviewed_delivery_review_sub_controller.dart';
+import '../../../misc/controllercontentdelegate/repurchase_controller_content_delegate.dart';
+import '../../../misc/errorprovider/error_provider.dart';
 import '../../../misc/injector.dart';
 import '../../../misc/main_route_observer.dart';
 import '../../../misc/refresh_delivery_review.dart';
@@ -14,6 +16,7 @@ import '../../widget/modified_tab_bar.dart';
 import '../../widget/modifiedappbar/modified_app_bar.dart';
 import '../country_delivery_review_page.dart';
 import '../getx_page.dart';
+import '../order_detail_page.dart';
 import 'deliveryreviewsubpage/history_delivery_review_sub_page.dart';
 import 'deliveryreviewsubpage/waiting_to_be_reviewed_delivery_review_sub_page.dart';
 
@@ -53,6 +56,7 @@ class DeliveryReviewPage extends RestorableGetxPage<_DeliveryReviewPageRestorati
     _deliveryReviewController.controller = GetExtended.put<DeliveryReviewController>(
       DeliveryReviewController(
         controllerManager,
+        Injector.locator<RepurchaseControllerContentDelegate>()
       ),
       tag: pageName
     );
@@ -71,7 +75,7 @@ class DeliveryReviewPage extends RestorableGetxPage<_DeliveryReviewPageRestorati
   }
 }
 
-class _DeliveryReviewPageRestoration extends MixableGetxPageRestoration with CountryDeliveryReviewPageRestorationMixin {
+class _DeliveryReviewPageRestoration extends MixableGetxPageRestoration with CountryDeliveryReviewPageRestorationMixin, OrderDetailPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
@@ -191,6 +195,12 @@ class _StatefulDeliveryReviewControllerMediatorWidgetState extends State<_Statef
 
   @override
   Widget build(BuildContext context) {
+    widget.deliveryReviewController.repurchaseControllerContentDelegate.setRepurchaseDelegate(
+      Injector.locator<RepurchaseDelegateFactory>().generateRepurchaseDelegate(
+        onGetBuildContext: () => context,
+        onGetErrorProvider: () => Injector.locator<ErrorProvider>()
+      )
+    );
     return Scaffold(
       appBar: ModifiedAppBar(
         titleInterceptor: (context, title) => Row(
@@ -220,6 +230,9 @@ class _StatefulDeliveryReviewControllerMediatorWidgetState extends State<_Statef
                   WaitingToBeReviewedDeliveryReviewSubPage(
                     ancestorPageName: widget.pageName,
                     onAddControllerMember: () => widget.deliveryReviewSubControllerList[0][2]() as ControllerMember<WaitingToBeReviewedDeliveryReviewSubController>,
+                    onBuyAgainTap: (order) {
+                      widget.deliveryReviewController.repurchaseControllerContentDelegate.repurchase(order.id);
+                    },
                   ),
                   HistoryDeliveryReviewSubPage(
                     ancestorPageName: widget.pageName,
