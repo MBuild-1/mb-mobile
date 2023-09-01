@@ -90,6 +90,8 @@ import '../../../presentation/widget/tap_area.dart';
 import '../../../presentation/widget/titleanddescriptionitem/title_and_description_item.dart';
 import '../../../presentation/widget/titledescriptionandcontentitem/title_description_and_content_item.dart';
 import '../../../presentation/widget/product_detail_header.dart';
+import '../../../presentation/widget/video/default_video_item.dart';
+import '../../../presentation/widget/video/short_video_item.dart';
 import '../../carouselbackground/asset_carousel_background.dart';
 import '../../carouselbackground/carousel_background.dart';
 import '../../constant.dart';
@@ -200,6 +202,8 @@ import '../../controllerstate/listitemcontrollerstate/spacing_list_item_controll
 import '../../controllerstate/listitemcontrollerstate/tab_bar_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/title_and_description_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/title_description_and_content_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/videolistitemcontrollerstate/default_video_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/videolistitemcontrollerstate/short_video_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/widget_substitution_list_item_controller_state.dart';
 import '../../controllerstate/paging_controller_state.dart';
@@ -293,9 +297,17 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
       return DefaultVideoCarouselListItem(
         defaultVideoListLoadDataResult: item.defaultVideoListLoadDataResult,
       );
+    } else if (item is DefaultVideoListItemControllerState) {
+      return DefaultVideoItem(
+        defaultVideo: item.defaultVideo,
+      );
     } else if (item is ShortVideoCarouselListItemControllerState) {
       return ShortVideoCarouselListItem(
         shortVideoListLoadDataResult: item.shortVideoListLoadDataResult,
+      );
+    } else if (item is ShortVideoListItemControllerState) {
+      return ShortVideoItem(
+        shortVideo: item.shortVideo,
       );
     } else if (item is ProductListItemControllerState) {
       if (item is HorizontalProductListItemControllerState) {

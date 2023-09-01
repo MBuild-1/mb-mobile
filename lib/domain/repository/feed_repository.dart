@@ -20,6 +20,7 @@ import '../entity/news/news.dart';
 import '../entity/news/news_paging_parameter.dart';
 import '../entity/video/defaultvideo/default_video.dart';
 import '../entity/video/defaultvideo/default_video_list_parameter.dart';
+import '../entity/video/defaultvideo/default_video_paging_parameter.dart';
 import '../entity/video/shortvideo/short_video.dart';
 import '../entity/video/shortvideo/short_video_list_parameter.dart';
 import '../entity/video/shortvideo/short_video_paging_parameter.dart';
@@ -27,6 +28,7 @@ import '../entity/video/shortvideo/short_video_paging_parameter.dart';
 abstract class FeedRepository {
   FutureProcessing<LoadDataResult<PagingDataResult<ShortVideo>>> shortVideoPaging(ShortVideoPagingParameter shortVideoPagingParameter);
   FutureProcessing<LoadDataResult<List<ShortVideo>>> shortVideoList(ShortVideoListParameter shortVideoListParameter);
+  FutureProcessing<LoadDataResult<PagingDataResult<DefaultVideo>>> defaultVideoPaging(DefaultVideoPagingParameter defaultVideoPagingParameter);
   FutureProcessing<LoadDataResult<List<DefaultVideo>>> defaultVideoList(DefaultVideoListParameter defaultVideoListParameter);
   FutureProcessing<LoadDataResult<List<DeliveryReview>>> deliveryReviewList(DeliveryReviewListParameter deliveryReviewListParameter);
   FutureProcessing<LoadDataResult<PagingDataResult<DeliveryReview>>> deliveryReviewPaging(DeliveryReviewPagingParameter deliveryReviewPagingParameter);

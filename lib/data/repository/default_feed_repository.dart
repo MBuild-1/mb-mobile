@@ -17,6 +17,7 @@ import '../../domain/entity/news/news.dart';
 import '../../domain/entity/news/news_paging_parameter.dart';
 import '../../domain/entity/video/defaultvideo/default_video.dart';
 import '../../domain/entity/video/defaultvideo/default_video_list_parameter.dart';
+import '../../domain/entity/video/defaultvideo/default_video_paging_parameter.dart';
 import '../../domain/entity/video/shortvideo/short_video.dart';
 import '../../domain/entity/video/shortvideo/short_video_list_parameter.dart';
 import '../../domain/entity/video/shortvideo/short_video_paging_parameter.dart';
@@ -41,6 +42,11 @@ class DefaultFeedRepository implements FeedRepository {
   @override
   FutureProcessing<LoadDataResult<List<ShortVideo>>> shortVideoList(ShortVideoListParameter shortVideoListParameter) {
     return feedDataSource.shortVideoList(shortVideoListParameter).mapToLoadDataResult<List<ShortVideo>>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<PagingDataResult<DefaultVideo>>> defaultVideoPaging(DefaultVideoPagingParameter defaultVideoPagingParameter) {
+    return feedDataSource.defaultVideoPaging(defaultVideoPagingParameter).mapToLoadDataResult<PagingDataResult<DefaultVideo>>();
   }
 
   @override

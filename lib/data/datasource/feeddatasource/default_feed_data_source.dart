@@ -20,6 +20,7 @@ import '../../../domain/entity/news/news_paging_parameter.dart';
 import '../../../domain/entity/order/combined_order.dart';
 import '../../../domain/entity/video/defaultvideo/default_video.dart';
 import '../../../domain/entity/video/defaultvideo/default_video_list_parameter.dart';
+import '../../../domain/entity/video/defaultvideo/default_video_paging_parameter.dart';
 import '../../../domain/entity/video/shortvideo/short_video.dart';
 import '../../../domain/entity/video/shortvideo/short_video_list_parameter.dart';
 import '../../../domain/entity/video/shortvideo/short_video_paging_parameter.dart';
@@ -39,7 +40,11 @@ class DefaultFeedDataSource implements FeedDataSource {
 
   @override
   FutureProcessing<PagingDataResult<ShortVideo>> shortVideoPaging(ShortVideoPagingParameter shortVideoPagingParameter) {
-    throw UnimplementedError();
+    return DioHttpClientProcessing((cancelToken) {
+      String pageParameterPath = "/?pageNumber=${shortVideoPagingParameter.itemEachPageCount}&page=${shortVideoPagingParameter.page}";
+      return dio.get("/youtube/type/shorts$pageParameterPath", cancelToken: cancelToken)
+        .map<PagingDataResult<ShortVideo>>(onMap: (value) => value.wrapResponse().mapFromResponseToShortVideoPaging());
+    });
   }
 
   @override
@@ -47,6 +52,15 @@ class DefaultFeedDataSource implements FeedDataSource {
     return DioHttpClientProcessing((cancelToken) {
       return dio.get("/youtube/type/shorts", cancelToken: cancelToken)
         .map<List<ShortVideo>>(onMap: (value) => value.wrapResponse().mapFromResponseToShortVideoList());
+    });
+  }
+
+  @override
+  FutureProcessing<PagingDataResult<DefaultVideo>> defaultVideoPaging(DefaultVideoPagingParameter defaultVideoPagingParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      String pageParameterPath = "/?pageNumber=${defaultVideoPagingParameter.itemEachPageCount}&page=${defaultVideoPagingParameter.page}";
+      return dio.get("/youtube/type/video$pageParameterPath", cancelToken: cancelToken)
+        .map<PagingDataResult<DefaultVideo>>(onMap: (value) => value.wrapResponse().mapFromResponseToDefaultVideoPaging());
     });
   }
 

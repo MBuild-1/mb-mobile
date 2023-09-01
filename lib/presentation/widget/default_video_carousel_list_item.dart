@@ -8,6 +8,9 @@ import '../../domain/entity/video/defaultvideo/default_video.dart';
 import '../../misc/aspect_ratio_value.dart';
 import '../../misc/constant.dart';
 import '../../misc/load_data_result.dart';
+import '../../misc/page_restoration_helper.dart';
+import '../page/videopage/video_page.dart';
+import 'tap_area.dart';
 import 'video/default_video_item.dart';
 
 class DefaultVideoCarouselListItem extends StatefulWidget {
@@ -84,12 +87,15 @@ class DefaultVideoCarouselListItemState extends State<DefaultVideoCarouselListIt
                           ),
                         ),
                       ),
-                      Text(
-                        "Look All".tr,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.primary,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12
+                      TapArea(
+                        onTap: () => PageRestorationHelper.toVideoPage(context, VideoPageParameter(videoType: VideoType.defaultVideo)),
+                        child: Text(
+                          "Look All".tr,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12
+                          ),
                         ),
                       ),
                     ]

@@ -32,6 +32,7 @@ import '../../itemtypelistsubinterceptor/row_container_item_type_list_sub_interc
 import '../../itemtypelistsubinterceptor/search_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/stack_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/verticalgriditemtypelistsubinterceptor/vertical_grid_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/video_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/wishlist_item_type_list_sub_interceptor.dart';
 import '../../typedef.dart';
 import '../item_type_list_interceptor_parameter.dart';
@@ -247,6 +248,11 @@ class ListItemControllerStateItemTypeInterceptorChecker extends ItemTypeListInte
       listItemControllerStateItemTypeInterceptorChecker: this
     ),
     ChatItemTypeListSubInterceptor(
+      padding: padding,
+      itemSpacing: itemSpacing,
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
+    VideoItemTypeListSubInterceptor(
       padding: padding,
       itemSpacing: itemSpacing,
       listItemControllerStateItemTypeInterceptorChecker: this

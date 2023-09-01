@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -8,6 +9,8 @@ import '../../../domain/entity/video/shortvideo/short_video.dart';
 import '../../../misc/constant.dart';
 import '../../../misc/string_util.dart';
 import '../modified_loading_indicator.dart';
+import '../modifiedcachednetworkimage/video_modified_cached_network_image.dart';
+import 'video_play_indicator.dart';
 
 class ShortVideoItem extends StatelessWidget {
   final ShortVideo shortVideo;
@@ -27,21 +30,23 @@ class ShortVideoItem extends StatelessWidget {
         borderRadius: borderRadius,
         elevation: 3,
         child: InkWell(
-          onTap: () {},
+          onTap: () => Get.to(_ShortVideoPlayer(shortVideo: shortVideo)),
           borderRadius: borderRadius,
           child: Container(
             clipBehavior: Clip.antiAlias,
             decoration: BoxDecoration(
               borderRadius: borderRadius
             ),
-            child: SizedBox(
-              width: 200,
-              child: AspectRatio(
-                aspectRatio: Constant.aspectRatioValueShortVideo.toDouble(),
-                child: _ShortVideoPlayer(
-                  shortVideo: shortVideo,
-                )
-              ),
+            child: Stack(
+              children: [
+                AspectRatio(
+                  aspectRatio: Constant.aspectRatioValueShortVideo.toDouble(),
+                  child: VideoModifiedCachedNetworkImage(
+                    imageUrl: "https://img.youtube.com/vi/${StringUtil.convertYoutubeLinkUrlToId(shortVideo.url)}/sddefault.jpg"
+                  )
+                ),
+                const VideoPlayIndicator()
+              ],
             )
           )
         )

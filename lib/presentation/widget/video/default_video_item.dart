@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -8,6 +9,9 @@ import '../../../domain/entity/video/defaultvideo/default_video.dart';
 import '../../../misc/constant.dart';
 import '../../../misc/string_util.dart';
 import '../modified_loading_indicator.dart';
+import '../modifiedcachednetworkimage/video_modified_cached_network_image.dart';
+import '../tap_area.dart';
+import 'video_play_indicator.dart';
 
 class DefaultVideoItem extends StatelessWidget {
   final DefaultVideo defaultVideo;
@@ -20,29 +24,33 @@ class DefaultVideoItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     BorderRadius borderRadius = BorderRadius.circular(8.0);
-    return Padding(
-      padding: const EdgeInsets.only(top: 1.0, bottom: 5.0),
-      child: Material(
-        color: Colors.white,
+    return Material(
+      color: Colors.white,
+      borderRadius: borderRadius,
+      elevation: 3,
+      child: InkWell(
+        onTap: () {},
         borderRadius: borderRadius,
-        elevation: 3,
-        child: InkWell(
-          onTap: () {},
-          borderRadius: borderRadius,
-          child: Container(
-            clipBehavior: Clip.antiAlias,
-            decoration: BoxDecoration(
-              borderRadius: borderRadius
-            ),
+        child: Container(
+          clipBehavior: Clip.antiAlias,
+          decoration: BoxDecoration(
+            borderRadius: borderRadius
+          ),
+          child: TapArea(
+            onTap: () => Get.to(_DefaultVideoPlayer(defaultVideo: defaultVideo)),
             child: SizedBox(
-              height: 170,
               child: AspectRatio(
                 aspectRatio: Constant.aspectRatioValueDefaultVideo.toDouble(),
-                child: _DefaultVideoPlayer(
-                  defaultVideo: defaultVideo,
+                child: Stack(
+                  children: [
+                    VideoModifiedCachedNetworkImage(
+                      imageUrl: "https://img.youtube.com/vi/${StringUtil.convertYoutubeLinkUrlToId(defaultVideo.url)}/sddefault.jpg"
+                    ),
+                    const VideoPlayIndicator()
+                  ],
                 )
               ),
-            )
+            ),
           )
         )
       )

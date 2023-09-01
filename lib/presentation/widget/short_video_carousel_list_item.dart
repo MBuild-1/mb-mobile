@@ -7,6 +7,9 @@ import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import '../../domain/entity/video/shortvideo/short_video.dart';
 import '../../misc/constant.dart';
 import '../../misc/load_data_result.dart';
+import '../../misc/page_restoration_helper.dart';
+import '../page/videopage/video_page.dart';
+import 'tap_area.dart';
 import 'video/short_video_item.dart';
 
 class ShortVideoCarouselListItem extends StatefulWidget {
@@ -63,14 +66,17 @@ class ShortVideoCarouselListItemState extends State<ShortVideoCarouselListItem> 
                       ),
                     ),
                   ),
-                  Text(
-                    "Look All".tr,
-                    style: const TextStyle(
-                      color: Colors.grey,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12
+                  TapArea(
+                    onTap: () => PageRestorationHelper.toVideoPage(context, VideoPageParameter(videoType: VideoType.shortVideo)),
+                    child: Text(
+                      "Look All".tr,
+                      style: const TextStyle(
+                        color: Colors.grey,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12
+                      ),
                     ),
-                  ),
+                  )
                 ]
               )
             ),

@@ -38,6 +38,7 @@ import '../presentation/page/product_entry_page.dart';
 import '../presentation/page/register_page.dart';
 import '../presentation/page/search_page.dart';
 import '../presentation/page/take_friend_cart_page.dart';
+import '../presentation/page/videopage/video_page.dart';
 import '../presentation/page/web_viewer_page.dart';
 import 'constant.dart';
 import 'login_helper.dart';
@@ -431,6 +432,19 @@ class _PageRestorationHelperImpl {
       PageRestorationHelper.findPageRestorationMixin<ChatHistoryPageRestorationMixin>(
         onGetxPageRestorationFound: (restoration) {
           restoration.chatHistoryPageRestorableRouteFuture.present();
+        },
+        context: context
+      );
+    });
+  }
+
+  void toVideoPage(BuildContext context, VideoPageParameter videoPageParameter) {
+    LoginHelper.checkingLogin(context, () {
+      PageRestorationHelper.findPageRestorationMixin<VideoPageRestorationMixin>(
+        onGetxPageRestorationFound: (restoration) {
+          restoration.videoPageRestorableRouteFuture.present(
+            videoPageParameter.toEncodeBase64String()
+          );
         },
         context: context
       );

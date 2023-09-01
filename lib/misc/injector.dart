@@ -163,10 +163,12 @@ import '../domain/usecase/get_province_map_use_case.dart';
 import '../domain/usecase/get_shipping_price_contents_banner_use_case.dart';
 import '../domain/usecase/get_shipping_review_order_list_use_case.dart';
 import '../domain/usecase/get_short_my_cart_use_case.dart';
+import '../domain/usecase/get_short_video_paging_use_case.dart';
 import '../domain/usecase/get_short_video_use_case.dart';
 import '../domain/usecase/get_snack_for_lying_around_list_use_case.dart';
 import '../domain/usecase/get_sponsor_contents_banner_use_case.dart';
 import '../domain/usecase/get_transaction_notification_detail_use_case.dart';
+import '../domain/usecase/get_trip_default_video_paging_use_case.dart';
 import '../domain/usecase/get_trip_default_video_use_case.dart';
 import '../domain/usecase/get_user_use_case.dart';
 import '../domain/usecase/get_waiting_to_be_reviewed_delivery_review_paging_use_case.dart';
@@ -510,6 +512,7 @@ class _Injector {
     locator.registerLazySingleton<RemoveWishlistUseCase>(() => RemoveWishlistUseCase(productRepository: locator()));
     locator.registerLazySingleton<RemoveWishlistBasedProductUseCase>(() => RemoveWishlistBasedProductUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetShortVideoUseCase>(() => GetShortVideoUseCase(feedRepository: locator()));
+    locator.registerLazySingleton<GetShortVideoPagingUseCase>(() => GetShortVideoPagingUseCase(feedRepository: locator()));
     locator.registerLazySingleton<GetDeliveryReviewUseCase>(() => GetDeliveryReviewUseCase(feedRepository: locator()));
     locator.registerLazySingleton<GetWaitingToBeReviewedDeliveryReviewPagingUseCase>(() => GetWaitingToBeReviewedDeliveryReviewPagingUseCase(feedRepository: locator()));
     locator.registerLazySingleton<GetHistoryDeliveryReviewListUseCase>(() => GetHistoryDeliveryReviewListUseCase(feedRepository: locator()));
@@ -518,6 +521,7 @@ class _Injector {
     locator.registerLazySingleton<GetCountryDeliveryReviewUseCase>(() => GetCountryDeliveryReviewUseCase(feedRepository: locator()));
     locator.registerLazySingleton<GetNewsUseCase>(() => GetNewsUseCase(feedRepository: locator()));
     locator.registerLazySingleton<GetTripDefaultVideoUseCase>(() => GetTripDefaultVideoUseCase(feedRepository: locator()));
+    locator.registerLazySingleton<GetTripDefaultVideoPagingUseCase>(() => GetTripDefaultVideoPagingUseCase(feedRepository: locator()));
     locator.registerLazySingleton<GetKitchenContentsBannerUseCase>(() => GetKitchenContentsBannerUseCase(bannerRepository: locator()));
     locator.registerLazySingleton<GetHandycraftsContentsBannerUseCase>(() => GetHandycraftsContentsBannerUseCase(bannerRepository: locator()));
     locator.registerLazySingleton<GetHomepageContentsBannerUseCase>(() => GetHomepageContentsBannerUseCase(bannerRepository: locator()));
