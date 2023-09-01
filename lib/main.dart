@@ -8,6 +8,8 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'domain/usecase/get_cart_list_use_case.dart';
+import 'domain/usecase/get_notification_by_user_paging_use_case.dart';
 import 'firebase_options.dart';
 
 import 'domain/usecase/get_user_use_case.dart';
@@ -18,6 +20,7 @@ import 'misc/login_helper.dart';
 import 'misc/main_route_observer.dart';
 import 'presentation/notifier/login_notifier.dart';
 import 'presentation/notifier/component_notifier.dart';
+import 'presentation/notifier/notification_notifier.dart';
 import 'presentation/page/introduction_page.dart';
 import 'presentation/page/mainmenu/main_menu_page.dart';
 
@@ -54,6 +57,12 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<ComponentNotifier>(
           create: (_) => ComponentNotifier(),
+        ),
+        ChangeNotifierProvider<NotificationNotifier>(
+          create: (_) => NotificationNotifier(
+            getNotificationByUserPagingUseCase: Injector.locator<GetNotificationByUserPagingUseCase>(),
+            getCartListUseCase: Injector.locator<GetCartListUseCase>(),
+          ),
         )
       ],
       child: Sizer(

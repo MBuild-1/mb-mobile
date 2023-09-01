@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
+import 'package:provider/provider.dart';
 
 import '../../controller/notification_controller.dart';
 import '../../domain/entity/notification/notification.dart';
@@ -24,6 +25,7 @@ import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
+import '../notifier/notification_notifier.dart';
 import '../widget/colorful_chip_tab_bar.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
@@ -200,6 +202,9 @@ class _StatefulNotificationControllerMediatorWidgetState extends State<_Stateful
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _notificationListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? notificationListItemControllerStateList) async {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      Provider.of<NotificationNotifier>(context, listen: false).loadNotificationLoadDataResult();
+    });
     List<ListItemControllerState> resultListItemControllerState = [];
     if (pageKey == 1) {
       resultListItemControllerState = [

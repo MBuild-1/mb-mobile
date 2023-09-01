@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
+import 'package:provider/provider.dart';
 
 import '../../domain/entity/cart/add_to_cart_parameter.dart';
 import '../../domain/entity/cart/add_to_cart_response.dart';
@@ -16,6 +17,7 @@ import '../../domain/usecase/add_to_cart_use_case.dart';
 import '../../domain/usecase/add_wishlist_use_case.dart';
 import '../../domain/usecase/remove_wishlist_based_product_use_case.dart';
 import '../../domain/usecase/remove_wishlist_use_case.dart';
+import '../../presentation/notifier/notification_notifier.dart';
 import '../dialog_helper.dart';
 import '../errorprovider/error_provider.dart';
 import '../load_data_result.dart';
@@ -223,6 +225,7 @@ class WishlistAndCartDelegateFactory {
         if (MainRouteObserver.onRefreshCartInMainMenu != null) {
           MainRouteObserver.onRefreshCartInMainMenu!();
         }
+        Provider.of<NotificationNotifier>(onGetBuildContext(), listen: false).loadCartLoadDataResult();
         ToastHelper.showToast("${"Success add to cart".tr}.");
       },
       onShowAddCartRequestProcessFailedCallback: onShowAddCartRequestProcessFailedCallback ?? (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(

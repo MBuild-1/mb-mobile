@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/number_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
+import 'package:provider/provider.dart';
 
 import '../../controller/cart_controller.dart';
 import '../../domain/entity/additionalitem/add_additional_item_parameter.dart';
@@ -50,6 +51,7 @@ import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_it
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
 import '../../misc/toast_helper.dart';
+import '../notifier/notification_notifier.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modified_svg_picture.dart';
@@ -247,6 +249,7 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _cartListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? cartListItemControllerStateList) async {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       setState(() => _cartCount = 0);
+      Provider.of<NotificationNotifier>(context, listen: false).loadCartLoadDataResult();
     });
     LoadDataResult<PagingDataResult<Cart>> cartPagingLoadDataResult = await widget.cartController.getCartPaging(
       CartPagingParameter(page: pageKey)
@@ -351,6 +354,7 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
         onRemoveCartRequestProcessSuccessCallback: (cart) async {
           if (_cartContainerInterceptingActionListItemControllerState.removeCart != null) {
             _cartContainerInterceptingActionListItemControllerState.removeCart!(cart);
+            Provider.of<NotificationNotifier>(context, listen: false).loadCartLoadDataResult();
           }
         },
       )

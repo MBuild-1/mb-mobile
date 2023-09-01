@@ -12,9 +12,6 @@ class NotificationNumberIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (notificationNumber <= 0) {
-      return Container();
-    }
     int maxNumber = 99;
     bool moreThanMaxNumber = notificationNumber > maxNumber;
     return Container(
