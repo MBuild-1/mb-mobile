@@ -14,6 +14,7 @@ import '../../domain/entity/delivery/delivery_review_paging_parameter.dart';
 import '../../domain/entity/delivery/give_review_delivery_review_detail_parameter.dart';
 import '../../domain/entity/delivery/give_review_delivery_review_detail_response.dart';
 import '../../domain/entity/news/news.dart';
+import '../../domain/entity/news/news_detail_parameter.dart';
 import '../../domain/entity/news/news_paging_parameter.dart';
 import '../../domain/entity/video/defaultvideo/default_video.dart';
 import '../../domain/entity/video/defaultvideo/default_video_list_parameter.dart';
@@ -82,6 +83,11 @@ class DefaultFeedRepository implements FeedRepository {
   @override
   FutureProcessing<LoadDataResult<PagingDataResult<News>>> newsPaging(NewsPagingParameter newsPagingParameter) {
     return feedDataSource.newsPaging(newsPagingParameter).mapToLoadDataResult<PagingDataResult<News>>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<News>> newsDetail(NewsDetailParameter newsDetailParameter) {
+    return feedDataSource.newsDetail(newsDetailParameter).mapToLoadDataResult<News>();
   }
 
   @override

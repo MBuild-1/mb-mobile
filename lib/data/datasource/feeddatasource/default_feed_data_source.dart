@@ -16,6 +16,7 @@ import '../../../domain/entity/delivery/give_review_delivery_review_detail_param
 import '../../../domain/entity/delivery/give_review_delivery_review_detail_response.dart';
 import '../../../domain/entity/delivery/givedeliveryreviewvalue/give_delivery_review_value.dart';
 import '../../../domain/entity/news/news.dart';
+import '../../../domain/entity/news/news_detail_parameter.dart';
 import '../../../domain/entity/news/news_paging_parameter.dart';
 import '../../../domain/entity/order/combined_order.dart';
 import '../../../domain/entity/video/defaultvideo/default_video.dart';
@@ -203,6 +204,14 @@ class DefaultFeedDataSource implements FeedDataSource {
       String pageParameterPath = "/?pageNumber=${newsPagingParameter.itemEachPageCount}&page=${newsPagingParameter.page}";
       return dio.get("/news$pageParameterPath", cancelToken: cancelToken)
         .map<PagingDataResult<News>>(onMap: (value) => value.wrapResponse().mapFromResponseToNewsPaging());
+    });
+  }
+
+  @override
+  FutureProcessing<News> newsDetail(NewsDetailParameter newsDetailParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.get("/news/${newsDetailParameter.newsId}", cancelToken: cancelToken)
+        .map<News>(onMap: (value) => value.wrapResponse().mapFromResponseToNews());
     });
   }
 

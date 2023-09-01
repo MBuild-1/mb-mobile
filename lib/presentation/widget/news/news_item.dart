@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../../domain/entity/news/news.dart';
 import '../../../misc/constant.dart';
+import '../../../misc/page_restoration_helper.dart';
 import '../modifiedcachednetworkimage/news_modified_cached_network_image.dart';
 
 typedef OnTapNews = void Function(News);
@@ -36,7 +37,7 @@ abstract class NewsItem extends StatelessWidget {
           borderRadius: borderRadius,
           elevation: 3,
           child: InkWell(
-            onTap: onTapNews != null ? () => onTapNews!(news) : null,
+            onTap: () => PageRestorationHelper.toNewsDetailPage(context, news.id),
             borderRadius: borderRadius,
             child: Stack(
               children: [

@@ -449,7 +449,8 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
     } else if (item is NewsListItemControllerState) {
       if (item is HorizontalNewsListItemControllerState) {
         return HorizontalNewsItem(
-          news: item.news
+          news: item.news,
+          onTapNews: item.onTapNews
         );
       } else if (item is VerticalNewsListItemControllerState) {
         if (item is ShimmerVerticalNewsListItemControllerState) {

@@ -14,6 +14,7 @@ import '../../../domain/entity/delivery/delivery_review_paging_parameter.dart';
 import '../../../domain/entity/delivery/give_review_delivery_review_detail_parameter.dart';
 import '../../../domain/entity/delivery/give_review_delivery_review_detail_response.dart';
 import '../../../domain/entity/news/news.dart';
+import '../../../domain/entity/news/news_detail_parameter.dart';
 import '../../../domain/entity/news/news_paging_parameter.dart';
 import '../../../domain/entity/video/defaultvideo/default_video.dart';
 import '../../../domain/entity/video/defaultvideo/default_video_list_parameter.dart';
@@ -35,6 +36,7 @@ abstract class FeedDataSource {
   FutureProcessing<PagingDataResult<DeliveryReview>> historyDeliveryReviewPaging(DeliveryReviewPagingParameter deliveryReviewPagingParameter);
   FutureProcessing<List<DeliveryReview>> historyDeliveryReviewList(DeliveryReviewListParameter deliveryReviewListParameter);
   FutureProcessing<PagingDataResult<News>> newsPaging(NewsPagingParameter newsPagingParameter);
+  FutureProcessing<News> newsDetail(NewsDetailParameter newsDetailParameter);
   FutureProcessing<CheckYourContributionDeliveryReviewDetailResponse> checkYourContributionDeliveryReviewDetail(CheckYourContributionDeliveryReviewDetailParameter checkYourContributionDeliveryReviewDetailParameter);
   FutureProcessing<GiveReviewDeliveryReviewDetailResponse> giveReviewDeliveryReviewDetail(GiveReviewDeliveryReviewDetailParameter giveReviewDeliveryReviewDetailParameter);
   FutureProcessing<CountryDeliveryReviewResponse> countryDeliveryReview(CountryDeliveryReviewBasedCountryParameter countryDeliveryReviewBasedCountryParameter);

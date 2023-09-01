@@ -129,6 +129,7 @@ import '../domain/usecase/get_history_delivery_review_list_use_case.dart';
 import '../domain/usecase/get_homepage_contents_banner_use_case.dart';
 import '../domain/usecase/get_kitchen_contents_banner_use_case.dart';
 import '../domain/usecase/get_my_cart_use_case.dart';
+import '../domain/usecase/get_news_detail_use_case.dart';
 import '../domain/usecase/get_news_use_case.dart';
 import '../domain/usecase/get_notification_by_user_paging_use_case.dart';
 import '../domain/usecase/get_order_based_id_use_case.dart';
@@ -521,6 +522,7 @@ class _Injector {
     locator.registerLazySingleton<GiveReviewDeliveryReviewDetailUseCase>(() => GiveReviewDeliveryReviewDetailUseCase(feedRepository: locator()));
     locator.registerLazySingleton<GetCountryDeliveryReviewUseCase>(() => GetCountryDeliveryReviewUseCase(feedRepository: locator()));
     locator.registerLazySingleton<GetNewsUseCase>(() => GetNewsUseCase(feedRepository: locator()));
+    locator.registerLazySingleton<GetNewsDetailUseCase>(() => GetNewsDetailUseCase(feedRepository: locator()));
     locator.registerLazySingleton<GetTripDefaultVideoUseCase>(() => GetTripDefaultVideoUseCase(feedRepository: locator()));
     locator.registerLazySingleton<GetTripDefaultVideoPagingUseCase>(() => GetTripDefaultVideoPagingUseCase(feedRepository: locator()));
     locator.registerLazySingleton<GetKitchenContentsBannerUseCase>(() => GetKitchenContentsBannerUseCase(bannerRepository: locator()));
