@@ -23,27 +23,24 @@ class ShortVideoItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     BorderRadius borderRadius = BorderRadius.circular(8.0);
-    return Padding(
-      padding: const EdgeInsets.only(top: 1.0, bottom: 5.0),
-      child: Material(
-        color: Colors.white,
+    return Material(
+      color: Colors.white,
+      borderRadius: borderRadius,
+      elevation: 3,
+      child: InkWell(
+        onTap: () => Get.to(_ShortVideoPlayer(shortVideo: shortVideo)),
         borderRadius: borderRadius,
-        elevation: 3,
-        child: InkWell(
-          onTap: () => Get.to(_ShortVideoPlayer(shortVideo: shortVideo)),
-          borderRadius: borderRadius,
-          child: Container(
-            clipBehavior: Clip.antiAlias,
-            decoration: BoxDecoration(
-              borderRadius: borderRadius
-            ),
+        child: Container(
+          clipBehavior: Clip.antiAlias,
+          decoration: BoxDecoration(
+            borderRadius: borderRadius
+          ),
+          child: AspectRatio(
+            aspectRatio: Constant.aspectRatioValueShortVideo.toDouble(),
             child: Stack(
               children: [
-                AspectRatio(
-                  aspectRatio: Constant.aspectRatioValueShortVideo.toDouble(),
-                  child: VideoModifiedCachedNetworkImage(
-                    imageUrl: "https://img.youtube.com/vi/${StringUtil.convertYoutubeLinkUrlToId(shortVideo.url)}/sddefault.jpg"
-                  )
+                VideoModifiedCachedNetworkImage(
+                  imageUrl: "https://img.youtube.com/vi/${StringUtil.convertYoutubeLinkUrlToId(shortVideo.url)}/sddefault.jpg"
                 ),
                 const VideoPlayIndicator()
               ],
