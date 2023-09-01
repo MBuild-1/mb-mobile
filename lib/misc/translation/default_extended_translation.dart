@@ -35,7 +35,7 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Min. Order": "Min. Pemesanan",
       "Storefront": "Etalase",
       "Save More With Bundles": "Lebih Hemat Dengan Bundle",
-      "More": "Lihat Semuanya",
+      "More": "Lihat Semua",
       "Login With Google": "Login Dengan Google",
       "Register With Google": "Daftar Dengan Google",
       "Save more using shared cart": "Makin hemat dengan keranjang bersama",

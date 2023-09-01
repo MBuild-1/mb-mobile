@@ -131,7 +131,10 @@ class FeedMainMenuSubController extends BaseGetxController {
             OnObserveSuccessLoadDeliveryReviewCarouselParameter(
               title: title,
               description: description,
-              deliveryReviewList: deliveryReviewList
+              deliveryReviewList: deliveryReviewList,
+              data: DeliveryReviewSectionData(
+                firstCountryId: deliveryReviewList.first.countryId
+              )
             )
           );
         }
@@ -173,7 +176,8 @@ class FeedMainMenuSubController extends BaseGetxController {
             OnObserveSuccessLoadNewsCarouselParameter(
               title: title,
               description: description,
-              newsList: newsList
+              newsList: newsList,
+              data: Constant.carouselKeyNews
             )
           );
         }
@@ -239,5 +243,13 @@ class _OnObserveLoadTripDefaultVideoDirectlyParameter {
 
   _OnObserveLoadTripDefaultVideoDirectlyParameter({
     required this.tripDefaultVideoListLoadDataResult
+  });
+}
+
+class DeliveryReviewSectionData {
+  String firstCountryId;
+
+  DeliveryReviewSectionData({
+    required this.firstCountryId
   });
 }

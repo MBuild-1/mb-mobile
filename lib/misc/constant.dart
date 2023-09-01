@@ -224,6 +224,8 @@ class _ConstantImpl {
   String get carouselKeyCoffeeAndTeaOriginIndonesia => "carousel_key_coffee_and_tea_origin_indonesia";
   String get carouselKeyBeautyProductIndonesia => "carousel_key_beauty_product_indonesia";
   String get carouselKeyFashionProductIndonesia => "carousel_key_fashion_product_indonesia";
+  String get carouselKeyDeliveryReview => "carousel_key_delivery_review";
+  String get carouselKeyNews => "carousel_key_news";
 
   String get transparentBannerKeyKitchenContents => "transparent_banner_key_kitchen_contents";
   String get transparentBannerKeyHandycrafts => "transparent_banner_key_handycrafts";
