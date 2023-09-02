@@ -54,32 +54,34 @@ class ChatBubble extends StatelessWidget {
                 );
               }
             ),
-            Container(
-              decoration: BoxDecoration(
-                color: isLoggedUser ? Constant.colorMain : Constant.colorGrey6,
-                borderRadius: BorderRadius.circular(8)
-              ),
-              padding: const EdgeInsets.all(8),
-              child: Column(
-                crossAxisAlignment: isLoggedUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    userMessage.message,
-                    style: TextStyle(
-                      color: isLoggedUser ? Colors.white : null
-                    )
-                  ),
-                  if (userMessage.createdAt != null) ...[
-                    const SizedBox(height: 10),
+            Flexible(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: isLoggedUser ? Constant.colorMain : Constant.colorGrey6,
+                  borderRadius: BorderRadius.circular(8)
+                ),
+                padding: const EdgeInsets.all(8),
+                child: Column(
+                  crossAxisAlignment: isLoggedUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                  children: [
                     Text(
-                      DateUtil.standardDateFormat10.format(userMessage.createdAt!),
+                      userMessage.message,
                       style: TextStyle(
-                        color: isLoggedUser ? Colors.white : null,
-                        fontSize: 11
+                        color: isLoggedUser ? Colors.white : null
                       )
                     ),
-                  ]
-                ],
+                    if (userMessage.createdAt != null) ...[
+                      const SizedBox(height: 10),
+                      Text(
+                        DateUtil.standardDateFormat10.format(userMessage.createdAt!),
+                        style: TextStyle(
+                          color: isLoggedUser ? Colors.white : null,
+                          fontSize: 11
+                        )
+                      ),
+                    ]
+                  ],
+                ),
               ),
             ),
           ],
