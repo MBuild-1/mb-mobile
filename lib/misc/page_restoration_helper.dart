@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../controller/crop_picture_controller.dart';
+import '../presentation/page/accountsecurity/account_security_page.dart';
 import '../presentation/page/address_page.dart';
 import '../presentation/page/affiliate_page.dart';
 import '../presentation/page/cart_page.dart';
@@ -465,6 +466,17 @@ class _PageRestorationHelperImpl {
       },
       context: context
     );
+  }
+
+  void toAccountSecurityPage(BuildContext context) {
+    LoginHelper.checkingLogin(context, () {
+      PageRestorationHelper.findPageRestorationMixin<AccountSecurityPageRestorationMixin>(
+        onGetxPageRestorationFound: (restoration) {
+          restoration.accountSecurityPageRestorableRouteFuture.present();
+        },
+        context: context
+      );
+    });
   }
 }
 

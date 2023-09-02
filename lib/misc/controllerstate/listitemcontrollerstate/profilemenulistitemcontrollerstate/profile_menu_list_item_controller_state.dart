@@ -5,7 +5,7 @@ import '../list_item_controller_state.dart';
 
 class ProfileMenuListItemControllerState extends ListItemControllerState {
   void Function(BuildContext)? onTap;
-  WidgetBuilder icon;
+  WidgetBuilder? icon;
   String title;
   TitleInterceptor? titleInterceptor;
   String? description;

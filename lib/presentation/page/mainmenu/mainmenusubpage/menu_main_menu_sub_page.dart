@@ -174,7 +174,7 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
             description: "${'Set the address for sending groceries'.tr}."
           ),
           ProfileMenuListItemControllerState(
-            onTap: (context) => DialogHelper.showPromptUnderConstruction(context),
+            onTap: (context) => PageRestorationHelper.toAccountSecurityPage(context),
             icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorAccountSecurity, width: 20.0),
             title: 'Account Security'.tr,
             description: "${'Password, PIN, and personal data verification'.tr}."

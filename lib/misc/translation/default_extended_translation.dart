@@ -242,7 +242,11 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Order": "Pesanan",
       "Please Start Conversation": "Silahkan Memulai Percakapan",
       "Is Viral": "Lagi Viral",
-      "Bestseller": "Terlaris"
+      "Bestseller": "Terlaris",
+      "Change Password": "Ubah Kata Sandi",
+      "Fingerprint": "Sidik Jari",
+      "Personal Data Verification": "Verifikasi Data Diri",
+      "Login Via Notification": "Masuk Lewat Notifikasi"
     }
   };
 
