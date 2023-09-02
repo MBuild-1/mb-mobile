@@ -15,7 +15,7 @@ class MultiBannerListItemControllerState extends ListItemControllerState {
     required this.bannerList,
     required this.aspectRatioValue,
     this.onTapBanner,
-    this.isAutoSwipe = false,
+    this.isAutoSwipe = true,
     this.onPageChanged
   });
 }
