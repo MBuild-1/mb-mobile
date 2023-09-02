@@ -2,17 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
+import 'package:provider/provider.dart';
 
 import '../../controller/product_bundle_detail_controller.dart';
 import '../../domain/entity/product/productbundle/product_bundle_detail.dart';
 import '../../domain/entity/product/productbundle/product_bundle_detail_parameter.dart';
 import '../../domain/usecase/get_product_bundle_detail_use_case.dart';
 import '../../misc/additionalloadingindicatorchecker/product_bundle_detail_additional_paging_result_parameter_checker.dart';
+import '../../misc/constant.dart';
+import '../../misc/controllercontentdelegate/wishlist_and_cart_controller_content_delegate.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/padding_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/product_bundle_header_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/productlistitemcontrollerstate/vertical_product_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
 import '../../misc/error/message_error.dart';
+import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
@@ -22,6 +27,7 @@ import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
+import '../notifier/component_notifier.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/default_search_app_bar.dart';
 import 'getx_page.dart';
@@ -38,7 +44,11 @@ class ProductBundleDetailPage extends RestorableGetxPage<_ProductBundleDetailPag
   @override
   void onSetController() {
     _productBundleDetailController.controller = GetExtended.put<ProductBundleDetailController>(
-      ProductBundleDetailController(controllerManager, Injector.locator<GetProductBundleDetailUseCase>()), tag: pageName
+      ProductBundleDetailController(
+        controllerManager,
+        Injector.locator<GetProductBundleDetailUseCase>(),
+        Injector.locator<WishlistAndCartControllerContentDelegate>()
+      ), tag: pageName
     );
   }
 
@@ -201,7 +211,15 @@ class _StatefulProductBundleDetailControllerMediatorWidgetState extends State<_S
         totalPage: 1,
         totalItem: 1,
         itemList: [
-          ProductBundleHeaderListItemControllerState(productBundle: productBundleDetail),
+          PaddingContainerListItemControllerState(
+            padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+            paddingChildListItemControllerState: ProductBundleHeaderListItemControllerState(
+              productBundle: productBundleDetail,
+              onAddWishlist: (productBundleOutput) => widget.productBundleDetailController.wishlistAndCartControllerContentDelegate.addToWishlist(productBundleOutput),
+              onRemoveWishlist: (productBundleOutput) => widget.productBundleDetailController.wishlistAndCartControllerContentDelegate.removeFromWishlist(productBundleOutput),
+              onAddCart: (productBundleOutput) => widget.productBundleDetailController.wishlistAndCartControllerContentDelegate.addToCart(productBundleOutput),
+            ),
+          ),
           ...productBundleDetail.productEntryList.map<ListItemControllerState>((product) {
             return VerticalProductListItemControllerState(
               productAppearanceData: product,
@@ -216,6 +234,14 @@ class _StatefulProductBundleDetailControllerMediatorWidgetState extends State<_S
 
   @override
   Widget build(BuildContext context) {
+    widget.productBundleDetailController.wishlistAndCartControllerContentDelegate.setWishlistAndCartDelegate(
+      Injector.locator<WishlistAndCartDelegateFactory>().generateWishlistAndCartDelegate(
+        onGetBuildContext: () => context,
+        onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
+        onAddToWishlistRequestProcessSuccessCallback: () async => context.read<ComponentNotifier>().updateWishlist(),
+        onRemoveFromWishlistRequestProcessSuccessCallback: (wishlist) async => context.read<ComponentNotifier>().updateWishlist(),
+      )
+    );
     return Scaffold(
       appBar: DefaultSearchAppBar(),
       body: SafeArea(

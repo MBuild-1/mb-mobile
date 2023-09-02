@@ -83,12 +83,22 @@ abstract class ProductBundleItem extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text(
-                                  comingSoon ? "Coming Soon".tr : productBundle.price.toRupiah(),
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold
-                                  )
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      image: AssetImage(Constant.imageBadgeBlue),
+                                      fit: BoxFit.cover
+                                    ),
+                                  ),
+                                  child: Text(
+                                    comingSoon ? "Coming Soon".tr : productBundle.price.toRupiah(),
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white
+                                    )
+                                  ),
                                 ),
                                 const SizedBox(height: 10),
                                 Row(
@@ -116,24 +126,29 @@ abstract class ProductBundleItem extends StatelessWidget {
                                       isAddToWishlist: productBundle.hasAddedToWishlist,
                                     ),
                                     SizedBox(width: 1.5.w),
-                                    Expanded(
-                                      child: SizedOutlineGradientButton(
-                                        onPressed: !comingSoon ? (onAddCart != null ? () => onAddCart!(productBundle) : null) : null,
-                                        text: "+ ${"Cart".tr}",
-                                        outlineGradientButtonType: OutlineGradientButtonType.outline,
-                                        outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
-                                        childInterceptor: (textStyle) {
-                                          return Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: [
-                                              ModifiedSvgPicture.asset(
-                                                Constant.vectorCart,
-                                                color: Colors.grey.shade600,
-                                              )
-                                            ],
-                                          );
-                                        },
-                                      )
+                                    Builder(
+                                      builder: (context) {
+                                        void Function()? onPressed = !comingSoon ? (onAddCart != null ? () => onAddCart!(productBundle) : null) : null;
+                                        return Expanded(
+                                          child: SizedOutlineGradientButton(
+                                            onPressed: onPressed,
+                                            text: "+ ${"Cart".tr}",
+                                            outlineGradientButtonType: OutlineGradientButtonType.solid,
+                                            outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
+                                            childInterceptor: (textStyle) {
+                                              return Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  ModifiedSvgPicture.asset(
+                                                    Constant.vectorCart,
+                                                    color: onPressed != null ? Colors.white : Colors.grey.shade600,
+                                                  )
+                                                ],
+                                              );
+                                            },
+                                          )
+                                        );
+                                      }
                                     )
                                   ],
                                 )

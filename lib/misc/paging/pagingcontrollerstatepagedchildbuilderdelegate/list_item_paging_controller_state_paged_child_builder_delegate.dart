@@ -416,7 +416,13 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
         return Container();
       }
     } else if (item is ProductBundleHeaderListItemControllerState) {
-      return ProductBundleHeaderListItem(productBundle: item.productBundle);
+      return ProductBundleHeaderListItem(
+        productBundle: item.productBundle,
+        onAddWishlist: item.onAddWishlist,
+        onRemoveWishlist: item.onRemoveWishlist,
+        onAddCart: item.onAddCart,
+        onRemoveCart: item.onRemoveCart,
+      );
     } else if (item is ProductEntryHeaderListItemControllerState) {
       return ProductEntryHeader(
         title: item.title,
@@ -834,10 +840,6 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
     } else if (item is ProductCategoryHeaderListItemControllerState) {
       return ProductCategoryHeaderListItem(
         productCategory: item.productCategory,
-      );
-    } else if (item is ProductBundleHeaderListItemControllerState) {
-      return ProductBundleHeaderListItem(
-        productBundle: item.productBundle,
       );
     } else if (item is ProvinceMapHeaderListItemControllerState) {
       return ProvinceMapHeaderListItem(
