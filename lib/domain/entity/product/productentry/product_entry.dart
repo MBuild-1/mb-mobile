@@ -15,12 +15,17 @@ class ProductEntry implements ProductEntryAppearanceData, SupportCart, SupportWi
   String sustension;
   @override
   double weight;
+  @override
   int isViral;
+  @override
   int isKitchen;
+  @override
   int isHandycrafts;
+  @override
   int isFashionable;
   int purchasePrice;
   int sellingPrice;
+  @override
   int isBestSelling;
   Product product;
   List<String> imageUrlList;

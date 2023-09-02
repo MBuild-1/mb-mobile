@@ -9,9 +9,11 @@ import '../../../domain/entity/wishlist/wishlist.dart';
 import '../../../misc/constant.dart';
 import '../../../misc/page_restoration_helper.dart';
 import '../../page/product_detail_page.dart';
+import '../badge_indicator.dart';
 import '../button/add_or_remove_wishlist_button.dart';
 import '../button/custombutton/sized_outline_gradient_button.dart';
 import '../modified_divider.dart';
+import '../modified_svg_picture.dart';
 import '../modified_vertical_divider.dart';
 import '../modifiedcachednetworkimage/product_modified_cached_network_image.dart';
 import '../productbundle/product_bundle_item.dart';
@@ -139,10 +141,15 @@ abstract class ProductItem extends StatelessWidget {
                 children: [
                   AspectRatio(
                     aspectRatio: 1.0,
-                    child: ClipRRect(
-                      child: ProductModifiedCachedNetworkImage(
-                        imageUrl: productAppearanceData.imageUrl.toEmptyStringNonNull,
-                      )
+                    child: Stack(
+                      children: [
+                        ClipRRect(
+                          child: ProductModifiedCachedNetworkImage(
+                            imageUrl: productAppearanceData.imageUrl.toEmptyStringNonNull,
+                          )
+                        ),
+                        ..._productBadge()
+                      ],
                     )
                   ),
                   ModifiedDivider(
@@ -215,5 +222,30 @@ abstract class ProductItem extends StatelessWidget {
         ),
       )
     );
+  }
+
+  List<Widget> _productBadge() {
+    List<Widget> result = [];
+    void addBadgeResult(BadgeIndicatorType badgeIndicatorType) {
+      Widget addedResult = BadgeIndicator(
+        paddingLeft: result.isNotEmpty ? 10 : null,
+        badgeIndicatorType: badgeIndicatorType,
+      );
+      addedResult = Positioned(
+        left: result.isNotEmpty ? 70 : null,
+        child: addedResult,
+      );
+      result.insert(0, addedResult);
+    }
+    if (productAppearanceData is ProductEntryAppearanceData) {
+      ProductEntryAppearanceData productEntryAppearanceData = productAppearanceData as ProductEntryAppearanceData;
+      if (productEntryAppearanceData.isViral == 1) {
+        addBadgeResult(IsViralBadgeIndicatorType());
+      }
+      if (productEntryAppearanceData.isBestSelling == 1) {
+        addBadgeResult(BestsellerBadgeIndicatorType());
+      }
+    }
+    return result;
   }
 }

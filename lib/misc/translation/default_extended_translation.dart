@@ -240,7 +240,9 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Help": "Bantuan",
       "Product": "Produk",
       "Order": "Pesanan",
-      "Please Start Conversation": "Silahkan Memulai Percakapan"
+      "Please Start Conversation": "Silahkan Memulai Percakapan",
+      "Is Viral": "Lagi Viral",
+      "Bestseller": "Terlaris"
     }
   };
 
