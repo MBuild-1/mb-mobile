@@ -352,14 +352,12 @@ class _PageRestorationHelperImpl {
   }
 
   void toSearchPage(BuildContext context) {
-    LoginHelper.checkingLogin(context, () {
-      PageRestorationHelper.findPageRestorationMixin<SearchPageRestorationMixin>(
-        onGetxPageRestorationFound: (restoration) {
-          restoration.searchPageRestorableRouteFuture.present();
-        },
-        context: context
-      );
-    });
+    PageRestorationHelper.findPageRestorationMixin<SearchPageRestorationMixin>(
+      onGetxPageRestorationFound: (restoration) {
+        restoration.searchPageRestorableRouteFuture.present();
+      },
+      context: context
+    );
   }
 
   void toHelpPage(BuildContext context) {
