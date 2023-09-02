@@ -440,27 +440,23 @@ class _PageRestorationHelperImpl {
   }
 
   void toVideoPage(BuildContext context, VideoPageParameter videoPageParameter) {
-    LoginHelper.checkingLogin(context, () {
-      PageRestorationHelper.findPageRestorationMixin<VideoPageRestorationMixin>(
-        onGetxPageRestorationFound: (restoration) {
-          restoration.videoPageRestorableRouteFuture.present(
-            videoPageParameter.toEncodeBase64String()
-          );
-        },
-        context: context
-      );
-    });
+    PageRestorationHelper.findPageRestorationMixin<VideoPageRestorationMixin>(
+      onGetxPageRestorationFound: (restoration) {
+        restoration.videoPageRestorableRouteFuture.present(
+          videoPageParameter.toEncodeBase64String()
+        );
+      },
+      context: context
+    );
   }
 
   void toNewsDetailPage(BuildContext context, String newsId) {
-    LoginHelper.checkingLogin(context, () {
-      PageRestorationHelper.findPageRestorationMixin<NewsDetailPageRestorationMixin>(
-        onGetxPageRestorationFound: (restoration) {
-          restoration.newsDetailPageRestorableRouteFuture.present(newsId);
-        },
-        context: context
-      );
-    });
+    PageRestorationHelper.findPageRestorationMixin<NewsDetailPageRestorationMixin>(
+      onGetxPageRestorationFound: (restoration) {
+        restoration.newsDetailPageRestorableRouteFuture.present(newsId);
+      },
+      context: context
+    );
   }
 }
 
