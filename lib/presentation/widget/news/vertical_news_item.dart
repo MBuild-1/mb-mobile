@@ -8,7 +8,7 @@ class VerticalNewsItem extends NewsItem {
   double? get itemWidth => null;
 
   @override
-  double? get itemHeight => 220.0;
+  double? get itemHeight => null;
 
   const VerticalNewsItem({
     super.key,

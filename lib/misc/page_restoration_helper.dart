@@ -24,6 +24,7 @@ import '../presentation/page/mainmenu/main_menu_page.dart';
 import '../presentation/page/modify_address_page.dart';
 import '../presentation/page/msme_partner_page.dart';
 import '../presentation/page/newspage/news_detail_page.dart';
+import '../presentation/page/newspage/news_page.dart';
 import '../presentation/page/notification_page.dart';
 import '../presentation/page/order_chat_page.dart';
 import '../presentation/page/order_detail_page.dart';
@@ -443,6 +444,15 @@ class _PageRestorationHelperImpl {
         restoration.videoPageRestorableRouteFuture.present(
           videoPageParameter.toEncodeBase64String()
         );
+      },
+      context: context
+    );
+  }
+
+  void toNewsPage(BuildContext context) {
+    PageRestorationHelper.findPageRestorationMixin<NewsPageRestorationMixin>(
+      onGetxPageRestorationFound: (restoration) {
+        restoration.newsPageRestorableRouteFuture.present();
       },
       context: context
     );

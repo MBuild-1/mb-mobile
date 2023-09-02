@@ -19,6 +19,7 @@ import '../../itemtypelistsubinterceptor/expandable_description_item_type_list_s
 import '../../itemtypelistsubinterceptor/faq_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/favorite_product_brand_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/news_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/notification_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/order_detail_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/order_item_type_list_sub_interceptor.dart';
@@ -253,6 +254,11 @@ class ListItemControllerStateItemTypeInterceptorChecker extends ItemTypeListInte
       listItemControllerStateItemTypeInterceptorChecker: this
     ),
     VideoItemTypeListSubInterceptor(
+      padding: padding,
+      itemSpacing: itemSpacing,
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
+    NewsItemTypeListSubInterceptor(
       padding: padding,
       itemSpacing: itemSpacing,
       listItemControllerStateItemTypeInterceptorChecker: this

@@ -37,6 +37,7 @@ import '../login_page.dart';
 import '../getx_page.dart';
 import '../msme_partner_page.dart';
 import '../newspage/news_detail_page.dart';
+import '../newspage/news_page.dart';
 import '../notification_page.dart';
 import '../order_page.dart';
 import '../product_brand_page.dart';
@@ -152,7 +153,7 @@ class MainMenuPage extends RestorableGetxPage<_MainMenuPageRestoration> {
   }
 }
 
-class _MainMenuPageRestoration extends MixableGetxPageRestoration with MainMenuPageRestorationMixin, LoginPageRestorationMixin, ProductEntryPageRestorationMixin, ProductDetailPageRestorationMixin, ProductCategoryDetailPageRestorationMixin, ProductBundlePageRestorationMixin, ProductBundleDetailPageRestorationMixin, CartPageRestorationMixin, ProductBrandPageRestorationMixin, WebViewerPageRestorationMixin, OrderPageRestorationMixin, DeliveryReviewPageRestorationMixin, FavoriteProductBrandPageRestorationMixin, ProductDiscussionPageRestorationMixin, MainMenuPageRestorationMixin, AddressPageRestorationMixin, InboxPageRestorationMixin, AffiliatePageRestorationMixin, MsmePartnerPageRestorationMixin, CountryDeliveryReviewPageRestorationMixin, HelpPageRestorationMixin, SearchPageRestorationMixin, NotificationPageRestorationMixin, VideoPageRestorationMixin, NewsDetailPageRestorationMixin {
+class _MainMenuPageRestoration extends MixableGetxPageRestoration with MainMenuPageRestorationMixin, LoginPageRestorationMixin, ProductEntryPageRestorationMixin, ProductDetailPageRestorationMixin, ProductCategoryDetailPageRestorationMixin, ProductBundlePageRestorationMixin, ProductBundleDetailPageRestorationMixin, CartPageRestorationMixin, ProductBrandPageRestorationMixin, WebViewerPageRestorationMixin, OrderPageRestorationMixin, DeliveryReviewPageRestorationMixin, FavoriteProductBrandPageRestorationMixin, ProductDiscussionPageRestorationMixin, MainMenuPageRestorationMixin, AddressPageRestorationMixin, InboxPageRestorationMixin, AffiliatePageRestorationMixin, MsmePartnerPageRestorationMixin, CountryDeliveryReviewPageRestorationMixin, HelpPageRestorationMixin, SearchPageRestorationMixin, NotificationPageRestorationMixin, VideoPageRestorationMixin, NewsPageRestorationMixin, NewsDetailPageRestorationMixin {
   final RouteCompletionCallback<bool?>? _onCompleteAddressPage;
 
   _MainMenuPageRestoration({

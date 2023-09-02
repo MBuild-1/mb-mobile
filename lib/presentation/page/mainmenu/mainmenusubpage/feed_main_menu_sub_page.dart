@@ -195,7 +195,7 @@ class _StatefulFeedMainMenuSubControllerMediatorWidgetState extends State<_State
             titleInterceptor = (text, style) => titleArea(
               title: Text(text.toStringNonNull, style: style?.copyWith()),
               onInterceptTextStyle: (style) => style.copyWith(),
-              onTapMore: null
+              onTapMore: () => PageRestorationHelper.toNewsPage(context)
             );
           } else {
             titleInterceptor = (text, style) => Container();
