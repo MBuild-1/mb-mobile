@@ -1,5 +1,7 @@
 import '../../misc/load_data_result.dart';
 import '../../misc/processing/future_processing.dart';
+import '../entity/changepassword/change_password_parameter.dart';
+import '../entity/changepassword/change_password_response.dart';
 import '../entity/login/login_parameter.dart';
 import '../entity/login/login_response.dart';
 import '../entity/login/login_with_google_parameter.dart';
@@ -20,4 +22,5 @@ abstract class UserRepository {
   FutureProcessing<LoadDataResult<RegisterWithGoogleResponse>> registerWithGoogle(RegisterWithGoogleParameter registerWithGoogleParameter);
   FutureProcessing<LoadDataResult<LogoutResponse>> logout(LogoutParameter logoutParameter);
   FutureProcessing<LoadDataResult<GetUserResponse>> getUser(GetUserParameter getUserParameter);
+  FutureProcessing<LoadDataResult<ChangePasswordResponse>> changePassword(ChangePasswordParameter changePasswordParameter);
 }

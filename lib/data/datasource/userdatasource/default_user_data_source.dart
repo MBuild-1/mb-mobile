@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:masterbagasi/data/entitymappingext/user_entity_mapping_ext.dart';
+import 'package:masterbagasi/domain/entity/changepassword/change_password_parameter.dart';
+import 'package:masterbagasi/domain/entity/changepassword/change_password_response.dart';
 import 'package:masterbagasi/misc/ext/future_ext.dart';
 import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 
@@ -15,8 +17,10 @@ import '../../../domain/entity/register/register_with_google_parameter.dart';
 import '../../../domain/entity/register/register_with_google_response.dart';
 import '../../../domain/entity/user/getuser/get_user_parameter.dart';
 import '../../../domain/entity/user/getuser/get_user_response.dart';
+import '../../../misc/load_data_result.dart';
 import '../../../misc/option_builder.dart';
 import '../../../misc/processing/dio_http_client_processing.dart';
+import '../../../misc/processing/dummy_future_processing.dart';
 import '../../../misc/processing/future_processing.dart';
 import 'user_data_source.dart';
 
@@ -96,6 +100,13 @@ class DefaultUserDataSource implements UserDataSource {
     return DioHttpClientProcessing((cancelToken) {
       return dio.post("/auth/me", cancelToken: cancelToken)
         .map<GetUserResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToGetUserResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<ChangePasswordResponse> changePassword(ChangePasswordParameter changePasswordParameter) {
+    return DummyFutureProcessing((cancelToken) async {
+      return ChangePasswordResponse();
     });
   }
 }

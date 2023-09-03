@@ -1,18 +1,12 @@
-import '../validator/validator.dart';
+import '../validator/compoundvalidator/password_compound_validator.dart';
 import 'validator_group.dart';
 
 class ChangePasswordValidatorGroup extends ValidatorGroup {
-  Validator currentPasswordValidator;
-  Validator newPasswordValidator;
-  Validator confirmNewPasswordValidator;
+  PasswordCompoundValidator passwordCompoundValidator;
 
   ChangePasswordValidatorGroup({
-    required this.currentPasswordValidator,
-    required this.newPasswordValidator,
-    required this.confirmNewPasswordValidator
+    required this.passwordCompoundValidator,
   }) {
-    validatorList.add(currentPasswordValidator);
-    validatorList.add(newPasswordValidator);
-    validatorList.add(confirmNewPasswordValidator);
+    validatorList.add(passwordCompoundValidator);
   }
 }

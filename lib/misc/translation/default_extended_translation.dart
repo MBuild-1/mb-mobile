@@ -246,7 +246,10 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Change Password": "Ubah Kata Sandi",
       "Fingerprint": "Sidik Jari",
       "Personal Data Verification": "Verifikasi Data Diri",
-      "Login Via Notification": "Masuk Lewat Notifikasi"
+      "Login Via Notification": "Masuk Lewat Notifikasi",
+      "New Password": "Kata Sandi Baru",
+      "New Password Confirmation": "Konfirmasi Kata Sandi Baru",
+      "Success change password": "Sukses ubah kata sandi"
     }
   };
 

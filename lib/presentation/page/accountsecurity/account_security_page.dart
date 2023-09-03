@@ -19,6 +19,7 @@ import '../../../misc/paging/pagingresult/paging_result.dart';
 import '../../widget/modified_paged_list_view.dart';
 import '../../widget/modifiedappbar/modified_app_bar.dart';
 import '../getx_page.dart';
+import 'change_password_page.dart';
 
 class AccountSecurityPage extends RestorableGetxPage<_AccountSecurityPageRestoration> {
   late final ControllerMember<AccountSecurityController> _accountSecurityController = ControllerMember<AccountSecurityController>().addToControllerManager(controllerManager);
@@ -47,7 +48,7 @@ class AccountSecurityPage extends RestorableGetxPage<_AccountSecurityPageRestora
   _AccountSecurityPageRestoration createPageRestoration() => _AccountSecurityPageRestoration();
 }
 
-class _AccountSecurityPageRestoration extends MixableGetxPageRestoration {
+class _AccountSecurityPageRestoration extends MixableGetxPageRestoration with ChangePasswordPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
@@ -179,7 +180,7 @@ class _StatefulAccountSecurityControllerMediatorWidgetState extends State<_State
       value: PagingDataResult<ListItemControllerState>(
         itemList: [
           ProfileMenuListItemControllerState(
-            onTap: (context) {},
+            onTap: (context) => PageRestorationHelper.toChangePasswordPage(context),
             title: 'Change Password'.tr,
             descriptionInterceptor: descriptionInterceptor,
             icon: null

@@ -1,3 +1,5 @@
+import '../../../domain/entity/changepassword/change_password_parameter.dart';
+import '../../../domain/entity/changepassword/change_password_response.dart';
 import '../../../domain/entity/login/login_parameter.dart';
 import '../../../domain/entity/login/login_response.dart';
 import '../../../domain/entity/login/login_with_google_parameter.dart';
@@ -19,4 +21,5 @@ abstract class UserDataSource {
   FutureProcessing<RegisterWithGoogleResponse> registerWithGoogle(RegisterWithGoogleParameter registerWithGoogleParameter);
   FutureProcessing<LogoutResponse> logout(LogoutParameter logoutParameter);
   FutureProcessing<GetUserResponse> getUser(GetUserParameter getUserParameter);
+  FutureProcessing<ChangePasswordResponse> changePassword(ChangePasswordParameter changePasswordParameter);
 }
