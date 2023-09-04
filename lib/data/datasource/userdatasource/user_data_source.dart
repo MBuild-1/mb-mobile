@@ -6,6 +6,8 @@ import '../../../domain/entity/login/login_with_google_parameter.dart';
 import '../../../domain/entity/login/login_with_google_response.dart';
 import '../../../domain/entity/logout/logout_parameter.dart';
 import '../../../domain/entity/logout/logout_response.dart';
+import '../../../domain/entity/pin/modifypin/modifypinparameter/modify_pin_parameter.dart';
+import '../../../domain/entity/pin/modifypin/modify_pin_response.dart';
 import '../../../domain/entity/register/register_parameter.dart';
 import '../../../domain/entity/register/register_response.dart';
 import '../../../domain/entity/register/register_with_google_parameter.dart';
@@ -22,4 +24,5 @@ abstract class UserDataSource {
   FutureProcessing<LogoutResponse> logout(LogoutParameter logoutParameter);
   FutureProcessing<GetUserResponse> getUser(GetUserParameter getUserParameter);
   FutureProcessing<ChangePasswordResponse> changePassword(ChangePasswordParameter changePasswordParameter);
+  FutureProcessing<ModifyPinResponse> modifyPin(ModifyPinParameter modifyPinParameter);
 }

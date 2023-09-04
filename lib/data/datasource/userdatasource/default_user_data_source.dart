@@ -11,16 +11,20 @@ import '../../../domain/entity/login/login_with_google_parameter.dart';
 import '../../../domain/entity/login/login_with_google_response.dart';
 import '../../../domain/entity/logout/logout_parameter.dart';
 import '../../../domain/entity/logout/logout_response.dart';
+import '../../../domain/entity/pin/modifypin/modifypinparameter/change_modify_pin_parameter.dart';
+import '../../../domain/entity/pin/modifypin/modifypinparameter/create_modify_pin_parameter.dart';
+import '../../../domain/entity/pin/modifypin/modifypinparameter/modify_pin_parameter.dart';
+import '../../../domain/entity/pin/modifypin/modify_pin_response.dart';
+import '../../../domain/entity/pin/modifypin/modifypinparameter/remove_modify_pin_parameter.dart';
+import '../../../domain/entity/pin/modifypin/modifypinparameter/validate_modify_pin_parameter.dart';
 import '../../../domain/entity/register/register_parameter.dart';
 import '../../../domain/entity/register/register_response.dart';
 import '../../../domain/entity/register/register_with_google_parameter.dart';
 import '../../../domain/entity/register/register_with_google_response.dart';
 import '../../../domain/entity/user/getuser/get_user_parameter.dart';
 import '../../../domain/entity/user/getuser/get_user_response.dart';
-import '../../../misc/load_data_result.dart';
 import '../../../misc/option_builder.dart';
 import '../../../misc/processing/dio_http_client_processing.dart';
-import '../../../misc/processing/dummy_future_processing.dart';
 import '../../../misc/processing/future_processing.dart';
 import 'user_data_source.dart';
 
@@ -114,6 +118,41 @@ class DefaultUserDataSource implements UserDataSource {
     return DioHttpClientProcessing((cancelToken) {
       return dio.post("/auth/change-password", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
         .map<ChangePasswordResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToChangePasswordResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<ModifyPinResponse> modifyPin(ModifyPinParameter modifyPinParameter) {
+    String modifyPinEndpoint = "";
+    Map<String, dynamic> formDataMap = {};
+    if (modifyPinParameter is CreateModifyPinParameter) {
+      modifyPinEndpoint = "/create-pin";
+      formDataMap = <String, dynamic> {
+        "pin": modifyPinParameter.pin,
+        "confirm_pin": modifyPinParameter.confirmPin
+      };
+    } else if (modifyPinParameter is ChangeModifyPinParameter) {
+      modifyPinEndpoint = "/change-pin";
+      formDataMap = <String, dynamic> {
+        "current_pin": modifyPinParameter.currentPin,
+        "new_pin": modifyPinParameter.newPin,
+        "confirm_new_pin": modifyPinParameter.confirmNewPin
+      };
+    } else if (modifyPinParameter is RemoveModifyPinParameter) {
+      modifyPinEndpoint = "/remove-pin";
+      formDataMap = <String, dynamic> {
+        "pin": modifyPinParameter.pin,
+      };
+    } else if (modifyPinParameter is ValidateModifyPinParameter) {
+      modifyPinEndpoint = "/validate-pin";
+      formDataMap = <String, dynamic> {
+        "pin": modifyPinParameter.pin,
+      };
+    }
+    FormData formData = FormData.fromMap(formDataMap);
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.post("/auth$modifyPinEndpoint", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+        .map<ModifyPinResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToModifyPinResponse());
     });
   }
 }

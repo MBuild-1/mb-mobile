@@ -1,8 +1,10 @@
 import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 
+import '../../domain/entity/changepassword/change_password_response.dart';
 import '../../domain/entity/login/login_response.dart';
 import '../../domain/entity/login/login_with_google_response.dart';
 import '../../domain/entity/logout/logout_response.dart';
+import '../../domain/entity/pin/modifypin/modify_pin_response.dart';
 import '../../domain/entity/register/register_response.dart';
 import '../../domain/entity/register/register_with_google_response.dart';
 import '../../domain/entity/user/getuser/get_user_response.dart';
@@ -50,6 +52,14 @@ extension UserEntityMappingExt on ResponseWrapper {
     return GetUserResponse(
       user: ResponseWrapper(response).mapFromResponseToUser()
     );
+  }
+
+  ChangePasswordResponse mapFromResponseToChangePasswordResponse() {
+    return ChangePasswordResponse();
+  }
+
+  ModifyPinResponse mapFromResponseToModifyPinResponse() {
+    return ModifyPinResponse();
   }
 }
 

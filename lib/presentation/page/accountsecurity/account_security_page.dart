@@ -20,6 +20,7 @@ import '../../widget/modified_paged_list_view.dart';
 import '../../widget/modifiedappbar/modified_app_bar.dart';
 import '../getx_page.dart';
 import 'change_password_page.dart';
+import 'modify_pin_page.dart';
 
 class AccountSecurityPage extends RestorableGetxPage<_AccountSecurityPageRestoration> {
   late final ControllerMember<AccountSecurityController> _accountSecurityController = ControllerMember<AccountSecurityController>().addToControllerManager(controllerManager);
@@ -48,7 +49,7 @@ class AccountSecurityPage extends RestorableGetxPage<_AccountSecurityPageRestora
   _AccountSecurityPageRestoration createPageRestoration() => _AccountSecurityPageRestoration();
 }
 
-class _AccountSecurityPageRestoration extends MixableGetxPageRestoration with ChangePasswordPageRestorationMixin {
+class _AccountSecurityPageRestoration extends MixableGetxPageRestoration with ChangePasswordPageRestorationMixin, ModifyPinPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
@@ -187,7 +188,7 @@ class _StatefulAccountSecurityControllerMediatorWidgetState extends State<_State
           ),
           DividerListItemControllerState(),
           ProfileMenuListItemControllerState(
-            onTap: (context) {},
+            onTap: (context) => PageRestorationHelper.toModifyPinPage(context, ModifyPinPageParameter(modifyPinType: ModifyPinType.createPin)),
             title: 'PIN Master Bagasi'.tr,
             descriptionInterceptor: descriptionInterceptor,
             icon: null

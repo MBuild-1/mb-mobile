@@ -6,6 +6,8 @@ import '../../domain/entity/login/login_with_google_parameter.dart';
 import '../../domain/entity/login/login_with_google_response.dart';
 import '../../domain/entity/logout/logout_parameter.dart';
 import '../../domain/entity/logout/logout_response.dart';
+import '../../domain/entity/pin/modifypin/modifypinparameter/modify_pin_parameter.dart';
+import '../../domain/entity/pin/modifypin/modify_pin_response.dart';
 import '../../domain/entity/register/register_parameter.dart';
 import '../../domain/entity/register/register_response.dart';
 import '../../domain/entity/register/register_with_google_parameter.dart';
@@ -57,5 +59,10 @@ class DefaultUserRepository implements UserRepository {
   @override
   FutureProcessing<LoadDataResult<ChangePasswordResponse>> changePassword(ChangePasswordParameter changePasswordParameter) {
     return userDataSource.changePassword(changePasswordParameter).mapToLoadDataResult<ChangePasswordResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<ModifyPinResponse>> modifyPin(ModifyPinParameter modifyPinParameter) {
+    return userDataSource.modifyPin(modifyPinParameter).mapToLoadDataResult<ModifyPinResponse>();
   }
 }

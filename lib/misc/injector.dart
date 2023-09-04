@@ -181,6 +181,7 @@ import '../domain/usecase/give_review_delivery_review_detail_use_case.dart';
 import '../domain/usecase/login_use_case.dart';
 import '../domain/usecase/login_with_google_use_case.dart';
 import '../domain/usecase/logout_use_case.dart';
+import '../domain/usecase/modify_pin_use_case.dart';
 import '../domain/usecase/purchase_direct_use_case.dart';
 import '../domain/usecase/register_use_case.dart';
 import '../domain/usecase/register_with_google_use_case.dart';
@@ -481,6 +482,7 @@ class _Injector {
     locator.registerLazySingleton<RegisterWithGoogleUseCase>(() => RegisterWithGoogleUseCase(userRepository: locator()));
     locator.registerLazySingleton<LogoutUseCase>(() => LogoutUseCase(userRepository: locator()));
     locator.registerLazySingleton<ChangePasswordUseCase>(() => ChangePasswordUseCase(userRepository: locator()));
+    locator.registerLazySingleton<ModifyPinUseCase>(() => ModifyPinUseCase(userRepository: locator()));
     locator.registerLazySingleton<GetUserUseCase>(() => GetUserUseCase(userRepository: locator()));
     locator.registerLazySingleton<GetProductBrandListUseCase>(() => GetProductBrandListUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductBrandPagingUseCase>(() => GetProductBrandPagingUseCase(productRepository: locator()));

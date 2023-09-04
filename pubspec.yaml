@@ -72,7 +72,7 @@ dependencies:
   provider: ^6.0.5
   qr_flutter: ^4.0.0
   syncfusion_flutter_pdfviewer: ^20.4.49
-  flutter_otp_text_field: ^1.1.1
+  pin_code_fields: ^8.0.1
   image_size_getter: ^2.1.2
   image: ^4.0.15
   touchable: ^1.0.2

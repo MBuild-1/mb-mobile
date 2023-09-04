@@ -101,6 +101,7 @@ class _ConstantImpl {
   String get vectorStep3ReadyToSend => _getVectorsAssets("step_3_ready_to_send.svg");
   String get vectorStep4IsSending => _getVectorsAssets("step_4_is_sending.svg");
   String get vectorStep5IsArrived => _getVectorsAssets("step_5_is_arrived.svg");
+  String get vectorPinLock => _getVectorsAssets("pin_lock.svg");
 
   Color get colorYellow => const Color.fromRGBO(244, 184, 43, 1);
   Color get colorLightRed => const Color.fromRGBO(255, 236, 230, 1);

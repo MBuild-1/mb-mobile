@@ -26,6 +26,7 @@ import '../../widget/custom_bottom_navigation_bar.dart';
 import '../../widget/modified_svg_picture.dart';
 import '../../widget/rx_consumer.dart';
 import '../accountsecurity/account_security_page.dart';
+import '../accountsecurity/modify_pin_page.dart';
 import '../address_page.dart';
 import '../affiliate_page.dart';
 import '../cart_page.dart';
