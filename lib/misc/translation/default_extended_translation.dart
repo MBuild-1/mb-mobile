@@ -252,7 +252,8 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Login Via Notification": "Masuk Lewat Notifikasi",
       "New Password": "Kata Sandi Baru",
       "New Password Confirmation": "Konfirmasi Kata Sandi Baru",
-      "Success change password": "Sukses ubah kata sandi"
+      "Success change password": "Sukses ubah kata sandi",
+      "Free": "Gratis"
     }
   };
 
