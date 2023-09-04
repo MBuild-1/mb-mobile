@@ -24,10 +24,8 @@ class NotificationIconIndicator extends StatelessWidget {
         height: 25,
         child: Stack(
           children: [
-            Positioned(
-              bottom: 0,
-              left: 0,
-              child: icon,
+            Center(
+              child: icon
             ),
             Positioned(
               top: 0,

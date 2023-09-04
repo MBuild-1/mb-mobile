@@ -12,11 +12,14 @@ class NotificationNumberIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (notificationNumber <= 0) {
+      return Container();
+    }
     int maxNumber = 99;
     bool moreThanMaxNumber = notificationNumber > maxNumber;
     return Container(
-      width: moreThanMaxNumber ? 20 : 16,
-      height: 16,
+      width: moreThanMaxNumber ? 18 : 14,
+      height: 14,
       decoration: BoxDecoration(
         color: Constant.colorMain,
         borderRadius: BorderRadius.circular(3)
@@ -25,7 +28,7 @@ class NotificationNumberIndicator extends StatelessWidget {
         child: Text(
           moreThanMaxNumber ? "$maxNumber+" : notificationNumber.toString(),
           style: const TextStyle(
-            fontSize: 8,
+            fontSize: 7,
             color: Colors.white
           )
         ),
