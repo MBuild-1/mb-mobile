@@ -105,8 +105,14 @@ class DefaultUserDataSource implements UserDataSource {
 
   @override
   FutureProcessing<ChangePasswordResponse> changePassword(ChangePasswordParameter changePasswordParameter) {
+    FormData formData = FormData.fromMap(
+      <String, dynamic> {
+        "new_password": changePasswordParameter.newPassword,
+        "confirm_new_password": changePasswordParameter.confirmNewPassword,
+      }
+    );
     return DioHttpClientProcessing((cancelToken) {
-      return dio.post("/auth/change-password", cancelToken: cancelToken)
+      return dio.post("/auth/change-password", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
         .map<ChangePasswordResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToChangePasswordResponse());
     });
   }
