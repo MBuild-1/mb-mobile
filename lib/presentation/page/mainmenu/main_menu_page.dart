@@ -411,6 +411,7 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
     MainRouteObserver.onRefreshAddress = null;
     MainRouteObserver.onRefreshCartInMainMenu = null;
     MainRouteObserver.onRefreshWishlistInMainMenu = null;
+    MainRouteObserver.onChangeSelectedProvince = null;
     super.dispose();
   }
 }

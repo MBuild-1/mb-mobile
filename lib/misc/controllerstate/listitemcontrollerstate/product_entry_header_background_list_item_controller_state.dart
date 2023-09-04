@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../domain/entity/product/productbrand/favorite_product_brand.dart';
 import '../../../domain/entity/product/productbrand/product_brand.dart';
 import '../../../domain/entity/product/productentry/product_entry_header_content_response.dart';
+import '../../../domain/entity/province/province_map.dart';
 import '../../../presentation/widget/product_entry_header.dart';
 import '../../errorprovider/error_provider.dart';
 import '../../load_data_result.dart';
@@ -26,11 +27,13 @@ class ProductEntryHeaderLoadDataResultListItemControllerState extends ListItemCo
   ErrorProvider errorProvider;
   void Function(ProductBrand) onAddToFavoriteProductBrand;
   void Function(ProductBrand) onRemoveFromFavoriteProductBrand;
+  void Function(ProvinceMap)? onSelectProvince;
 
   ProductEntryHeaderLoadDataResultListItemControllerState({
     required this.productEntryHeaderContentResponseLoadDataResult,
     required this.errorProvider,
     required this.onAddToFavoriteProductBrand,
-    required this.onRemoveFromFavoriteProductBrand
+    required this.onRemoveFromFavoriteProductBrand,
+    this.onSelectProvince
   });
 }

@@ -3,8 +3,10 @@ import 'list_item_controller_state.dart';
 
 class ProvinceMapHeaderListItemControllerState extends ListItemControllerState {
   ProvinceMap provinceMap;
+  void Function(ProvinceMap)? onSelectProvince;
 
   ProvinceMapHeaderListItemControllerState({
-    required this.provinceMap
+    required this.provinceMap,
+    this.onSelectProvince
   });
 }

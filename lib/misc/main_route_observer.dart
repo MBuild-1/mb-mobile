@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../domain/entity/province/province_map.dart';
 import '../presentation/widget/something_counter.dart';
 import 'refresh_delivery_review.dart';
 
@@ -17,6 +18,7 @@ class _MainRouteObserver extends RouteObserver {
   void Function()? onRefreshWishlistInMainMenu;
   void Function()? onRefreshAddress;
   void Function()? onRefreshCartInMainMenu;
+  void Function(ProvinceMap)? onChangeSelectedProvince;
   RefreshDeliveryReview? onRefreshDeliveryReview;
 
   void applyNewRouteMapFromRouteKeyMap(Map<String, int> newRouteMap) {

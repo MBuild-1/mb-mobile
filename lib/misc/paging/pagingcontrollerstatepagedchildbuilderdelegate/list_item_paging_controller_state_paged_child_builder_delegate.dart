@@ -82,6 +82,7 @@ import '../../../presentation/widget/productcategory/vertical_product_category_i
 import '../../../presentation/widget/productdiscussion/productdiscussiondialog/vertical_product_discussion_dialog_item.dart';
 import '../../../presentation/widget/productdiscussion/vertical_product_discussion_item.dart';
 import '../../../presentation/widget/prompt_indicator.dart';
+import '../../../presentation/widget/province/vertical_province_item.dart';
 import '../../../presentation/widget/province_map_header_list_item.dart';
 import '../../../presentation/widget/shimmer_carousel_item.dart';
 import '../../../presentation/widget/address/shipping_address_indicator.dart';
@@ -193,6 +194,8 @@ import '../../controllerstate/listitemcontrollerstate/province_map_header_list_i
 import '../../controllerstate/listitemcontrollerstate/row_container_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/selectcountrieslistitemcontrollerstate/country_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/selectcountrieslistitemcontrollerstate/vertical_country_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/selectprovinceslistitemcontrollerstate/province_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/selectprovinceslistitemcontrollerstate/vertical_province_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/shipping_address_indicator_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/stack_container_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/videocarousellistitemcontrollerstate/default_video_carousel_list_item_controller_state.dart';
@@ -844,6 +847,7 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
     } else if (item is ProvinceMapHeaderListItemControllerState) {
       return ProvinceMapHeaderListItem(
         provinceMap: item.provinceMap,
+        onSelectProvince: item.onSelectProvince,
       );
     } else if (item is ProductBundleHighlightListItemControllerState) {
       return ProductBundleHighlightListItem(
@@ -976,6 +980,16 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
           country: item.country,
           isSelected: item.isSelected,
           onSelectCountry: item.onSelectCountry
+        );
+      } else {
+        return Container();
+      }
+    } else if (item is ProvinceListItemControllerState) {
+      if (item is VerticalProvinceListItemControllerState) {
+        return VerticalProvinceItem(
+          province: item.province,
+          isSelected: item.isSelected,
+          onSelectProvince: item.onSelectProvince
         );
       } else {
         return Container();

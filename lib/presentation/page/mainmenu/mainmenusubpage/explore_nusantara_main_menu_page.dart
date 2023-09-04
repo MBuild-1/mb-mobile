@@ -66,6 +66,9 @@ class _StatefulExploreNusantaraMainMenuSubControllerMediatorWidgetState extends 
     super.initState();
     _exploreNusantaraAppBarBackgroundAssetImage = AssetImage(Constant.imagePatternExploreNusantaraMainMenuAppBar);
     MainRouteObserver.controllerMediatorMap[Constant.subPageKeyExploreNusantaraMainMenu] = refreshExploreNusantaraMainMenu;
+    MainRouteObserver.onChangeSelectedProvince = (provinceMap) {
+      widget.exploreNusantaraMainMenuSubController.selectProvinceMap(provinceMap);
+    };
   }
 
   @override

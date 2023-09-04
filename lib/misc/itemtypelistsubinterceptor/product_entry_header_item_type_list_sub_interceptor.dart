@@ -56,7 +56,8 @@ class ProductEntryHeaderItemTypeListSubInterceptor extends ItemTypeListSubInterc
         } else if (productEntryHeaderContentResponseValue is ProvinceMapProductEntryHeaderContentResponseValue) {
           newItemTypeList.add(
             ProvinceMapHeaderListItemControllerState(
-              provinceMap: productEntryHeaderContentResponseValue.provinceMap
+              provinceMap: productEntryHeaderContentResponseValue.provinceMap,
+              onSelectProvince: oldItemType.onSelectProvince
             )
           );
           return true;

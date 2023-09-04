@@ -36,6 +36,7 @@ import '../../misc/injector.dart';
 import '../../misc/itemtypelistsubinterceptor/verticalgriditemtypelistsubinterceptor/vertical_grid_item_type_list_sub_interceptor.dart';
 import '../../misc/list_item_controller_state_helper.dart';
 import '../../misc/load_data_result.dart';
+import '../../misc/main_route_observer.dart';
 import '../../misc/manager/controller_manager.dart';
 import '../../misc/on_observe_load_product_delegate.dart';
 import '../../misc/paging/modified_paging_controller.dart';
@@ -326,6 +327,14 @@ class _StatefulProductEntryControllerMediatorWidgetState extends State<_Stateful
             onRemoveFromFavoriteProductBrand: (favoriteProductBrand) {
               widget.productEntryController.productBrandFavoriteControllerContentDelegate.removeFromFavoriteProductBrandBasedProductBrand(favoriteProductBrand);
             },
+            onSelectProvince: (provinceMap) {
+              widget.productEntryPageParameter.productEntryParameterMap["province"] = provinceMap.slug;
+              widget.productEntryPageParameter.productEntryParameterMap["province_id"] = provinceMap.id;
+              if (MainRouteObserver.onChangeSelectedProvince != null) {
+                MainRouteObserver.onChangeSelectedProvince!(provinceMap);
+              }
+              _productEntryListItemPagingController.refresh();
+            }
           );
         },
       )
