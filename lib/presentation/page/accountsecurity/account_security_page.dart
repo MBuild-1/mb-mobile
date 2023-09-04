@@ -194,13 +194,13 @@ class _StatefulAccountSecurityControllerMediatorWidgetState extends State<_State
             descriptionInterceptor: descriptionInterceptor,
             icon: null
           ),
-          DividerListItemControllerState(),
-          ProfileMenuListItemControllerState(
-            onTap: (context) {},
-            title: 'Fingerprint'.tr,
-            descriptionInterceptor: descriptionInterceptor,
-            icon: null
-          ),
+          // DividerListItemControllerState(),
+          // ProfileMenuListItemControllerState(
+          //   onTap: (context) {},
+          //   title: 'Fingerprint'.tr,
+          //   descriptionInterceptor: descriptionInterceptor,
+          //   icon: null
+          // ),
           DividerListItemControllerState(),
           ProfileMenuListItemControllerState(
             onTap: (context) => PageRestorationHelper.toPersonalVerificationPage(context),
@@ -208,13 +208,13 @@ class _StatefulAccountSecurityControllerMediatorWidgetState extends State<_State
             descriptionInterceptor: descriptionInterceptor,
             icon: null
           ),
-          DividerListItemControllerState(),
-          ProfileMenuListItemControllerState(
-            onTap: (context) {},
-            title: 'Login Via Notification'.tr,
-            descriptionInterceptor: descriptionInterceptor,
-            icon: null
-          ),
+          // DividerListItemControllerState(),
+          // ProfileMenuListItemControllerState(
+          //   onTap: (context) {},
+          //   title: 'Login Via Notification'.tr,
+          //   descriptionInterceptor: descriptionInterceptor,
+          //   icon: null
+          // ),
         ],
         page: 1,
         totalPage: 1,
