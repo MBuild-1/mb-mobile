@@ -89,7 +89,7 @@ abstract class OrderItem extends StatelessWidget {
                           Text("Shopping Total".tr),
                           const SizedBox(height: 3),
                           Text(
-                            order.orderProduct.orderDetail.totalPrice.toRupiah(),
+                            order.orderProduct.orderDetail.totalPrice.toRupiah(withFreeTextIfZero: false),
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 17

@@ -395,7 +395,7 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
                               children: [
                                 Text("Shopping Total".tr),
                                 const SizedBox(height: 4),
-                                Text(_selectedCartShoppingTotal.toRupiah(), style: const TextStyle(
+                                Text(_selectedCartShoppingTotal.toRupiah(withFreeTextIfZero: false), style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold
                                 )),

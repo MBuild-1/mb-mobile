@@ -74,9 +74,9 @@ class SummaryWidget extends StatelessWidget {
       String cartSummaryValueType = cartSummaryValue.type;
       if (cartSummaryValueType == "currency") {
         if (cartSummaryValue.value is num) {
-          cartSummaryValueDescription = (cartSummaryValue.value as num).toRupiah();
+          cartSummaryValueDescription = (cartSummaryValue.value as num).toRupiah(withFreeTextIfZero: false);
         } else {
-          cartSummaryValueDescription = double.parse(cartSummaryValue.value as String).toRupiah();
+          cartSummaryValueDescription = double.parse(cartSummaryValue.value as String).toRupiah(withFreeTextIfZero: false);
         }
       } else {
         cartSummaryValueDescription = cartSummaryValue.value;

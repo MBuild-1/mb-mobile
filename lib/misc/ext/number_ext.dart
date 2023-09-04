@@ -27,13 +27,14 @@ extension NumExt on num? {
     }
   }
 
-  String toRupiah() {
+  String toRupiah({bool withFreeTextIfZero = true}) {
     IsZeroResult zeroResult = isZeroResult;
     if (zeroResult.isZero) {
-      return "Free".tr;
-    } else {
-      return NumberFormat.currency(locale: "id", symbol: "Rp", decimalDigits: 0).format(zeroResult.effectiveNum);
+      if (withFreeTextIfZero) {
+        return "Free".tr;
+      }
     }
+    return NumberFormat.currency(locale: "id", symbol: "Rp", decimalDigits: 0).format(zeroResult.effectiveNum);
   }
 
   bool hasDecimal() {
