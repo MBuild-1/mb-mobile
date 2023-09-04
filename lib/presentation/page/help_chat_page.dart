@@ -74,7 +74,7 @@ class HelpChatPage extends RestorableGetxPage<_HelpChatPageRestoration> {
   @override
   Widget buildPage(BuildContext context) {
     return Scaffold(
-      body: _StatefulHelpChatControllerMediatorWidget(
+      body: StatefulHelpChatControllerMediatorWidget(
         helpChatController: _helpChatController.controller,
       ),
     );
@@ -170,24 +170,30 @@ class HelpChatPageRestorableRouteFuture extends GetRestorableRouteFuture {
   }
 }
 
-class _StatefulHelpChatControllerMediatorWidget extends StatefulWidget {
+class StatefulHelpChatControllerMediatorWidget extends StatefulWidget {
   final HelpChatController helpChatController;
+  final bool withAppBar;
+  final void Function(FocusNode)? onGetTextFocusNode;
 
-  const _StatefulHelpChatControllerMediatorWidget({
-    required this.helpChatController
+  const StatefulHelpChatControllerMediatorWidget({
+    super.key,
+    required this.helpChatController,
+    this.withAppBar = true,
+    this.onGetTextFocusNode
   });
 
   @override
-  State<_StatefulHelpChatControllerMediatorWidget> createState() => _StatefulHelpChatControllerMediatorWidgetState();
+  State<StatefulHelpChatControllerMediatorWidget> createState() => _StatefulHelpChatControllerMediatorWidgetState();
 }
 
-class _StatefulHelpChatControllerMediatorWidgetState extends State<_StatefulHelpChatControllerMediatorWidget> {
+class _StatefulHelpChatControllerMediatorWidgetState extends State<StatefulHelpChatControllerMediatorWidget> {
   late final ScrollController _helpChatScrollController;
   late final ModifiedPagingController<int, ListItemControllerState> _helpChatListItemPagingController;
   late final PagingControllerState<int, ListItemControllerState> _helpChatListItemPagingControllerState;
   final PusherChannelsFlutter _pusher = PusherChannelsFlutter.getInstance();
 
   final TextEditingController _helpTextEditingController = TextEditingController();
+  final FocusNode _helpTextFocusNode = FocusNode();
   bool _isFirstEmpty = false;
   bool _showLoadingIndicatorInTextField = false;
   String _helpConversationId = "";
@@ -219,6 +225,9 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<_StatefulHelp
       onPageKeyNext: (pageKey) => pageKey + 1
     );
     _helpChatListItemPagingControllerState.isPagingControllerExist = true;
+    if (widget.onGetTextFocusNode != null) {
+      widget.onGetTextFocusNode!(_helpTextFocusNode);
+    }
   }
 
   Future<UserMessageResponseWrapper<GetHelpMessageByUserResponse>> getHelpMessageByUser() async {
@@ -308,13 +317,13 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<_StatefulHelp
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: ModifiedAppBar(
+      appBar: widget.withAppBar ? ModifiedAppBar(
         titleInterceptor: (context, title) => Row(
           children: [
             Text("Mista".tr),
           ],
         ),
-      ),
+      ) : null,
       body: SafeArea(
         child: Column(
           children: [
@@ -339,6 +348,7 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<_StatefulHelp
                   children: [
                     Expanded(
                       child: TextField(
+                        focusNode: _helpTextFocusNode,
                         controller: _helpTextEditingController,
                         decoration: InputDecoration.collapsed(
                           hintText: "Type Chat".tr,
@@ -435,6 +445,7 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<_StatefulHelp
 
   @override
   void dispose() {
+    _helpTextFocusNode.dispose();
     _helpTextEditingController.dispose();
     _pusher.disconnect();
     super.dispose();

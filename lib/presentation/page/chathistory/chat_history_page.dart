@@ -5,6 +5,7 @@ import '../../../controller/chathistorycontroller/chat_history_controller.dart';
 import '../../../controller/chathistorycontroller/chathistorysubpagecontroller/help_chat_history_sub_controller.dart';
 import '../../../controller/chathistorycontroller/chathistorysubpagecontroller/order_chat_history_sub_controller.dart';
 import '../../../controller/chathistorycontroller/chathistorysubpagecontroller/product_chat_history_sub_controller.dart';
+import '../../../controller/help_chat_controller.dart';
 import '../../../misc/getextended/get_extended.dart';
 import '../../../misc/getextended/get_restorable_route_future.dart';
 import '../../../misc/manager/controller_manager.dart';
@@ -26,7 +27,7 @@ class ChatHistoryPage extends RestorableGetxPage<_ChatHistoryPageRestoration> {
     _chatHistorySubControllerList = [
       [
         null,
-        () => ControllerMember<HelpChatHistorySubController>().addToControllerManager(controllerManager),
+        () => ControllerMember<HelpChatController>().addToControllerManager(controllerManager),
         null
       ],
       [
@@ -190,12 +191,14 @@ class _StatefulChatHistoryControllerMediatorWidget extends StatefulWidget {
 class _StatefulChatHistoryControllerMediatorWidgetState extends State<_StatefulChatHistoryControllerMediatorWidget> with SingleTickerProviderStateMixin {
   late final TabController _tabController;
   int _tabControllerIndex = 0;
+  FocusNode? _textFocusNode;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(() {
+      _textFocusNode?.unfocus();
       setState(() => _tabControllerIndex = _tabController.index);
     });
   }
@@ -233,7 +236,8 @@ class _StatefulChatHistoryControllerMediatorWidgetState extends State<_StatefulC
                 children: [
                   HelpChatHistorySubPage(
                     ancestorPageName: widget.pageName,
-                    onAddControllerMember: () => widget.chatHistorySubControllerList[0][2]() as ControllerMember<HelpChatHistorySubController>,
+                    onAddControllerMember: () => widget.chatHistorySubControllerList[0][2]() as ControllerMember<HelpChatController>,
+                    onGetTextFocusNode: (focusNode) => _textFocusNode = focusNode,
                   ),
                   ProductChatHistorySubPage(
                     ancestorPageName: widget.pageName,
@@ -254,6 +258,7 @@ class _StatefulChatHistoryControllerMediatorWidgetState extends State<_StatefulC
 
   @override
   void dispose() {
+    _tabController.dispose();
     super.dispose();
   }
 }
