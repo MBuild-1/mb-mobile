@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:masterbagasi/misc/ext/number_ext.dart';
 
 import '../../../../domain/entity/cart/cart.dart';
+import '../../../../domain/entity/cart/support_cart.dart';
+import '../../../../domain/entity/product/productbundle/product_bundle.dart';
+import '../../../../domain/entity/product/productentry/product_entry.dart';
+import '../../../../misc/page_restoration_helper.dart';
+import '../../../page/product_detail_page.dart';
 import '../../modifiedcachednetworkimage/product_modified_cached_network_image.dart';
 
 typedef OnSelectCart = void Function(Cart);
@@ -40,7 +45,23 @@ abstract class ShortCartItem extends StatelessWidget {
           borderRadius: borderRadius,
           elevation: 3,
           child: InkWell(
-            onTap: onSelectCart != null ? () => onSelectCart!(cart) : null,
+            onTap: onSelectCart != null ? () => onSelectCart!(cart) : () {
+              SupportCart supportCart = cart.supportCart;
+              if (supportCart is ProductEntry) {
+                PageRestorationHelper.toProductDetailPage(
+                  context,
+                  ProductDetailPageParameter(
+                    productId: supportCart.productId,
+                    productEntryId: supportCart.productEntryId
+                  )
+                );
+              } else if (supportCart is ProductBundle) {
+                PageRestorationHelper.toProductBundleDetailPage(
+                  context,
+                  supportCart.id
+                );
+              }
+            },
             borderRadius: borderRadius,
             child: Container(
               clipBehavior: Clip.antiAlias,

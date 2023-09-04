@@ -3,11 +3,13 @@ import 'package:get/get.dart';
 import 'package:masterbagasi/misc/controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../../controller/mainmenucontroller/mainmenusubpagecontroller/menu_main_menu_sub_controller.dart';
 import '../../../../domain/entity/user/user.dart';
 import '../../../../misc/additionalloadingindicatorchecker/menu_main_menu_sub_additional_paging_result_parameter_checker.dart';
+import '../../../../misc/carouselbackground/carousel_background.dart';
 import '../../../../misc/constant.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/load_data_result_dynamic_list_item_controller_state.dart';
@@ -32,6 +34,7 @@ import '../../../../misc/paging/modified_paging_controller.dart';
 import '../../../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../../../misc/paging/pagingresult/paging_result.dart';
+import '../../../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/carousel_background_parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../../../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/cart_refresh_delegate_parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../../../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/horizontal_dynamic_item_carousel_parametered_component_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../../../../misc/string_util.dart';
@@ -41,9 +44,11 @@ import '../../../widget/menu_profile_header.dart';
 import '../../../widget/modified_paged_list_view.dart';
 import '../../../widget/modified_svg_picture.dart';
 import '../../../widget/modifiedappbar/default_search_app_bar.dart';
-import '../../../widget/modifiedappbar/modified_app_bar.dart';
+import '../../../widget/modifiedappbar/modified_app_bar.dart' hide TitleInterceptor;
 import '../../../widget/modifiedappbar/opacity_modified_app_bar.dart';
 import '../../../widget/rx_consumer.dart';
+import '../../../widget/tap_area.dart';
+import '../../../widget/titleanddescriptionitem/title_and_description_item.dart';
 import '../../getx_page.dart';
 
 class MenuMainMenuSubPage extends DefaultGetxPage {
@@ -162,7 +167,7 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
             title: 'Inbox'.tr,
           ),
           ProfileMenuListItemControllerState(
-            onTap: (context) => PageRestorationHelper.toHelpPage(context),
+            onTap: (context) => PageRestorationHelper.toHelpChatPage(context),
             icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorSupportMessage, width: 20.0),
             title: 'Support Message'.tr,
           ),
@@ -290,6 +295,60 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
             MainRouteObserver.onRefreshCartInMainMenu = repeatableDynamicItemCarouselAdditionalParameter.onRepeatLoading;
           }
         )
+      )
+      ..onInjectCarouselParameterizedEntity = (
+        (data) {
+          Widget moreTapArea({
+            void Function()? onTap,
+            TextStyle Function(TextStyle)? onInterceptTextStyle
+          }) {
+            TextStyle textStyle = TextStyle(
+              color: Theme.of(context).colorScheme.primary,
+              fontWeight: FontWeight.bold,
+              fontSize: 12
+            );
+            return TapArea(
+              onTap: onTap,
+              child: Text(
+                "More".tr,
+                style: onInterceptTextStyle != null ? onInterceptTextStyle(textStyle) : textStyle
+              ),
+            );
+          }
+          Widget titleArea({
+            required Widget title,
+            void Function()? onTapMore,
+            TextStyle Function(TextStyle)? onInterceptTextStyle
+          }) {
+            return Row(
+              children: [
+                Expanded(child: title),
+                const SizedBox(width: 10),
+                if (onTapMore != null) ...[
+                  moreTapArea(
+                    onTap: onTapMore,
+                    onInterceptTextStyle: onInterceptTextStyle
+                  )
+                ]
+              ],
+            );
+          }
+          CarouselBackground? carouselBackground;
+          TitleInterceptor? titleInterceptor;
+          if (data == Constant.carouselKeyShortMyCart) {
+            titleInterceptor = (text, style) => titleArea(
+              title: Text(text.toStringNonNull, style: style?.copyWith()),
+              onInterceptTextStyle: (style) => style.copyWith(),
+              onTapMore: () => PageRestorationHelper.toCartPage(context)
+            );
+          } else {
+            titleInterceptor = (text, style) => Container();
+          }
+          return CarouselParameterizedEntityAndListItemControllerStateMediatorParameter(
+            carouselBackground: carouselBackground,
+            titleInterceptor: titleInterceptor
+          );
+        }
       );
     widget.menuMainMenuSubController.setMenuMainMenuSubDelegate(
       MenuMainMenuSubDelegate(

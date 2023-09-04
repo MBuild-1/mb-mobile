@@ -86,6 +86,7 @@ class MenuMainMenuSubController extends BaseGetxController {
               title: title,
               description: description,
               cartList: cartList,
+              data: Constant.carouselKeyShortMyCart,
               repeatableDynamicItemCarouselAdditionalParameter: repeatableDynamicItemCarouselAdditionalParameter
             )
           );
