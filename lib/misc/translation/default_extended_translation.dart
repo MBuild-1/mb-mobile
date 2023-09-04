@@ -253,7 +253,9 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "New Password": "Kata Sandi Baru",
       "New Password Confirmation": "Konfirmasi Kata Sandi Baru",
       "Success change password": "Sukses ubah kata sandi",
-      "Free": "Gratis"
+      "Free": "Gratis",
+      "Request Failed": "Request Gagal",
+      "No Message": "Tidak Ada Pesan"
     }
   };
 

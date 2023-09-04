@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 
 import 'constant.dart';
+import 'error/empty_error.dart';
 import 'error/not_found_error.dart';
 import 'error/please_login_first_error.dart';
 
@@ -34,6 +35,22 @@ class _ErrorHelperImpl {
     if (message is Map<String, dynamic>) {
       if (message[Constant.textEnUsLanguageKey].toLowerCase().contains("please login first")) {
         return PleaseLoginFirstError();
+      }
+    }
+    return NotFoundError();
+  }
+
+  Error generateEmptyError(dynamic e) {
+    bool checkingEmpty(String lowerCaseMessage) => lowerCaseMessage.contains("is empty") || lowerCaseMessage.contains("empty");
+    DioError dioError = generatePleaseLoginFirstDioError(e);
+    dynamic message = dioError.response?.data["meta"]["message"];
+    if (message is Map<String, dynamic>) {
+      if (checkingEmpty(message[Constant.textEnUsLanguageKey].toLowerCase())) {
+        return EmptyError();
+      }
+    } else if (message is String) {
+      if (checkingEmpty(message.toLowerCase())) {
+        return EmptyError();
       }
     }
     return NotFoundError();

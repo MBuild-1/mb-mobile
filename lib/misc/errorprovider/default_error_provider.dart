@@ -160,13 +160,19 @@ class DefaultErrorProvider extends ErrorProvider {
             } else if (errors is List) {
               if (errors.isEmpty) {
                 if (errorMeta is Map) {
-                  if (errorMeta.containsKey('message')) {
-                    return ErrorProviderResult(
-                      title: "Request Failed".tr,
-                      message: MultiLanguageString(errorMeta['message']).toEmptyStringNonNull,
-                      imageAssetUrl: Constant.imageFailed
-                    );
+                  String title = "Request Failed".tr;
+                  String message = "No Message".tr;
+                  if (errorMeta.containsKey('title')) {
+                    title = MultiLanguageString(errorMeta['title']).toEmptyStringNonNull;
                   }
+                  if (errorMeta.containsKey('message')) {
+                    message = MultiLanguageString(errorMeta['message']).toEmptyStringNonNull;
+                  }
+                  return ErrorProviderResult(
+                    title: title,
+                    message: message,
+                    imageAssetUrl: Constant.imageFailed
+                  );
                 }
               }
             }

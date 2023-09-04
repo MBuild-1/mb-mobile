@@ -55,6 +55,7 @@ import '../../../domain/entity/wishlist/wishlist.dart';
 import '../../../domain/entity/wishlist/wishlist_list_parameter.dart';
 import '../../../domain/entity/wishlist/wishlist_paging_parameter.dart';
 import '../../../misc/constant.dart';
+import '../../../misc/error/empty_error.dart';
 import '../../../misc/error/not_found_error.dart';
 import '../../../misc/error/please_login_first_error.dart';
 import '../../../misc/error_helper.dart';
@@ -309,6 +310,11 @@ class DefaultProductDataSource implements ProductDataSource {
         Error error = ErrorHelper.generatePleaseLoginFirstError(e);
         if (error is PleaseLoginFirstError) {
           return [];
+        } else {
+          error = ErrorHelper.generateEmptyError(e);
+          if (error is EmptyError) {
+            return [];
+          }
         }
         rethrow;
       } catch (e) {
@@ -382,6 +388,11 @@ class DefaultProductDataSource implements ProductDataSource {
         Error error = ErrorHelper.generatePleaseLoginFirstError(e);
         if (error is PleaseLoginFirstError) {
           return [];
+        } else {
+          error = ErrorHelper.generateEmptyError(e);
+          if (error is EmptyError) {
+            return [];
+          }
         }
         rethrow;
       } catch (e) {
