@@ -44,6 +44,7 @@ class _ConstantImpl {
   String get imageHelpMessage => _getImagesAssets("help_message.png");
   String get imageBadgeBlue => _getImagesAssets("badge_blue.png");
   String get imageBadgeOrange => _getImagesAssets("badge_orange.png");
+  String get imagePersonalVerification => _getImagesAssets("personal_verification.png");
 
   String get baseVectorsAssetsPath => "assets/vectors/";
   String _getVectorsAssets(String vectorAssetsPath) => "$baseVectorsAssetsPath$vectorAssetsPath";

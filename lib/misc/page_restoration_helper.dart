@@ -7,6 +7,7 @@ import '../controller/crop_picture_controller.dart';
 import '../presentation/page/accountsecurity/account_security_page.dart';
 import '../presentation/page/accountsecurity/change_password_page.dart';
 import '../presentation/page/accountsecurity/modify_pin_page.dart';
+import '../presentation/page/accountsecurity/personalverification/personal_verification_page.dart';
 import '../presentation/page/address_page.dart';
 import '../presentation/page/affiliate_page.dart';
 import '../presentation/page/cart_page.dart';
@@ -497,6 +498,17 @@ class _PageRestorationHelperImpl {
       PageRestorationHelper.findPageRestorationMixin<ModifyPinPageRestorationMixin>(
         onGetxPageRestorationFound: (restoration) {
           restoration.modifyPinPageRestorableRouteFuture.present(modifyPinPageParameter.toEncodeBase64String());
+        },
+        context: context
+      );
+    });
+  }
+
+  void toPersonalVerificationPage(BuildContext context) {
+    LoginHelper.checkingLogin(context, () {
+      PageRestorationHelper.findPageRestorationMixin<PersonalVerificationPageRestorationMixin>(
+        onGetxPageRestorationFound: (restoration) {
+          restoration.personalVerificationPageRestorableRouteFuture.present();
         },
         context: context
       );

@@ -21,6 +21,7 @@ import '../../widget/modifiedappbar/modified_app_bar.dart';
 import '../getx_page.dart';
 import 'change_password_page.dart';
 import 'modify_pin_page.dart';
+import 'personalverification/personal_verification_page.dart';
 
 class AccountSecurityPage extends RestorableGetxPage<_AccountSecurityPageRestoration> {
   late final ControllerMember<AccountSecurityController> _accountSecurityController = ControllerMember<AccountSecurityController>().addToControllerManager(controllerManager);
@@ -49,7 +50,7 @@ class AccountSecurityPage extends RestorableGetxPage<_AccountSecurityPageRestora
   _AccountSecurityPageRestoration createPageRestoration() => _AccountSecurityPageRestoration();
 }
 
-class _AccountSecurityPageRestoration extends MixableGetxPageRestoration with ChangePasswordPageRestorationMixin, ModifyPinPageRestorationMixin {
+class _AccountSecurityPageRestoration extends MixableGetxPageRestoration with ChangePasswordPageRestorationMixin, ModifyPinPageRestorationMixin, PersonalVerificationPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
@@ -202,7 +203,7 @@ class _StatefulAccountSecurityControllerMediatorWidgetState extends State<_State
           ),
           DividerListItemControllerState(),
           ProfileMenuListItemControllerState(
-            onTap: (context) {},
+            onTap: (context) => PageRestorationHelper.toPersonalVerificationPage(context),
             title: 'Personal Data Verification'.tr,
             descriptionInterceptor: descriptionInterceptor,
             icon: null
