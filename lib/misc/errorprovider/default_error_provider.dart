@@ -7,11 +7,13 @@ import 'package:masterbagasi/misc/ext/string_ext.dart';
 import '../constant.dart';
 import '../error/cart_empty_error.dart';
 import '../error/coming_soon_error.dart';
+import '../error/empty_error.dart';
 import '../error/message_error.dart';
 import '../error/not_found_error.dart';
 import '../error/search_not_found_error.dart';
 import '../error/token_empty_error.dart';
 import '../error/validation_error.dart';
+import '../error_helper.dart';
 import '../multi_language_string.dart';
 import 'error_provider.dart';
 
@@ -38,7 +40,8 @@ class DefaultErrorProvider extends ErrorProvider {
     } else if (e is MultiLanguageMessageError) {
       return ErrorProviderResult(
         title: e.title.toStringNonNull,
-        message: e.message.toStringNonNull
+        message: e.message.toStringNonNull,
+        imageAssetUrl: e.imageAssetUrl
       );
     } else if (e is CartEmptyError) {
       return _cartIsEmptyErrorProvider();
@@ -78,6 +81,7 @@ class DefaultErrorProvider extends ErrorProvider {
           Constant.textEnUsLanguageKey: "Now cart is empty.",
           Constant.textInIdLanguageKey: "Untuk sekarang keranjangnya kosong."
         }),
+        imageAssetUrl: Constant.imageEmptyError
       )
     ).toErrorProviderResultNonNull();
   }
@@ -228,6 +232,11 @@ class DefaultErrorProvider extends ErrorProvider {
               return _cartIsEmptyErrorProvider();
             }
           }
+        }
+        Error error = ErrorHelper.generateEmptyError(e);
+        if (error is EmptyError) {
+          return elseResponseDecision()
+            ..imageAssetUrl = Constant.imageEmptyError;
         }
         return elseResponseDecision();
       } else if (statusCode == 500) {

@@ -27,10 +27,12 @@ class MessageError extends Error {
 class MultiLanguageMessageError extends Error {
   final MultiLanguageString title;
   final MultiLanguageString message;
+  final String imageAssetUrl;
 
   MultiLanguageMessageError({
     MultiLanguageString? title,
-    MultiLanguageString? message
+    MultiLanguageString? message,
+    this.imageAssetUrl = ""
   }) : title = title ?? MultiLanguageString(""),
       message = message ?? MultiLanguageString("");
 }
