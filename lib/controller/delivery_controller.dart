@@ -163,23 +163,21 @@ class DeliveryController extends BaseGetxController {
       if (currentAddressLoadDataResult.isFailedBecauseCancellation) {
         return;
       }
+      Address? address;
       if (currentAddressLoadDataResult.isSuccess) {
-        LoadDataResult<CartSummary> cartSummaryLoadDataResult = await getCartSummaryUseCase.execute(
-          CartSummaryParameter(
-            cartList: _deliveryDelegate!.onGetCartList(),
-            additionalItemList: _deliveryDelegate!.onGetAdditionalList(),
-            couponId: _deliveryDelegate!.onGetCouponId(),
-            address: currentAddressLoadDataResult.resultIfSuccess!.address
-          )
-        ).future(
-          parameter: apiRequestManager.addRequestToCancellationPart("cart-summary").value
-        );
-        _deliveryDelegate!.onShowCartSummaryProcessCallback(cartSummaryLoadDataResult);
-      } else {
-        _deliveryDelegate!.onShowCartSummaryProcessCallback(
-          currentAddressLoadDataResult.map<CartSummary>((test) => throw UnimplementedError())
-        );
+        address = currentAddressLoadDataResult.resultIfSuccess!.address;
       }
+      LoadDataResult<CartSummary> cartSummaryLoadDataResult = await getCartSummaryUseCase.execute(
+        CartSummaryParameter(
+          cartList: _deliveryDelegate!.onGetCartList(),
+          additionalItemList: _deliveryDelegate!.onGetAdditionalList(),
+          couponId: _deliveryDelegate!.onGetCouponId(),
+          address: address
+        )
+      ).future(
+        parameter: apiRequestManager.addRequestToCancellationPart("cart-summary").value
+      );
+      _deliveryDelegate!.onShowCartSummaryProcessCallback(cartSummaryLoadDataResult);
     }
   }
 }
