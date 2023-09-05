@@ -69,12 +69,14 @@ class DeliveryCartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
       void loadShippingAddress() async {
         if (deliveryCartContainerStateStorageListItemControllerState is DefaultDeliveryCartContainerStateStorageListItemControllerState) {
           deliveryCartContainerStateStorageListItemControllerState._shippingAddressLoadDataResult = IsLoadingLoadDataResult<Address>();
+          oldItemType.onGetShippingAddressLoadDataResult(deliveryCartContainerStateStorageListItemControllerState._shippingAddressLoadDataResult);
           oldItemType.onUpdateState();
           LoadDataResult<Address> shippingAddressLoadDataResult = await deliveryCartContainerActionListItemControllerState.getCurrentSelectedAddress(CurrentSelectedAddressParameter());
           if (shippingAddressLoadDataResult.isFailedBecauseCancellation) {
             return;
           }
           deliveryCartContainerStateStorageListItemControllerState._shippingAddressLoadDataResult = shippingAddressLoadDataResult;
+          oldItemType.onGetShippingAddressLoadDataResult(deliveryCartContainerStateStorageListItemControllerState._shippingAddressLoadDataResult);
           oldItemType.onUpdateState();
         }
       }

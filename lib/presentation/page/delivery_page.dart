@@ -293,6 +293,7 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
   late final PagingControllerState<int, ListItemControllerState> _deliveryListItemPagingControllerState;
   late int _selectedCartCount = 0;
   LoadDataResult<CartSummary> _cartSummaryLoadDataResult = NoLoadDataResult<CartSummary>();
+  LoadDataResult<Address> _shippingAddressLoadDataResult = NoLoadDataResult<Address>();
   String? _couponId;
   List<Cart> _cartList = [];
   List<AdditionalItem> _additionalItemList = [];
@@ -410,6 +411,9 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
                   widget.deliveryController.getCartSummary();
                 }
               },
+              onGetShippingAddressLoadDataResult: (shippingAddressLoadDataResult) {
+                setState(() => _shippingAddressLoadDataResult = shippingAddressLoadDataResult);
+              },
               deliveryCartContainerStateStorageListItemControllerState: DefaultDeliveryCartContainerStateStorageListItemControllerState(),
               deliveryCartContainerActionListItemControllerState: _DefaultDeliveryCartContainerActionListItemControllerState(
                 getAdditionalItemList: (additionalItemListParameter) => widget.deliveryController.getAdditionalItem(additionalItemListParameter),
@@ -470,7 +474,9 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
           NavigationHelper.navigationAfterPurchaseProcess(context, order);
         },
         onShowCartSummaryProcessCallback: (cartSummaryLoadDataResult) async {
-          setState(() => _cartSummaryLoadDataResult = cartSummaryLoadDataResult);
+          setState(() {
+            _cartSummaryLoadDataResult = cartSummaryLoadDataResult;
+          });
         },
         onGetAdditionalList: () => _additionalItemList,
         onGetCartList: () => _cartList
@@ -592,12 +598,20 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
                         }
                       ),
                     ),
-                    SizedOutlineGradientButton(
-                      onPressed: _selectedCartCount == 0 ? null : () => widget.deliveryController.createOrder(),
-                      width: 120,
-                      text: "${"Pay".tr} ($_selectedCartCount)",
-                      outlineGradientButtonType: OutlineGradientButtonType.solid,
-                      outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
+                    Builder(
+                      builder: (context) {
+                        void Function()? onPressed = _selectedCartCount == 0 ? null : () => widget.deliveryController.createOrder();
+                        if (!_shippingAddressLoadDataResult.isSuccess) {
+                          onPressed = null;
+                        }
+                        return SizedOutlineGradientButton(
+                          onPressed: onPressed,
+                          width: 120,
+                          text: "${"Pay".tr} ($_selectedCartCount)",
+                          outlineGradientButtonType: OutlineGradientButtonType.solid,
+                          outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
+                        );
+                      }
                     )
                   ],
                 ),
