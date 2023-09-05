@@ -948,7 +948,10 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
     } else if (item is AdditionalItemListItemControllerState) {
       return AdditionalItemWidget(
         additionalItem: item.additionalItem,
-        no: item.no
+        no: item.no,
+        onRemoveAdditionalItem: item.onRemoveAdditionalItem,
+        onLoadAdditionalItem: item.onLoadAdditionalItem,
+        showEditAndRemoveIcon: item.showEditAndRemoveIcon
       );
     } else if (item is AdditionalItemSummaryListItemControllerState) {
       return AdditionalItemSummaryWidget(

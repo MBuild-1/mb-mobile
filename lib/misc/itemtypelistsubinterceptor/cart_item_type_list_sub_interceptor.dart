@@ -6,6 +6,8 @@ import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 
 import '../../domain/entity/additionalitem/additional_item.dart';
 import '../../domain/entity/additionalitem/additional_item_list_parameter.dart';
+import '../../domain/entity/additionalitem/remove_additional_item_parameter.dart';
+import '../../domain/entity/additionalitem/remove_additional_item_response.dart';
 import '../../domain/entity/cart/cart.dart';
 import '../../presentation/page/modaldialogpage/add_additional_item_modal_dialog_page.dart';
 import '../../presentation/widget/button/custombutton/sized_outline_gradient_button.dart';
@@ -154,6 +156,22 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
           });
         }
       }
+      void removeAdditionalItem(AdditionalItem additionalItem) async {
+        if (cartContainerStateStorageListItemControllerState is DefaultCartContainerStateStorageListItemControllerState) {
+          cartContainerStateStorageListItemControllerState._additionalItemLoadDataResult = IsLoadingLoadDataResult<List<AdditionalItem>>();
+          oldItemType.onUpdateState();
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            oldItemType.onScrollToAdditionalItemsSection();
+          });
+          LoadDataResult<RemoveAdditionalItemResponse> removeAdditionalItemResponseLoadDataResult = await cartContainerActionListItemControllerState.removeAdditionalItem(
+            RemoveAdditionalItemParameter(additionalItemId: additionalItem.id)
+          );
+          if (removeAdditionalItemResponseLoadDataResult.isFailedBecauseCancellation) {
+            return;
+          }
+          loadAdditionalItem();
+        }
+      }
       newItemTypeList.add(
         PaddingContainerListItemControllerState(
           padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
@@ -219,7 +237,9 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
                     padding: EdgeInsets.symmetric(horizontal: padding()),
                     paddingChildListItemControllerState: AdditionalItemListItemControllerState(
                       additionalItem: additionalItem,
-                      no: i + 1
+                      no: i + 1,
+                      onRemoveAdditionalItem: removeAdditionalItem,
+                      onLoadAdditionalItem: loadAdditionalItem
                     )
                   )
                 ]

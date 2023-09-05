@@ -4,9 +4,15 @@ import '../list_item_controller_state.dart';
 class AdditionalItemListItemControllerState extends ListItemControllerState {
   AdditionalItem additionalItem;
   int? no;
+  void Function(AdditionalItem)? onRemoveAdditionalItem;
+  void Function() onLoadAdditionalItem;
+  bool showEditAndRemoveIcon;
 
   AdditionalItemListItemControllerState({
     required this.additionalItem,
-    this.no
+    this.no,
+    this.onRemoveAdditionalItem,
+    required this.onLoadAdditionalItem,
+    this.showEditAndRemoveIcon = true
   });
 }

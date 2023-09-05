@@ -567,7 +567,9 @@ class DeliveryCartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
                       padding: EdgeInsets.symmetric(horizontal: padding()),
                       paddingChildListItemControllerState: AdditionalItemListItemControllerState(
                         additionalItem: additionalItem,
-                        no: i + 1
+                        no: i + 1,
+                        onLoadAdditionalItem: loadAdditionalItem,
+                        showEditAndRemoveIcon: false
                       )
                     )
                   ]

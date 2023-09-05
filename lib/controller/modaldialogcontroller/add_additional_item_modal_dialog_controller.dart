@@ -5,6 +5,9 @@ import 'package:masterbagasi/misc/ext/string_ext.dart';
 import '../../domain/entity/additionalitem/add_additional_item_parameter.dart';
 import '../../domain/entity/additionalitem/add_additional_item_response.dart';
 import '../../domain/entity/additionalitem/additional_item.dart';
+import '../../domain/entity/additionalitem/change_additional_item.dart';
+import '../../domain/entity/additionalitem/change_additional_item_parameter.dart';
+import '../../domain/entity/additionalitem/change_additional_item_response.dart';
 import '../../domain/usecase/add_additional_item_use_case.dart';
 import '../../domain/usecase/change_additional_item_use_case.dart';
 import '../../misc/error/validation_error.dart';
@@ -18,6 +21,7 @@ import '../../misc/validation/validator/validator.dart';
 import '../../misc/validation/validatorgroup/add_additional_item_validator_group.dart';
 import 'modal_dialog_controller.dart';
 
+typedef _OnGetHasParameter = bool Function();
 typedef _OnGetAddAdditionalItemInput = String Function();
 typedef _OnShowAdditionalItemRequestProcessLoadingCallback = Future<void> Function();
 typedef _OnAddAdditionalItemRequestProcessSuccessCallback = Future<void> Function(AddAdditionalItemModalDialogResponse, String);
@@ -102,35 +106,64 @@ class AddAdditionalItemModalDialogController extends ModalDialogController {
     return this;
   }
 
-  void createAdditionalItem() async {
+  void createOrChangeAdditionalItem() async {
     if (_addAdditionalItemModalDialogDelegate != null) {
       _addAdditionalItemModalDialogDelegate!.onUnfocusAllWidget();
       if (addAdditionalItemValidatorGroup.validate()) {
         _addAdditionalItemModalDialogDelegate!.onShowAdditionalItemRequestProcessLoadingCallback();
         AdditionalItem additionalItem = AdditionalItem(
-          id: "",
+          id: _addAdditionalItemModalDialogDelegate!.onGetAdditionalItemIdInput(),
           name: _addAdditionalItemModalDialogDelegate!.onGetAdditionalItemNameInput(),
           estimationPrice: double.parse(_addAdditionalItemModalDialogDelegate!.onGetAdditionalItemEstimationPriceInput()),
           estimationWeight: double.parse(_addAdditionalItemModalDialogDelegate!.onGetAdditionalItemEstimationWeightInput()),
           quantity: int.parse(_addAdditionalItemModalDialogDelegate!.onGetAdditionalItemQuantityInput()),
         );
-        LoadDataResult<AddAdditionalItemResponse> addAdditionalItemResponseLoadDataResult = await addAdditionalItemUseCase.execute(
-          AddAdditionalItemParameter(additionalItem: additionalItem)
-        ).future(
-          parameter: apiRequestManager.addRequestToCancellationPart('add-additional-item').value
-        );
-        _addAdditionalItemModalDialogDelegate!.onAddAdditionalItemBack();
-        if (addAdditionalItemResponseLoadDataResult.isSuccess) {
-          AddAdditionalItemModalDialogResponse addAdditionalItemModalDialogResponse = AddAdditionalItemModalDialogResponse(
-            additionalItem: additionalItem
+        if (!_addAdditionalItemModalDialogDelegate!.onGetHasParameter()) {
+          LoadDataResult<AddAdditionalItemResponse> addAdditionalItemResponseLoadDataResult = await addAdditionalItemUseCase.execute(
+            AddAdditionalItemParameter(additionalItem: additionalItem)
+          ).future(
+            parameter: apiRequestManager.addRequestToCancellationPart('add-additional-item').value
           );
-          _addAdditionalItemModalDialogDelegate!.onAddAdditionalItemRequestProcessSuccessCallback(
-            addAdditionalItemModalDialogResponse, addAdditionalItemModalDialogResponse.toEncodeBase64String()
-          );
+          _addAdditionalItemModalDialogDelegate!.onAddAdditionalItemBack();
+          if (addAdditionalItemResponseLoadDataResult.isSuccess) {
+            AddAdditionalItemModalDialogResponse addAdditionalItemModalDialogResponse = AddAdditionalItemModalDialogResponse(
+              additionalItem: additionalItem
+            );
+            _addAdditionalItemModalDialogDelegate!.onAddAdditionalItemRequestProcessSuccessCallback(
+              addAdditionalItemModalDialogResponse, addAdditionalItemModalDialogResponse.toEncodeBase64String()
+            );
+          } else {
+            _addAdditionalItemModalDialogDelegate!.onShowAdditionalItemRequestProcessFailedCallback(
+              addAdditionalItemResponseLoadDataResult.resultIfFailed
+            );
+          }
         } else {
-          _addAdditionalItemModalDialogDelegate!.onShowAdditionalItemRequestProcessFailedCallback(
-            addAdditionalItemResponseLoadDataResult.resultIfFailed
+          LoadDataResult<ChangeAdditionalItemResponse> changeAdditionalItemResponseLoadDataResult = await changeAdditionalItemUseCase.execute(
+            ChangeAdditionalItemParameter(
+              changeAdditionalItem: ChangeAdditionalItem(
+                id: additionalItem.id,
+                name: additionalItem.name,
+                estimationPrice: additionalItem.estimationPrice,
+                estimationWeight: additionalItem.estimationWeight,
+                quantity: additionalItem.quantity
+              )
+            )
+          ).future(
+            parameter: apiRequestManager.addRequestToCancellationPart('change-additional-item').value
           );
+          _addAdditionalItemModalDialogDelegate!.onAddAdditionalItemBack();
+          if (changeAdditionalItemResponseLoadDataResult.isSuccess) {
+            AddAdditionalItemModalDialogResponse addAdditionalItemModalDialogResponse = AddAdditionalItemModalDialogResponse(
+              additionalItem: additionalItem
+            );
+            _addAdditionalItemModalDialogDelegate!.onAddAdditionalItemRequestProcessSuccessCallback(
+              addAdditionalItemModalDialogResponse, addAdditionalItemModalDialogResponse.toEncodeBase64String()
+            );
+          } else {
+            _addAdditionalItemModalDialogDelegate!.onShowAdditionalItemRequestProcessFailedCallback(
+              changeAdditionalItemResponseLoadDataResult.resultIfFailed
+            );
+          }
         }
       }
     }
@@ -139,6 +172,8 @@ class AddAdditionalItemModalDialogController extends ModalDialogController {
 
 class AddAdditionalItemModalDialogDelegate {
   OnUnfocusAllWidget onUnfocusAllWidget;
+  _OnGetHasParameter onGetHasParameter;
+  _OnGetAddAdditionalItemInput onGetAdditionalItemIdInput;
   _OnGetAddAdditionalItemInput onGetAdditionalItemNameInput;
   _OnGetAddAdditionalItemInput onGetAdditionalItemEstimationPriceInput;
   _OnGetAddAdditionalItemInput onGetAdditionalItemEstimationWeightInput;
@@ -150,6 +185,8 @@ class AddAdditionalItemModalDialogDelegate {
 
   AddAdditionalItemModalDialogDelegate({
     required this.onUnfocusAllWidget,
+    required this.onGetHasParameter,
+    required this.onGetAdditionalItemIdInput,
     required this.onGetAdditionalItemNameInput,
     required this.onGetAdditionalItemEstimationPriceInput,
     required this.onGetAdditionalItemEstimationWeightInput,

@@ -65,12 +65,14 @@ class _StatefulAddAdditionalItemControllerMediatorWidgetState extends State<_Sta
   final TextEditingController _additionalEstimationPriceTextEditingController = TextEditingController();
   final TextEditingController _additionalEstimationWeightTextEditingController = TextEditingController();
   final TextEditingController _additionalQuantityTextEditingController = TextEditingController();
+  String _id = "";
 
   @override
   void initState() {
     super.initState();
     if (widget.serializedJsonAdditionalItemModalDialogParameter.isNotEmptyString) {
       AdditionalItem additionalItem = widget.serializedJsonAdditionalItemModalDialogParameter!.toAddAdditionalItemModalDialogParameter().additionalItem;
+      _id = additionalItem.id;
       _additionalNameTextEditingController.text = additionalItem.name;
       _additionalEstimationPriceTextEditingController.text = additionalItem.estimationPrice.toString();
       _additionalEstimationWeightTextEditingController.text = additionalItem.estimationWeight.toString();
@@ -83,6 +85,8 @@ class _StatefulAddAdditionalItemControllerMediatorWidgetState extends State<_Sta
     widget.addAdditionalItemModalDialogController.setAddAdditionalItemModalDialogDelegate(
       AddAdditionalItemModalDialogDelegate(
         onUnfocusAllWidget: () => FocusScope.of(context).unfocus(),
+        onGetHasParameter: () => widget.serializedJsonAdditionalItemModalDialogParameter.isNotEmptyString,
+        onGetAdditionalItemIdInput: () => _id,
         onGetAdditionalItemNameInput: () => _additionalNameTextEditingController.text,
         onGetAdditionalItemEstimationPriceInput: () => _additionalEstimationPriceTextEditingController.text,
         onGetAdditionalItemEstimationWeightInput: () => _additionalEstimationWeightTextEditingController.text,
@@ -110,7 +114,7 @@ class _StatefulAddAdditionalItemControllerMediatorWidgetState extends State<_Sta
               child: ExcludeFocus(
                 child: SizedOutlineGradientButton(
                   onPressed: () {},
-                  text: "Add New Item".tr,
+                  text: widget.serializedJsonAdditionalItemModalDialogParameter.isNotEmptyString ? "Change New Item".tr : "Add New Item".tr,
                   outlineGradientButtonType: OutlineGradientButtonType.outline,
                   outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
                   customGradientButtonVariation: (outlineGradientButtonType) {
@@ -191,8 +195,8 @@ class _StatefulAddAdditionalItemControllerMediatorWidgetState extends State<_Sta
             ),
             const SizedBox(height: 20),
             SizedOutlineGradientButton(
-              onPressed: widget.addAdditionalItemModalDialogController.createAdditionalItem,
-              text: "Add".tr,
+              onPressed: widget.addAdditionalItemModalDialogController.createOrChangeAdditionalItem,
+              text: widget.serializedJsonAdditionalItemModalDialogParameter.isNotEmptyString ? "Change".tr : "Add".tr,
               outlineGradientButtonType: OutlineGradientButtonType.solid,
               outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
             ),
