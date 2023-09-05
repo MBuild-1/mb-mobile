@@ -26,8 +26,12 @@ import '../../domain/entity/chat/product/update_read_status_product_conversation
 import '../../domain/entity/chat/user_chat.dart';
 import '../../domain/entity/chat/user_chat_status.dart';
 import '../../domain/entity/chat/user_chat_wrapper.dart';
+import '../../misc/constant.dart';
 import '../../misc/date_util.dart';
 import '../../misc/error/empty_chat_error.dart';
+import '../../misc/error/message_error.dart';
+import '../../misc/error_helper.dart';
+import '../../misc/multi_language_string.dart';
 import '../../misc/response_wrapper.dart';
 
 extension HelpChatEntityMappingExt on ResponseWrapper {
@@ -218,11 +222,26 @@ extension HelpChatDetailEntityMappingExt on ResponseWrapper {
   }
 
   GetOrderMessageByUserResponse mapFromResponseToGetOrderMessageByUserResponse() {
-    return GetOrderMessageByUserResponse(
+    GetOrderMessageByUserResponse getOrderMessageByUserResponse = GetOrderMessageByUserResponse(
       getOrderMessageByUserResponseMemberList: response.map<GetOrderMessageByUserResponseMember>(
         (getOrderMessageByUserResponseMemberValue) => ResponseWrapper(getOrderMessageByUserResponseMemberValue).mapFromResponseToGetOrderMessageByUserResponseMember()
       ).toList()
     );
+    if (getOrderMessageByUserResponse.getOrderMessageByUserResponseMemberList.isEmpty) {
+      throw ErrorHelper.generateMultiLanguageDioError(
+        MultiLanguageMessageError(
+          title: MultiLanguageString({
+            Constant.textEnUsLanguageKey: "Order Chat Is Empty",
+            Constant.textInIdLanguageKey: "Chat Order Kosong",
+          }),
+          message: MultiLanguageString({
+            Constant.textEnUsLanguageKey: "For now, order chat is empty.",
+            Constant.textInIdLanguageKey: "Untuk sekarang, chat order kosong.",
+          }),
+        )
+      );
+    }
+    return getOrderMessageByUserResponse;
   }
 
   GetOrderMessageByCombinedOrderResponse mapFromResponseToGetOrderMessageByCombinedOrderResponse() {
@@ -347,11 +366,26 @@ extension HelpChatDetailEntityMappingExt on ResponseWrapper {
   }
 
   GetProductMessageByUserResponse mapFromResponseToGetProductMessageByUserResponse() {
-    return GetProductMessageByUserResponse(
+    GetProductMessageByUserResponse getProductMessageByUserResponse = GetProductMessageByUserResponse(
       getProductMessageByUserResponseMemberList: response.map<GetProductMessageByUserResponseMember>(
         (getProductMessageByUserResponseMemberValue) => ResponseWrapper(getProductMessageByUserResponseMemberValue).mapFromResponseToGetProductMessageByUserResponseMember()
       ).toList()
     );
+    if (getProductMessageByUserResponse.getProductMessageByUserResponseMemberList.isEmpty) {
+      throw ErrorHelper.generateMultiLanguageDioError(
+        MultiLanguageMessageError(
+          title: MultiLanguageString({
+            Constant.textEnUsLanguageKey: "Product Chat Is Empty",
+            Constant.textInIdLanguageKey: "Chat Produk Kosong",
+          }),
+          message: MultiLanguageString({
+            Constant.textEnUsLanguageKey: "For now, product chat is empty.",
+            Constant.textInIdLanguageKey: "Untuk sekarang, chat produk kosong.",
+          }),
+        )
+      );
+    }
+    return getProductMessageByUserResponse;
   }
 
   GetProductMessageByUserResponseMember mapFromResponseToGetProductMessageByUserResponseMember() {
