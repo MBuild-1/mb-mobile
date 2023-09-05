@@ -4,6 +4,7 @@ import 'package:masterbagasi/misc/controllerstate/listitemcontrollerstate/virtua
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
+import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../../controller/mainmenucontroller/mainmenusubpagecontroller/menu_main_menu_sub_controller.dart';
@@ -39,6 +40,7 @@ import '../../../../misc/parameterizedcomponententityandlistitemcontrollerstatem
 import '../../../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/horizontal_dynamic_item_carousel_parametered_component_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../../../../misc/string_util.dart';
 import '../../../../misc/widget_helper.dart';
+import '../../../notifier/notification_notifier.dart';
 import '../../../widget/background_app_bar_scaffold.dart';
 import '../../../widget/menu_profile_header.dart';
 import '../../../widget/modified_paged_list_view.dart';
@@ -367,7 +369,10 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
           errorProvider: Injector.locator<ErrorProvider>(),
           e: e
         ),
-        onLogoutRequestProcessSuccessCallback: () async => PageRestorationHelper.toMainMenuPage(context, Constant.restorableRouteFuturePushAndRemoveUntil),
+        onLogoutRequestProcessSuccessCallback: () async {
+          Provider.of<NotificationNotifier>(context, listen: false).resetNotification();
+          PageRestorationHelper.toMainMenuPage(context, Constant.restorableRouteFuturePushAndRemoveUntil);
+        }
       )
     );
     return Scaffold(

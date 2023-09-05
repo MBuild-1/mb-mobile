@@ -29,6 +29,10 @@ class NotificationNotifier extends ChangeNotifier {
   }) {
     apiRequestManager = ApiRequestManager();
     notifyListeners();
+    loadAllNotification();
+  }
+
+  void loadAllNotification() {
     loadNotificationLoadDataResult();
     loadInboxLoadDataResult();
     loadCartLoadDataResult();
@@ -63,6 +67,19 @@ class NotificationNotifier extends ChangeNotifier {
       parameter: apiRequestManager.addRequestToCancellationPart("cart").value
     ).map<int>(
       (cartList) => cartList.length
+    );
+    notifyListeners();
+  }
+
+  void resetNotification() {
+    _inboxLoadDataResult = SuccessLoadDataResult<int>(
+      value: 0
+    );
+    _cartLoadDataResult = SuccessLoadDataResult<int>(
+      value: 0
+    );
+    _notificationLoadDataResult = SuccessLoadDataResult<int>(
+      value: 0
     );
     notifyListeners();
   }
