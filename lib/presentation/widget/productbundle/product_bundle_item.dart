@@ -6,6 +6,7 @@ import 'package:sizer/sizer.dart';
 import '../../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../../misc/constant.dart';
 import '../../../misc/page_restoration_helper.dart';
+import '../button/add_or_remove_cart_button.dart';
 import '../button/add_or_remove_wishlist_button.dart';
 import '../button/custombutton/sized_outline_gradient_button.dart';
 import '../modified_svg_picture.dart';
@@ -130,22 +131,10 @@ abstract class ProductBundleItem extends StatelessWidget {
                                       builder: (context) {
                                         void Function()? onPressed = !comingSoon ? (onAddCart != null ? () => onAddCart!(productBundle) : null) : null;
                                         return Expanded(
-                                          child: SizedOutlineGradientButton(
-                                            onPressed: onPressed,
-                                            text: "+ ${"Cart".tr}",
-                                            outlineGradientButtonType: OutlineGradientButtonType.solid,
-                                            outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
-                                            childInterceptor: (textStyle) {
-                                              return Row(
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                children: [
-                                                  ModifiedSvgPicture.asset(
-                                                    Constant.vectorCart,
-                                                    color: onPressed != null ? Colors.white : Colors.grey.shade600,
-                                                  )
-                                                ],
-                                              );
-                                            },
+                                          child: AddOrRemoveCartButton(
+                                            onAddCart: onPressed,
+                                            isAddToCart: productBundle.hasAddedToCart,
+                                            isIcon: true
                                           )
                                         );
                                       }

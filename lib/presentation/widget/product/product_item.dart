@@ -10,6 +10,7 @@ import '../../../misc/constant.dart';
 import '../../../misc/page_restoration_helper.dart';
 import '../../page/product_detail_page.dart';
 import '../badge_indicator.dart';
+import '../button/add_or_remove_cart_button.dart';
 import '../button/add_or_remove_wishlist_button.dart';
 import '../button/custombutton/sized_outline_gradient_button.dart';
 import '../modified_divider.dart';
@@ -205,11 +206,9 @@ abstract class ProductItem extends StatelessWidget {
                             ),
                             SizedBox(width: 1.5.w),
                             Expanded(
-                              child: SizedOutlineGradientButton(
-                                onPressed: onAddCart != null ? () => onAddCart!(productAppearanceData) : null,
-                                text: "${isAddToCart ? '-' : '+'} ${"Cart".tr}",
-                                outlineGradientButtonType: OutlineGradientButtonType.outline,
-                                outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
+                              child: AddOrRemoveCartButton(
+                                onAddCart: onAddCart != null ? () => onAddCart!(productAppearanceData) : null,
+                                isAddToCart: isAddToCart
                               )
                             )
                           ],

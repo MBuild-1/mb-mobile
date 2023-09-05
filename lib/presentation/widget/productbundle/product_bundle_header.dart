@@ -5,6 +5,7 @@ import 'package:sizer/sizer.dart';
 
 import '../../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../../misc/constant.dart';
+import '../button/add_or_remove_cart_button.dart';
 import '../button/add_or_remove_wishlist_button.dart';
 import '../button/custombutton/sized_outline_gradient_button.dart';
 import '../modifiedcachednetworkimage/product_bundle_modified_cached_network_image.dart';
@@ -107,11 +108,9 @@ class ProductBundleHeader extends StatelessWidget {
                                     ),
                                     SizedBox(width: 1.5.w),
                                     Expanded(
-                                      child: SizedOutlineGradientButton(
-                                        onPressed: onAddCart != null ? () => onAddCart!(productBundle) : null,
-                                        text: "+ ${"Cart".tr}",
-                                        outlineGradientButtonType: OutlineGradientButtonType.outline,
-                                        outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
+                                      child: AddOrRemoveCartButton(
+                                        onAddCart: onAddCart != null ? () => onAddCart!(productBundle) : null,
+                                        isAddToCart: productBundle.hasAddedToCart,
                                       )
                                     )
                                   ],
