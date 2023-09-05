@@ -285,6 +285,7 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
   }
 
   void refreshMenuMainMenu() {
+    setState(() {});
     _menuMainMenuSubListItemPagingController.refresh();
   }
 

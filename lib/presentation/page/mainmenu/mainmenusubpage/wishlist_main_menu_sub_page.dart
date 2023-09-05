@@ -137,6 +137,7 @@ class _StatefulWishlistMainMenuSubControllerMediatorWidgetState extends State<_S
   }
 
   void refreshWishlistMainMenu() {
+    setState(() {});
     _wishlistMainMenuSubListItemPagingController.refresh();
   }
 
