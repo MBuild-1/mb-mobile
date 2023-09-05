@@ -28,7 +28,7 @@ class SharedCartIndicator extends StatelessWidget {
           ),
           child: Row(
             children: [
-              ModifiedSvgPicture.asset(Constant.vectorDiscount, color: Constant.colorDiscount),
+              ModifiedSvgPicture.asset(Constant.vectorDiscount, color: Constant.colorMain),
               SizedBox(width: 2.w),
               Expanded(
                 child: Text("Save more using shared cart".tr)

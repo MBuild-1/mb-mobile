@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
+import 'package:masterbagasi/misc/ext/number_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
+import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../controller/take_friend_cart_controller.dart';
@@ -16,8 +18,11 @@ import '../../domain/entity/additionalitem/remove_additional_item_response.dart'
 import '../../domain/entity/cart/cart.dart';
 import '../../domain/entity/cart/cart_paging_parameter.dart';
 import '../../domain/entity/cart/host_cart.dart';
+import '../../domain/entity/cart/support_cart.dart';
+import '../../domain/entity/wishlist/support_wishlist.dart';
 import '../../domain/usecase/add_additional_item_use_case.dart';
 import '../../domain/usecase/add_to_cart_use_case.dart';
+import '../../domain/usecase/add_wishlist_use_case.dart';
 import '../../domain/usecase/change_additional_item_use_case.dart';
 import '../../domain/usecase/get_additional_item_use_case.dart';
 import '../../domain/usecase/get_cart_summary_use_case.dart';
@@ -34,18 +39,26 @@ import '../../misc/controllerstate/listitemcontrollerstate/padding_container_lis
 import '../../misc/controllerstate/listitemcontrollerstate/page_keyed_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/spacing_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
+import '../../misc/dialog_helper.dart';
+import '../../misc/error/cart_empty_error.dart';
+import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
 import '../../misc/itemtypelistsubinterceptor/cart_item_type_list_sub_interceptor.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/controller_manager.dart';
+import '../../misc/page_restoration_helper.dart';
 import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
+import '../../misc/toast_helper.dart';
+import '../notifier/notification_notifier.dart';
+import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
+import 'delivery_page.dart';
 import 'getx_page.dart';
 
 class TakeFriendCartPage extends RestorableGetxPage<_TakeFriendCartPageRestoration> {
@@ -65,7 +78,8 @@ class TakeFriendCartPage extends RestorableGetxPage<_TakeFriendCartPageRestorati
         Injector.locator<GetAdditionalItemUseCase>(),
         Injector.locator<AddAdditionalItemUseCase>(),
         Injector.locator<ChangeAdditionalItemUseCase>(),
-        Injector.locator<RemoveAdditionalItemUseCase>()
+        Injector.locator<RemoveAdditionalItemUseCase>(),
+        Injector.locator<AddWishlistUseCase>(),
       ), tag: pageName
     );
   }
@@ -187,7 +201,11 @@ class _StatefulTakeFriendCartControllerMediatorWidgetState extends State<_Statef
   late final ScrollController _takeFriendCartScrollController;
   late final ModifiedPagingController<int, ListItemControllerState> _takeFriendCartListItemPagingController;
   late final PagingControllerState<int, ListItemControllerState> _takeFriendCartListItemPagingControllerState;
+  int _cartCount = 0;
+  late int _selectedCartCount = 0;
+  late double _selectedCartShoppingTotal = 0;
   List<AdditionalItem> _additionalItemList = [];
+  List<Cart> _selectedCartList = [];
   CartContainerInterceptingActionListItemControllerState _cartContainerInterceptingActionListItemControllerState = DefaultCartContainerInterceptingActionListItemControllerState();
 
   @override
@@ -212,7 +230,22 @@ class _StatefulTakeFriendCartControllerMediatorWidgetState extends State<_Statef
     _takeFriendCartListItemPagingControllerState.isPagingControllerExist = true;
   }
 
+  void _updateCartInformation() {
+    _selectedCartShoppingTotal = 0;
+    for (Cart cart in _selectedCartList) {
+      SupportCart supportCart = cart.supportCart;
+      _selectedCartShoppingTotal += supportCart.cartPrice * cart.quantity.toDouble();
+    }
+    if (_cartContainerInterceptingActionListItemControllerState.getCartCount != null) {
+      _cartCount = _cartContainerInterceptingActionListItemControllerState.getCartCount!();
+    }
+  }
+
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _takeFriendCartListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? cartListItemControllerStateList) async {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      setState(() => _cartCount = 0);
+      Provider.of<NotificationNotifier>(context, listen: false).loadCartLoadDataResult();
+    });
     LoadDataResult<PagingDataResult<Cart>> cartPagingLoadDataResult = await widget.takeFriendCartController.getCartPaging(
       CartPagingParameter(page: pageKey)
     );
@@ -220,7 +253,22 @@ class _StatefulTakeFriendCartControllerMediatorWidgetState extends State<_Statef
       List<CartListItemControllerState> newCartListItemControllerStateList = cartPaging.itemList.map<CartListItemControllerState>(
         (cart) => VerticalCartListItemControllerState(
           isSelected: false,
-          cart: cart
+          cart: cart,
+          onChangeQuantity: (quantity) {
+            setState(() {
+              int newQuantity = quantity;
+              if (newQuantity < 1) {
+                newQuantity = 1;
+              }
+              cart.quantity = newQuantity;
+              _updateCartInformation();
+            });
+          },
+          onAddToWishlist: () => widget.takeFriendCartController.addToWishlist(cart.supportCart as SupportWishlist),
+          onRemoveCart: () {
+            widget.takeFriendCartController.removeCart(cart);
+            _updateCartInformation();
+          },
         )
       ).toList();
       if (pageKey == 1) {
@@ -237,10 +285,21 @@ class _StatefulTakeFriendCartControllerMediatorWidgetState extends State<_Statef
               onScrollToAdditionalItemsSection: () => _takeFriendCartScrollController.jumpTo(
                 _takeFriendCartScrollController.position.maxScrollExtent
               ),
-              onChangeSelected: (cartList) {},
+              additionalItemList: _additionalItemList,
+              onChangeSelected: (cartList) {
+                setState(() {
+                  _selectedCartList = cartList;
+                  _selectedCartCount = cartList.length;
+                  _updateCartInformation();
+                });
+              },
+              onCartChange: () {
+                setState(() => _updateCartInformation());
+                if (_cartCount == 0) {
+                  _takeFriendCartListItemPagingController.errorFirstPageOuterProcess = CartEmptyError();
+                }
+              },
               cartContainerStateStorageListItemControllerState: DefaultCartContainerStateStorageListItemControllerState(),
-              additionalItemList: [],
-              onCartChange: () => setState(() {}),
               cartContainerActionListItemControllerState: _DefaultTakeFriendCartContainerActionListItemControllerState(
                 getAdditionalItemList: (additionalItemListParameter) => widget.takeFriendCartController.getAdditionalItem(additionalItemListParameter),
                 addAdditionalItem: (addAdditionalItemParameter) => widget.takeFriendCartController.addAdditionalItem(addAdditionalItemParameter),
@@ -282,6 +341,33 @@ class _StatefulTakeFriendCartControllerMediatorWidgetState extends State<_Statef
 
   @override
   Widget build(BuildContext context) {
+    widget.takeFriendCartController.setTakeFriendCartDelegate(
+      TakeFriendCartDelegate(
+        onUnfocusAllWidget: () => FocusScope.of(context).unfocus(),
+        onCartBack: () => Get.back(),
+        onShowAddToWishlistRequestProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
+        onShowAddToWishlistRequestProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
+          context: context,
+          errorProvider: Injector.locator<ErrorProvider>(),
+          e: e
+        ),
+        onAddToWishlistRequestProcessSuccessCallback: () async {
+          ToastHelper.showToast("${"Success add to wishlist".tr}.");
+        },
+        onShowRemoveCartRequestProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
+        onShowRemoveCartRequestProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
+          context: context,
+          errorProvider: Injector.locator<ErrorProvider>(),
+          e: e
+        ),
+        onRemoveCartRequestProcessSuccessCallback: (cart) async {
+          if (_cartContainerInterceptingActionListItemControllerState.removeCart != null) {
+            _cartContainerInterceptingActionListItemControllerState.removeCart!(cart);
+            Provider.of<NotificationNotifier>(context, listen: false).loadCartLoadDataResult();
+          }
+        },
+      )
+    );
     return Scaffold(
       appBar: ModifiedAppBar(
         titleInterceptor: (context, title) => Row(
@@ -302,6 +388,56 @@ class _StatefulTakeFriendCartControllerMediatorWidgetState extends State<_Statef
                 pullToRefresh: true
               ),
             ),
+            if (_cartCount > 0)
+              Container(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text("Shopping Total".tr),
+                                const SizedBox(height: 4),
+                                Text(_selectedCartShoppingTotal.toRupiah(withFreeTextIfZero: false), style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold
+                                )),
+                              ]
+                            ),
+                          ],
+                        ),
+                        const Expanded(
+                          child: SizedBox()
+                        ),
+                        SizedOutlineGradientButton(
+                          onPressed: _selectedCartCount == 0 ? null : () {
+                            PageRestorationHelper.toDeliveryPage(
+                              context, DeliveryPageParameter(
+                                selectedCartIdList: _selectedCartList.map<List<String>>((cart) {
+                                  return <String>[cart.id, cart.quantity.toString()];
+                                }).toList(),
+                                selectedAdditionalItemIdList: _additionalItemList.map<String>((additionalItem) {
+                                  return additionalItem.id;
+                                }).toList(),
+                              )
+                            );
+                          },
+                          width: 120,
+                          text: "${"Checkout".tr} ($_selectedCartCount)",
+                          outlineGradientButtonType: OutlineGradientButtonType.solid,
+                          outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
+                        )
+                      ],
+                    )
+                  ]
+                ),
+              )
           ]
         )
       ),

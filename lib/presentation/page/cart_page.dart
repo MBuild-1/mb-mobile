@@ -385,6 +385,10 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    SharedCartIndicator(
+                      onTap: () => DialogHelper.showSharedCartOptionsPrompt(context),
+                    ),
+                    const SizedBox(height: 16),
                     Row(
                       children: [
                         Row(
