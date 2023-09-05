@@ -81,7 +81,7 @@ class MainMenuSearchAppBar extends SearchAppBar {
                   ],
                 ),
               ),
-              const SizedBox(width: 13),
+              const SizedBox(width: 10),
               NotificationIconIndicator(
                 notificationNumber: notificationNotifier.inboxLoadDataResult.resultIfSuccess ?? 0,
                 onTap: () => PageRestorationHelper.toInboxPage(context),
