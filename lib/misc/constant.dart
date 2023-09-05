@@ -46,6 +46,11 @@ class _ConstantImpl {
   String get imageBadgeOrange => _getImagesAssets("badge_orange.png");
   String get imagePersonalVerification => _getImagesAssets("personal_verification.png");
   String get imageEmptyError => _getImagesAssets("empty_error.png");
+  String get imageEmptyErrorAddress => _getImagesAssets("empty_error_address.png");
+  String get imageEmptyErrorCart => _getImagesAssets("empty_error_cart.png");
+  String get imageEmptyErrorSend => _getImagesAssets("empty_error_send.png");
+  String get imageEmptyErrorTransaction => _getImagesAssets("empty_error_transaction.png");
+  String get imageEmptyErrorWishlist => _getImagesAssets("empty_error_wishlist.png");
 
   String get baseVectorsAssetsPath => "assets/vectors/";
   String _getVectorsAssets(String vectorAssetsPath) => "$baseVectorsAssetsPath$vectorAssetsPath";

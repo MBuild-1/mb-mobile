@@ -13,6 +13,7 @@ import '../controllerstate/listitemcontrollerstate/padding_container_list_item_c
 import '../controllerstate/listitemcontrollerstate/spacing_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
 import '../error/message_error.dart';
+import '../error_helper.dart';
 import '../itemtypelistinterceptor/itemtypelistinterceptorchecker/list_item_controller_state_item_type_list_interceptor_checker.dart';
 import '../load_data_result.dart';
 import '../multi_language_string.dart';
@@ -67,16 +68,20 @@ class CountryDeliveryReviewItemTypeListSubInterceptor extends ItemTypeListSubInt
           ListItemControllerStateWrapper(
             FailedPromptIndicatorListItemControllerState(
               errorProvider: oldItemType.errorProvider,
-              e: FailedLoadDataResult.throwException(() => throw MultiLanguageMessageError(
-                title: MultiLanguageString({
-                  Constant.textEnUsLanguageKey: "Country Review Is Empty",
-                  Constant.textInIdLanguageKey: "Ulasan Negara Kosong",
-                }),
-                message: MultiLanguageString({
-                  Constant.textEnUsLanguageKey: "Country Review in selected country is empty.",
-                  Constant.textInIdLanguageKey: "Ulasan Negara di negara yang dipilih kosong.",
-                }),
-              ))!.e,
+              e: FailedLoadDataResult.throwException(() {
+                throw ErrorHelper.generateMultiLanguageDioError(
+                  MultiLanguageMessageError(
+                    title: MultiLanguageString({
+                      Constant.textEnUsLanguageKey: "Country Review Is Empty",
+                      Constant.textInIdLanguageKey: "Ulasan Negara Kosong",
+                    }),
+                    message: MultiLanguageString({
+                      Constant.textEnUsLanguageKey: "Country Review in selected country is empty.",
+                      Constant.textInIdLanguageKey: "Ulasan Negara di negara yang dipilih kosong.",
+                    }),
+                  )
+                );
+              })!.e,
             )
           ),
           oldItemTypeList,

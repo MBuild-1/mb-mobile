@@ -81,7 +81,7 @@ class DefaultErrorProvider extends ErrorProvider {
           Constant.textEnUsLanguageKey: "Now cart is empty.",
           Constant.textInIdLanguageKey: "Untuk sekarang keranjangnya kosong."
         }),
-        imageAssetUrl: Constant.imageEmptyError
+        imageAssetUrl: Constant.imageEmptyErrorCart
       )
     ).toErrorProviderResultNonNull();
   }
@@ -235,8 +235,23 @@ class DefaultErrorProvider extends ErrorProvider {
         }
         Error error = ErrorHelper.generateEmptyError(e);
         if (error is EmptyError) {
+          late String imageAssetUrl;
+          EmptyErrorType emptyErrorType = error.emptyErrorType;
+          if (emptyErrorType == EmptyErrorType.addressEmpty) {
+            imageAssetUrl = Constant.imageEmptyErrorAddress;
+          } else if (emptyErrorType == EmptyErrorType.cartEmpty) {
+            imageAssetUrl = Constant.imageEmptyErrorCart;
+          } else if (emptyErrorType == EmptyErrorType.sendEmpty) {
+            imageAssetUrl = Constant.imageEmptyErrorSend;
+          } else if (emptyErrorType == EmptyErrorType.transactionEmpty) {
+            imageAssetUrl = Constant.imageEmptyErrorTransaction;
+          } else if (emptyErrorType == EmptyErrorType.wishlistEmpty) {
+            imageAssetUrl = Constant.imageEmptyErrorWishlist;
+          } else {
+            imageAssetUrl = Constant.imageEmptyError;
+          }
           return elseResponseDecision()
-            ..imageAssetUrl = Constant.imageEmptyError;
+            ..imageAssetUrl = imageAssetUrl;
         }
         return elseResponseDecision();
       } else if (statusCode == 500) {

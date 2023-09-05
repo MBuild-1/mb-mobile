@@ -21,6 +21,7 @@ import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
+import '../../misc/itemtypelistsubinterceptor/order_item_type_list_sub_interceptor.dart';
 import '../../misc/list_item_controller_state_helper.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/controller_manager.dart';
@@ -170,6 +171,8 @@ class _StatefulOrderControllerMediatorWidgetState extends State<_StatefulOrderCo
   late List<ColorfulChipTabBarData> _orderColorfulChipTabBarDataList;
   String _status = "";
 
+  final DefaultOrderContainerInterceptingActionListItemControllerState _defaultOrderContainerInterceptingActionListItemControllerState = DefaultOrderContainerInterceptingActionListItemControllerState();
+
   @override
   void initState() {
     super.initState();
@@ -233,7 +236,10 @@ class _StatefulOrderControllerMediatorWidgetState extends State<_StatefulOrderCo
           onBuyAgainTap: (order) => widget.orderController.repurchaseControllerContentDelegate.repurchase(order.id),
           onUpdateState: () => setState(() {}),
           orderTabColorfulChipTabBarController: _orderTabColorfulChipTabBarController,
-          orderColorfulChipTabBarDataList: _orderColorfulChipTabBarDataList
+          orderColorfulChipTabBarDataList: _orderColorfulChipTabBarDataList,
+          errorProvider: Injector.locator<ErrorProvider>(),
+          orderContainerStateStorageListItemControllerState: DefaultOrderContainerStateStorageListItemControllerState(),
+          orderContainerInterceptingActionListItemControllerState: _defaultOrderContainerInterceptingActionListItemControllerState
         )
       ];
       return SuccessLoadDataResult<PagingDataResult<ListItemControllerState>>(
@@ -245,10 +251,12 @@ class _StatefulOrderControllerMediatorWidgetState extends State<_StatefulOrderCo
         )
       );
     } else {
+      _updateOrderPaging(NoLoadDataResult());
       int effectivePageKey = pageKey - 1;
       LoadDataResult<PagingDataResult<CombinedOrder>> orderPagingLoadDataResult = await widget.orderController.getOrderPaging(
         OrderPagingParameter(page: effectivePageKey, status: _status)
       );
+      _updateOrderPaging(orderPagingLoadDataResult);
       return orderPagingLoadDataResult.map<PagingResult<ListItemControllerState>>((orderPaging) {
         if (ListItemControllerStateHelper.checkListItemControllerStateList(orderListItemControllerStateList)) {
           OrderContainerListItemControllerState orderContainerListItemControllerState = ListItemControllerStateHelper.parsePageKeyedListItemControllerState(orderListItemControllerStateList![0]) as OrderContainerListItemControllerState;
@@ -260,6 +268,14 @@ class _StatefulOrderControllerMediatorWidgetState extends State<_StatefulOrderCo
           totalPage: orderPaging.totalPage,
           totalItem: orderPaging.totalItem
         );
+      });
+    }
+  }
+
+  void _updateOrderPaging(LoadDataResult<PagingDataResult<CombinedOrder>> combinedOrderPagingDataResult) {
+    if (_defaultOrderContainerInterceptingActionListItemControllerState.onRefreshCombinedOrderPagingDataResult != null) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        _defaultOrderContainerInterceptingActionListItemControllerState.onRefreshCombinedOrderPagingDataResult!(combinedOrderPagingDataResult);
       });
     }
   }
