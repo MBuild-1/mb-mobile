@@ -22,6 +22,8 @@ import '../../../domain/entity/cart/add_to_cart_response.dart';
 import '../../../domain/entity/cart/cart_list_parameter.dart';
 import '../../../domain/entity/cart/cart_summary.dart';
 import '../../../domain/entity/cart/cart_summary_parameter.dart';
+import '../../../domain/entity/cart/remove_from_cart_directly_parameter.dart';
+import '../../../domain/entity/cart/remove_from_cart_directly_response.dart';
 import '../../../domain/entity/cart/remove_from_cart_parameter.dart';
 import '../../../domain/entity/cart/remove_from_cart_response.dart';
 import '../../../domain/entity/cart/shared_cart_paging_parameter.dart';
@@ -56,7 +58,7 @@ class DefaultCartDataSource implements CartDataSource {
     return DioHttpClientProcessing((cancelToken) {
       String pageParameterPath = "/?pageNumber=${cartPagingParameter.itemEachPageCount}&page=${cartPagingParameter.page}";
       return dio.get("/user/cart$pageParameterPath", cancelToken: cancelToken)
-        .map<PagingDataResult<Cart>>(onMap: (value) => value.wrapResponse().mapFromResponseToCartPaging([]));
+        .map<PagingDataResult<Cart>>(onMap: (value) => value.wrapResponse().mapFromResponseToCartPaging([], []));
     });
   }
 
@@ -64,7 +66,7 @@ class DefaultCartDataSource implements CartDataSource {
   FutureProcessing<List<Cart>> cartList(CartListParameter cartListParameter) {
     return DioHttpClientProcessing((cancelToken) {
       return dio.get("/user/cart", cancelToken: cancelToken)
-        .map<List<Cart>>(onMap: (value) => value.wrapResponse().mapFromResponseToCartList([]));
+        .map<List<Cart>>(onMap: (value) => value.wrapResponse().mapFromResponseToCartList([], []));
     });
   }
 
@@ -109,6 +111,21 @@ class DefaultCartDataSource implements CartDataSource {
     return DioHttpClientProcessing((cancelToken) async {
       return dio.delete("/user/cart/${removeFromCartParameter.cart.id}", cancelToken: cancelToken)
         .map<RemoveFromCartResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToRemoveFromCartResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<RemoveFromCartDirectlyResponse> removeFromCartDirectly(RemoveFromCartDirectlyParameter removeFromCartDirectlyParameter) {
+    return DioHttpClientProcessing((cancelToken) async {
+      String id = "";
+      SupportCart supportCart = removeFromCartDirectlyParameter.supportCart;
+      if (supportCart is ProductEntryAppearanceData) {
+        id = (supportCart as ProductEntryAppearanceData).productEntryId;
+      } else if (supportCart is ProductBundle) {
+        id = supportCart.id;
+      }
+      return dio.delete("/user/cart/$id", cancelToken: cancelToken)
+        .map<RemoveFromCartDirectlyResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToRemoveFromCartDirectlyResponse());
     });
   }
 

@@ -67,6 +67,7 @@ import '../../misc/product_helper.dart';
 import '../../misc/string_util.dart';
 import '../../misc/toast_helper.dart';
 import '../notifier/component_notifier.dart';
+import '../notifier/notification_notifier.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/colorful_chip_tab_bar.dart';
 import '../widget/modified_divider.dart';
@@ -620,6 +621,10 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
         onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
         onAddToWishlistRequestProcessSuccessCallback: () async => context.read<ComponentNotifier>().updateWishlist(),
         onRemoveFromWishlistRequestProcessSuccessCallback: (wishlist) async => context.read<ComponentNotifier>().updateWishlist(),
+        onAddCartRequestProcessSuccessCallback: () async {
+          context.read<ComponentNotifier>().updateCart();
+          context.read<NotificationNotifier>().loadCartLoadDataResult();
+        }
       )
     );
     widget.productDetailController.productBrandFavoriteControllerContentDelegate.setProductBrandFavoriteDelegate(

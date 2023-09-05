@@ -18,6 +18,8 @@ import '../entity/cart/cart_list_parameter.dart';
 import '../entity/cart/cart_paging_parameter.dart';
 import '../entity/cart/cart_summary.dart';
 import '../entity/cart/cart_summary_parameter.dart';
+import '../entity/cart/remove_from_cart_directly_parameter.dart';
+import '../entity/cart/remove_from_cart_directly_response.dart';
 import '../entity/cart/remove_from_cart_parameter.dart';
 import '../entity/cart/remove_from_cart_response.dart';
 import '../entity/cart/shared_cart_paging_parameter.dart';
@@ -30,6 +32,7 @@ abstract class CartRepository {
   FutureProcessing<LoadDataResult<PagingDataResult<Cart>>> sharedCartPaging(SharedCartPagingParameter sharedCartPagingParameter);
   FutureProcessing<LoadDataResult<AddToCartResponse>> addToCart(AddToCartParameter addToCartParameter);
   FutureProcessing<LoadDataResult<RemoveFromCartResponse>> removeFromCart(RemoveFromCartParameter removeFromCartParameter);
+  FutureProcessing<LoadDataResult<RemoveFromCartDirectlyResponse>> removeFromCartDirectly(RemoveFromCartDirectlyParameter removeFromCartDirectlyParameter);
   FutureProcessing<LoadDataResult<AddHostCartResponse>> addHostCart(AddHostCartParameter addHostCartParameter);
   FutureProcessing<LoadDataResult<TakeFriendCartResponse>> takeFriendCart(TakeFriendCartParameter takeFriendCartParameter);
   FutureProcessing<LoadDataResult<CartSummary>> cartSummary(CartSummaryParameter cartSummaryParameter);

@@ -12,6 +12,7 @@ class ProductBundle implements SupportCart, SupportWishlist, SupportOrderProduct
   double rating;
   int soldOut;
   bool _hasAddedToWishlist = false;
+  bool _hasAddedToCart = false;
 
   @override
   String get cartTitle => name;
@@ -40,6 +41,12 @@ class ProductBundle implements SupportCart, SupportWishlist, SupportOrderProduct
   @override
   set hasAddedToWishlist(bool value) => _hasAddedToWishlist = value;
 
+  @override
+  bool get hasAddedToCart => _hasAddedToCart;
+
+  @override
+  set hasAddedToCart(bool value) => _hasAddedToCart = value;
+
   ProductBundle({
     required this.id,
     required this.name,
@@ -49,6 +56,8 @@ class ProductBundle implements SupportCart, SupportWishlist, SupportOrderProduct
     required this.price,
     required this.rating,
     required this.soldOut,
-    required bool hasAddedToWishlist
-  }) : _hasAddedToWishlist = hasAddedToWishlist;
+    required bool hasAddedToWishlist,
+    required bool hasAddedToCart
+  }) : _hasAddedToWishlist = hasAddedToWishlist,
+      _hasAddedToCart = hasAddedToCart;
 }

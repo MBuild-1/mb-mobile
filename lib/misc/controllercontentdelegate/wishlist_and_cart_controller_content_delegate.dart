@@ -5,6 +5,10 @@ import 'package:provider/provider.dart';
 
 import '../../domain/entity/cart/add_to_cart_parameter.dart';
 import '../../domain/entity/cart/add_to_cart_response.dart';
+import '../../domain/entity/cart/remove_from_cart_directly_parameter.dart';
+import '../../domain/entity/cart/remove_from_cart_directly_response.dart';
+import '../../domain/entity/cart/remove_from_cart_parameter.dart';
+import '../../domain/entity/cart/remove_from_cart_response.dart';
 import '../../domain/entity/cart/support_cart.dart';
 import '../../domain/entity/wishlist/add_wishlist_parameter.dart';
 import '../../domain/entity/wishlist/add_wishlist_response.dart';
@@ -15,6 +19,8 @@ import '../../domain/entity/wishlist/support_wishlist.dart';
 import '../../domain/entity/wishlist/wishlist.dart';
 import '../../domain/usecase/add_to_cart_use_case.dart';
 import '../../domain/usecase/add_wishlist_use_case.dart';
+import '../../domain/usecase/remove_from_cart_directly_use_case.dart';
+import '../../domain/usecase/remove_from_cart_use_case.dart';
 import '../../domain/usecase/remove_wishlist_based_product_use_case.dart';
 import '../../domain/usecase/remove_wishlist_use_case.dart';
 import '../../presentation/notifier/notification_notifier.dart';
@@ -32,6 +38,8 @@ class WishlistAndCartControllerContentDelegate extends ControllerContentDelegate
   final RemoveWishlistUseCase removeWishlistUseCase;
   final RemoveWishlistBasedProductUseCase removeWishlistBasedProductUseCase;
   final AddToCartUseCase addToCartUseCase;
+  final RemoveFromCartUseCase removeFromCartUseCase;
+  final RemoveFromCartDirectlyUseCase removeFromCartDirectlyUseCase;
 
   WishlistAndCartDelegate? _wishlistAndCartDelegate;
   ApiRequestManager Function()? _onGetApiRequestManager;
@@ -40,7 +48,9 @@ class WishlistAndCartControllerContentDelegate extends ControllerContentDelegate
     required this.addWishlistUseCase,
     required this.removeWishlistUseCase,
     required this.removeWishlistBasedProductUseCase,
-    required this.addToCartUseCase
+    required this.addToCartUseCase,
+    required this.removeFromCartUseCase,
+    required this.removeFromCartDirectlyUseCase
   });
 
   void addToWishlist(SupportWishlist supportWishlist) async {
@@ -134,9 +144,50 @@ class WishlistAndCartControllerContentDelegate extends ControllerContentDelegate
       );
       _wishlistAndCartDelegate!.onBack();
       if (addToCartResponseLoadDataResult.isSuccess) {
+        supportCart.hasAddedToCart = true;
         _wishlistAndCartDelegate!.onAddCartRequestProcessSuccessCallback();
       } else {
-        _wishlistAndCartDelegate!.onShowAddCartRequestProcessFailedCallback(addToCartResponseLoadDataResult.resultIfFailed);
+        LoadDataResult<RemoveFromCartDirectlyResponse> removeFromCartDirectlyResponseLoadDataResult = await removeFromCartDirectlyUseCase.execute(
+          RemoveFromCartDirectlyParameter(supportCart: supportCart)
+        ).future(
+          parameter: apiRequestManager.addRequestToCancellationPart('remove-from-cart').value
+        );
+        if (removeFromCartDirectlyResponseLoadDataResult.isSuccess) {
+          supportCart.hasAddedToCart = false;
+          _wishlistAndCartDelegate!.onRemoveCartRequestProcessSuccessCallback();
+        } else {
+          _wishlistAndCartDelegate!.onShowRemoveCartRequestProcessFailedCallback(removeFromCartDirectlyResponseLoadDataResult.resultIfFailed);
+        }
+      }
+    }
+  }
+
+  void removeFromCart(SupportCart supportCart) async {
+    if (_wishlistAndCartDelegate != null && _onGetApiRequestManager != null) {
+      ApiRequestManager apiRequestManager = _onGetApiRequestManager!();
+      _wishlistAndCartDelegate!.onUnfocusAllWidget();
+      _wishlistAndCartDelegate!.onShowRemoveCartRequestProcessLoadingCallback();
+      LoadDataResult<RemoveFromCartDirectlyResponse> removeFromCartDirectlyResponseLoadDataResult = await removeFromCartDirectlyUseCase.execute(
+        RemoveFromCartDirectlyParameter(supportCart: supportCart)
+      ).future(
+        parameter: apiRequestManager.addRequestToCancellationPart('remove-from-cart').value
+      );
+      _wishlistAndCartDelegate!.onBack();
+      if (removeFromCartDirectlyResponseLoadDataResult.isSuccess) {
+        supportCart.hasAddedToCart = false;
+        _wishlistAndCartDelegate!.onRemoveCartRequestProcessSuccessCallback();
+      } else {
+        LoadDataResult<AddToCartResponse> addToCartResponseLoadDataResult = await addToCartUseCase.execute(
+          AddToCartParameter(supportCart: supportCart, quantity: 1)
+        ).future(
+          parameter: apiRequestManager.addRequestToCancellationPart('add-to-cart').value
+        );
+        if (addToCartResponseLoadDataResult.isSuccess) {
+          supportCart.hasAddedToCart = true;
+          _wishlistAndCartDelegate!.onAddCartRequestProcessSuccessCallback();
+        } else {
+          _wishlistAndCartDelegate!.onShowAddCartRequestProcessFailedCallback(addToCartResponseLoadDataResult.resultIfFailed);
+        }
       }
     }
   }
@@ -164,6 +215,9 @@ class WishlistAndCartDelegate {
   OnShowAddCartRequestProcessLoadingCallback onShowAddCartRequestProcessLoadingCallback;
   OnAddCartRequestProcessSuccessCallback onAddCartRequestProcessSuccessCallback;
   OnShowAddCartRequestProcessFailedCallback onShowAddCartRequestProcessFailedCallback;
+  OnShowRemoveCartRequestProcessLoadingCallback onShowRemoveCartRequestProcessLoadingCallback;
+  OnRemoveCartRequestProcessSuccessCallback onRemoveCartRequestProcessSuccessCallback;
+  OnShowRemoveCartRequestProcessFailedCallback onShowRemoveCartRequestProcessFailedCallback;
 
   WishlistAndCartDelegate({
     required this.onBack,
@@ -177,6 +231,9 @@ class WishlistAndCartDelegate {
     required this.onShowAddCartRequestProcessLoadingCallback,
     required this.onAddCartRequestProcessSuccessCallback,
     required this.onShowAddCartRequestProcessFailedCallback,
+    required this.onShowRemoveCartRequestProcessLoadingCallback,
+    required this.onRemoveCartRequestProcessSuccessCallback,
+    required this.onShowRemoveCartRequestProcessFailedCallback
   });
 }
 
@@ -195,6 +252,9 @@ class WishlistAndCartDelegateFactory {
     OnShowAddCartRequestProcessLoadingCallback? onShowAddCartRequestProcessLoadingCallback,
     OnAddCartRequestProcessSuccessCallback? onAddCartRequestProcessSuccessCallback,
     OnShowAddCartRequestProcessFailedCallback? onShowAddCartRequestProcessFailedCallback,
+    OnShowRemoveCartRequestProcessLoadingCallback? onShowRemoveCartRequestProcessLoadingCallback,
+    OnRemoveCartRequestProcessSuccessCallback? onRemoveCartRequestProcessSuccessCallback,
+    OnShowRemoveCartRequestProcessFailedCallback? onShowRemoveCartRequestProcessFailedCallback
   }) {
     return WishlistAndCartDelegate(
       onUnfocusAllWidget: () => FocusScope.of(onGetBuildContext()).unfocus(),
@@ -229,6 +289,19 @@ class WishlistAndCartDelegateFactory {
         ToastHelper.showToast("${"Success add to cart".tr}.");
       },
       onShowAddCartRequestProcessFailedCallback: onShowAddCartRequestProcessFailedCallback ?? (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
+        context: onGetBuildContext(),
+        errorProvider: onGetErrorProvider(),
+        e: e
+      ),
+      onShowRemoveCartRequestProcessLoadingCallback: onShowRemoveCartRequestProcessLoadingCallback ?? () async => DialogHelper.showLoadingDialog(onGetBuildContext()),
+      onRemoveCartRequestProcessSuccessCallback: onRemoveCartRequestProcessSuccessCallback ?? () async {
+        if (MainRouteObserver.onRefreshCartInMainMenu != null) {
+          MainRouteObserver.onRefreshCartInMainMenu!();
+        }
+        Provider.of<NotificationNotifier>(onGetBuildContext(), listen: false).loadCartLoadDataResult();
+        ToastHelper.showToast("${"Success remove to cart".tr}.");
+      },
+      onShowRemoveCartRequestProcessFailedCallback: onShowRemoveCartRequestProcessFailedCallback ?? (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
         context: onGetBuildContext(),
         errorProvider: onGetErrorProvider(),
         e: e

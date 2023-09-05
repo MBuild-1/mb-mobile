@@ -28,6 +28,7 @@ import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_it
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
 import '../notifier/component_notifier.dart';
+import '../notifier/notification_notifier.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/default_search_app_bar.dart';
 import 'getx_page.dart';
@@ -240,6 +241,10 @@ class _StatefulProductBundleDetailControllerMediatorWidgetState extends State<_S
         onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
         onAddToWishlistRequestProcessSuccessCallback: () async => context.read<ComponentNotifier>().updateWishlist(),
         onRemoveFromWishlistRequestProcessSuccessCallback: (wishlist) async => context.read<ComponentNotifier>().updateWishlist(),
+        onAddCartRequestProcessSuccessCallback: () async {
+          context.read<ComponentNotifier>().updateCart();
+          context.read<NotificationNotifier>().loadCartLoadDataResult();
+        }
       )
     );
     return Scaffold(

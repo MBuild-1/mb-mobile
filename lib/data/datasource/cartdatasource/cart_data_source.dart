@@ -15,6 +15,8 @@ import '../../../domain/entity/cart/cart_list_parameter.dart';
 import '../../../domain/entity/cart/cart_paging_parameter.dart';
 import '../../../domain/entity/cart/cart_summary.dart';
 import '../../../domain/entity/cart/cart_summary_parameter.dart';
+import '../../../domain/entity/cart/remove_from_cart_directly_parameter.dart';
+import '../../../domain/entity/cart/remove_from_cart_directly_response.dart';
 import '../../../domain/entity/cart/remove_from_cart_parameter.dart';
 import '../../../domain/entity/cart/remove_from_cart_response.dart';
 import '../../../domain/entity/cart/shared_cart_paging_parameter.dart';
@@ -29,6 +31,7 @@ abstract class CartDataSource {
   FutureProcessing<PagingDataResult<Cart>> sharedCartPaging(SharedCartPagingParameter sharedCartPagingParameter);
   FutureProcessing<AddToCartResponse> addToCart(AddToCartParameter addToCartParameter);
   FutureProcessing<RemoveFromCartResponse> removeFromCart(RemoveFromCartParameter removeFromCartParameter);
+  FutureProcessing<RemoveFromCartDirectlyResponse> removeFromCartDirectly(RemoveFromCartDirectlyParameter removeFromCartDirectlyParameter);
   FutureProcessing<AddHostCartResponse> addHostCart(AddHostCartParameter addHostCartParameter);
   FutureProcessing<TakeFriendCartResponse> takeFriendCart(TakeFriendCartParameter takeFriendCartParameter);
   FutureProcessing<CartSummary> cartSummary(CartSummaryParameter cartSummaryParameter);

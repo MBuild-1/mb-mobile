@@ -41,7 +41,7 @@ class _ErrorHelperImpl {
   }
 
   Error generateEmptyError(dynamic e) {
-    bool checkingEmpty(String lowerCaseMessage) => lowerCaseMessage.contains("is empty") || lowerCaseMessage.contains("empty");
+    bool checkingEmpty(String lowerCaseMessage) => lowerCaseMessage.contains("is empty") || lowerCaseMessage.contains("empty") || lowerCaseMessage.contains("not found");
     DioError dioError = generatePleaseLoginFirstDioError(e);
     dynamic message = dioError.response?.data["meta"]["message"];
     if (message is Map<String, dynamic>) {

@@ -15,6 +15,8 @@ import '../../domain/entity/cart/cart_list_parameter.dart';
 import '../../domain/entity/cart/cart_paging_parameter.dart';
 import '../../domain/entity/cart/cart_summary.dart';
 import '../../domain/entity/cart/cart_summary_parameter.dart';
+import '../../domain/entity/cart/remove_from_cart_directly_parameter.dart';
+import '../../domain/entity/cart/remove_from_cart_directly_response.dart';
 import '../../domain/entity/cart/remove_from_cart_parameter.dart';
 import '../../domain/entity/cart/remove_from_cart_response.dart';
 import '../../domain/entity/cart/shared_cart_paging_parameter.dart';
@@ -56,6 +58,11 @@ class DefaultCartRepository implements CartRepository {
   @override
   FutureProcessing<LoadDataResult<RemoveFromCartResponse>> removeFromCart(RemoveFromCartParameter removeFromCartParameter) {
     return cartDataSource.removeFromCart(removeFromCartParameter).mapToLoadDataResult<RemoveFromCartResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<RemoveFromCartDirectlyResponse>> removeFromCartDirectly(RemoveFromCartDirectlyParameter removeFromCartDirectlyParameter) {
+    return cartDataSource.removeFromCartDirectly(removeFromCartDirectlyParameter).mapToLoadDataResult<RemoveFromCartDirectlyResponse>();
   }
 
   @override

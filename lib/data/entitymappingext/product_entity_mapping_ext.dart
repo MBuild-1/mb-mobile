@@ -2,6 +2,7 @@ import 'package:masterbagasi/data/entitymappingext/product_entity_mapping_ext.da
 import 'package:masterbagasi/data/entitymappingext/province_entity_mapping_ext.dart';
 import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 
+import '../../domain/entity/cart/cart.dart';
 import '../../domain/entity/product/product.dart';
 import '../../domain/entity/product/product_detail.dart';
 import '../../domain/entity/product/productbrand/add_to_favorite_product_brand_response.dart';
@@ -86,7 +87,7 @@ extension ProductDetailEntityMappingExt on ResponseWrapper {
     );
   }
 
-  ProductDetail mapFromResponseToProductDetail(List<Wishlist> wishlistList, List<FavoriteProductBrand> favoriteProductBrandList) {
+  ProductDetail mapFromResponseToProductDetail(List<Wishlist> wishlistList, List<FavoriteProductBrand> favoriteProductBrandList, List<Cart> cartList) {
     Product product = ResponseWrapper(response).mapFromResponseToProduct(favoriteProductBrandList);
     return ProductDetail(
       id: product.id,
@@ -105,27 +106,27 @@ extension ProductDetailEntityMappingExt on ResponseWrapper {
       productCategory: product.productCategory,
       province: product.province,
       productCertificationList: product.productCertificationList,
-      productEntry: ResponseWrapper(response["product_entry"]).mapFromResponseToProductEntryList(wishlistList)
+      productEntry: ResponseWrapper(response["product_entry"]).mapFromResponseToProductEntryList(wishlistList, cartList)
     );
   }
 }
 
 extension ProductBundleMappingExt on ResponseWrapper {
-  List<ProductBundle> mapFromResponseToProductBundleList(List<Wishlist> wishlistList) {
-    return response.map<ProductBundle>((productBundleResponse) => ResponseWrapper(productBundleResponse).mapFromResponseToProductBundle(wishlistList)).toList();
+  List<ProductBundle> mapFromResponseToProductBundleList(List<Wishlist> wishlistList, List<Cart> cartList) {
+    return response.map<ProductBundle>((productBundleResponse) => ResponseWrapper(productBundleResponse).mapFromResponseToProductBundle(wishlistList, cartList)).toList();
   }
 
-  PagingDataResult<ProductBundle> mapFromResponseToProductBundlePaging(List<Wishlist> wishlistList) {
+  PagingDataResult<ProductBundle> mapFromResponseToProductBundlePaging(List<Wishlist> wishlistList, List<Cart> cartList) {
     return ResponseWrapper(response).mapFromResponseToPagingDataResult(
       (dataResponse) => dataResponse.map<ProductBundle>(
-        (productBundleResponse) => ResponseWrapper(productBundleResponse).mapFromResponseToProductBundle(wishlistList)
+        (productBundleResponse) => ResponseWrapper(productBundleResponse).mapFromResponseToProductBundle(wishlistList, cartList)
       ).toList()
     );
   }
 }
 
 extension ProductBundleDetailEntityMappingExt on ResponseWrapper {
-  ProductBundle mapFromResponseToProductBundle(List<Wishlist> wishlistList) {
+  ProductBundle mapFromResponseToProductBundle(List<Wishlist> wishlistList, List<Cart> cartList) {
     String productBundleId = response["id"];
     return ProductBundle(
       id: productBundleId,
@@ -141,11 +142,17 @@ extension ProductBundleDetailEntityMappingExt on ResponseWrapper {
           return (wishlist.supportWishlist as ProductBundle).id == productBundleId;
         }
         return false;
-      }).isNotEmpty
+      }).isNotEmpty,
+      hasAddedToCart: response["has_added_to_cart"] ?? cartList.where((cart) {
+        if (cart.supportCart is ProductBundle) {
+          return (cart.supportCart as ProductBundle).id == productBundleId;
+        }
+        return false;
+      }).isNotEmpty,
     );
   }
 
-  ProductBundleDetail mapFromResponseToProductBundleDetail(List<Wishlist> wishlistList) {
+  ProductBundleDetail mapFromResponseToProductBundleDetail(List<Wishlist> wishlistList, List<Cart> cartList) {
     String productBundleId = response["id"];
     return ProductBundleDetail(
       id: productBundleId,
@@ -156,12 +163,18 @@ extension ProductBundleDetailEntityMappingExt on ResponseWrapper {
       price: ResponseWrapper(response["price"]).mapFromResponseToDouble()!,
       rating: 0.0,
       productEntryList: response["bundling_list"].map<ProductEntry>(
-        (bundlingResponse) => ResponseWrapper(bundlingResponse["product_entry"]).mapFromResponseToProductEntry(wishlistList)
+        (bundlingResponse) => ResponseWrapper(bundlingResponse["product_entry"]).mapFromResponseToProductEntry(wishlistList, cartList)
       ).toList(),
       soldOut: response["sold"] ?? 0,
       hasAddedToWishlist: response["has_added_to_wishlist"] ?? wishlistList.where((wishlist) {
         if (wishlist.supportWishlist is ProductBundle) {
           return (wishlist.supportWishlist as ProductBundle).id == productBundleId;
+        }
+        return false;
+      }).isNotEmpty,
+      hasAddedToCart: response["has_added_to_cart"] ?? cartList.where((cart) {
+        if (cart.supportCart is ProductBundle) {
+          return (cart.supportCart as ProductBundle).id == productBundleId;
         }
         return false;
       }).isNotEmpty
@@ -300,21 +313,21 @@ extension ProductCertificationDetailEntityMappingExt on ResponseWrapper {
 }
 
 extension ProductEntryEntityMappingExt on ResponseWrapper {
-  List<ProductEntry> mapFromResponseToProductEntryList(List<Wishlist> wishlistList) {
-    return response.map<ProductEntry>((productEntryResponse) => ResponseWrapper(productEntryResponse).mapFromResponseToProductEntry(wishlistList)).toList();
+  List<ProductEntry> mapFromResponseToProductEntryList(List<Wishlist> wishlistList, List<Cart> cartList) {
+    return response.map<ProductEntry>((productEntryResponse) => ResponseWrapper(productEntryResponse).mapFromResponseToProductEntry(wishlistList, cartList)).toList();
   }
 
-  PagingDataResult<ProductEntry> mapFromResponseToProductEntryPaging(List<Wishlist> wishlistList) {
+  PagingDataResult<ProductEntry> mapFromResponseToProductEntryPaging(List<Wishlist> wishlistList, List<Cart> cartList) {
     return ResponseWrapper(response).mapFromResponseToPagingDataResult(
       (dataResponse) => dataResponse.map<ProductEntry>(
-        (productResponse) => ResponseWrapper(productResponse).mapFromResponseToProductEntry(wishlistList)
+        (productResponse) => ResponseWrapper(productResponse).mapFromResponseToProductEntry(wishlistList, cartList)
       ).toList()
     );
   }
 }
 
 extension ProductEntryDetailEntityMappingExt on ResponseWrapper {
-  ProductEntry mapFromResponseToProductEntry(List<Wishlist> wishlistList) {
+  ProductEntry mapFromResponseToProductEntry(List<Wishlist> wishlistList, List<Cart> cartList) {
     String productEntryId = response["id"];
     return ProductEntry(
       id: productEntryId,
@@ -344,6 +357,12 @@ extension ProductEntryDetailEntityMappingExt on ResponseWrapper {
         }
         return false;
       }).isNotEmpty,
+      hasAddedToCart: response["has_added_to_cart"] ?? cartList.where((cart) {
+        if (cart.supportCart is ProductEntry) {
+          return (cart.supportCart as ProductEntry).id == productEntryId;
+        }
+        return false;
+      }).isNotEmpty,
     );
   }
 }
@@ -366,24 +385,24 @@ extension ProductVariantDetailEntityMappingExt on ResponseWrapper {
 }
 
 extension WishlistEntityMappingExt on ResponseWrapper {
-  List<Wishlist> mapFromResponseToWishlistList() {
-    return response.map<Wishlist>((wishlistResponse) => ResponseWrapper(wishlistResponse).mapFromResponseToWishlist()).toList();
+  List<Wishlist> mapFromResponseToWishlistList(List<Cart> cartList) {
+    return response.map<Wishlist>((wishlistResponse) => ResponseWrapper(wishlistResponse).mapFromResponseToWishlist(cartList)).toList();
   }
 
-  PagingDataResult<Wishlist> mapFromResponseToWishlistPaging() {
+  PagingDataResult<Wishlist> mapFromResponseToWishlistPaging(List<Cart> cartList) {
     return ResponseWrapper(response).mapFromResponseToPagingDataResult(
       (dataResponse) => dataResponse.map<Wishlist>(
-        (wishlistResponse) => ResponseWrapper(wishlistResponse).mapFromResponseToWishlist()
+        (wishlistResponse) => ResponseWrapper(wishlistResponse).mapFromResponseToWishlist(cartList)
       ).toList()
     );
   }
 }
 
 extension WishlistDetailEntityMappingExt on ResponseWrapper {
-  Wishlist mapFromResponseToWishlist() {
+  Wishlist mapFromResponseToWishlist(List<Cart> cartList) {
     return Wishlist(
       id: response["id"],
-      supportWishlist: ResponseWrapper(response).mapFromResponseToSupportWishlist([])
+      supportWishlist: ResponseWrapper(response).mapFromResponseToSupportWishlist([], cartList)
     );
   }
 
@@ -395,13 +414,13 @@ extension WishlistDetailEntityMappingExt on ResponseWrapper {
     return RemoveWishlistResponse();
   }
 
-  SupportWishlist mapFromResponseToSupportWishlist(List<Wishlist> wishlistList) {
+  SupportWishlist mapFromResponseToSupportWishlist(List<Wishlist> wishlistList, List<Cart> cartList) {
     dynamic productEntry = response["product_entry"];
     dynamic bundling = response["bundling"];
     if (productEntry != null) {
-      return ResponseWrapper(productEntry).mapFromResponseToProductEntry(wishlistList);
+      return ResponseWrapper(productEntry).mapFromResponseToProductEntry(wishlistList, cartList);
     } else if (bundling != null) {
-      return ResponseWrapper(bundling).mapFromResponseToProductBundle(wishlistList);
+      return ResponseWrapper(bundling).mapFromResponseToProductBundle(wishlistList, cartList);
     } else {
       throw MessageError(message: "Support wishlist not suitable");
     }

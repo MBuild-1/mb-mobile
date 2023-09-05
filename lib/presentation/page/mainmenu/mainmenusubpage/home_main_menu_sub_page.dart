@@ -62,6 +62,7 @@ import '../../../../misc/parameterizedcomponententityandlistitemcontrollerstatem
 import '../../../../misc/shimmercarousellistitemgenerator/factory/product_bundle_shimmer_carousel_list_item_generator_factory.dart';
 import '../../../../misc/shimmercarousellistitemgenerator/type/product_bundle_shimmer_carousel_list_item_generator_type.dart';
 import '../../../notifier/component_notifier.dart';
+import '../../../notifier/notification_notifier.dart';
 import '../../../widget/background_app_bar_scaffold.dart';
 import '../../../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../../../widget/modified_paged_list_view.dart';
@@ -229,7 +230,11 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
         onGetBuildContext: () => context,
         onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
         onAddToWishlistRequestProcessSuccessCallback: () async => context.read<ComponentNotifier>().updateWishlist(),
-        onRemoveFromWishlistRequestProcessSuccessCallback: (wishlist) async => context.read<ComponentNotifier>().updateWishlist()
+        onRemoveFromWishlistRequestProcessSuccessCallback: (wishlist) async => context.read<ComponentNotifier>().updateWishlist(),
+        onAddCartRequestProcessSuccessCallback: () async {
+          context.read<ComponentNotifier>().updateCart();
+          context.read<NotificationNotifier>().loadCartLoadDataResult();
+        }
       )
     );
     OnObserveLoadProductDelegateFactory onObserveLoadProductDelegateFactory = Injector.locator<OnObserveLoadProductDelegateFactory>()
@@ -242,6 +247,7 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
             ),
             CartDelegateParameterizedEntityAndListItemControllerStateMediatorParameter(
               onAddCart: (data) => widget.homeMainMenuSubController.wishlistAndCartControllerContentDelegate.addToCart(data),
+              onRemoveCart: (data) => widget.homeMainMenuSubController.wishlistAndCartControllerContentDelegate.removeFromCart(data),
             )
           ]
         )
@@ -255,6 +261,7 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
             ),
             CartDelegateParameterizedEntityAndListItemControllerStateMediatorParameter(
               onAddCart: (data) => widget.homeMainMenuSubController.wishlistAndCartControllerContentDelegate.addToCart(data),
+              onRemoveCart: (data) => widget.homeMainMenuSubController.wishlistAndCartControllerContentDelegate.removeFromCart(data),
             )
           ]
         )
@@ -448,6 +455,7 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
                   onAddWishlist: (productBundleOutput) => widget.homeMainMenuSubController.wishlistAndCartControllerContentDelegate.addToWishlist(productBundleOutput),
                   onRemoveWishlist: (productBundleOutput) => widget.homeMainMenuSubController.wishlistAndCartControllerContentDelegate.removeFromWishlist(productBundleOutput),
                   onAddCart: (productBundleOutput) => widget.homeMainMenuSubController.wishlistAndCartControllerContentDelegate.addToCart(productBundleOutput),
+                  onRemoveCart: (productBundleOutput) => widget.homeMainMenuSubController.wishlistAndCartControllerContentDelegate.removeFromCart(productBundleOutput),
                 )
               ]
             )

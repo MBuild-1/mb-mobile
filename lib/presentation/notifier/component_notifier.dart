@@ -15,4 +15,8 @@ class ComponentNotifier extends ChangeNotifier {
   void updateFavorite() {
     notifyListeners();
   }
+
+  void updateCart() {
+    notifyListeners();
+  }
 }

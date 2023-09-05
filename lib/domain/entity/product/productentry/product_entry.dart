@@ -33,6 +33,7 @@ class ProductEntry implements ProductEntryAppearanceData, SupportCart, SupportWi
   @override
   int soldCount;
   bool _hasAddedToWishlist;
+  bool _hasAddedToCart;
 
   @override
   String get cartTitle => name;
@@ -71,7 +72,9 @@ class ProductEntry implements ProductEntryAppearanceData, SupportCart, SupportWi
     required this.imageUrlList,
     required this.soldCount,
     required bool hasAddedToWishlist,
-  }) : _hasAddedToWishlist = hasAddedToWishlist;
+    required bool hasAddedToCart
+  }) : _hasAddedToWishlist = hasAddedToWishlist,
+      _hasAddedToCart = hasAddedToCart;
 
   @override
   double? get discountPrice => product.discountPrice;
@@ -98,4 +101,10 @@ class ProductEntry implements ProductEntryAppearanceData, SupportCart, SupportWi
 
   @override
   set hasAddedToWishlist(bool value) => _hasAddedToWishlist = value;
+
+  @override
+  bool get hasAddedToCart => _hasAddedToCart;
+
+  @override
+  set hasAddedToCart(bool value) => _hasAddedToCart = value;
 }

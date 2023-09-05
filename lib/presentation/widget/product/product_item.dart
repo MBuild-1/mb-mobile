@@ -100,6 +100,7 @@ abstract class ProductItem extends StatelessWidget {
     String weight = "${productAppearanceData.weight.toString()} Kg";
     String soldCount = "No Sold Count".tr;
     bool isAddToWishlist = false;
+    bool isAddToCart = false;
     void onWishlist(void Function(ProductAppearanceData)? onWishlistCallback) {
       if (onWishlistCallback != null) {
         if (productAppearanceData is ProductEntryAppearanceData) {
@@ -112,6 +113,7 @@ abstract class ProductItem extends StatelessWidget {
     if (productAppearanceData is ProductEntryAppearanceData) {
       soldCount = "${"sold".tr} ${(productAppearanceData as ProductEntryAppearanceData).soldCount}";
       isAddToWishlist = (productAppearanceData as ProductEntryAppearanceData).hasAddedToWishlist;
+      isAddToCart = (productAppearanceData as ProductEntryAppearanceData).hasAddedToCart;
     }
     return SizedBox(
       width: itemWidth,
@@ -205,7 +207,7 @@ abstract class ProductItem extends StatelessWidget {
                             Expanded(
                               child: SizedOutlineGradientButton(
                                 onPressed: onAddCart != null ? () => onAddCart!(productAppearanceData) : null,
-                                text: "+ ${"Cart".tr}",
+                                text: "${isAddToCart ? '-' : '+'} ${"Cart".tr}",
                                 outlineGradientButtonType: OutlineGradientButtonType.outline,
                                 outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
                               )

@@ -187,6 +187,7 @@ import '../domain/usecase/register_use_case.dart';
 import '../domain/usecase/register_with_google_use_case.dart';
 import '../domain/usecase/remove_additional_item_use_case.dart';
 import '../domain/usecase/remove_address_use_case.dart';
+import '../domain/usecase/remove_from_cart_directly_use_case.dart';
 import '../domain/usecase/remove_from_cart_use_case.dart';
 import '../domain/usecase/remove_from_favorite_product_brand_use_case.dart';
 import '../domain/usecase/remove_wishlist_based_product_use_case.dart';
@@ -445,7 +446,9 @@ class _Injector {
         addWishlistUseCase: locator(),
         removeWishlistUseCase: locator(),
         addToCartUseCase: locator(),
-        removeWishlistBasedProductUseCase: locator()
+        removeWishlistBasedProductUseCase: locator(),
+        removeFromCartUseCase: locator(),
+        removeFromCartDirectlyUseCase: locator()
       )
     );
     locator.registerFactory<ProductBrandFavoriteControllerContentDelegate>(
@@ -544,6 +547,7 @@ class _Injector {
     locator.registerLazySingleton<GetMyCartUseCase>(() => GetMyCartUseCase(cartRepository: locator()));
     locator.registerLazySingleton<AddToCartUseCase>(() => AddToCartUseCase(cartRepository: locator()));
     locator.registerLazySingleton<RemoveFromCartUseCase>(() => RemoveFromCartUseCase(cartRepository: locator()));
+    locator.registerLazySingleton<RemoveFromCartDirectlyUseCase>(() => RemoveFromCartDirectlyUseCase(cartRepository: locator()));
     locator.registerLazySingleton<AddHostCartUseCase>(() => AddHostCartUseCase(cartRepository: locator()));
     locator.registerLazySingleton<TakeFriendCartUseCase>(() => TakeFriendCartUseCase(cartRepository: locator()));
     locator.registerLazySingleton<GetCurrentSelectedAddressUseCase>(() => GetCurrentSelectedAddressUseCase(addressRepository: locator()));
@@ -622,6 +626,7 @@ class _Injector {
     locator.registerLazySingleton<ProductDataSource>(
       () => DefaultProductDataSource(
         dio: locator(),
+        cartDataSource: locator(),
         productBundleDummy: locator(),
         productEntryDummy: locator(),
         productBrandDummy: locator()

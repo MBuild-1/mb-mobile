@@ -48,6 +48,7 @@ import '../../misc/productentryheaderbackground/asset_product_entry_header_backg
 import '../../misc/string_util.dart';
 import '../../misc/toast_helper.dart';
 import '../notifier/component_notifier.dart';
+import '../notifier/notification_notifier.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/default_search_app_bar.dart';
 import 'getx_page.dart';
@@ -300,6 +301,10 @@ class _StatefulProductEntryControllerMediatorWidgetState extends State<_Stateful
         onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
         onAddToWishlistRequestProcessSuccessCallback: () async => context.read<ComponentNotifier>().updateWishlist(),
         onRemoveFromWishlistRequestProcessSuccessCallback: (wishlist) async => context.read<ComponentNotifier>().updateWishlist(),
+        onAddCartRequestProcessSuccessCallback: () async {
+          context.read<ComponentNotifier>().updateCart();
+          context.read<NotificationNotifier>().loadCartLoadDataResult();
+        }
       )
     );
     widget.productEntryController.productBrandFavoriteControllerContentDelegate.setProductBrandFavoriteDelegate(

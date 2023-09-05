@@ -13,7 +13,8 @@ class ProductBundleDummy {
       price: 0.0,
       rating: 0.0,
       soldOut: 0,
-      hasAddedToWishlist: false
+      hasAddedToWishlist: false,
+      hasAddedToCart: false
     );
   }
 
@@ -27,7 +28,8 @@ class ProductBundleDummy {
       price: 0.0,
       rating: 0.0,
       soldOut: 0,
-      hasAddedToWishlist: false
+      hasAddedToWishlist: false,
+      hasAddedToCart: false
     );
   }
 }

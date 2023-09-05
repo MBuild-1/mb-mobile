@@ -14,7 +14,8 @@ class ProductBundleDetail extends ProductBundle {
     required double rating,
     required this.productEntryList,
     required int soldOut,
-    required bool hasAddedToWishlist
+    required bool hasAddedToWishlist,
+    required bool hasAddedToCart
   }) : super(
     id: id,
     name: name,
@@ -24,6 +25,7 @@ class ProductBundleDetail extends ProductBundle {
     price: price,
     rating: rating,
     soldOut: soldOut,
-    hasAddedToWishlist: hasAddedToWishlist
+    hasAddedToWishlist: hasAddedToWishlist,
+    hasAddedToCart: hasAddedToCart
   );
 }

@@ -29,6 +29,7 @@ import '../../../../misc/paging/pagingresult/paging_result.dart';
 import '../../../../misc/toast_helper.dart';
 import '../../../../misc/widget_helper.dart';
 import '../../../notifier/component_notifier.dart';
+import '../../../notifier/notification_notifier.dart';
 import '../../../widget/background_app_bar_scaffold.dart';
 import '../../../widget/modified_paged_list_view.dart';
 import '../../../widget/modifiedappbar/main_menu_search_app_bar.dart';
@@ -156,6 +157,10 @@ class _StatefulWishlistMainMenuSubControllerMediatorWidgetState extends State<_S
           ErrorProviderResult errorProviderResult = errorProvider.onGetErrorProviderResult(e).toErrorProviderResultNonNull();
           ToastHelper.showToast(errorProviderResult.message);
           context.read<ComponentNotifier>().updateWishlist(withRefreshWishlistInMainMenu: false);
+        },
+        onAddCartRequestProcessSuccessCallback: () async {
+          context.read<ComponentNotifier>().updateCart();
+          context.read<NotificationNotifier>().loadCartLoadDataResult();
         }
       )
     );

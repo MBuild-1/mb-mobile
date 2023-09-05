@@ -12,6 +12,8 @@ abstract class ProductEntryAppearanceData extends ProductAppearanceData {
   int get soldCount;
   bool get hasAddedToWishlist;
   set hasAddedToWishlist(bool value);
+  bool get hasAddedToCart;
+  set hasAddedToCart(bool value);
   int get isViral;
   set isViral(int value);
   int get isKitchen;
