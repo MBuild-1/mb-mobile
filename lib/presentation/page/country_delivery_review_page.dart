@@ -247,7 +247,7 @@ class _StatefulCountryDeliveryReviewControllerMediatorWidgetState extends State<
         countryId: _currentSelectedCountryId
       )
     );
-    if (countryDeliveryReviewResponseLoadDataResult.isSuccess) {
+    if (countryDeliveryReviewResponseLoadDataResult.isSuccess && pageKey == 1) {
       if (countryDeliveryReviewResponseLoadDataResult.resultIfSuccess!.countryDeliveryReviewList.isEmpty) {
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           _fillerErrorValueNotifier.value = FailedLoadDataResult.throwException(() {

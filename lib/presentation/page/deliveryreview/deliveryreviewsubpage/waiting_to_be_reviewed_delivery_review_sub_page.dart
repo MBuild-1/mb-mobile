@@ -135,10 +135,11 @@ class _StatefulWaitingToBeReviewedDeliveryReviewSubControllerMediatorWidgetState
         )
       );
     } else {
+      int effectivePageKey = pageKey - 1;
       LoadDataResult<List<CombinedOrder>> orderListLoadDataResult = await widget.waitingToBeReviewedDeliveryReviewSubController.getShippingReviewOrderList(
         ShippingReviewOrderListParameter()
       );
-      if (orderListLoadDataResult.isSuccess) {
+      if (orderListLoadDataResult.isSuccess && effectivePageKey == 1) {
         List itemList = orderListLoadDataResult.resultIfSuccess!;
         if (itemList.isEmpty) {
           WidgetsBinding.instance.addPostFrameCallback((timeStamp) {

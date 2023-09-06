@@ -263,7 +263,7 @@ class _StatefulOrderControllerMediatorWidgetState extends State<_StatefulOrderCo
       LoadDataResult<PagingDataResult<CombinedOrder>> orderPagingLoadDataResult = await widget.orderController.getOrderPaging(
         OrderPagingParameter(page: effectivePageKey, status: _status)
       );
-      if (orderPagingLoadDataResult.isSuccess) {
+      if (orderPagingLoadDataResult.isSuccess && effectivePageKey == 1) {
         List itemList = orderPagingLoadDataResult.resultIfSuccess!.itemList;
         if (itemList.isEmpty) {
           WidgetsBinding.instance.addPostFrameCallback((timeStamp) {

@@ -214,7 +214,7 @@ class _StatefulProductBundleDetailControllerMediatorWidgetState extends State<_S
     LoadDataResult<ProductBundleDetail> productBundleDetailLoadDataResult = await widget.productBundleDetailController.getProductBundleDetail(
       ProductBundleDetailParameter(productBundleId: widget.productBundleId)
     );
-    if (productBundleDetailLoadDataResult.isSuccess) {
+    if (productBundleDetailLoadDataResult.isSuccess && pageKey == 1) {
       List itemList = productBundleDetailLoadDataResult.resultIfSuccess!.productEntryList;
       if (itemList.isEmpty) {
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
