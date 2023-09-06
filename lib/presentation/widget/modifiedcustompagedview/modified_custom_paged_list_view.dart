@@ -100,38 +100,41 @@ class ModifiedCustomPagedListView<PageKeyType, ItemType> extends CustomScrollVie
       shrinkWrapFirstPageIndicators: _shrinkWrapFirstPageIndicators,
       itemTypeListInterceptorList: itemTypeListInterceptorList,
     );
+    bool hasFillerErrorValueNotifier = true;
+    ModifiedPagingController modifiedPagingController = pagingController as ModifiedPagingController;
+    ValueNotifier<dynamic>? fillerErrorValueNotifier = modifiedPagingController.fillerErrorValueNotifier;
+    if (fillerErrorValueNotifier == null) {
+      hasFillerErrorValueNotifier = false;
+    }
     return <Widget>[
       resultWidget,
-      SliverFillRemaining(
-        hasScrollBody: false,
-        child: Builder(
-          builder: (context) {
-            if (pagingController is! ModifiedPagingController) {
-              return Container();
-            }
-            ModifiedPagingController modifiedPagingController = pagingController as ModifiedPagingController;
-            ValueNotifier<dynamic>? fillerErrorValueNotifier = modifiedPagingController.fillerErrorValueNotifier;
-            if (fillerErrorValueNotifier == null) {
-              return Container();
-            }
-            if (onGetErrorProvider == null) {
-              return Container();
-            }
-            return ValueListenableBuilder<dynamic>(
-              valueListenable: fillerErrorValueNotifier,
-              builder: (context, value, _) {
-                if (value == null) {
-                  return Container();
-                }
-                return LoadDataResultImplementer(
-                  loadDataResult: FailedLoadDataResult(e: value),
-                  errorProvider: onGetErrorProvider!()
-                );
+      if (hasFillerErrorValueNotifier) ...[
+        SliverFillRemaining(
+          hasScrollBody: false,
+          child: Builder(
+            builder: (context) {
+              if (pagingController is! ModifiedPagingController) {
+                return Container();
               }
-            );
-          }
+              if (onGetErrorProvider == null) {
+                return Container();
+              }
+              return ValueListenableBuilder<dynamic>(
+                valueListenable: fillerErrorValueNotifier!,
+                builder: (context, value, _) {
+                  if (value == null) {
+                    return Container();
+                  }
+                  return LoadDataResultImplementer(
+                    loadDataResult: FailedLoadDataResult(e: value),
+                    errorProvider: onGetErrorProvider!()
+                  );
+                }
+              );
+            }
+          )
         )
-      )
+      ]
     ];
   }
 }
