@@ -6,6 +6,7 @@ import 'package:masterbagasi/misc/ext/rx_ext.dart';
 import '../../../domain/entity/cart/cart.dart';
 import '../../../domain/entity/cart/cart_paging_parameter.dart';
 import '../../../domain/entity/componententity/dynamic_item_carousel_component_entity.dart';
+import '../../../domain/entity/componententity/dynamic_item_carousel_directly_component_entity.dart';
 import '../../../domain/entity/componententity/i_dynamic_item_carousel_component_entity.dart';
 import '../../../domain/entity/logout/logout_parameter.dart';
 import '../../../domain/entity/logout/logout_response.dart';
@@ -73,10 +74,11 @@ class MenuMainMenuSubController extends BaseGetxController {
       onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
         if (_menuMainMenuSubDelegate != null) {
           return _menuMainMenuSubDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadCartCarousel(
-            OnObserveLoadingLoadCartCarouselParameter()
+            OnObserveLoadingLoadCartCarouselParameter(
+              repeatableDynamicItemCarouselAdditionalParameter: repeatableDynamicItemCarouselAdditionalParameter
+            )
           );
         }
-        throw MessageError(title: "My cart delegate must be initialized");
       },
       onObserveSuccessDynamicItemActionState: (title, description, loadDataResult) {
         List<Cart> cartList = loadDataResult.resultIfSuccess!;
@@ -93,7 +95,18 @@ class MenuMainMenuSubController extends BaseGetxController {
         }
         throw MessageError(title: "My cart delegate must be initialized");
       },
-      dynamicItemCarouselAdditionalParameter: repeatableDynamicItemCarouselAdditionalParameter
+      onObserveFailedDynamicItemActionState: (title, description, loadDataResult) {
+        if (_menuMainMenuSubDelegate != null) {
+          return _menuMainMenuSubDelegate!.onObserveLoadProductDelegate.onObserveFailedLoadCartCarousel(
+            OnObserveFailedLoadCartCarouselParameter(
+              e: (loadDataResult as FailedLoadDataResult).e,
+              repeatableDynamicItemCarouselAdditionalParameter: repeatableDynamicItemCarouselAdditionalParameter
+            )
+          );
+        }
+        throw MessageError(title: "My cart delegate must be initialized");
+      },
+      dynamicItemCarouselAdditionalParameter: repeatableDynamicItemCarouselAdditionalParameter,
     );
   }
 

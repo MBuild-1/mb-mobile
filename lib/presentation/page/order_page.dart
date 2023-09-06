@@ -17,6 +17,8 @@ import '../../misc/controllerstate/listitemcontrollerstate/orderlistitemcontroll
 import '../../misc/controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/order_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/vertical_order_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
+import '../../misc/error/message_error.dart';
+import '../../misc/error_helper.dart';
 import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
@@ -25,6 +27,7 @@ import '../../misc/itemtypelistsubinterceptor/order_item_type_list_sub_intercept
 import '../../misc/list_item_controller_state_helper.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/controller_manager.dart';
+import '../../misc/multi_language_string.dart';
 import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
@@ -171,6 +174,7 @@ class _StatefulOrderControllerMediatorWidgetState extends State<_StatefulOrderCo
   late List<ColorfulChipTabBarData> _orderColorfulChipTabBarDataList;
   String _status = "";
 
+  final ValueNotifier<dynamic> _fillerErrorValueNotifier = ValueNotifier(null);
   final DefaultOrderContainerInterceptingActionListItemControllerState _defaultOrderContainerInterceptingActionListItemControllerState = DefaultOrderContainerInterceptingActionListItemControllerState();
 
   @override
@@ -181,6 +185,7 @@ class _StatefulOrderControllerMediatorWidgetState extends State<_StatefulOrderCo
       firstPageKey: 1,
       // ignore: invalid_use_of_protected_member
       apiRequestManager: widget.orderController.apiRequestManager,
+      fillerErrorValueNotifier: _fillerErrorValueNotifier
     );
     _orderListItemPagingControllerState = PagingControllerState(
       pagingController: _orderListItemPagingController,
@@ -228,6 +233,9 @@ class _StatefulOrderControllerMediatorWidgetState extends State<_StatefulOrderCo
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _orderListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? orderListItemControllerStateList) async {
     List<ListItemControllerState> resultListItemControllerState = [];
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _fillerErrorValueNotifier.value = null;
+    });
     if (pageKey == 1) {
       resultListItemControllerState = [
         OrderContainerListItemControllerState(
@@ -251,12 +259,31 @@ class _StatefulOrderControllerMediatorWidgetState extends State<_StatefulOrderCo
         )
       );
     } else {
-      _updateOrderPaging(NoLoadDataResult());
       int effectivePageKey = pageKey - 1;
       LoadDataResult<PagingDataResult<CombinedOrder>> orderPagingLoadDataResult = await widget.orderController.getOrderPaging(
         OrderPagingParameter(page: effectivePageKey, status: _status)
       );
-      _updateOrderPaging(orderPagingLoadDataResult);
+      if (orderPagingLoadDataResult.isSuccess) {
+        List itemList = orderPagingLoadDataResult.resultIfSuccess!.itemList;
+        if (itemList.isEmpty) {
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            _fillerErrorValueNotifier.value = FailedLoadDataResult.throwException(() {
+              throw ErrorHelper.generateMultiLanguageDioError(
+                MultiLanguageMessageError(
+                  title: MultiLanguageString({
+                    Constant.textEnUsLanguageKey: "Cart Item Is Empty",
+                    Constant.textInIdLanguageKey: "Order Kosong",
+                  }),
+                  message: MultiLanguageString({
+                    Constant.textEnUsLanguageKey: "For now, cart Item is empty.",
+                    Constant.textInIdLanguageKey: "Untuk sekarang, ordernya kosong.",
+                  }),
+                )
+              );
+            })!.e;
+          });
+        }
+      }
       return orderPagingLoadDataResult.map<PagingResult<ListItemControllerState>>((orderPaging) {
         if (ListItemControllerStateHelper.checkListItemControllerStateList(orderListItemControllerStateList)) {
           OrderContainerListItemControllerState orderContainerListItemControllerState = ListItemControllerStateHelper.parsePageKeyedListItemControllerState(orderListItemControllerStateList![0]) as OrderContainerListItemControllerState;
@@ -268,14 +295,6 @@ class _StatefulOrderControllerMediatorWidgetState extends State<_StatefulOrderCo
           totalPage: orderPaging.totalPage,
           totalItem: orderPaging.totalItem
         );
-      });
-    }
-  }
-
-  void _updateOrderPaging(LoadDataResult<PagingDataResult<CombinedOrder>> combinedOrderPagingDataResult) {
-    if (_defaultOrderContainerInterceptingActionListItemControllerState.onRefreshCombinedOrderPagingDataResult != null) {
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        _defaultOrderContainerInterceptingActionListItemControllerState.onRefreshCombinedOrderPagingDataResult!(combinedOrderPagingDataResult);
       });
     }
   }
@@ -305,6 +324,7 @@ class _StatefulOrderControllerMediatorWidgetState extends State<_StatefulOrderCo
                 onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
                   pagingControllerState: pagingControllerState!
                 ),
+                onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
                 pullToRefresh: true
               ),
             ),

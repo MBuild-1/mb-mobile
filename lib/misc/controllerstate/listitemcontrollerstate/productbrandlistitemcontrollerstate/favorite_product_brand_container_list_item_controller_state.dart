@@ -6,6 +6,7 @@ class FavoriteProductBrandContainerListItemControllerState extends ListItemContr
   List<FavoriteProductBrand> favoriteProductBrandList;
   void Function(ProductBrand)? onTapFavoriteProductBrand;
   void Function(FavoriteProductBrand) onRemoveFromFavoriteProductBrand;
+  void Function(List<FavoriteProductBrand>) onAfterRemoveFromFavoriteProductBrand;
   void Function() onUpdateState;
   FavoriteProductBrandContainerInterceptingActionListItemControllerState favoriteProductBrandContainerInterceptingActionListItemControllerState;
 
@@ -13,6 +14,7 @@ class FavoriteProductBrandContainerListItemControllerState extends ListItemContr
     required this.favoriteProductBrandList,
     this.onTapFavoriteProductBrand,
     required this.onRemoveFromFavoriteProductBrand,
+    required this.onAfterRemoveFromFavoriteProductBrand,
     required this.onUpdateState,
     required this.favoriteProductBrandContainerInterceptingActionListItemControllerState
   });

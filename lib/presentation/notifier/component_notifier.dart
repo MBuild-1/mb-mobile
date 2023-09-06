@@ -17,6 +17,9 @@ class ComponentNotifier extends ChangeNotifier {
   }
 
   void updateCart() {
+    if (MainRouteObserver.onRefreshCartInMainMenu != null) {
+      MainRouteObserver.onRefreshCartInMainMenu!();
+    }
     notifyListeners();
   }
 }

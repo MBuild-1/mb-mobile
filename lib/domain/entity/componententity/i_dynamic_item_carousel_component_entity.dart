@@ -14,6 +14,8 @@ abstract class IDynamicItemCarouselComponentEntity<T> implements IComponentEntit
   set onObserveLoadingDynamicItemActionState(ObserveDynamicItemAction? value);
   ObserveDynamicItemAction get onObserveSuccessDynamicItemActionState;
   set onObserveSuccessDynamicItemActionState(ObserveDynamicItemAction value);
+  ObserveDynamicItemAction? get onObserveFailedDynamicItemActionState;
+  set onObserveFailedDynamicItemActionState(ObserveDynamicItemAction? value);
   DynamicItemCarouselAdditionalParameter? get dynamicItemCarouselAdditionalParameter;
   set dynamicItemCarouselAdditionalParameter(DynamicItemCarouselAdditionalParameter? value);
 }

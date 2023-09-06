@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:masterbagasi/presentation/widget/modifiedcustompagedview/modified_custom_paged_list_view.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:sizer/sizer.dart';
 
 import '../../misc/constant.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
+import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/itemtypelistinterceptor/default_item_type_list_interceptor.dart';
 import '../../misc/itemtypelistinterceptor/item_type_list_interceptor.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/paging_controller_state_paged_child_builder_delegate.dart';
@@ -18,6 +18,7 @@ class ModifiedPagedListView<PageKeyType, ItemType> extends StatefulWidget {
   final bool pullToRefresh;
   final PagingControllerState<PageKeyType, ItemType>? pagingControllerState;
   final OnProvidePagedChildBuilderDelegate<PageKeyType, ItemType> onProvidePagedChildBuilderDelegate;
+  final ErrorProvider Function()? onGetErrorProvider;
   late final ModifiedCustomPagedListView<PageKeyType, ItemType> pagedListView;
   final List<ItemTypeListInterceptor<ItemType>> itemTypeListInterceptorList = <ItemTypeListInterceptor<ItemType>>[
     DefaultItemTypeListInterceptor(
@@ -50,7 +51,8 @@ class ModifiedPagedListView<PageKeyType, ItemType> extends StatefulWidget {
     ScrollViewKeyboardDismissBehavior keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
     String? restorationId,
     Clip clipBehavior = Clip.hardEdge,
-    List<ItemTypeListInterceptor<ItemType>> itemTypeListInterceptorList = const []
+    List<ItemTypeListInterceptor<ItemType>> itemTypeListInterceptorList = const [],
+    this.onGetErrorProvider
   }) : pagingControllerState = null, super(key: key) {
     this.itemTypeListInterceptorList.addAll(itemTypeListInterceptorList);
     pagedListView = ModifiedCustomPagedListView(
@@ -73,7 +75,8 @@ class ModifiedPagedListView<PageKeyType, ItemType> extends StatefulWidget {
       keyboardDismissBehavior: keyboardDismissBehavior,
       restorationId: restorationId,
       clipBehavior: clipBehavior,
-      itemTypeListInterceptorList: this.itemTypeListInterceptorList
+      itemTypeListInterceptorList: this.itemTypeListInterceptorList,
+      onGetErrorProvider: onGetErrorProvider,
     );
   }
 
@@ -97,7 +100,8 @@ class ModifiedPagedListView<PageKeyType, ItemType> extends StatefulWidget {
     ScrollViewKeyboardDismissBehavior keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
     String? restorationId,
     Clip clipBehavior = Clip.hardEdge,
-    List<ItemTypeListInterceptor<ItemType>> itemTypeListInterceptorList = const []
+    List<ItemTypeListInterceptor<ItemType>> itemTypeListInterceptorList = const [],
+    this.onGetErrorProvider
   }) : visible = pagingControllerState.isPagingControllerExist,
       // ignore: prefer_initializing_formals
       pagingControllerState = pagingControllerState,
@@ -124,7 +128,8 @@ class ModifiedPagedListView<PageKeyType, ItemType> extends StatefulWidget {
       keyboardDismissBehavior: keyboardDismissBehavior,
       restorationId: restorationId,
       clipBehavior: clipBehavior,
-      itemTypeListInterceptorList: this.itemTypeListInterceptorList
+      itemTypeListInterceptorList: this.itemTypeListInterceptorList,
+      onGetErrorProvider: onGetErrorProvider
     );
   }
 

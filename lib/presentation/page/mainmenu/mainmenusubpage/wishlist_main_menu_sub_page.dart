@@ -15,6 +15,7 @@ import '../../../../misc/controllercontentdelegate/wishlist_and_cart_controller_
 import '../../../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/wishlistlistitemcontrollerstate/wishlist_container_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/paging_controller_state.dart';
+import '../../../../misc/error/empty_error.dart';
 import '../../../../misc/errorprovider/error_provider.dart';
 import '../../../../misc/injector.dart';
 import '../../../../misc/itemtypelistsubinterceptor/wishlist_item_type_list_sub_interceptor.dart';
@@ -113,6 +114,9 @@ class _StatefulWishlistMainMenuSubControllerMediatorWidgetState extends State<_S
           WishlistContainerListItemControllerState(
             wishlistList: wishlistPaging.itemList,
             onUpdateState: () => setState(() {}),
+            afterRemoveWishlist: (wishlistList) {
+              _wishlistMainMenuSubListItemPagingController.refresh();
+            },
             onRemoveWishlistWithWishlist: (wishlist) => widget.wishlistMainMenuSubController.wishlistAndCartControllerContentDelegate.removeFromWishlistDirectly(wishlist),
             onAddProductCart: (productAppearanceData) => widget.wishlistMainMenuSubController.wishlistAndCartControllerContentDelegate.addToCart(productAppearanceData as SupportCart),
             onAddProductBundleCart: (productBundle) => widget.wishlistMainMenuSubController.wishlistAndCartControllerContentDelegate.addToCart(productBundle),

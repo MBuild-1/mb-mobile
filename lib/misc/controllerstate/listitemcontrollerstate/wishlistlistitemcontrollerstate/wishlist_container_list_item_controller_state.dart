@@ -6,6 +6,7 @@ import '../list_item_controller_state.dart';
 class WishlistContainerListItemControllerState extends ListItemControllerState {
   List<Wishlist> wishlistList;
   void Function() onUpdateState;
+  void Function(List<Wishlist>) afterRemoveWishlist;
   OnRemoveWishlistWithWishlist onRemoveWishlistWithWishlist;
   OnAddCartWithProductAppearanceData onAddProductCart;
   OnAddCartWithProductBundle onAddProductBundleCart;
@@ -14,6 +15,7 @@ class WishlistContainerListItemControllerState extends ListItemControllerState {
   WishlistContainerListItemControllerState({
     required this.wishlistList,
     required this.onUpdateState,
+    required this.afterRemoveWishlist,
     required this.onRemoveWishlistWithWishlist,
     required this.onAddProductCart,
     required this.onAddProductBundleCart,

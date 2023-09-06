@@ -16,15 +16,18 @@ import '../../misc/controllerstate/listitemcontrollerstate/countrydeliveryreview
 import '../../misc/controllerstate/listitemcontrollerstate/countrydeliveryreviewlistitemcontrollerstate/country_delivery_review_header_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/countrydeliveryreviewlistitemcontrollerstate/country_delivery_review_media_short_content_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/countrydeliveryreviewlistitemcontrollerstate/country_delivery_review_select_country_list_item_controller_state.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/failed_prompt_indicator_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
 import '../../misc/error/message_error.dart';
+import '../../misc/error_helper.dart';
 import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/controller_manager.dart';
+import '../../misc/multi_language_string.dart';
 import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
@@ -205,6 +208,7 @@ class _StatefulCountryDeliveryReviewControllerMediatorWidgetState extends State<
   late final PagingControllerState<int, ListItemControllerState> _countryDeliveryReviewListItemPagingControllerState;
 
   late String _currentSelectedCountryId;
+  final ValueNotifier<dynamic> _fillerErrorValueNotifier = ValueNotifier(null);
 
   @override
   void initState() {
@@ -215,6 +219,7 @@ class _StatefulCountryDeliveryReviewControllerMediatorWidgetState extends State<
       firstPageKey: 1,
       // ignore: invalid_use_of_protected_member
       apiRequestManager: widget.countryDeliveryReviewController.apiRequestManager,
+      fillerErrorValueNotifier: _fillerErrorValueNotifier
     );
     _countryDeliveryReviewListItemPagingControllerState = PagingControllerState(
       pagingController: _countryDeliveryReviewListItemPagingController,
@@ -234,11 +239,34 @@ class _StatefulCountryDeliveryReviewControllerMediatorWidgetState extends State<
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _countryDeliveryReviewListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? listItemControllerStateList) async {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _fillerErrorValueNotifier.value = null;
+    });
     LoadDataResult<CountryDeliveryReviewResponse> countryDeliveryReviewResponseLoadDataResult = await widget.countryDeliveryReviewController.getCountryDeliveryReview(
       CountryDeliveryReviewBasedCountryParameter(
         countryId: _currentSelectedCountryId
       )
     );
+    if (countryDeliveryReviewResponseLoadDataResult.isSuccess) {
+      if (countryDeliveryReviewResponseLoadDataResult.resultIfSuccess!.countryDeliveryReviewList.isEmpty) {
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          _fillerErrorValueNotifier.value = FailedLoadDataResult.throwException(() {
+            throw ErrorHelper.generateMultiLanguageDioError(
+              MultiLanguageMessageError(
+                title: MultiLanguageString({
+                  Constant.textEnUsLanguageKey: "Country Review Is Empty",
+                  Constant.textInIdLanguageKey: "Ulasan Negara Kosong",
+                }),
+                message: MultiLanguageString({
+                  Constant.textEnUsLanguageKey: "Country Review in selected country is empty.",
+                  Constant.textInIdLanguageKey: "Ulasan Negara di negara yang dipilih kosong.",
+                }),
+              )
+            );
+          })!.e;
+        });
+      }
+    }
     return countryDeliveryReviewResponseLoadDataResult.map<PagingResult<ListItemControllerState>>((countryDeliveryReviewResponse) {
       return PagingDataResult<ListItemControllerState>(
         itemList: [
@@ -290,7 +318,8 @@ class _StatefulCountryDeliveryReviewControllerMediatorWidgetState extends State<
           onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
             pagingControllerState: pagingControllerState!
           ),
-          pullToRefresh: true
+          pullToRefresh: true,
+          onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
         ),
       ),
     );

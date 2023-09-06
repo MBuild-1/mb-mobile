@@ -60,33 +60,6 @@ class CountryDeliveryReviewItemTypeListSubInterceptor extends ItemTypeListSubInt
         newListItemControllerStateList
       );
       if (oldItemType.countryDeliveryReviewList.isEmpty) {
-        listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
-          i, ListItemControllerStateWrapper(VirtualSpacingListItemControllerState(height: 16)), oldItemTypeList, newListItemControllerStateList
-        );
-        listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
-          i,
-          ListItemControllerStateWrapper(
-            FailedPromptIndicatorListItemControllerState(
-              errorProvider: oldItemType.errorProvider,
-              e: FailedLoadDataResult.throwException(() {
-                throw ErrorHelper.generateMultiLanguageDioError(
-                  MultiLanguageMessageError(
-                    title: MultiLanguageString({
-                      Constant.textEnUsLanguageKey: "Country Review Is Empty",
-                      Constant.textInIdLanguageKey: "Ulasan Negara Kosong",
-                    }),
-                    message: MultiLanguageString({
-                      Constant.textEnUsLanguageKey: "Country Review in selected country is empty.",
-                      Constant.textInIdLanguageKey: "Ulasan Negara di negara yang dipilih kosong.",
-                    }),
-                  )
-                );
-              })!.e,
-            )
-          ),
-          oldItemTypeList,
-          newListItemControllerStateList
-        );
         newItemTypeList.addAll(newListItemControllerStateList);
         return true;
       }

@@ -70,6 +70,7 @@ class WishlistItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<List
             l++;
           }
           oldItemType.onUpdateState();
+          oldItemType.afterRemoveWishlist(oldItemType.wishlistList);
         };
       }
       List<ListItemControllerState> wishlistListItemControllerStateList = oldItemType.wishlistList.map<ListItemControllerState>(

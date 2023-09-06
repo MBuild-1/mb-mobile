@@ -15,9 +15,12 @@ import '../presentation/widget/titleanddescriptionitem/title_and_description_ite
 import 'carouselbackground/carousel_background.dart';
 import 'constant.dart';
 import 'controllerstate/listitemcontrollerstate/carousel_list_item_controller_state.dart';
+import 'controllerstate/listitemcontrollerstate/failed_prompt_indicator_list_item_controller_state.dart';
 import 'controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
+import 'controllerstate/listitemcontrollerstate/no_content_list_item_controller_state.dart';
 import 'entityandlistitemcontrollerstatemediator/horizontal_component_entity_parameterized_entity_and_list_item_controller_state_mediator.dart';
 import 'entityandlistitemcontrollerstatemediator/horizontal_entity_and_list_item_controller_state_mediator.dart';
+import 'errorprovider/error_provider.dart';
 import 'injector.dart';
 import 'load_data_result.dart';
 import 'multi_language_string.dart';
@@ -284,25 +287,9 @@ class OnObserveLoadProductDelegateFactory {
           titleInterceptor = onInjectCarouselParameterizedEntity!(onObserveSuccessLoadCartCarouselParameter.data).titleInterceptor;
           carouselBackground = onInjectCarouselParameterizedEntity!(onObserveSuccessLoadCartCarouselParameter.data).carouselBackground;
         }
-        var parameter = onInjectLoadCartCarouselParameterizedEntity != null ? onInjectLoadCartCarouselParameterizedEntity!() : null;
-        List<ParameterizedEntityAndListItemControllerStateMediatorParameter> parameterList = [];
-        if (parameter is CompoundParameterizedEntityAndListItemControllerStateMediatorParameter) {
-          parameterList = parameter.parameterizedEntityAndListItemControllerStateMediatorParameterList;
-        } else if (parameter != null) {
-          parameterList.add(parameter);
-        }
-        CartRefreshDelegateParameterizedEntityAndListItemControllerStateMediatorParameter? cartRefreshDelegate;
-        for (var iteratedParameter in parameterList) {
-          if (iteratedParameter is CartRefreshDelegateParameterizedEntityAndListItemControllerStateMediatorParameter) {
-            cartRefreshDelegate = iteratedParameter;
-          }
-        }
-        if (cartRefreshDelegate != null) {
-          RepeatableDynamicItemCarouselAdditionalParameter? repeatableDynamicItemCarouselAdditionalParameter = onObserveSuccessLoadCartCarouselParameter.repeatableDynamicItemCarouselAdditionalParameter;
-          if (repeatableDynamicItemCarouselAdditionalParameter != null) {
-            cartRefreshDelegate.onGetRepeatableDynamicItemCarouselAdditionalParameter(repeatableDynamicItemCarouselAdditionalParameter);
-          }
-        }
+        _getCartRefreshDelegate(
+          getRepeatableParameter: () => onObserveSuccessLoadCartCarouselParameter.repeatableDynamicItemCarouselAdditionalParameter
+        );
         return CarouselListItemControllerState(
           title: onObserveSuccessLoadCartCarouselParameter.title.toEmptyStringNonNull,
           description: onObserveSuccessLoadCartCarouselParameter.description.toEmptyStringNonNull,
@@ -318,7 +305,19 @@ class OnObserveLoadProductDelegateFactory {
           carouselBackground: carouselBackground
         );
       },
+      onObserveFailedLoadCartCarousel: (onObserveFailedLoadCartCarouselParameter) {
+        _getCartRefreshDelegate(
+          getRepeatableParameter: () => onObserveFailedLoadCartCarouselParameter.repeatableDynamicItemCarouselAdditionalParameter
+        );
+        return FailedPromptIndicatorListItemControllerState(
+          e: onObserveFailedLoadCartCarouselParameter.e,
+          errorProvider: Injector.locator<ErrorProvider>()
+        );
+      },
       onObserveLoadingLoadCartCarousel: (onObserveLoadingLoadCartCarouselParameter) {
+        _getCartRefreshDelegate(
+          getRepeatableParameter: () => onObserveLoadingLoadCartCarouselParameter.repeatableDynamicItemCarouselAdditionalParameter
+        );
         return ShimmerCarouselListItemControllerState<CartShimmerCarouselListItemGeneratorType>(
           padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
           showTitleShimmer: true,
@@ -364,6 +363,29 @@ class OnObserveLoadProductDelegateFactory {
       },
     );
   }
+
+  CartRefreshDelegateParameterizedEntityAndListItemControllerStateMediatorParameter? _getCartRefreshDelegate({required RepeatableDynamicItemCarouselAdditionalParameter? Function() getRepeatableParameter}) {
+    var parameter = onInjectLoadCartCarouselParameterizedEntity != null ? onInjectLoadCartCarouselParameterizedEntity!() : null;
+    List<ParameterizedEntityAndListItemControllerStateMediatorParameter> parameterList = [];
+    if (parameter is CompoundParameterizedEntityAndListItemControllerStateMediatorParameter) {
+      parameterList = parameter.parameterizedEntityAndListItemControllerStateMediatorParameterList;
+    } else if (parameter != null) {
+      parameterList.add(parameter);
+    }
+    CartRefreshDelegateParameterizedEntityAndListItemControllerStateMediatorParameter? cartRefreshDelegate;
+    for (var iteratedParameter in parameterList) {
+      if (iteratedParameter is CartRefreshDelegateParameterizedEntityAndListItemControllerStateMediatorParameter) {
+        cartRefreshDelegate = iteratedParameter;
+      }
+    }
+    if (cartRefreshDelegate != null) {
+      RepeatableDynamicItemCarouselAdditionalParameter? repeatableDynamicItemCarouselAdditionalParameter = getRepeatableParameter();
+      if (repeatableDynamicItemCarouselAdditionalParameter != null) {
+        cartRefreshDelegate.onGetRepeatableDynamicItemCarouselAdditionalParameter(repeatableDynamicItemCarouselAdditionalParameter);
+      }
+    }
+    return cartRefreshDelegate;
+  }
 }
 
 class OnObserveLoadProductDelegate {
@@ -382,6 +404,7 @@ class OnObserveLoadProductDelegate {
   ListItemControllerState Function(OnObserveSuccessLoadCouponCarouselParameter) onObserveSuccessLoadCouponCarousel;
   ListItemControllerState Function(OnObserveLoadingLoadCouponCarouselParameter) onObserveLoadingLoadCouponCarousel;
   ListItemControllerState Function(OnObserveSuccessLoadCartCarouselParameter) onObserveSuccessLoadCartCarousel;
+  ListItemControllerState Function(OnObserveFailedLoadCartCarouselParameter) onObserveFailedLoadCartCarousel;
   ListItemControllerState Function(OnObserveLoadingLoadCartCarouselParameter) onObserveLoadingLoadCartCarousel;
   ListItemControllerState Function(OnObserveSuccessLoadAddressCarouselParameter) onObserveSuccessLoadAddressCarousel;
   ListItemControllerState Function(OnObserveLoadingLoadAddressCarouselParameter) onObserveLoadingLoadAddressCarousel;
@@ -402,6 +425,7 @@ class OnObserveLoadProductDelegate {
     required this.onObserveSuccessLoadCouponCarousel,
     required this.onObserveLoadingLoadCouponCarousel,
     required this.onObserveSuccessLoadCartCarousel,
+    required this.onObserveFailedLoadCartCarousel,
     required this.onObserveLoadingLoadCartCarousel,
     required this.onObserveSuccessLoadAddressCarousel,
     required this.onObserveLoadingLoadAddressCarousel
@@ -536,7 +560,23 @@ class OnObserveSuccessLoadCartCarouselParameter {
   });
 }
 
-class OnObserveLoadingLoadCartCarouselParameter {}
+class OnObserveFailedLoadCartCarouselParameter {
+  dynamic e;
+  RepeatableDynamicItemCarouselAdditionalParameter? repeatableDynamicItemCarouselAdditionalParameter;
+
+  OnObserveFailedLoadCartCarouselParameter({
+    required this.e,
+    this.repeatableDynamicItemCarouselAdditionalParameter
+  });
+}
+
+class OnObserveLoadingLoadCartCarouselParameter {
+  RepeatableDynamicItemCarouselAdditionalParameter? repeatableDynamicItemCarouselAdditionalParameter;
+
+  OnObserveLoadingLoadCartCarouselParameter({
+    this.repeatableDynamicItemCarouselAdditionalParameter
+  });
+}
 
 class OnObserveSuccessLoadAddressCarouselParameter {
   MultiLanguageString? title;

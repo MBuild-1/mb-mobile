@@ -3,11 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
+import '../../../misc/errorprovider/error_provider.dart';
 import '../../../misc/itemtypelistinterceptor/item_type_list_interceptor.dart';
 import '../../../misc/itemtypelistinterceptor/item_type_list_interceptor_parameter.dart';
 import '../../../misc/itemtypelistinterceptor/item_type_list_interceptor_result.dart';
+import '../../../misc/load_data_result.dart';
+import '../../../misc/paging/modified_paging_controller.dart';
 import '../../../misc/paging/modified_paging_state.dart';
 import '../../../misc/paging/pagingresult/paging_result_with_parameter.dart';
+import '../loaddataresultimplementer/load_data_result_implementer.dart';
 import 'modified_custom_paged_sliver_list.dart';
 
 class ModifiedCustomPagedListView<PageKeyType, ItemType> extends CustomScrollView {
@@ -20,6 +24,7 @@ class ModifiedCustomPagedListView<PageKeyType, ItemType> extends CustomScrollVie
   final bool addRepaintBoundaries;
   final bool addSemanticIndexes;
   final double? itemExtent;
+  final ErrorProvider Function()? onGetErrorProvider;
 
   const ModifiedCustomPagedListView({
     required this.pagingController,
@@ -41,6 +46,7 @@ class ModifiedCustomPagedListView<PageKeyType, ItemType> extends CustomScrollVie
     String? restorationId,
     Clip clipBehavior = Clip.hardEdge,
     required this.itemTypeListInterceptorList,
+    this.onGetErrorProvider,
     Key? key,
   }) : _separatorBuilder = null,
       _shrinkWrapFirstPageIndicators = shrinkWrap,
@@ -96,6 +102,36 @@ class ModifiedCustomPagedListView<PageKeyType, ItemType> extends CustomScrollVie
     );
     return <Widget>[
       resultWidget,
+      SliverFillRemaining(
+        hasScrollBody: false,
+        child: Builder(
+          builder: (context) {
+            if (pagingController is! ModifiedPagingController) {
+              return Container();
+            }
+            ModifiedPagingController modifiedPagingController = pagingController as ModifiedPagingController;
+            ValueNotifier<dynamic>? fillerErrorValueNotifier = modifiedPagingController.fillerErrorValueNotifier;
+            if (fillerErrorValueNotifier == null) {
+              return Container();
+            }
+            if (onGetErrorProvider == null) {
+              return Container();
+            }
+            return ValueListenableBuilder<dynamic>(
+              valueListenable: fillerErrorValueNotifier,
+              builder: (context, value, _) {
+                if (value == null) {
+                  return Container();
+                }
+                return LoadDataResultImplementer(
+                  loadDataResult: FailedLoadDataResult(e: value),
+                  errorProvider: onGetErrorProvider!()
+                );
+              }
+            );
+          }
+        )
+      )
     ];
   }
 }

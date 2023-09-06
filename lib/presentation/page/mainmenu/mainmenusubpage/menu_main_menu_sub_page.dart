@@ -295,7 +295,9 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
       ..onInjectLoadCartCarouselParameterizedEntity = (
         () => CartRefreshDelegateParameterizedEntityAndListItemControllerStateMediatorParameter(
           onGetRepeatableDynamicItemCarouselAdditionalParameter: (repeatableDynamicItemCarouselAdditionalParameter) {
-            MainRouteObserver.onRefreshCartInMainMenu = repeatableDynamicItemCarouselAdditionalParameter.onRepeatLoading;
+            MainRouteObserver.onRefreshCartInMainMenu = () {
+              repeatableDynamicItemCarouselAdditionalParameter.onRepeatLoading();
+            };
           }
         )
       )

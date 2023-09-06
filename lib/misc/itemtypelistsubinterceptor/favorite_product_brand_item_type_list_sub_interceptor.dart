@@ -46,6 +46,7 @@ class FavoriteProductBrandItemTypeListSubInterceptor extends ItemTypeListSubInte
         favoriteProductBrandContainerInterceptingActionListItemControllerState._onRemoveFavoriteProductBrand = (favoriteProductBrand) {
           oldItemType.favoriteProductBrandList.remove(favoriteProductBrand);
           oldItemType.onUpdateState();
+          oldItemType.onAfterRemoveFromFavoriteProductBrand(oldItemType.favoriteProductBrandList);
         };
       }
       List<ListItemControllerState> favoriteProductBrandListItemControllerStateList = oldItemType.favoriteProductBrandList.map<ListItemControllerState>(
@@ -56,7 +57,9 @@ class FavoriteProductBrandItemTypeListSubInterceptor extends ItemTypeListSubInte
               ProductDetailBrandListItemControllerState(
                 productBrand: favoriteProductBrand.productBrand,
                 onTapProductBrand: oldItemType.onTapFavoriteProductBrand,
-                onRemoveFromFavoriteProductBrand: (productBrand) => oldItemType.onRemoveFromFavoriteProductBrand(favoriteProductBrand),
+                onRemoveFromFavoriteProductBrand: (productBrand) => oldItemType.onRemoveFromFavoriteProductBrand(
+                  favoriteProductBrand
+                ),
               ),
               VirtualSpacingListItemControllerState(height: 16)
             ]

@@ -54,6 +54,7 @@ import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_it
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
 import '../../misc/toast_helper.dart';
+import '../notifier/component_notifier.dart';
 import '../notifier/notification_notifier.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/modified_paged_list_view.dart';
@@ -245,6 +246,7 @@ class _StatefulTakeFriendCartControllerMediatorWidgetState extends State<_Statef
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       setState(() => _cartCount = 0);
       Provider.of<NotificationNotifier>(context, listen: false).loadCartLoadDataResult();
+      Provider.of<ComponentNotifier>(context, listen: false).updateCart();
     });
     LoadDataResult<PagingDataResult<Cart>> cartPagingLoadDataResult = await widget.takeFriendCartController.getCartPaging(
       CartPagingParameter(page: pageKey)
@@ -364,6 +366,7 @@ class _StatefulTakeFriendCartControllerMediatorWidgetState extends State<_Statef
           if (_cartContainerInterceptingActionListItemControllerState.removeCart != null) {
             _cartContainerInterceptingActionListItemControllerState.removeCart!(cart);
             Provider.of<NotificationNotifier>(context, listen: false).loadCartLoadDataResult();
+            Provider.of<ComponentNotifier>(context, listen: false).updateCart();
           }
         },
       )

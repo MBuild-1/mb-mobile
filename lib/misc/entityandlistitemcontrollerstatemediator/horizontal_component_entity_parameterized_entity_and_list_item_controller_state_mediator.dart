@@ -57,7 +57,12 @@ class HorizontalComponentEntityParameterizedEntityAndListItemControllerStateMedi
             return entity.onObserveSuccessDynamicItemActionState(
               entity.title, entity.description, SuccessLoadDataResult(value: data)
             );
-          }
+          },
+          failedListItemControllerState: entity.onObserveFailedDynamicItemActionState != null ? (errorProvider, e, listItemControllerState) {
+            return entity.onObserveFailedDynamicItemActionState!(
+              entity.title, entity.description, FailedLoadDataResult(e: e)
+            );
+          } : null,
         );
         parameter.dynamicItemLoadDataResultDynamicListItemControllerStateList.add(dynamicList);
         void dynamicItemAction() {

@@ -9,6 +9,7 @@ class DynamicItemCarouselComponentEntity<T> implements IDynamicItemCarouselCompo
   Future<void> Function(MultiLanguageString? title, MultiLanguageString? description, DynamicItemAction dynamicItemAction) _onDynamicItemAction;
   ObserveDynamicItemAction? _onObserveLoadingDynamicItemActionState;
   ObserveDynamicItemAction _onObserveSuccessDynamicItemActionState;
+  ObserveDynamicItemAction? _onObserveFailedDynamicItemActionState;
   DynamicItemCarouselAdditionalParameter? _dynamicItemCarouselAdditionalParameter;
 
   DynamicItemCarouselComponentEntity({
@@ -17,12 +18,14 @@ class DynamicItemCarouselComponentEntity<T> implements IDynamicItemCarouselCompo
     required Future<void> Function(MultiLanguageString? title, MultiLanguageString? description, DynamicItemAction dynamicItemAction) onDynamicItemAction,
     ObserveDynamicItemAction? onObserveLoadingDynamicItemActionState,
     required ObserveDynamicItemAction onObserveSuccessDynamicItemActionState,
+    ObserveDynamicItemAction? onObserveFailedDynamicItemActionState,
     DynamicItemCarouselAdditionalParameter? dynamicItemCarouselAdditionalParameter
   }) : _title = title,
       _description = description,
       _onDynamicItemAction = onDynamicItemAction,
       _onObserveLoadingDynamicItemActionState = onObserveLoadingDynamicItemActionState,
       _onObserveSuccessDynamicItemActionState = onObserveSuccessDynamicItemActionState,
+      _onObserveFailedDynamicItemActionState = onObserveFailedDynamicItemActionState,
       _dynamicItemCarouselAdditionalParameter = dynamicItemCarouselAdditionalParameter;
 
   @override
@@ -54,6 +57,12 @@ class DynamicItemCarouselComponentEntity<T> implements IDynamicItemCarouselCompo
 
   @override
   set onObserveSuccessDynamicItemActionState(ObserveDynamicItemAction value) => _onObserveSuccessDynamicItemActionState = value;
+
+  @override
+  ObserveDynamicItemAction? get onObserveFailedDynamicItemActionState => _onObserveFailedDynamicItemActionState;
+
+  @override
+  set onObserveFailedDynamicItemActionState(ObserveDynamicItemAction? value) => _onObserveFailedDynamicItemActionState = value;
 
   @override
   DynamicItemCarouselAdditionalParameter? get dynamicItemCarouselAdditionalParameter => _dynamicItemCarouselAdditionalParameter;

@@ -231,6 +231,11 @@ class _StatefulFavoriteProductBrandControllerMediatorWidgetState extends State<_
             onRemoveFromFavoriteProductBrand: (favoriteProductBrand) {
               widget.favoriteProductBrandController.productBrandFavoriteControllerContentDelegate.removeFromFavoriteProductBrand(favoriteProductBrand);
             },
+            onAfterRemoveFromFavoriteProductBrand: (favoriteProductBrandList) {
+              if (favoriteProductBrandList.isEmpty) {
+                _favoriteProductBrandListItemPagingController.refresh();
+              }
+            },
             onUpdateState: () => setState(() {}),
             favoriteProductBrandContainerInterceptingActionListItemControllerState: _favoriteProductBrandContainerInterceptingActionListItemControllerState
           )

@@ -6,9 +6,12 @@ import '../../../../controller/deliveryreviewcontroller/deliveryreviewsubpagecon
 import '../../../../domain/entity/order/combined_order.dart';
 import '../../../../domain/entity/order/order_paging_parameter.dart';
 import '../../../../domain/entity/order/shipping_review_order_list_parameter.dart';
+import '../../../../misc/constant.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/order_container_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/paging_controller_state.dart';
+import '../../../../misc/error/message_error.dart';
+import '../../../../misc/error_helper.dart';
 import '../../../../misc/errorprovider/error_provider.dart';
 import '../../../../misc/injector.dart';
 import '../../../../misc/itemtypelistsubinterceptor/order_item_type_list_sub_interceptor.dart';
@@ -16,6 +19,7 @@ import '../../../../misc/list_item_controller_state_helper.dart';
 import '../../../../misc/load_data_result.dart';
 import '../../../../misc/main_route_observer.dart';
 import '../../../../misc/manager/controller_manager.dart';
+import '../../../../misc/multi_language_string.dart';
 import '../../../../misc/paging/modified_paging_controller.dart';
 import '../../../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../../../misc/paging/pagingresult/paging_data_result.dart';
@@ -75,6 +79,7 @@ class _StatefulWaitingToBeReviewedDeliveryReviewSubControllerMediatorWidgetState
 
   final String _status = "Sampai Tujuan";
 
+  final ValueNotifier<dynamic> _fillerErrorValueNotifier = ValueNotifier(null);
   final DefaultOrderContainerInterceptingActionListItemControllerState _defaultOrderContainerInterceptingActionListItemControllerState = DefaultOrderContainerInterceptingActionListItemControllerState();
 
   @override
@@ -85,6 +90,7 @@ class _StatefulWaitingToBeReviewedDeliveryReviewSubControllerMediatorWidgetState
       firstPageKey: 1,
       // ignore: invalid_use_of_protected_member
       apiRequestManager: widget.waitingToBeReviewedDeliveryReviewSubController.apiRequestManager,
+      fillerErrorValueNotifier: _fillerErrorValueNotifier
     );
     _orderListItemPagingControllerState = PagingControllerState(
       pagingController: _orderListItemPagingController,
@@ -103,6 +109,9 @@ class _StatefulWaitingToBeReviewedDeliveryReviewSubControllerMediatorWidgetState
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _orderListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? orderListItemControllerStateList) async {
     List<ListItemControllerState> resultListItemControllerState = [];
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _fillerErrorValueNotifier.value = null;
+    });
     if (pageKey == 1) {
       resultListItemControllerState = [
         OrderContainerListItemControllerState(
@@ -114,7 +123,7 @@ class _StatefulWaitingToBeReviewedDeliveryReviewSubControllerMediatorWidgetState
           orderColorfulChipTabBarDataList: _orderColorfulChipTabBarDataList,
           errorProvider: Injector.locator<ErrorProvider>(),
           orderContainerStateStorageListItemControllerState: DefaultOrderContainerStateStorageListItemControllerState(),
-          orderContainerInterceptingActionListItemControllerState: _defaultOrderContainerInterceptingActionListItemControllerState
+          orderContainerInterceptingActionListItemControllerState: _defaultOrderContainerInterceptingActionListItemControllerState,
         )
       ];
       return SuccessLoadDataResult<PagingDataResult<ListItemControllerState>>(
@@ -126,11 +135,30 @@ class _StatefulWaitingToBeReviewedDeliveryReviewSubControllerMediatorWidgetState
         )
       );
     } else {
-      _updateOrderList(NoLoadDataResult());
       LoadDataResult<List<CombinedOrder>> orderListLoadDataResult = await widget.waitingToBeReviewedDeliveryReviewSubController.getShippingReviewOrderList(
         ShippingReviewOrderListParameter()
       );
-      _updateOrderList(orderListLoadDataResult);
+      if (orderListLoadDataResult.isSuccess) {
+        List itemList = orderListLoadDataResult.resultIfSuccess!;
+        if (itemList.isEmpty) {
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            _fillerErrorValueNotifier.value = FailedLoadDataResult.throwException(() {
+              throw ErrorHelper.generateMultiLanguageDioError(
+                MultiLanguageMessageError(
+                  title: MultiLanguageString({
+                    Constant.textEnUsLanguageKey: "Cart Item Is Empty",
+                    Constant.textInIdLanguageKey: "Order Kosong",
+                  }),
+                  message: MultiLanguageString({
+                    Constant.textEnUsLanguageKey: "For now, cart Item is empty.",
+                    Constant.textInIdLanguageKey: "Untuk sekarang, ordernya kosong.",
+                  }),
+                )
+              );
+            })!.e;
+          });
+        }
+      }
       return orderListLoadDataResult.map<PagingResult<ListItemControllerState>>((orderList) {
         if (ListItemControllerStateHelper.checkListItemControllerStateList(orderListItemControllerStateList)) {
           OrderContainerListItemControllerState orderContainerListItemControllerState = ListItemControllerStateHelper.parsePageKeyedListItemControllerState(orderListItemControllerStateList![0]) as OrderContainerListItemControllerState;
@@ -146,23 +174,6 @@ class _StatefulWaitingToBeReviewedDeliveryReviewSubControllerMediatorWidgetState
     }
   }
 
-  void _updateOrderList(LoadDataResult<List<CombinedOrder>> combinedOrderListDataResult) {
-    if (_defaultOrderContainerInterceptingActionListItemControllerState.onRefreshCombinedOrderPagingDataResult != null) {
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        _defaultOrderContainerInterceptingActionListItemControllerState.onRefreshCombinedOrderPagingDataResult!(
-          combinedOrderListDataResult.map<PagingDataResult<CombinedOrder>>(
-            (value) => PagingDataResult<CombinedOrder>(
-              page: 1,
-              totalPage: 1,
-              totalItem: value.length,
-              itemList: value
-            )
-          )
-        );
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -173,7 +184,8 @@ class _StatefulWaitingToBeReviewedDeliveryReviewSubControllerMediatorWidgetState
             onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
               pagingControllerState: pagingControllerState!
             ),
-            pullToRefresh: true
+            pullToRefresh: true,
+            onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
           ),
         ),
       ]
