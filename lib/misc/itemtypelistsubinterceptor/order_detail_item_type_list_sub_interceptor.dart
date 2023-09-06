@@ -105,7 +105,9 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
       description: order.combinedOrder.orderProduct.userAddress?.address,
       titleAndDescriptionItemInterceptor: (padding, title, titleWidget, description, descriptionWidget, titleAndDescriptionWidget, titleAndDescriptionWidgetList) {
         Address? userAddress = order.combinedOrder.orderProduct.userAddress;
-        titleAndDescriptionWidgetList[titleAndDescriptionWidgetList.length - 2] = const SizedBox(height: 5);
+        if (userAddress != null) {
+          titleAndDescriptionWidgetList[titleAndDescriptionWidgetList.length - 2] = const SizedBox(height: 5);
+        }
         titleAndDescriptionWidgetList[titleAndDescriptionWidgetList.length - 1] = userAddress != null ? SizedBox(
           width: double.infinity,
           child: VerticalAddressItem(
