@@ -17,12 +17,14 @@ import '../../misc/controllerstate/listitemcontrollerstate/product_bundle_header
 import '../../misc/controllerstate/listitemcontrollerstate/productlistitemcontrollerstate/vertical_product_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
 import '../../misc/error/message_error.dart';
+import '../../misc/error_helper.dart';
 import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/controller_manager.dart';
+import '../../misc/multi_language_string.dart';
 import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
@@ -182,6 +184,8 @@ class _StatefulProductBundleDetailControllerMediatorWidgetState extends State<_S
   late final ModifiedPagingController<int, ListItemControllerState> _productBundleDetailListItemPagingController;
   late final PagingControllerState<int, ListItemControllerState> _productBundleDetailListItemPagingControllerState;
 
+  final ValueNotifier<dynamic> _fillerErrorValueNotifier = ValueNotifier(null);
+
   @override
   void initState() {
     super.initState();
@@ -189,7 +193,8 @@ class _StatefulProductBundleDetailControllerMediatorWidgetState extends State<_S
       firstPageKey: 1,
       // ignore: invalid_use_of_protected_member
       apiRequestManager: widget.productBundleDetailController.apiRequestManager,
-      additionalPagingResultParameterChecker: Injector.locator<ProductBundleDetailAdditionalPagingResultParameterChecker>()
+      additionalPagingResultParameterChecker: Injector.locator<ProductBundleDetailAdditionalPagingResultParameterChecker>(),
+      fillerErrorValueNotifier: _fillerErrorValueNotifier
     );
     _productBundleDetailListItemPagingControllerState = PagingControllerState(
       pagingController: _productBundleDetailListItemPagingController,
@@ -203,9 +208,33 @@ class _StatefulProductBundleDetailControllerMediatorWidgetState extends State<_S
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _productBundleDetailListItemPagingControllerStateListener(int pageKey) async {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _fillerErrorValueNotifier.value = null;
+    });
     LoadDataResult<ProductBundleDetail> productBundleDetailLoadDataResult = await widget.productBundleDetailController.getProductBundleDetail(
       ProductBundleDetailParameter(productBundleId: widget.productBundleId)
     );
+    if (productBundleDetailLoadDataResult.isSuccess) {
+      List itemList = productBundleDetailLoadDataResult.resultIfSuccess!.productEntryList;
+      if (itemList.isEmpty) {
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          _fillerErrorValueNotifier.value = FailedLoadDataResult.throwException(() {
+            throw ErrorHelper.generateMultiLanguageDioError(
+              MultiLanguageMessageError(
+                title: MultiLanguageString({
+                  Constant.textEnUsLanguageKey: "Product Is Empty",
+                  Constant.textInIdLanguageKey: "Produk Kosong",
+                }),
+                message: MultiLanguageString({
+                  Constant.textEnUsLanguageKey: "For now, product is empty in this product bundle.",
+                  Constant.textInIdLanguageKey: "Untuk sekarang, produk kosong di bundel produk ini.",
+                }),
+              )
+            );
+          })!.e;
+        });
+      }
+    }
     return productBundleDetailLoadDataResult.map((productBundleDetail) {
       return PagingDataResult<ListItemControllerState>(
         page: 1,
@@ -258,7 +287,8 @@ class _StatefulProductBundleDetailControllerMediatorWidgetState extends State<_S
                 onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
                   pagingControllerState: pagingControllerState!
                 ),
-                pullToRefresh: true
+                pullToRefresh: true,
+                onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
               ),
             ),
           ]
