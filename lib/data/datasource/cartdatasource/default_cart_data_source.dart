@@ -34,6 +34,9 @@ import '../../../domain/entity/product/product_appearance_data.dart';
 import '../../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../../domain/entity/product/productentry/product_entry.dart';
 import '../../../domain/entity/summaryvalue/summary_value.dart';
+import '../../../misc/error/empty_error.dart';
+import '../../../misc/error/please_login_first_error.dart';
+import '../../../misc/error_helper.dart';
 import '../../../misc/option_builder.dart';
 import '../../../misc/processing/dio_http_client_processing.dart';
 import '../../../misc/processing/dummy_future_processing.dart';
@@ -67,6 +70,28 @@ class DefaultCartDataSource implements CartDataSource {
     return DioHttpClientProcessing((cancelToken) {
       return dio.get("/user/cart", cancelToken: cancelToken)
         .map<List<Cart>>(onMap: (value) => value.wrapResponse().mapFromResponseToCartList([], []));
+    });
+  }
+
+  @override
+  FutureProcessing<List<Cart>> cartListIgnoringLoginError(CartListParameter cartListParameter) {
+    return DioHttpClientProcessing((cancelToken) async {
+      try {
+        return await cartList(cartListParameter).future(parameter: cancelToken);
+      } on DioError catch (e) {
+        Error error = ErrorHelper.generatePleaseLoginFirstError(e);
+        if (error is PleaseLoginFirstError) {
+          return [];
+        } else {
+          error = ErrorHelper.generateEmptyError(e);
+          if (error is EmptyError) {
+            return [];
+          }
+        }
+        rethrow;
+      } catch (e) {
+        rethrow;
+      }
     });
   }
 
@@ -117,14 +142,14 @@ class DefaultCartDataSource implements CartDataSource {
   @override
   FutureProcessing<RemoveFromCartDirectlyResponse> removeFromCartDirectly(RemoveFromCartDirectlyParameter removeFromCartDirectlyParameter) {
     return DioHttpClientProcessing((cancelToken) async {
-      String id = "";
+      String queryString = "";
       SupportCart supportCart = removeFromCartDirectlyParameter.supportCart;
       if (supportCart is ProductEntryAppearanceData) {
-        id = (supportCart as ProductEntryAppearanceData).productEntryId;
+        queryString = "entry=${(supportCart as ProductEntryAppearanceData).productEntryId}";
       } else if (supportCart is ProductBundle) {
-        id = supportCart.id;
+        queryString = "bundling=${supportCart.id}";
       }
-      return dio.delete("/user/cart/$id", cancelToken: cancelToken)
+      return dio.delete("/user/cart?$queryString", cancelToken: cancelToken)
         .map<RemoveFromCartDirectlyResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToRemoveFromCartDirectlyResponse());
     });
   }

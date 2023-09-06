@@ -29,6 +29,7 @@ import '../entity/cart/take_friend_cart_response.dart';
 abstract class CartRepository {
   FutureProcessing<LoadDataResult<PagingDataResult<Cart>>> cartPaging(CartPagingParameter cartPagingParameter);
   FutureProcessing<LoadDataResult<List<Cart>>> cartList(CartListParameter cartListParameter);
+  FutureProcessing<LoadDataResult<List<Cart>>> cartListIgnoringLoginError(CartListParameter cartListParameter);
   FutureProcessing<LoadDataResult<PagingDataResult<Cart>>> sharedCartPaging(SharedCartPagingParameter sharedCartPagingParameter);
   FutureProcessing<LoadDataResult<AddToCartResponse>> addToCart(AddToCartParameter addToCartParameter);
   FutureProcessing<LoadDataResult<RemoveFromCartResponse>> removeFromCart(RemoveFromCartParameter removeFromCartParameter);

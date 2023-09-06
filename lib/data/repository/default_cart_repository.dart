@@ -46,6 +46,11 @@ class DefaultCartRepository implements CartRepository {
   }
 
   @override
+  FutureProcessing<LoadDataResult<List<Cart>>> cartListIgnoringLoginError(CartListParameter cartListParameter) {
+    return cartDataSource.cartListIgnoringLoginError(cartListParameter).mapToLoadDataResult<List<Cart>>();
+  }
+
+  @override
   FutureProcessing<LoadDataResult<PagingDataResult<Cart>>> sharedCartPaging(SharedCartPagingParameter sharedCartPagingParameter) {
     return cartDataSource.sharedCartPaging(sharedCartPagingParameter).mapToLoadDataResult<PagingDataResult<Cart>>();
   }

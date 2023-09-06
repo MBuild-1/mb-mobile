@@ -624,6 +624,7 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
         onAddCartRequestProcessSuccessCallback: () async {
           context.read<ComponentNotifier>().updateCart();
           context.read<NotificationNotifier>().loadCartLoadDataResult();
+          ToastHelper.showToast("${"Success add to cart".tr}.");
         }
       )
     );

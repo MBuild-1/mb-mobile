@@ -28,6 +28,7 @@ import '../../../misc/processing/future_processing.dart';
 abstract class CartDataSource {
   FutureProcessing<PagingDataResult<Cart>> cartPaging(CartPagingParameter cartPagingParameter);
   FutureProcessing<List<Cart>> cartList(CartListParameter cartListParameter);
+  FutureProcessing<List<Cart>> cartListIgnoringLoginError(CartListParameter cartListParameter);
   FutureProcessing<PagingDataResult<Cart>> sharedCartPaging(SharedCartPagingParameter sharedCartPagingParameter);
   FutureProcessing<AddToCartResponse> addToCart(AddToCartParameter addToCartParameter);
   FutureProcessing<RemoveFromCartResponse> removeFromCart(RemoveFromCartParameter removeFromCartParameter);

@@ -5,11 +5,13 @@ import 'package:provider/provider.dart';
 
 import '../../domain/entity/cart/add_to_cart_parameter.dart';
 import '../../domain/entity/cart/add_to_cart_response.dart';
+import '../../domain/entity/cart/cart.dart';
+import '../../domain/entity/cart/cart_list_parameter.dart';
 import '../../domain/entity/cart/remove_from_cart_directly_parameter.dart';
 import '../../domain/entity/cart/remove_from_cart_directly_response.dart';
-import '../../domain/entity/cart/remove_from_cart_parameter.dart';
-import '../../domain/entity/cart/remove_from_cart_response.dart';
 import '../../domain/entity/cart/support_cart.dart';
+import '../../domain/entity/product/productbundle/product_bundle.dart';
+import '../../domain/entity/product/productentry/product_entry.dart';
 import '../../domain/entity/wishlist/add_wishlist_parameter.dart';
 import '../../domain/entity/wishlist/add_wishlist_response.dart';
 import '../../domain/entity/wishlist/remove_wishlist_based_product_parameter.dart';
@@ -19,10 +21,12 @@ import '../../domain/entity/wishlist/support_wishlist.dart';
 import '../../domain/entity/wishlist/wishlist.dart';
 import '../../domain/usecase/add_to_cart_use_case.dart';
 import '../../domain/usecase/add_wishlist_use_case.dart';
+import '../../domain/usecase/get_cart_list_ignoring_login_error_use_case.dart';
 import '../../domain/usecase/remove_from_cart_directly_use_case.dart';
 import '../../domain/usecase/remove_from_cart_use_case.dart';
 import '../../domain/usecase/remove_wishlist_based_product_use_case.dart';
 import '../../domain/usecase/remove_wishlist_use_case.dart';
+import '../../presentation/notifier/component_notifier.dart';
 import '../../presentation/notifier/notification_notifier.dart';
 import '../dialog_helper.dart';
 import '../errorprovider/error_provider.dart';
@@ -34,6 +38,7 @@ import '../typedef.dart';
 import 'controller_content_delegate.dart';
 
 class WishlistAndCartControllerContentDelegate extends ControllerContentDelegate {
+  final GetCartListIgnoringLoginErrorUseCase getCartListIgnoringLoginErrorUseCase;
   final AddWishlistUseCase addWishlistUseCase;
   final RemoveWishlistUseCase removeWishlistUseCase;
   final RemoveWishlistBasedProductUseCase removeWishlistBasedProductUseCase;
@@ -45,6 +50,7 @@ class WishlistAndCartControllerContentDelegate extends ControllerContentDelegate
   ApiRequestManager Function()? _onGetApiRequestManager;
 
   WishlistAndCartControllerContentDelegate({
+    required this.getCartListIgnoringLoginErrorUseCase,
     required this.addWishlistUseCase,
     required this.removeWishlistUseCase,
     required this.removeWishlistBasedProductUseCase,
@@ -132,26 +138,18 @@ class WishlistAndCartControllerContentDelegate extends ControllerContentDelegate
     }
   }
 
-  void addToCart(SupportCart supportCart) async {
+  void addToCart(SupportCart supportCart, {bool canAddMultiple = false}) async {
     if (_wishlistAndCartDelegate != null && _onGetApiRequestManager != null) {
       ApiRequestManager apiRequestManager = _onGetApiRequestManager!();
       _wishlistAndCartDelegate!.onUnfocusAllWidget();
       _wishlistAndCartDelegate!.onShowAddCartRequestProcessLoadingCallback();
-      LoadDataResult<AddToCartResponse> addToCartResponseLoadDataResult = await addToCartUseCase.execute(
-        AddToCartParameter(supportCart: supportCart, quantity: 1)
-      ).future(
-        parameter: apiRequestManager.addRequestToCancellationPart('add-to-cart').value
-      );
-      _wishlistAndCartDelegate!.onBack();
-      if (addToCartResponseLoadDataResult.isSuccess) {
-        supportCart.hasAddedToCart = true;
-        _wishlistAndCartDelegate!.onAddCartRequestProcessSuccessCallback();
-      } else {
+      void removeFromCartLocalMethod() async {
         LoadDataResult<RemoveFromCartDirectlyResponse> removeFromCartDirectlyResponseLoadDataResult = await removeFromCartDirectlyUseCase.execute(
           RemoveFromCartDirectlyParameter(supportCart: supportCart)
         ).future(
           parameter: apiRequestManager.addRequestToCancellationPart('remove-from-cart').value
         );
+        _wishlistAndCartDelegate!.onBack();
         if (removeFromCartDirectlyResponseLoadDataResult.isSuccess) {
           supportCart.hasAddedToCart = false;
           _wishlistAndCartDelegate!.onRemoveCartRequestProcessSuccessCallback();
@@ -159,6 +157,48 @@ class WishlistAndCartControllerContentDelegate extends ControllerContentDelegate
           _wishlistAndCartDelegate!.onShowRemoveCartRequestProcessFailedCallback(removeFromCartDirectlyResponseLoadDataResult.resultIfFailed);
         }
       }
+      void addToCartLocalMethod() async {
+        LoadDataResult<AddToCartResponse> addToCartResponseLoadDataResult = await addToCartUseCase.execute(
+          AddToCartParameter(supportCart: supportCart, quantity: 1)
+        ).future(
+          parameter: apiRequestManager.addRequestToCancellationPart('add-to-cart').value
+        );
+        _wishlistAndCartDelegate!.onBack();
+        if (addToCartResponseLoadDataResult.isSuccess) {
+          supportCart.hasAddedToCart = true;
+          _wishlistAndCartDelegate!.onAddCartRequestProcessSuccessCallback();
+        } else {
+          _wishlistAndCartDelegate!.onShowAddCartRequestProcessFailedCallback(addToCartResponseLoadDataResult.resultIfFailed);
+        }
+      }
+      if (!canAddMultiple) {
+        LoadDataResult<List<Cart>> cartListLoadDataResult = await getCartListIgnoringLoginErrorUseCase.execute(
+          CartListParameter()
+        ).future(
+          parameter: apiRequestManager.addRequestToCancellationPart('add-to-cart').value
+        );
+        if (cartListLoadDataResult.isSuccess) {
+          List<Cart> cartList = cartListLoadDataResult.resultIfSuccess!;
+          Iterable<Cart> filteredCartIterated = cartList.where((cart) {
+            SupportCart iteratedSupportCart = cart.supportCart;
+            if (iteratedSupportCart is ProductEntry && supportCart is ProductEntry) {
+              return iteratedSupportCart.id == supportCart.id;
+            } else if (iteratedSupportCart is ProductBundle && supportCart is ProductBundle) {
+              return iteratedSupportCart.id == supportCart.id;
+            }
+            return false;
+          });
+          if (filteredCartIterated.isNotEmpty) {
+            removeFromCartLocalMethod();
+          } else {
+            addToCartLocalMethod();
+          }
+        } else {
+          _wishlistAndCartDelegate!.onShowAddCartRequestProcessFailedCallback(cartListLoadDataResult.resultIfFailed);
+        }
+        return;
+      }
+      addToCartLocalMethod();
     }
   }
 
@@ -286,6 +326,7 @@ class WishlistAndCartDelegateFactory {
           MainRouteObserver.onRefreshCartInMainMenu!();
         }
         Provider.of<NotificationNotifier>(onGetBuildContext(), listen: false).loadCartLoadDataResult();
+        Provider.of<ComponentNotifier>(onGetBuildContext(), listen: false).updateCart();
         ToastHelper.showToast("${"Success add to cart".tr}.");
       },
       onShowAddCartRequestProcessFailedCallback: onShowAddCartRequestProcessFailedCallback ?? (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
@@ -299,7 +340,7 @@ class WishlistAndCartDelegateFactory {
           MainRouteObserver.onRefreshCartInMainMenu!();
         }
         Provider.of<NotificationNotifier>(onGetBuildContext(), listen: false).loadCartLoadDataResult();
-        ToastHelper.showToast("${"Success remove to cart".tr}.");
+        Provider.of<ComponentNotifier>(onGetBuildContext(), listen: false).updateCart();
       },
       onShowRemoveCartRequestProcessFailedCallback: onShowRemoveCartRequestProcessFailedCallback ?? (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
         context: onGetBuildContext(),

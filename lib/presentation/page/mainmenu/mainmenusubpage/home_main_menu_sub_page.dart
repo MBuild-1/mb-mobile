@@ -234,7 +234,7 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
         onAddCartRequestProcessSuccessCallback: () async {
           context.read<ComponentNotifier>().updateCart();
           context.read<NotificationNotifier>().loadCartLoadDataResult();
-        }
+        },
       )
     );
     OnObserveLoadProductDelegateFactory onObserveLoadProductDelegateFactory = Injector.locator<OnObserveLoadProductDelegateFactory>()
