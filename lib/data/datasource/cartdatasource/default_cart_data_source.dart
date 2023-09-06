@@ -250,8 +250,9 @@ class DefaultCartDataSource implements CartDataSource {
         if (changeAdditionalItem.name.isNotEmptyString) "name": changeAdditionalItem.name,
         if (changeAdditionalItem.estimationPrice != null) "price": changeAdditionalItem.estimationPrice,
         if (changeAdditionalItem.estimationWeight != null) "weight": changeAdditionalItem.estimationWeight,
+        "_method": "PUT"
       });
-      return dio.put("user/send-wh/${changeAdditionalItemParameter.changeAdditionalItem.id}", data: data, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+      return dio.post("user/send-wh/${changeAdditionalItemParameter.changeAdditionalItem.id}", data: data, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
         .map<ChangeAdditionalItemResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToChangeAdditionalItemResponse());
     });
   }
