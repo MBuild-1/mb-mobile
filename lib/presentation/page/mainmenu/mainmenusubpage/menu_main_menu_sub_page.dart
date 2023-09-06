@@ -158,11 +158,11 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
             icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorFavoriteBrand, width: 20.0),
             title: 'Favorite Brand'.tr,
           ),
-          ProfileMenuListItemControllerState(
-            onTap: (context) => PageRestorationHelper.toProductDiscussionPage(context),
-            icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorProductDiscussion, width: 20.0),
-            title: 'Product Discussion'.tr,
-          ),
+          // ProfileMenuListItemControllerState(
+          //   onTap: (context) => PageRestorationHelper.toProductDiscussionPage(context),
+          //   icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorProductDiscussion, width: 20.0),
+          //   title: 'Product Discussion'.tr,
+          // ),
           ProfileMenuListItemControllerState(
             onTap: (context) => PageRestorationHelper.toInboxPage(context),
             icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorInbox2, width: 20.0),
