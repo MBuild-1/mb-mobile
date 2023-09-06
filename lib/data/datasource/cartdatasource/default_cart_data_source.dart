@@ -149,7 +149,7 @@ class DefaultCartDataSource implements CartDataSource {
       } else if (supportCart is ProductBundle) {
         queryString = "bundling=${supportCart.id}";
       }
-      return dio.delete("/user/cart?$queryString", cancelToken: cancelToken)
+      return dio.delete("/user/cart/product/delete?$queryString", cancelToken: cancelToken)
         .map<RemoveFromCartDirectlyResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToRemoveFromCartDirectlyResponse());
     });
   }
