@@ -29,6 +29,7 @@ import '../../misc/controllerstate/paging_controller_state.dart';
 import '../../misc/dialog_helper.dart';
 import '../../misc/entityandlistitemcontrollerstatemediator/horizontal_component_entity_parameterized_entity_and_list_item_controller_state_mediator.dart';
 import '../../misc/error/message_error.dart';
+import '../../misc/error_helper.dart';
 import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
@@ -38,6 +39,7 @@ import '../../misc/list_item_controller_state_helper.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/main_route_observer.dart';
 import '../../misc/manager/controller_manager.dart';
+import '../../misc/multi_language_string.dart';
 import '../../misc/on_observe_load_product_delegate.dart';
 import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
@@ -215,6 +217,8 @@ class _StatefulProductEntryControllerMediatorWidgetState extends State<_Stateful
   late final PagingControllerState<int, ListItemControllerState> _productEntryListItemPagingControllerState;
   final List<BaseLoadDataResultDynamicListItemControllerState> _dynamicItemLoadDataResultDynamicListItemControllerStateList = [];
 
+  final ValueNotifier<dynamic> _fillerErrorValueNotifier = ValueNotifier(null);
+
   @override
   void initState() {
     super.initState();
@@ -222,7 +226,8 @@ class _StatefulProductEntryControllerMediatorWidgetState extends State<_Stateful
       firstPageKey: 1,
       // ignore: invalid_use_of_protected_member
       apiRequestManager: widget.productEntryController.apiRequestManager,
-      additionalPagingResultParameterChecker: Injector.locator<ProductBundleAdditionalPagingResultParameterChecker>()
+      additionalPagingResultParameterChecker: Injector.locator<ProductBundleAdditionalPagingResultParameterChecker>(),
+      fillerErrorValueNotifier: _fillerErrorValueNotifier
     );
     _productEntryListItemPagingControllerState = PagingControllerState(
       pagingController: _productEntryListItemPagingController,
@@ -236,6 +241,9 @@ class _StatefulProductEntryControllerMediatorWidgetState extends State<_Stateful
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _productEntryListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? listItemControllerStateList) async {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _fillerErrorValueNotifier.value = null;
+    });
     HorizontalComponentEntityParameterizedEntityAndListItemControllerStateMediator componentEntityMediator = Injector.locator<HorizontalComponentEntityParameterizedEntityAndListItemControllerStateMediator>();
     HorizontalDynamicItemCarouselParameterizedEntityAndListItemControllerStateMediatorParameter carouselParameterizedEntityMediator = HorizontalDynamicItemCarouselParameterizedEntityAndListItemControllerStateMediatorParameter(
       onSetState: () => setState(() {}),
@@ -260,6 +268,27 @@ class _StatefulProductEntryControllerMediatorWidgetState extends State<_Stateful
       ).itemList;
       int totalItem = productEntryPaging.totalItem;
       if (pageKey == 1) {
+        if (productEntryLoadDataResult.isSuccess) {
+          List itemList = productEntryLoadDataResult.resultIfSuccess!.itemList;
+          if (itemList.isEmpty) {
+            WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+              _fillerErrorValueNotifier.value = FailedLoadDataResult.throwException(() {
+                throw ErrorHelper.generateMultiLanguageDioError(
+                  MultiLanguageMessageError(
+                    title: MultiLanguageString({
+                      Constant.textEnUsLanguageKey: "Product Is Empty",
+                      Constant.textInIdLanguageKey: "Produk Kosong",
+                    }),
+                    message: MultiLanguageString({
+                      Constant.textEnUsLanguageKey: "For now, product is empty.",
+                      Constant.textInIdLanguageKey: "Untuk sekarang, produk kosong.",
+                    }),
+                  )
+                );
+              })!.e;
+            });
+          }
+        }
         totalItem = 2;
         resultListItemControllerState = [
           componentEntityMediator.mapWithParameter(
@@ -355,7 +384,8 @@ class _StatefulProductEntryControllerMediatorWidgetState extends State<_Stateful
                 onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
                   pagingControllerState: pagingControllerState!
                 ),
-                pullToRefresh: true
+                pullToRefresh: true,
+                onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
               ),
             ),
           ]
