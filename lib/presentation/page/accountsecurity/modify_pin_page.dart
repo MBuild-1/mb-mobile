@@ -27,6 +27,7 @@ import '../../../misc/toast_helper.dart';
 import '../../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../../widget/modified_svg_picture.dart';
 import '../../widget/modifiedappbar/modified_app_bar.dart';
+import '../../widget/tap_area.dart';
 import '../getx_page.dart';
 
 class ModifyPinPage extends RestorableGetxPage<_ModifyPinPageRestoration> {
@@ -348,6 +349,13 @@ class _StatefulModifyPinControllerMediatorWidgetState extends State<_StatefulMod
                     SizedBox(
                       width: 180,
                       child: PinCodeTextField(
+                        onTap: () async {
+                          WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+                            _focusNode.unfocus();
+                            await Future.delayed(const Duration(milliseconds: 10));
+                            _focusNode.requestFocus();
+                          });
+                        },
                         focusNode: _focusNode,
                         appContext: context,
                         length: 6,
