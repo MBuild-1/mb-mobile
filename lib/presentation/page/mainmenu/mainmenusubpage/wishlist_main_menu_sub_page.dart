@@ -115,7 +115,9 @@ class _StatefulWishlistMainMenuSubControllerMediatorWidgetState extends State<_S
             wishlistList: wishlistPaging.itemList,
             onUpdateState: () => setState(() {}),
             afterRemoveWishlist: (wishlistList) {
-              _wishlistMainMenuSubListItemPagingController.refresh();
+              if (wishlistList.isEmpty) {
+                _wishlistMainMenuSubListItemPagingController.refresh();
+              }
             },
             onRemoveWishlistWithWishlist: (wishlist) => widget.wishlistMainMenuSubController.wishlistAndCartControllerContentDelegate.removeFromWishlistDirectly(wishlist),
             onAddProductCart: (productAppearanceData) => widget.wishlistMainMenuSubController.wishlistAndCartControllerContentDelegate.addToCart(productAppearanceData as SupportCart),
