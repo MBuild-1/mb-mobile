@@ -42,7 +42,7 @@ class AdditionalItemSummaryWidget extends StatelessWidget {
                 children: [
                   Text("Estimation Price of Additional Items".tr, style: const TextStyle(color: Colors.grey, fontSize: 11)),
                   const SizedBox(width: 10),
-                  Text(totalEstimationPrice.toRupiah(), style: const TextStyle(fontSize: 11))
+                  Text(totalEstimationPrice.toRupiah(withFreeTextIfZero: false), style: const TextStyle(fontSize: 11))
                 ]
               ),
               const SizedBox(height: 10),

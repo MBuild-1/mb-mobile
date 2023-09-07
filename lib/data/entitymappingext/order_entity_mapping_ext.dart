@@ -7,12 +7,15 @@ import 'package:masterbagasi/data/entitymappingext/user_entity_mapping_ext.dart'
 import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
+import '../../domain/entity/additionalitem/additional_item.dart';
 import '../../domain/entity/order/combined_order.dart';
 import '../../domain/entity/order/order.dart';
 import '../../domain/entity/order/order_detail.dart';
 import '../../domain/entity/order/order_product.dart';
 import '../../domain/entity/order/order_product_detail.dart';
 import '../../domain/entity/order/order_product_in_order_shipping.dart';
+import '../../domain/entity/order/order_product_inventory.dart';
+import '../../domain/entity/order/order_purchasing.dart';
 import '../../domain/entity/order/order_shipping.dart';
 import '../../domain/entity/order/order_summary.dart';
 import '../../domain/entity/order/support_order_product.dart';
@@ -69,7 +72,41 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
       user: ResponseWrapper(response["user"]).mapFromResponseToUser(),
       orderProduct: ResponseWrapper(response["order_product"]).mapFromResponseToOrderProduct(),
       orderShipping: response["order_shipping"] != null ? ResponseWrapper(response["order_shipping"]).mapFromResponseToOrderShipping() : null,
+      orderPurchasingList: response["repurchase"].map<OrderPurchasing>(
+        (orderPurchasingResponse) => ResponseWrapper(orderPurchasingResponse).mapFromResponseToOrderPurchasing()
+      ).toList(),
       createdAt: ResponseWrapper(response["created_at"]).mapFromResponseToDateTime()!
+    );
+  }
+
+  OrderPurchasing mapFromResponseToOrderPurchasing() {
+    return OrderPurchasing(
+      id: response["id"],
+      productEntryId: response["product_entry_id"],
+      bundlingId: response["bundling_id"],
+      combinedOrderId: response["combined_order_id"],
+      buyingPrice: response["buying_price"],
+      name: (response["name"] as String?).toEmptyStringNonNull,
+      price: response["price"],
+      weight: ResponseWrapper(response["weight"]).mapFromResponseToDouble() ?? 0.0,
+      quantity: response["quantity"],
+      quantityItem: response["quantity_item"],
+      totalPrice: response["total_price"],
+      totalWeight: ResponseWrapper(response["total_weight"]).mapFromResponseToDouble() ?? 0.0,
+    );
+  }
+
+  OrderProductInventory mapFromResponseToOrderProductInventory() {
+    return OrderProductInventory(
+      id: response["id"],
+      orderProductId: response["order_product_id"],
+      productEntryId: response["product_entry_id"],
+      quantity: response["quantity"],
+      checkoutPrice: response["checkout_price"],
+      defaultQuantity: response["default_quantity"],
+      notes: response["notes"],
+      status: response["status"],
+      productEntry: ResponseWrapper(response["product_entry"]).mapFromResponseToProductEntry([], [])
     );
   }
 
@@ -83,7 +120,11 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
       orderProductDetailList: response["order_product_list"].map<OrderProductDetail>(
         (orderProductDetailResponse) => ResponseWrapper(orderProductDetailResponse).mapFromResponseToOrderProductDetail()
       ).toList(),
-      additionalItemList: ResponseWrapper(response["order_send_to_warehouse_list"]).mapFromResponseToAdditionalItemList()
+      additionalItemList: ResponseWrapper(response["order_send_to_warehouse_list"]).mapFromResponseToAdditionalItemList(),
+      otherOrderProductList: ResponseWrapper(response["other_order_product_list"]).mapFromResponseToAdditionalItemList(),
+      otherProductInventoryList: response["product_inventory"].map<OrderProductInventory>(
+        (orderProductInventoryResponse) => ResponseWrapper(orderProductInventoryResponse).mapFromResponseToOrderProductInventory()
+      ).toList()
     );
   }
 

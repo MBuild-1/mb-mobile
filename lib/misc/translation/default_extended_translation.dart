@@ -257,7 +257,10 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Success change password": "Sukses ubah kata sandi",
       "Free": "Gratis",
       "Request Failed": "Request Gagal",
-      "No Message": "Tidak Ada Pesan"
+      "No Message": "Tidak Ada Pesan",
+      "Order Send to Warehouse List": "Daftar Kirim Barang Ke Warehouse",
+      "Other Order Product List": "Daftar Product Lainnya",
+      "Product Inventory": "Inventori Produk"
     }
   };
 
