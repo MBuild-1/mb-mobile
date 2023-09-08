@@ -87,7 +87,12 @@ class _ErrorHelperImpl {
   }
 
   Error generateEmptyError(dynamic e) {
-    bool checkingEmpty(String lowerCaseMessage) => lowerCaseMessage.contains("is empty") || lowerCaseMessage.contains("empty") || lowerCaseMessage.contains("not found");
+    bool checkingEmpty(String lowerCaseMessage) {
+      return lowerCaseMessage.contains("is empty")
+        || lowerCaseMessage.contains("empty")
+        || lowerCaseMessage.contains("not found")
+        || lowerCaseMessage.contains("will appear");
+    }
     EmptyError generateEmptyErrorResult(String lowerCaseMessage) {
       EmptyErrorType emptyErrorType = EmptyErrorType.defaultEmpty;
       if (lowerCaseMessage.contains("address")) {
@@ -100,6 +105,8 @@ class _ErrorHelperImpl {
         emptyErrorType = EmptyErrorType.transactionEmpty;
       } else if (lowerCaseMessage.contains("wishlist")) {
         emptyErrorType = EmptyErrorType.wishlistEmpty;
+      } else if (lowerCaseMessage.contains("notification")) {
+        emptyErrorType = EmptyErrorType.notificationEmpty;
       }
       return EmptyError(
         emptyErrorType: emptyErrorType

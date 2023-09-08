@@ -169,9 +169,9 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
             title: 'Inbox'.tr,
           ),
           ProfileMenuListItemControllerState(
-            onTap: (context) => PageRestorationHelper.toHelpChatPage(context),
+            onTap: (context) => PageRestorationHelper.toNotificationPage(context),
             icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorSupportMessage, width: 20.0),
-            title: 'Support Message'.tr,
+            title: 'Update'.tr,
           ),
           SpacingListItemControllerState(),
           ProfileMenuListItemControllerState(

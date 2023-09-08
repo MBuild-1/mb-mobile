@@ -15,12 +15,16 @@ import '../../misc/constant.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/notificationlistitemcontrollerstate/notification_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
+import '../../misc/error/message_error.dart';
+import '../../misc/error_helper.dart';
+import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
 import '../../misc/list_item_controller_state_helper.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/controller_manager.dart';
+import '../../misc/multi_language_string.dart';
 import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
@@ -166,7 +170,9 @@ class _StatefulNotificationControllerMediatorWidgetState extends State<_Stateful
   late final PagingControllerState<int, ListItemControllerState> _notificationListItemPagingControllerState;
   late ColorfulChipTabBarController _notificationTabColorfulChipTabBarController;
   late List<ColorfulChipTabBarData> _notificationColorfulChipTabBarDataList;
-  String _status = "";
+  String _status = "transaction";
+
+  final ValueNotifier<dynamic> _fillerErrorValueNotifier = ValueNotifier(null);
 
   @override
   void initState() {
@@ -176,6 +182,7 @@ class _StatefulNotificationControllerMediatorWidgetState extends State<_Stateful
       firstPageKey: 1,
       // ignore: invalid_use_of_protected_member
       apiRequestManager: widget.notificationController.apiRequestManager,
+      fillerErrorValueNotifier: _fillerErrorValueNotifier
     );
     _notificationListItemPagingControllerState = PagingControllerState(
       pagingController: _notificationListItemPagingController,
@@ -191,8 +198,21 @@ class _StatefulNotificationControllerMediatorWidgetState extends State<_Stateful
     _notificationColorfulChipTabBarDataList = <ColorfulChipTabBarData>[
       ColorfulChipTabBarData(
         color: Constant.colorMain,
-        title: "Transaksi",
+        title: MultiLanguageString({
+          Constant.textInIdLanguageKey: "Transaksi",
+          Constant.textEnUsLanguageKey: "Transaction"
+        }).toEmptyStringNonNull,
         data: "transaction"
+      ),
+      ColorfulChipTabBarData(
+        color: Constant.colorMain,
+        title: "Info",
+        data: "info"
+      ),
+      ColorfulChipTabBarData(
+        color: Constant.colorMain,
+        title: "Promo",
+        data: "promo"
       ),
     ];
     _notificationTabColorfulChipTabBarController.addListener(() {
@@ -204,6 +224,7 @@ class _StatefulNotificationControllerMediatorWidgetState extends State<_Stateful
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _notificationListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? notificationListItemControllerStateList) async {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       Provider.of<NotificationNotifier>(context, listen: false).loadNotificationLoadDataResult();
+      _fillerErrorValueNotifier.value = null;
     });
     List<ListItemControllerState> resultListItemControllerState = [];
     if (pageKey == 1) {
@@ -225,6 +246,51 @@ class _StatefulNotificationControllerMediatorWidgetState extends State<_Stateful
         )
       );
     } else {
+      if (_status != "transaction") {
+        if (_status == "info") {
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            _fillerErrorValueNotifier.value = FailedLoadDataResult.throwException(() {
+              throw ErrorHelper.generateMultiLanguageDioError(
+                MultiLanguageMessageError(
+                  title: MultiLanguageString({
+                    Constant.textEnUsLanguageKey: "No Information Notification Yet",
+                    Constant.textInIdLanguageKey: "Belum Ada Notifikasi Info",
+                  }),
+                  message: MultiLanguageString({
+                    Constant.textEnUsLanguageKey: "Notifications regarding your information will appear here.",
+                    Constant.textInIdLanguageKey: "Notifikasi terkait info kamu bakal muncul disini.",
+                  }),
+                )
+              );
+            })!.e;
+          });
+        } else if (_status == "promo") {
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            _fillerErrorValueNotifier.value = FailedLoadDataResult.throwException(() {
+              throw ErrorHelper.generateMultiLanguageDioError(
+                MultiLanguageMessageError(
+                  title: MultiLanguageString({
+                    Constant.textEnUsLanguageKey: "No Promo Notification Yet",
+                    Constant.textInIdLanguageKey: "Belum Ada Notifikasi Promo",
+                  }),
+                  message: MultiLanguageString({
+                    Constant.textEnUsLanguageKey: "Notifications regarding your promo will appear here.",
+                    Constant.textInIdLanguageKey: "Notifikasi terkait promo kamu bakal muncul disini.",
+                  }),
+                )
+              );
+            })!.e;
+          });
+        }
+        return SuccessLoadDataResult<PagingDataResult<ListItemControllerState>>(
+          value: PagingDataResult<ListItemControllerState>(
+            itemList: [],
+            page: 2,
+            totalPage: 2,
+            totalItem: 0
+          )
+        );
+      }
       int effectivePageKey = pageKey - 1;
       LoadDataResult<PagingDataResult<ShortNotification>> shortNotificationPagingLoadDataResult = await widget.notificationController.getNotificationByUser(
         NotificationByUserPagingParameter(page: effectivePageKey)
@@ -263,7 +329,8 @@ class _StatefulNotificationControllerMediatorWidgetState extends State<_Stateful
                 onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
                   pagingControllerState: pagingControllerState!
                 ),
-                pullToRefresh: true
+                pullToRefresh: true,
+                onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
               ),
             ),
           ]

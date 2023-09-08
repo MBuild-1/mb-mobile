@@ -7,5 +7,5 @@ class EmptyError extends Error {
 }
 
 enum EmptyErrorType {
-  defaultEmpty, addressEmpty, cartEmpty, sendEmpty, transactionEmpty, wishlistEmpty
+  defaultEmpty, addressEmpty, cartEmpty, sendEmpty, transactionEmpty, wishlistEmpty, notificationEmpty
 }

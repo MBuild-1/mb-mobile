@@ -247,6 +247,8 @@ class DefaultErrorProvider extends ErrorProvider {
             imageAssetUrl = Constant.imageEmptyErrorTransaction;
           } else if (emptyErrorType == EmptyErrorType.wishlistEmpty) {
             imageAssetUrl = Constant.imageEmptyErrorWishlist;
+          } else if (emptyErrorType == EmptyErrorType.notificationEmpty) {
+            imageAssetUrl = Constant.imageEmptyErrorTransaction;
           } else {
             imageAssetUrl = Constant.imageEmptyError;
           }

@@ -38,6 +38,7 @@ class PurchaseSectionNotificationItem extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               child: PurchaseSectionNotificationStep(
@@ -50,6 +51,9 @@ class PurchaseSectionNotificationItem extends StatelessWidget {
                     Constant.textEnUsLanguageKey: "Waiting Confirmation",
                     Constant.textInIdLanguageKey: "Menunggu Konfirmasi"
                   }).toString(),
+                  style: const TextStyle(
+                    fontSize: 13.0
+                  ),
                   textAlign: TextAlign.center,
                 )
               ),
@@ -65,6 +69,9 @@ class PurchaseSectionNotificationItem extends StatelessWidget {
                     Constant.textEnUsLanguageKey: "Is Being Processed",
                     Constant.textInIdLanguageKey: "Pesanan Diproses"
                   }).toString(),
+                  style: const TextStyle(
+                    fontSize: 13.0
+                  ),
                   textAlign: TextAlign.center,
                 )
               ),
@@ -80,6 +87,9 @@ class PurchaseSectionNotificationItem extends StatelessWidget {
                     Constant.textEnUsLanguageKey: "Ready To Send",
                     Constant.textInIdLanguageKey: "Siap Dikirim"
                   }).toString(),
+                  style: const TextStyle(
+                    fontSize: 13.0
+                  ),
                   textAlign: TextAlign.center,
                 )
               ),
@@ -95,6 +105,9 @@ class PurchaseSectionNotificationItem extends StatelessWidget {
                     Constant.textEnUsLanguageKey: "Is Sending",
                     Constant.textInIdLanguageKey: "Sedang Dikirim"
                   }).toString(),
+                  style: const TextStyle(
+                    fontSize: 13.0
+                  ),
                   textAlign: TextAlign.center,
                 )
               ),
