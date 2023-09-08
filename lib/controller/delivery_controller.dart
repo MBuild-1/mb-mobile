@@ -14,6 +14,7 @@ import '../domain/entity/address/address.dart';
 import '../domain/entity/address/current_selected_address_parameter.dart';
 import '../domain/entity/address/current_selected_address_response.dart';
 import '../domain/entity/cart/cart.dart';
+import '../domain/entity/cart/cart_list_parameter.dart';
 import '../domain/entity/cart/cart_paging_parameter.dart';
 import '../domain/entity/cart/cart_summary.dart';
 import '../domain/entity/cart/cart_summary_parameter.dart';
@@ -25,6 +26,7 @@ import '../domain/usecase/add_additional_item_use_case.dart';
 import '../domain/usecase/change_additional_item_use_case.dart';
 import '../domain/usecase/create_order_use_case.dart';
 import '../domain/usecase/get_additional_item_use_case.dart';
+import '../domain/usecase/get_cart_list_use_case.dart';
 import '../domain/usecase/get_cart_summary_use_case.dart';
 import '../domain/usecase/get_coupon_detail_use_case.dart';
 import '../domain/usecase/get_current_selected_address_use_case.dart';
@@ -46,7 +48,7 @@ typedef _OnShowDeliveryRequestProcessFailedCallback = Future<void> Function(dyna
 typedef _OnShowCartSummaryProcessCallback = Future<void> Function(LoadDataResult<CartSummary>);
 
 class DeliveryController extends BaseGetxController {
-  final GetMyCartUseCase getMyCartUseCase;
+  final GetCartListUseCase getCartListUseCase;
   final GetCartSummaryUseCase getCartSummaryUseCase;
   final GetAdditionalItemUseCase getAdditionalItemUseCase;
   final AddAdditionalItemUseCase addAdditionalItemUseCase;
@@ -61,7 +63,7 @@ class DeliveryController extends BaseGetxController {
 
   DeliveryController(
     super.controllerManager,
-    this.getMyCartUseCase,
+    this.getCartListUseCase,
     this.getCurrentSelectedAddressUseCase,
     this.getCartSummaryUseCase,
     this.getAdditionalItemUseCase,
@@ -95,8 +97,8 @@ class DeliveryController extends BaseGetxController {
     );
   }
 
-  Future<LoadDataResult<PagingDataResult<Cart>>> getDeliveryCartPaging(CartPagingParameter cartPagingParameter) {
-    return getMyCartUseCase.execute(cartPagingParameter).future(
+  Future<LoadDataResult<List<Cart>>> getDeliveryCartList(CartListParameter cartListParameter) {
+    return getCartListUseCase.execute(cartListParameter).future(
       parameter: apiRequestManager.addRequestToCancellationPart("cart-paging").value
     );
   }

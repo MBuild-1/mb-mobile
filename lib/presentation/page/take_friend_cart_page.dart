@@ -16,6 +16,7 @@ import '../../domain/entity/additionalitem/change_additional_item_response.dart'
 import '../../domain/entity/additionalitem/remove_additional_item_parameter.dart';
 import '../../domain/entity/additionalitem/remove_additional_item_response.dart';
 import '../../domain/entity/cart/cart.dart';
+import '../../domain/entity/cart/cart_list_parameter.dart';
 import '../../domain/entity/cart/cart_paging_parameter.dart';
 import '../../domain/entity/cart/host_cart.dart';
 import '../../domain/entity/cart/support_cart.dart';
@@ -25,6 +26,7 @@ import '../../domain/usecase/add_to_cart_use_case.dart';
 import '../../domain/usecase/add_wishlist_use_case.dart';
 import '../../domain/usecase/change_additional_item_use_case.dart';
 import '../../domain/usecase/get_additional_item_use_case.dart';
+import '../../domain/usecase/get_cart_list_use_case.dart';
 import '../../domain/usecase/get_cart_summary_use_case.dart';
 import '../../domain/usecase/get_my_cart_use_case.dart';
 import '../../domain/usecase/remove_additional_item_use_case.dart';
@@ -72,7 +74,7 @@ class TakeFriendCartPage extends RestorableGetxPage<_TakeFriendCartPageRestorati
     _takeFriendCartController.controller = GetExtended.put<TakeFriendCartController>(
       TakeFriendCartController(
         controllerManager,
-        Injector.locator<GetMyCartUseCase>(),
+        Injector.locator<GetCartListUseCase>(),
         Injector.locator<AddToCartUseCase>(),
         Injector.locator<RemoveFromCartUseCase>(),
         Injector.locator<GetCartSummaryUseCase>(),
@@ -248,11 +250,11 @@ class _StatefulTakeFriendCartControllerMediatorWidgetState extends State<_Statef
       Provider.of<NotificationNotifier>(context, listen: false).loadCartLoadDataResult();
       Provider.of<ComponentNotifier>(context, listen: false).updateCart();
     });
-    LoadDataResult<PagingDataResult<Cart>> cartPagingLoadDataResult = await widget.takeFriendCartController.getCartPaging(
-      CartPagingParameter(page: pageKey)
+    LoadDataResult<List<Cart>> cartListLoadDataResult = await widget.takeFriendCartController.getCartList(
+      CartListParameter()
     );
-    return cartPagingLoadDataResult.map<PagingResult<ListItemControllerState>>((cartPaging) {
-      List<CartListItemControllerState> newCartListItemControllerStateList = cartPaging.itemList.map<CartListItemControllerState>(
+    return cartListLoadDataResult.map<PagingResult<ListItemControllerState>>((cartList) {
+      List<CartListItemControllerState> newCartListItemControllerStateList = cartList.map<CartListItemControllerState>(
         (cart) => VerticalCartListItemControllerState(
           isSelected: false,
           cart: cart,
@@ -273,71 +275,47 @@ class _StatefulTakeFriendCartControllerMediatorWidgetState extends State<_Statef
           },
         )
       ).toList();
-      if (pageKey == 1) {
-        return PagingDataResult<ListItemControllerState>(
-          itemList: [
-            PaddingContainerListItemControllerState(
-              padding: EdgeInsets.all(4.w),
-              paddingChildListItemControllerState: HostCartIndicatorListItemControllerState(hostCart: HostCart(id: "test"))
+      return PagingDataResult<ListItemControllerState>(
+        itemList: [
+          PaddingContainerListItemControllerState(
+            padding: EdgeInsets.all(4.w),
+            paddingChildListItemControllerState: HostCartIndicatorListItemControllerState(hostCart: HostCart(id: "test"))
+          ),
+          SpacingListItemControllerState(),
+          CartContainerListItemControllerState(
+            cartListItemControllerStateList: newCartListItemControllerStateList,
+            onUpdateState: () => setState(() {}),
+            onScrollToAdditionalItemsSection: () => _takeFriendCartScrollController.jumpTo(
+              _takeFriendCartScrollController.position.maxScrollExtent
             ),
-            SpacingListItemControllerState(),
-            CartContainerListItemControllerState(
-              cartListItemControllerStateList: newCartListItemControllerStateList,
-              onUpdateState: () => setState(() {}),
-              onScrollToAdditionalItemsSection: () => _takeFriendCartScrollController.jumpTo(
-                _takeFriendCartScrollController.position.maxScrollExtent
-              ),
-              additionalItemList: _additionalItemList,
-              onChangeSelected: (cartList) {
-                setState(() {
-                  _selectedCartList = cartList;
-                  _selectedCartCount = cartList.length;
-                  _updateCartInformation();
-                });
-              },
-              onCartChange: () {
-                setState(() => _updateCartInformation());
-                if (_cartCount == 0) {
-                  _takeFriendCartListItemPagingController.errorFirstPageOuterProcess = CartEmptyError();
-                }
-              },
-              cartContainerStateStorageListItemControllerState: DefaultCartContainerStateStorageListItemControllerState(),
-              cartContainerActionListItemControllerState: _DefaultTakeFriendCartContainerActionListItemControllerState(
-                getAdditionalItemList: (additionalItemListParameter) => widget.takeFriendCartController.getAdditionalItem(additionalItemListParameter),
-                addAdditionalItem: (addAdditionalItemParameter) => widget.takeFriendCartController.addAdditionalItem(addAdditionalItemParameter),
-                changeAdditionalItem: (changeAdditionalItemParameter) => widget.takeFriendCartController.changeAdditionalItem(changeAdditionalItemParameter),
-                removeAdditionalItem: (removeAdditionalItemParameter) => widget.takeFriendCartController.removeAdditionalItem(removeAdditionalItemParameter),
-              ),
-              cartContainerInterceptingActionListItemControllerState: _cartContainerInterceptingActionListItemControllerState
-            )
-          ],
-          page: cartPaging.page,
-          totalPage: cartPaging.totalPage,
-          totalItem: 1
-        );
-      } else {
-        if (cartListItemControllerStateList != null) {
-          if (cartListItemControllerStateList.isNotEmpty) {
-            ListItemControllerState cartListItemControllerState = cartListItemControllerStateList.first;
-            if (cartListItemControllerState is PageKeyedListItemControllerState) {
-              if (cartListItemControllerState.listItemControllerState != null) {
-                cartListItemControllerState = cartListItemControllerState.listItemControllerState!;
+            additionalItemList: _additionalItemList,
+            onChangeSelected: (cartList) {
+              setState(() {
+                _selectedCartList = cartList;
+                _selectedCartCount = cartList.length;
+                _updateCartInformation();
+              });
+            },
+            onCartChange: () {
+              setState(() => _updateCartInformation());
+              if (_cartCount == 0) {
+                _takeFriendCartListItemPagingController.errorFirstPageOuterProcess = CartEmptyError();
               }
-            }
-            if (cartListItemControllerState is CartContainerListItemControllerState) {
-              cartListItemControllerState.cartListItemControllerStateList.addAll(
-                newCartListItemControllerStateList
-              );
-            }
-          }
-        }
-        return PagingDataResult<ListItemControllerState>(
-          itemList: [],
-          page: cartPaging.page,
-          totalPage: cartPaging.totalPage,
-          totalItem: 0
-        );
-      }
+            },
+            cartContainerStateStorageListItemControllerState: DefaultCartContainerStateStorageListItemControllerState(),
+            cartContainerActionListItemControllerState: _DefaultTakeFriendCartContainerActionListItemControllerState(
+              getAdditionalItemList: (additionalItemListParameter) => widget.takeFriendCartController.getAdditionalItem(additionalItemListParameter),
+              addAdditionalItem: (addAdditionalItemParameter) => widget.takeFriendCartController.addAdditionalItem(addAdditionalItemParameter),
+              changeAdditionalItem: (changeAdditionalItemParameter) => widget.takeFriendCartController.changeAdditionalItem(changeAdditionalItemParameter),
+              removeAdditionalItem: (removeAdditionalItemParameter) => widget.takeFriendCartController.removeAdditionalItem(removeAdditionalItemParameter),
+            ),
+            cartContainerInterceptingActionListItemControllerState: _cartContainerInterceptingActionListItemControllerState
+          )
+        ],
+        page: 1,
+        totalPage: 1,
+        totalItem: 1
+      );
     });
   }
 

@@ -15,6 +15,7 @@ import '../../domain/entity/additionalitem/change_additional_item_response.dart'
 import '../../domain/entity/additionalitem/remove_additional_item_parameter.dart';
 import '../../domain/entity/additionalitem/remove_additional_item_response.dart';
 import '../../domain/entity/cart/cart.dart';
+import '../../domain/entity/cart/cart_list_parameter.dart';
 import '../../domain/entity/cart/cart_paging_parameter.dart';
 import '../../domain/entity/cart/support_cart.dart';
 import '../../domain/entity/wishlist/support_wishlist.dart';
@@ -23,6 +24,7 @@ import '../../domain/usecase/add_to_cart_use_case.dart';
 import '../../domain/usecase/add_wishlist_use_case.dart';
 import '../../domain/usecase/change_additional_item_use_case.dart';
 import '../../domain/usecase/get_additional_item_use_case.dart';
+import '../../domain/usecase/get_cart_list_use_case.dart';
 import '../../domain/usecase/get_cart_summary_use_case.dart';
 import '../../domain/usecase/get_my_cart_use_case.dart';
 import '../../domain/usecase/remove_additional_item_use_case.dart';
@@ -76,7 +78,7 @@ class CartPage extends RestorableGetxPage<_CartPageRestoration> {
     _cartController.controller = GetExtended.put<CartController>(
       CartController(
         controllerManager,
-        Injector.locator<GetMyCartUseCase>(),
+        Injector.locator<GetCartListUseCase>(),
         Injector.locator<AddToCartUseCase>(),
         Injector.locator<RemoveFromCartUseCase>(),
         Injector.locator<GetCartSummaryUseCase>(),
@@ -253,11 +255,11 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
       Provider.of<NotificationNotifier>(context, listen: false).loadCartLoadDataResult();
       Provider.of<ComponentNotifier>(context, listen: false).updateCart();
     });
-    LoadDataResult<PagingDataResult<Cart>> cartPagingLoadDataResult = await widget.cartController.getCartPaging(
-      CartPagingParameter(page: pageKey)
+    LoadDataResult<List<Cart>> cartListLoadDataResult = await widget.cartController.getCartList(
+      CartListParameter()
     );
-    return cartPagingLoadDataResult.map<PagingResult<ListItemControllerState>>((cartPaging) {
-      List<CartListItemControllerState> newCartListItemControllerStateList = cartPaging.itemList.map<CartListItemControllerState>(
+    return cartListLoadDataResult.map<PagingResult<ListItemControllerState>>((cartList) {
+      List<CartListItemControllerState> newCartListItemControllerStateList = cartList.map<CartListItemControllerState>(
         (cart) => VerticalCartListItemControllerState(
           isSelected: false,
           cart: cart,
@@ -278,57 +280,42 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
           },
         )
       ).toList();
-      if (pageKey == 1) {
-        return PagingDataResult<ListItemControllerState>(
-          itemList: [
-            CartContainerListItemControllerState(
-              cartListItemControllerStateList: newCartListItemControllerStateList,
-              onUpdateState: () => setState(() {}),
-              onScrollToAdditionalItemsSection: () => _cartScrollController.jumpTo(
-                _cartScrollController.position.maxScrollExtent
-              ),
-              additionalItemList: _additionalItemList,
-              onChangeSelected: (cartList) {
-                setState(() {
-                  _selectedCartList = cartList;
-                  _selectedCartCount = cartList.length;
-                  _updateCartInformation();
-                });
-              },
-              onCartChange: () {
-                setState(() => _updateCartInformation());
-                if (_cartCount == 0) {
-                  _cartListItemPagingController.errorFirstPageOuterProcess = CartEmptyError();
-                }
-              },
-              cartContainerStateStorageListItemControllerState: DefaultCartContainerStateStorageListItemControllerState(),
-              cartContainerActionListItemControllerState: _DefaultCartContainerActionListItemControllerState(
-                getAdditionalItemList: (additionalItemListParameter) => widget.cartController.getAdditionalItem(additionalItemListParameter),
-                addAdditionalItem: (addAdditionalItemParameter) => widget.cartController.addAdditionalItem(addAdditionalItemParameter),
-                changeAdditionalItem: (changeAdditionalItemParameter) => widget.cartController.changeAdditionalItem(changeAdditionalItemParameter),
-                removeAdditionalItem: (removeAdditionalItemParameter) => widget.cartController.removeAdditionalItem(removeAdditionalItemParameter),
-              ),
-              cartContainerInterceptingActionListItemControllerState: _cartContainerInterceptingActionListItemControllerState
-            )
-          ],
-          page: cartPaging.page,
-          totalPage: cartPaging.totalPage,
-          totalItem: 1
-        );
-      } else {
-        if (ListItemControllerStateHelper.checkListItemControllerStateList(cartListItemControllerStateList)) {
-          CartContainerListItemControllerState cartContainerListItemControllerState = ListItemControllerStateHelper.parsePageKeyedListItemControllerState(cartListItemControllerStateList![0]) as CartContainerListItemControllerState;
-          cartContainerListItemControllerState.cartListItemControllerStateList.addAll(
-            newCartListItemControllerStateList
-          );
-        }
-        return PagingDataResult<ListItemControllerState>(
-          itemList: [],
-          page: cartPaging.page,
-          totalPage: cartPaging.totalPage,
-          totalItem: 0
-        );
-      }
+      return PagingDataResult<ListItemControllerState>(
+        itemList: [
+          CartContainerListItemControllerState(
+            cartListItemControllerStateList: newCartListItemControllerStateList,
+            onUpdateState: () => setState(() {}),
+            onScrollToAdditionalItemsSection: () => _cartScrollController.jumpTo(
+              _cartScrollController.position.maxScrollExtent
+            ),
+            additionalItemList: _additionalItemList,
+            onChangeSelected: (cartList) {
+              setState(() {
+                _selectedCartList = cartList;
+                _selectedCartCount = cartList.length;
+                _updateCartInformation();
+              });
+            },
+            onCartChange: () {
+              setState(() => _updateCartInformation());
+              if (_cartCount == 0) {
+                _cartListItemPagingController.errorFirstPageOuterProcess = CartEmptyError();
+              }
+            },
+            cartContainerStateStorageListItemControllerState: DefaultCartContainerStateStorageListItemControllerState(),
+            cartContainerActionListItemControllerState: _DefaultCartContainerActionListItemControllerState(
+              getAdditionalItemList: (additionalItemListParameter) => widget.cartController.getAdditionalItem(additionalItemListParameter),
+              addAdditionalItem: (addAdditionalItemParameter) => widget.cartController.addAdditionalItem(addAdditionalItemParameter),
+              changeAdditionalItem: (changeAdditionalItemParameter) => widget.cartController.changeAdditionalItem(changeAdditionalItemParameter),
+              removeAdditionalItem: (removeAdditionalItemParameter) => widget.cartController.removeAdditionalItem(removeAdditionalItemParameter),
+            ),
+            cartContainerInterceptingActionListItemControllerState: _cartContainerInterceptingActionListItemControllerState
+          )
+        ],
+        page: 1,
+        totalPage: 1,
+        totalItem: 1
+      );
     });
   }
 

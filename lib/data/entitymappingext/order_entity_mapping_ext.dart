@@ -72,9 +72,9 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
       user: ResponseWrapper(response["user"]).mapFromResponseToUser(),
       orderProduct: ResponseWrapper(response["order_product"]).mapFromResponseToOrderProduct(),
       orderShipping: response["order_shipping"] != null ? ResponseWrapper(response["order_shipping"]).mapFromResponseToOrderShipping() : null,
-      orderPurchasingList: response["repurchase"].map<OrderPurchasing>(
+      orderPurchasingList: response["repurchase"] != null ? response["repurchase"].map<OrderPurchasing>(
         (orderPurchasingResponse) => ResponseWrapper(orderPurchasingResponse).mapFromResponseToOrderPurchasing()
-      ).toList(),
+      ).toList() : [],
       createdAt: ResponseWrapper(response["created_at"]).mapFromResponseToDateTime()!
     );
   }

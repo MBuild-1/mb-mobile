@@ -9,6 +9,7 @@ import '../domain/entity/additionalitem/change_additional_item_response.dart';
 import '../domain/entity/additionalitem/remove_additional_item_parameter.dart';
 import '../domain/entity/additionalitem/remove_additional_item_response.dart';
 import '../domain/entity/cart/cart.dart';
+import '../domain/entity/cart/cart_list_parameter.dart';
 import '../domain/entity/cart/cart_paging_parameter.dart';
 import '../domain/entity/cart/cart_summary.dart';
 import '../domain/entity/cart/cart_summary_parameter.dart';
@@ -22,6 +23,7 @@ import '../domain/usecase/add_to_cart_use_case.dart';
 import '../domain/usecase/add_wishlist_use_case.dart';
 import '../domain/usecase/change_additional_item_use_case.dart';
 import '../domain/usecase/get_additional_item_use_case.dart';
+import '../domain/usecase/get_cart_list_use_case.dart';
 import '../domain/usecase/get_cart_summary_use_case.dart';
 import '../domain/usecase/get_my_cart_use_case.dart';
 import '../domain/usecase/remove_additional_item_use_case.dart';
@@ -40,7 +42,7 @@ typedef _OnRemoveCartRequestProcessSuccessCallback = Future<void> Function(Cart 
 typedef _OnShowRemoveCartRequestProcessFailedCallback = Future<void> Function(dynamic e);
 
 class CartController extends BaseGetxController {
-  final GetMyCartUseCase getMyCartUseCase;
+  final GetCartListUseCase getCartListUseCase;
   final AddToCartUseCase addToCartUseCase;
   final RemoveFromCartUseCase removeFromCartUseCase;
   final GetCartSummaryUseCase getCartSummaryUseCase;
@@ -54,7 +56,7 @@ class CartController extends BaseGetxController {
 
   CartController(
     super.controllerManager,
-    this.getMyCartUseCase,
+    this.getCartListUseCase,
     this.addToCartUseCase,
     this.removeFromCartUseCase,
     this.getCartSummaryUseCase,
@@ -65,8 +67,8 @@ class CartController extends BaseGetxController {
     this.addWishlistUseCase,
   );
 
-  Future<LoadDataResult<PagingDataResult<Cart>>> getCartPaging(CartPagingParameter cartPagingParameter) {
-    return getMyCartUseCase.execute(cartPagingParameter).future(
+  Future<LoadDataResult<List<Cart>>> getCartList(CartListParameter cartListParameter) {
+    return getCartListUseCase.execute(cartListParameter).future(
       parameter: apiRequestManager.addRequestToCancellationPart("cart").value
     );
   }

@@ -19,6 +19,7 @@ import '../../domain/entity/address/address.dart';
 import '../../domain/entity/address/current_selected_address_parameter.dart';
 import '../../domain/entity/address/current_selected_address_response.dart';
 import '../../domain/entity/cart/cart.dart';
+import '../../domain/entity/cart/cart_list_parameter.dart';
 import '../../domain/entity/cart/cart_paging_parameter.dart';
 import '../../domain/entity/cart/cart_summary.dart';
 import '../../domain/entity/cart/support_cart.dart';
@@ -29,6 +30,7 @@ import '../../domain/usecase/add_additional_item_use_case.dart';
 import '../../domain/usecase/change_additional_item_use_case.dart';
 import '../../domain/usecase/create_order_use_case.dart';
 import '../../domain/usecase/get_additional_item_use_case.dart';
+import '../../domain/usecase/get_cart_list_use_case.dart';
 import '../../domain/usecase/get_cart_summary_use_case.dart';
 import '../../domain/usecase/get_coupon_detail_use_case.dart';
 import '../../domain/usecase/get_current_selected_address_use_case.dart';
@@ -98,7 +100,7 @@ class DeliveryPage extends RestorableGetxPage<_DeliveryPageRestoration> {
     _deliveryController.controller = GetExtended.put<DeliveryController>(
       DeliveryController(
         controllerManager,
-        Injector.locator<GetMyCartUseCase>(),
+        Injector.locator<GetCartListUseCase>(),
         Injector.locator<GetCurrentSelectedAddressUseCase>(),
         Injector.locator<GetCartSummaryUseCase>(),
         Injector.locator<GetAdditionalItemUseCase>(),
@@ -337,12 +339,12 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       setState(() => _selectedCartCount = 0);
     });
-    LoadDataResult<PagingDataResult<Cart>> cartPagingLoadDataResult = await widget.deliveryController.getDeliveryCartPaging(
-      CartPagingParameter(page: pageKey)
+    LoadDataResult<List<Cart>> cartListLoadDataResult = await widget.deliveryController.getDeliveryCartList(
+      CartListParameter()
     );
-    return cartPagingLoadDataResult.map<PagingResult<ListItemControllerState>>((cartPaging) {
+    return cartListLoadDataResult.map<PagingResult<ListItemControllerState>>((cartList) {
       List<CartListItemControllerState> newCartListItemControllerStateList = [];
-      for (var iteratedCart in cartPaging.itemList) {
+      for (var iteratedCart in cartList) {
         for (var iteratedCartId in widget.selectedCartIdList) {
           String iteratedCartIdValue = iteratedCartId[0];
           String iteratedCartIdQuantity = iteratedCartId[1];
@@ -384,79 +386,55 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
           }
         }
       }
-      if (pageKey == 1) {
-        return PagingDataResult<ListItemControllerState>(
-          itemList: [
-            DeliveryCartContainerListItemControllerState(
-              selectedCartIdList: widget.selectedCartIdList,
-              selectedAdditionalItemIdList: widget.selectedAdditionalItemIdList,
-              cartListItemControllerStateList: newCartListItemControllerStateList,
-              onUpdateState: () => setState(() {}),
-              onScrollToAdditionalItemsSection: () => _deliveryScrollController.jumpTo(
-                _deliveryScrollController.position.maxScrollExtent
-              ),
-              additionalItemList: _additionalItemList,
-              onChangeSelected: (cartList) {
-                _cartList = cartList;
-                setState(() {
-                  _selectedCartCount = cartList.length;
-                });
-                widget.deliveryController.getCartSummary();
-              },
-              onCartChange: () {
-                if (_selectedCartCount == 0) {
-                  _deliveryListItemPagingController.errorFirstPageOuterProcess = CartEmptyError();
-                }
-              },
-              onUpdateCoupon: (coupon) {
-                if (coupon == null) {
-                  _couponId = null;
-                  widget.deliveryController.getCartSummary();
-                }
-              },
-              onGetShippingAddressLoadDataResult: (shippingAddressLoadDataResult) {
-                setState(() => _shippingAddressLoadDataResult = shippingAddressLoadDataResult);
-              },
-              deliveryCartContainerStateStorageListItemControllerState: DefaultDeliveryCartContainerStateStorageListItemControllerState(),
-              deliveryCartContainerActionListItemControllerState: _DefaultDeliveryCartContainerActionListItemControllerState(
-                getAdditionalItemList: (additionalItemListParameter) => widget.deliveryController.getAdditionalItem(additionalItemListParameter),
-                addAdditionalItem: (addAdditionalItemParameter) => widget.deliveryController.addAdditionalItem(addAdditionalItemParameter),
-                changeAdditionalItem: (changeAdditionalItemParameter) => widget.deliveryController.changeAdditionalItem(changeAdditionalItemParameter),
-                removeAdditionalItem: (removeAdditionalItemParameter) => widget.deliveryController.removeAdditionalItem(removeAdditionalItemParameter),
-                getCurrentSelectedAddress: (currentSelectedAddressParameter) => widget.deliveryController.getCurrentSelectedAddress(currentSelectedAddressParameter),
-                getCouponDetail: (couponDetailParameter) => widget.deliveryController.getCouponDetail(couponDetailParameter)
-              ),
-              deliveryCartContainerInterceptingActionListItemControllerState: _defaultDeliveryCartContainerInterceptingActionListItemControllerState,
-              errorProvider: Injector.locator<ErrorProvider>()
-            )
-          ],
-          page: cartPaging.page,
-          totalPage: cartPaging.totalPage,
-          totalItem: 1
-        );
-      } else {
-        if (cartListItemControllerStateList != null) {
-          if (cartListItemControllerStateList.isNotEmpty) {
-            ListItemControllerState cartListItemControllerState = cartListItemControllerStateList.first;
-            if (cartListItemControllerState is PageKeyedListItemControllerState) {
-              if (cartListItemControllerState.listItemControllerState != null) {
-                cartListItemControllerState = cartListItemControllerState.listItemControllerState!;
+      return PagingDataResult<ListItemControllerState>(
+        itemList: [
+          DeliveryCartContainerListItemControllerState(
+            selectedCartIdList: widget.selectedCartIdList,
+            selectedAdditionalItemIdList: widget.selectedAdditionalItemIdList,
+            cartListItemControllerStateList: newCartListItemControllerStateList,
+            onUpdateState: () => setState(() {}),
+            onScrollToAdditionalItemsSection: () => _deliveryScrollController.jumpTo(
+              _deliveryScrollController.position.maxScrollExtent
+            ),
+            additionalItemList: _additionalItemList,
+            onChangeSelected: (cartList) {
+              _cartList = cartList;
+              setState(() {
+                _selectedCartCount = cartList.length;
+              });
+              widget.deliveryController.getCartSummary();
+            },
+            onCartChange: () {
+              if (_selectedCartCount == 0) {
+                _deliveryListItemPagingController.errorFirstPageOuterProcess = CartEmptyError();
               }
-            }
-            if (cartListItemControllerState is CartContainerListItemControllerState) {
-              cartListItemControllerState.cartListItemControllerStateList.addAll(
-                newCartListItemControllerStateList
-              );
-            }
-          }
-        }
-        return PagingDataResult<ListItemControllerState>(
-          itemList: [],
-          page: cartPaging.page,
-          totalPage: cartPaging.totalPage,
-          totalItem: 0
-        );
-      }
+            },
+            onUpdateCoupon: (coupon) {
+              if (coupon == null) {
+                _couponId = null;
+                widget.deliveryController.getCartSummary();
+              }
+            },
+            onGetShippingAddressLoadDataResult: (shippingAddressLoadDataResult) {
+              setState(() => _shippingAddressLoadDataResult = shippingAddressLoadDataResult);
+            },
+            deliveryCartContainerStateStorageListItemControllerState: DefaultDeliveryCartContainerStateStorageListItemControllerState(),
+            deliveryCartContainerActionListItemControllerState: _DefaultDeliveryCartContainerActionListItemControllerState(
+              getAdditionalItemList: (additionalItemListParameter) => widget.deliveryController.getAdditionalItem(additionalItemListParameter),
+              addAdditionalItem: (addAdditionalItemParameter) => widget.deliveryController.addAdditionalItem(addAdditionalItemParameter),
+              changeAdditionalItem: (changeAdditionalItemParameter) => widget.deliveryController.changeAdditionalItem(changeAdditionalItemParameter),
+              removeAdditionalItem: (removeAdditionalItemParameter) => widget.deliveryController.removeAdditionalItem(removeAdditionalItemParameter),
+              getCurrentSelectedAddress: (currentSelectedAddressParameter) => widget.deliveryController.getCurrentSelectedAddress(currentSelectedAddressParameter),
+              getCouponDetail: (couponDetailParameter) => widget.deliveryController.getCouponDetail(couponDetailParameter)
+            ),
+            deliveryCartContainerInterceptingActionListItemControllerState: _defaultDeliveryCartContainerInterceptingActionListItemControllerState,
+            errorProvider: Injector.locator<ErrorProvider>()
+          )
+        ],
+        page: 1,
+        totalPage: 1,
+        totalItem: 1
+      );
     });
   }
 
