@@ -109,6 +109,9 @@ class _ConstantImpl {
   String get vectorStep4IsSending => _getVectorsAssets("step_4_is_sending.svg");
   String get vectorStep5IsArrived => _getVectorsAssets("step_5_is_arrived.svg");
   String get vectorPinLock => _getVectorsAssets("pin_lock.svg");
+  String get vectorNotificationIconCart => _getVectorsAssets("notification_icon_cart.svg");
+  String get vectorNotificationIconInbox => _getVectorsAssets("notification_icon_inbox.svg");
+  String get vectorNotificationIconNotif => _getVectorsAssets("notification_icon_notif.svg");
 
   Color get colorYellow => const Color.fromRGBO(244, 184, 43, 1);
   Color get colorLightRed => const Color.fromRGBO(255, 236, 230, 1);
@@ -182,7 +185,7 @@ class _ConstantImpl {
   double get paddingListItem => 4.w;
   double get spacingListItem => 2.w;
   double get iconSpacing => 7.w;
-  BorderRadius get inputBorderRadius => BorderRadius.circular(16.0);
+  BorderRadius get inputBorderRadius => BorderRadius.circular(5.0);
   double get inputBorderWidth => 1.5;
   int get dummyLoadingTimeInSeconds => 1;
   double get bannerMarginTopHeight => 130.0;

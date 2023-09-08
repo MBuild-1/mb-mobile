@@ -68,37 +68,36 @@ class MainMenuSearchAppBar extends SearchAppBar {
               NotificationIconIndicator(
                 notificationNumber: notificationNotifier.notificationLoadDataResult.resultIfSuccess ?? 0,
                 onTap: () => PageRestorationHelper.toNotificationPage(context),
-                icon: Row(
-                  children: [
-                    const SizedBox(
-                      width: 3
-                    ),
-                    SvgPicture.asset(
-                      Constant.vectorNotification,
-                      color: Colors.grey.shade600,
-                      height: 22,
-                    ),
-                  ],
+                icon: SvgPicture.asset(
+                  Constant.vectorNotificationIconNotif,
+                  color: Constant.colorGrey6,
+                  height: 25,
+                  width: 25,
+                  fit: BoxFit.fitHeight,
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 5),
               NotificationIconIndicator(
                 notificationNumber: notificationNotifier.inboxLoadDataResult.resultIfSuccess ?? 0,
                 onTap: () => PageRestorationHelper.toInboxPage(context),
                 icon: SvgPicture.asset(
-                  Constant.vectorInbox,
-                  color: Colors.grey.shade600,
-                  height: 18,
+                  Constant.vectorNotificationIconInbox,
+                  color: Constant.colorGrey6,
+                  height: 25,
+                  width: 25,
+                  fit: BoxFit.fitHeight,
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 5),
               NotificationIconIndicator(
                 notificationNumber: notificationNotifier.cartLoadDataResult.resultIfSuccess ?? 0,
                 onTap: () => PageRestorationHelper.toCartPage(context),
                 icon: SvgPicture.asset(
-                  Constant.vectorCart,
-                  color: Colors.grey.shade600,
-                  height: 18,
+                  Constant.vectorNotificationIconCart,
+                  color: Constant.colorGrey6,
+                  height: 25,
+                  width: 25,
+                  fit: BoxFit.fitHeight,
                 ),
               ),
             ]
