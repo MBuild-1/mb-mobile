@@ -295,6 +295,26 @@ class _StatefulNotificationControllerMediatorWidgetState extends State<_Stateful
       LoadDataResult<PagingDataResult<ShortNotification>> shortNotificationPagingLoadDataResult = await widget.notificationController.getNotificationByUser(
         NotificationByUserPagingParameter(page: effectivePageKey)
       );
+      if (shortNotificationPagingLoadDataResult.isSuccess) {
+        if (shortNotificationPagingLoadDataResult.resultIfSuccess!.itemList.isEmpty) {
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            _fillerErrorValueNotifier.value = FailedLoadDataResult.throwException(() {
+              throw ErrorHelper.generateMultiLanguageDioError(
+                MultiLanguageMessageError(
+                  title: MultiLanguageString({
+                    Constant.textEnUsLanguageKey: "No Transaction Notification Yet",
+                    Constant.textInIdLanguageKey: "Belum Ada Notifikasi Transaksi",
+                  }),
+                  message: MultiLanguageString({
+                    Constant.textEnUsLanguageKey: "Notifications regarding your transaction will appear here.",
+                    Constant.textInIdLanguageKey: "Notifikasi terkait transaksi kamu bakal muncul disini.",
+                  }),
+                )
+              );
+            })!.e;
+          });
+        }
+      }
       return shortNotificationPagingLoadDataResult.map<PagingResult<ListItemControllerState>>((notificationPaging) {
         if (ListItemControllerStateHelper.checkListItemControllerStateList(notificationListItemControllerStateList)) {
           NotificationContainerListItemControllerState notificationContainerListItemControllerState = ListItemControllerStateHelper.parsePageKeyedListItemControllerState(notificationListItemControllerStateList![0]) as NotificationContainerListItemControllerState;
