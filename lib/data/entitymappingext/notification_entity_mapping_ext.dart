@@ -15,6 +15,10 @@ extension NotificationEntityMappingExt on ResponseWrapper {
       ).toList()
     );
   }
+
+  List<ShortNotification> mapFromResponseToShortNotificationList() {
+    return response.map<ShortNotification>((shortNotificationResponse) => ResponseWrapper(shortNotificationResponse).mapFromResponseToShortNotification()).toList();
+  }
 }
 
 extension NotificationDetailEntityMappingExt on ResponseWrapper {

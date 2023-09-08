@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'domain/usecase/get_cart_list_use_case.dart';
-import 'domain/usecase/get_notification_by_user_paging_use_case.dart';
+import 'domain/usecase/get_notification_by_user_list_use_case.dart';
 import 'firebase_options.dart';
 
 import 'domain/usecase/get_user_use_case.dart';
@@ -60,7 +60,7 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<NotificationNotifier>(
           create: (_) => NotificationNotifier(
-            getNotificationByUserPagingUseCase: Injector.locator<GetNotificationByUserPagingUseCase>(),
+            getNotificationByUserListUseCase: Injector.locator<GetNotificationByUserListUseCase>(),
             getCartListUseCase: Injector.locator<GetCartListUseCase>(),
           ),
         )

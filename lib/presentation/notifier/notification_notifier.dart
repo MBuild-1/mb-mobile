@@ -2,16 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:masterbagasi/misc/ext/future_ext.dart';
 
 import '../../domain/entity/cart/cart_list_parameter.dart';
+import '../../domain/entity/notification/notification_by_user_list_parameter.dart';
 import '../../domain/entity/notification/notification_by_user_paging_parameter.dart';
 import '../../domain/usecase/get_cart_list_use_case.dart';
-import '../../domain/usecase/get_notification_by_user_paging_use_case.dart';
+import '../../domain/usecase/get_notification_by_user_list_use_case.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/api_request_manager.dart';
 
 class NotificationNotifier extends ChangeNotifier {
   late ApiRequestManager apiRequestManager;
 
-  final GetNotificationByUserPagingUseCase getNotificationByUserPagingUseCase;
+  final GetNotificationByUserListUseCase getNotificationByUserListUseCase;
   final GetCartListUseCase getCartListUseCase;
 
   LoadDataResult<int> _notificationLoadDataResult = NoLoadDataResult<int>();
@@ -24,7 +25,7 @@ class NotificationNotifier extends ChangeNotifier {
   LoadDataResult<int> get cartLoadDataResult => _cartLoadDataResult;
 
   NotificationNotifier({
-    required this.getNotificationByUserPagingUseCase,
+    required this.getNotificationByUserListUseCase,
     required this.getCartListUseCase
   }) {
     apiRequestManager = ApiRequestManager();
@@ -41,12 +42,12 @@ class NotificationNotifier extends ChangeNotifier {
   void loadNotificationLoadDataResult() async {
     _notificationLoadDataResult = IsLoadingLoadDataResult<int>();
     notifyListeners();
-    _notificationLoadDataResult = await getNotificationByUserPagingUseCase.execute(
-      NotificationByUserPagingParameter(page: 1)
+    _notificationLoadDataResult = await getNotificationByUserListUseCase.execute(
+      NotificationByUserListParameter()
     ).future(
       parameter: apiRequestManager.addRequestToCancellationPart("notification").value
     ).map<int>(
-      (getUserResponse) => getUserResponse.itemList.length
+      (getUserResponse) => getUserResponse.length
     );
     notifyListeners();
   }

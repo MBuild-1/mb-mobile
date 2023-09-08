@@ -134,6 +134,7 @@ import '../domain/usecase/get_my_cart_use_case.dart';
 import '../domain/usecase/get_news_detail_use_case.dart';
 import '../domain/usecase/get_news_paging_use_case.dart';
 import '../domain/usecase/get_news_use_case.dart';
+import '../domain/usecase/get_notification_by_user_list_use_case.dart';
 import '../domain/usecase/get_notification_by_user_paging_use_case.dart';
 import '../domain/usecase/get_order_based_id_use_case.dart';
 import '../domain/usecase/get_order_message_by_combined_order_use_case.dart';
@@ -594,6 +595,7 @@ class _Injector {
     locator.registerLazySingleton<GetProductMessageByUserUseCase>(() => GetProductMessageByUserUseCase(chatRepository: locator()));
     locator.registerLazySingleton<GetProductMessageByConversationUseCase>(() => GetProductMessageByConversationUseCase(chatRepository: locator()));
     locator.registerLazySingleton<GetProductMessageByProductUseCase>(() => GetProductMessageByProductUseCase(chatRepository: locator()));
+    locator.registerLazySingleton<GetNotificationByUserListUseCase>(() => GetNotificationByUserListUseCase(notificationRepository: locator()));
     locator.registerLazySingleton<GetNotificationByUserPagingUseCase>(() => GetNotificationByUserPagingUseCase(notificationRepository: locator()));
     locator.registerLazySingleton<GetTransactionNotificationDetailUseCase>(() => GetTransactionNotificationDetailUseCase(notificationRepository: locator()));
 
