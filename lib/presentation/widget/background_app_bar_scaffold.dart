@@ -27,6 +27,7 @@ class BackgroundAppBarScaffold extends StatelessWidget {
             ),
           ),
           SafeArea(
+            bottom: false,
             child: Column(
               children: [
                 appBar,
