@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -341,29 +343,31 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
                   onPressed: widget.loginController.login,
                   text: "Login".tr,
                 ),
-                SizedBox(height: 3.h),
-                Row(
-                  children: [
-                    const Expanded(
-                      child: Divider()
-                    ),
-                    SizedBox(width: 6.w),
-                    Text("or login with".tr, style: TextStyle(
-                      color: Theme.of(context).dividerTheme.color
-                    )),
-                    SizedBox(width: 6.w),
-                    const Expanded(
-                      child: Divider()
-                    ),
-                  ],
-                ),
-                SizedBox(height: 3.h),
-                SizedOutlineGradientButton(
-                  width: double.infinity,
-                  outlineGradientButtonType: OutlineGradientButtonType.outline,
-                  onPressed: widget.loginController.loginWithGoogle,
-                  text: "Login With Google".tr,
-                ),
+                if (Platform.isAndroid) ...[
+                  SizedBox(height: 3.h),
+                  Row(
+                    children: [
+                      const Expanded(
+                        child: Divider()
+                      ),
+                      SizedBox(width: 6.w),
+                      Text("or login with".tr, style: TextStyle(
+                        color: Theme.of(context).dividerTheme.color
+                      )),
+                      SizedBox(width: 6.w),
+                      const Expanded(
+                        child: Divider()
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 3.h),
+                  SizedOutlineGradientButton(
+                    width: double.infinity,
+                    outlineGradientButtonType: OutlineGradientButtonType.outline,
+                    onPressed: widget.loginController.loginWithGoogle,
+                    text: "Login With Google".tr,
+                  ),
+                ],
                 SizedBox(height: 2.h),
                 Builder(
                   builder: (context) {
