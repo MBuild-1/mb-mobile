@@ -9,6 +9,7 @@ import '../../../domain/entity/video/shortvideo/short_video.dart';
 import '../../../misc/constant.dart';
 import '../../../misc/string_util.dart';
 import '../modified_loading_indicator.dart';
+import '../modifiedappbar/modified_app_bar.dart';
 import '../modifiedcachednetworkimage/video_modified_cached_network_image.dart';
 import 'video_play_indicator.dart';
 
@@ -28,7 +29,19 @@ class ShortVideoItem extends StatelessWidget {
       borderRadius: borderRadius,
       elevation: 3,
       child: InkWell(
-        onTap: () => Get.to(_ShortVideoPlayer(shortVideo: shortVideo)),
+        onTap: () => Get.to(
+          Column(
+            children: [
+              ModifiedAppBar(),
+              Expanded(
+                child: SafeArea(
+                  top: false,
+                  child: _ShortVideoPlayer(shortVideo: shortVideo),
+                ),
+              )
+            ],
+          )
+        ),
         borderRadius: borderRadius,
         child: Container(
           clipBehavior: Clip.antiAlias,

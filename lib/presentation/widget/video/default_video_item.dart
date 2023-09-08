@@ -9,6 +9,7 @@ import '../../../domain/entity/video/defaultvideo/default_video.dart';
 import '../../../misc/constant.dart';
 import '../../../misc/string_util.dart';
 import '../modified_loading_indicator.dart';
+import '../modifiedappbar/modified_app_bar.dart';
 import '../modifiedcachednetworkimage/video_modified_cached_network_image.dart';
 import '../tap_area.dart';
 import 'video_play_indicator.dart';
@@ -37,7 +38,19 @@ class DefaultVideoItem extends StatelessWidget {
             borderRadius: borderRadius
           ),
           child: TapArea(
-            onTap: () => Get.to(_DefaultVideoPlayer(defaultVideo: defaultVideo)),
+            onTap: () => Get.to(
+              Column(
+                children: [
+                  ModifiedAppBar(),
+                  Expanded(
+                    child: SafeArea(
+                      top: false,
+                      child: _DefaultVideoPlayer(defaultVideo: defaultVideo),
+                    ),
+                  )
+                ],
+              )
+            ),
             child: SizedBox(
               child: AspectRatio(
                 aspectRatio: Constant.aspectRatioValueDefaultVideo.toDouble(),
