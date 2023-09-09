@@ -135,7 +135,7 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Valid Until": "Berlaku Hingga",
       "No additional items": "Tidak ada kiriman tambahan",
       "Add Notes": "Tambah Catatan",
-      "Change Notes": "Tambah Catatan",
+      "Change Notes": "Ubah Catatan",
       "Remove Notes": "Hapus Catatan",
       "Cart note is required": "Catatan keranjang dibutuhkan",
       "Add To Wishlist": "Tambah Ke Wishlist",
