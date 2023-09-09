@@ -102,7 +102,7 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
       orderProductId: response["order_product_id"],
       productEntryId: response["product_entry_id"],
       quantity: response["quantity"],
-      checkoutPrice: response["checkout_price"],
+      checkoutPrice: response["checkout_price"] ?? 0,
       defaultQuantity: response["default_quantity"],
       notes: response["notes"],
       status: response["status"],
