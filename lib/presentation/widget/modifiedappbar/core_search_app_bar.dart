@@ -87,17 +87,20 @@ class CoreSearchAppBar extends SearchAppBar {
               ModifiedVerticalDivider(
                 lineWidth: 1,
                 lineHeight: 25,
-                lineColor: Colors.grey.shade600,
+                lineColor: Constant.colorGrey9,
               ),
               const SizedBox(width: 8),
             ],
-            Icon(Icons.search, color: Colors.grey.shade600),
+            Icon(Icons.search, color: Constant.colorGrey8),
             const SizedBox(width: 5),
             Expanded(
               child: TextField(
                 controller: searchTextEditingController,
                 decoration: InputDecoration.collapsed(
                   hintText: "Search in Masterbagasi".tr,
+                  hintStyle: TextStyle(
+                    color: Constant.colorGrey8
+                  )
                 ),
                 onEditingComplete: onSearch != null ? () {
                   if (searchTextEditingController != null) {

@@ -62,13 +62,13 @@ class DefaultSearchAppBar extends SearchAppBar {
                   ModifiedVerticalDivider(
                     lineWidth: 1,
                     lineHeight: 25,
-                    lineColor: Colors.grey.shade600,
+                    lineColor: Constant.colorGrey9,
                   ),
                   const SizedBox(width: 8),
                 ],
-                Icon(Icons.search, color: Colors.grey.shade600),
+                Icon(Icons.search, color: Constant.colorGrey8),
                 const SizedBox(width: 5),
-                Text("Search in Masterbagasi".tr, style: TextStyle(color: Colors.grey.shade600)),
+                Text("Search in Masterbagasi".tr, style: TextStyle(color: Constant.colorGrey8)),
               ]
             )
           ),

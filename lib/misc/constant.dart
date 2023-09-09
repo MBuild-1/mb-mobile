@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
 import 'aspect_ratio_value.dart';
+import 'color_helper.dart';
 import 'multi_language_string.dart';
 
 class _ConstantImpl {
@@ -124,6 +125,12 @@ class _ConstantImpl {
   Color get colorGrey5 => const Color.fromRGBO(235, 235, 235, 1);
   Color get colorGrey6 => const Color.fromRGBO(209, 211, 217, 1);
   Color get colorGrey7 => const Color.fromRGBO(110, 110, 110, 1);
+  Color get colorGrey8 => ColorHelper.convertFromAlphaEnabledToNonAlphaEnabledColor(
+    const Color.fromRGBO(44, 44, 44, 0.4)
+  );
+  Color get colorGrey9 => ColorHelper.convertFromAlphaEnabledToNonAlphaEnabledColor(
+    const Color.fromRGBO(0, 0, 0, 0.2)
+  );
   Color get colorSurfaceGrey => const Color.fromRGBO(247, 247, 247, 1);
   Color get colorDarkGrey => const Color.fromRGBO(105, 105, 105, 1);
   Color get colorBrown => const Color.fromRGBO(191, 105, 25, 1);
