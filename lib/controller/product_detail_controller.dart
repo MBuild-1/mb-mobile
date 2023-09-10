@@ -89,10 +89,7 @@ class ProductDetailController extends BaseGetxController {
 
   IDynamicItemCarouselComponentEntity getOtherFromThisBrand(ProductDetailGetOtherFromThisBrandParameter productDetailGetOtherFromThisBrandParameter) {
     return DynamicItemCarouselComponentEntity(
-      title: MultiLanguageString({
-        Constant.textEnUsLanguageKey: "Other From This Brand",
-        Constant.textInIdLanguageKey: "Lainnya Dari Brand Ini"
-      }),
+      title: Constant.multiLanguageStringOtherFromThisBrand,
       onDynamicItemAction: (title, description, observer) async {
         observer(title, description, IsLoadingLoadDataResult<List<ProductEntry>>());
         LoadDataResult<List<ProductEntry>> productEntryPagingDataResult = await getProductDetailOtherFromThisBrandProductEntryListUseCase.execute(
@@ -124,7 +121,8 @@ class ProductDetailController extends BaseGetxController {
             OnObserveSuccessLoadProductEntryCarouselParameter(
               title: title,
               description: description,
-              productEntryList: productEntryList
+              productEntryList: productEntryList,
+              data: Constant.carouselKeyProductDetailOtherFromThisBrand
             )
           );
         }
@@ -135,10 +133,7 @@ class ProductDetailController extends BaseGetxController {
 
   IDynamicItemCarouselComponentEntity getOtherChosenForYou() {
     return DynamicItemCarouselComponentEntity(
-      title: MultiLanguageString({
-        Constant.textEnUsLanguageKey: "Other Choosen For You",
-        Constant.textInIdLanguageKey: "Pilihan Lainnya Untukmu"
-      }),
+      title: Constant.multiLanguageStringOtherChosenForYou,
       onDynamicItemAction: (title, description, observer) async {
         observer(title, description, IsLoadingLoadDataResult<List<ProductEntry>>());
         LoadDataResult<List<ProductEntry>> productEntryPagingDataResult = await getProductDetailOtherChosenForYouProductEntryListUseCase.execute(
@@ -168,7 +163,8 @@ class ProductDetailController extends BaseGetxController {
             OnObserveSuccessLoadProductEntryCarouselParameter(
               title: title,
               description: description,
-              productEntryList: productEntryList
+              productEntryList: productEntryList,
+              data: Constant.carouselKeyProductDetailOtherChosenForYou
             )
           );
         }
@@ -214,7 +210,8 @@ class ProductDetailController extends BaseGetxController {
             OnObserveSuccessLoadProductEntryCarouselParameter(
               title: title,
               description: description,
-              productEntryList: productEntryList
+              productEntryList: productEntryList,
+              data: Constant.carouselKeyProductDetailOtherInThisCategory
             )
           );
         }
@@ -225,10 +222,7 @@ class ProductDetailController extends BaseGetxController {
 
   IDynamicItemCarouselComponentEntity getOtherFromYourSearch() {
     return DynamicItemCarouselComponentEntity(
-      title: MultiLanguageString({
-        Constant.textEnUsLanguageKey: "From Your Search",
-        Constant.textInIdLanguageKey: "Dari Pencarianmu"
-      }),
+      title: Constant.multiLanguageStringFromYourSearch,
       onDynamicItemAction: (title, description, observer) async {
         observer(title, description, IsLoadingLoadDataResult<List<ProductEntry>>());
         LoadDataResult<List<ProductEntry>> productEntryPagingDataResult = await getProductDetailFromYourSearchProductEntryListUseCase.execute(
@@ -258,7 +252,8 @@ class ProductDetailController extends BaseGetxController {
             OnObserveSuccessLoadProductEntryCarouselParameter(
               title: title,
               description: description,
-              productEntryList: productEntryList
+              productEntryList: productEntryList,
+              data: Constant.carouselKeyProductDetailFromYourSearch
             )
           );
         }
@@ -302,7 +297,8 @@ class ProductDetailController extends BaseGetxController {
             OnObserveSuccessLoadProductBrandCarouselParameter(
               title: title,
               description: description,
-              productBrandList: productBrandList
+              productBrandList: productBrandList,
+              data: Constant.carouselKeyProductDetailOtherInterestedBrand
             )
           );
         }

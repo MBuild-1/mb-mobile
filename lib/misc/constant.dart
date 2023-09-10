@@ -220,6 +220,26 @@ class _ConstantImpl {
     textEnUsLanguageKey: "Is Viral",
     textInIdLanguageKey: "Lagi Viral"
   });
+  MultiLanguageString get multiLanguageStringOtherFromThisBrand => MultiLanguageString({
+    Constant.textEnUsLanguageKey: "Other From This Brand",
+    Constant.textInIdLanguageKey: "Lainnya Dari Brand Ini"
+  });
+  MultiLanguageString get multiLanguageStringOtherChosenForYou => MultiLanguageString({
+    Constant.textEnUsLanguageKey: "Other Chosen For You",
+    Constant.textInIdLanguageKey: "Pilihan Lainnya Untukmu"
+  });
+  MultiLanguageString get multiLanguageStringOtherInThisCategory => MultiLanguageString({
+    Constant.textEnUsLanguageKey: "Other In This Category",
+    Constant.textInIdLanguageKey: "Lainnya Di Kategory Ini"
+  });
+  MultiLanguageString get multiLanguageStringFromYourSearch => MultiLanguageString({
+    Constant.textEnUsLanguageKey: "From Your Search",
+    Constant.textInIdLanguageKey: "Dari Pencarianmu"
+  });
+  MultiLanguageString get multiLanguageStringOtherInterestedProductBrand => MultiLanguageString({
+    Constant.textEnUsLanguageKey: "Other Interested Brand",
+    Constant.textInIdLanguageKey: "Brand Menarik Lainnya"
+  });
 
   String get settingHiveTable => 'setting_hive_table';
   String get settingHiveTableKey => 'setting_hive_table_key';
@@ -247,6 +267,11 @@ class _ConstantImpl {
   String get carouselKeyDeliveryReview => "carousel_key_delivery_review";
   String get carouselKeyNews => "carousel_key_news";
   String get carouselKeyShortMyCart => "carousel_key_short_my_cart";
+  String get carouselKeyProductDetailOtherFromThisBrand => "carousel_key_product_detail_other_from_this_brand";
+  String get carouselKeyProductDetailOtherChosenForYou => "carousel_key_product_detail_other_chosen_for_you";
+  String get carouselKeyProductDetailOtherInThisCategory => "carousel_key_product_detail_other_in_this_category";
+  String get carouselKeyProductDetailFromYourSearch => "carousel_key_product_detail_from_your_search";
+  String get carouselKeyProductDetailOtherInterestedBrand => "carousel_key_product_detail_other_interested_brand";
 
   String get transparentBannerKeyKitchenContents => "transparent_banner_key_kitchen_contents";
   String get transparentBannerKeyHandycrafts => "transparent_banner_key_handycrafts";

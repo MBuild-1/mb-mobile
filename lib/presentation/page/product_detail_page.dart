@@ -27,6 +27,8 @@ import '../../domain/usecase/get_product_detail_other_interested_product_brand_l
 import '../../domain/usecase/get_product_detail_use_case.dart';
 import '../../domain/usecase/purchase_direct_use_case.dart';
 import '../../misc/additionalloadingindicatorchecker/product_detail_additional_paging_result_parameter_checker.dart';
+import '../../misc/carouselbackground/asset_carousel_background.dart';
+import '../../misc/carouselbackground/carousel_background.dart';
 import '../../misc/constant.dart';
 import '../../misc/controllercontentdelegate/product_brand_favorite_controller_content_delegate.dart';
 import '../../misc/controllercontentdelegate/wishlist_and_cart_controller_content_delegate.dart';
@@ -59,6 +61,7 @@ import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
+import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/carousel_background_parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/cart_delegate_parameterized_entity_and_list_item_controllere_state_mediator_parameter.dart';
 import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/compound_parameterized_entity_and_list_item_controller_state_mediator.dart';
 import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/horizontal_dynamic_item_carousel_parametered_component_entity_and_list_item_controller_state_mediator_parameter.dart';
@@ -75,8 +78,11 @@ import '../widget/colorful_chip_tab_bar.dart';
 import '../widget/modified_divider.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/default_search_app_bar.dart';
+import '../widget/tap_area.dart';
+import '../widget/titleanddescriptionitem/title_and_description_item.dart';
 import 'getx_page.dart';
 import 'login_page.dart';
+import 'product_brand_page.dart';
 import 'product_chat_page.dart';
 import 'product_entry_page.dart';
 import 'search_page.dart';
@@ -129,7 +135,7 @@ class ProductDetailPage extends RestorableGetxPage<_ProductDetailPageRestoration
   }
 }
 
-class _ProductDetailPageRestoration extends MixableGetxPageRestoration with ProductDetailPageRestorationMixin, ProductEntryPageRestorationMixin, SearchPageRestorationMixin, ProductChatPageRestorationMixin, LoginPageRestorationMixin {
+class _ProductDetailPageRestoration extends MixableGetxPageRestoration with ProductDetailPageRestorationMixin, ProductEntryPageRestorationMixin, SearchPageRestorationMixin, ProductChatPageRestorationMixin, LoginPageRestorationMixin, ProductBrandPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
@@ -585,6 +591,117 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
         () => ProductBrandParameterizedEntityAndListItemControllerStateMediatorParameter(
           productBrandItemType: ProductBrandItemType.imageAndBackground
         )
+      )
+      ..onInjectCarouselParameterizedEntity = (
+        (data) {
+          Widget moreTapArea({
+            void Function()? onTap,
+            TextStyle Function(TextStyle)? onInterceptTextStyle
+          }) {
+            TextStyle textStyle = TextStyle(
+              color: Theme.of(context).colorScheme.primary,
+              fontWeight: FontWeight.bold,
+              fontSize: 12
+            );
+            return TapArea(
+              onTap: onTap,
+              child: Text(
+                "More".tr,
+                style: onInterceptTextStyle != null ? onInterceptTextStyle(textStyle) : textStyle
+              ),
+            );
+          }
+          Widget titleArea({
+            required Widget title,
+            void Function()? onTapMore,
+            TextStyle Function(TextStyle)? onInterceptTextStyle
+          }) {
+            return Row(
+              children: [
+                Expanded(child: title),
+                const SizedBox(width: 10),
+                moreTapArea(
+                  onTap: onTapMore,
+                  onInterceptTextStyle: onInterceptTextStyle
+                )
+              ],
+            );
+          }
+          CarouselBackground? carouselBackground;
+          TitleInterceptor? titleInterceptor;
+          if (data == Constant.carouselKeyProductDetailOtherFromThisBrand) {
+            titleInterceptor = (text, style) => titleArea(
+              title: Text(text.toStringNonNull, style: style),
+              onTapMore: () {
+                if (_productDetailLoadDataResult.isSuccess) {
+                  ProductDetail productDetail = _productDetailLoadDataResult.resultIfSuccess!;
+                  PageRestorationHelper.toProductEntryPage(
+                    context,
+                    ProductEntryPageParameter(
+                      productEntryParameterMap: {
+                        "brand_id": productDetail.productBrand.id,
+                        "brand": productDetail.productBrand.slug
+                      }
+                    )
+                  );
+                }
+              },
+            );
+          } else if (data == Constant.carouselKeyProductDetailOtherChosenForYou) {
+            titleInterceptor = (text, style) => titleArea(
+              title: Text(text.toStringNonNull, style: style),
+              onTapMore: () => PageRestorationHelper.toProductEntryPage(
+                context,
+                ProductEntryPageParameter(
+                  productEntryParameterMap: {
+                    "fyp": true,
+                    "name": Constant.multiLanguageStringOtherChosenForYou.value
+                  }
+                )
+              ),
+            );
+          } else if (data == Constant.carouselKeyProductDetailOtherInThisCategory) {
+            titleInterceptor = (text, style) => titleArea(
+              title: Text(text.toStringNonNull, style: style),
+              onTapMore: () {
+                if (_productDetailLoadDataResult.isSuccess) {
+                  ProductDetail productDetail = _productDetailLoadDataResult.resultIfSuccess!;
+                  PageRestorationHelper.toProductEntryPage(
+                    context,
+                    ProductEntryPageParameter(
+                      productEntryParameterMap: {
+                        "category": productDetail.productCategory.slug,
+                        "name": Constant.multiLanguageStringOtherInThisCategory.value
+                      }
+                    )
+                  );
+                }
+              },
+            );
+          } else if (data == Constant.carouselKeyProductDetailFromYourSearch) {
+            titleInterceptor = (text, style) => titleArea(
+              title: Text(text.toStringNonNull, style: style),
+              onTapMore: () => PageRestorationHelper.toProductEntryPage(
+                context,
+                ProductEntryPageParameter(
+                  productEntryParameterMap: {
+                    "fyp": true,
+                    "name": Constant.multiLanguageStringFromYourSearch.value
+                  }
+                )
+              ),
+            );
+          } else if (data == Constant.carouselKeyProductDetailOtherInterestedBrand) {
+            titleInterceptor = (text, style) => titleArea(
+              title: Text(text.toStringNonNull, style: style),
+              onTapMore: () => PageRestorationHelper.toProductBrandPage(context)
+            );
+          }
+          return CarouselParameterizedEntityAndListItemControllerStateMediatorParameter(
+            carouselBackground: carouselBackground,
+            titleInterceptor: titleInterceptor
+          );
+        }
       );
     widget.productDetailController.setProductDetailMainMenuDelegate(
       ProductDetailMainMenuDelegate(
