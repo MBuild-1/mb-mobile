@@ -62,7 +62,9 @@ import '../../misc/paging/pagingresult/paging_result.dart';
 import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/cart_delegate_parameterized_entity_and_list_item_controllere_state_mediator_parameter.dart';
 import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/compound_parameterized_entity_and_list_item_controller_state_mediator.dart';
 import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/horizontal_dynamic_item_carousel_parametered_component_entity_and_list_item_controller_state_mediator_parameter.dart';
+import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/product_brand_parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/wishlist_delegate_parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
+import '../../misc/product_brand_item_type.dart';
 import '../../misc/product_helper.dart';
 import '../../misc/string_util.dart';
 import '../../misc/toast_helper.dart';
@@ -577,6 +579,11 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
               onAddCart: (data) async => widget.productDetailController.wishlistAndCartControllerContentDelegate.addToCart(data),
             )
           ]
+        )
+      )
+      ..onInjectLoadProductBrandCarouselParameterizedEntity = (
+        () => ProductBrandParameterizedEntityAndListItemControllerStateMediatorParameter(
+          productBrandItemType: ProductBrandItemType.imageAndBackground
         )
       );
     widget.productDetailController.setProductDetailMainMenuDelegate(

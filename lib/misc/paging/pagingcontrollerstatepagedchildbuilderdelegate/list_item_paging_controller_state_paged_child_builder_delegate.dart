@@ -71,6 +71,8 @@ import '../../../presentation/widget/product_entry_header.dart';
 import '../../../presentation/widget/productbrand/circleproductbrand/horizontal_circle_product_brand_item.dart';
 import '../../../presentation/widget/productbrand/circleproductbrand/vertical_circle_product_brand_item.dart';
 import '../../../presentation/widget/productbrand/horizontal_product_brand_item.dart';
+import '../../../presentation/widget/productbrand/imageandbackgroundproductbrand/horizontal_image_and_background_product_brand_item.dart';
+import '../../../presentation/widget/productbrand/imageandbackgroundproductbrand/vertical_image_and_background_product_brand_item.dart';
 import '../../../presentation/widget/productbrand/vertical_product_brand_item.dart';
 import '../../../presentation/widget/productbundle/horizontal_product_bundle_item.dart';
 import '../../../presentation/widget/productbundle/support_vertical_grid_vertical_product_bundle_item.dart';
@@ -172,6 +174,9 @@ import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontro
 import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/circleproductbrandlistitemcontrollerstate/horizontal_circle_product_brand_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/circleproductbrandlistitemcontrollerstate/vertical_circle_product_brand_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/horizontal_product_brand_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/imageandbackgroundproductbrandlistitemcontrollerstate/horizontal_image_and_background_product_brand_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/imageandbackgroundproductbrandlistitemcontrollerstate/image_and_background_product_brand_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/imageandbackgroundproductbrandlistitemcontrollerstate/vertical_image_and_background_product_brand_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/product_brand_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/vertical_product_brand_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productbundlelistitemcontrollerstate/horizontal_product_bundle_list_item_controller_state.dart';
@@ -382,6 +387,18 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
           return ShimmerVerticalCircleProductBrandItem(productBrand: item.productBrand);
         } else {
           return VerticalCircleProductBrandItem(productBrand: item.productBrand);
+        }
+      } else {
+        return Container();
+      }
+    } else if (item is ImageAndBackgroundProductBrandListItemControllerState) {
+      if (item is HorizontalImageAndBackgroundProductBrandListItemControllerState) {
+        return HorizontalImageAndBackgroundProductBrandItem(productBrand: item.productBrand);
+      } else if (item is VerticalImageAndBackgroundProductBrandListItemControllerState) {
+        if (item is ShimmerVerticalImageAndBackgroundProductBrandListItemControllerState) {
+          return ShimmerVerticalImageAndBackgroundProductBrandItem(productBrand: item.productBrand);
+        } else {
+          return VerticalImageAndBackgroundProductBrandItem(productBrand: item.productBrand);
         }
       } else {
         return Container();
