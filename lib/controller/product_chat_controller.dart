@@ -34,31 +34,31 @@ class ProductChatController extends BaseGetxController {
 
   Future<LoadDataResult<GetProductMessageByUserResponse>> getProductMessageByUser(GetProductMessageByUserParameter getProductMessageByUserParameter) {
     return getProductMessageByUserUseCase.execute(getProductMessageByUserParameter).future(
-      parameter: apiRequestManager.addRequestToCancellationPart("chat-message-by-user").value
+      parameter: apiRequestManager.addRequestToCancellationPart("chat-message-by-user", duplicate: true).value
     );
   }
 
   Future<LoadDataResult<GetProductMessageByProductResponse>> getProductMessageByProduct(GetProductMessageByProductParameter getProductMessageByProductParameter) {
     return getProductMessageByProductUseCase.execute(getProductMessageByProductParameter).future(
-      parameter: apiRequestManager.addRequestToCancellationPart("chat-message-by-product").value
+      parameter: apiRequestManager.addRequestToCancellationPart("chat-message-by-product", duplicate: true).value
     );
   }
 
   Future<LoadDataResult<CreateProductConversationResponse>> createChatConversation(CreateProductConversationParameter createProductConversationParameter) {
     return createProductConversationUseCase.execute(createProductConversationParameter).future(
-      parameter: apiRequestManager.addRequestToCancellationPart("create-chat-conversation").value
+      parameter: apiRequestManager.addRequestToCancellationPart("create-chat-conversation", duplicate: true).value
     );
   }
 
   Future<LoadDataResult<AnswerProductConversationResponse>> answerProductConversation(AnswerProductConversationParameter answerProductConversationParameter) {
     return answerProductConversationUseCase.execute(answerProductConversationParameter).future(
-      parameter: apiRequestManager.addRequestToCancellationPart("answer-product-conversation").value
+      parameter: apiRequestManager.addRequestToCancellationPart("answer-product-conversation", duplicate: true).value
     );
   }
 
   Future<LoadDataResult<GetUserResponse>> getUser(GetUserParameter getUserParameter) {
     return getUserUseCase.execute(getUserParameter).future(
-      parameter: apiRequestManager.addRequestToCancellationPart("get-user").value
+      parameter: apiRequestManager.addRequestToCancellationPart("get-user", duplicate: true).value
     );
   }
 }

@@ -34,31 +34,31 @@ class OrderChatController extends BaseGetxController {
 
   Future<LoadDataResult<GetOrderMessageByUserResponse>> getOrderMessageByUser(GetOrderMessageByUserParameter getOrderMessageByUserParameter) {
     return getOrderMessageByUserUseCase.execute(getOrderMessageByUserParameter).future(
-      parameter: apiRequestManager.addRequestToCancellationPart("order-message-by-user").value
+      parameter: apiRequestManager.addRequestToCancellationPart("order-message-by-user", duplicate: true).value
     );
   }
 
   Future<LoadDataResult<GetOrderMessageByCombinedOrderResponse>> getOrderMessageByCombinedOrder(GetOrderMessageByCombinedOrderParameter getOrderMessageByCombinedOrderParameter) {
     return getOrderMessageByCombinedOrderUseCase.execute(getOrderMessageByCombinedOrderParameter).future(
-      parameter: apiRequestManager.addRequestToCancellationPart("order-message-by-combined-order").value
+      parameter: apiRequestManager.addRequestToCancellationPart("order-message-by-combined-order", duplicate: true).value
     );
   }
 
   Future<LoadDataResult<CreateOrderConversationResponse>> createOrderConversation(CreateOrderConversationParameter createOrderConversationParameter) {
     return createOrderConversationUseCase.execute(createOrderConversationParameter).future(
-      parameter: apiRequestManager.addRequestToCancellationPart("create-order-conversation").value
+      parameter: apiRequestManager.addRequestToCancellationPart("create-order-conversation", duplicate: true).value
     );
   }
 
   Future<LoadDataResult<AnswerOrderConversationResponse>> answerOrderConversation(AnswerOrderConversationParameter answerOrderConversationParameter) {
     return answerOrderConversationUseCase.execute(answerOrderConversationParameter).future(
-      parameter: apiRequestManager.addRequestToCancellationPart("answer-order-conversation").value
+      parameter: apiRequestManager.addRequestToCancellationPart("answer-order-conversation", duplicate: true).value
     );
   }
 
   Future<LoadDataResult<GetUserResponse>> getUser(GetUserParameter getUserParameter) {
     return getUserUseCase.execute(getUserParameter).future(
-      parameter: apiRequestManager.addRequestToCancellationPart("get-user").value
+      parameter: apiRequestManager.addRequestToCancellationPart("get-user", duplicate: true).value
     );
   }
 }

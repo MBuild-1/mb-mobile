@@ -29,25 +29,25 @@ class HelpChatController extends BaseGetxController {
 
   Future<LoadDataResult<GetHelpMessageByUserResponse>> getHelpMessageByUser(GetHelpMessageByUserParameter getHelpMessageByUserParameter) {
     return getHelpMessageByUserUseCase.execute(getHelpMessageByUserParameter).future(
-      parameter: apiRequestManager.addRequestToCancellationPart("help-message-by-user").value
+      parameter: apiRequestManager.addRequestToCancellationPart("help-message-by-user", duplicate: true).value
     );
   }
 
   Future<LoadDataResult<CreateHelpConversationResponse>> createHelpConversation(CreateHelpConversationParameter createHelpConversationParameter) {
     return createHelpConversationUseCase.execute(createHelpConversationParameter).future(
-      parameter: apiRequestManager.addRequestToCancellationPart("create-help-conversation").value
+      parameter: apiRequestManager.addRequestToCancellationPart("create-help-conversation", duplicate: true).value
     );
   }
 
   Future<LoadDataResult<AnswerHelpConversationResponse>> answerHelpConversation(AnswerHelpConversationParameter answerHelpConversationParameter) {
     return answerHelpConversationUseCase.execute(answerHelpConversationParameter).future(
-      parameter: apiRequestManager.addRequestToCancellationPart("answer-help-conversation").value
+      parameter: apiRequestManager.addRequestToCancellationPart("answer-help-conversation", duplicate: true).value
     );
   }
 
   Future<LoadDataResult<GetUserResponse>> getUser(GetUserParameter getUserParameter) {
     return getUserUseCase.execute(getUserParameter).future(
-      parameter: apiRequestManager.addRequestToCancellationPart("get-user").value
+      parameter: apiRequestManager.addRequestToCancellationPart("get-user", duplicate: true).value
     );
   }
 }
