@@ -9,6 +9,7 @@ import '../../misc/error/validation_error.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/typedef.dart';
 import '../../misc/validation/validation_result.dart';
+import '../../misc/validation/validator/compoundvalidator/change_password_compound_validator.dart';
 import '../../misc/validation/validator/compoundvalidator/password_compound_validator.dart';
 import '../../misc/validation/validator/validator.dart';
 import '../../misc/validation/validatorgroup/change_password_validator_group.dart';
@@ -23,7 +24,7 @@ typedef _OnShowChangePasswordRequestProcessFailedCallback = Future<void> Functio
 class ChangePasswordController extends BaseGetxController {
   final ChangePasswordUseCase changePasswordUseCase;
 
-  late Rx<PasswordCompoundValidator> passwordCompoundValidatorRx;
+  late Rx<ChangePasswordCompoundValidator> changePasswordCompoundValidatorRx;
   late final ChangePasswordValidatorGroup changePasswordValidatorGroup;
 
   ChangePasswordDelegate? _changePasswordDelegate;
@@ -33,7 +34,10 @@ class ChangePasswordController extends BaseGetxController {
     this.changePasswordUseCase
   ) {
     changePasswordValidatorGroup = ChangePasswordValidatorGroup(
-      passwordCompoundValidator: PasswordCompoundValidator(
+      changePasswordCompoundValidator: ChangePasswordCompoundValidator(
+        currentPasswordValidator: Validator(
+          onValidate: () => !_changePasswordDelegate!.onGetCurrentPasswordInput().isEmptyString ? SuccessValidationResult() : FailedValidationResult(e: ValidationError(message: "${"Password is required".tr}."))
+        ),
         passwordValidator: Validator(
           onValidate: () => !_changePasswordDelegate!.onGetNewPasswordInput().isEmptyString ? SuccessValidationResult() : FailedValidationResult(e: ValidationError(message: "${"Password is required".tr}."))
         ),
@@ -50,7 +54,7 @@ class ChangePasswordController extends BaseGetxController {
         )
       )
     );
-    passwordCompoundValidatorRx = changePasswordValidatorGroup.passwordCompoundValidator.obs;
+    changePasswordCompoundValidatorRx = changePasswordValidatorGroup.changePasswordCompoundValidator.obs;
   }
 
   ChangePasswordController setChangePasswordDelegate(ChangePasswordDelegate changePasswordDelegate) {
@@ -65,6 +69,7 @@ class ChangePasswordController extends BaseGetxController {
         _changePasswordDelegate!.onShowChangePasswordRequestProcessLoadingCallback();
         LoadDataResult<ChangePasswordResponse> changePasswordLoadDataResult = await changePasswordUseCase.execute(
           ChangePasswordParameter(
+            currentPassword: _changePasswordDelegate!.onGetCurrentPasswordInput(),
             newPassword: _changePasswordDelegate!.onGetNewPasswordInput(),
             confirmNewPassword: _changePasswordDelegate!.onGetConfirmNewPasswordInput(),
           )
@@ -84,6 +89,7 @@ class ChangePasswordController extends BaseGetxController {
 
 class ChangePasswordDelegate {
   OnUnfocusAllWidget onUnfocusAllWidget;
+  _OnGetChangePasswordInput onGetCurrentPasswordInput;
   _OnGetChangePasswordInput onGetNewPasswordInput;
   _OnGetChangePasswordInput onGetConfirmNewPasswordInput;
   _OnChangePasswordBack onChangePasswordBack;
@@ -93,6 +99,7 @@ class ChangePasswordDelegate {
 
   ChangePasswordDelegate({
     required this.onUnfocusAllWidget,
+    required this.onGetCurrentPasswordInput,
     required this.onGetNewPasswordInput,
     required this.onGetConfirmNewPasswordInput,
     required this.onChangePasswordBack,

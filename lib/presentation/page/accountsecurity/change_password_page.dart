@@ -16,6 +16,7 @@ import '../../../misc/inputdecoration/default_input_decoration.dart';
 import '../../../misc/manager/controller_manager.dart';
 import '../../../misc/page_restoration_helper.dart';
 import '../../../misc/toast_helper.dart';
+import '../../../misc/validation/validator/compoundvalidator/change_password_compound_validator.dart';
 import '../../../misc/validation/validator/compoundvalidator/password_compound_validator.dart';
 import '../../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../../widget/field.dart';
@@ -154,9 +155,10 @@ class _StatefulChangePasswordControllerMediatorWidget extends StatefulWidget {
 }
 
 class _StatefulChangePasswordControllerMediatorWidgetState extends State<_StatefulChangePasswordControllerMediatorWidget> {
+  final TextEditingController _currentPasswordTextEditingController = TextEditingController();
   final TextEditingController _newPasswordTextEditingController = TextEditingController();
   final TextEditingController _confirmNewPasswordTextEditingController = TextEditingController();
-  dynamic _failedLoginError;
+  bool _obscureCurrentPassword = true;
   bool _obscurePassword = true;
   bool _obscurePasswordConfirmation = true;
 
@@ -170,13 +172,16 @@ class _StatefulChangePasswordControllerMediatorWidgetState extends State<_Statef
     widget.changePasswordController.setChangePasswordDelegate(
       ChangePasswordDelegate(
         onUnfocusAllWidget: () => FocusScope.of(context).unfocus(),
+        onGetCurrentPasswordInput: () => _currentPasswordTextEditingController.text,
         onGetNewPasswordInput: () => _newPasswordTextEditingController.text,
         onGetConfirmNewPasswordInput: () => _confirmNewPasswordTextEditingController.text,
         onChangePasswordBack: () => Get.back(),
         onShowChangePasswordRequestProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
-        onShowChangePasswordRequestProcessFailedCallback: (e) async {
-          setState(() => _failedLoginError = e);
-        },
+        onShowChangePasswordRequestProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
+          context: context,
+          errorProvider: Injector.locator<ErrorProvider>(),
+          e: e
+        ),
         onChangePasswordRequestProcessSuccessCallback: () async {
           Get.back();
           ToastHelper.showToast("${"Success change password".tr}.");
@@ -204,8 +209,32 @@ class _StatefulChangePasswordControllerMediatorWidgetState extends State<_Statef
             padding: EdgeInsets.all(4.w),
             child: Column(
               children: [
-                RxConsumer<PasswordCompoundValidator>(
-                  rxValue: widget.changePasswordController.passwordCompoundValidatorRx,
+                RxConsumer<ChangePasswordCompoundValidator>(
+                  rxValue: widget.changePasswordController.changePasswordCompoundValidatorRx,
+                  onConsumeValue: (context, passwordCompoundValidator) => Field(
+                    child: (context, validationResult, validator) => ModifiedTextField(
+                      isError: validationResult.isFailed,
+                      controller: _currentPasswordTextEditingController,
+                      decoration: DefaultInputDecoration(
+                        label: Text("Current Password".tr),
+                        labelStyle: const TextStyle(color: Colors.black),
+                        floatingLabelStyle: const TextStyle(color: Colors.black),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        suffixIcon: PasswordObscurer(
+                          obscurePassword: _obscureCurrentPassword,
+                          onObscurePassword: () => setState(() => _obscureCurrentPassword = !_obscureCurrentPassword),
+                        )
+                      ),
+                      obscureText: _obscureCurrentPassword,
+                      onChanged: (value) => passwordCompoundValidator.currentPasswordValidator.validate(),
+                      textInputAction: TextInputAction.next,
+                    ),
+                    validator: passwordCompoundValidator.currentPasswordValidator,
+                  )
+                ),
+                SizedBox(height: 3.h),
+                RxConsumer<ChangePasswordCompoundValidator>(
+                  rxValue: widget.changePasswordController.changePasswordCompoundValidatorRx,
                   onConsumeValue: (context, passwordCompoundValidator) => Field(
                     child: (context, validationResult, validator) => ModifiedTextField(
                       isError: validationResult.isFailed,
@@ -228,8 +257,8 @@ class _StatefulChangePasswordControllerMediatorWidgetState extends State<_Statef
                   )
                 ),
                 SizedBox(height: 3.h),
-                RxConsumer<PasswordCompoundValidator>(
-                  rxValue: widget.changePasswordController.passwordCompoundValidatorRx,
+                RxConsumer<ChangePasswordCompoundValidator>(
+                  rxValue: widget.changePasswordController.changePasswordCompoundValidatorRx,
                   onConsumeValue: (context, passwordCompoundValidator) => Field(
                     child: (context, validationResult, validator) => ModifiedTextField(
                       isError: validationResult.isFailed,
@@ -268,6 +297,7 @@ class _StatefulChangePasswordControllerMediatorWidgetState extends State<_Statef
 
   @override
   void dispose() {
+    _currentPasswordTextEditingController.dispose();
     _newPasswordTextEditingController.dispose();
     _confirmNewPasswordTextEditingController.dispose();
     super.dispose();

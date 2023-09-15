@@ -253,6 +253,7 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Fingerprint": "Sidik Jari",
       "Personal Data Verification": "Verifikasi Data Diri",
       "Login Via Notification": "Masuk Lewat Notifikasi",
+      "Current Password": "Kata Sandi Sekarang",
       "New Password": "Kata Sandi Baru",
       "New Password Confirmation": "Konfirmasi Kata Sandi Baru",
       "Success change password": "Sukses ubah kata sandi",
