@@ -111,12 +111,13 @@ class DefaultUserDataSource implements UserDataSource {
   FutureProcessing<ChangePasswordResponse> changePassword(ChangePasswordParameter changePasswordParameter) {
     FormData formData = FormData.fromMap(
       <String, dynamic> {
+        "current_password": changePasswordParameter.currentPassword,
         "new_password": changePasswordParameter.newPassword,
-        "confirm_new_password": changePasswordParameter.confirmNewPassword,
+        "new_password_confirmation": changePasswordParameter.confirmNewPassword,
       }
     );
     return DioHttpClientProcessing((cancelToken) {
-      return dio.post("/auth/change-password", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+      return dio.post("/change-password", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
         .map<ChangePasswordResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToChangePasswordResponse());
     });
   }
@@ -126,33 +127,39 @@ class DefaultUserDataSource implements UserDataSource {
     String modifyPinEndpoint = "";
     Map<String, dynamic> formDataMap = {};
     if (modifyPinParameter is CreateModifyPinParameter) {
-      modifyPinEndpoint = "/create-pin";
+      modifyPinEndpoint = "/create/pin";
       formDataMap = <String, dynamic> {
         "pin": modifyPinParameter.pin,
-        "confirm_pin": modifyPinParameter.confirmPin
       };
     } else if (modifyPinParameter is ChangeModifyPinParameter) {
       modifyPinEndpoint = "/change-pin";
       formDataMap = <String, dynamic> {
         "current_pin": modifyPinParameter.currentPin,
         "new_pin": modifyPinParameter.newPin,
-        "confirm_new_pin": modifyPinParameter.confirmNewPin
       };
     } else if (modifyPinParameter is RemoveModifyPinParameter) {
       modifyPinEndpoint = "/remove-pin";
-      formDataMap = <String, dynamic> {
-        "pin": modifyPinParameter.pin,
-      };
     } else if (modifyPinParameter is ValidateModifyPinParameter) {
-      modifyPinEndpoint = "/validate-pin";
+      modifyPinEndpoint = "/check/pin";
       formDataMap = <String, dynamic> {
         "pin": modifyPinParameter.pin,
       };
     }
     FormData formData = FormData.fromMap(formDataMap);
     return DioHttpClientProcessing((cancelToken) {
-      return dio.post("/auth$modifyPinEndpoint", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
-        .map<ModifyPinResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToModifyPinResponse());
+      return () {
+        if (modifyPinParameter is RemoveModifyPinParameter) {
+          return dio.put(modifyPinEndpoint, cancelToken: cancelToken);
+        }
+        return dio.post(
+          modifyPinEndpoint,
+          data: formData,
+          cancelToken: cancelToken,
+          options: OptionsBuilder.multipartData().build()
+        );
+      }().map<ModifyPinResponse>(
+        onMap: (value) => value.wrapResponse().mapFromResponseToModifyPinResponse()
+      );
     });
   }
 }
