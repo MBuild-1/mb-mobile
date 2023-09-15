@@ -225,6 +225,7 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Coming Soon": "Segera Hadir",
       "Order List": "Daftar Pemesanan",
       "Order Summary": "Ringkasan Pemesanan",
+      "Order Invoice": "Invoice Pemesanan",
       "No order summary": "Tidak ada ringkasan belanja",
       "Your private conversations": "Percakapan pribadi anda",
       "Ask questions about the product": "Tanya jawab seputar produk",

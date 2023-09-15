@@ -6,6 +6,7 @@ import 'order_shipping.dart';
 
 class CombinedOrder {
   String id;
+  String? invoiceId;
   String userId;
   String orderProductId;
   String? orderShippingId;
@@ -25,6 +26,7 @@ class CombinedOrder {
 
   CombinedOrder({
     required this.id,
+    required this.invoiceId,
     required this.userId,
     required this.orderProductId,
     required this.orderShippingId,

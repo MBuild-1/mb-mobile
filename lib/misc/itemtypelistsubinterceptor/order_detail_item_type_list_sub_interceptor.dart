@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/order_purchasing_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:sizer/sizer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../domain/entity/additionalitem/additional_item.dart';
 import '../../domain/entity/address/address.dart';
@@ -13,12 +14,14 @@ import '../../domain/entity/order/order_product_detail.dart';
 import '../../domain/entity/order/order_product_inventory.dart';
 import '../../presentation/widget/address/horizontal_address_item.dart';
 import '../../presentation/widget/address/vertical_address_item.dart';
+import '../../presentation/widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../../presentation/widget/colorful_chip.dart';
 import '../../presentation/widget/order/order_conclusion_item.dart';
 import '../../presentation/widget/order/order_product_detail_item.dart';
 import '../../presentation/widget/order/order_product_inventory_item.dart';
 import '../../presentation/widget/order/order_send_to_warehouse_item.dart';
 import '../../presentation/widget/summary_widget.dart';
+import '../../presentation/widget/tap_area.dart';
 import '../constant.dart';
 import '../controllerstate/listitemcontrollerstate/additionalitemlistitemcontrollerstate/additional_item_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/additionalitemlistitemcontrollerstate/additional_item_summary_list_item_controller_state.dart';
@@ -33,6 +36,7 @@ import '../controllerstate/listitemcontrollerstate/spacing_list_item_controller_
 import '../controllerstate/listitemcontrollerstate/title_and_description_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/widget_substitution_list_item_controller_state.dart';
+import '../http_client.dart';
 import '../itemtypelistinterceptor/itemtypelistinterceptorchecker/list_item_controller_state_item_type_list_interceptor_checker.dart';
 import '../multi_language_string.dart';
 import '../typedef.dart';
@@ -71,6 +75,10 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
       _interceptForOtherProductInformation(i, oldItemType, oldItemTypeList, newListItemControllerState);
       newListItemControllerState.add(SpacingListItemControllerState());
       _interceptForTransactionOrderSummaryInformation(i, oldItemType, oldItemTypeList, newListItemControllerState);
+      if (oldItemType.order.combinedOrder.invoiceId.isNotEmptyString) {
+        newListItemControllerState.add(SpacingListItemControllerState());
+        _interceptForTransactionOrderInvoiceInformation(i, oldItemType, oldItemTypeList, newListItemControllerState);
+      }
       newItemTypeList.addAll(newListItemControllerState);
       return true;
     }
@@ -449,6 +457,57 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
     );
     listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
       i, ListItemControllerStateWrapper(orderConclusionItemListItemControllerState), oldItemTypeList, newListItemControllerState
+    );
+    newListItemControllerState.add(
+      VirtualSpacingListItemControllerState(height: padding())
+    );
+  }
+
+  void _interceptForTransactionOrderInvoiceInformation(
+    int i,
+    OrderDetailContainerListItemControllerState orderDetailContainerListItemControllerState,
+    List<ListItemControllerState> oldItemTypeList,
+    List<ListItemControllerState> newListItemControllerState
+  ) {
+    Order order = orderDetailContainerListItemControllerState.order;
+    newListItemControllerState.add(
+      VirtualSpacingListItemControllerState(height: padding())
+    );
+    ListItemControllerState paymentTypeListItemControllerState = TitleAndDescriptionListItemControllerState(
+      title: "Order Invoice".tr,
+      padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem)
+    );
+    listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
+      i, ListItemControllerStateWrapper(paymentTypeListItemControllerState), oldItemTypeList, newListItemControllerState
+    );
+    newListItemControllerState.add(
+      VirtualSpacingListItemControllerState(height: padding())
+    );
+    ListItemControllerState orderInvoiceDetailTypeListItemControllerState = PaddingContainerListItemControllerState(
+      padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+      paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
+        widgetSubstitution: (BuildContext context, int index) => Row(
+          children: [
+            Expanded(
+              child: SizedOutlineGradientButton(
+                onPressed: () {
+                  launchUrl(
+                    Uri.parse("${DioHttpClient.of().options.baseUrl}/user/order/generate/invoice/${order.combinedOrder.id}"),
+                    mode: LaunchMode.externalApplication
+                  );
+                },
+                text: "Open".tr,
+                customPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                outlineGradientButtonType: OutlineGradientButtonType.solid,
+                outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
+              ),
+            ),
+          ],
+        )
+      )
+    );
+    listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
+      i, ListItemControllerStateWrapper(orderInvoiceDetailTypeListItemControllerState), oldItemTypeList, newListItemControllerState
     );
     newListItemControllerState.add(
       VirtualSpacingListItemControllerState(height: padding())

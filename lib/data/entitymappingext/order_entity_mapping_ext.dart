@@ -58,6 +58,7 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
   CombinedOrder mapFromResponseToCombinedOrder() {
     return CombinedOrder(
       id: response["id"],
+      invoiceId: response["invoice_id"],
       userId: response["user_id"],
       orderProductId: response["order_product_id"],
       orderShippingId: response["order_shipping_id"],
