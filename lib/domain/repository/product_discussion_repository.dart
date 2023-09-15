@@ -1,12 +1,14 @@
 import '../../misc/load_data_result.dart';
-import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/processing/future_processing.dart';
+import '../entity/product/productdiscussion/create_product_discussion_parameter.dart';
+import '../entity/product/productdiscussion/create_product_discussion_response.dart';
 import '../entity/product/productdiscussion/product_discussion.dart';
-import '../entity/product/productdiscussion/product_discussion_dialog.dart';
-import '../entity/product/productdiscussion/product_discussion_dialog_paging_parameter.dart';
-import '../entity/product/productdiscussion/product_discussion_paging_parameter.dart';
+import '../entity/product/productdiscussion/product_discussion_list_parameter.dart';
+import '../entity/product/productdiscussion/reply_product_discussion_parameter.dart';
+import '../entity/product/productdiscussion/reply_product_discussion_response.dart';
 
 abstract class ProductDiscussionRepository {
-  FutureProcessing<LoadDataResult<PagingDataResult<ProductDiscussion>>> productDiscussionPaging(ProductDiscussionPagingParameter productDiscussionPagingParameter);
-  FutureProcessing<LoadDataResult<PagingDataResult<ProductDiscussionDialog>>> productDiscussionDialogPaging(ProductDiscussionDialogPagingParameter productDiscussionDialogPagingParameter);
+  FutureProcessing<LoadDataResult<ProductDiscussion>> productDiscussion(ProductDiscussionParameter productDiscussionParameter);
+  FutureProcessing<LoadDataResult<CreateProductDiscussionResponse>> createProductDiscussion(CreateProductDiscussionParameter createProductDiscussionParameter);
+  FutureProcessing<LoadDataResult<ReplyProductDiscussionResponse>> replyProductDiscussion(ReplyProductDiscussionParameter replyProductDiscussionParameter);
 }

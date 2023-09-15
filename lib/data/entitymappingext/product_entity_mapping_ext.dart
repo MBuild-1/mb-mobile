@@ -5,6 +5,7 @@ import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 import '../../domain/entity/cart/cart.dart';
 import '../../domain/entity/product/product.dart';
 import '../../domain/entity/product/product_detail.dart';
+import '../../domain/entity/product/product_in_discussion.dart';
 import '../../domain/entity/product/productbrand/add_to_favorite_product_brand_response.dart';
 import '../../domain/entity/product/productbrand/favorite_product_brand.dart';
 import '../../domain/entity/product/productbrand/product_brand.dart';
@@ -15,6 +16,11 @@ import '../../domain/entity/product/productbundle/product_bundle_detail.dart';
 import '../../domain/entity/product/productcategory/product_category.dart';
 import '../../domain/entity/product/productcategory/product_category_detail.dart';
 import '../../domain/entity/product/productcertification/product_certification.dart';
+import '../../domain/entity/product/productdiscussion/create_product_discussion_response.dart';
+import '../../domain/entity/product/productdiscussion/product_discussion.dart';
+import '../../domain/entity/product/productdiscussion/product_discussion_dialog.dart';
+import '../../domain/entity/product/productdiscussion/product_discussion_user.dart';
+import '../../domain/entity/product/productdiscussion/reply_product_discussion_response.dart';
 import '../../domain/entity/product/productentry/product_entry.dart';
 import '../../domain/entity/product/productvariant/product_variant.dart';
 import '../../domain/entity/product/short_product.dart';
@@ -424,5 +430,88 @@ extension WishlistDetailEntityMappingExt on ResponseWrapper {
     } else {
       throw MessageError(message: "Support wishlist not suitable");
     }
+  }
+}
+
+extension ProductDiscussionEntityMappingExt on ResponseWrapper {
+  List<ProductDiscussion> mapFromResponseToProductDiscussionList() {
+    return response.map<ProductDiscussion>((productDiscussionResponse) => ResponseWrapper(productDiscussionResponse).mapFromResponseToProductDiscussion()).toList();
+  }
+}
+
+extension ProductDiscussionDetailEntityMappingExt on ResponseWrapper {
+  ProductDiscussion mapFromResponseToProductDiscussion() {
+    return ProductDiscussion(
+      productDiscussionDialogList: response.map<ProductDiscussionDialog>(
+        (productDiscussionDialogResponse) => ResponseWrapper(productDiscussionDialogResponse).mapFromResponseToProductDiscussionDialog()
+      ).toList()
+    );
+  }
+
+  ProductDiscussionDialog mapFromResponseToProductDiscussionDialog({
+    ProductInDiscussion? productInDiscussion,
+    String? productId,
+    String? bundleId
+  }) {
+    String? newProductId;
+    String? newBundleId;
+    ProductInDiscussion? newProductInDiscussion;
+    if (productId == null) {
+      newProductId = response["product_id"];
+    }
+    if (bundleId == null) {
+      newBundleId = response["bundle_id"];
+    }
+    if (productInDiscussion == null) {
+      newProductInDiscussion = ResponseWrapper(response["product"]).mapFromResponseToProductInDiscussion();
+    }
+    return ProductDiscussionDialog(
+      id: response["id"],
+      productId: productId ?? newProductId,
+      bundleId: bundleId ?? newBundleId,
+      userId: response["user_id"],
+      discussion: response["message"],
+      discussionDate: ResponseWrapper(response["created_at"]).mapFromResponseToDateTime(dateFormat: null)!,
+      productDiscussionUser: ResponseWrapper(response["user"]).mapFromResponseToProductDiscussionUser(),
+      productInDiscussion: productInDiscussion ?? newProductInDiscussion!,
+      replyProductDiscussionDialogList: response["sub_discussion_product"] != null ? response["sub_discussion_product"].map<ProductDiscussionDialog>(
+        (replyProductDiscussionDialogResponse) => ResponseWrapper(replyProductDiscussionDialogResponse).mapFromResponseToProductDiscussionDialog(
+          productInDiscussion: newProductInDiscussion,
+          productId: newProductId,
+          bundleId: newBundleId
+        )
+      ).toList() : []
+    );
+  }
+
+  ProductInDiscussion mapFromResponseToProductInDiscussion() {
+    return ProductInDiscussion(
+      id: response["id"],
+      userId: response["user_id"],
+      productBrandId: response["product_brand_id"],
+      name: response["name"],
+      slug: response["slug"],
+      description: response["description"],
+      productCategoryId: response["product_category_id"],
+      provinceId: response["product_category_id"]
+    );
+  }
+
+  ProductDiscussionUser mapFromResponseToProductDiscussionUser() {
+    return ProductDiscussionUser(
+      id: response["id"],
+      name: response["name"],
+      role: response["role"],
+      email: response["email"],
+      avatar: response["user_profile"]["avatar"],
+    );
+  }
+
+  CreateProductDiscussionResponse mapFromResponseToCreateProductDiscussionResponse() {
+    return CreateProductDiscussionResponse();
+  }
+
+  ReplyProductDiscussionResponse mapFromResponseToReplyProductDiscussionResponse() {
+    return ReplyProductDiscussionResponse();
   }
 }

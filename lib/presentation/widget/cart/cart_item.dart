@@ -10,6 +10,7 @@ import '../../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../../domain/entity/product/productentry/product_entry.dart';
 import '../../../domain/entity/product/productvariant/product_variant.dart';
 import '../../../misc/constant.dart';
+import '../../../misc/product_helper.dart';
 import '../check_list_item.dart';
 import '../modified_svg_picture.dart';
 import '../modifiedcachednetworkimage/product_modified_cached_network_image.dart';
@@ -75,15 +76,7 @@ abstract class CartItem extends StatelessWidget {
                 SupportCart supportCart = cart.supportCart;
                 if (supportCart is ProductEntry) {
                   ProductEntry productEntry = supportCart;
-                  List<ProductVariant> productVariantList = productEntry.productVariantList;
-                  String productVariantDescription = "";
-                  if (productVariantList.isNotEmpty) {
-                    int j = 0;
-                    for (ProductVariant productVariant in productVariantList) {
-                      productVariantDescription += "${(j > 0 ? ", " : "")}${productVariant.type} (${productVariant.name})";
-                      j++;
-                    }
-                  }
+                  String productVariantDescription = ProductHelper.getProductVariantDescription(productEntry);
                   columnWidget.addAll(<Widget>[
                     Text(productEntry.name),
                     if (productEntry.product.productCategory.name.isNotEmptyString)

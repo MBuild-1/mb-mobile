@@ -101,6 +101,7 @@ import '../domain/usecase/create_help_conversation_use_case.dart';
 import '../domain/usecase/create_order_conversation_use_case.dart';
 import '../domain/usecase/create_order_use_case.dart';
 import '../domain/usecase/create_product_conversation_use_case.dart';
+import '../domain/usecase/create_product_discussion_use_case.dart';
 import '../domain/usecase/get_additional_item_use_case.dart';
 import '../domain/usecase/get_address_based_id_use_case.dart';
 import '../domain/usecase/get_address_list_use_case.dart';
@@ -155,8 +156,7 @@ import '../domain/usecase/get_product_detail_other_from_this_brand_product_entry
 import '../domain/usecase/get_product_detail_other_in_this_category_product_entry_list_use_case.dart';
 import '../domain/usecase/get_product_detail_other_interested_product_brand_list_use_case.dart';
 import '../domain/usecase/get_product_detail_use_case.dart';
-import '../domain/usecase/get_product_discussion_dialog_paging_use_case.dart';
-import '../domain/usecase/get_product_discussion_paging_use_case.dart';
+import '../domain/usecase/get_product_discussion_use_case.dart';
 import '../domain/usecase/get_product_entry_header_content_use_case.dart';
 import '../domain/usecase/get_product_entry_with_condition_paging_use_case.dart';
 import '../domain/usecase/get_product_list_use_case.dart';
@@ -173,6 +173,7 @@ import '../domain/usecase/get_short_video_paging_use_case.dart';
 import '../domain/usecase/get_short_video_use_case.dart';
 import '../domain/usecase/get_snack_for_lying_around_list_use_case.dart';
 import '../domain/usecase/get_sponsor_contents_banner_use_case.dart';
+import '../domain/usecase/get_support_discussion_use_case.dart';
 import '../domain/usecase/get_transaction_notification_detail_use_case.dart';
 import '../domain/usecase/get_trip_default_video_paging_use_case.dart';
 import '../domain/usecase/get_trip_default_video_use_case.dart';
@@ -194,6 +195,7 @@ import '../domain/usecase/remove_from_cart_use_case.dart';
 import '../domain/usecase/remove_from_favorite_product_brand_use_case.dart';
 import '../domain/usecase/remove_wishlist_based_product_use_case.dart';
 import '../domain/usecase/remove_wishlist_use_case.dart';
+import '../domain/usecase/reply_product_discussion_use_case.dart';
 import '../domain/usecase/repurchase_use_case.dart';
 import '../domain/usecase/take_friend_cart_use_case.dart';
 import '../domain/usecase/update_current_selected_address_use_case.dart';
@@ -513,8 +515,10 @@ class _Injector {
     locator.registerLazySingleton<GetProductBundlePagingUseCase>(() => GetProductBundlePagingUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductBundleHighlightUseCase>(() => GetProductBundleHighlightUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductBundleDetailUseCase>(() => GetProductBundleDetailUseCase(productRepository: locator()));
-    locator.registerLazySingleton<GetProductDiscussionPagingUseCase>(() => GetProductDiscussionPagingUseCase(productDiscussionRepository: locator()));
-    locator.registerLazySingleton<GetProductDiscussionDialogPagingUseCase>(() => GetProductDiscussionDialogPagingUseCase(productDiscussionRepository: locator()));
+    locator.registerLazySingleton<GetSupportDiscussionUseCase>(() => GetSupportDiscussionUseCase(productRepository: locator()));
+    locator.registerLazySingleton<GetProductDiscussionUseCase>(() => GetProductDiscussionUseCase(productDiscussionRepository: locator()));
+    locator.registerLazySingleton<CreateProductDiscussionUseCase>(() => CreateProductDiscussionUseCase(productDiscussionRepository: locator()));
+    locator.registerLazySingleton<ReplyProductDiscussionUseCase>(() => ReplyProductDiscussionUseCase(productDiscussionRepository: locator()));
     locator.registerLazySingleton<GetWishlistPagingUseCase>(() => GetWishlistPagingUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetSnackForLyingAroundListUseCase>(() => GetSnackForLyingAroundListUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetBestsellerInMasterbagasiListUseCase>(() => GetBestsellerInMasterbagasiListUseCase(productRepository: locator()));
@@ -640,7 +644,8 @@ class _Injector {
     locator.registerLazySingleton<ProductDiscussionDataSource>(
       () => DefaultProductDiscussionDataSource(
         dio: locator(),
-        userDummy: locator()
+        userDummy: locator(),
+        productEntryDummy: locator()
       )
     );
     locator.registerLazySingleton<CouponDataSource>(() => DefaultCouponDataSource(dio: locator()));

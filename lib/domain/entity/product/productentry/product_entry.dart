@@ -1,11 +1,12 @@
 import '../../cart/support_cart.dart';
+import '../../discussion/support_discussion.dart';
 import '../../order/support_order_product.dart';
 import '../../wishlist/support_wishlist.dart';
 import '../product.dart';
 import '../product_appearance_data.dart';
 import '../productvariant/product_variant.dart';
 
-class ProductEntry implements ProductEntryAppearanceData, SupportCart, SupportWishlist, SupportOrderProduct {
+class ProductEntry implements ProductEntryAppearanceData, SupportCart, SupportWishlist, SupportOrderProduct, SupportDiscussion {
   String id;
   @override
   String productId;
@@ -52,6 +53,15 @@ class ProductEntry implements ProductEntryAppearanceData, SupportCart, SupportWi
 
   @override
   String get orderImageUrl => imageUrl;
+
+  @override
+  String get discussionTitle => name;
+
+  @override
+  double get discussionPrice => sellingPrice.toDouble();
+
+  @override
+  String get discussionImageUrl => imageUrl;
 
   ProductEntry({
     required this.id,

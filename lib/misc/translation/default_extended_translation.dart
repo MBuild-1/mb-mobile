@@ -95,6 +95,7 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Wishlist": "Wishlist",
       "Favorite Brand": "Brand Favorit",
       "Product Discussion": "Diskusi Produk",
+      "Discussion": "Diskusi",
       "Inbox": "Inbox",
       "Main Menu": "Menu Utama",
       "Support Message": "Pesan Bantuan",
@@ -260,7 +261,12 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "No Message": "Tidak Ada Pesan",
       "Order Send to Warehouse List": "Daftar Kirim Barang Ke Warehouse",
       "Other Order Product List": "Daftar Product Lainnya",
-      "Product Inventory": "Inventori Produk"
+      "Product Inventory": "Inventori Produk",
+      "Type Product Discussion": "Ketikan Diskusi Produk",
+      "Type Reply Product Discussion": "Ketikan Balas Diskusi Produk",
+      "Reply Product Discussion": "Balas Diskusi Produk",
+      "No Reply": "Belum Ada Balasan",
+      "Reply": "Balas"
     }
   };
 

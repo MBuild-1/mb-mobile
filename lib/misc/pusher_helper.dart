@@ -15,6 +15,17 @@ class _PusherHelperImpl {
     );
   }
 
+  Future<void> _initPusherChannels({
+    required PusherChannelsFlutter pusherChannelsFlutter,
+    required void Function(PusherEvent) onEvent
+  }) async {
+    await pusherChannelsFlutter.init(
+      apiKey: "aec3cf529553db66701a",
+      cluster: "ap1",
+      onEvent: onEvent,
+    );
+  }
+
   Future<PusherChannelsFlutter> connectChatPusherChannel({
     required PusherChannelsFlutter pusherChannelsFlutter,
     required void Function(PusherEvent) onEvent,
@@ -33,10 +44,9 @@ class _PusherHelperImpl {
       }
     }
     try {
-      await pusherChannelsFlutter.init(
-        apiKey: "aec3cf529553db66701a",
-        cluster: "ap1",
-        onEvent: onEvent,
+      _initPusherChannels(
+        pusherChannelsFlutter: pusherChannelsFlutter,
+        onEvent: onEvent
       );
       await pusherChannelsFlutter.subscribe(
         channelName: "${getFirstChannelName()}.$conversationId"
@@ -47,10 +57,45 @@ class _PusherHelperImpl {
     }
     return pusherChannelsFlutter;
   }
+
+  Future<PusherChannelsFlutter> connectDiscussionPusherChannel({
+    required PusherChannelsFlutter pusherChannelsFlutter,
+    required void Function(PusherEvent) onEvent,
+    required DiscussionPusherChannelType discussionPusherChannelType,
+    required String productDiscussionId,
+  }) async {
+    String getFirstChannelName() {
+      if (discussionPusherChannelType == DiscussionPusherChannelType.discussion) {
+        return "product-discussion";
+      } else if (discussionPusherChannelType == DiscussionPusherChannelType.subDiscussion) {
+        return "product-sub-discussion";
+      } else {
+        return "";
+      }
+    }
+    try {
+      _initPusherChannels(
+        pusherChannelsFlutter: pusherChannelsFlutter,
+        onEvent: onEvent
+      );
+      await pusherChannelsFlutter.subscribe(
+        channelName: "${getFirstChannelName()}.$productDiscussionId"
+      );
+      await pusherChannelsFlutter.connect();
+    } catch (e) {
+      print("ERROR: $e");
+    }
+    print("kereturn");
+    return pusherChannelsFlutter;
+  }
 }
 
 enum ChatPusherChannelType {
   help, order, product
+}
+
+enum DiscussionPusherChannelType {
+  discussion, subDiscussion
 }
 
 // ignore: non_constant_identifier_names

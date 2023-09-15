@@ -290,11 +290,13 @@ class _PageRestorationHelperImpl {
     });
   }
 
-  void toProductDiscussionPage(BuildContext context) {
+  void toProductDiscussionPage(BuildContext context, ProductDiscussionPageParameter productDiscussionPageParameter) {
     LoginHelper.checkingLogin(context, () {
       PageRestorationHelper.findPageRestorationMixin<ProductDiscussionPageRestorationMixin>(
         onGetxPageRestorationFound: (restoration) {
-          restoration.productDiscussionPageRestorableRouteFuture.present();
+          restoration.productDiscussionPageRestorableRouteFuture.present(
+            productDiscussionPageParameter.toEncodeBase64String()
+          );
         },
         context: context
       );

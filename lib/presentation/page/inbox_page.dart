@@ -206,14 +206,14 @@ class _StatefulInboxControllerMediatorWidgetState extends State<_StatefulInboxCo
             descriptionInterceptor: descriptionInterceptor
           ),
           DividerListItemControllerState(),
-          ProfileMenuListItemControllerState(
-            onTap: (context) => PageRestorationHelper.toProductDiscussionPage(context),
-            icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorProductDiscussion2, color: iconColor, width: 20.0),
-            title: 'Product Discussion'.tr,
-            description: "Ask questions about the product".tr,
-            descriptionInterceptor: descriptionInterceptor
-          ),
-          DividerListItemControllerState(),
+          // ProfileMenuListItemControllerState(
+          //   onTap: (context) => PageRestorationHelper.toProductDiscussionPage(context),
+          //   icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorProductDiscussion2, color: iconColor, width: 20.0),
+          //   title: 'Product Discussion'.tr,
+          //   description: "Ask questions about the product".tr,
+          //   descriptionInterceptor: descriptionInterceptor
+          // ),
+          // DividerListItemControllerState(),
           ProfileMenuListItemControllerState(
             onTap: (context) => PageRestorationHelper.toDeliveryReviewPage(context),
             icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorDeliveryReview2, color: iconColor, width: 20.0),

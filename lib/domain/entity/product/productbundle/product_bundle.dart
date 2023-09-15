@@ -1,8 +1,9 @@
 import '../../cart/support_cart.dart';
+import '../../discussion/support_discussion.dart';
 import '../../order/support_order_product.dart';
 import '../../wishlist/support_wishlist.dart';
 
-class ProductBundle implements SupportCart, SupportWishlist, SupportOrderProduct {
+class ProductBundle implements SupportCart, SupportWishlist, SupportOrderProduct, SupportDiscussion {
   String id;
   String name;
   String slug;
@@ -46,6 +47,15 @@ class ProductBundle implements SupportCart, SupportWishlist, SupportOrderProduct
 
   @override
   set hasAddedToCart(bool value) => _hasAddedToCart = value;
+
+  @override
+  String get discussionTitle => name;
+
+  @override
+  double get discussionPrice => price;
+
+  @override
+  String get discussionImageUrl => imageUrl;
 
   ProductBundle({
     required this.id,

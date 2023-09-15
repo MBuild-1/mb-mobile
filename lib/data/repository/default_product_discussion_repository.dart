@@ -1,10 +1,11 @@
+import '../../domain/entity/product/productdiscussion/create_product_discussion_parameter.dart';
+import '../../domain/entity/product/productdiscussion/create_product_discussion_response.dart';
 import '../../domain/entity/product/productdiscussion/product_discussion.dart';
-import '../../domain/entity/product/productdiscussion/product_discussion_dialog.dart';
-import '../../domain/entity/product/productdiscussion/product_discussion_dialog_paging_parameter.dart';
-import '../../domain/entity/product/productdiscussion/product_discussion_paging_parameter.dart';
+import '../../domain/entity/product/productdiscussion/product_discussion_list_parameter.dart';
+import '../../domain/entity/product/productdiscussion/reply_product_discussion_parameter.dart';
+import '../../domain/entity/product/productdiscussion/reply_product_discussion_response.dart';
 import '../../domain/repository/product_discussion_repository.dart';
 import '../../misc/load_data_result.dart';
-import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/processing/future_processing.dart';
 import '../datasource/productdiscussiondatasource/product_discussion_data_source.dart';
 
@@ -16,12 +17,17 @@ class DefaultProductDiscussionRepository implements ProductDiscussionRepository 
   });
 
   @override
-  FutureProcessing<LoadDataResult<PagingDataResult<ProductDiscussion>>> productDiscussionPaging(ProductDiscussionPagingParameter productDiscussionPagingParameter) {
-    return productDiscussionDataSource.productDiscussionPaging(productDiscussionPagingParameter).mapToLoadDataResult<PagingDataResult<ProductDiscussion>>();
+  FutureProcessing<LoadDataResult<ProductDiscussion>> productDiscussion(ProductDiscussionParameter productDiscussionParameter) {
+    return productDiscussionDataSource.productDiscussion(productDiscussionParameter).mapToLoadDataResult<ProductDiscussion>();
   }
 
   @override
-  FutureProcessing<LoadDataResult<PagingDataResult<ProductDiscussionDialog>>> productDiscussionDialogPaging(ProductDiscussionDialogPagingParameter productDiscussionDialogPagingParameter) {
-    return productDiscussionDataSource.productDiscussionDialogPaging(productDiscussionDialogPagingParameter).mapToLoadDataResult<PagingDataResult<ProductDiscussionDialog>>();
+  FutureProcessing<LoadDataResult<CreateProductDiscussionResponse>> createProductDiscussion(CreateProductDiscussionParameter createProductDiscussionParameter) {
+    return productDiscussionDataSource.createProductDiscussion(createProductDiscussionParameter).mapToLoadDataResult<CreateProductDiscussionResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<ReplyProductDiscussionResponse>> replyProductDiscussion(ReplyProductDiscussionParameter replyProductDiscussionParameter) {
+    return productDiscussionDataSource.replyProductDiscussion(replyProductDiscussionParameter).mapToLoadDataResult<ReplyProductDiscussionResponse>();
   }
 }

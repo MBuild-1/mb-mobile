@@ -14,6 +14,9 @@ class _MainRouteObserver extends RouteObserver {
   Map<String, BuildContext Function()?> get buildContextEventRouteMap => _buildContextEventRouteMap;
   Map<String, void Function()?> _controllerMediatorMap = {};
   Map<String, void Function()?> get controllerMediatorMap => _controllerMediatorMap;
+  Map<String, void Function()?> _onRefreshProductDiscussion = {};
+  Map<String, void Function()?> get onRefreshProductDiscussion => _onRefreshProductDiscussion;
+
   void Function(int)? onChangeMainMenuTap;
   void Function()? onRefreshWishlistInMainMenu;
   void Function()? onRefreshAddress;
@@ -35,6 +38,9 @@ class _MainRouteObserver extends RouteObserver {
       for (var key in newRouteMap.keys) key: null
     };
     _controllerMediatorMap = {
+      for (var key in newRouteMap.keys) key: null
+    };
+    _onRefreshProductDiscussion = {
       for (var key in newRouteMap.keys) key: null
     };
   }

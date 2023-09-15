@@ -4,6 +4,9 @@ class VerticalProductDiscussionDialogItem extends ProductDiscussionDialogItem {
   const VerticalProductDiscussionDialogItem({
     super.key,
     required super.productDiscussionDialog,
-    super.isMainProductDiscussion = false
+    required super.isExpanded,
+    super.isMainProductDiscussion = false,
+    super.onTapProductDiscussionDialog,
+    required super.isLoading
   });
 }

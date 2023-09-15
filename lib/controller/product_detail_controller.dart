@@ -4,6 +4,8 @@ import '../domain/entity/cart/add_to_cart_parameter.dart';
 import '../domain/entity/cart/add_to_cart_response.dart';
 import '../domain/entity/cart/support_cart.dart';
 import '../domain/entity/componententity/dynamic_item_carousel_component_entity.dart';
+import '../domain/entity/componententity/dynamic_item_carousel_directly_component_entity.dart';
+import '../domain/entity/componententity/i_component_entity.dart';
 import '../domain/entity/componententity/i_dynamic_item_carousel_component_entity.dart';
 import '../domain/entity/order/order.dart';
 import '../domain/entity/order/purchase_direct_parameter.dart';
@@ -20,6 +22,8 @@ import '../domain/entity/product/product_detail_other_interested_product_brand_l
 import '../domain/entity/product/product_detail_parameter.dart';
 import '../domain/entity/product/productbrand/product_brand.dart';
 import '../domain/entity/product/productcategory/product_category.dart';
+import '../domain/entity/product/productdiscussion/product_discussion.dart';
+import '../domain/entity/product/productdiscussion/product_discussion_list_parameter.dart';
 import '../domain/entity/product/productentry/product_entry.dart';
 import '../domain/usecase/add_to_cart_use_case.dart';
 import '../domain/usecase/get_my_cart_use_case.dart';
@@ -30,10 +34,13 @@ import '../domain/usecase/get_product_detail_other_from_this_brand_product_entry
 import '../domain/usecase/get_product_detail_other_in_this_category_product_entry_list_use_case.dart';
 import '../domain/usecase/get_product_detail_other_interested_product_brand_list_use_case.dart';
 import '../domain/usecase/get_product_detail_use_case.dart';
+import '../domain/usecase/get_product_discussion_use_case.dart';
 import '../domain/usecase/purchase_direct_use_case.dart';
 import '../misc/constant.dart';
 import '../misc/controllercontentdelegate/product_brand_favorite_controller_content_delegate.dart';
 import '../misc/controllercontentdelegate/wishlist_and_cart_controller_content_delegate.dart';
+import '../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
+import '../misc/controllerstate/listitemcontrollerstate/loading_list_item_controller_state.dart';
 import '../misc/error/message_error.dart';
 import '../misc/load_data_result.dart';
 import '../misc/multi_language_string.dart';
@@ -59,6 +66,7 @@ class ProductDetailController extends BaseGetxController {
   final GetProductDetailOtherInterestedProductBrandListUseCase getProductDetailOtherInterestedProductBrandListUseCase;
   final PurchaseDirectUseCase purchaseDirectUseCase;
   final AddToCartUseCase addToCartUseCase;
+  final GetProductDiscussionUseCase getProductDiscussionUseCase;
   final WishlistAndCartControllerContentDelegate wishlistAndCartControllerContentDelegate;
   final ProductBrandFavoriteControllerContentDelegate productBrandFavoriteControllerContentDelegate;
   ProductDetailMainMenuDelegate? _productDetailMainMenuDelegate;
@@ -74,6 +82,7 @@ class ProductDetailController extends BaseGetxController {
     this.getProductDetailOtherInterestedProductBrandListUseCase,
     this.purchaseDirectUseCase,
     this.addToCartUseCase,
+    this.getProductDiscussionUseCase,
     this.wishlistAndCartControllerContentDelegate,
     this.productBrandFavoriteControllerContentDelegate
   ) {
@@ -307,6 +316,45 @@ class ProductDetailController extends BaseGetxController {
     );
   }
 
+  IComponentEntity getShortProductDiscussion() {
+    return DynamicItemCarouselComponentEntity(
+      title: MultiLanguageString(""),
+      onDynamicItemAction: (title, description, observer) async {
+        observer(title, description, IsLoadingLoadDataResult<ProductDiscussion>());
+        String productId = "";
+        if (_productDetailMainMenuDelegate != null) {
+          SupportCart? supportCart = _productDetailMainMenuDelegate!.onGetSupportCart();
+          if (supportCart is ProductEntry) {
+            productId = supportCart.productId;
+          }
+        }
+        LoadDataResult<ProductDiscussion> productDiscussionLoadDataResult = await getProductDiscussionUseCase.execute(
+          ProductDiscussionParameter(productId: productId)
+        ).future(
+          parameter: apiRequestManager.addRequestToCancellationPart("short-product-discussion").value
+        );
+        if (productDiscussionLoadDataResult.isFailedBecauseCancellation) {
+          return;
+        }
+        observer(title, description, productDiscussionLoadDataResult);
+      },
+      onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
+        return LoadingListItemControllerState();
+      },
+      onObserveSuccessDynamicItemActionState: (title, description, loadDataResult) {
+        LoadDataResult<ProductDiscussion> productDiscussionLoadDataResult = loadDataResult.castFromDynamic<ProductDiscussion>();
+        if (_productDetailMainMenuDelegate != null) {
+          return _productDetailMainMenuDelegate!.onObserveLoadShortProductDiscussionDirectly(
+            _OnObserveLoadShortProductDiscussionParameter(
+              productDiscussionSuccessLoadDataResult: productDiscussionLoadDataResult as SuccessLoadDataResult<ProductDiscussion>
+            )
+          );
+        }
+        throw MessageError(title: "Product detail delegate must be not null");
+      },
+    );
+  }
+
   void setProductDetailMainMenuDelegate(ProductDetailMainMenuDelegate productDetailMainMenuDelegate) {
     _productDetailMainMenuDelegate = productDetailMainMenuDelegate;
   }
@@ -359,6 +407,7 @@ class ProductDetailMainMenuDelegate {
   _OnShowBuyDirectlyRequestProcessLoadingCallback onShowBuyDirectlyRequestProcessLoadingCallback;
   _OnBuyDirectlyRequestProcessSuccessCallback onBuyDirectlyRequestProcessSuccessCallback;
   _OnShowBuyDirectlyRequestProcessFailedCallback onShowBuyDirectlyRequestProcessFailedCallback;
+  ListItemControllerState Function(_OnObserveLoadShortProductDiscussionParameter) onObserveLoadShortProductDiscussionDirectly;
   void Function() onBack;
 
   ProductDetailMainMenuDelegate({
@@ -371,6 +420,15 @@ class ProductDetailMainMenuDelegate {
     required this.onShowBuyDirectlyRequestProcessLoadingCallback,
     required this.onBuyDirectlyRequestProcessSuccessCallback,
     required this.onShowBuyDirectlyRequestProcessFailedCallback,
+    required this.onObserveLoadShortProductDiscussionDirectly,
     required this.onBack
+  });
+}
+
+class _OnObserveLoadShortProductDiscussionParameter {
+  SuccessLoadDataResult<ProductDiscussion> productDiscussionSuccessLoadDataResult;
+
+  _OnObserveLoadShortProductDiscussionParameter({
+    required this.productDiscussionSuccessLoadDataResult
   });
 }

@@ -8,6 +8,8 @@ class VerticalProductDiscussionItem extends ProductDiscussionItem {
     super.key,
     required super.productDiscussion,
     required super.isExpanded,
+    required super.supportDiscussionLoadDataResult,
+    required super.errorProvider,
     super.onProductDiscussionTap
   });
 }

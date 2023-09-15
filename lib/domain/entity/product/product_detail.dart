@@ -1,7 +1,8 @@
+import '../discussion/support_discussion.dart';
 import 'product.dart';
 import 'productentry/product_entry.dart';
 
-class ProductDetail extends Product {
+class ProductDetail extends Product implements SupportDiscussion {
   List<ProductEntry> productEntry;
 
   ProductDetail({
@@ -23,4 +24,20 @@ class ProductDetail extends Product {
     required super.productCertificationList,
     required this.productEntry
   });
+
+  String get _imageUrl {
+    if (productEntry.isEmpty) {
+      return "";
+    }
+    return productEntry.first.imageUrl;
+  }
+
+  @override
+  String get discussionTitle => name;
+
+  @override
+  double get discussionPrice => price;
+
+  @override
+  String get discussionImageUrl => _imageUrl;
 }

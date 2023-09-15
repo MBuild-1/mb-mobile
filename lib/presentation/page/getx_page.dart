@@ -230,7 +230,7 @@ class _StatefulRestorableGetxPage extends StatefulWidget {
 }
 
 class _StatefulRestorableGetxPageState extends State<_StatefulRestorableGetxPage> {
-  String get _routeMapKey => _getRouteMapKey(widget.pageName);
+  String get _routeMapKey => getRouteMapKey(widget.pageName);
 
   @override
   void initState() {
@@ -317,7 +317,7 @@ class _RestorableGetxOuterPageState<T extends GetxPageRestoration> extends _Getx
   late final Restorator _restorator;
   late T _pageRestoration;
 
-  String get _routeMapKey => _getRouteMapKey(widget.pageName);
+  String get _routeMapKey => getRouteMapKey(widget.pageName);
 
   _RestorableGetxOuterPageState() {
     _restorator = Restorator(this);
@@ -456,6 +456,6 @@ class ExtendedGetPageRoute<T> extends GetPageRoute<T> {
   }
 }
 
-String _getRouteMapKey(String pageName) {
+String getRouteMapKey(String pageName) {
   return "/$pageName";
 }

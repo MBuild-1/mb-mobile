@@ -14,6 +14,7 @@ import '../../domain/entity/product/product_detail.dart';
 import '../../domain/entity/product/product_detail_get_other_from_this_brand_parameter.dart';
 import '../../domain/entity/product/product_detail_get_other_in_this_category_parameter.dart';
 import '../../domain/entity/product/product_detail_parameter.dart';
+import '../../domain/entity/product/productdiscussion/product_discussion.dart';
 import '../../domain/entity/product/productentry/product_entry.dart';
 import '../../domain/entity/product/productvariant/product_variant.dart';
 import '../../domain/entity/wishlist/support_wishlist.dart';
@@ -25,6 +26,7 @@ import '../../domain/usecase/get_product_detail_other_from_this_brand_product_en
 import '../../domain/usecase/get_product_detail_other_in_this_category_product_entry_list_use_case.dart';
 import '../../domain/usecase/get_product_detail_other_interested_product_brand_list_use_case.dart';
 import '../../domain/usecase/get_product_detail_use_case.dart';
+import '../../domain/usecase/get_product_discussion_use_case.dart';
 import '../../domain/usecase/purchase_direct_use_case.dart';
 import '../../misc/additionalloadingindicatorchecker/product_detail_additional_paging_result_parameter_checker.dart';
 import '../../misc/carouselbackground/asset_carousel_background.dart';
@@ -41,6 +43,8 @@ import '../../misc/controllerstate/listitemcontrollerstate/padding_container_lis
 import '../../misc/controllerstate/listitemcontrollerstate/product_detail_brand_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/product_detail_image_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/product_detail_short_header_list_item_controller_state.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/productdiscussionlistitemcontrollerstate/product_discussion_list_item_controller_state.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/productdiscussionlistitemcontrollerstate/short_product_discussion_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/title_and_description_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
@@ -84,6 +88,7 @@ import 'getx_page.dart';
 import 'login_page.dart';
 import 'product_brand_page.dart';
 import 'product_chat_page.dart';
+import 'product_discussion_page.dart';
 import 'product_entry_page.dart';
 import 'search_page.dart';
 
@@ -113,6 +118,7 @@ class ProductDetailPage extends RestorableGetxPage<_ProductDetailPageRestoration
         Injector.locator<GetProductDetailOtherInterestedProductBrandListUseCase>(),
         Injector.locator<PurchaseDirectUseCase>(),
         Injector.locator<AddToCartUseCase>(),
+        Injector.locator<GetProductDiscussionUseCase>(),
         Injector.locator<WishlistAndCartControllerContentDelegate>(),
         Injector.locator<ProductBrandFavoriteControllerContentDelegate>()
       ),
@@ -135,7 +141,7 @@ class ProductDetailPage extends RestorableGetxPage<_ProductDetailPageRestoration
   }
 }
 
-class _ProductDetailPageRestoration extends MixableGetxPageRestoration with ProductDetailPageRestorationMixin, ProductEntryPageRestorationMixin, SearchPageRestorationMixin, ProductChatPageRestorationMixin, LoginPageRestorationMixin, ProductBrandPageRestorationMixin {
+class _ProductDetailPageRestoration extends MixableGetxPageRestoration with ProductDetailPageRestorationMixin, ProductEntryPageRestorationMixin, SearchPageRestorationMixin, ProductChatPageRestorationMixin, LoginPageRestorationMixin, ProductBrandPageRestorationMixin, ProductDiscussionPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
@@ -539,6 +545,11 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
           ),
           VirtualSpacingListItemControllerState(height: 4.h),
           componentEntityMediator.mapWithParameter(
+            widget.productDetailController.getShortProductDiscussion(),
+            parameter: carouselParameterizedEntityMediator
+          ),
+          VirtualSpacingListItemControllerState(height: 4.h),
+          componentEntityMediator.mapWithParameter(
             widget.productDetailController.getOtherChosenForYou(),
             parameter: carouselParameterizedEntityMediator
           ),
@@ -717,6 +728,35 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
             return productEntry;
           }
           return null;
+        },
+        onObserveLoadShortProductDiscussionDirectly: (onObserveLoadShortProductDiscussionParameter) {
+          ProductDiscussion productDiscussion = onObserveLoadShortProductDiscussionParameter.productDiscussionSuccessLoadDataResult.resultIfSuccess!;
+          return ShortProductDiscussionContainerListItemControllerState(
+            productDiscussionListItemValue: ProductDiscussionListItemValue(
+              isExpanded: true,
+              productDiscussionDetailListItemValue: productDiscussion.toProductDiscussionDetailListItemValue()
+            ),
+            onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
+            onUpdateState: () => setState(() {}),
+            onTapMore: (productDiscussion) {
+              PageRestorationHelper.toProductDiscussionPage(
+                context, ProductDiscussionPageParameter(
+                  productId: widget.productId,
+                  bundleId: null,
+                  discussionProductId: null
+                )
+              );
+            },
+            onGotoReplyProductDiscussionPage: (productDiscussionDialog) {
+              PageRestorationHelper.toProductDiscussionPage(
+                context, ProductDiscussionPageParameter(
+                  productId: widget.productId,
+                  bundleId: null,
+                  discussionProductId: productDiscussionDialog.id
+                )
+              );
+            }
+          );
         },
         onShowAddToCartRequestProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
         onShowAddToCartRequestProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(

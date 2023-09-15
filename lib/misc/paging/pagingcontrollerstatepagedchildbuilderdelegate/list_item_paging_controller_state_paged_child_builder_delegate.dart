@@ -1061,9 +1061,11 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
     } else if (item is ProductDiscussionListItemControllerState) {
       if (item is VerticalProductDiscussionListItemControllerState) {
         return VerticalProductDiscussionItem(
-          productDiscussion: item.productDiscussion,
+          productDiscussion: item.productDiscussionDetailListItemValue.toProductDiscussion(),
           isExpanded: item.isExpanded,
-          onProductDiscussionTap: item.onProductDiscussionTap
+          onProductDiscussionTap: item.onProductDiscussionTap,
+          errorProvider: item.errorProvider,
+          supportDiscussionLoadDataResult: item.supportDiscussionLoadDataResult,
         );
       } else {
         return Container();
@@ -1073,6 +1075,9 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
         return VerticalProductDiscussionDialogItem(
           productDiscussionDialog: item.productDiscussionDialog,
           isMainProductDiscussion: item.isMainProductDiscussion,
+          isExpanded: item.isExpanded,
+          onTapProductDiscussionDialog: item.onTapProductDiscussionDialog,
+          isLoading: item.isLoading
         );
       } else {
         return Container();
