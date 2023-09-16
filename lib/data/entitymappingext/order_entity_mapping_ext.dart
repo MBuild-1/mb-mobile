@@ -86,7 +86,7 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
       productEntryId: response["product_entry_id"],
       bundlingId: response["bundling_id"],
       combinedOrderId: response["combined_order_id"],
-      buyingPrice: response["buying_price"],
+      buyingPrice: response["buying_price"] ?? 0,
       name: (response["name"] as String?).toEmptyStringNonNull,
       price: response["price"] ?? 0,
       weight: ResponseWrapper(response["weight"]).mapFromResponseToDouble() ?? 0.0,
