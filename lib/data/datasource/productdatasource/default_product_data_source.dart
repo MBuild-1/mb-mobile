@@ -104,6 +104,16 @@ class DefaultProductDataSource implements ProductDataSource {
   }
 
   @override
+  FutureProcessing<PagingDataResult<ProductBrand>> selectedFashionProductBrandPaging(ProductBrandPagingParameter productBrandPagingParameter) {
+    return DioHttpClientProcessing((cancelToken) async {
+      List<FavoriteProductBrand> favoriteProductBrandListResult = await _favoriteProductBrandListIgnoringLoginError(FavoriteProductBrandListParameter()).future(parameter: cancelToken);
+      String pageParameterPath = "/?pageNumber=${productBrandPagingParameter.itemEachPageCount}&page=${productBrandPagingParameter.page}";
+      return await dio.get("/product/brand/fashion/choosen$pageParameterPath", cancelToken: cancelToken)
+        .map<PagingDataResult<ProductBrand>>(onMap: (value) => value.wrapResponse().mapFromResponseToProductBrandPaging(favoriteProductBrandListResult));
+    });
+  }
+
+  @override
   FutureProcessing<List<ProductCategory>> productCategoryList(ProductCategoryListParameter productCategoryListParameter) {
     return DioHttpClientProcessing((cancelToken) {
       return dio.get("/product/category", cancelToken: cancelToken)

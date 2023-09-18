@@ -2,11 +2,14 @@ import 'package:flutter/material.dart' hide Banner;
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../misc/carousellistitemtype/carousel_list_item_type.dart';
+import '../../misc/carousellistitemtype/tile_carousel_list_item_Type.dart';
 import '../../misc/constant.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/shimmercarousellistitemgenerator/shimmer_carousel_list_item_generator.dart';
 import '../../misc/shimmercarousellistitemgenerator/type/shimmer_carousel_list_item_generator_type.dart';
 import '../../misc/typedef.dart';
+import 'horizontal_scalable.dart';
 import 'modified_shimmer.dart';
 import 'titleanddescriptionitem/title_and_description_item.dart';
 
@@ -21,6 +24,7 @@ class CarouselListItem<T> extends StatelessWidget {
   final WidgetBuilderWithItem<T> builderWithItem;
   final Widget? backgroundImage;
   final double? backgroundImageHeight;
+  final CarouselListItemType? carouselListItemType;
 
   const CarouselListItem({
     Key? key,
@@ -33,7 +37,8 @@ class CarouselListItem<T> extends StatelessWidget {
     required this.itemList,
     required this.builderWithItem,
     this.backgroundImage,
-    this.backgroundImageHeight
+    this.backgroundImageHeight,
+    this.carouselListItemType
   }) : super(key: key);
 
   @override
@@ -48,7 +53,8 @@ class CarouselListItem<T> extends StatelessWidget {
       itemList: itemList,
       builderWithItem: builderWithItem,
       backgroundImage: backgroundImage,
-      backgroundImageHeight: backgroundImageHeight
+      backgroundImageHeight: backgroundImageHeight,
+      carouselListItemType: carouselListItemType
     );
   }
 }
@@ -87,7 +93,7 @@ class ShimmerCarouselListItem<G extends ShimmerCarouselListItemGeneratorType> ex
           itemList: List<ListItemControllerState>.generate(10, (index) {
             return shimmerCarouselListItemGenerator.onGenerateListItemValue();
           }),
-          builderWithItem: builderWithItem
+          builderWithItem: builderWithItem,
         )
       )
     );
@@ -105,6 +111,7 @@ class _InnerCarouselListItem<T> extends StatefulWidget {
   final WidgetBuilderWithItem<T> builderWithItem;
   final Widget? backgroundImage;
   final double? backgroundImageHeight;
+  final CarouselListItemType? carouselListItemType;
 
   const _InnerCarouselListItem({
     Key? key,
@@ -117,7 +124,8 @@ class _InnerCarouselListItem<T> extends StatefulWidget {
     required this.itemList,
     required this.builderWithItem,
     this.backgroundImage,
-    this.backgroundImageHeight
+    this.backgroundImageHeight,
+    this.carouselListItemType
   }) : super(key: key);
 
   @override
@@ -179,31 +187,58 @@ class _InnerCarouselListItemState<T> extends State<_InnerCarouselListItem<T>> wi
             ),
             if (!widget.title.isEmptyString || !widget.description.isEmptyString)
               SizedBox(height: verticalSpace ?? Constant.paddingListItem),
-            SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              scrollDirection: Axis.horizontal,
-              padding: EdgeInsets.only(
-                left: left ?? Constant.paddingListItem,
-                right: right ?? Constant.paddingListItem,
-              ),
-              child: Builder(
-                builder: (context) {
-                  List<Widget> itemMap = [];
-                  int i = 0;
-                  while (i < widget.itemList.length) {
-                    if (i > 0) {
-                      itemMap.add(SizedBox(width: 3.w));
-                    }
-                    itemMap.add(widget.builderWithItem(context, widget.itemList[i]));
-                    i++;
-                  }
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: itemMap,
+            Builder(
+              builder: (BuildContext context) {
+                CarouselListItemType? carouselListItemType = widget.carouselListItemType;
+                if (carouselListItemType is TileCarouselListItemType) {
+                  double spacing = 10.0;
+                  double count = 2;
+                  return SizedBox(
+                    width: double.infinity,
+                    child: Wrap(
+                      spacing: spacing,
+                      runSpacing: spacing,
+                      alignment: WrapAlignment.center,
+                      runAlignment: WrapAlignment.center,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: widget.itemList.take(4).map<Widget>((item) {
+                        Widget result = widget.builderWithItem(context, item);
+                        if (result is HorizontalScalable) {
+                          double width = (MediaQuery.of(context).size.width - (2 * Constant.paddingListItem) - (spacing * (count - 1))) / count;
+                          (result as HorizontalScalable).horizontalScalableValue.scalableItemWidth = width;
+                        }
+                        return result;
+                      }).toList(),
+                    ),
                   );
-                },
-              )
+                }
+                return SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  scrollDirection: Axis.horizontal,
+                  padding: EdgeInsets.only(
+                    left: left ?? Constant.paddingListItem,
+                    right: right ?? Constant.paddingListItem,
+                  ),
+                  child: Builder(
+                    builder: (context) {
+                      List<Widget> itemMap = [];
+                      int i = 0;
+                      while (i < widget.itemList.length) {
+                        if (i > 0) {
+                          itemMap.add(SizedBox(width: 3.w));
+                        }
+                        itemMap.add(widget.builderWithItem(context, widget.itemList[i]));
+                        i++;
+                      }
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: itemMap,
+                      );
+                    },
+                  )
+                );
+              }
             ),
             SizedBox(height: bottom ?? Constant.paddingListItem),
             if (hasBackgroundImage)

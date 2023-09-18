@@ -705,7 +705,11 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
           } else if (data == Constant.carouselKeyProductDetailOtherInterestedBrand) {
             titleInterceptor = (text, style) => titleArea(
               title: Text(text.toStringNonNull, style: style),
-              onTapMore: () => PageRestorationHelper.toProductBrandPage(context)
+              onTapMore: () => PageRestorationHelper.toProductBrandPage(
+                context, ProductBrandPageParameter(
+                  productBrandPageType: ProductBrandPageType.defaultProductDetail
+                )
+              )
             );
           }
           return CarouselParameterizedEntityAndListItemControllerStateMediatorParameter(

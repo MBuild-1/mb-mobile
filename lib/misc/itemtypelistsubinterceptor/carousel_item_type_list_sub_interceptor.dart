@@ -38,7 +38,8 @@ class CarouselItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<List
           titleInterceptor: oldItemType.titleInterceptor,
           description: oldItemType.description,
           descriptionInterceptor: oldItemType.descriptionInterceptor,
-          carouselBackground: oldItemType.carouselBackground
+          carouselBackground: oldItemType.carouselBackground,
+          carouselListItemType: oldItemType.carouselListItemType
         )
       );
       return true;

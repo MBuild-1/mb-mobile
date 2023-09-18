@@ -20,6 +20,8 @@ import '../../../../misc/additionalloadingindicatorchecker/home_sub_additional_p
 import '../../../../misc/aspect_ratio_value.dart';
 import '../../../../misc/carouselbackground/asset_carousel_background.dart';
 import '../../../../misc/carouselbackground/carousel_background.dart';
+import '../../../../misc/carousellistitemtype/carousel_list_item_type.dart';
+import '../../../../misc/carousellistitemtype/tile_carousel_list_item_Type.dart';
 import '../../../../misc/constant.dart';
 import '../../../../misc/controllercontentdelegate/wishlist_and_cart_controller_content_delegate.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/carousel_list_item_controller_state.dart';
@@ -58,7 +60,10 @@ import '../../../../misc/paging/pagingresult/paging_result.dart';
 import '../../../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/carousel_background_parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../../../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/cart_delegate_parameterized_entity_and_list_item_controllere_state_mediator_parameter.dart';
 import '../../../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/compound_parameterized_entity_and_list_item_controller_state_mediator.dart';
+import '../../../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/horizontal_brand_appearance_parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../../../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/horizontal_dynamic_item_carousel_parametered_component_entity_and_list_item_controller_state_mediator_parameter.dart';
+import '../../../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/horizontal_product_appearance_parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
+import '../../../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../../../../misc/shimmercarousellistitemgenerator/factory/product_bundle_shimmer_carousel_list_item_generator_factory.dart';
 import '../../../../misc/shimmercarousellistitemgenerator/type/product_bundle_shimmer_carousel_list_item_generator_type.dart';
 import '../../../notifier/component_notifier.dart';
@@ -73,6 +78,7 @@ import '../../../widget/tap_area.dart';
 import '../../../widget/titleanddescriptionitem/title_and_description_item.dart';
 import '../../getx_page.dart';
 import '../../modaldialogpage/check_rates_for_various_countries_modal_dialog_page.dart';
+import '../../product_brand_page.dart';
 
 class HomeMainMenuSubPage extends DefaultGetxPage {
   late final ControllerMember<HomeMainMenuSubController> _homeMainMenuSubController = ControllerMember<HomeMainMenuSubController>().addToControllerManager(controllerManager);
@@ -303,6 +309,8 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
           }
           late CarouselBackground? carouselBackground;
           TitleInterceptor? titleInterceptor;
+          CarouselListItemType? carouselListItemType;
+          ParameterizedEntityAndListItemControllerStateMediatorParameter? additionalParameter;
           if (data == Constant.carouselKeyIndonesianCategoryProduct) {
             carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternGrey);
           } else if (data == Constant.carouselKeyIndonesianOriginalBrand) {
@@ -310,7 +318,11 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
             titleInterceptor = (text, style) => titleArea(
               title: Text(text.toStringNonNull, style: style?.copyWith()),
               onInterceptTextStyle: (style) => style.copyWith(),
-              onTapMore: () => PageRestorationHelper.toProductBrandPage(context)
+              onTapMore: () => PageRestorationHelper.toProductBrandPage(
+                context, ProductBrandPageParameter(
+                  productBrandPageType: ProductBrandPageType.defaultProductDetail
+                )
+              )
             );
           } else if (data == Constant.carouselKeyIsViral) {
             carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternBlue);
@@ -361,6 +373,23 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
                 )
               ),
             );
+          } else if (data == Constant.carouselKeySelectedFashionBrands) {
+            carouselBackground = AssetCarouselBackground(
+              assetImageName: Constant.imagePatternBlackSquare,
+              imageBackgroundHeight: 340
+            );
+            carouselListItemType = TileCarouselListItemType();
+            additionalParameter = HorizontalBrandAppearanceParameterizedEntityAndListItemControllerStateMediatorParameter(
+              horizontalBrandAppearance: HorizontalBrandAppearance.squareAppearance
+            );
+            titleInterceptor = (text, style) => titleArea(
+              title: Text(text.toStringNonNull, style: style?.copyWith(color: Colors.white)),
+              onTapMore: () => PageRestorationHelper.toProductBrandPage(
+                context, ProductBrandPageParameter(
+                  productBrandPageType: ProductBrandPageType.selectedFashionBrandProductDetail
+                )
+              )
+            );
           } else if (data == Constant.carouselKeyCoffeeAndTeaOriginIndonesia) {
             carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternBlue);
             titleInterceptor = (text, style) => titleArea(
@@ -408,7 +437,9 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
           }
           return CarouselParameterizedEntityAndListItemControllerStateMediatorParameter(
             carouselBackground: carouselBackground,
-            titleInterceptor: titleInterceptor
+            titleInterceptor: titleInterceptor,
+            carouselListItemType: carouselListItemType,
+            additionalParameter: additionalParameter
           );
         }
       );

@@ -34,6 +34,12 @@ abstract class ProductItem extends StatelessWidget {
   final OnRemoveCartWithProductAppearanceData? onRemoveCart;
 
   @protected
+  bool get showPicture => true;
+
+  @protected
+  bool get showContent => true;
+
+  @protected
   String get priceString => _priceString(productAppearanceData.price.toDouble());
 
   @protected
@@ -142,80 +148,86 @@ abstract class ProductItem extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  AspectRatio(
-                    aspectRatio: 1.0,
-                    child: Stack(
-                      children: [
-                        ClipRRect(
-                          child: ProductModifiedCachedNetworkImage(
-                            imageUrl: productAppearanceData.imageUrl.toEmptyStringNonNull,
-                          )
-                        ),
-                        ..._productBadge()
-                      ],
-                    )
-                  ),
-                  ModifiedDivider(
-                    lineHeight: 3.5,
-                    lineColor: Constant.colorGrey5
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Tooltip(
-                          message: productAppearanceData.name.toStringNonNull,
-                          child: Text(
-                            productAppearanceData.name.toStringNonNull,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: priceWidget(context, _nonDiscountPriceWidget(context), _discountPriceWidget(context)),
-                            ),
-                            SizedBox(width: 1.5.w),
-                            const ModifiedVerticalDivider(
-                              lineWidth: 1,
-                              lineHeight: 20,
-                              lineColor: Colors.black,
-                            ),
-                            const SizedBox(width: 15),
-                            Text(weight, style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold)),
-                          ]
-                        ),
-                        const SizedBox(height: 10),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(soldCount, style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.w300)),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        Row(
-                          children: [
-                            AddOrRemoveWishlistButton(
-                              onAddWishlist: onAddWishlist != null ? () => onWishlist(onAddWishlist) : null,
-                              onRemoveWishlist: onRemoveWishlist != null ? () => onWishlist(onRemoveWishlist) : null,
-                              isAddToWishlist: isAddToWishlist,
-                            ),
-                            SizedBox(width: 1.5.w),
-                            Expanded(
-                              child: AddOrRemoveCartButton(
-                                onAddCart: onAddCart != null ? () => onAddCart!(productAppearanceData) : null,
-                                isAddToCart: isAddToCart
-                              )
+                  if (showPicture) ...[
+                    AspectRatio(
+                      aspectRatio: 1.0,
+                      child: Stack(
+                        children: [
+                          ClipRRect(
+                            child: ProductModifiedCachedNetworkImage(
+                              imageUrl: productAppearanceData.imageUrl.toEmptyStringNonNull,
                             )
-                          ],
-                        )
-                      ],
+                          ),
+                          ..._productBadge()
+                        ],
+                      )
                     ),
-                  ),
+                  ],
+                  if (showPicture && showContent) ...[
+                    ModifiedDivider(
+                      lineHeight: 3.5,
+                      lineColor: Constant.colorGrey5
+                    ),
+                  ],
+                  if (showContent) ...[
+                    Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Tooltip(
+                            message: productAppearanceData.name.toStringNonNull,
+                            child: Text(
+                              productAppearanceData.name.toStringNonNull,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: priceWidget(context, _nonDiscountPriceWidget(context), _discountPriceWidget(context)),
+                              ),
+                              SizedBox(width: 1.5.w),
+                              const ModifiedVerticalDivider(
+                                lineWidth: 1,
+                                lineHeight: 20,
+                                lineColor: Colors.black,
+                              ),
+                              const SizedBox(width: 15),
+                              Text(weight, style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold)),
+                            ]
+                          ),
+                          const SizedBox(height: 10),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(soldCount, style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.w300)),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          Row(
+                            children: [
+                              AddOrRemoveWishlistButton(
+                                onAddWishlist: onAddWishlist != null ? () => onWishlist(onAddWishlist) : null,
+                                onRemoveWishlist: onRemoveWishlist != null ? () => onWishlist(onRemoveWishlist) : null,
+                                isAddToWishlist: isAddToWishlist,
+                              ),
+                              SizedBox(width: 1.5.w),
+                              Expanded(
+                                child: AddOrRemoveCartButton(
+                                  onAddCart: onAddCart != null ? () => onAddCart!(productAppearanceData) : null,
+                                  isAddToCart: isAddToCart
+                                )
+                              )
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                  ]
                 ],
               )
             )

@@ -152,10 +152,10 @@ class _PageRestorationHelperImpl {
     );
   }
 
-  void toProductBrandPage(BuildContext context) {
+  void toProductBrandPage(BuildContext context, ProductBrandPageParameter productBrandPageParameter) {
     PageRestorationHelper.findPageRestorationMixin<ProductBrandPageRestorationMixin>(
       onGetxPageRestorationFound: (restoration) {
-        restoration.productBrandPageRestorableRouteFuture.present();
+        restoration.productBrandPageRestorableRouteFuture.present(productBrandPageParameter.toEncodeBase64String());
       },
       context: context
     );

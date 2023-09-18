@@ -3,11 +3,13 @@ import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_ext.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../../controller/product_brand_controller.dart';
 import '../../domain/entity/product/productbrand/product_brand.dart';
 import '../../domain/entity/product/productbrand/product_brand_paging_parameter.dart';
 import '../../domain/usecase/get_product_brand_paging_use_case.dart';
+import '../../domain/usecase/get_selected_fashion_brands_paging_use_case.dart';
 import '../../misc/additionalloadingindicatorchecker/product_bundle_additional_paging_result_parameter_checker.dart';
 import '../../misc/constant.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/compound_list_item_controller_state.dart';
@@ -18,6 +20,7 @@ import '../../misc/controllerstate/listitemcontrollerstate/productbrandlistitemc
 import '../../misc/controllerstate/listitemcontrollerstate/title_and_description_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
+import '../../misc/error/message_error.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
@@ -29,6 +32,7 @@ import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
+import '../../misc/string_util.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/default_search_app_bar.dart';
 import 'getx_page.dart';
@@ -38,7 +42,12 @@ import 'search_page.dart';
 class ProductBrandPage extends RestorableGetxPage<_ProductBrandPageRestoration> {
   late final ControllerMember<ProductBrandController> _productBrandController = ControllerMember<ProductBrandController>().addToControllerManager(controllerManager);
 
-  ProductBrandPage({Key? key}) : super(key: key, pageRestorationId: () => "product-brand-page");
+  final ProductBrandPageParameter productBrandPageParameter;
+
+  ProductBrandPage({
+    Key? key,
+    required this.productBrandPageParameter
+  }) : super(key: key, pageRestorationId: () => "product-brand-page");
 
   @override
   void onSetController() {
@@ -46,6 +55,7 @@ class ProductBrandPage extends RestorableGetxPage<_ProductBrandPageRestoration> 
       ProductBrandController(
         controllerManager,
         Injector.locator<GetProductBrandPagingUseCase>(),
+        Injector.locator<GetSelectedFashionBrandsPagingUseCase>()
       ),
       tag: pageName
     );
@@ -57,7 +67,8 @@ class ProductBrandPage extends RestorableGetxPage<_ProductBrandPageRestoration> 
   @override
   Widget buildPage(BuildContext context) {
     return _StatefulProductBrandControllerMediatorWidget(
-      productBrandController: _productBrandController.controller
+      productBrandController: _productBrandController.controller,
+      productBrandPageParameter: productBrandPageParameter
     );
   }
 }
@@ -83,13 +94,17 @@ class _ProductBrandPageRestoration extends MixableGetxPageRestoration with Produ
 }
 
 class ProductBrandPageGetPageBuilderAssistant extends GetPageBuilderAssistant {
-  ProductBrandPageGetPageBuilderAssistant();
+  final ProductBrandPageParameter productBrandPageParameter;
+
+  ProductBrandPageGetPageBuilderAssistant({
+    required this.productBrandPageParameter
+  });
 
   @override
-  GetPageBuilder get pageBuilder => (() => ProductBrandPage());
+  GetPageBuilder get pageBuilder => (() => ProductBrandPage(productBrandPageParameter: productBrandPageParameter));
 
   @override
-  GetPageBuilder get pageWithOuterGetxBuilder => (() => GetxPageBuilder.buildRestorableGetxPage(ProductBrandPage()));
+  GetPageBuilder get pageWithOuterGetxBuilder => (() => GetxPageBuilder.buildRestorableGetxPage(ProductBrandPage(productBrandPageParameter: productBrandPageParameter)));
 }
 
 mixin ProductBrandPageRestorationMixin on MixableGetxPageRestoration {
@@ -126,9 +141,13 @@ class ProductBrandPageRestorableRouteFuture extends GetRestorableRouteFuture {
   }
 
   static Route<void>? _getRoute([Object? arguments]) {
+    if (arguments is! String) {
+      throw MessageError(message: "Arguments must be a String");
+    }
+    ProductBrandPageParameter productBrandPageParameter = arguments.toProductBrandPageParameter();
     return GetExtended.toWithGetPageRouteReturnValue<void>(
       GetxPageBuilder.buildRestorableGetxPageBuilder(
-        ProductBrandPageGetPageBuilderAssistant()
+        ProductBrandPageGetPageBuilderAssistant(productBrandPageParameter: productBrandPageParameter)
       ),
     );
   }
@@ -157,9 +176,11 @@ class ProductBrandPageRestorableRouteFuture extends GetRestorableRouteFuture {
 
 class _StatefulProductBrandControllerMediatorWidget extends StatefulWidget {
   final ProductBrandController productBrandController;
+  final ProductBrandPageParameter productBrandPageParameter;
 
   const _StatefulProductBrandControllerMediatorWidget({
     required this.productBrandController,
+    required this.productBrandPageParameter
   });
 
   @override
@@ -192,12 +213,26 @@ class _StatefulProductBrandControllerMediatorWidgetState extends State<_Stateful
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _productBrandListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? listItemControllerStateList) async {
-    LoadDataResult<PagingDataResult<ProductBrand>> productBrandLoadDataResult = await widget.productBrandController.getProductBrandPaging(
-      ProductBrandPagingParameter(
-        page: pageKey,
-        itemEachPageCount: 10
-      )
-    );
+    late LoadDataResult<PagingDataResult<ProductBrand>> productBrandLoadDataResult;
+    ProductBrandPageType productBrandPageType = widget.productBrandPageParameter.productBrandPageType;
+    String title = "";
+    if (productBrandPageType == ProductBrandPageType.defaultProductDetail) {
+      productBrandLoadDataResult = await widget.productBrandController.getProductBrandPaging(
+        ProductBrandPagingParameter(
+          page: pageKey,
+          itemEachPageCount: 10
+        )
+      );
+      title = "Product Brand".tr;
+    } else if (productBrandPageType == ProductBrandPageType.selectedFashionBrandProductDetail) {
+      productBrandLoadDataResult = await widget.productBrandController.getSelectedFashionBrandsPaging(
+        ProductBrandPagingParameter(
+          page: pageKey,
+          itemEachPageCount: 10
+        )
+      );
+      title = Constant.multiLanguageStringSelectedFashionBrands.toEmptyStringNonNull;
+    }
     return productBrandLoadDataResult.map<PagingResult<ListItemControllerState>>((productBrandPaging) {
       List<ListItemControllerState> resultListItemControllerState = [];
       Iterable<ListItemControllerState> verticalProductBrandListItemControllerStateList = productBrandPaging.map<ListItemControllerState>(
@@ -215,7 +250,7 @@ class _StatefulProductBrandControllerMediatorWidgetState extends State<_Stateful
               PaddingContainerListItemControllerState(
                 padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
                 paddingChildListItemControllerState: TitleAndDescriptionListItemControllerState(
-                  title: "Product Brand".tr
+                  title: title
                 ),
               ),
             ]
@@ -270,5 +305,49 @@ class _StatefulProductBrandControllerMediatorWidgetState extends State<_Stateful
   @override
   void dispose() {
     super.dispose();
+  }
+}
+
+enum ProductBrandPageType {
+  defaultProductDetail, selectedFashionBrandProductDetail
+}
+
+class ProductBrandPageParameter {
+  ProductBrandPageType productBrandPageType;
+
+  ProductBrandPageParameter({
+    required this.productBrandPageType
+  });
+}
+
+extension ProductBrandPageParameterExt on ProductBrandPageParameter {
+  String toEncodeBase64String() {
+    String type = "";
+    if (productBrandPageType == ProductBrandPageType.defaultProductDetail) {
+      type = "1";
+    } else if (productBrandPageType == ProductBrandPageType.selectedFashionBrandProductDetail) {
+      type = "2";
+    }
+    return StringUtil.encodeBase64StringFromJson(
+      <String, dynamic>{
+        "product_brand_page_type": type,
+      }
+    );
+  }
+}
+
+extension ProductBrandPageParameterStringExt on String {
+  ProductBrandPageParameter toProductBrandPageParameter() {
+    dynamic result = StringUtil.decodeBase64StringToJson(this);
+    late ProductBrandPageType productBrandPageType;
+    String type = result["product_brand_page_type"];
+    if (type == "1") {
+      productBrandPageType = ProductBrandPageType.defaultProductDetail;
+    } else if (type == "2") {
+      productBrandPageType = ProductBrandPageType.selectedFashionBrandProductDetail;
+    }
+    return ProductBrandPageParameter(
+      productBrandPageType: productBrandPageType
+    );
   }
 }

@@ -39,6 +39,7 @@ import '../../../domain/usecase/get_product_bundle_list_use_case.dart';
 import '../../../domain/usecase/get_product_category_list_use_case.dart';
 import '../../../domain/usecase/get_product_entry_with_condition_paging_use_case.dart';
 import '../../../domain/usecase/get_product_viral_list_use_case.dart';
+import '../../../domain/usecase/get_selected_fashion_brands_list_use_case.dart';
 import '../../../domain/usecase/get_shipping_price_contents_banner_use_case.dart';
 import '../../../domain/usecase/get_snack_for_lying_around_list_use_case.dart';
 import '../../../domain/usecase/get_sponsor_contents_banner_use_case.dart';
@@ -64,6 +65,7 @@ class HomeMainMenuSubController extends BaseGetxController {
   final GetProductBundleHighlightUseCase getProductBundleHighlightUseCase;
   final GetSnackForLyingAroundListUseCase getSnackForLyingAroundListUseCase;
   final GetBestsellerInMasterbagasiListUseCase getBestsellerInMasterbagasiListUseCase;
+  final GetSelectedFashionBrandsListUseCase getSelectedFashionBrandsListUseCase;
   final GetCoffeeAndTeaOriginIndonesiaListUseCase getCoffeeAndTeaOriginIndonesiaListUseCase;
   final GetBeautyProductIndonesiaListUseCase getBeautyProductIndonesiaListUseCase;
   final GetFashionProductIndonesiaListUseCase getFashionProductIndonesiaListUseCase;
@@ -92,6 +94,7 @@ class HomeMainMenuSubController extends BaseGetxController {
     this.addWishlistUseCase,
     this.getSnackForLyingAroundListUseCase,
     this.getBestsellerInMasterbagasiListUseCase,
+    this.getSelectedFashionBrandsListUseCase,
     this.getCoffeeAndTeaOriginIndonesiaListUseCase,
     this.getBeautyProductIndonesiaListUseCase,
     this.getFashionProductIndonesiaListUseCase,
@@ -680,6 +683,46 @@ class HomeMainMenuSubController extends BaseGetxController {
         },
       ),
       DynamicItemCarouselHomeMainMenuComponentEntity(
+        title: Constant.multiLanguageStringSelectedFashionBrands,
+        onDynamicItemAction: (title, description, observer) async {
+          observer(title, description, IsLoadingLoadDataResult<List<ProductBrand>>());
+          LoadDataResult<List<ProductBrand>> productEntryPagingDataResult = await getSelectedFashionBrandsListUseCase.execute().future(
+            parameter: apiRequestManager.addRequestToCancellationPart("selected-fashion-brands").value
+          );
+          if (productEntryPagingDataResult.isFailedBecauseCancellation) {
+            return;
+          }
+          observer(title, description, productEntryPagingDataResult);
+        },
+        onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
+          if (_homeMainMenuDelegate != null) {
+            return CompoundListItemControllerState(
+              listItemControllerState: [
+                VirtualSpacingListItemControllerState(height: 16),
+                _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductBrandCarousel(
+                  OnObserveLoadingLoadProductBrandCarouselParameter()
+                ),
+                VirtualSpacingListItemControllerState(height: 16),
+              ]
+            );
+          }
+        },
+        onObserveSuccessDynamicItemActionState: (title, description, loadDataResult) {
+          List<ProductBrand> productBrandList = loadDataResult.resultIfSuccess!;
+          if (_homeMainMenuDelegate != null) {
+            return _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveSuccessLoadProductBrandCarousel(
+              OnObserveSuccessLoadProductBrandCarouselParameter(
+                title: title,
+                description: description,
+                productBrandList: productBrandList,
+                data: Constant.carouselKeySelectedFashionBrands
+              )
+            );
+          }
+          throw MessageError(title: "Home main menu delegate must be initialized");
+        },
+      ),
+      DynamicItemCarouselHomeMainMenuComponentEntity(
         title: MultiLanguageString({
           Constant.textEnUsLanguageKey: "Handicrafts made by the Nation's Children",
           Constant.textInIdLanguageKey: "Kerajinan Tangan Karya Anak Bangsa"
@@ -813,6 +856,46 @@ class HomeMainMenuSubController extends BaseGetxController {
         },
       ),
       DynamicItemCarouselHomeMainMenuComponentEntity(
+        title: Constant.multiLanguageStringChoiceBeautyBrand,
+        onDynamicItemAction: (title, description, observer) async {
+          observer(title, description, IsLoadingLoadDataResult<List<ProductBrand>>());
+          LoadDataResult<List<ProductBrand>> productEntryPagingDataResult = await getSelectedFashionBrandsListUseCase.execute().future(
+            parameter: apiRequestManager.addRequestToCancellationPart("choice-beauty-brand").value
+          );
+          if (productEntryPagingDataResult.isFailedBecauseCancellation) {
+            return;
+          }
+          observer(title, description, productEntryPagingDataResult);
+        },
+        onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
+          if (_homeMainMenuDelegate != null) {
+            return CompoundListItemControllerState(
+              listItemControllerState: [
+                VirtualSpacingListItemControllerState(height: 16),
+                _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductBrandCarousel(
+                  OnObserveLoadingLoadProductBrandCarouselParameter()
+                ),
+                VirtualSpacingListItemControllerState(height: 16),
+              ]
+            );
+          }
+        },
+        onObserveSuccessDynamicItemActionState: (title, description, loadDataResult) {
+          List<ProductBrand> productBrandList = loadDataResult.resultIfSuccess!;
+          if (_homeMainMenuDelegate != null) {
+            return _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveSuccessLoadProductBrandCarousel(
+              OnObserveSuccessLoadProductBrandCarouselParameter(
+                title: title,
+                description: description,
+                productBrandList: productBrandList,
+                data: Constant.carouselKeySelectedFashionBrands
+              )
+            );
+          }
+          throw MessageError(title: "Home main menu delegate must be initialized");
+        },
+      ),
+      DynamicItemCarouselHomeMainMenuComponentEntity(
         title: MultiLanguageString({
           Constant.textEnUsLanguageKey: "Indonesian Fashion Products",
           Constant.textInIdLanguageKey: "Produk Fesyen Indonesia"
@@ -856,7 +939,7 @@ class HomeMainMenuSubController extends BaseGetxController {
           }
           throw MessageError(title: "Home main menu delegate must be initialized");
         },
-      )
+      ),
     ];
   }
 
@@ -874,6 +957,7 @@ class HomeMainMenuSubControllerInjectionFactory {
   final GetProductBundleHighlightUseCase getProductBundleHighlightUseCase;
   final GetSnackForLyingAroundListUseCase getSnackForLyingAroundListUseCase;
   final GetBestsellerInMasterbagasiListUseCase getBestsellerInMasterbagasiListUseCase;
+  final GetSelectedFashionBrandsListUseCase getSelectedFashionBrandsListUseCase;
   final GetCoffeeAndTeaOriginIndonesiaListUseCase getCoffeeAndTeaOriginIndonesiaListUseCase;
   final GetBeautyProductIndonesiaListUseCase getBeautyProductIndonesiaListUseCase;
   final GetFashionProductIndonesiaListUseCase getFashionProductIndonesiaListUseCase;
@@ -895,6 +979,7 @@ class HomeMainMenuSubControllerInjectionFactory {
     required this.getProductBundleHighlightUseCase,
     required this.getSnackForLyingAroundListUseCase,
     required this.getBestsellerInMasterbagasiListUseCase,
+    required this.getSelectedFashionBrandsListUseCase,
     required this.getCoffeeAndTeaOriginIndonesiaListUseCase,
     required this.getBeautyProductIndonesiaListUseCase,
     required this.getFashionProductIndonesiaListUseCase,
@@ -921,6 +1006,7 @@ class HomeMainMenuSubControllerInjectionFactory {
         addWishlistUseCase,
         getSnackForLyingAroundListUseCase,
         getBestsellerInMasterbagasiListUseCase,
+        getSelectedFashionBrandsListUseCase,
         getCoffeeAndTeaOriginIndonesiaListUseCase,
         getBeautyProductIndonesiaListUseCase,
         getFashionProductIndonesiaListUseCase,

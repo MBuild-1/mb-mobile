@@ -73,6 +73,8 @@ import '../../../presentation/widget/productbrand/circleproductbrand/vertical_ci
 import '../../../presentation/widget/productbrand/horizontal_product_brand_item.dart';
 import '../../../presentation/widget/productbrand/imageandbackgroundproductbrand/horizontal_image_and_background_product_brand_item.dart';
 import '../../../presentation/widget/productbrand/imageandbackgroundproductbrand/vertical_image_and_background_product_brand_item.dart';
+import '../../../presentation/widget/productbrand/squareproductbrand/horizontal_square_product_brand_item.dart';
+import '../../../presentation/widget/productbrand/squareproductbrand/vertical_square_product_brand_item.dart';
 import '../../../presentation/widget/productbrand/vertical_product_brand_item.dart';
 import '../../../presentation/widget/productbundle/horizontal_product_bundle_item.dart';
 import '../../../presentation/widget/productbundle/support_vertical_grid_vertical_product_bundle_item.dart';
@@ -97,6 +99,7 @@ import '../../../presentation/widget/video/default_video_item.dart';
 import '../../../presentation/widget/video/short_video_item.dart';
 import '../../carouselbackground/asset_carousel_background.dart';
 import '../../carouselbackground/carousel_background.dart';
+import '../../carousellistitemtype/carousel_list_item_type.dart';
 import '../../constant.dart';
 import '../../controllerstate/listitemcontrollerstate/additionalitemlistitemcontrollerstate/additional_item_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/additionalitemlistitemcontrollerstate/additional_item_summary_list_item_controller_state.dart';
@@ -178,6 +181,9 @@ import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontro
 import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/imageandbackgroundproductbrandlistitemcontrollerstate/image_and_background_product_brand_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/imageandbackgroundproductbrandlistitemcontrollerstate/vertical_image_and_background_product_brand_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/product_brand_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/squareproductbrandlistitemcontrollerstate/horizontal_square_product_brand_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/squareproductbrandlistitemcontrollerstate/square_product_brand_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/squareproductbrandlistitemcontrollerstate/vertical_square_product_brand_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/vertical_product_brand_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productbundlelistitemcontrollerstate/horizontal_product_bundle_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productbundlelistitemcontrollerstate/product_bundle_list_item_controller_state.dart';
@@ -274,6 +280,7 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
         Widget? backgroundImage;
         double? backgroundImageHeight;
         CarouselBackground? carouselBackground = item.carouselBackground;
+        CarouselListItemType? carouselListItemType = item.carouselListItemType;
         if (carouselBackground is AssetCarouselBackground) {
           backgroundImage = Image.asset(carouselBackground.assetImageName);
           backgroundImageHeight = carouselBackground.imageBackgroundHeight;
@@ -287,7 +294,8 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
           descriptionInterceptor: item.descriptionInterceptor,
           builderWithItem: (context, listItemControllerState) => _itemBuilder(context, listItemControllerState, index),
           backgroundImage: backgroundImage,
-          backgroundImageHeight: backgroundImageHeight
+          backgroundImageHeight: backgroundImageHeight,
+          carouselListItemType: carouselListItemType
         );
       } else if (item is ShimmerCarouselListItemControllerState) {
         return ShimmerCarouselListItem(
@@ -325,6 +333,7 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
           onRemoveWishlist: item.onRemoveWishlist,
           onAddCart: item.onAddCart,
           onRemoveCart: item.onRemoveCart,
+          horizontalProductAppearance: item.horizontalProductAppearance,
         );
       } else if (item is VerticalProductListItemControllerState) {
         if (item is ShimmerVerticalProductListItemControllerState) {
@@ -388,6 +397,14 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
         } else {
           return VerticalCircleProductBrandItem(productBrand: item.productBrand);
         }
+      } else {
+        return Container();
+      }
+    } else if (item is SquareProductBrandListItemControllerState) {
+      if (item is HorizontalSquareProductBrandListItemControllerState) {
+        return HorizontalSquareProductBrandItem(productBrand: item.productBrand);
+      } else if (item is VerticalSquareProductBrandListItemControllerState) {
+        return VerticalSquareProductBrandItem(productBrand: item.productBrand);
       } else {
         return Container();
       }

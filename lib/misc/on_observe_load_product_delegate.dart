@@ -13,6 +13,7 @@ import '../domain/entity/product/productentry/product_entry.dart';
 import '../domain/entity/wishlist/add_wishlist_response.dart';
 import '../presentation/widget/titleanddescriptionitem/title_and_description_item.dart';
 import 'carouselbackground/carousel_background.dart';
+import 'carousellistitemtype/carousel_list_item_type.dart';
 import 'constant.dart';
 import 'controllerstate/listitemcontrollerstate/carousel_list_item_controller_state.dart';
 import 'controllerstate/listitemcontrollerstate/failed_prompt_indicator_list_item_controller_state.dart';
@@ -49,6 +50,24 @@ import 'shimmercarousellistitemgenerator/type/product_category_shimmer_carousel_
 import 'shimmercarousellistitemgenerator/type/product_shimmer_carousel_list_item_generator_type.dart';
 import 'typedef.dart';
 
+class _GetCarouselListItemControllerStateParameter<T> {
+  dynamic data;
+  MultiLanguageString? title;
+  MultiLanguageString? description;
+  List<T> itemList;
+  ParameterizedEntityAndListItemControllerStateMediatorParameter Function()? onInjectParameterEntityAndListItem;
+  void Function()? onAfterProcess;
+
+  _GetCarouselListItemControllerStateParameter({
+    required this.data,
+    required this.title,
+    required this.description,
+    required this.itemList,
+    required this.onInjectParameterEntityAndListItem,
+    this.onAfterProcess
+  });
+}
+
 class OnObserveLoadProductDelegateFactory {
   CarouselParameterizedEntityAndListItemControllerStateMediatorParameter Function(dynamic data)? onInjectCarouselParameterizedEntity;
   ParameterizedEntityAndListItemControllerStateMediatorParameter Function()? onInjectLoadProductBrandCarouselParameterizedEntity;
@@ -61,28 +80,76 @@ class OnObserveLoadProductDelegateFactory {
   ParameterizedEntityAndListItemControllerStateMediatorParameter Function()? onInjectLoadCartCarouselParameterizedEntity;
   ParameterizedEntityAndListItemControllerStateMediatorParameter Function()? onInjectLoadAddressCarouselParameterizedEntity;
 
+  CarouselListItemControllerState _getCarouselListItemControllerState({
+    required _GetCarouselListItemControllerStateParameter getCarouselListItemControllerStateParameter
+  }) {
+    TitleInterceptor? titleInterceptor;
+    CarouselBackground? carouselBackground;
+    CarouselListItemType? carouselListItemType;
+    ParameterizedEntityAndListItemControllerStateMediatorParameter? additionalParameter;
+    if (onInjectCarouselParameterizedEntity != null) {
+      titleInterceptor = onInjectCarouselParameterizedEntity!(getCarouselListItemControllerStateParameter.data).titleInterceptor;
+      carouselBackground = onInjectCarouselParameterizedEntity!(getCarouselListItemControllerStateParameter.data).carouselBackground;
+      carouselListItemType = onInjectCarouselParameterizedEntity!(getCarouselListItemControllerStateParameter.data).carouselListItemType;
+      additionalParameter = onInjectCarouselParameterizedEntity!(getCarouselListItemControllerStateParameter.data).additionalParameter;
+    }
+    if (getCarouselListItemControllerStateParameter.onAfterProcess != null) {
+      getCarouselListItemControllerStateParameter.onAfterProcess!();
+    }
+    dynamic injectedParameter = getCarouselListItemControllerStateParameter.onInjectParameterEntityAndListItem != null ? getCarouselListItemControllerStateParameter.onInjectParameterEntityAndListItem!() : null;
+    if (additionalParameter != null) {
+      if (injectedParameter == null) {
+        injectedParameter = additionalParameter;
+      } else {
+        if (injectedParameter is CompoundParameterizedEntityAndListItemControllerStateMediatorParameter) {
+          if (additionalParameter is CompoundParameterizedEntityAndListItemControllerStateMediatorParameter) {
+            injectedParameter.parameterizedEntityAndListItemControllerStateMediatorParameterList.addAll(
+              additionalParameter.parameterizedEntityAndListItemControllerStateMediatorParameterList
+            );
+          } else {
+            injectedParameter.parameterizedEntityAndListItemControllerStateMediatorParameterList.add(additionalParameter);
+          }
+        } else {
+          injectedParameter = CompoundParameterizedEntityAndListItemControllerStateMediatorParameter(
+            parameterizedEntityAndListItemControllerStateMediatorParameterList: [
+              if (additionalParameter is CompoundParameterizedEntityAndListItemControllerStateMediatorParameter) ...[
+                ...additionalParameter.parameterizedEntityAndListItemControllerStateMediatorParameterList
+              ] else ...[
+                additionalParameter
+              ]
+            ]
+          );
+        }
+      }
+    }
+    return CarouselListItemControllerState(
+      title: getCarouselListItemControllerStateParameter.title.toEmptyStringNonNull,
+      titleInterceptor: titleInterceptor,
+      description: getCarouselListItemControllerStateParameter.description.toEmptyStringNonNull,
+      padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+      itemListItemControllerState: getCarouselListItemControllerStateParameter.itemList.map<ListItemControllerState>(
+        (item) {
+          return Injector.locator<HorizontalParameterizedEntityAndListItemControllerStateMediator>().mapWithParameter(
+            item, parameter: injectedParameter
+          );
+        }
+      ).toList(),
+      carouselBackground: carouselBackground,
+      carouselListItemType: carouselListItemType
+    );
+  }
+
   OnObserveLoadProductDelegate generateOnObserveLoadProductDelegate() {
     return OnObserveLoadProductDelegate(
       onObserveSuccessLoadProductBrandCarousel: (onObserveSuccessLoadProductBrandCarouselParameter) {
-        TitleInterceptor? titleInterceptor;
-        CarouselBackground? carouselBackground;
-        if (onInjectCarouselParameterizedEntity != null) {
-          titleInterceptor = onInjectCarouselParameterizedEntity!(onObserveSuccessLoadProductBrandCarouselParameter.data).titleInterceptor;
-          carouselBackground = onInjectCarouselParameterizedEntity!(onObserveSuccessLoadProductBrandCarouselParameter.data).carouselBackground;
-        }
-        return CarouselListItemControllerState(
-          title: onObserveSuccessLoadProductBrandCarouselParameter.title.toEmptyStringNonNull,
-          titleInterceptor: titleInterceptor,
-          description: onObserveSuccessLoadProductBrandCarouselParameter.description.toEmptyStringNonNull,
-          padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-          itemListItemControllerState: onObserveSuccessLoadProductBrandCarouselParameter.productBrandList.map<ListItemControllerState>(
-            (productBrand) {
-              return Injector.locator<HorizontalParameterizedEntityAndListItemControllerStateMediator>().mapWithParameter(
-                productBrand, parameter: onInjectLoadProductBrandCarouselParameterizedEntity != null ? onInjectLoadProductBrandCarouselParameterizedEntity!() : null
-              );
-            }
-          ).toList(),
-          carouselBackground: carouselBackground
+        return _getCarouselListItemControllerState(
+          getCarouselListItemControllerStateParameter: _GetCarouselListItemControllerStateParameter(
+            data: onObserveSuccessLoadProductBrandCarouselParameter.data,
+            title: onObserveSuccessLoadProductBrandCarouselParameter.title,
+            description: onObserveSuccessLoadProductBrandCarouselParameter.description,
+            itemList: onObserveSuccessLoadProductBrandCarouselParameter.productBrandList,
+            onInjectParameterEntityAndListItem: onInjectLoadProductBrandCarouselParameterizedEntity
+          )
         );
       },
       onObserveLoadingLoadProductBrandCarousel: (onObserveLoadingLoadProductBrandCarouselParameter) {
@@ -95,25 +162,14 @@ class OnObserveLoadProductDelegateFactory {
         );
       },
       onObserveSuccessLoadProductCategoryCarousel: (onObserveSuccessLoadProductCategoryCarouselParameter) {
-        TitleInterceptor? titleInterceptor;
-        CarouselBackground? carouselBackground;
-        if (onInjectCarouselParameterizedEntity != null) {
-          titleInterceptor = onInjectCarouselParameterizedEntity!(onObserveSuccessLoadProductCategoryCarouselParameter.data).titleInterceptor;
-          carouselBackground = onInjectCarouselParameterizedEntity!(onObserveSuccessLoadProductCategoryCarouselParameter.data).carouselBackground;
-        }
-        return CarouselListItemControllerState(
-          title: onObserveSuccessLoadProductCategoryCarouselParameter.title.toEmptyStringNonNull,
-          titleInterceptor: titleInterceptor,
-          description: onObserveSuccessLoadProductCategoryCarouselParameter.description.toEmptyStringNonNull,
-          padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-          itemListItemControllerState: onObserveSuccessLoadProductCategoryCarouselParameter.productCategoryList.map<ListItemControllerState>(
-            (productCategory) {
-              return Injector.locator<HorizontalParameterizedEntityAndListItemControllerStateMediator>().mapWithParameter(
-                productCategory, parameter: onInjectLoadProductCategoryCarouselParameterizedEntity != null ? onInjectLoadProductCategoryCarouselParameterizedEntity!() : null
-              );
-            }
-          ).toList(),
-          carouselBackground: carouselBackground
+        return _getCarouselListItemControllerState(
+          getCarouselListItemControllerStateParameter: _GetCarouselListItemControllerStateParameter(
+            data: onObserveSuccessLoadProductCategoryCarouselParameter.data,
+            title: onObserveSuccessLoadProductCategoryCarouselParameter.title,
+            description: onObserveSuccessLoadProductCategoryCarouselParameter.description,
+            itemList: onObserveSuccessLoadProductCategoryCarouselParameter.productCategoryList,
+            onInjectParameterEntityAndListItem: onInjectLoadProductCategoryCarouselParameterizedEntity
+          )
         );
       },
       onObserveLoadingLoadProductCategoryCarousel: (onObserveLoadingLoadProductCategoryCarouselParameter) {
@@ -126,25 +182,14 @@ class OnObserveLoadProductDelegateFactory {
         );
       },
       onObserveSuccessLoadProductEntryCarousel: (onObserveSuccessLoadProductEntryCarouselParameter) {
-        TitleInterceptor? titleInterceptor;
-        CarouselBackground? carouselBackground;
-        if (onInjectCarouselParameterizedEntity != null) {
-          titleInterceptor = onInjectCarouselParameterizedEntity!(onObserveSuccessLoadProductEntryCarouselParameter.data).titleInterceptor;
-          carouselBackground = onInjectCarouselParameterizedEntity!(onObserveSuccessLoadProductEntryCarouselParameter.data).carouselBackground;
-        }
-        return CarouselListItemControllerState(
-          title: onObserveSuccessLoadProductEntryCarouselParameter.title.toEmptyStringNonNull,
-          titleInterceptor: titleInterceptor,
-          description: onObserveSuccessLoadProductEntryCarouselParameter.description.toEmptyStringNonNull,
-          padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-          itemListItemControllerState: onObserveSuccessLoadProductEntryCarouselParameter.productEntryList.map<ListItemControllerState>(
-            (productEntry) {
-              return Injector.locator<HorizontalParameterizedEntityAndListItemControllerStateMediator>().mapWithParameter(
-                productEntry, parameter: onInjectLoadProductEntryCarouselParameterizedEntity != null ? onInjectLoadProductEntryCarouselParameterizedEntity!() : null
-              );
-            }
-          ).toList(),
-          carouselBackground: carouselBackground
+        return _getCarouselListItemControllerState(
+          getCarouselListItemControllerStateParameter: _GetCarouselListItemControllerStateParameter(
+            data: onObserveSuccessLoadProductEntryCarouselParameter.data,
+            title: onObserveSuccessLoadProductEntryCarouselParameter.title,
+            description: onObserveSuccessLoadProductEntryCarouselParameter.description,
+            itemList: onObserveSuccessLoadProductEntryCarouselParameter.productEntryList,
+            onInjectParameterEntityAndListItem: onInjectLoadProductEntryCarouselParameterizedEntity
+          )
         );
       },
       onObserveLoadingLoadProductEntryCarousel: (onObserveLoadingLoadProductEntryCarouselParameter) {
@@ -157,25 +202,14 @@ class OnObserveLoadProductDelegateFactory {
         );
       },
       onObserveSuccessLoadProductBundleCarousel: (onObserveSuccessLoadProductBundleCarouselParameter) {
-        TitleInterceptor? titleInterceptor;
-        CarouselBackground? carouselBackground;
-        if (onInjectCarouselParameterizedEntity != null) {
-          titleInterceptor = onInjectCarouselParameterizedEntity!(onObserveSuccessLoadProductBundleCarouselParameter.data).titleInterceptor;
-          carouselBackground = onInjectCarouselParameterizedEntity!(onObserveSuccessLoadProductBundleCarouselParameter.data).carouselBackground;
-        }
-        return CarouselListItemControllerState(
-          title: onObserveSuccessLoadProductBundleCarouselParameter.title.toEmptyStringNonNull,
-          titleInterceptor: titleInterceptor,
-          description: onObserveSuccessLoadProductBundleCarouselParameter.description.toEmptyStringNonNull,
-          padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-          itemListItemControllerState: onObserveSuccessLoadProductBundleCarouselParameter.productBundleList.map<ListItemControllerState>(
-            (productBundle) {
-              return Injector.locator<HorizontalParameterizedEntityAndListItemControllerStateMediator>().mapWithParameter(
-                productBundle, parameter: onInjectLoadProductBundleCarouselParameterizedEntity != null ? onInjectLoadProductBundleCarouselParameterizedEntity!() : null
-              );
-            }
-          ).toList(),
-          carouselBackground: carouselBackground
+        return _getCarouselListItemControllerState(
+          getCarouselListItemControllerStateParameter: _GetCarouselListItemControllerStateParameter(
+            data: onObserveSuccessLoadProductBundleCarouselParameter.data,
+            title: onObserveSuccessLoadProductBundleCarouselParameter.title,
+            description: onObserveSuccessLoadProductBundleCarouselParameter.description,
+            itemList: onObserveSuccessLoadProductBundleCarouselParameter.productBundleList,
+            onInjectParameterEntityAndListItem: onInjectLoadProductBundleCarouselParameterizedEntity
+          )
         );
       },
       onObserveLoadingLoadProductBundleCarousel: (onObserveLoadingLoadProductBundleCarouselParameter) {
@@ -188,25 +222,14 @@ class OnObserveLoadProductDelegateFactory {
         );
       },
       onObserveSuccessLoadDeliveryReviewCarousel: (onObserveSuccessLoadDeliveryReviewCarouselParameter) {
-        TitleInterceptor? titleInterceptor;
-        CarouselBackground? carouselBackground;
-        if (onInjectCarouselParameterizedEntity != null) {
-          titleInterceptor = onInjectCarouselParameterizedEntity!(onObserveSuccessLoadDeliveryReviewCarouselParameter.data).titleInterceptor;
-          carouselBackground = onInjectCarouselParameterizedEntity!(onObserveSuccessLoadDeliveryReviewCarouselParameter.data).carouselBackground;
-        }
-        return CarouselListItemControllerState(
-          title: onObserveSuccessLoadDeliveryReviewCarouselParameter.title.toEmptyStringNonNull,
-          titleInterceptor: titleInterceptor,
-          description: onObserveSuccessLoadDeliveryReviewCarouselParameter.description.toEmptyStringNonNull,
-          padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-          itemListItemControllerState: onObserveSuccessLoadDeliveryReviewCarouselParameter.deliveryReviewList.map<ListItemControllerState>(
-            (deliveryReview) {
-              return Injector.locator<HorizontalParameterizedEntityAndListItemControllerStateMediator>().mapWithParameter(
-                deliveryReview, parameter: onInjectLoadDeliveryReviewCarouselParameterizedEntity != null ? onInjectLoadDeliveryReviewCarouselParameterizedEntity!() : null
-              );
-            }
-          ).toList(),
-          carouselBackground: carouselBackground
+        return _getCarouselListItemControllerState(
+          getCarouselListItemControllerStateParameter: _GetCarouselListItemControllerStateParameter(
+            data: onObserveSuccessLoadDeliveryReviewCarouselParameter.data,
+            title: onObserveSuccessLoadDeliveryReviewCarouselParameter.title,
+            description: onObserveSuccessLoadDeliveryReviewCarouselParameter.description,
+            itemList: onObserveSuccessLoadDeliveryReviewCarouselParameter.deliveryReviewList,
+            onInjectParameterEntityAndListItem: onInjectLoadDeliveryReviewCarouselParameterizedEntity
+          )
         );
       },
       onObserveLoadingLoadDeliveryReviewCarousel: (onObserveLoadingLoadDeliveryReviewCarouselParameter) {
@@ -219,25 +242,14 @@ class OnObserveLoadProductDelegateFactory {
         );
       },
       onObserveSuccessLoadNewsCarousel: (onObserveSuccessLoadNewsCarouselParameter) {
-        TitleInterceptor? titleInterceptor;
-        CarouselBackground? carouselBackground;
-        if (onInjectCarouselParameterizedEntity != null) {
-          titleInterceptor = onInjectCarouselParameterizedEntity!(onObserveSuccessLoadNewsCarouselParameter.data).titleInterceptor;
-          carouselBackground = onInjectCarouselParameterizedEntity!(onObserveSuccessLoadNewsCarouselParameter.data).carouselBackground;
-        }
-        return CarouselListItemControllerState(
-          title: onObserveSuccessLoadNewsCarouselParameter.title.toEmptyStringNonNull,
-          titleInterceptor: titleInterceptor,
-          description: onObserveSuccessLoadNewsCarouselParameter.description.toEmptyStringNonNull,
-          padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-          itemListItemControllerState: onObserveSuccessLoadNewsCarouselParameter.newsList.map<ListItemControllerState>(
-            (news) {
-              return Injector.locator<HorizontalParameterizedEntityAndListItemControllerStateMediator>().mapWithParameter(
-                news, parameter: onInjectLoadNewsCarouselParameterizedEntity != null ? onInjectLoadNewsCarouselParameterizedEntity!() : null
-              );
-            }
-          ).toList(),
-          carouselBackground: carouselBackground
+        return _getCarouselListItemControllerState(
+          getCarouselListItemControllerStateParameter: _GetCarouselListItemControllerStateParameter(
+            data: onObserveSuccessLoadNewsCarouselParameter.data,
+            title: onObserveSuccessLoadNewsCarouselParameter.title,
+            description: onObserveSuccessLoadNewsCarouselParameter.description,
+            itemList: onObserveSuccessLoadNewsCarouselParameter.newsList,
+            onInjectParameterEntityAndListItem: onInjectLoadNewsCarouselParameterizedEntity
+          )
         );
       },
       onObserveLoadingLoadNewsCarousel: (onObserveLoadingLoadNewsCarouselParameter) {
@@ -250,25 +262,14 @@ class OnObserveLoadProductDelegateFactory {
         );
       },
       onObserveSuccessLoadCouponCarousel: (onObserveSuccessLoadCouponCarouselParameter) {
-        TitleInterceptor? titleInterceptor;
-        CarouselBackground? carouselBackground;
-        if (onInjectCarouselParameterizedEntity != null) {
-          titleInterceptor = onInjectCarouselParameterizedEntity!(onObserveSuccessLoadCouponCarouselParameter.data).titleInterceptor;
-          carouselBackground = onInjectCarouselParameterizedEntity!(onObserveSuccessLoadCouponCarouselParameter.data).carouselBackground;
-        }
-        return CarouselListItemControllerState(
-          title: onObserveSuccessLoadCouponCarouselParameter.title.toEmptyStringNonNull,
-          titleInterceptor: titleInterceptor,
-          description: onObserveSuccessLoadCouponCarouselParameter.description.toEmptyStringNonNull,
-          padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-          itemListItemControllerState: onObserveSuccessLoadCouponCarouselParameter.couponList.map<ListItemControllerState>(
-            (coupon) {
-              return Injector.locator<HorizontalParameterizedEntityAndListItemControllerStateMediator>().mapWithParameter(
-                coupon, parameter: onInjectLoadCouponCarouselParameterizedEntity != null ? onInjectLoadCouponCarouselParameterizedEntity!() : null
-              );
-            }
-          ).toList(),
-          carouselBackground: carouselBackground
+        return _getCarouselListItemControllerState(
+          getCarouselListItemControllerStateParameter: _GetCarouselListItemControllerStateParameter(
+            data: onObserveSuccessLoadCouponCarouselParameter.data,
+            title: onObserveSuccessLoadCouponCarouselParameter.title,
+            description: onObserveSuccessLoadCouponCarouselParameter.description,
+            itemList: onObserveSuccessLoadCouponCarouselParameter.couponList,
+            onInjectParameterEntityAndListItem: onInjectLoadCouponCarouselParameterizedEntity
+          )
         );
       },
       onObserveLoadingLoadCouponCarousel: (onObserveLoadingLoadCouponCarouselParameter) {
@@ -281,28 +282,17 @@ class OnObserveLoadProductDelegateFactory {
         );
       },
       onObserveSuccessLoadCartCarousel: (onObserveSuccessLoadCartCarouselParameter) {
-        TitleInterceptor? titleInterceptor;
-        CarouselBackground? carouselBackground;
-        if (onInjectCarouselParameterizedEntity != null) {
-          titleInterceptor = onInjectCarouselParameterizedEntity!(onObserveSuccessLoadCartCarouselParameter.data).titleInterceptor;
-          carouselBackground = onInjectCarouselParameterizedEntity!(onObserveSuccessLoadCartCarouselParameter.data).carouselBackground;
-        }
-        _getCartRefreshDelegate(
-          getRepeatableParameter: () => onObserveSuccessLoadCartCarouselParameter.repeatableDynamicItemCarouselAdditionalParameter
-        );
-        return CarouselListItemControllerState(
-          title: onObserveSuccessLoadCartCarouselParameter.title.toEmptyStringNonNull,
-          description: onObserveSuccessLoadCartCarouselParameter.description.toEmptyStringNonNull,
-          titleInterceptor: titleInterceptor,
-          padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-          itemListItemControllerState: onObserveSuccessLoadCartCarouselParameter.cartList.map<ListItemControllerState>(
-            (cart) {
-              return Injector.locator<HorizontalParameterizedEntityAndListItemControllerStateMediator>().mapWithParameter(
-                cart, parameter: onInjectLoadCartCarouselParameterizedEntity != null ? onInjectLoadCartCarouselParameterizedEntity!() : null
-              );
-            }
-          ).toList(),
-          carouselBackground: carouselBackground
+        return _getCarouselListItemControllerState(
+          getCarouselListItemControllerStateParameter: _GetCarouselListItemControllerStateParameter(
+            data: onObserveSuccessLoadCartCarouselParameter.data,
+            title: onObserveSuccessLoadCartCarouselParameter.title,
+            description: onObserveSuccessLoadCartCarouselParameter.description,
+            itemList: onObserveSuccessLoadCartCarouselParameter.cartList,
+            onInjectParameterEntityAndListItem: onInjectLoadCartCarouselParameterizedEntity,
+            onAfterProcess: () => _getCartRefreshDelegate(
+              getRepeatableParameter: () => onObserveSuccessLoadCartCarouselParameter.repeatableDynamicItemCarouselAdditionalParameter
+            )
+          )
         );
       },
       onObserveFailedLoadCartCarousel: (onObserveFailedLoadCartCarouselParameter) {
@@ -327,29 +317,14 @@ class OnObserveLoadProductDelegateFactory {
         );
       },
       onObserveSuccessLoadAddressCarousel: (onObserveSuccessLoadAddressCarouselParameter) {
-        TitleInterceptor? titleInterceptor;
-        CarouselBackground? carouselBackground;
-        if (onInjectCarouselParameterizedEntity != null) {
-          titleInterceptor = onInjectCarouselParameterizedEntity!(onObserveSuccessLoadAddressCarouselParameter.data).titleInterceptor;
-          carouselBackground = onInjectCarouselParameterizedEntity!(onObserveSuccessLoadAddressCarouselParameter.data).carouselBackground;
-        }
-        return CarouselListItemControllerState(
-          title: onObserveSuccessLoadAddressCarouselParameter.title.toEmptyStringNonNull,
-          description: onObserveSuccessLoadAddressCarouselParameter.description.toEmptyStringNonNull,
-          titleInterceptor: titleInterceptor,
-          padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-          itemListItemControllerState: onObserveSuccessLoadAddressCarouselParameter.addressList.map<ListItemControllerState>(
-            (address) {
-              AddressCarouselCompoundParameterized addressCarouselCompoundParameterized = AddressCarouselCompoundParameterized(
-                onObserveSuccessLoadAddressCarouselParameter: onObserveSuccessLoadAddressCarouselParameter,
-                address: address
-              );
-              return Injector.locator<HorizontalParameterizedEntityAndListItemControllerStateMediator>().mapWithParameter(
-                addressCarouselCompoundParameterized, parameter: onInjectLoadAddressCarouselParameterizedEntity != null ? onInjectLoadAddressCarouselParameterizedEntity!() : null
-              );
-            }
-          ).toList(),
-          carouselBackground: carouselBackground
+        return _getCarouselListItemControllerState(
+          getCarouselListItemControllerStateParameter: _GetCarouselListItemControllerStateParameter(
+            data: onObserveSuccessLoadAddressCarouselParameter.data,
+            title: onObserveSuccessLoadAddressCarouselParameter.title,
+            description: onObserveSuccessLoadAddressCarouselParameter.description,
+            itemList: onObserveSuccessLoadAddressCarouselParameter.addressList,
+            onInjectParameterEntityAndListItem: onInjectLoadAddressCarouselParameterizedEntity,
+          )
         );
       },
       onObserveLoadingLoadAddressCarousel: (onObserveLoadingLoadAddressCarouselParameter) {

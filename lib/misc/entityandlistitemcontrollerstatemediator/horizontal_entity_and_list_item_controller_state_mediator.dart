@@ -19,14 +19,18 @@ import '../controllerstate/listitemcontrollerstate/no_content_list_item_controll
 import '../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/circleproductbrandlistitemcontrollerstate/horizontal_circle_product_brand_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/horizontal_product_brand_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/imageandbackgroundproductbrandlistitemcontrollerstate/horizontal_image_and_background_product_brand_list_item_controller_state.dart';
+import '../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/squareproductbrandlistitemcontrollerstate/horizontal_square_product_brand_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/productbundlelistitemcontrollerstate/horizontal_product_bundle_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/productcategorylistitemcontrollerstate/circleproductcategorylistitemcontrollerstate/horizontal_circle_product_category_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/productlistitemcontrollerstate/horizontal_product_list_item_controller_state.dart';
+import '../controllerstate/listitemcontrollerstate/productlistitemcontrollerstate/vertical_product_list_item_controller_state.dart';
 import '../error/message_error.dart';
 import '../on_observe_load_product_delegate.dart';
 import '../parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/address_delegate_parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/cart_delegate_parameterized_entity_and_list_item_controllere_state_mediator_parameter.dart';
 import '../parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/compound_parameterized_entity_and_list_item_controller_state_mediator.dart';
+import '../parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/horizontal_brand_appearance_parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
+import '../parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/horizontal_product_appearance_parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/product_brand_parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/wishlist_delegate_parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
@@ -71,6 +75,8 @@ class HorizontalParameterizedEntityAndListItemControllerStateMediator extends Pa
       || parameter is CartDelegateParameterizedEntityAndListItemControllerStateMediatorParameter
       || parameter is AddressDelegateParameterizedEntityAndListItemControllerStateMediatorParameter
       || parameter is ProductBrandParameterizedEntityAndListItemControllerStateMediatorParameter
+      || parameter is HorizontalProductAppearanceParameterizedEntityAndListItemControllerStateMediatorParameter
+      || parameter is HorizontalBrandAppearanceParameterizedEntityAndListItemControllerStateMediatorParameter
     ) {
       parameterList.add(parameter);
     }
@@ -79,6 +85,8 @@ class HorizontalParameterizedEntityAndListItemControllerStateMediator extends Pa
       CartDelegateParameterizedEntityAndListItemControllerStateMediatorParameter? cartDelegateParameter;
       AddressDelegateParameterizedEntityAndListItemControllerStateMediatorParameter? addressDelegateParameter;
       ProductBrandParameterizedEntityAndListItemControllerStateMediatorParameter? productBrandParameter;
+      HorizontalProductAppearanceParameterizedEntityAndListItemControllerStateMediatorParameter? horizontalProductAppearanceParameter;
+      HorizontalBrandAppearanceParameterizedEntityAndListItemControllerStateMediatorParameter? horizontalBrandAppearanceParameter;
       for (var iteratedParameter in parameterList) {
         if (iteratedParameter is WishlistDelegateParameterizedEntityAndListItemControllerStateMediatorParameter) {
           wishlistDelegateParameter = iteratedParameter;
@@ -88,6 +96,10 @@ class HorizontalParameterizedEntityAndListItemControllerStateMediator extends Pa
           addressDelegateParameter = iteratedParameter;
         } else if (iteratedParameter is ProductBrandParameterizedEntityAndListItemControllerStateMediatorParameter) {
           productBrandParameter = iteratedParameter;
+        } else if (iteratedParameter is HorizontalProductAppearanceParameterizedEntityAndListItemControllerStateMediatorParameter) {
+          horizontalProductAppearanceParameter = iteratedParameter;
+        } else if (iteratedParameter is HorizontalBrandAppearanceParameterizedEntityAndListItemControllerStateMediatorParameter) {
+          horizontalBrandAppearanceParameter = iteratedParameter;
         }
       }
       afterSeparateParameter(
@@ -95,7 +107,9 @@ class HorizontalParameterizedEntityAndListItemControllerStateMediator extends Pa
           wishlistDelegateParameter: wishlistDelegateParameter,
           cartDelegateParameter: cartDelegateParameter,
           addressDelegateParameter: addressDelegateParameter,
-          productBrandParameter: productBrandParameter
+          productBrandParameter: productBrandParameter,
+          horizontalProductAppearanceParameter: horizontalProductAppearanceParameter,
+          horizontalBrandAppearanceParameter: horizontalBrandAppearanceParameter
         )
       );
     }
@@ -127,12 +141,18 @@ class HorizontalParameterizedEntityAndListItemControllerStateMediator extends Pa
         onRemoveCart = (productAppearanceData) => separatedParameter.cartDelegateParameter!.onRemoveCart!(productAppearanceData);
       }
     }
+    HorizontalProductAppearance horizontalProductAppearance = HorizontalProductAppearance.full;
+    if (separatedParameter.horizontalProductAppearanceParameter != null) {
+      horizontalProductAppearance = separatedParameter.horizontalProductAppearanceParameter!.horizontalProductAppearance;
+    }
+
     return HorizontalProductListItemControllerState(
       productAppearanceData: productAppearanceData,
       onAddWishlist: onAddToWishlist,
       onRemoveWishlist: onRemoveFromWishlist,
       onAddCart: onAddCart,
-      onRemoveCart: onRemoveCart
+      onRemoveCart: onRemoveCart,
+      horizontalProductAppearance: horizontalProductAppearance
     );
   }
 
@@ -218,6 +238,14 @@ class HorizontalParameterizedEntityAndListItemControllerStateMediator extends Pa
           );
         }
       }
+      if (separatedParameter!.horizontalBrandAppearanceParameter != null) {
+        HorizontalBrandAppearance horizontalBrandAppearance = separatedParameter!.horizontalBrandAppearanceParameter!.horizontalBrandAppearance;
+        if (horizontalBrandAppearance == HorizontalBrandAppearance.squareAppearance) {
+          return HorizontalSquareProductBrandListItemControllerState(
+            productBrand: productBrand
+          );
+        }
+      }
     }
     return HorizontalCircleProductBrandListItemControllerState(
       productBrand: productBrand
@@ -230,11 +258,15 @@ class SeparatedParameterizedEntityAndListItemControllerStateMediatorParameter {
   CartDelegateParameterizedEntityAndListItemControllerStateMediatorParameter? cartDelegateParameter;
   AddressDelegateParameterizedEntityAndListItemControllerStateMediatorParameter? addressDelegateParameter;
   ProductBrandParameterizedEntityAndListItemControllerStateMediatorParameter? productBrandParameter;
+  HorizontalProductAppearanceParameterizedEntityAndListItemControllerStateMediatorParameter? horizontalProductAppearanceParameter;
+  HorizontalBrandAppearanceParameterizedEntityAndListItemControllerStateMediatorParameter? horizontalBrandAppearanceParameter;
 
   SeparatedParameterizedEntityAndListItemControllerStateMediatorParameter({
     required this.wishlistDelegateParameter,
     required this.cartDelegateParameter,
     required this.addressDelegateParameter,
-    required this.productBrandParameter
+    required this.productBrandParameter,
+    required this.horizontalProductAppearanceParameter,
+    required this.horizontalBrandAppearanceParameter
   });
 }

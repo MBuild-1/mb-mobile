@@ -1,0 +1,13 @@
+import 'parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
+
+enum HorizontalBrandAppearance {
+  defaultAppearance, squareAppearance
+}
+
+class HorizontalBrandAppearanceParameterizedEntityAndListItemControllerStateMediatorParameter extends ParameterizedEntityAndListItemControllerStateMediatorParameter {
+  HorizontalBrandAppearance horizontalBrandAppearance;
+
+  HorizontalBrandAppearanceParameterizedEntityAndListItemControllerStateMediatorParameter({
+    required this.horizontalBrandAppearance
+  });
+}

@@ -48,6 +48,7 @@ import '../../../misc/processing/future_processing.dart';
 abstract class ProductDataSource {
   FutureProcessing<List<ProductBundle>> productBundleList(ProductBundleListParameter productBundleListParameter);
   FutureProcessing<List<ProductBrand>> productBrandList(ProductBrandListParameter productBrandListParameter);
+  FutureProcessing<PagingDataResult<ProductBrand>> selectedFashionProductBrandPaging(ProductBrandPagingParameter productBrandPagingParameter);
   FutureProcessing<List<ProductCategory>> productCategoryList(ProductCategoryListParameter productCategoryListParameter);
   FutureProcessing<List<Product>> productList(ProductListParameter productListParameter);
   FutureProcessing<List<ProductEntry>> productWithConditionList(ProductWithConditionListParameter productWithConditionListParameter);

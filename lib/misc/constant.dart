@@ -38,6 +38,7 @@ class _ConstantImpl {
   String get imagePatternBlue => _getImagesAssets("pattern_blue.png");
   String get imagePatternLightBlue => _getImagesAssets("pattern_light_blue.png");
   String get imagePatternOrange => _getImagesAssets("pattern_orange.png");
+  String get imagePatternBlackSquare => _getImagesAssets("pattern_black_square.png");
   String get imageProductViralBackground => _getImagesAssets("product_viral_background.jpeg");
   String get imageCoupon => _getImagesAssets("coupon.png");
   String get imageAffiliate => _getImagesAssets("affiliate.png");
@@ -240,6 +241,14 @@ class _ConstantImpl {
     Constant.textEnUsLanguageKey: "Other Interested Brand",
     Constant.textInIdLanguageKey: "Brand Menarik Lainnya"
   });
+  MultiLanguageString get multiLanguageStringSelectedFashionBrands => MultiLanguageString({
+    Constant.textEnUsLanguageKey: "Selected Fashion Brands",
+    Constant.textInIdLanguageKey: "Brand Fesyen Pilihan"
+  });
+  MultiLanguageString get multiLanguageStringChoiceBeautyBrand => MultiLanguageString({
+    Constant.textEnUsLanguageKey: "Choice Beauty Brand",
+    Constant.textInIdLanguageKey: "Brand Kecantikan Pilihan"
+  });
 
   String get settingHiveTable => 'setting_hive_table';
   String get settingHiveTableKey => 'setting_hive_table_key';
@@ -261,6 +270,7 @@ class _ConstantImpl {
   String get carouselKeySnackForLyingAround => "carousel_key_snack_for_lying_around";
   String get carouselKeyProductBundleHighlight => "carousel_key_product_bundle_highlight";
   String get carouselKeyBestSellingInMasterBagasi => "carousel_key_best_selling_in_master_bagasi";
+  String get carouselKeySelectedFashionBrands => "carousel_key_selected_fashion_brands";
   String get carouselKeyCoffeeAndTeaOriginIndonesia => "carousel_key_coffee_and_tea_origin_indonesia";
   String get carouselKeyBeautyProductIndonesia => "carousel_key_beauty_product_indonesia";
   String get carouselKeyFashionProductIndonesia => "carousel_key_fashion_product_indonesia";
