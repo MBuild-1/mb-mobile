@@ -7,10 +7,12 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:masterbagasi/misc/ext/error_provider_ext.dart';
 import 'package:masterbagasi/misc/ext/future_ext.dart';
 import 'package:masterbagasi/misc/ext/validation_result_ext.dart';
+import 'package:masterbagasi/misc/temp_login_data_while_input_pin_helper.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../controller/login_controller.dart';
+import '../../domain/entity/pin/modifypin/modifypinparameter/modify_pin_parameter.dart';
 import '../../domain/usecase/login_use_case.dart';
 import '../../domain/usecase/login_with_google_use_case.dart';
 import '../../misc/constant.dart';
@@ -20,6 +22,7 @@ import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
 import '../../misc/inputdecoration/default_input_decoration.dart';
+import '../../misc/login_helper.dart';
 import '../../misc/main_route_observer.dart';
 import '../../misc/manager/controller_manager.dart';
 import '../../misc/page_restoration_helper.dart';
@@ -33,11 +36,14 @@ import '../widget/modified_text_field.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import '../widget/password_obscurer.dart';
 import '../widget/rx_consumer.dart';
+import 'accountsecurity/modify_pin_page.dart';
 import 'getx_page.dart';
 import 'register_page.dart';
 
 class LoginPage extends RestorableGetxPage<_LoginPageRestoration> {
   late final ControllerMember<LoginController> _loginController = ControllerMember<LoginController>().addToControllerManager(controllerManager);
+
+  final _StatefulLoginControllerMediatorWidgetDelegate _statefulLoginControllerMediatorWidgetDelegate = _StatefulLoginControllerMediatorWidgetDelegate();
 
   LoginPage({Key? key}) : super(key: key, pageRestorationId: () => "login-page");
 
@@ -53,22 +59,40 @@ class LoginPage extends RestorableGetxPage<_LoginPageRestoration> {
   }
 
   @override
-  _LoginPageRestoration createPageRestoration() => _LoginPageRestoration();
+  _LoginPageRestoration createPageRestoration() => _LoginPageRestoration(
+    onCompleteInputPin: (result) {
+      if (result != null) {
+        if (result) {
+          if (_statefulLoginControllerMediatorWidgetDelegate.onLoginProcess != null) {
+            _statefulLoginControllerMediatorWidgetDelegate.onLoginProcess!();
+          }
+        }
+      }
+    }
+  );
 
   @override
   Widget buildPage(BuildContext context) {
     return Scaffold(
       body: _StatefulLoginControllerMediatorWidget(
         loginController: _loginController.controller,
+        statefulLoginControllerMediatorWidgetDelegate: _statefulLoginControllerMediatorWidgetDelegate
       ),
     );
   }
 }
 
-class _LoginPageRestoration extends MixableGetxPageRestoration with RegisterPageRestorationMixin {
+class _LoginPageRestoration extends MixableGetxPageRestoration with RegisterPageRestorationMixin, ModifyPinPageRestorationMixin {
+  final RouteCompletionCallback<bool?>? _onCompleteInputPin;
+
+  _LoginPageRestoration({
+    RouteCompletionCallback<bool?>? onCompleteInputPin
+  }) : _onCompleteInputPin = onCompleteInputPin;
+
   @override
   // ignore: unnecessary_overrides
   void initState() {
+    onCompleteInputPin = _onCompleteInputPin;
     super.initState();
   }
 
@@ -163,11 +187,17 @@ class LoginPageRestorableRouteFuture extends GetRestorableRouteFuture {
   }
 }
 
+class _StatefulLoginControllerMediatorWidgetDelegate {
+  Future<void> Function()? onLoginProcess;
+}
+
 class _StatefulLoginControllerMediatorWidget extends StatefulWidget {
   final LoginController loginController;
+  final _StatefulLoginControllerMediatorWidgetDelegate statefulLoginControllerMediatorWidgetDelegate;
 
   const _StatefulLoginControllerMediatorWidget({
-    required this.loginController
+    required this.loginController,
+    required this.statefulLoginControllerMediatorWidgetDelegate
   });
 
   @override
@@ -182,12 +212,22 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
   final TapGestureRecognizer _forgotPasswordTapGestureRecognizer = TapGestureRecognizer();
   final TapGestureRecognizer _signUpTapGestureRecognizer = TapGestureRecognizer();
   late final GoogleSignIn _googleSignIn;
+  late Future<void> Function() _onLoginRequestProcessSuccessCallback;
   dynamic _failedLoginError;
   bool _obscurePassword = true;
 
   @override
   void initState() {
     super.initState();
+    _onLoginRequestProcessSuccessCallback = () async {
+      _loginNotifier.loadProfile();
+      _notificationNotifier.loadAllNotification();
+      Map<String, RouteWrapper?> routeMap = MainRouteObserver.routeMap;
+      for (var element in routeMap.entries) {
+        element.value?.requestLoginChangeValue = 1;
+      }
+      Get.back();
+    };
     _loginNotifier = Provider.of<LoginNotifier>(context, listen: false);
     _notificationNotifier = Provider.of<NotificationNotifier>(context, listen: false);
     _googleSignIn = GoogleSignIn(
@@ -196,6 +236,14 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
         'https://www.googleapis.com/auth/contacts.readonly',
       ],
     );
+    widget.statefulLoginControllerMediatorWidgetDelegate.onLoginProcess = () async {
+      DialogHelper.showLoadingDialog(context);
+      await LoginHelper.saveToken(
+        TempLoginDataWhileInputPinHelper.getTempLoginDataWhileInputPin().result
+      ).future();
+      Get.back();
+      _onLoginRequestProcessSuccessCallback();
+    };
   }
 
   @override
@@ -210,14 +258,12 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
         onShowLoginRequestProcessFailedCallback: (e) async {
           setState(() => _failedLoginError = e);
         },
-        onLoginRequestProcessSuccessCallback: () async {
-          _loginNotifier.loadProfile();
-          _notificationNotifier.loadAllNotification();
-          Map<String, RouteWrapper?> routeMap = MainRouteObserver.routeMap;
-          for (var element in routeMap.entries) {
-            element.value?.requestLoginChangeValue = 1;
-          }
-          Get.back();
+        onLoginRequestProcessSuccessCallback: _onLoginRequestProcessSuccessCallback,
+        onRequestPin: (requestPinParameter) {
+          ModifyPinPageParameter modifyPinPageParameter = ModifyPinPageParameter(
+            modifyPinType: ModifyPinType.validatePinWhileLogin
+          );
+          PageRestorationHelper.toModifyPinPage(context, modifyPinPageParameter);
         },
         onLoginWithGoogle: () async {
           GoogleSignInAccount? googleSignInAccount = await _googleSignIn.signIn();
@@ -226,6 +272,9 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
           }
           GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
           return googleSignInAuthentication.idToken;
+        },
+        onSaveTempData: (data) async {
+          await TempLoginDataWhileInputPinHelper.saveTempLoginDataWhileInputPin(data).future();
         },
       )
     );

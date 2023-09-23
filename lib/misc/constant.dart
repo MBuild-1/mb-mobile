@@ -254,6 +254,7 @@ class _ConstantImpl {
   String get settingHiveTableKey => 'setting_hive_table_key';
   String get languageSettingHiveTableKey => 'setting_language_hive_table_key';
   String get hasVisitedIntroductionPageHiveTableKey => 'has_visited_introduction_hive_table_key';
+  String get tempLoginDataWhileInputPinHiveTableKey => 'temp_login_data_while_input_pin_hive_table_key';
   String get textIdKey => 'id';
   String get textTypeKey => 'type';
   String get textUrlKey => 'url';

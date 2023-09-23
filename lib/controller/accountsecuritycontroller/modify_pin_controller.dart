@@ -1,7 +1,7 @@
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 
 import '../../domain/entity/pin/modifypin/modifypinparameter/modify_pin_parameter.dart';
-import '../../domain/entity/pin/modifypin/modify_pin_response.dart';
+import '../../domain/entity/pin/modifypin/modifypinresponse/modify_pin_response.dart';
 import '../../domain/usecase/modify_pin_use_case.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/typedef.dart';
@@ -10,7 +10,7 @@ import '../base_getx_controller.dart';
 typedef _OnGetModifyPinParameterInput = ModifyPinParameter Function();
 typedef _OnModifyPinBack = void Function();
 typedef _OnShowModifyPinRequestProcessLoadingCallback = Future<void> Function();
-typedef _OnModifyPinRequestProcessSuccessCallback = Future<void> Function();
+typedef _OnModifyPinRequestProcessSuccessCallback = Future<void> Function(ModifyPinResponse);
 typedef _OnShowModifyPinRequestProcessFailedCallback = Future<void> Function(dynamic e);
 
 class ModifyPinController extends BaseGetxController {
@@ -39,7 +39,7 @@ class ModifyPinController extends BaseGetxController {
       );
       _modifyPinDelegate!.onModifyPinBack();
       if (modifyPinResponseLoadDataResult.isSuccess) {
-        _modifyPinDelegate!.onModifyPinRequestProcessSuccessCallback();
+        _modifyPinDelegate!.onModifyPinRequestProcessSuccessCallback(modifyPinResponseLoadDataResult.resultIfSuccess!);
       } else {
         _modifyPinDelegate!.onShowModifyPinRequestProcessFailedCallback(modifyPinResponseLoadDataResult.resultIfFailed);
       }

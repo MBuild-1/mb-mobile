@@ -496,14 +496,12 @@ class _PageRestorationHelperImpl {
   }
 
   void toModifyPinPage(BuildContext context, ModifyPinPageParameter modifyPinPageParameter) {
-    LoginHelper.checkingLogin(context, () {
-      PageRestorationHelper.findPageRestorationMixin<ModifyPinPageRestorationMixin>(
-        onGetxPageRestorationFound: (restoration) {
-          restoration.modifyPinPageRestorableRouteFuture.present(modifyPinPageParameter.toEncodeBase64String());
-        },
-        context: context
-      );
-    });
+    PageRestorationHelper.findPageRestorationMixin<ModifyPinPageRestorationMixin>(
+      onGetxPageRestorationFound: (restoration) {
+        restoration.modifyPinPageRestorableRouteFuture.present(modifyPinPageParameter.toEncodeBase64String());
+      },
+      context: context
+    );
   }
 
   void toPersonalVerificationPage(BuildContext context) {

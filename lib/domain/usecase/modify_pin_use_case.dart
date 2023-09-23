@@ -1,7 +1,7 @@
 import '../../misc/load_data_result.dart';
 import '../../misc/processing/future_processing.dart';
 import '../entity/pin/modifypin/modifypinparameter/modify_pin_parameter.dart';
-import '../entity/pin/modifypin/modify_pin_response.dart';
+import '../entity/pin/modifypin/modifypinresponse/modify_pin_response.dart';
 import '../repository/user_repository.dart';
 
 class ModifyPinUseCase {

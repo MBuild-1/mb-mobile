@@ -12,6 +12,12 @@ import '../../../domain/entity/pin/modifypin/modifypinparameter/change_modify_pi
 import '../../../domain/entity/pin/modifypin/modifypinparameter/modify_pin_parameter.dart';
 import '../../../domain/entity/pin/modifypin/modifypinparameter/remove_modify_pin_parameter.dart';
 import '../../../domain/entity/pin/modifypin/modifypinparameter/validate_modify_pin_parameter.dart';
+import '../../../domain/entity/pin/modifypin/modifypinparameter/validate_while_login_modify_pin_parameter.dart';
+import '../../../domain/entity/pin/modifypin/modifypinresponse/change_modify_pin_response.dart';
+import '../../../domain/entity/pin/modifypin/modifypinresponse/create_modify_pin_response.dart';
+import '../../../domain/entity/pin/modifypin/modifypinresponse/remove_modify_pin_response.dart';
+import '../../../domain/entity/pin/modifypin/modifypinresponse/validate_modify_pin_response.dart';
+import '../../../domain/entity/pin/modifypin/modifypinresponse/validate_while_login_modify_pin_response.dart';
 import '../../../domain/usecase/modify_pin_use_case.dart';
 import '../../../misc/constant.dart';
 import '../../../misc/dialog_helper.dart';
@@ -23,6 +29,7 @@ import '../../../misc/injector.dart';
 import '../../../misc/manager/controller_manager.dart';
 import '../../../misc/multi_language_string.dart';
 import '../../../misc/string_util.dart';
+import '../../../misc/temp_login_data_while_input_pin_helper.dart';
 import '../../../misc/toast_helper.dart';
 import '../../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../../widget/modified_svg_picture.dart';
@@ -99,12 +106,17 @@ class ModifyPinPageGetPageBuilderAssistant extends GetPageBuilderAssistant {
 }
 
 mixin ModifyPinPageRestorationMixin on MixableGetxPageRestoration {
+  RouteCompletionCallback<bool?>? onCompleteInputPin;
+
   late ModifyPinPageRestorableRouteFuture modifyPinPageRestorableRouteFuture;
 
   @override
   void initState() {
     super.initState();
-    modifyPinPageRestorableRouteFuture = ModifyPinPageRestorableRouteFuture(restorationId: restorationIdWithPageName('modify-pin-page-route'));
+    modifyPinPageRestorableRouteFuture = ModifyPinPageRestorableRouteFuture(
+      restorationId: restorationIdWithPageName('modify-pin-page-route'),
+      onCompleteInputPin: onCompleteInputPin
+    );
   }
 
   @override
@@ -121,22 +133,28 @@ mixin ModifyPinPageRestorationMixin on MixableGetxPageRestoration {
 }
 
 class ModifyPinPageRestorableRouteFuture extends GetRestorableRouteFuture {
-  late RestorableRouteFuture<void> _pageRoute;
+  final RouteCompletionCallback<bool?>? onCompleteInputPin;
 
-  ModifyPinPageRestorableRouteFuture({required String restorationId}) : super(restorationId: restorationId) {
-    _pageRoute = RestorableRouteFuture<void>(
+  late RestorableRouteFuture<bool?> _pageRoute;
+
+  ModifyPinPageRestorableRouteFuture({
+    required String restorationId,
+    this.onCompleteInputPin
+  }) : super(restorationId: restorationId) {
+    _pageRoute = RestorableRouteFuture<bool?>(
       onPresent: (NavigatorState navigator, Object? arguments) {
         return navigator.restorablePush(_pageRouteBuilder, arguments: arguments);
       },
+      onComplete: onCompleteInputPin
     );
   }
 
-  static Route<void>? _getRoute([Object? arguments]) {
+  static Route<bool?>? _getRoute([Object? arguments]) {
     if (arguments is! String) {
       throw MessageError(message: "Arguments must be a String");
     }
     ModifyPinPageParameter modifyPinPageParameter = arguments.toModifyPinPageParameter();
-    return GetExtended.toWithGetPageRouteReturnValue<void>(
+    return GetExtended.toWithGetPageRouteReturnValue<bool?>(
       GetxPageBuilder.buildRestorableGetxPageBuilder(
         ModifyPinPageGetPageBuilderAssistant(
           modifyPinPageParameter: modifyPinPageParameter
@@ -146,7 +164,7 @@ class ModifyPinPageRestorableRouteFuture extends GetRestorableRouteFuture {
   }
 
   @pragma('vm:entry-point')
-  static Route<void> _pageRouteBuilder(BuildContext context, Object? arguments) {
+  static Route<bool?> _pageRouteBuilder(BuildContext context, Object? arguments) {
     return _getRoute(arguments)!;
   }
 
@@ -210,6 +228,11 @@ class _StatefulModifyPinControllerMediatorWidgetState extends State<_StatefulMod
       _modifyPinParameter = ValidateModifyPinParameter(
         pin: "",
       );
+    } else if (modifyPinType == ModifyPinType.validatePinWhileLogin) {
+      _modifyPinParameter = ValidateWhileLoginModifyPinParameter(
+        pin: "",
+        data: ""
+      );
     }
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _focusNode.requestFocus();
@@ -228,9 +251,21 @@ class _StatefulModifyPinControllerMediatorWidgetState extends State<_StatefulMod
           ErrorProviderResult errorProviderResult = Injector.locator<ErrorProvider>().onGetErrorProviderResult(e).toErrorProviderResultNonNull();
           ToastHelper.showToast(errorProviderResult.message);
         },
-        onModifyPinRequestProcessSuccessCallback: () async {
-          Get.back();
-          ToastHelper.showToast("${"Success change password".tr}.");
+        onModifyPinRequestProcessSuccessCallback: (modifyPinResponse) async {
+          if (modifyPinResponse is CreateModifyPinResponse) {
+            // Nothing
+          } else if (modifyPinResponse is ChangeModifyPinResponse) {
+            ToastHelper.showToast("${"Success change password".tr}.");
+          } else if (modifyPinResponse is RemoveModifyPinResponse) {
+            // Nothing
+          } else if (modifyPinResponse is ValidateModifyPinResponse) {
+            if (modifyPinResponse is ValidateWhileLoginModifyPinResponse) {
+              await TempLoginDataWhileInputPinHelper.saveTempLoginDataWhileInputPin(
+                modifyPinResponse.loginResponse.token
+              ).future();
+            }
+          }
+          Get.back(result: true);
         }
       )
     );
@@ -467,11 +502,21 @@ class _StatefulModifyPinControllerMediatorWidgetState extends State<_StatefulMod
         widget.modifyPinController.modifyPin();
       }
     } else if (_modifyPinParameter is ValidateModifyPinParameter) {
-      RemoveModifyPinParameter removeModifyPinParameter = _modifyPinParameter as RemoveModifyPinParameter;
-      if (_step == 1) {
-        removeModifyPinParameter.pin = _textEditingController.text;
-        _textEditingController.clear();
-        widget.modifyPinController.modifyPin();
+      if (_modifyPinParameter is ValidateWhileLoginModifyPinParameter) {
+        ValidateWhileLoginModifyPinParameter validateWhileLoginModifyPinParameter = _modifyPinParameter as ValidateWhileLoginModifyPinParameter;
+        if (_step == 1) {
+          validateWhileLoginModifyPinParameter.pin = _textEditingController.text;
+          validateWhileLoginModifyPinParameter.data = TempLoginDataWhileInputPinHelper.getTempLoginDataWhileInputPin().result;
+          _textEditingController.clear();
+          widget.modifyPinController.modifyPin();
+        }
+      } else {
+        ValidateModifyPinParameter validateModifyPinParameter = _modifyPinParameter as ValidateModifyPinParameter;
+        if (_step == 1) {
+          validateModifyPinParameter.pin = _textEditingController.text;
+          _textEditingController.clear();
+          widget.modifyPinController.modifyPin();
+        }
       }
     }
   }
@@ -484,7 +529,7 @@ class _StatefulModifyPinControllerMediatorWidgetState extends State<_StatefulMod
 }
 
 enum ModifyPinType {
-  createPin, changePin, removePin, validatePin
+  createPin, changePin, removePin, validatePin, validatePinWhileLogin
 }
 
 class ModifyPinPageParameter {
@@ -506,6 +551,8 @@ extension ModifyPinPageParameterExt on ModifyPinPageParameter {
       result = "3";
     } else if (modifyPinType == ModifyPinType.validatePin) {
       result = "4";
+    } else if (modifyPinType == ModifyPinType.validatePinWhileLogin) {
+      result = "5";
     }
     return StringUtil.encodeBase64StringFromJson(
       <String, dynamic>{
@@ -528,6 +575,8 @@ extension ModifyPinPageParameterStringExt on String {
       modifyPinType = ModifyPinType.removePin;
     } else if (rawModifyPinType == "4") {
       modifyPinType = ModifyPinType.validatePin;
+    } else if (rawModifyPinType == "5") {
+      modifyPinType = ModifyPinType.validatePinWhileLogin;
     }
     return ModifyPinPageParameter(
       modifyPinType: modifyPinType

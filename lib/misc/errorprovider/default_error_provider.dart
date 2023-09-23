@@ -144,7 +144,7 @@ class DefaultErrorProvider extends ErrorProvider {
             if (errors is Map) {
               Map<String, dynamic> errorsMap = errors as Map<String, dynamic>;
               String errorMessage = "";
-              void addErrorMessage(String errorMessageContent) {
+              void addErrorMessage(dynamic errorMessageContent) {
                 errorMessage += "${(errorMessage.isEmptyString ? "" : "\r\n")}$errorMessageContent";
               }
               for (var errorValue in errorsMap.values) {

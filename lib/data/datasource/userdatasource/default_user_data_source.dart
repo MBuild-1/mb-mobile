@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:masterbagasi/data/entitymappingext/user_entity_mapping_ext.dart';
 import 'package:masterbagasi/domain/entity/changepassword/change_password_parameter.dart';
@@ -14,7 +16,8 @@ import '../../../domain/entity/logout/logout_response.dart';
 import '../../../domain/entity/pin/modifypin/modifypinparameter/change_modify_pin_parameter.dart';
 import '../../../domain/entity/pin/modifypin/modifypinparameter/create_modify_pin_parameter.dart';
 import '../../../domain/entity/pin/modifypin/modifypinparameter/modify_pin_parameter.dart';
-import '../../../domain/entity/pin/modifypin/modify_pin_response.dart';
+import '../../../domain/entity/pin/modifypin/modifypinparameter/validate_while_login_modify_pin_parameter.dart';
+import '../../../domain/entity/pin/modifypin/modifypinresponse/modify_pin_response.dart';
 import '../../../domain/entity/pin/modifypin/modifypinparameter/remove_modify_pin_parameter.dart';
 import '../../../domain/entity/pin/modifypin/modifypinparameter/validate_modify_pin_parameter.dart';
 import '../../../domain/entity/register/register_parameter.dart';
@@ -23,9 +26,11 @@ import '../../../domain/entity/register/register_with_google_parameter.dart';
 import '../../../domain/entity/register/register_with_google_response.dart';
 import '../../../domain/entity/user/getuser/get_user_parameter.dart';
 import '../../../domain/entity/user/getuser/get_user_response.dart';
+import '../../../misc/http_client.dart';
 import '../../../misc/option_builder.dart';
 import '../../../misc/processing/dio_http_client_processing.dart';
 import '../../../misc/processing/future_processing.dart';
+import '../../../misc/response_wrapper.dart';
 import 'user_data_source.dart';
 
 class DefaultUserDataSource implements UserDataSource {
@@ -125,6 +130,7 @@ class DefaultUserDataSource implements UserDataSource {
   @override
   FutureProcessing<ModifyPinResponse> modifyPin(ModifyPinParameter modifyPinParameter) {
     String modifyPinEndpoint = "";
+    LoginResponse? loginResponse;
     Map<String, dynamic> formDataMap = {};
     if (modifyPinParameter is CreateModifyPinParameter) {
       modifyPinEndpoint = "/create/pin";
@@ -141,9 +147,17 @@ class DefaultUserDataSource implements UserDataSource {
       modifyPinEndpoint = "/remove-pin";
     } else if (modifyPinParameter is ValidateModifyPinParameter) {
       modifyPinEndpoint = "/check/pin";
-      formDataMap = <String, dynamic> {
-        "pin": modifyPinParameter.pin,
-      };
+      if (modifyPinParameter is ValidateWhileLoginModifyPinParameter) {
+        loginResponse = ResponseWrapper(jsonDecode(modifyPinParameter.data)).mapFromResponseToLoginResponse();
+        formDataMap = <String, dynamic> {
+          "pin": modifyPinParameter.pin,
+          "data": modifyPinParameter.data
+        };
+      } else {
+        formDataMap = <String, dynamic> {
+          "pin": modifyPinParameter.pin,
+        };
+      }
     }
     FormData formData = FormData.fromMap(formDataMap);
     return DioHttpClientProcessing((cancelToken) {
@@ -151,14 +165,45 @@ class DefaultUserDataSource implements UserDataSource {
         if (modifyPinParameter is RemoveModifyPinParameter) {
           return dio.put(modifyPinEndpoint, cancelToken: cancelToken);
         }
+        OptionsBuilder optionsBuilder = OptionsBuilder.multipartData();
+        Options? options;
+        if (modifyPinParameter is ValidateWhileLoginModifyPinParameter) {
+          if (loginResponse != null) {
+            optionsBuilder.withTokenHeader(loginResponse.token);
+          }
+          optionsBuilder.withOptionsMergeParameter(const OptionsMergeParameter());
+          options = optionsBuilder.buildExtended();
+        } else {
+          options = optionsBuilder.build();
+        }
         return dio.post(
           modifyPinEndpoint,
           data: formData,
           cancelToken: cancelToken,
-          options: OptionsBuilder.multipartData().build()
+          options: options,
         );
       }().map<ModifyPinResponse>(
-        onMap: (value) => value.wrapResponse().mapFromResponseToModifyPinResponse()
+        onMap: (value) {
+          if (modifyPinParameter is CreateModifyPinParameter) {
+            return value.wrapResponse().mapFromResponseToCreateModifyPinResponse();
+          } else if (modifyPinParameter is ChangeModifyPinParameter) {
+            return value.wrapResponse().mapFromResponseToChangeModifyPinResponse();
+          } else if (modifyPinParameter is RemoveModifyPinParameter) {
+            return value.wrapResponse().mapFromResponseToRemoveModifyPinResponse();
+          } else if (modifyPinParameter is ValidateModifyPinParameter) {
+            if (modifyPinParameter is ValidateWhileLoginModifyPinParameter) {
+              if (loginResponse != null) {
+                return value.wrapResponse().mapFromResponseToValidateWhileLoginModifyPinResponse(loginResponse);
+              } else {
+                throw Exception("Modify PIN is not suitable");
+              }
+            } else {
+              return value.wrapResponse().mapFromResponseToValidateModifyPinResponse();
+            }
+          } else {
+            throw Exception("Modify PIN is not suitable");
+          }
+        }
       );
     });
   }

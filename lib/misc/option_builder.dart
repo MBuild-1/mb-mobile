@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 
 import 'http_client.dart';
+import 'string_util.dart';
 
 class OptionsBuilder {
   String? _baseUrl;
@@ -18,6 +19,7 @@ class OptionsBuilder {
   RequestEncoder? _requestEncoder;
   ResponseDecoder? _responseDecoder;
   ListFormat? _listFormat;
+  OptionsMergeParameter? _optionsMergeParameter;
 
   OptionsBuilder();
 
@@ -29,6 +31,10 @@ class OptionsBuilder {
     return OptionsBuilder().withBaseUrl(baseUrl);
   }
 
+  factory OptionsBuilder.withTokenHeader(String tokenWithoutBearer) {
+    return OptionsBuilder().withTokenHeader(tokenWithoutBearer);
+  }
+
   OptionsBuilder withMultipartData() {
     _method = "multipart/form-data";
     return this;
@@ -36,6 +42,23 @@ class OptionsBuilder {
 
   OptionsBuilder withBaseUrl(String? baseUrl) {
     _baseUrl = baseUrl;
+    return this;
+  }
+
+  OptionsBuilder withTokenHeader(String tokenWithoutBearer) {
+    Map<String, dynamic> willBeAddHeader = DioHttpClientOptions.createTokenHeader(
+      StringUtil.tokenWithBearer(tokenWithoutBearer)
+    );
+    if (_headers == null) {
+      _headers = willBeAddHeader;
+    } else {
+      _headers!.addAll(willBeAddHeader);
+    }
+    return this;
+  }
+
+  OptionsBuilder withOptionsMergeParameter(OptionsMergeParameter optionsMergeParameter) {
+    _optionsMergeParameter = optionsMergeParameter;
     return this;
   }
 
@@ -75,6 +98,7 @@ class OptionsBuilder {
       requestEncoder: _requestEncoder,
       responseDecoder: _responseDecoder,
       listFormat: _listFormat,
+      optionsMergeParameter: _optionsMergeParameter
     );
   }
 }

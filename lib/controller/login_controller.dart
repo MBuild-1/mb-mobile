@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
@@ -25,6 +28,8 @@ typedef _OnShowLoginRequestProcessLoadingCallback = Future<void> Function();
 typedef _OnLoginRequestProcessSuccessCallback = Future<void> Function();
 typedef _OnShowLoginRequestProcessFailedCallback = Future<void> Function(dynamic e);
 typedef _OnLoginWithGoogle = Future<String?> Function();
+typedef _OnRequestPin = void Function(RequestPinParameter);
+typedef _OnSaveTempData = Future<void> Function(String);
 
 class LoginController extends BaseGetxController {
   final LoginUseCase loginUseCase;
@@ -71,12 +76,17 @@ class LoginController extends BaseGetxController {
         ).future(
           parameter: apiRequestManager.addRequestToCancellationPart('login').value
         );
-        Get.back();
         if (loginLoadDataResult.isSuccess) {
           await LoginHelper.saveToken(loginLoadDataResult.resultIfSuccess!.token).future();
+          Get.back();
           _loginDelegate!.onLoginRequestProcessSuccessCallback();
         } else {
-          _loginDelegate!.onShowLoginRequestProcessFailedCallback(loginLoadDataResult.resultIfFailed);
+          dynamic data = loginLoadDataResult.resultIfFailed;
+          if (await _checkIfNeedPinWhileLoginError(data)) {
+            return;
+          }
+          Get.back();
+          _loginDelegate!.onShowLoginRequestProcessFailedCallback(data);
         }
       }
     }
@@ -95,15 +105,37 @@ class LoginController extends BaseGetxController {
         ).future(
           parameter: apiRequestManager.addRequestToCancellationPart('login-with-google').value
         );
-        Get.back();
         if (loginWithGoogleLoadDataResult.isSuccess) {
           await LoginHelper.saveToken(loginWithGoogleLoadDataResult.resultIfSuccess!.token).future();
+          Get.back();
           _loginDelegate!.onLoginRequestProcessSuccessCallback();
         } else {
-          _loginDelegate!.onShowLoginRequestProcessFailedCallback(loginWithGoogleLoadDataResult.resultIfFailed);
+          dynamic data = loginWithGoogleLoadDataResult.resultIfFailed;
+          if (await _checkIfNeedPinWhileLoginError(data)) {
+            return;
+          }
+          Get.back();
+          _loginDelegate!.onShowLoginRequestProcessFailedCallback(data);
         }
       }
     }
+  }
+
+  Future<bool> _checkIfNeedPinWhileLoginError(dynamic result) async {
+    if (result is DioError) {
+      dynamic data = result.response?.data;
+      if (data is Map<String, dynamic>) {
+        String message = data["meta"]["message"];
+        if (message.toLowerCase() == "you must input your pin") {
+          String dataString = jsonEncode(data["data"]);
+          await _loginDelegate!.onSaveTempData(dataString);
+          Get.back();
+          _loginDelegate!.onRequestPin(RequestPinParameter(data: dataString));
+          return true;
+        }
+      }
+    }
+    return false;
   }
 }
 
@@ -115,7 +147,9 @@ class LoginDelegate {
   _OnShowLoginRequestProcessLoadingCallback onShowLoginRequestProcessLoadingCallback;
   _OnLoginRequestProcessSuccessCallback onLoginRequestProcessSuccessCallback;
   _OnShowLoginRequestProcessFailedCallback onShowLoginRequestProcessFailedCallback;
+  _OnRequestPin onRequestPin;
   _OnLoginWithGoogle onLoginWithGoogle;
+  _OnSaveTempData onSaveTempData;
 
   LoginDelegate({
     required this.onUnfocusAllWidget,
@@ -125,6 +159,16 @@ class LoginDelegate {
     required this.onShowLoginRequestProcessLoadingCallback,
     required this.onLoginRequestProcessSuccessCallback,
     required this.onShowLoginRequestProcessFailedCallback,
+    required this.onRequestPin,
     required this.onLoginWithGoogle,
+    required this.onSaveTempData
+  });
+}
+
+class RequestPinParameter {
+  String data;
+
+  RequestPinParameter({
+    required this.data
   });
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:masterbagasi/misc/ext/future_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/misc/page_restoration_helper.dart';
+import 'package:masterbagasi/misc/string_util.dart';
 
 import 'constant.dart';
 import 'load_data_result.dart';
@@ -17,8 +18,6 @@ abstract class _LoginHelperImpl {
 }
 
 class _DefaultLoginHelperImpl implements _LoginHelperImpl {
-  final String _keyword = 'Bearer';
-
   @override
   void checkingLogin(BuildContext context, void Function() resultIfHasBeenLogin) {
     if (!LoginHelper.getTokenWithBearer().result.isEmptyString) {
@@ -32,7 +31,7 @@ class _DefaultLoginHelperImpl implements _LoginHelperImpl {
   FutureProcessing<LoadDataResult<void>> saveToken(String tokenWithoutBearer) {
     return FutureProcessing(({parameter}) {
       var box = Hive.box(Constant.settingHiveTable);
-      return box.put(Constant.settingHiveTableKey, '$_keyword $tokenWithoutBearer').getLoadDataResult();
+      return box.put(Constant.settingHiveTableKey, StringUtil.tokenWithBearer(tokenWithoutBearer)).getLoadDataResult();
     });
   }
 

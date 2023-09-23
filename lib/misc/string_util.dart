@@ -156,6 +156,10 @@ class _StringUtilImpl {
     }
     return null;
   }
+
+  String tokenWithBearer(String tokenWithoutBearer) {
+    return "Bearer $tokenWithoutBearer";
+  }
 }
 
 // ignore: non_constant_identifier_names

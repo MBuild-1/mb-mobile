@@ -9,7 +9,7 @@ import '../entity/login/login_with_google_response.dart';
 import '../entity/logout/logout_parameter.dart';
 import '../entity/logout/logout_response.dart';
 import '../entity/pin/modifypin/modifypinparameter/modify_pin_parameter.dart';
-import '../entity/pin/modifypin/modify_pin_response.dart';
+import '../entity/pin/modifypin/modifypinresponse/modify_pin_response.dart';
 import '../entity/register/register_parameter.dart';
 import '../entity/register/register_response.dart';
 import '../entity/register/register_with_google_parameter.dart';
