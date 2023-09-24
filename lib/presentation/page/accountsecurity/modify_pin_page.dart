@@ -420,15 +420,20 @@ class _StatefulModifyPinControllerMediatorWidgetState extends State<_StatefulMod
                         },
                       ),
                     ),
-                    const SizedBox(height: 50),
-                    Text(
-                      "Hindari menggunakan kombinasi angka yang mudah ditebak, seperti tanggal lahir atau nomor telepon.",
-                      style: TextStyle(
-                        fontSize: 12.0,
-                        color: Constant.colorGrey7
+                    if (_modifyPinParameter is CreateModifyPinParameter || _modifyPinParameter is ChangeModifyPinParameter) ...[
+                      const SizedBox(height: 50),
+                      Text(
+                        MultiLanguageString({
+                          Constant.textInIdLanguageKey: "Hindari menggunakan kombinasi angka yang mudah ditebak, seperti tanggal lahir atau nomor telepon.",
+                          Constant.textEnUsLanguageKey: "Avoid using combinations of numbers that are easy to guess, such as birth dates or phone numbers."
+                        }).toEmptyStringNonNull,
+                        style: TextStyle(
+                          fontSize: 12.0,
+                          color: Constant.colorGrey7
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                      textAlign: TextAlign.center,
-                    ),
+                    ]
                   ],
                 ),
               ),
