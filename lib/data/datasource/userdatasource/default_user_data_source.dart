@@ -13,6 +13,8 @@ import '../../../domain/entity/login/login_with_google_parameter.dart';
 import '../../../domain/entity/login/login_with_google_response.dart';
 import '../../../domain/entity/logout/logout_parameter.dart';
 import '../../../domain/entity/logout/logout_response.dart';
+import '../../../domain/entity/pin/checkactivepin/check_active_pin_parameter.dart';
+import '../../../domain/entity/pin/checkactivepin/check_active_pin_response.dart';
 import '../../../domain/entity/pin/modifypin/modifypinparameter/change_modify_pin_parameter.dart';
 import '../../../domain/entity/pin/modifypin/modifypinparameter/create_modify_pin_parameter.dart';
 import '../../../domain/entity/pin/modifypin/modifypinparameter/modify_pin_parameter.dart';
@@ -124,6 +126,14 @@ class DefaultUserDataSource implements UserDataSource {
     return DioHttpClientProcessing((cancelToken) {
       return dio.post("/change-password", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
         .map<ChangePasswordResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToChangePasswordResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<CheckActivePinResponse> checkActivePin(CheckActivePinParameter checkActivePinParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.get("/check/pin", cancelToken: cancelToken)
+        .map<CheckActivePinResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToCheckActivePinResponse());
     });
   }
 

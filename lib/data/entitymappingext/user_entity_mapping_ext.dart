@@ -4,6 +4,7 @@ import '../../domain/entity/changepassword/change_password_response.dart';
 import '../../domain/entity/login/login_response.dart';
 import '../../domain/entity/login/login_with_google_response.dart';
 import '../../domain/entity/logout/logout_response.dart';
+import '../../domain/entity/pin/checkactivepin/check_active_pin_response.dart';
 import '../../domain/entity/pin/modifypin/modifypinresponse/change_modify_pin_response.dart';
 import '../../domain/entity/pin/modifypin/modifypinresponse/create_modify_pin_response.dart';
 import '../../domain/entity/pin/modifypin/modifypinresponse/modify_pin_response.dart';
@@ -82,6 +83,12 @@ extension UserEntityMappingExt on ResponseWrapper {
   ValidateWhileLoginModifyPinResponse mapFromResponseToValidateWhileLoginModifyPinResponse(LoginResponse loginResponse) {
     return ValidateWhileLoginModifyPinResponse(
       loginResponse: loginResponse
+    );
+  }
+
+  CheckActivePinResponse mapFromResponseToCheckActivePinResponse() {
+    return CheckActivePinResponse(
+      active: response["active"]
     );
   }
 }

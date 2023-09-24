@@ -8,6 +8,8 @@ import '../entity/login/login_with_google_parameter.dart';
 import '../entity/login/login_with_google_response.dart';
 import '../entity/logout/logout_parameter.dart';
 import '../entity/logout/logout_response.dart';
+import '../entity/pin/checkactivepin/check_active_pin_parameter.dart';
+import '../entity/pin/checkactivepin/check_active_pin_response.dart';
 import '../entity/pin/modifypin/modifypinparameter/modify_pin_parameter.dart';
 import '../entity/pin/modifypin/modifypinresponse/modify_pin_response.dart';
 import '../entity/register/register_parameter.dart';
@@ -25,5 +27,6 @@ abstract class UserRepository {
   FutureProcessing<LoadDataResult<LogoutResponse>> logout(LogoutParameter logoutParameter);
   FutureProcessing<LoadDataResult<GetUserResponse>> getUser(GetUserParameter getUserParameter);
   FutureProcessing<LoadDataResult<ChangePasswordResponse>> changePassword(ChangePasswordParameter changePasswordParameter);
+  FutureProcessing<LoadDataResult<CheckActivePinResponse>> checkActivePin(CheckActivePinParameter checkActivePinParameter);
   FutureProcessing<LoadDataResult<ModifyPinResponse>> modifyPin(ModifyPinParameter modifyPinParameter);
 }
