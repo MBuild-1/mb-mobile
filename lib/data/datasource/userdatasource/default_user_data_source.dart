@@ -6,6 +6,7 @@ import 'package:masterbagasi/domain/entity/changepassword/change_password_parame
 import 'package:masterbagasi/domain/entity/changepassword/change_password_response.dart';
 import 'package:masterbagasi/misc/ext/future_ext.dart';
 import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../../../domain/entity/login/login_parameter.dart';
 import '../../../domain/entity/login/login_response.dart';
@@ -26,8 +27,11 @@ import '../../../domain/entity/register/register_parameter.dart';
 import '../../../domain/entity/register/register_response.dart';
 import '../../../domain/entity/register/register_with_google_parameter.dart';
 import '../../../domain/entity/register/register_with_google_response.dart';
+import '../../../domain/entity/user/edituser/edit_user_parameter.dart';
+import '../../../domain/entity/user/edituser/edit_user_response.dart';
 import '../../../domain/entity/user/getuser/get_user_parameter.dart';
 import '../../../domain/entity/user/getuser/get_user_response.dart';
+import '../../../misc/date_util.dart';
 import '../../../misc/http_client.dart';
 import '../../../misc/option_builder.dart';
 import '../../../misc/processing/dio_http_client_processing.dart';
@@ -111,6 +115,22 @@ class DefaultUserDataSource implements UserDataSource {
     return DioHttpClientProcessing((cancelToken) {
       return dio.post("/auth/me", cancelToken: cancelToken)
         .map<GetUserResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToGetUserResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<EditUserResponse> editUser(EditUserParameter editUserParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      dynamic formData = <String, dynamic>{
+        if (editUserParameter.name.isNotEmptyString) "name": editUserParameter.name,
+        if (editUserParameter.email.isNotEmptyString) "email": editUserParameter.email,
+        if (editUserParameter.gender.isNotEmptyString) "gender": editUserParameter.gender,
+        if (editUserParameter.birthDateTime != null) "date_birth": DateUtil.standardDateFormat.format(editUserParameter.birthDateTime!),
+        if (editUserParameter.placeBirth.isNotEmptyString) "place_birth": editUserParameter.placeBirth,
+        if (editUserParameter.phoneNumber.isNotEmptyString) "phone_number": editUserParameter.phoneNumber
+      };
+      return dio.put("/user/profile", data: formData, cancelToken: cancelToken)
+        .map<EditUserResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToEditUserResponse());
     });
   }
 

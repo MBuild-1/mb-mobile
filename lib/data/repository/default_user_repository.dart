@@ -14,6 +14,8 @@ import '../../domain/entity/register/register_parameter.dart';
 import '../../domain/entity/register/register_response.dart';
 import '../../domain/entity/register/register_with_google_parameter.dart';
 import '../../domain/entity/register/register_with_google_response.dart';
+import '../../domain/entity/user/edituser/edit_user_parameter.dart';
+import '../../domain/entity/user/edituser/edit_user_response.dart';
 import '../../domain/entity/user/getuser/get_user_parameter.dart';
 import '../../domain/entity/user/getuser/get_user_response.dart';
 import '../../domain/repository/user_repository.dart';
@@ -56,6 +58,11 @@ class DefaultUserRepository implements UserRepository {
   @override
   FutureProcessing<LoadDataResult<GetUserResponse>> getUser(GetUserParameter getUserParameter) {
     return userDataSource.getUser(getUserParameter).mapToLoadDataResult<GetUserResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<EditUserResponse>> editUser(EditUserParameter editUserParameter) {
+    return userDataSource.editUser(editUserParameter).mapToLoadDataResult<EditUserResponse>();
   }
 
   @override

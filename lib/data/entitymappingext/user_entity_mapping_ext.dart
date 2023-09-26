@@ -13,6 +13,7 @@ import '../../domain/entity/pin/modifypin/modifypinresponse/validate_modify_pin_
 import '../../domain/entity/pin/modifypin/modifypinresponse/validate_while_login_modify_pin_response.dart';
 import '../../domain/entity/register/register_response.dart';
 import '../../domain/entity/register/register_with_google_response.dart';
+import '../../domain/entity/user/edituser/edit_user_response.dart';
 import '../../domain/entity/user/getuser/get_user_response.dart';
 import '../../domain/entity/user/user.dart';
 import '../../misc/response_wrapper.dart';
@@ -58,6 +59,10 @@ extension UserEntityMappingExt on ResponseWrapper {
     return GetUserResponse(
       user: ResponseWrapper(response).mapFromResponseToUser()
     );
+  }
+
+  EditUserResponse mapFromResponseToEditUserResponse() {
+    return EditUserResponse();
   }
 
   ChangePasswordResponse mapFromResponseToChangePasswordResponse() {

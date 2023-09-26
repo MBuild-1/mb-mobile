@@ -16,6 +16,8 @@ import '../entity/register/register_parameter.dart';
 import '../entity/register/register_response.dart';
 import '../entity/register/register_with_google_parameter.dart';
 import '../entity/register/register_with_google_response.dart';
+import '../entity/user/edituser/edit_user_parameter.dart';
+import '../entity/user/edituser/edit_user_response.dart';
 import '../entity/user/getuser/get_user_parameter.dart';
 import '../entity/user/getuser/get_user_response.dart';
 
@@ -26,6 +28,7 @@ abstract class UserRepository {
   FutureProcessing<LoadDataResult<RegisterWithGoogleResponse>> registerWithGoogle(RegisterWithGoogleParameter registerWithGoogleParameter);
   FutureProcessing<LoadDataResult<LogoutResponse>> logout(LogoutParameter logoutParameter);
   FutureProcessing<LoadDataResult<GetUserResponse>> getUser(GetUserParameter getUserParameter);
+  FutureProcessing<LoadDataResult<EditUserResponse>> editUser(EditUserParameter editUserParameter);
   FutureProcessing<LoadDataResult<ChangePasswordResponse>> changePassword(ChangePasswordParameter changePasswordParameter);
   FutureProcessing<LoadDataResult<CheckActivePinResponse>> checkActivePin(CheckActivePinParameter checkActivePinParameter);
   FutureProcessing<LoadDataResult<ModifyPinResponse>> modifyPin(ModifyPinParameter modifyPinParameter);
