@@ -15,6 +15,8 @@ import '../data/datasource/addressdatasource/address_data_source.dart';
 import '../data/datasource/addressdatasource/default_address_data_source.dart';
 import '../data/datasource/bannerdatasource/banner_data_source.dart';
 import '../data/datasource/bannerdatasource/default_banner_data_source.dart';
+import '../data/datasource/bucketdatasource/bucket_data_source.dart';
+import '../data/datasource/bucketdatasource/default_bucket_data_source.dart';
 import '../data/datasource/cargodatasource/cargo_data_source.dart';
 import '../data/datasource/cargodatasource/default_cargo_data_source.dart';
 import '../data/datasource/cartdatasource/cart_data_source.dart';
@@ -41,6 +43,7 @@ import '../data/datasource/userdatasource/default_user_data_source.dart';
 import '../data/datasource/userdatasource/user_data_source.dart';
 import '../data/repository/default_address_repository.dart';
 import '../data/repository/default_banner_repository.dart';
+import '../data/repository/default_bucket_repository.dart';
 import '../data/repository/default_cargo_repository.dart';
 import '../data/repository/default_cart_repository.dart';
 import '../data/repository/default_chat_repository.dart';
@@ -72,6 +75,7 @@ import '../domain/dummy/provincedummy/province_dummy.dart';
 import '../domain/dummy/userdummy/user_dummy.dart';
 import '../domain/repository/address_repository.dart';
 import '../domain/repository/banner_repository.dart';
+import '../domain/repository/bucket_repository.dart';
 import '../domain/repository/cargo_repository.dart';
 import '../domain/repository/cart_repository.dart';
 import '../domain/repository/chat_repository.dart';
@@ -93,11 +97,13 @@ import '../domain/usecase/add_wishlist_use_case.dart';
 import '../domain/usecase/answer_help_conversation_use_case.dart';
 import '../domain/usecase/answer_order_conversation_use_case.dart';
 import '../domain/usecase/answer_product_conversation_use_case.dart';
+import '../domain/usecase/approve_or_reject_request_bucket_use_case.dart';
 import '../domain/usecase/change_additional_item_use_case.dart';
 import '../domain/usecase/change_address_use_case.dart';
 import '../domain/usecase/change_password_use_case.dart';
 import '../domain/usecase/check_active_pin_use_case.dart';
 import '../domain/usecase/check_rates_for_various_countries_use_case.dart';
+import '../domain/usecase/create_bucket_use_case.dart';
 import '../domain/usecase/create_help_conversation_use_case.dart';
 import '../domain/usecase/create_order_conversation_use_case.dart';
 import '../domain/usecase/create_order_use_case.dart';
@@ -197,10 +203,13 @@ import '../domain/usecase/remove_address_use_case.dart';
 import '../domain/usecase/remove_from_cart_directly_use_case.dart';
 import '../domain/usecase/remove_from_cart_use_case.dart';
 import '../domain/usecase/remove_from_favorite_product_brand_use_case.dart';
+import '../domain/usecase/remove_member_bucket_use_case.dart';
 import '../domain/usecase/remove_wishlist_based_product_use_case.dart';
 import '../domain/usecase/remove_wishlist_use_case.dart';
 import '../domain/usecase/reply_product_discussion_use_case.dart';
 import '../domain/usecase/repurchase_use_case.dart';
+import '../domain/usecase/request_join_bucket_use_case.dart';
+import '../domain/usecase/show_bucket_by_id_use_case.dart';
 import '../domain/usecase/take_friend_cart_use_case.dart';
 import '../domain/usecase/update_current_selected_address_use_case.dart';
 import '../domain/usecase/update_read_status_help_conversation_use_case.dart';
@@ -611,6 +620,11 @@ class _Injector {
     locator.registerLazySingleton<GetNotificationByUserListUseCase>(() => GetNotificationByUserListUseCase(notificationRepository: locator()));
     locator.registerLazySingleton<GetNotificationByUserPagingUseCase>(() => GetNotificationByUserPagingUseCase(notificationRepository: locator()));
     locator.registerLazySingleton<GetTransactionNotificationDetailUseCase>(() => GetTransactionNotificationDetailUseCase(notificationRepository: locator()));
+    locator.registerLazySingleton<ShowBucketByIdUseCase>(() => ShowBucketByIdUseCase(bucketRepository: locator()));
+    locator.registerLazySingleton<CreateBucketUseCase>(() => CreateBucketUseCase(bucketRepository: locator()));
+    locator.registerLazySingleton<RequestJoinBucketUseCase>(() => RequestJoinBucketUseCase(bucketRepository: locator()));
+    locator.registerLazySingleton<ApproveOrRejectRequestBucketUseCase>(() => ApproveOrRejectRequestBucketUseCase(bucketRepository: locator()));
+    locator.registerLazySingleton<RemoveMemberBucketUseCase>(() => RemoveMemberBucketUseCase(bucketRepository: locator()));
 
     // Repository
     locator.registerLazySingleton<UserRepository>(() => DefaultUserRepository(userDataSource: locator()));
@@ -636,6 +650,7 @@ class _Injector {
     locator.registerLazySingleton<FaqRepository>(() => DefaultFaqRepository(faqDataSource: locator()));
     locator.registerLazySingleton<ChatRepository>(() => DefaultChatRepository(chatDataSource: locator()));
     locator.registerLazySingleton<NotificationRepository>(() => DefaultNotificationRepository(notificationDataSource: locator()));
+    locator.registerLazySingleton<BucketRepository>(() => DefaultBucketRepository(bucketDataSource: locator()));
 
     // Data Sources
     locator.registerLazySingleton<UserDataSource>(() => DefaultUserDataSource(dio: locator()));
@@ -666,6 +681,7 @@ class _Injector {
     locator.registerLazySingleton<FaqDataSource>(() => DefaultFaqDataSource(dio: locator()));
     locator.registerLazySingleton<ChatDataSource>(() => DefaultChatDataSource(dio: locator()));
     locator.registerLazySingleton<NotificationDataSource>(() => DefaultNotificationDataSource(dio: locator()));
+    locator.registerLazySingleton<BucketDataSource>(() => DefaultBucketDataSource(dio: locator()));
 
     // Dio
     locator.registerLazySingleton<Dio>(() => DioHttpClient.of());
