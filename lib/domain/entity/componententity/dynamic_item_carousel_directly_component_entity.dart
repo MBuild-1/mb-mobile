@@ -19,7 +19,8 @@ class DynamicItemCarouselDirectlyComponentEntity<T> implements IDynamicItemCarou
   }) : _title = title,
       _description = description,
       _onDynamicItemAction = onDynamicItemAction,
-      _onObserveDynamicItemActionStateDirectly = observeDynamicItemActionStateDirectly;
+      _onObserveDynamicItemActionStateDirectly = observeDynamicItemActionStateDirectly,
+      _dynamicItemCarouselAdditionalParameter = dynamicItemCarouselAdditionalParameter;
 
   @override
   MultiLanguageString? get title => _title;

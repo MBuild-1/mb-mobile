@@ -32,6 +32,7 @@ import '../../itemtypelistsubinterceptor/profile_item_type_list_sub_interceptor.
 import '../../itemtypelistsubinterceptor/province_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/row_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/search_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/shimmer_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/stack_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/verticalgriditemtypelistsubinterceptor/vertical_grid_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/video_item_type_list_sub_interceptor.dart';
@@ -270,6 +271,9 @@ class ListItemControllerStateItemTypeInterceptorChecker extends ItemTypeListInte
       listItemControllerStateItemTypeInterceptorChecker: this
     ),
     PaddingContainerItemTypeListSubInterceptor(
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
+    ShimmerContainerItemTypeListSubInterceptor(
       listItemControllerStateItemTypeInterceptorChecker: this
     ),
     StackContainerItemTypeListSubInterceptor(

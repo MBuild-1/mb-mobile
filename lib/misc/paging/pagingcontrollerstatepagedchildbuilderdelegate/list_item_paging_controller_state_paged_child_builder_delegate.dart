@@ -207,6 +207,7 @@ import '../../controllerstate/listitemcontrollerstate/selectcountrieslistitemcon
 import '../../controllerstate/listitemcontrollerstate/selectcountrieslistitemcontrollerstate/vertical_country_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/selectprovinceslistitemcontrollerstate/province_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/selectprovinceslistitemcontrollerstate/vertical_province_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/shimmer_container_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/shipping_address_indicator_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/stack_container_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/videocarousellistitemcontrollerstate/default_video_carousel_list_item_controller_state.dart';
@@ -646,6 +647,10 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
       return Padding(
         padding: item.padding,
         child: _itemBuilder(context, item.paddingChildListItemControllerState, index)
+      );
+    } else if (item is ShimmerContainerListItemControllerState) {
+      return ModifiedShimmer.fromColors(
+        child: _itemBuilder(context, item.shimmerChildListItemControllerState, index)
       );
     } else if (item is StackContainerListItemControllerState) {
       List<Widget> result = [];

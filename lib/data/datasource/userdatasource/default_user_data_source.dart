@@ -152,7 +152,7 @@ class DefaultUserDataSource implements UserDataSource {
   @override
   FutureProcessing<CheckActivePinResponse> checkActivePin(CheckActivePinParameter checkActivePinParameter) {
     return DioHttpClientProcessing((cancelToken) {
-      return dio.get("/check/pin", cancelToken: cancelToken)
+      return dio.get("/active/pin", cancelToken: cancelToken)
         .map<CheckActivePinResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToCheckActivePinResponse());
     });
   }

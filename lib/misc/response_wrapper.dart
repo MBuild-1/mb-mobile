@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 import 'response_encyption_helper.dart';
 
 class ResponseWrapper {
@@ -21,12 +23,18 @@ class MainStructureResponseWrapper extends ResponseWrapper {
   }
 
   MainStructureResponseWrapper(dynamic fullResponse) : super(fullResponse) {
-    dynamic meta = fullResponse["meta"];
-    dynamic dataResponse = fullResponse["data"];
-    dynamic decryptedDataResponse = ResponseEncryptionHelper.decryptResponseData(dataResponse);
-    status = meta["status"];
-    code = meta["code"];
-    message = meta["message"];
-    _dataResponse = decryptedDataResponse;
+    try {
+      dynamic meta = fullResponse["meta"];
+      dynamic dataResponse = fullResponse["data"];
+      dynamic decryptedDataResponse = ResponseEncryptionHelper.decryptResponseData(dataResponse);
+      status = meta["status"];
+      code = meta["code"];
+      message = meta["message"];
+      _dataResponse = decryptedDataResponse;
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error while init main structure response wrapper: $e");
+      }
+    }
   }
 }
