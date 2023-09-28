@@ -483,6 +483,23 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
     newListItemControllerState.add(
       VirtualSpacingListItemControllerState(height: padding())
     );
+    ListItemControllerState orderInvoiceDescriptionListItemControllerState = PaddingContainerListItemControllerState(
+      padding: EdgeInsets.symmetric(horizontal: padding()),
+      paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
+        widgetSubstitution: (context, index) => Text(
+          MultiLanguageString({
+            Constant.textEnUsLanguageKey: "Order invoice is generated. Tap button below for open order invoice.",
+            Constant.textInIdLanguageKey: "Invoice Pemesanan sudah dibuat. Tap tombol dibawah untuk membuka invoice pemesanan.",
+          }).toEmptyStringNonNull
+        )
+      )
+    );
+    listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
+      i, ListItemControllerStateWrapper(orderInvoiceDescriptionListItemControllerState), oldItemTypeList, newListItemControllerState
+    );
+    newListItemControllerState.add(
+      VirtualSpacingListItemControllerState(height: padding())
+    );
     ListItemControllerState orderInvoiceDetailTypeListItemControllerState = PaddingContainerListItemControllerState(
       padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
       paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
