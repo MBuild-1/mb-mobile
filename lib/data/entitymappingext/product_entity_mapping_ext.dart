@@ -11,6 +11,7 @@ import '../../domain/entity/product/productbrand/favorite_product_brand.dart';
 import '../../domain/entity/product/productbrand/product_brand.dart';
 import '../../domain/entity/product/productbrand/product_brand_detail.dart';
 import '../../domain/entity/product/productbrand/remove_from_favorite_product_brand_response.dart';
+import '../../domain/entity/product/productbrand/selected_product_brand.dart';
 import '../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../domain/entity/product/productbundle/product_bundle_detail.dart';
 import '../../domain/entity/product/productcategory/product_category.dart';
@@ -229,7 +230,7 @@ extension ProductBrandDetailEntityMappingExt on ResponseWrapper {
 
   ProductBrand mapFromResponseToProductBrand(List<FavoriteProductBrand> favoriteProductBrandList, {bool? isAddedToFavorite}) {
     String productBrandId = response["id"];
-    return ProductBrand(
+    ProductBrand productBrand = ProductBrand(
       id: productBrandId,
       name: response["name"],
       slug: response["slug"],
@@ -238,6 +239,21 @@ extension ProductBrandDetailEntityMappingExt on ResponseWrapper {
       bannerMobile: response["banner_mobile"],
       isAddedToFavorite: isAddedToFavorite ?? favoriteProductBrandList.where((favoriteProductBrand) => favoriteProductBrand.productBrand.id == productBrandId).isNotEmpty
     );
+    Map<String, dynamic> responseMap = response as Map<String, dynamic>;
+    if (responseMap.containsKey("banner_brand_choosen_desktop") && responseMap.containsKey("banner_brand_choosen_mobile")) {
+      return SelectedProductBrand(
+        id: productBrand.id,
+        name: productBrand.name,
+        slug: productBrand.slug,
+        icon: productBrand.icon,
+        bannerDesktop: productBrand.bannerMobile,
+        bannerMobile: productBrand.bannerDesktop,
+        isAddedToFavorite: productBrand.isAddedToFavorite,
+        bannerBrandChosenDesktop: responseMap["banner_brand_choosen_desktop"],
+        bannerBrandChosenMobile: responseMap["banner_brand_choosen_mobile"]
+      );
+    }
+    return productBrand;
   }
 
   ProductBrandDetail mapFromResponseToProductBrandDetail(List<FavoriteProductBrand> favoriteProductBrandList) {
@@ -249,7 +265,7 @@ extension ProductBrandDetailEntityMappingExt on ResponseWrapper {
       icon: response["icon"],
       bannerDesktop: response["banner_desktop"],
       bannerMobile: response["banner_mobile"],
-      shortProductList: ResponseWrapper(response["product"]).mapFromResponseToShortProductList(),
+      shortProductList: response["product"] != null ? ResponseWrapper(response["product"]).mapFromResponseToShortProductList() : [],
       isAddedToFavorite: favoriteProductBrandList.where((favoriteProductBrand) => favoriteProductBrand.productBrand.id == productBrandId).isNotEmpty
     );
   }
