@@ -19,12 +19,13 @@ extension DateTimeResponseWrapperExt on ResponseWrapper {
 
 extension PagingResponseWrapperExt on ResponseWrapper {
   PagingDataResult<T> mapFromResponseToPagingDataResult<T>(List<T> Function(dynamic dataResponse) onMapToPagingDataResult) {
-    dynamic data = response["data"];
-    dynamic currentPage = response["current_page"];
+    bool isResponseMap = response is Map<String, dynamic>;
+    dynamic data = isResponseMap ? response["data"] : response;
+    dynamic currentPage = isResponseMap ? response["current_page"] : null;
     return PagingDataResult<T>(
       page: currentPage ?? 1,
-      totalPage: response["last_page"] ?? 1,
-      totalItem: response["total"] ?? -1,
+      totalPage: (isResponseMap ? response["last_page"] : null) ?? 1,
+      totalItem: (isResponseMap ? response["total"] : null) ?? -1,
       itemList: onMapToPagingDataResult(data)
     );
   }

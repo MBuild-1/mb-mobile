@@ -174,6 +174,8 @@ import '../domain/usecase/get_product_message_by_user_use_case.dart';
 import '../domain/usecase/get_product_viral_list_use_case.dart';
 import '../domain/usecase/get_product_viral_paging_use_case.dart';
 import '../domain/usecase/get_province_map_use_case.dart';
+import '../domain/usecase/get_selected_beauty_brands_list_use_case.dart';
+import '../domain/usecase/get_selected_beauty_brands_paging_use_case.dart';
 import '../domain/usecase/get_selected_fashion_brands_list_use_case.dart';
 import '../domain/usecase/get_selected_fashion_brands_paging_use_case.dart';
 import '../domain/usecase/get_shipping_price_contents_banner_use_case.dart';
@@ -263,6 +265,7 @@ class _Injector {
         getSnackForLyingAroundListUseCase: locator(),
         getBestsellerInMasterbagasiListUseCase: locator(),
         getSelectedFashionBrandsListUseCase: locator(),
+        getSelectedBeautyBrandsListUseCase: locator(),
         getCoffeeAndTeaOriginIndonesiaListUseCase: locator(),
         getBeautyProductIndonesiaListUseCase: locator(),
         getFashionProductIndonesiaListUseCase: locator(),
@@ -540,6 +543,8 @@ class _Injector {
     locator.registerLazySingleton<GetBestsellerInMasterbagasiListUseCase>(() => GetBestsellerInMasterbagasiListUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetSelectedFashionBrandsListUseCase>(() => GetSelectedFashionBrandsListUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetSelectedFashionBrandsPagingUseCase>(() => GetSelectedFashionBrandsPagingUseCase(productRepository: locator()));
+    locator.registerLazySingleton<GetSelectedBeautyBrandsListUseCase>(() => GetSelectedBeautyBrandsListUseCase(productRepository: locator()));
+    locator.registerLazySingleton<GetSelectedBeautyBrandsPagingUseCase>(() => GetSelectedBeautyBrandsPagingUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetCoffeeAndTeaOriginIndonesiaListUseCase>(() => GetCoffeeAndTeaOriginIndonesiaListUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetBeautyProductIndonesiaListUseCase>(() => GetBeautyProductIndonesiaListUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetFashionProductIndonesiaListUseCase>(() => GetFashionProductIndonesiaListUseCase(productRepository: locator()));

@@ -57,6 +57,7 @@ abstract class ProductRepository {
   FutureProcessing<LoadDataResult<ProductEntryHeaderContentResponse>> productEntryHeaderContent(ProductEntryHeaderContentParameter productEntryHeaderContentParameter);
   FutureProcessing<LoadDataResult<PagingDataResult<Product>>> productPaging(ProductPagingParameter productPagingParameter);
   FutureProcessing<LoadDataResult<PagingDataResult<ProductBrand>>> selectedFashionProductBrandPaging(ProductBrandPagingParameter productBrandPagingParameter);
+  FutureProcessing<LoadDataResult<PagingDataResult<ProductBrand>>> selectedBeautyProductBrandPaging(ProductBrandPagingParameter productBrandPagingParameter);
   FutureProcessing<LoadDataResult<PagingDataResult<ProductBrand>>> productBrandPaging(ProductBrandPagingParameter productBrandPagingParameter);
   FutureProcessing<LoadDataResult<PagingDataResult<ProductCategory>>> productCategoryPaging(ProductCategoryPagingParameter productCategoryPagingParameter);
   FutureProcessing<LoadDataResult<PagingDataResult<ProductBundle>>> productBundlePaging(ProductBundlePagingParameter productBundlePagingParameter);

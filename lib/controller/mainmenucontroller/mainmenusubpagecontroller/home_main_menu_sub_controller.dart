@@ -39,6 +39,7 @@ import '../../../domain/usecase/get_product_bundle_list_use_case.dart';
 import '../../../domain/usecase/get_product_category_list_use_case.dart';
 import '../../../domain/usecase/get_product_entry_with_condition_paging_use_case.dart';
 import '../../../domain/usecase/get_product_viral_list_use_case.dart';
+import '../../../domain/usecase/get_selected_beauty_brands_list_use_case.dart';
 import '../../../domain/usecase/get_selected_fashion_brands_list_use_case.dart';
 import '../../../domain/usecase/get_shipping_price_contents_banner_use_case.dart';
 import '../../../domain/usecase/get_snack_for_lying_around_list_use_case.dart';
@@ -66,6 +67,7 @@ class HomeMainMenuSubController extends BaseGetxController {
   final GetSnackForLyingAroundListUseCase getSnackForLyingAroundListUseCase;
   final GetBestsellerInMasterbagasiListUseCase getBestsellerInMasterbagasiListUseCase;
   final GetSelectedFashionBrandsListUseCase getSelectedFashionBrandsListUseCase;
+  final GetSelectedBeautyBrandsListUseCase getSelectedBeautyBrandsListUseCase;
   final GetCoffeeAndTeaOriginIndonesiaListUseCase getCoffeeAndTeaOriginIndonesiaListUseCase;
   final GetBeautyProductIndonesiaListUseCase getBeautyProductIndonesiaListUseCase;
   final GetFashionProductIndonesiaListUseCase getFashionProductIndonesiaListUseCase;
@@ -95,6 +97,7 @@ class HomeMainMenuSubController extends BaseGetxController {
     this.getSnackForLyingAroundListUseCase,
     this.getBestsellerInMasterbagasiListUseCase,
     this.getSelectedFashionBrandsListUseCase,
+    this.getSelectedBeautyBrandsListUseCase,
     this.getCoffeeAndTeaOriginIndonesiaListUseCase,
     this.getBeautyProductIndonesiaListUseCase,
     this.getFashionProductIndonesiaListUseCase,
@@ -859,7 +862,7 @@ class HomeMainMenuSubController extends BaseGetxController {
         title: Constant.multiLanguageStringChoiceBeautyBrand,
         onDynamicItemAction: (title, description, observer) async {
           observer(title, description, IsLoadingLoadDataResult<List<ProductBrand>>());
-          LoadDataResult<List<ProductBrand>> productEntryPagingDataResult = await getSelectedFashionBrandsListUseCase.execute().future(
+          LoadDataResult<List<ProductBrand>> productEntryPagingDataResult = await getSelectedBeautyBrandsListUseCase.execute().future(
             parameter: apiRequestManager.addRequestToCancellationPart("choice-beauty-brand").value
           );
           if (productEntryPagingDataResult.isFailedBecauseCancellation) {
@@ -960,6 +963,7 @@ class HomeMainMenuSubControllerInjectionFactory {
   final GetSelectedFashionBrandsListUseCase getSelectedFashionBrandsListUseCase;
   final GetCoffeeAndTeaOriginIndonesiaListUseCase getCoffeeAndTeaOriginIndonesiaListUseCase;
   final GetBeautyProductIndonesiaListUseCase getBeautyProductIndonesiaListUseCase;
+  final GetSelectedBeautyBrandsListUseCase getSelectedBeautyBrandsListUseCase;
   final GetFashionProductIndonesiaListUseCase getFashionProductIndonesiaListUseCase;
   final GetHandycraftsContentsBannerUseCase getHandycraftsContentsBannerUseCase;
   final GetKitchenContentsBannerUseCase getKitchenContentsBannerUseCase;
@@ -982,6 +986,7 @@ class HomeMainMenuSubControllerInjectionFactory {
     required this.getSelectedFashionBrandsListUseCase,
     required this.getCoffeeAndTeaOriginIndonesiaListUseCase,
     required this.getBeautyProductIndonesiaListUseCase,
+    required this.getSelectedBeautyBrandsListUseCase,
     required this.getFashionProductIndonesiaListUseCase,
     required this.getHandycraftsContentsBannerUseCase,
     required this.getKitchenContentsBannerUseCase,
@@ -1007,6 +1012,7 @@ class HomeMainMenuSubControllerInjectionFactory {
         getSnackForLyingAroundListUseCase,
         getBestsellerInMasterbagasiListUseCase,
         getSelectedFashionBrandsListUseCase,
+        getSelectedBeautyBrandsListUseCase,
         getCoffeeAndTeaOriginIndonesiaListUseCase,
         getBeautyProductIndonesiaListUseCase,
         getFashionProductIndonesiaListUseCase,

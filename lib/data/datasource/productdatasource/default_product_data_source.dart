@@ -114,6 +114,16 @@ class DefaultProductDataSource implements ProductDataSource {
   }
 
   @override
+  FutureProcessing<PagingDataResult<ProductBrand>> selectedBeautyProductBrandPaging(ProductBrandPagingParameter productBrandPagingParameter) {
+    return DioHttpClientProcessing((cancelToken) async {
+      List<FavoriteProductBrand> favoriteProductBrandListResult = await _favoriteProductBrandListIgnoringLoginError(FavoriteProductBrandListParameter()).future(parameter: cancelToken);
+      String pageParameterPath = "/?pageNumber=${productBrandPagingParameter.itemEachPageCount}&page=${productBrandPagingParameter.page}";
+      return await dio.get("/product/brand/banner/beauty$pageParameterPath", cancelToken: cancelToken)
+        .map<PagingDataResult<ProductBrand>>(onMap: (value) => value.wrapResponse().mapFromResponseToProductBrandPaging(favoriteProductBrandListResult));
+    });
+  }
+
+  @override
   FutureProcessing<List<ProductCategory>> productCategoryList(ProductCategoryListParameter productCategoryListParameter) {
     return DioHttpClientProcessing((cancelToken) {
       return dio.get("/product/category", cancelToken: cancelToken)
@@ -246,6 +256,8 @@ class DefaultProductDataSource implements ProductDataSource {
         .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductBrandDetail(favoriteProductBrandListResult));
     });
   }
+
+  // Mas untuk yang bagian kenapa banner brandnya error di load itu karena response dari get product brand detail (v1/mobile/product/brand/966fb13a-f3fd-4151-8ccc-0f13082e68cc) itu fieldnya ada yang hilang,
 
   @override
   FutureProcessing<ProductCategoryDetail> productCategoryDetail(ProductCategoryDetailParameter productCategoryDetailParameter) {

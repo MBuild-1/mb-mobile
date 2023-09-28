@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../../../../domain/entity/product/productbrand/product_brand.dart';
+import '../../../../domain/entity/product/productbrand/selected_product_brand.dart';
 import '../../../../misc/page_restoration_helper.dart';
 import '../../../page/product_entry_page.dart';
 import '../../modifiedcachednetworkimage/product_modified_cached_network_image.dart';
@@ -23,6 +24,13 @@ abstract class SquareProductBrandItem extends StatelessWidget {
       topLeft: Radius.circular(16.0),
       bottomRight: Radius.circular(16.0)
     );
+    String? imageUrl;
+    if (productBrand is SelectedProductBrand) {
+      SelectedProductBrand selectedProductBrand = productBrand as SelectedProductBrand;
+      imageUrl = selectedProductBrand.bannerBrandChosenMobile ?? selectedProductBrand.bannerBrandChosenDesktop ?? selectedProductBrand.icon;
+    } else {
+      imageUrl = productBrand.icon;
+    }
     return SizedBox(
       width: itemWidth,
       child: Padding(
@@ -55,7 +63,7 @@ abstract class SquareProductBrandItem extends StatelessWidget {
                     aspectRatio: 1.0,
                     child: ClipRRect(
                       child: ProductModifiedCachedNetworkImage(
-                        imageUrl: productBrand.icon.toEmptyStringNonNull
+                        imageUrl: imageUrl.toEmptyStringNonNull
                       )
                     )
                   ),

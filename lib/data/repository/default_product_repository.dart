@@ -189,6 +189,11 @@ class DefaultProductRepository implements ProductRepository {
   }
 
   @override
+  FutureProcessing<LoadDataResult<PagingDataResult<ProductBrand>>> selectedBeautyProductBrandPaging(ProductBrandPagingParameter productBrandPagingParameter) {
+    return productDataSource.selectedBeautyProductBrandPaging(productBrandPagingParameter).mapToLoadDataResult<PagingDataResult<ProductBrand>>();
+  }
+
+  @override
   FutureProcessing<LoadDataResult<PagingDataResult<ProductCategory>>> productCategoryPaging(ProductCategoryPagingParameter productCategoryPagingParameter) {
     return productDataSource.productCategoryPaging(productCategoryPagingParameter).mapToLoadDataResult<PagingDataResult<ProductCategory>>();
   }
