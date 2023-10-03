@@ -9,6 +9,7 @@ import '../../controller/product_brand_controller.dart';
 import '../../domain/entity/product/productbrand/product_brand.dart';
 import '../../domain/entity/product/productbrand/product_brand_paging_parameter.dart';
 import '../../domain/usecase/get_product_brand_paging_use_case.dart';
+import '../../domain/usecase/get_selected_beauty_brands_paging_use_case.dart';
 import '../../domain/usecase/get_selected_fashion_brands_paging_use_case.dart';
 import '../../misc/additionalloadingindicatorchecker/product_bundle_additional_paging_result_parameter_checker.dart';
 import '../../misc/constant.dart';
@@ -55,7 +56,8 @@ class ProductBrandPage extends RestorableGetxPage<_ProductBrandPageRestoration> 
       ProductBrandController(
         controllerManager,
         Injector.locator<GetProductBrandPagingUseCase>(),
-        Injector.locator<GetSelectedFashionBrandsPagingUseCase>()
+        Injector.locator<GetSelectedFashionBrandsPagingUseCase>(),
+        Injector.locator<GetSelectedBeautyBrandsPagingUseCase>()
       ),
       tag: pageName
     );
@@ -232,6 +234,14 @@ class _StatefulProductBrandControllerMediatorWidgetState extends State<_Stateful
         )
       );
       title = Constant.multiLanguageStringSelectedFashionBrands.toEmptyStringNonNull;
+    } else if (productBrandPageType == ProductBrandPageType.selectedBeautyBrandProductDetail) {
+      productBrandLoadDataResult = await widget.productBrandController.getSelectedBeautyBrandsPaging(
+        ProductBrandPagingParameter(
+          page: pageKey,
+          itemEachPageCount: 10
+        )
+      );
+      title = Constant.multiLanguageStringChoiceBeautyBrand.toEmptyStringNonNull;
     }
     return productBrandLoadDataResult.map<PagingResult<ListItemControllerState>>((productBrandPaging) {
       List<ListItemControllerState> resultListItemControllerState = [];
@@ -309,7 +319,7 @@ class _StatefulProductBrandControllerMediatorWidgetState extends State<_Stateful
 }
 
 enum ProductBrandPageType {
-  defaultProductDetail, selectedFashionBrandProductDetail
+  defaultProductDetail, selectedFashionBrandProductDetail, selectedBeautyBrandProductDetail
 }
 
 class ProductBrandPageParameter {
@@ -327,6 +337,8 @@ extension ProductBrandPageParameterExt on ProductBrandPageParameter {
       type = "1";
     } else if (productBrandPageType == ProductBrandPageType.selectedFashionBrandProductDetail) {
       type = "2";
+    } else if (productBrandPageType == ProductBrandPageType.selectedBeautyBrandProductDetail) {
+      type = "3";
     }
     return StringUtil.encodeBase64StringFromJson(
       <String, dynamic>{
@@ -345,6 +357,8 @@ extension ProductBrandPageParameterStringExt on String {
       productBrandPageType = ProductBrandPageType.defaultProductDetail;
     } else if (type == "2") {
       productBrandPageType = ProductBrandPageType.selectedFashionBrandProductDetail;
+    } else if (type == "3") {
+      productBrandPageType = ProductBrandPageType.selectedBeautyBrandProductDetail;
     }
     return ProductBrandPageParameter(
       productBrandPageType: productBrandPageType

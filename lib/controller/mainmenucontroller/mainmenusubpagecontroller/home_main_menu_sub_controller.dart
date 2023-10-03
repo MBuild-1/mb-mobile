@@ -891,7 +891,7 @@ class HomeMainMenuSubController extends BaseGetxController {
                 title: title,
                 description: description,
                 productBrandList: productBrandList,
-                data: Constant.carouselKeySelectedFashionBrands
+                data: Constant.carouselKeyChoiceBeautyBrand
               )
             );
           }

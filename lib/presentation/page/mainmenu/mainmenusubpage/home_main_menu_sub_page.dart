@@ -390,6 +390,23 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
                 )
               )
             );
+          } else if (data == Constant.carouselKeyChoiceBeautyBrand) {
+            carouselBackground = AssetCarouselBackground(
+              assetImageName: Constant.imagePatternBlackSquare,
+              imageBackgroundHeight: 340
+            );
+            carouselListItemType = TileCarouselListItemType();
+            additionalParameter = HorizontalBrandAppearanceParameterizedEntityAndListItemControllerStateMediatorParameter(
+              horizontalBrandAppearance: HorizontalBrandAppearance.squareAppearance
+            );
+            titleInterceptor = (text, style) => titleArea(
+              title: Text(text.toStringNonNull, style: style?.copyWith(color: Colors.white)),
+              onTapMore: () => PageRestorationHelper.toProductBrandPage(
+                context, ProductBrandPageParameter(
+                  productBrandPageType: ProductBrandPageType.selectedBeautyBrandProductDetail
+                )
+              )
+            );
           } else if (data == Constant.carouselKeyCoffeeAndTeaOriginIndonesia) {
             carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternBlue);
             titleInterceptor = (text, style) => titleArea(

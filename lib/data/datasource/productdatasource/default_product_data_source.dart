@@ -257,8 +257,6 @@ class DefaultProductDataSource implements ProductDataSource {
     });
   }
 
-  // Mas untuk yang bagian kenapa banner brandnya error di load itu karena response dari get product brand detail (v1/mobile/product/brand/966fb13a-f3fd-4151-8ccc-0f13082e68cc) itu fieldnya ada yang hilang,
-
   @override
   FutureProcessing<ProductCategoryDetail> productCategoryDetail(ProductCategoryDetailParameter productCategoryDetailParameter) {
     return DioHttpClientProcessing((cancelToken) {
