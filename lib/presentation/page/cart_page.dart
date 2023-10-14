@@ -31,6 +31,7 @@ import '../../domain/usecase/remove_additional_item_use_case.dart';
 import '../../domain/usecase/remove_from_cart_use_case.dart';
 import '../../misc/additionalloadingindicatorchecker/cart_additional_paging_result_parameter_checker.dart';
 import '../../misc/constant.dart';
+import '../../misc/controllercontentdelegate/shared_cart_controller_content_delegate.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/cart_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/cart_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/vertical_cart_list_item_controller_state.dart';
@@ -65,6 +66,7 @@ import 'delivery_page.dart';
 import 'getx_page.dart';
 import 'modaldialogpage/add_cart_note_modal_dialog_page.dart';
 import 'modaldialogpage/cart_summary_cart_modal_dialog_page.dart';
+import 'shared_cart_page.dart';
 import 'take_friend_cart_page.dart';
 import 'dart:math' as math;
 
@@ -86,7 +88,8 @@ class CartPage extends RestorableGetxPage<_CartPageRestoration> {
         Injector.locator<AddAdditionalItemUseCase>(),
         Injector.locator<ChangeAdditionalItemUseCase>(),
         Injector.locator<RemoveAdditionalItemUseCase>(),
-        Injector.locator<AddWishlistUseCase>()
+        Injector.locator<AddWishlistUseCase>(),
+        Injector.locator<SharedCartControllerContentDelegate>()
       ),
       tag: pageName
     );
@@ -105,7 +108,7 @@ class CartPage extends RestorableGetxPage<_CartPageRestoration> {
   }
 }
 
-class _CartPageRestoration extends MixableGetxPageRestoration with CartPageRestorationMixin, TakeFriendCartPageRestorationMixin, DeliveryPageRestorationMixin {
+class _CartPageRestoration extends MixableGetxPageRestoration with CartPageRestorationMixin, TakeFriendCartPageRestorationMixin, DeliveryPageRestorationMixin, SharedCartPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
@@ -349,6 +352,12 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
         },
       )
     );
+    widget.cartController.sharedCartControllerContentDelegate.setSharedCartDelegate(
+      Injector.locator<SharedCartDelegateFactory>().generateSharedCartDelegate(
+        onGetBuildContext: () => context,
+        onGetErrorProvider: () => Injector.locator<ErrorProvider>()
+      )
+    );
     return Scaffold(
       appBar: ModifiedAppBar(
         titleInterceptor: (context, title) => Row(
@@ -376,7 +385,7 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SharedCartIndicator(
-                      onTap: () => DialogHelper.showSharedCartOptionsPrompt(context),
+                      onTap: () => widget.cartController.sharedCartControllerContentDelegate.checkSharedCart(),
                     ),
                     const SizedBox(height: 16),
                     Row(

@@ -4,7 +4,7 @@ import 'package:masterbagasi/misc/ext/validation_result_ext.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../controller/modaldialogcontroller/add_host_cart_modal_dialog_controller.dart';
-import '../../../domain/usecase/add_host_cart_use_case.dart';
+import '../../../domain/usecase/create_bucket_use_case.dart';
 import '../../../misc/dialog_helper.dart';
 import '../../../misc/errorprovider/error_provider.dart';
 import '../../../misc/injector.dart';
@@ -28,7 +28,7 @@ class AddHostCartModalDialogPage extends ModalDialogPage<AddHostCartModalDialogC
   AddHostCartModalDialogController onCreateModalDialogController() {
     return AddHostCartModalDialogController(
       controllerManager,
-      Injector.locator<AddHostCartUseCase>()
+      Injector.locator<CreateBucketUseCase>()
     );
   }
 
@@ -61,8 +61,8 @@ class _StatefulAddHostCartControllerMediatorWidgetState extends State<_StatefulA
     widget.addHostCartModalDialogController.setAddHostCartModalDialogDelegate(
       AddHostCartModalDialogDelegate(
         onUnfocusAllWidget: () => FocusScope.of(context).unfocus(),
-        onGetHostCartIdInput: () => _hostCartIdTextEditingController.text,
-        onGetHostCartPasswordInput: () => _hostCartPasswordTextEditingController.text,
+        onGetHostCartBucketUsernameInput: () => _hostCartIdTextEditingController.text,
+        onGetHostCartBucketPasswordInput: () => _hostCartPasswordTextEditingController.text,
         onAddHostCartBack: () => Get.back(),
         onShowAddHostCartRequestProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
         onShowAddHostCartRequestProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
@@ -99,7 +99,7 @@ class _StatefulAddHostCartControllerMediatorWidgetState extends State<_StatefulA
             ),
           ),
           const SizedBox(height: 20),
-          Text("Host Cart Id".tr),
+          Text("Host Cart Username".tr),
           const SizedBox(height: 10),
           RxConsumer<Validator>(
             rxValue: widget.addHostCartModalDialogController.hostCartIdValidatorRx,
@@ -107,7 +107,7 @@ class _StatefulAddHostCartControllerMediatorWidgetState extends State<_StatefulA
               child: (context, validationResult, validator) => ModifiedTextField(
                 isError: validationResult.isFailed,
                 controller: _hostCartIdTextEditingController,
-                decoration: DefaultInputDecoration(hintText: "Enter host cart id".tr),
+                decoration: DefaultInputDecoration(hintText: "Enter host cart username".tr),
                 onChanged: (value) => validator?.validate(),
                 textInputAction: TextInputAction.next,
               ),

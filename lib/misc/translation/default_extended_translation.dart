@@ -44,6 +44,8 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Host Cart": "Keranjang Tuan Rumah",
       "Host Cart Id": "Id Keranjang Tuan Rumah",
       "Enter host cart id": "Masukan id keranjang tuan rumah",
+      "Host Cart Username": "Username Keranjang Tuan Rumah",
+      "Enter host cart username": "Masukan username keranjang tuan rumah",
       "Host cart id is required": "Id keranjang tuan rumah dibutuhkan",
       "Host Cart Password": "Password Keranjang Tuan Rumah",
       "Enter host cart password": "Masukan password keranjang tuan rumah",
@@ -268,7 +270,7 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Type Reply Product Discussion": "Ketikan Balas Diskusi Produk",
       "Reply Product Discussion": "Balas Diskusi Produk",
       "No Reply": "Belum Ada Balasan",
-      "Reply": "Balas"
+      "Reply": "Balas",
     }
   };
 

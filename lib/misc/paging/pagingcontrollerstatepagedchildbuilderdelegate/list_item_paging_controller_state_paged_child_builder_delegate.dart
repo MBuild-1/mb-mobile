@@ -9,6 +9,11 @@ import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../../../domain/entity/address/address.dart';
+import '../../../domain/entity/bucket/bucket_member.dart';
+import '../../../domain/entity/cart/cart.dart';
+import '../../../domain/entity/cart/support_cart.dart';
+import '../../../domain/entity/product/product_appearance_data.dart';
+import '../../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../../domain/entity/product/productentry/product_entry.dart';
 import '../../../presentation/page/modaldialogpage/select_address_modal_dialog_page.dart';
 import '../../../presentation/widget/additional_item_summary_widget.dart';
@@ -42,6 +47,7 @@ import '../../../presentation/widget/deliveryreview/vertical_delivery_review_ite
 import '../../../presentation/widget/faq/faq_detail_item.dart';
 import '../../../presentation/widget/faq/faq_item.dart';
 import '../../../presentation/widget/host_cart_indicator.dart';
+import '../../../presentation/widget/host_cart_member_indicator.dart';
 import '../../../presentation/widget/icon_title_and_description_list_item.dart';
 import '../../../presentation/widget/menu_profile_header.dart';
 import '../../../presentation/widget/modified_carousel_slider.dart';
@@ -88,6 +94,7 @@ import '../../../presentation/widget/productdiscussion/vertical_product_discussi
 import '../../../presentation/widget/prompt_indicator.dart';
 import '../../../presentation/widget/province/vertical_province_item.dart';
 import '../../../presentation/widget/province_map_header_list_item.dart';
+import '../../../presentation/widget/sharedcart/shared_cart_member_item.dart';
 import '../../../presentation/widget/shimmer_carousel_item.dart';
 import '../../../presentation/widget/address/shipping_address_indicator.dart';
 import '../../../presentation/widget/short_video_carousel_list_item.dart';
@@ -111,6 +118,7 @@ import '../../controllerstate/listitemcontrollerstate/carousel_list_item_control
 import '../../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/cart_header_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/cart_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/horizontal_cart_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/shared_cart_member_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/shortcartlistitemcontrollerstate/horizontal_short_cart_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/shortcartlistitemcontrollerstate/short_cart_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/shortcartlistitemcontrollerstate/vertical_short_cart_list_item_controller_state.dart';
@@ -147,6 +155,7 @@ import '../../controllerstate/listitemcontrollerstate/faqlistitemcontrollerstate
 import '../../controllerstate/listitemcontrollerstate/faqlistitemcontrollerstate/faq_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/fill_remaining_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/host_cart_indicator_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/host_cart_member_indicator_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/icon_title_and_description_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/loading_list_item_controller_state.dart';
@@ -950,7 +959,8 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
           isSelected: item.isSelected,
           onChangeSelected: item.onChangeSelected,
           showDefaultCart: item.showDefaultCart,
-          showCheck: item.showCheck
+          showCheck: item.showCheck,
+          showBottom: item.showBottom,
         );
       } else if (item is VerticalCartListItemControllerState) {
         if (item is ShimmerVerticalCartListItemControllerState) {
@@ -969,7 +979,8 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
             onRemoveCart: item.onRemoveCart,
             onChangeQuantity: item.onChangeQuantity,
             showDefaultCart: item.showDefaultCart,
-            showCheck: item.showCheck
+            showCheck: item.showCheck,
+            showBottom: item.showBottom,
           );
         }
       } else {
@@ -983,6 +994,11 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
     } else if (item is HostCartIndicatorListItemControllerState) {
       return HostCartIndicator(
         hostCart: item.hostCart,
+      );
+    } else if (item is HostCartMemberIndicatorListItemControllerState) {
+      return HostCartMemberIndicator(
+        bucketMember: item.bucketMember,
+        memberNo: item.memberNo
       );
     } else if (item is AdditionalItemListItemControllerState) {
       return AdditionalItemWidget(
@@ -1168,6 +1184,27 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
       return OrderChatHistoryItem(
         getOrderMessageByUserResponseMember: item.getOrderMessageByUserResponseMember,
         onTap: item.onTap
+      );
+    } else if (item is SharedCartMemberListItemControllerState) {
+      BucketMember bucketMember = item.bucketMember;
+      double shoppingItemTotal = 0.0;
+      double shoppingItemWeightTotal = 0.0;
+      for (Cart cart in bucketMember.bucketCartList) {
+        SupportCart supportCart = cart.supportCart;
+        shoppingItemTotal += supportCart.cartPrice;
+        if (supportCart is ProductAppearanceData) {
+          ProductAppearanceData productAppearanceData = supportCart as ProductAppearanceData;
+          shoppingItemWeightTotal += productAppearanceData.weight;
+        }
+      }
+      return SharedCartMemberItem(
+        shoppingItemTotalCount: bucketMember.bucketCartList.length,
+        shoppingItemTotal: shoppingItemTotal,
+        shoppingItemWeightTotal: shoppingItemWeightTotal,
+        onTapDelete: item.onTapDelete,
+        onTapMore: item.onTapMore,
+        isExpanded: item.isExpanded,
+        onAcceptOrDeclineMember: item.onAcceptOrDeclineMember,
       );
     } else {
       return Container();

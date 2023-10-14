@@ -12,6 +12,7 @@ import '../../../../domain/entity/user/user.dart';
 import '../../../../misc/additionalloadingindicatorchecker/menu_main_menu_sub_additional_paging_result_parameter_checker.dart';
 import '../../../../misc/carouselbackground/carousel_background.dart';
 import '../../../../misc/constant.dart';
+import '../../../../misc/controllercontentdelegate/shared_cart_controller_content_delegate.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/compound_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/load_data_result_dynamic_list_item_controller_state.dart';
@@ -173,6 +174,11 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
             onTap: (context) => PageRestorationHelper.toNotificationPage(context),
             icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorSupportMessage, width: 20.0),
             title: 'Update'.tr,
+          ),
+          ProfileMenuListItemControllerState(
+            onTap: (context) => widget.menuMainMenuSubController.sharedCartControllerContentDelegate.checkSharedCart(),
+            icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorCart, width: 20.0),
+            title: 'Shared Cart'.tr,
           ),
           SpacingListItemControllerState(),
           ProfileMenuListItemControllerState(
@@ -377,6 +383,12 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
           Provider.of<NotificationNotifier>(context, listen: false).resetNotification();
           PageRestorationHelper.toMainMenuPage(context, Constant.restorableRouteFuturePushAndRemoveUntil);
         }
+      )
+    );
+    widget.menuMainMenuSubController.sharedCartControllerContentDelegate.setSharedCartDelegate(
+      Injector.locator<SharedCartDelegateFactory>().generateSharedCartDelegate(
+        onGetBuildContext: () => context,
+        onGetErrorProvider: () => Injector.locator<ErrorProvider>()
       )
     );
     return Scaffold(

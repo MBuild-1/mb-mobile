@@ -279,7 +279,7 @@ class _StatefulTakeFriendCartControllerMediatorWidgetState extends State<_Statef
         itemList: [
           PaddingContainerListItemControllerState(
             padding: EdgeInsets.all(4.w),
-            paddingChildListItemControllerState: HostCartIndicatorListItemControllerState(hostCart: HostCart(id: "test"))
+            paddingChildListItemControllerState: HostCartIndicatorListItemControllerState(hostCart: HostCart(username: "test"))
           ),
           SpacingListItemControllerState(),
           CartContainerListItemControllerState(

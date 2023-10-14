@@ -21,6 +21,7 @@ abstract class CartItem extends StatelessWidget {
   final bool isSelected;
   final bool showDefaultCart;
   final bool showCheck;
+  final bool showBottom;
   final void Function()? onChangeSelected;
   final void Function()? onAddToNotes;
   final void Function()? onChangeNotes;
@@ -42,6 +43,7 @@ abstract class CartItem extends StatelessWidget {
     required this.showDefaultCart,
     required this.onChangeSelected,
     this.showCheck = true,
+    this.showBottom = true,
     this.onAddToNotes,
     this.onChangeNotes,
     this.onRemoveFromNotes,
@@ -144,7 +146,7 @@ abstract class CartItem extends StatelessWidget {
           )
         ],
       ),
-      content: Column(
+      content: !showBottom ? null : Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (onAddToNotes != null) ...[
@@ -168,8 +170,8 @@ abstract class CartItem extends StatelessWidget {
                 ),
               ]
             ),
-            const SizedBox(height: 10.0),
-            if (cart.notes.isNotEmptyString)
+            if (cart.notes.isNotEmptyString) ...[
+              const SizedBox(height: 10.0),
               Row(
                 children: [
                   TapArea(
@@ -193,6 +195,7 @@ abstract class CartItem extends StatelessWidget {
                   ),
                 ]
               )
+            ]
           ],
           if (showDefaultCart) ...[
             const SizedBox(height: 10),

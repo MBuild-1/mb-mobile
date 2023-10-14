@@ -3,10 +3,8 @@ import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/validation_result_ext.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../../controller/modaldialogcontroller/add_host_cart_modal_dialog_controller.dart';
 import '../../../controller/modaldialogcontroller/take_friend_cart_modal_dialog_controller.dart';
-import '../../../domain/usecase/add_host_cart_use_case.dart';
-import '../../../domain/usecase/take_friend_cart_use_case.dart';
+import '../../../domain/usecase/request_join_bucket_use_case.dart';
 import '../../../misc/dialog_helper.dart';
 import '../../../misc/errorprovider/error_provider.dart';
 import '../../../misc/injector.dart';
@@ -30,7 +28,7 @@ class TakeFriendCartModalDialogPage extends ModalDialogPage<TakeFriendCartModalD
   TakeFriendCartModalDialogController onCreateModalDialogController() {
     return TakeFriendCartModalDialogController(
       controllerManager,
-      Injector.locator<TakeFriendCartUseCase>()
+      Injector.locator<RequestJoinBucketUseCase>()
     );
   }
 
@@ -63,8 +61,8 @@ class _StatefulTakeFriendCartControllerMediatorWidgetState extends State<_Statef
     widget.takeFriendCartModalDialogController.setTakeFriendCartModalDialogDelegate(
       TakeFriendCartModalDialogDelegate(
         onUnfocusAllWidget: () => FocusScope.of(context).unfocus(),
-        onGetHostCartIdInput: () => _hostCartIdTextEditingController.text,
-        onGetHostCartPasswordInput: () => _hostCartPasswordTextEditingController.text,
+        onGetHostCartBucketUsernameInput: () => _hostCartIdTextEditingController.text,
+        onGetHostCartBucketPasswordInput: () => _hostCartPasswordTextEditingController.text,
         onTakeFriendCartBack: () => Get.back(),
         onShowTakeFriendCartRequestProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
         onShowTakeFriendCartRequestProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
@@ -101,7 +99,7 @@ class _StatefulTakeFriendCartControllerMediatorWidgetState extends State<_Statef
             ),
           ),
           const SizedBox(height: 20),
-          Text("Host Cart Id".tr),
+          Text("Host Cart Username".tr),
           const SizedBox(height: 10),
           RxConsumer<Validator>(
             rxValue: widget.takeFriendCartModalDialogController.hostCartIdValidatorRx,
@@ -109,7 +107,7 @@ class _StatefulTakeFriendCartControllerMediatorWidgetState extends State<_Statef
               child: (context, validationResult, validator) => ModifiedTextField(
                 isError: validationResult.isFailed,
                 controller: _hostCartIdTextEditingController,
-                decoration: DefaultInputDecoration(hintText: "Enter host cart id".tr),
+                decoration: DefaultInputDecoration(hintText: "Enter host cart username".tr),
                 onChanged: (value) => validator?.validate(),
                 textInputAction: TextInputAction.next,
               ),

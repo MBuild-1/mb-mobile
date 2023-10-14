@@ -102,7 +102,9 @@ import '../domain/usecase/change_additional_item_use_case.dart';
 import '../domain/usecase/change_address_use_case.dart';
 import '../domain/usecase/change_password_use_case.dart';
 import '../domain/usecase/check_active_pin_use_case.dart';
+import '../domain/usecase/check_bucket_use_case.dart';
 import '../domain/usecase/check_rates_for_various_countries_use_case.dart';
+import '../domain/usecase/checkout_bucket_use_case.dart';
 import '../domain/usecase/create_bucket_use_case.dart';
 import '../domain/usecase/create_help_conversation_use_case.dart';
 import '../domain/usecase/create_order_conversation_use_case.dart';
@@ -213,6 +215,7 @@ import '../domain/usecase/repurchase_use_case.dart';
 import '../domain/usecase/request_join_bucket_use_case.dart';
 import '../domain/usecase/show_bucket_by_id_use_case.dart';
 import '../domain/usecase/take_friend_cart_use_case.dart';
+import '../domain/usecase/trigger_bucket_ready_use_case.dart';
 import '../domain/usecase/update_current_selected_address_use_case.dart';
 import '../domain/usecase/update_read_status_help_conversation_use_case.dart';
 import '../domain/usecase/update_read_status_order_conversation_use_case.dart';
@@ -221,16 +224,19 @@ import 'additionalloadingindicatorchecker/cart_additional_paging_result_paramete
 import 'additionalloadingindicatorchecker/coupon_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/feed_sub_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/home_sub_additional_paging_result_parameter_checker.dart';
+import 'additionalloadingindicatorchecker/host_cart_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/menu_main_menu_sub_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/product_brand_detail_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/product_bundle_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/product_bundle_detail_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/product_category_detail_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/product_detail_additional_paging_result_parameter_checker.dart';
+import 'additionalloadingindicatorchecker/shared_cart_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/take_friend_cart_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/wishlist_sub_additional_paging_result_parameter_checker.dart';
 import 'controllercontentdelegate/product_brand_favorite_controller_content_delegate.dart';
 import 'controllercontentdelegate/repurchase_controller_content_delegate.dart';
+import 'controllercontentdelegate/shared_cart_controller_content_delegate.dart';
 import 'controllercontentdelegate/wishlist_and_cart_controller_content_delegate.dart';
 import 'defaultloaddataresultwidget/default_load_data_result_widget.dart';
 import 'defaultloaddataresultwidget/main_default_load_data_result_widget.dart';
@@ -304,7 +310,8 @@ class _Injector {
       () => MenuMainMenuSubControllerInjectionFactory(
         getUserUseCase: locator(),
         getShortMyCartUseCase: locator(),
-        logoutUseCase: locator()
+        logoutUseCase: locator(),
+        sharedCartControllerContentDelegate: locator()
       )
     );
     locator.registerLazySingleton<WaitingToBeReviewedDeliveryReviewSubControllerInjectionFactory>(
@@ -460,6 +467,12 @@ class _Injector {
     locator.registerFactory<TakeFriendCartAdditionalPagingResultParameterChecker>(
       () => TakeFriendCartAdditionalPagingResultParameterChecker()
     );
+    locator.registerFactory<HostCartAdditionalPagingResultParameterChecker>(
+      () => HostCartAdditionalPagingResultParameterChecker()
+    );
+    locator.registerFactory<SharedCartAdditionalPagingResultParameterChecker>(
+      () => SharedCartAdditionalPagingResultParameterChecker()
+    );
 
     // Controller Content Delegate
     locator.registerFactory<WishlistAndCartControllerContentDelegate>(
@@ -485,6 +498,11 @@ class _Injector {
         repurchaseUseCase: locator()
       )
     );
+    locator.registerFactory<SharedCartControllerContentDelegate>(
+      () => SharedCartControllerContentDelegate(
+        checkBucketUseCase: locator()
+      )
+    );
 
     // Controller Delegate Factory
     locator.registerLazySingleton<WishlistAndCartDelegateFactory>(
@@ -495,6 +513,9 @@ class _Injector {
     );
     locator.registerLazySingleton<RepurchaseDelegateFactory>(
       () => RepurchaseDelegateFactory()
+    );
+    locator.registerLazySingleton<SharedCartDelegateFactory>(
+      () => SharedCartDelegateFactory()
     );
 
     // Default Load Data Result Widget
@@ -630,6 +651,9 @@ class _Injector {
     locator.registerLazySingleton<RequestJoinBucketUseCase>(() => RequestJoinBucketUseCase(bucketRepository: locator()));
     locator.registerLazySingleton<ApproveOrRejectRequestBucketUseCase>(() => ApproveOrRejectRequestBucketUseCase(bucketRepository: locator()));
     locator.registerLazySingleton<RemoveMemberBucketUseCase>(() => RemoveMemberBucketUseCase(bucketRepository: locator()));
+    locator.registerLazySingleton<CheckBucketUseCase>(() => CheckBucketUseCase(bucketRepository: locator()));
+    locator.registerLazySingleton<TriggerBucketReadyUseCase>(() => TriggerBucketReadyUseCase(bucketRepository: locator()));
+    locator.registerLazySingleton<CheckoutBucketUseCase>(() => CheckoutBucketUseCase(bucketRepository: locator()));
 
     // Repository
     locator.registerLazySingleton<UserRepository>(() => DefaultUserRepository(userDataSource: locator()));

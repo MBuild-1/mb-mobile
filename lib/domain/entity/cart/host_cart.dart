@@ -1,7 +1,7 @@
 class HostCart {
-  String id;
+  String username;
 
   HostCart({
-    required this.id
+    required this.username
   });
 }

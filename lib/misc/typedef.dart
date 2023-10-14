@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:masterbagasi/misc/aspect_ratio_value.dart';
 
 import '../controller/base_getx_controller.dart';
+import '../domain/entity/bucket/checkbucket/check_bucket_response.dart';
 import '../domain/entity/cart/cart.dart';
 import '../domain/entity/order/order.dart';
 import '../domain/entity/product/productbrand/favorite_product_brand.dart';
@@ -52,3 +53,6 @@ typedef OnShowRemoveFromFavoriteProductBrandProcessFailedCallback = Future<void>
 typedef OnShowRepurchaseProcessLoadingCallback = Future<void> Function();
 typedef OnRepurchaseProcessSuccessCallback = Future<void> Function(Order);
 typedef OnShowRepurchaseProcessFailedCallback = Future<void> Function(dynamic e);
+typedef OnShowCheckSharedCartRequestProcessLoadingCallback = Future<void> Function();
+typedef OnCheckSharedCartRequestProcessSuccessCallback = Future<void> Function(CheckBucketResponse);
+typedef OnShowCheckSharedCartRequestProcessFailedCallback = Future<void> Function(dynamic e);

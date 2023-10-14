@@ -44,3 +44,17 @@ extension DoubleResponseWrapperExt on ResponseWrapper {
     }
   }
 }
+
+extension IntResponseWrapperExt on ResponseWrapper {
+  int? mapFromResponseToInt() {
+    if (response is int) {
+      return response;
+    } else if (response is double) {
+      return (response as double).toInt();
+    } else if (response is String) {
+      return int.tryParse(response);
+    } else {
+      return response;
+    }
+  }
+}

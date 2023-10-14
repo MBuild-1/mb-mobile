@@ -251,6 +251,7 @@ class _DialogHelperImpl {
                                   if (result != null) {
                                     if (result) {
                                       Navigator.of(context).pop();
+                                      PageRestorationHelper.toSharedCartPage(context);
                                     }
                                   }
                                 },
@@ -280,7 +281,7 @@ class _DialogHelperImpl {
                                   if (result != null) {
                                     if (result) {
                                       Navigator.of(context).pop();
-                                      PageRestorationHelper.toTakeFriendCartPage(context);
+                                      PageRestorationHelper.toSharedCartPage(context);
                                     }
                                   }
                                 },

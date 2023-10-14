@@ -6,6 +6,7 @@ abstract class CartListItemControllerState extends ListItemControllerState {
   bool isSelected;
   bool showDefaultCart;
   bool showCheck;
+  bool showBottom;
   void Function()? onChangeSelected;
   void Function()? onAddToNotes;
   void Function()? onAddToWishlist;
@@ -19,6 +20,7 @@ abstract class CartListItemControllerState extends ListItemControllerState {
     required this.isSelected,
     required this.showDefaultCart,
     required this.showCheck,
+    required this.showBottom,
     this.onChangeSelected,
     this.onAddToNotes,
     this.onAddToWishlist,

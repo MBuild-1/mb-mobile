@@ -2,9 +2,9 @@ import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
-import '../../domain/entity/cart/take_friend_cart_parameter.dart';
-import '../../domain/entity/cart/take_friend_cart_response.dart';
-import '../../domain/usecase/take_friend_cart_use_case.dart';
+import '../../domain/entity/bucket/requestjoinbucket/request_join_bucket_parameter.dart';
+import '../../domain/entity/bucket/requestjoinbucket/request_join_bucket_response.dart';
+import '../../domain/usecase/request_join_bucket_use_case.dart';
 import '../../misc/error/validation_error.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/controller_manager.dart';
@@ -21,7 +21,7 @@ typedef _OnShowTakeFriendCartRequestProcessFailedCallback = Future<void> Functio
 typedef _OnTakeFriendCartBack = void Function();
 
 class TakeFriendCartModalDialogController extends ModalDialogController {
-  final TakeFriendCartUseCase takeFriendCartUseCase;
+  final RequestJoinBucketUseCase requestJoinBucketUseCase;
 
   late Rx<Validator> hostCartIdValidatorRx;
   late Rx<Validator> hostCartPasswordValidatorRx;
@@ -31,14 +31,14 @@ class TakeFriendCartModalDialogController extends ModalDialogController {
 
   TakeFriendCartModalDialogController(
     ControllerManager? controllerManager,
-    this.takeFriendCartUseCase
+    this.requestJoinBucketUseCase
   ) : super(controllerManager) {
     takeFriendCartValidatorGroup = TakeFriendCartValidatorGroup(
       hostCartIdValidator: Validator(
-        onValidate: () => !_takeFriendCartModalDialogDelegate!.onGetHostCartIdInput().isEmptyString ? SuccessValidationResult() : FailedValidationResult(e: ValidationError(message: "${"Host cart id is required".tr}."))
+        onValidate: () => !_takeFriendCartModalDialogDelegate!.onGetHostCartBucketUsernameInput().isEmptyString ? SuccessValidationResult() : FailedValidationResult(e: ValidationError(message: "${"Host cart id is required".tr}."))
       ),
       hostCartPasswordValidator: Validator(
-        onValidate: () => !_takeFriendCartModalDialogDelegate!.onGetHostCartPasswordInput().isEmptyString ? SuccessValidationResult() : FailedValidationResult(e: ValidationError(message: "${"Host cart password is required".tr}."))
+        onValidate: () => !_takeFriendCartModalDialogDelegate!.onGetHostCartBucketPasswordInput().isEmptyString ? SuccessValidationResult() : FailedValidationResult(e: ValidationError(message: "${"Host cart password is required".tr}."))
       ),
     );
     hostCartIdValidatorRx = takeFriendCartValidatorGroup.hostCartIdValidator.obs;
@@ -55,19 +55,19 @@ class TakeFriendCartModalDialogController extends ModalDialogController {
       _takeFriendCartModalDialogDelegate!.onUnfocusAllWidget();
       if (takeFriendCartValidatorGroup.validate()) {
         _takeFriendCartModalDialogDelegate!.onShowTakeFriendCartRequestProcessLoadingCallback();
-        LoadDataResult<TakeFriendCartResponse> takeFriendCartResponseLoadDataResult = await takeFriendCartUseCase.execute(
-          TakeFriendCartParameter(
-            hostCartId: _takeFriendCartModalDialogDelegate!.onGetHostCartIdInput(),
-            hostCartPassword: _takeFriendCartModalDialogDelegate!.onGetHostCartPasswordInput(),
+        LoadDataResult<RequestJoinBucketResponse> requestJoinBucketResponseLoadDataResult = await requestJoinBucketUseCase.execute(
+          RequestJoinBucketParameter(
+            bucketUsername: _takeFriendCartModalDialogDelegate!.onGetHostCartBucketUsernameInput(),
+            bucketPassword: _takeFriendCartModalDialogDelegate!.onGetHostCartBucketPasswordInput(),
           )
         ).future(
           parameter: apiRequestManager.addRequestToCancellationPart('take-friend-cart').value
         );
         _takeFriendCartModalDialogDelegate!.onTakeFriendCartBack();
-        if (takeFriendCartResponseLoadDataResult.isSuccess) {
+        if (requestJoinBucketResponseLoadDataResult.isSuccess) {
           _takeFriendCartModalDialogDelegate!.onTakeFriendCartRequestProcessSuccessCallback();
         } else {
-          _takeFriendCartModalDialogDelegate!.onShowTakeFriendCartRequestProcessFailedCallback(takeFriendCartResponseLoadDataResult.resultIfFailed);
+          _takeFriendCartModalDialogDelegate!.onShowTakeFriendCartRequestProcessFailedCallback(requestJoinBucketResponseLoadDataResult.resultIfFailed);
         }
       }
     }
@@ -76,8 +76,8 @@ class TakeFriendCartModalDialogController extends ModalDialogController {
 
 class TakeFriendCartModalDialogDelegate {
   OnUnfocusAllWidget onUnfocusAllWidget;
-  _OnGetTakeFriendCartInput onGetHostCartIdInput;
-  _OnGetTakeFriendCartInput onGetHostCartPasswordInput;
+  _OnGetTakeFriendCartInput onGetHostCartBucketUsernameInput;
+  _OnGetTakeFriendCartInput onGetHostCartBucketPasswordInput;
   _OnShowTakeFriendCartRequestProcessLoadingCallback onShowTakeFriendCartRequestProcessLoadingCallback;
   _OnTakeFriendCartRequestProcessSuccessCallback onTakeFriendCartRequestProcessSuccessCallback;
   _OnShowTakeFriendCartRequestProcessFailedCallback onShowTakeFriendCartRequestProcessFailedCallback;
@@ -85,8 +85,8 @@ class TakeFriendCartModalDialogDelegate {
 
   TakeFriendCartModalDialogDelegate({
     required this.onUnfocusAllWidget,
-    required this.onGetHostCartIdInput,
-    required this.onGetHostCartPasswordInput,
+    required this.onGetHostCartBucketUsernameInput,
+    required this.onGetHostCartBucketPasswordInput,
     required this.onShowTakeFriendCartRequestProcessLoadingCallback,
     required this.onTakeFriendCartRequestProcessSuccessCallback,
     required this.onShowTakeFriendCartRequestProcessFailedCallback,

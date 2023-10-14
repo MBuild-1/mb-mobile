@@ -2,9 +2,12 @@ import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
+import '../../domain/entity/bucket/createbucket/create_bucket_parameter.dart';
+import '../../domain/entity/bucket/createbucket/create_bucket_response.dart';
 import '../../domain/entity/cart/add_host_cart_parameter.dart';
 import '../../domain/entity/cart/add_host_cart_response.dart';
 import '../../domain/usecase/add_host_cart_use_case.dart';
+import '../../domain/usecase/create_bucket_use_case.dart';
 import '../../misc/error/validation_error.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/controller_manager.dart';
@@ -21,7 +24,7 @@ typedef _OnShowAddHostCartRequestProcessFailedCallback = Future<void> Function(d
 typedef _OnAddHostCartBack = void Function();
 
 class AddHostCartModalDialogController extends ModalDialogController {
-  final AddHostCartUseCase addHostCartUseCase;
+  final CreateBucketUseCase createBucketUseCase;
 
   late Rx<Validator> hostCartIdValidatorRx;
   late Rx<Validator> hostCartPasswordValidatorRx;
@@ -31,14 +34,14 @@ class AddHostCartModalDialogController extends ModalDialogController {
 
   AddHostCartModalDialogController(
     ControllerManager? controllerManager,
-    this.addHostCartUseCase
+    this.createBucketUseCase
   ) : super(controllerManager) {
     addHostCartValidatorGroup = AddHostCartValidatorGroup(
       hostCartIdValidator: Validator(
-        onValidate: () => !_addHostCartModalDialogDelegate!.onGetHostCartIdInput().isEmptyString ? SuccessValidationResult() : FailedValidationResult(e: ValidationError(message: "${"Host cart id is required".tr}."))
+        onValidate: () => !_addHostCartModalDialogDelegate!.onGetHostCartBucketUsernameInput().isEmptyString ? SuccessValidationResult() : FailedValidationResult(e: ValidationError(message: "${"Host cart id is required".tr}."))
       ),
       hostCartPasswordValidator: Validator(
-        onValidate: () => !_addHostCartModalDialogDelegate!.onGetHostCartPasswordInput().isEmptyString ? SuccessValidationResult() : FailedValidationResult(e: ValidationError(message: "${"Host cart password is required".tr}."))
+        onValidate: () => !_addHostCartModalDialogDelegate!.onGetHostCartBucketPasswordInput().isEmptyString ? SuccessValidationResult() : FailedValidationResult(e: ValidationError(message: "${"Host cart password is required".tr}."))
       ),
     );
     hostCartIdValidatorRx = addHostCartValidatorGroup.hostCartIdValidator.obs;
@@ -55,19 +58,19 @@ class AddHostCartModalDialogController extends ModalDialogController {
       _addHostCartModalDialogDelegate!.onUnfocusAllWidget();
       if (addHostCartValidatorGroup.validate()) {
         _addHostCartModalDialogDelegate!.onShowAddHostCartRequestProcessLoadingCallback();
-        LoadDataResult<AddHostCartResponse> addHostCartResponseLoadDataResult = await addHostCartUseCase.execute(
-          AddHostCartParameter(
-            hostCartId: _addHostCartModalDialogDelegate!.onGetHostCartIdInput(),
-            hostCartPassword: _addHostCartModalDialogDelegate!.onGetHostCartPasswordInput(),
+        LoadDataResult<CreateBucketResponse> createBucketResponseLoadDataResult = await createBucketUseCase.execute(
+          CreateBucketParameter(
+            bucketUsername: _addHostCartModalDialogDelegate!.onGetHostCartBucketUsernameInput(),
+            bucketPassword: _addHostCartModalDialogDelegate!.onGetHostCartBucketPasswordInput(),
           )
         ).future(
           parameter: apiRequestManager.addRequestToCancellationPart('add-host-cart').value
         );
         _addHostCartModalDialogDelegate!.onAddHostCartBack();
-        if (addHostCartResponseLoadDataResult.isSuccess) {
+        if (createBucketResponseLoadDataResult.isSuccess) {
           _addHostCartModalDialogDelegate!.onAddHostCartRequestProcessSuccessCallback();
         } else {
-          _addHostCartModalDialogDelegate!.onShowAddHostCartRequestProcessFailedCallback(addHostCartResponseLoadDataResult.resultIfFailed);
+          _addHostCartModalDialogDelegate!.onShowAddHostCartRequestProcessFailedCallback(createBucketResponseLoadDataResult.resultIfFailed);
         }
       }
     }
@@ -76,8 +79,8 @@ class AddHostCartModalDialogController extends ModalDialogController {
 
 class AddHostCartModalDialogDelegate {
   OnUnfocusAllWidget onUnfocusAllWidget;
-  _OnGetAddHostCartInput onGetHostCartIdInput;
-  _OnGetAddHostCartInput onGetHostCartPasswordInput;
+  _OnGetAddHostCartInput onGetHostCartBucketUsernameInput;
+  _OnGetAddHostCartInput onGetHostCartBucketPasswordInput;
   _OnShowAddHostCartRequestProcessLoadingCallback onShowAddHostCartRequestProcessLoadingCallback;
   _OnAddHostCartRequestProcessSuccessCallback onAddHostCartRequestProcessSuccessCallback;
   _OnShowAddHostCartRequestProcessFailedCallback onShowAddHostCartRequestProcessFailedCallback;
@@ -85,8 +88,8 @@ class AddHostCartModalDialogDelegate {
 
   AddHostCartModalDialogDelegate({
     required this.onUnfocusAllWidget,
-    required this.onGetHostCartIdInput,
-    required this.onGetHostCartPasswordInput,
+    required this.onGetHostCartBucketUsernameInput,
+    required this.onGetHostCartBucketPasswordInput,
     required this.onShowAddHostCartRequestProcessLoadingCallback,
     required this.onAddHostCartRequestProcessSuccessCallback,
     required this.onShowAddHostCartRequestProcessFailedCallback,

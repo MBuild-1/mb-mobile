@@ -17,6 +17,7 @@ import '../../../domain/usecase/get_short_my_cart_use_case.dart';
 import '../../../domain/usecase/get_user_use_case.dart';
 import '../../../domain/usecase/logout_use_case.dart';
 import '../../../misc/constant.dart';
+import '../../../misc/controllercontentdelegate/shared_cart_controller_content_delegate.dart';
 import '../../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../../misc/entityandlistitemcontrollerstatemediator/horizontal_component_entity_parameterized_entity_and_list_item_controller_state_mediator.dart';
 import '../../../misc/error/message_error.dart';
@@ -41,6 +42,7 @@ class MenuMainMenuSubController extends BaseGetxController {
   final GetShortMyCartUseCase getShortMyCartUseCase;
   final LogoutUseCase logoutUseCase;
   MenuMainMenuSubDelegate? _menuMainMenuSubDelegate;
+  final SharedCartControllerContentDelegate sharedCartControllerContentDelegate;
 
   LoadDataResult<User> _userLoadDataResult = NoLoadDataResult<User>();
   late Rx<LoadDataResultWrapper<User>> userLoadDataResultWrapperRx;
@@ -49,9 +51,13 @@ class MenuMainMenuSubController extends BaseGetxController {
     super.controllerManager,
     this.getUserUseCase,
     this.getShortMyCartUseCase,
-    this.logoutUseCase
+    this.logoutUseCase,
+    this.sharedCartControllerContentDelegate
   ) {
     userLoadDataResultWrapperRx = LoadDataResultWrapper<User>(_userLoadDataResult).obs;
+    sharedCartControllerContentDelegate.setApiRequestManager(
+      () => apiRequestManager
+    );
   }
 
   IDynamicItemCarouselComponentEntity getMyCart() {
@@ -161,11 +167,13 @@ class MenuMainMenuSubControllerInjectionFactory {
   final GetUserUseCase getUserUseCase;
   final GetShortMyCartUseCase getShortMyCartUseCase;
   final LogoutUseCase logoutUseCase;
+  final SharedCartControllerContentDelegate sharedCartControllerContentDelegate;
 
   MenuMainMenuSubControllerInjectionFactory({
     required this.getUserUseCase,
     required this.getShortMyCartUseCase,
-    required this.logoutUseCase
+    required this.logoutUseCase,
+    required this.sharedCartControllerContentDelegate
   });
 
   MenuMainMenuSubController inject(ControllerManager controllerManager, String pageName) {
@@ -174,7 +182,8 @@ class MenuMainMenuSubControllerInjectionFactory {
         controllerManager,
         getUserUseCase,
         getShortMyCartUseCase,
-        logoutUseCase
+        logoutUseCase,
+        sharedCartControllerContentDelegate
       ),
       tag: pageName
     );

@@ -25,7 +25,7 @@ class HostCartIndicator extends StatelessWidget {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-              child: Text("@${hostCart.id}", style: const TextStyle(color: Colors.grey, fontSize: 18.0, fontWeight: FontWeight.bold))
+              child: Text("@${hostCart.username}", style: const TextStyle(color: Colors.grey, fontSize: 18.0, fontWeight: FontWeight.bold))
             ),
           ),
           Container(

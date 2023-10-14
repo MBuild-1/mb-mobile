@@ -5,6 +5,10 @@ import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 
 import '../../../domain/entity/bucket/approveorrejectrequestbucket/approve_or_reject_request_bucket_parameter.dart';
 import '../../../domain/entity/bucket/approveorrejectrequestbucket/approve_or_reject_request_bucket_response.dart';
+import '../../../domain/entity/bucket/checkbucket/check_bucket_parameter.dart';
+import '../../../domain/entity/bucket/checkbucket/check_bucket_response.dart';
+import '../../../domain/entity/bucket/checkoutbucket/checkout_bucket_parameter.dart';
+import '../../../domain/entity/bucket/checkoutbucket/checkout_bucket_response.dart';
 import '../../../domain/entity/bucket/createbucket/create_bucket_parameter.dart';
 import '../../../domain/entity/bucket/createbucket/create_bucket_response.dart';
 import '../../../domain/entity/bucket/removememberbucket/remove_member_bucket_parameter.dart';
@@ -13,6 +17,8 @@ import '../../../domain/entity/bucket/requestjoinbucket/request_join_bucket_para
 import '../../../domain/entity/bucket/requestjoinbucket/request_join_bucket_response.dart';
 import '../../../domain/entity/bucket/showbucketbyid/show_bucket_by_id_parameter.dart';
 import '../../../domain/entity/bucket/showbucketbyid/show_bucket_by_id_response.dart';
+import '../../../domain/entity/bucket/triggerbucketready/trigger_bucket_ready_parameter.dart';
+import '../../../domain/entity/bucket/triggerbucketready/trigger_bucket_ready_response.dart';
 import '../../../misc/processing/dio_http_client_processing.dart';
 import '../../../misc/processing/future_processing.dart';
 import 'bucket_data_source.dart';
@@ -73,12 +79,37 @@ class DefaultBucketDataSource implements BucketDataSource {
     FormData formData = FormData.fromMap(
       <String, dynamic> {
         "type": approveOrRejectRequestBucketParameter.type,
-        "user_id": approveOrRejectRequestBucketParameter.userId
+        "user_id": approveOrRejectRequestBucketParameter.userId,
+        "bucket_id": approveOrRejectRequestBucketParameter.bucketId
       }
     );
     return DioHttpClientProcessing((cancelToken) {
       return dio.post("/user/bucket/request/action", data: formData, cancelToken: cancelToken)
         .map(onMap: (value) => value.wrapResponse().mapFromResponseToApproveOrRejectRequestBucketResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<CheckBucketResponse> checkBucket(CheckBucketParameter checkBucketParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.get("/user/bucket/user/check", cancelToken: cancelToken)
+        .map(onMap: (value) => value.wrapResponse().mapFromResponseToCheckBucketResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<CheckoutBucketResponse> checkoutBucket(CheckoutBucketParameter checkoutBucketParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.post("/user/bucket/checkout/${checkoutBucketParameter.bucketId}", cancelToken: cancelToken)
+        .map(onMap: (value) => value.wrapResponse().mapFromResponseToCheckoutBucketResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<TriggerBucketReadyResponse> triggerBucketReady(TriggerBucketReadyParameter triggerBucketReadyParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.post("/user/bucket/ready", cancelToken: cancelToken)
+        .map(onMap: (value) => value.wrapResponse().mapFromResponseToTriggerBucketReadyResponse());
     });
   }
 }

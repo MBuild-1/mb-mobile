@@ -22,6 +22,7 @@ import '../presentation/page/favorite_product_brand_page.dart';
 import '../presentation/page/getx_page.dart';
 import '../presentation/page/help_chat_page.dart';
 import '../presentation/page/help_page.dart';
+import '../presentation/page/host_cart_page.dart';
 import '../presentation/page/inbox_page.dart';
 import '../presentation/page/login_page.dart';
 import '../presentation/page/mainmenu/main_menu_page.dart';
@@ -43,6 +44,7 @@ import '../presentation/page/product_discussion_page.dart';
 import '../presentation/page/product_entry_page.dart';
 import '../presentation/page/register_page.dart';
 import '../presentation/page/search_page.dart';
+import '../presentation/page/shared_cart_page.dart';
 import '../presentation/page/take_friend_cart_page.dart';
 import '../presentation/page/videopage/video_page.dart';
 import '../presentation/page/web_viewer_page.dart';
@@ -195,6 +197,28 @@ class _PageRestorationHelperImpl {
       PageRestorationHelper.findPageRestorationMixin<TakeFriendCartPageRestorationMixin>(
         onGetxPageRestorationFound: (restoration) {
           restoration.takeFriendCartPageRestorableRouteFuture.present();
+        },
+        context: context
+      );
+    });
+  }
+
+  void toHostCartPage(BuildContext context) {
+    LoginHelper.checkingLogin(context, () {
+      PageRestorationHelper.findPageRestorationMixin<HostCartPageRestorationMixin>(
+        onGetxPageRestorationFound: (restoration) {
+          restoration.hostCartPageRestorableRouteFuture.present();
+        },
+        context: context
+      );
+    });
+  }
+
+  void toSharedCartPage(BuildContext context) {
+    LoginHelper.checkingLogin(context, () {
+      PageRestorationHelper.findPageRestorationMixin<SharedCartPageRestorationMixin>(
+        onGetxPageRestorationFound: (restoration) {
+          restoration.sharedCartPageRestorableRouteFuture.present();
         },
         context: context
       );

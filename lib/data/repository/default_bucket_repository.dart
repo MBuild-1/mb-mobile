@@ -1,5 +1,9 @@
 import '../../domain/entity/bucket/approveorrejectrequestbucket/approve_or_reject_request_bucket_parameter.dart';
 import '../../domain/entity/bucket/approveorrejectrequestbucket/approve_or_reject_request_bucket_response.dart';
+import '../../domain/entity/bucket/checkbucket/check_bucket_parameter.dart';
+import '../../domain/entity/bucket/checkbucket/check_bucket_response.dart';
+import '../../domain/entity/bucket/checkoutbucket/checkout_bucket_parameter.dart';
+import '../../domain/entity/bucket/checkoutbucket/checkout_bucket_response.dart';
 import '../../domain/entity/bucket/createbucket/create_bucket_parameter.dart';
 import '../../domain/entity/bucket/createbucket/create_bucket_response.dart';
 import '../../domain/entity/bucket/removememberbucket/remove_member_bucket_parameter.dart';
@@ -8,6 +12,8 @@ import '../../domain/entity/bucket/requestjoinbucket/request_join_bucket_paramet
 import '../../domain/entity/bucket/requestjoinbucket/request_join_bucket_response.dart';
 import '../../domain/entity/bucket/showbucketbyid/show_bucket_by_id_parameter.dart';
 import '../../domain/entity/bucket/showbucketbyid/show_bucket_by_id_response.dart';
+import '../../domain/entity/bucket/triggerbucketready/trigger_bucket_ready_parameter.dart';
+import '../../domain/entity/bucket/triggerbucketready/trigger_bucket_ready_response.dart';
 import '../../domain/repository/bucket_repository.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/processing/future_processing.dart';
@@ -43,5 +49,20 @@ class DefaultBucketRepository implements BucketRepository {
   @override
   FutureProcessing<LoadDataResult<ApproveOrRejectRequestBucketResponse>> approveOrRejectRequestBucket(ApproveOrRejectRequestBucketParameter approveOrRejectRequestBucketParameter) {
     return bucketDataSource.approveOrRejectRequestBucket(approveOrRejectRequestBucketParameter).mapToLoadDataResult<ApproveOrRejectRequestBucketResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<CheckBucketResponse>> checkBucket(CheckBucketParameter checkBucketParameter) {
+    return bucketDataSource.checkBucket(checkBucketParameter).mapToLoadDataResult<CheckBucketResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<CheckoutBucketResponse>> checkoutBucket(CheckoutBucketParameter checkoutBucketParameter) {
+    return bucketDataSource.checkoutBucket(checkoutBucketParameter).mapToLoadDataResult<CheckoutBucketResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<TriggerBucketReadyResponse>> triggerBucketReady(TriggerBucketReadyParameter triggerBucketReadyParameter) {
+    return bucketDataSource.triggerBucketReady(triggerBucketReadyParameter).mapToLoadDataResult<TriggerBucketReadyResponse>();
   }
 }

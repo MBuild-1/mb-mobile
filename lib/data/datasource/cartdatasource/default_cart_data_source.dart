@@ -134,7 +134,7 @@ class DefaultCartDataSource implements CartDataSource {
   @override
   FutureProcessing<RemoveFromCartResponse> removeFromCart(RemoveFromCartParameter removeFromCartParameter) {
     return DioHttpClientProcessing((cancelToken) async {
-      return dio.delete("/user/cart/${removeFromCartParameter.cart.id}", cancelToken: cancelToken)
+      return dio.delete("/user/${removeFromCartParameter.fromSharedCart ? "bucket/bucket-cart-list" : "cart"}/${removeFromCartParameter.cart.id}", cancelToken: cancelToken)
         .map<RemoveFromCartResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToRemoveFromCartResponse());
     });
   }

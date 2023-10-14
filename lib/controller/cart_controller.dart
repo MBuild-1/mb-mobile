@@ -10,7 +10,6 @@ import '../domain/entity/additionalitem/remove_additional_item_parameter.dart';
 import '../domain/entity/additionalitem/remove_additional_item_response.dart';
 import '../domain/entity/cart/cart.dart';
 import '../domain/entity/cart/cart_list_parameter.dart';
-import '../domain/entity/cart/cart_paging_parameter.dart';
 import '../domain/entity/cart/cart_summary.dart';
 import '../domain/entity/cart/cart_summary_parameter.dart';
 import '../domain/entity/cart/remove_from_cart_parameter.dart';
@@ -22,14 +21,15 @@ import '../domain/usecase/add_additional_item_use_case.dart';
 import '../domain/usecase/add_to_cart_use_case.dart';
 import '../domain/usecase/add_wishlist_use_case.dart';
 import '../domain/usecase/change_additional_item_use_case.dart';
+import '../domain/usecase/create_bucket_use_case.dart';
 import '../domain/usecase/get_additional_item_use_case.dart';
 import '../domain/usecase/get_cart_list_use_case.dart';
 import '../domain/usecase/get_cart_summary_use_case.dart';
-import '../domain/usecase/get_my_cart_use_case.dart';
 import '../domain/usecase/remove_additional_item_use_case.dart';
 import '../domain/usecase/remove_from_cart_use_case.dart';
+import '../domain/usecase/request_join_bucket_use_case.dart';
+import '../misc/controllercontentdelegate/shared_cart_controller_content_delegate.dart';
 import '../misc/load_data_result.dart';
-import '../misc/paging/pagingresult/paging_data_result.dart';
 import '../misc/typedef.dart';
 import 'base_getx_controller.dart';
 
@@ -53,6 +53,7 @@ class CartController extends BaseGetxController {
   final AddWishlistUseCase addWishlistUseCase;
 
   CartDelegate? _cartDelegate;
+  final SharedCartControllerContentDelegate sharedCartControllerContentDelegate;
 
   CartController(
     super.controllerManager,
@@ -65,7 +66,12 @@ class CartController extends BaseGetxController {
     this.changeAdditionalItemUseCase,
     this.removeAdditionalItemUseCase,
     this.addWishlistUseCase,
-  );
+    this.sharedCartControllerContentDelegate
+  ) {
+    sharedCartControllerContentDelegate.setApiRequestManager(
+      () => apiRequestManager
+    );
+  }
 
   Future<LoadDataResult<List<Cart>>> getCartList(CartListParameter cartListParameter) {
     return getCartListUseCase.execute(cartListParameter).future(

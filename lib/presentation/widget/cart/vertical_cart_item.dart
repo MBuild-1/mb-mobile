@@ -16,6 +16,7 @@ class VerticalCartItem extends CartItem {
     required super.isSelected,
     super.showDefaultCart = true,
     super.showCheck = true,
+    super.showBottom = true,
     super.onChangeSelected,
     super.onAddToNotes,
     super.onChangeNotes,
