@@ -147,6 +147,7 @@ import '../domain/usecase/get_news_paging_use_case.dart';
 import '../domain/usecase/get_news_use_case.dart';
 import '../domain/usecase/get_notification_by_user_list_use_case.dart';
 import '../domain/usecase/get_notification_by_user_paging_use_case.dart';
+import '../domain/usecase/get_only_for_you_list_use_case.dart';
 import '../domain/usecase/get_order_based_id_use_case.dart';
 import '../domain/usecase/get_order_message_by_combined_order_use_case.dart';
 import '../domain/usecase/get_order_message_by_conversation_use_case.dart';
@@ -275,6 +276,7 @@ class _Injector {
         getCoffeeAndTeaOriginIndonesiaListUseCase: locator(),
         getBeautyProductIndonesiaListUseCase: locator(),
         getFashionProductIndonesiaListUseCase: locator(),
+        getOnlyForYouListUseCase: locator(),
         getHandycraftsContentsBannerUseCase: locator(),
         getKitchenContentsBannerUseCase: locator(),
         getSponsorContentsBannerUseCase: locator(),
@@ -569,6 +571,7 @@ class _Injector {
     locator.registerLazySingleton<GetCoffeeAndTeaOriginIndonesiaListUseCase>(() => GetCoffeeAndTeaOriginIndonesiaListUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetBeautyProductIndonesiaListUseCase>(() => GetBeautyProductIndonesiaListUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetFashionProductIndonesiaListUseCase>(() => GetFashionProductIndonesiaListUseCase(productRepository: locator()));
+    locator.registerLazySingleton<GetOnlyForYouListUseCase>(() => GetOnlyForYouListUseCase(productRepository: locator()));
     locator.registerLazySingleton<AddWishlistUseCase>(() => AddWishlistUseCase(productRepository: locator()));
     locator.registerLazySingleton<RemoveWishlistUseCase>(() => RemoveWishlistUseCase(productRepository: locator()));
     locator.registerLazySingleton<RemoveWishlistBasedProductUseCase>(() => RemoveWishlistBasedProductUseCase(productRepository: locator()));

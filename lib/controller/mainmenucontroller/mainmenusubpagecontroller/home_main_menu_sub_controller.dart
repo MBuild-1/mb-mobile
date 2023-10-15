@@ -33,6 +33,7 @@ import '../../../domain/usecase/get_fashion_product_indonesia_list_use_case.dart
 import '../../../domain/usecase/get_handycrafts_contents_banner_use_case.dart';
 import '../../../domain/usecase/get_homepage_contents_banner_use_case.dart';
 import '../../../domain/usecase/get_kitchen_contents_banner_use_case.dart';
+import '../../../domain/usecase/get_only_for_you_list_use_case.dart';
 import '../../../domain/usecase/get_product_brand_use_case.dart';
 import '../../../domain/usecase/get_product_bundle_highlight_use_case.dart';
 import '../../../domain/usecase/get_product_bundle_list_use_case.dart';
@@ -71,6 +72,7 @@ class HomeMainMenuSubController extends BaseGetxController {
   final GetCoffeeAndTeaOriginIndonesiaListUseCase getCoffeeAndTeaOriginIndonesiaListUseCase;
   final GetBeautyProductIndonesiaListUseCase getBeautyProductIndonesiaListUseCase;
   final GetFashionProductIndonesiaListUseCase getFashionProductIndonesiaListUseCase;
+  final GetOnlyForYouListUseCase getOnlyForYouListUseCase;
   final GetHandycraftsContentsBannerUseCase getHandycraftsContentsBannerUseCase;
   final GetKitchenContentsBannerUseCase getKitchenContentsBannerUseCase;
   final GetHomepageContentsBannerUseCase getHomepageContentsBannerUseCase;
@@ -101,6 +103,7 @@ class HomeMainMenuSubController extends BaseGetxController {
     this.getCoffeeAndTeaOriginIndonesiaListUseCase,
     this.getBeautyProductIndonesiaListUseCase,
     this.getFashionProductIndonesiaListUseCase,
+    this.getOnlyForYouListUseCase,
     this.getHandycraftsContentsBannerUseCase,
     this.getKitchenContentsBannerUseCase,
     this.getHomepageContentsBannerUseCase,
@@ -943,6 +946,51 @@ class HomeMainMenuSubController extends BaseGetxController {
           throw MessageError(title: "Home main menu delegate must be initialized");
         },
       ),
+      DynamicItemCarouselHomeMainMenuComponentEntity(
+        title: MultiLanguageString({
+          Constant.textEnUsLanguageKey: "Only For You",
+          Constant.textInIdLanguageKey: "Hanya Untuk Kamu"
+        }),
+        onDynamicItemAction: (title, description, observer) async {
+          observer(title, description, IsLoadingLoadDataResult<List<ProductEntry>>());
+          LoadDataResult<List<ProductEntry>> productEntryPagingDataResult = await getOnlyForYouListUseCase.execute().future(
+            parameter: apiRequestManager.addRequestToCancellationPart("only-for-you").value
+          );
+          if (productEntryPagingDataResult.isFailedBecauseCancellation) {
+            return;
+          }
+          observer(title, description, productEntryPagingDataResult.map<List<ProductEntry>>(
+            (trainingPagingDataResult) => trainingPagingDataResult
+          ));
+        },
+        onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
+          if (_homeMainMenuDelegate != null) {
+            return CompoundListItemControllerState(
+              listItemControllerState: [
+                VirtualSpacingListItemControllerState(height: 16),
+                _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductCategoryCarousel(
+                  OnObserveLoadingLoadProductCategoryCarouselParameter()
+                ),
+                VirtualSpacingListItemControllerState(height: 16),
+              ]
+            );
+          }
+        },
+        onObserveSuccessDynamicItemActionState: (title, description, loadDataResult) {
+          List<ProductEntry> productEntryList = loadDataResult.resultIfSuccess!;
+          if (_homeMainMenuDelegate != null) {
+            return _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveSuccessLoadProductEntryCarousel(
+              OnObserveSuccessLoadProductEntryCarouselParameter(
+                title: title,
+                description: description,
+                productEntryList: productEntryList,
+                data: Constant.carouselKeyOnlyForYou
+              )
+            );
+          }
+          throw MessageError(title: "Home main menu delegate must be initialized");
+        },
+      ),
     ];
   }
 
@@ -965,6 +1013,7 @@ class HomeMainMenuSubControllerInjectionFactory {
   final GetBeautyProductIndonesiaListUseCase getBeautyProductIndonesiaListUseCase;
   final GetSelectedBeautyBrandsListUseCase getSelectedBeautyBrandsListUseCase;
   final GetFashionProductIndonesiaListUseCase getFashionProductIndonesiaListUseCase;
+  final GetOnlyForYouListUseCase getOnlyForYouListUseCase;
   final GetHandycraftsContentsBannerUseCase getHandycraftsContentsBannerUseCase;
   final GetKitchenContentsBannerUseCase getKitchenContentsBannerUseCase;
   final GetHomepageContentsBannerUseCase getHomepageContentsBannerUseCase;
@@ -988,6 +1037,7 @@ class HomeMainMenuSubControllerInjectionFactory {
     required this.getBeautyProductIndonesiaListUseCase,
     required this.getSelectedBeautyBrandsListUseCase,
     required this.getFashionProductIndonesiaListUseCase,
+    required this.getOnlyForYouListUseCase,
     required this.getHandycraftsContentsBannerUseCase,
     required this.getKitchenContentsBannerUseCase,
     required this.getHomepageContentsBannerUseCase,
@@ -1016,6 +1066,7 @@ class HomeMainMenuSubControllerInjectionFactory {
         getCoffeeAndTeaOriginIndonesiaListUseCase,
         getBeautyProductIndonesiaListUseCase,
         getFashionProductIndonesiaListUseCase,
+        getOnlyForYouListUseCase,
         getHandycraftsContentsBannerUseCase,
         getKitchenContentsBannerUseCase,
         getHomepageContentsBannerUseCase,

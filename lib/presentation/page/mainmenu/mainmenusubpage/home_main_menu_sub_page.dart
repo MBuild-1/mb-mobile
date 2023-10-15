@@ -446,6 +446,23 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
                 )
               ),
             );
+          } else if (data == Constant.carouselKeyOnlyForYou) {
+            carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternBlue);
+            titleInterceptor = (text, style) => titleArea(
+              title: Text(text.toStringNonNull, style: style?.copyWith(color: Colors.white)),
+              onTapMore: () => PageRestorationHelper.toProductEntryPage(
+                context,
+                ProductEntryPageParameter(
+                  productEntryParameterMap: {
+                    "fyp": true,
+                    "name": {
+                      Constant.textEnUsLanguageKey: "Only For You",
+                      Constant.textInIdLanguageKey: "Hanya Untuk Kamu"
+                    }
+                  }
+                )
+              ),
+            );
           } else if (data == Constant.carouselKeyProductSponsor) {
             carouselBackground = null;
             titleInterceptor = (text, style) => Container();
