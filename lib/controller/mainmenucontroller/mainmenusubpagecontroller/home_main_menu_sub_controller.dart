@@ -84,9 +84,6 @@ class HomeMainMenuSubController extends BaseGetxController {
   final WishlistAndCartControllerContentDelegate wishlistAndCartControllerContentDelegate;
   HomeMainMenuDelegate? _homeMainMenuDelegate;
 
-  RepeatableDynamicItemCarouselAdditionalParameter? _productSponsorRepeatableDynamicItemCarouselAdditionalParameter;
-  Completer? _productSponsorBannerCompleter;
-
   HomeMainMenuSubController(
     ControllerManager? controllerManager,
     this.getProductEntryWithConditionPagingUseCase,
@@ -193,13 +190,6 @@ class HomeMainMenuSubController extends BaseGetxController {
   }
 
   List<HomeMainMenuComponentEntity> getHomeMainMenuComponentEntity() {
-    _productSponsorRepeatableDynamicItemCarouselAdditionalParameter = RepeatableDynamicItemCarouselAdditionalParameter();
-    if (_productSponsorBannerCompleter != null) {
-      if (!_productSponsorBannerCompleter!.isCompleted) {
-        _productSponsorBannerCompleter!.completeError(Exception());
-      }
-    }
-    _productSponsorBannerCompleter = Completer();
     return [
       DynamicItemCarouselHomeMainMenuComponentEntity(
         title: MultiLanguageString({
@@ -382,7 +372,7 @@ class HomeMainMenuSubController extends BaseGetxController {
           Constant.textInIdLanguageKey: "Sponsor Banner"
         }),
         onDynamicItemAction: (title, description, observer) async {
-          observer(title, description, IsLoadingLoadDataResult<List<TransparentBanner>>());
+          observer(title, description, IsLoadingLoadDataResult<LoadSponsorBannerAndContentResponse>());
           LoadDataResult<List<TransparentBanner>> bannerLoadDataResult = await getSponsorContentsBannerUseCase.execute().future(
             parameter: apiRequestManager.addRequestToCancellationPart("sponsor-banner-highlight").value
           ).map(
@@ -402,9 +392,39 @@ class HomeMainMenuSubController extends BaseGetxController {
               );
               _homeMainMenuDelegate?.setBanner(banner);
             }
+          } else if (bannerLoadDataResult.isFailed) {
+            observer(title, description, bannerLoadDataResult.map<LoadSponsorBannerAndContentResponse>((value) => throw UnimplementedError()));
+            return;
           }
-          _productSponsorBannerCompleter?.complete();
-          observer(title, description, bannerLoadDataResult);
+          String bannerData = "";
+          if (_homeMainMenuDelegate != null) {
+            bannerData = _homeMainMenuDelegate!.getBannerData();
+          }
+          LoadDataResult<List<ProductEntry>> productEntryPagingDataResult = await getProductEntryWithConditionPagingUseCase.execute(
+            ProductWithConditionPagingParameter(
+              page: 1,
+              itemEachPageCount: 10,
+              withCondition: {
+                "type": "sponsor",
+                "brand": bannerData.toLowerCase(),
+              }
+            )
+          ).future(
+            parameter: apiRequestManager.addRequestToCancellationPart("product-sponsor").value
+          ).map((value) => value.itemList);
+          if (productEntryPagingDataResult.isFailedBecauseCancellation) {
+            return;
+          }
+          if (productEntryPagingDataResult.isFailed) {
+            observer(title, description, bannerLoadDataResult.map<LoadSponsorBannerAndContentResponse>((value) => throw UnimplementedError()));
+            return;
+          }
+          observer(title, description, productEntryPagingDataResult.map<LoadSponsorBannerAndContentResponse>(
+            (value) => LoadSponsorBannerAndContentResponse(
+              sponsorTransparentBannerList: bannerLoadDataResult.resultIfSuccess!,
+              sponsorProductEntryList: productEntryPagingDataResult.resultIfSuccess!
+            )
+          ));
         },
         onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
           if (_homeMainMenuDelegate != null) {
@@ -420,94 +440,32 @@ class HomeMainMenuSubController extends BaseGetxController {
           }
         },
         onObserveSuccessDynamicItemActionState: (title, description, loadDataResult) {
-          List<TransparentBanner> transparentBannerList = loadDataResult.resultIfSuccess!;
+          LoadSponsorBannerAndContentResponse loadSponsorBannerAndContentResponse = loadDataResult.resultIfSuccess!;
           if (_homeMainMenuDelegate != null) {
-            ListItemControllerState result = _homeMainMenuDelegate!.onObserveSuccessLoadMultipleTransparentBanner(
-              _OnObserveSuccessLoadMultipleTransparentBannerParameter(
-                title: title,
-                description: description,
-                transparentBannerList: transparentBannerList,
-                data: ProductSponsorTransparentBannerParameterData(
-                  repeatableDynamicItemCarouselAdditionalParameter: _productSponsorRepeatableDynamicItemCarouselAdditionalParameter
-                )
+            ListItemControllerState result = _homeMainMenuDelegate!.onObserveSuccessLoadProductSponsor(
+              _OnObserveSuccessLoadProductSponsorParameter(
+                loadSponsorBannerAndContentResponse: loadSponsorBannerAndContentResponse,
+                onCreateProductSponsorCarousel: () {
+                  return CompoundListItemControllerState(
+                    listItemControllerState: [
+                      _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveSuccessLoadProductEntryCarousel(
+                        OnObserveSuccessLoadProductEntryCarouselParameter(
+                          title: title,
+                          description: description,
+                          productEntryList: loadSponsorBannerAndContentResponse.sponsorProductEntryList,
+                          data: Constant.carouselKeyProductSponsor
+                        )
+                      ),
+                      VirtualSpacingListItemControllerState(height: 16),
+                    ]
+                  );
+                }
               )
             );
             return result;
           }
           throw MessageError(title: "Home main menu delegate must be initialized");
         },
-      ),
-      DynamicItemCarouselHomeMainMenuComponentEntity(
-        title: MultiLanguageString({
-          Constant.textEnUsLanguageKey: "Product Sponsor Content",
-          Constant.textInIdLanguageKey: "Konten Produk Sponsor"
-        }),
-        onDynamicItemAction: (title, description, observer) async {
-          observer(title, description, IsLoadingLoadDataResult<List<ProductEntry>>());
-          String bannerData = "";
-          Future<dynamic>? productSponsorLoadingFuture = _productSponsorBannerCompleter?.future;
-          if (productSponsorLoadingFuture != null) {
-            try {
-              await productSponsorLoadingFuture;
-              if (_homeMainMenuDelegate != null) {
-                bannerData = _homeMainMenuDelegate!.getBannerData();
-              }
-              LoadDataResult<List<ProductEntry>> productEntryPagingDataResult = await getProductEntryWithConditionPagingUseCase.execute(
-                ProductWithConditionPagingParameter(
-                  page: 1,
-                  itemEachPageCount: 10,
-                  withCondition: {
-                    "type": "sponsor",
-                    "brand": bannerData.toLowerCase(),
-                  }
-                )
-              ).future(
-                parameter: apiRequestManager.addRequestToCancellationPart("product-sponsor").value
-              ).map((value) => value.itemList);
-              if (productEntryPagingDataResult.isFailedBecauseCancellation) {
-                return;
-              }
-              observer(title, description, productEntryPagingDataResult.map<List<ProductEntry>>(
-                (productEntryPagingDataResult) => productEntryPagingDataResult
-              ));
-            } catch (e) {
-              // No catch error
-            }
-          }
-        },
-        onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
-          if (_homeMainMenuDelegate != null) {
-            return CompoundListItemControllerState(
-              listItemControllerState: [
-                VirtualSpacingListItemControllerState(height: 16),
-                _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductCategoryCarousel(
-                  OnObserveLoadingLoadProductCategoryCarouselParameter()
-                ),
-                VirtualSpacingListItemControllerState(height: 16),
-              ]
-            );
-          }
-        },
-        onObserveSuccessDynamicItemActionState: (title, description, loadDataResult) {
-          List<ProductEntry> productEntryList = loadDataResult.resultIfSuccess!;
-          if (_homeMainMenuDelegate != null) {
-            return CompoundListItemControllerState(
-              listItemControllerState: [
-                _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveSuccessLoadProductEntryCarousel(
-                  OnObserveSuccessLoadProductEntryCarouselParameter(
-                    title: title,
-                    description: description,
-                    productEntryList: productEntryList,
-                    data: Constant.carouselKeyProductSponsor
-                  )
-                ),
-                VirtualSpacingListItemControllerState(height: 16),
-              ]
-            );
-          }
-          throw MessageError(title: "Home main menu delegate must be initialized");
-        },
-        dynamicItemCarouselAdditionalParameter: _productSponsorRepeatableDynamicItemCarouselAdditionalParameter,
       ),
       DynamicItemCarouselHomeMainMenuComponentEntity(
         title: MultiLanguageString({
@@ -1088,6 +1046,7 @@ class HomeMainMenuDelegate {
   ListItemControllerState Function(_OnObserveSuccessLoadTransparentBannerParameter) onObserveSuccessLoadTransparentBanner;
   ListItemControllerState Function(_OnObserveLoadingLoadTransparentBannerParameter) onObserveLoadingLoadTransparentBanner;
   ListItemControllerState Function(_OnObserveLoadCurrentAddressParameter) onObserveLoadCurrentAddress;
+  ListItemControllerState Function(_OnObserveSuccessLoadProductSponsorParameter) onObserveSuccessLoadProductSponsor;
   String Function() getBannerData;
   void Function(Banner) setBanner;
 
@@ -1099,6 +1058,7 @@ class HomeMainMenuDelegate {
     required this.onObserveSuccessLoadTransparentBanner,
     required this.onObserveLoadingLoadTransparentBanner,
     required this.onObserveLoadCurrentAddress,
+    required this.onObserveSuccessLoadProductSponsor,
     required this.getBannerData,
     required this.setBanner
   });
@@ -1158,10 +1118,30 @@ class _OnObserveLoadCurrentAddressParameter {
   });
 }
 
+class _OnObserveSuccessLoadProductSponsorParameter {
+  LoadSponsorBannerAndContentResponse loadSponsorBannerAndContentResponse;
+  ListItemControllerState Function() onCreateProductSponsorCarousel;
+
+  _OnObserveSuccessLoadProductSponsorParameter({
+    required this.loadSponsorBannerAndContentResponse,
+    required this.onCreateProductSponsorCarousel
+  });
+}
+
 class ProductSponsorTransparentBannerParameterData {
   RepeatableDynamicItemCarouselAdditionalParameter? repeatableDynamicItemCarouselAdditionalParameter;
 
   ProductSponsorTransparentBannerParameterData({
     required this.repeatableDynamicItemCarouselAdditionalParameter
+  });
+}
+
+class LoadSponsorBannerAndContentResponse {
+  List<TransparentBanner> sponsorTransparentBannerList;
+  List<ProductEntry> sponsorProductEntryList;
+
+  LoadSponsorBannerAndContentResponse({
+    required this.sponsorTransparentBannerList,
+    required this.sponsorProductEntryList
   });
 }

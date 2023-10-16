@@ -9,6 +9,7 @@ class MultiBannerListItemControllerState extends ListItemControllerState {
   AspectRatioValue aspectRatioValue;
   void Function(Banner)? onTapBanner;
   bool isAutoSwipe;
+  bool withIndicator;
   final Function(int index, CarouselPageChangedReason reason)? onPageChanged;
 
   MultiBannerListItemControllerState({
@@ -16,6 +17,7 @@ class MultiBannerListItemControllerState extends ListItemControllerState {
     required this.aspectRatioValue,
     this.onTapBanner,
     this.isAutoSwipe = true,
+    this.withIndicator = true,
     this.onPageChanged
   });
 }

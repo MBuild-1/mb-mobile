@@ -174,6 +174,7 @@ import '../../controllerstate/listitemcontrollerstate/orderlistitemcontrollersta
 import '../../controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/waiting_for_payment_order_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/padding_container_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/page_keyed_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/positioned_container_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/product_bundle_header_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/product_bundle_highlight_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/product_category_header_list_item_controller_state.dart';
@@ -669,6 +670,16 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
       return Stack(
         children: result
       );
+    } else if (item is PositionedContainerListItemControllerState) {
+      return Positioned(
+        left: item.left,
+        top: item.top,
+        right: item.right,
+        bottom: item.bottom,
+        width: item.width,
+        height: item.height,
+        child: _itemBuilder(context, item.childListItemControllerState, index)
+      );
     } else if (item is DecoratedContainerListItemControllerState) {
       return Container(
         padding: item.padding,
@@ -726,6 +737,9 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
         ),
         carouselController: CarouselController(),
         modifiedCarouselSliderTopStackWidgetBuilder: (context, pageController) {
+          if (!item.withIndicator) {
+            return Container();
+          }
           return Align(
             alignment: Alignment.bottomCenter,
             child: SizedBox(

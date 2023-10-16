@@ -26,6 +26,7 @@ import '../../../../misc/constant.dart';
 import '../../../../misc/controllercontentdelegate/wishlist_and_cart_controller_content_delegate.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/carousel_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/colorful_divider_list_item_controller_state.dart';
+import '../../../../misc/controllerstate/listitemcontrollerstate/column_container_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/compound_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/decorated_container_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/delivery_to_list_item_controller_state.dart';
@@ -35,6 +36,7 @@ import '../../../../misc/controllerstate/listitemcontrollerstate/load_data_resul
 import '../../../../misc/controllerstate/listitemcontrollerstate/multi_banner_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/no_content_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/padding_container_list_item_controller_state.dart';
+import '../../../../misc/controllerstate/listitemcontrollerstate/positioned_container_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/product_bundle_highlight_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/single_banner_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/stack_container_list_item_controller_state.dart';
@@ -466,6 +468,9 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
           } else if (data == Constant.carouselKeyProductSponsor) {
             carouselBackground = null;
             titleInterceptor = (text, style) => Container();
+            additionalParameter = HorizontalProductAppearanceParameterizedEntityAndListItemControllerStateMediatorParameter(
+              horizontalProductAppearance: HorizontalProductAppearance.onlyPicture
+            );
           } else {
             carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternGrey);
           }
@@ -621,6 +626,7 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
                         data.repeatableDynamicItemCarouselAdditionalParameter?.onRepeatLoading();
                       },
                       isAutoSwipe: false,
+                      withIndicator: false
                     ),
                     WidgetSubstitutionListItemControllerState(
                       widgetSubstitution: (BuildContext context, int index) {
@@ -788,6 +794,109 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
             errorProvider: Injector.locator<ErrorProvider>(),
             onAddressSelectedChanged: (address) {
               onObserveLoadCurrentAddressParameter.repeatableDynamicItemCarouselAdditionalParameter.onRepeatLoading();
+            }
+          );
+        },
+        onObserveSuccessLoadProductSponsor: (onObserveSuccessLoadProductSponsorParameter) {
+          LoadSponsorBannerAndContentResponse loadSponsorBannerAndContentResponse = onObserveSuccessLoadProductSponsorParameter.loadSponsorBannerAndContentResponse;
+          return BuilderListItemControllerState(
+            buildListItemControllerState: () {
+              List<Banner> bannerList = loadSponsorBannerAndContentResponse.sponsorTransparentBannerList.map<Banner>(
+                (transparentBanner) => Banner(
+                  id: transparentBanner.id,
+                  imageUrl: transparentBanner.imageUrl,
+                  data: transparentBanner.title
+                )
+              ).toList();
+              void toProductEntryPage(Banner? banner) {
+                PageRestorationHelper.toProductEntryPage(
+                  context,
+                  ProductEntryPageParameter(
+                    productEntryParameterMap: {
+                      "type": "sponsor",
+                      "brand": (banner?.data as String).toLowerCase(),
+                      "sponsor_image_url": banner?.imageUrl ?? "",
+                      "sponsor_title": banner?.data as String,
+                      "sponsor_aspect_ratio": Constant.aspectRatioValueSponsorBanner.toDouble()
+                    }
+                  )
+                );
+              }
+              return StackContainerListItemControllerState(
+                childListItemControllerStateList: [
+                  ColumnContainerListItemControllerState(
+                    columnChildListItemControllerState: [
+                      MultiBannerListItemControllerState(
+                        bannerList: bannerList,
+                        aspectRatioValue: Constant.aspectRatioValueSponsorBanner,
+                        onTapBanner: (banner) => toProductEntryPage(banner),
+                        onPageChanged: (index, reason) {
+                          _banner = bannerList[index];
+                          //data.repeatableDynamicItemCarouselAdditionalParameter?.onRepeatLoading();
+                        },
+                        isAutoSwipe: false,
+                        withIndicator: false
+                      ),
+                    ]
+                  ),
+                  WidgetSubstitutionListItemControllerState(
+                    widgetSubstitution: (BuildContext context, int index) {
+                      return SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        child: Padding(
+                          padding: EdgeInsets.all(Constant.paddingListItem),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  MultiLanguageString({
+                                    Constant.textEnUsLanguageKey: "Selected Brand",
+                                    Constant.textInIdLanguageKey: "Brand Pilihan"
+                                  }).toEmptyStringNonNull,
+                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold
+                                  )
+                                ),
+                              ),
+                              TapArea(
+                                onTap: () => toProductEntryPage(_banner),
+                                child: Text(
+                                  MultiLanguageString({
+                                    Constant.textEnUsLanguageKey: "Look More",
+                                    Constant.textInIdLanguageKey: "Lihat Semua"
+                                  }).toEmptyStringNonNull,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold
+                                  ),
+                                )
+                              )
+                            ]
+                          ),
+                        )
+                      );
+                    }
+                  ),
+                  ColumnContainerListItemControllerState(
+                    columnChildListItemControllerState: [
+                      WidgetSubstitutionListItemControllerState(
+                        widgetSubstitution: (context, index) {
+                          AspectRatioValue aspectRatioValue = Constant.aspectRatioValueSponsorBanner;
+                          double bannerWidth = MediaQuery.of(context).size.width;
+                          double bannerHeight = bannerWidth * aspectRatioValue.height / aspectRatioValue.width;
+                          return SizedBox(
+                            width: bannerWidth,
+                            height: bannerHeight - 90
+                          );
+                        }
+                      ),
+                      onObserveSuccessLoadProductSponsorParameter.onCreateProductSponsorCarousel()
+                    ]
+                  )
+                ]
+              );
             }
           );
         },
