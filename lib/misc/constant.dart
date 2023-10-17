@@ -114,6 +114,11 @@ class _ConstantImpl {
   String get vectorNotificationIconCart => _getVectorsAssets("notification_icon_cart.svg");
   String get vectorNotificationIconInbox => _getVectorsAssets("notification_icon_inbox.svg");
   String get vectorNotificationIconNotif => _getVectorsAssets("notification_icon_notif.svg");
+  String get vectorAboutMasterbagasi => _getVectorsAssets("about_masterbagasi.svg");
+  String get vectorTermsAndConditions => _getVectorsAssets("terms_and_conditions.svg");
+  String get vectorPrivacyPolicy => _getVectorsAssets("privacy_policy.svg");
+  String get vectorIntellectualPropertyRights => _getVectorsAssets("intellectual_property_rights.svg");
+  String get vectorReviewThisApplication => _getVectorsAssets("review_this_application.svg");
 
   Color get colorYellow => const Color.fromRGBO(244, 184, 43, 1);
   Color get colorLightRed => const Color.fromRGBO(255, 236, 230, 1);

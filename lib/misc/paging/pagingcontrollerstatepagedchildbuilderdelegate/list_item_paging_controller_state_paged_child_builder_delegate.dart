@@ -586,6 +586,8 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
         return TitleAndDescriptionItem(
           title: item.title,
           description: item.description,
+          titleInterceptor: item.titleInterceptor,
+          descriptionInterceptor: item.descriptionInterceptor,
           padding: item.padding,
           verticalSpace: item.verticalSpace,
           titleAndDescriptionItemInterceptor: item.titleAndDescriptionItemInterceptor,

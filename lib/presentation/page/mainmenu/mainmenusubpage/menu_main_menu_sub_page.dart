@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:in_app_review/in_app_review.dart';
 import 'package:masterbagasi/misc/controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
@@ -18,10 +19,12 @@ import '../../../../misc/controllerstate/listitemcontrollerstate/list_item_contr
 import '../../../../misc/controllerstate/listitemcontrollerstate/load_data_result_dynamic_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/menu_profile_header_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/no_content_list_item_controller_state.dart';
+import '../../../../misc/controllerstate/listitemcontrollerstate/padding_container_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/profilemenulistitemcontrollerstate/profile_dropdown_menu_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/profilemenulistitemcontrollerstate/profile_menu_group_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/profilemenulistitemcontrollerstate/profile_menu_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/spacing_list_item_controller_state.dart';
+import '../../../../misc/controllerstate/listitemcontrollerstate/title_and_description_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/paging_controller_state.dart';
 import '../../../../misc/dialog_helper.dart';
 import '../../../../misc/entityandlistitemcontrollerstatemediator/horizontal_component_entity_parameterized_entity_and_list_item_controller_state_mediator.dart';
@@ -151,24 +154,24 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
             title: 'Wishlist'.tr,
           ),
           ProfileMenuListItemControllerState(
-            onTap: (context) => PageRestorationHelper.toDeliveryReviewPage(context),
-            icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorDeliveryShipping, width: 20.0),
-            title: 'Delivery Review'.tr,
-          ),
-          ProfileMenuListItemControllerState(
             onTap: (context) => PageRestorationHelper.toFavoriteProductBrandPage(context),
             icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorFavoriteBrand, width: 20.0),
             title: 'Favorite Brand'.tr,
           ),
-          // ProfileMenuListItemControllerState(
-          //   onTap: (context) => PageRestorationHelper.toProductDiscussionPage(context),
-          //   icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorProductDiscussion, width: 20.0),
-          //   title: 'Product Discussion'.tr,
-          // ),
           ProfileMenuListItemControllerState(
             onTap: (context) => PageRestorationHelper.toInboxPage(context),
             icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorInbox2, width: 20.0),
-            title: 'Inbox'.tr,
+            title: 'Chat'.tr,
+          ),
+          ProfileMenuListItemControllerState(
+            onTap: (context) {},
+            icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorProductDiscussion, width: 20.0),
+            title: 'Product Discussion'.tr,
+          ),
+          ProfileMenuListItemControllerState(
+            onTap: (context) => PageRestorationHelper.toDeliveryReviewPage(context),
+            icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorDeliveryShipping, width: 20.0),
+            title: 'Delivery Review'.tr,
           ),
           ProfileMenuListItemControllerState(
             onTap: (context) => PageRestorationHelper.toNotificationPage(context),
@@ -181,6 +184,22 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
             title: 'Shared Cart'.tr,
           ),
           SpacingListItemControllerState(),
+          VirtualSpacingListItemControllerState(
+            height: Constant.paddingListItem
+          ),
+          PaddingContainerListItemControllerState(
+            padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+            paddingChildListItemControllerState: TitleAndDescriptionListItemControllerState(
+              title: "Application Configuration".tr,
+              titleInterceptor: (title, titleTextStyle) => Text(
+                title.toStringNonNull,
+                style: const TextStyle(fontWeight: FontWeight.bold)
+              )
+            ),
+          ),
+          VirtualSpacingListItemControllerState(
+            height: 5
+          ),
           ProfileMenuListItemControllerState(
             onTap: (context) => PageRestorationHelper.toAddressPage(context),
             icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorAddressList, width: 20.0),
@@ -229,47 +248,50 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
                 onTap: (context) {
                   PageRestorationHelper.toWebViewerPage(
                     context, <String, dynamic>{
-                      Constant.textEncodedUrlKey: StringUtil.encodeBase64String("https://masterbagasi.com/about")
+                      Constant.textEncodedUrlKey: StringUtil.encodeBase64String("https://m.masterbagasi.com/about-us")
                     }
                   );
                 },
-                icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorArrow, width: 20.0, height: 13.0),
+                icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorAboutMasterbagasi, width: 20.0),
                 title: 'About MasterBagasi'.tr
               ),
               ProfileMenuListItemControllerState(
                 onTap: (context) {
                   PageRestorationHelper.toWebViewerPage(
                     context, <String, dynamic>{
-                      Constant.textEncodedUrlKey: StringUtil.encodeBase64String("https://masterbagasi.com/term-and-condition")
+                      Constant.textEncodedUrlKey: StringUtil.encodeBase64String("https://m.masterbagasi.com/terms-and-conditions")
                     }
                   );
                 },
-                icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorArrow, width: 20.0, height: 13.0),
+                icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorTermsAndConditions, width: 20.0),
                 title: 'Terms & Conditions'.tr
               ),
               ProfileMenuListItemControllerState(
                 onTap: (context) {
                   PageRestorationHelper.toWebViewerPage(
                     context, <String, dynamic>{
-                      Constant.textEncodedUrlKey: StringUtil.encodeBase64String("https://masterbagasi.com/privacy")
+                      Constant.textEncodedUrlKey: StringUtil.encodeBase64String("https://m.masterbagasi.com/privacy-policy")
                     }
                   );
                 },
-                icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorArrow, width: 20.0, height: 13.0),
+                icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorPrivacyPolicy, width: 20.0),
                 title: 'Privacy Policy'.tr
               ),
               ProfileMenuListItemControllerState(
                 onTap: (context) {
                   DialogHelper.showPromptUnderConstruction(context);
                 },
-                icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorArrow, width: 20.0, height: 13.0),
+                icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorIntellectualPropertyRights, width: 20.0),
                 title: 'Intellectual Rights and Property'.tr
               ),
               ProfileMenuListItemControllerState(
-                onTap: (context) {
-                  DialogHelper.showPromptUnderConstruction(context);
+                onTap: (context) async {
+                  final InAppReview inAppReview = InAppReview.instance;
+                  if (await inAppReview.isAvailable()) {
+                    inAppReview.requestReview();
+                  }
                 },
-                icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorArrow, width: 20.0, height: 13.0),
+                icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorReviewThisApplication, width: 20.0),
                 title: 'Review This App'.tr
               ),
             ]
