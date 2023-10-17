@@ -322,7 +322,12 @@ class OnObserveLoadProductDelegateFactory {
             data: onObserveSuccessLoadAddressCarouselParameter.data,
             title: onObserveSuccessLoadAddressCarouselParameter.title,
             description: onObserveSuccessLoadAddressCarouselParameter.description,
-            itemList: onObserveSuccessLoadAddressCarouselParameter.addressList,
+            itemList: onObserveSuccessLoadAddressCarouselParameter.addressList.map<AddressCarouselCompoundParameterized>(
+              (address) => AddressCarouselCompoundParameterized(
+                address: address,
+                onObserveSuccessLoadAddressCarouselParameter: onObserveSuccessLoadAddressCarouselParameter
+              )
+            ).toList(),
             onInjectParameterEntityAndListItem: onInjectLoadAddressCarouselParameterizedEntity,
           )
         );
