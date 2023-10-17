@@ -303,10 +303,12 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
               children: [
                 Expanded(child: title),
                 const SizedBox(width: 10),
-                moreTapArea(
-                  onTap: onTapMore,
-                  onInterceptTextStyle: onInterceptTextStyle
-                )
+                if (onTapMore != null) ...[
+                  moreTapArea(
+                    onTap: onTapMore,
+                    onInterceptTextStyle: onInterceptTextStyle
+                  )
+                ]
               ],
             );
           }
@@ -386,12 +388,7 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
               horizontalBrandAppearance: HorizontalBrandAppearance.squareAppearance
             );
             titleInterceptor = (text, style) => titleArea(
-              title: Text(text.toStringNonNull, style: style?.copyWith(color: Colors.white)),
-              onTapMore: () => PageRestorationHelper.toProductBrandPage(
-                context, ProductBrandPageParameter(
-                  productBrandPageType: ProductBrandPageType.selectedFashionBrandProductDetail
-                )
-              )
+              title: Text(text.toStringNonNull, style: style?.copyWith(color: Colors.white))
             );
           } else if (data == Constant.carouselKeyChoiceBeautyBrand) {
             carouselBackground = AssetCarouselBackground(
@@ -406,11 +403,6 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
             );
             titleInterceptor = (text, style) => titleArea(
               title: Text(text.toStringNonNull, style: style?.copyWith(color: Colors.white)),
-              onTapMore: () => PageRestorationHelper.toProductBrandPage(
-                context, ProductBrandPageParameter(
-                  productBrandPageType: ProductBrandPageType.selectedBeautyBrandProductDetail
-                )
-              )
             );
           } else if (data == Constant.carouselKeyCoffeeAndTeaOriginIndonesia) {
             carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternBlue);
