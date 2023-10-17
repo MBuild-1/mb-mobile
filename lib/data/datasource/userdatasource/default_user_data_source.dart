@@ -175,6 +175,9 @@ class DefaultUserDataSource implements UserDataSource {
       };
     } else if (modifyPinParameter is RemoveModifyPinParameter) {
       modifyPinEndpoint = "/remove-pin";
+      formDataMap = <String, dynamic> {
+        "pin": modifyPinParameter.pin,
+      };
     } else if (modifyPinParameter is ValidateModifyPinParameter) {
       modifyPinEndpoint = "/check/pin";
       if (modifyPinParameter is ValidateWhileLoginModifyPinParameter) {
@@ -193,7 +196,19 @@ class DefaultUserDataSource implements UserDataSource {
     return DioHttpClientProcessing((cancelToken) {
       return () {
         if (modifyPinParameter is RemoveModifyPinParameter) {
-          return dio.put(modifyPinEndpoint, cancelToken: cancelToken);
+          Future<Response> checkAndRemovePin() async {
+            try {
+              await modifyPin(
+                ValidateModifyPinParameter(pin: modifyPinParameter.pin)
+              ).future(
+                parameter: cancelToken
+              );
+              return await dio.put(modifyPinEndpoint, data: formData, cancelToken: cancelToken);
+            } catch (e) {
+              rethrow;
+            }
+          }
+          return checkAndRemovePin();
         }
         OptionsBuilder optionsBuilder = OptionsBuilder.multipartData();
         Options? options;

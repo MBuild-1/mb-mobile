@@ -488,6 +488,7 @@ class _StatefulModifyPinControllerMediatorWidgetState extends State<_StatefulMod
         _textEditingController.clear();
         _step += 1;
         _focusNode.requestFocus();
+        setState(() {});
       } else if (_step == 3) {
         changeModifyPinParameter.confirmNewPin = _textEditingController.text;
         _textEditingController.clear();
