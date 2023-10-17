@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:masterbagasi/misc/ext/number_ext.dart';
 import 'package:masterbagasi/presentation/widget/product/product_item.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../domain/entity/product/product_appearance_data.dart';
 import '../../domain/entity/product/product_detail.dart';
@@ -8,7 +9,9 @@ import '../../domain/entity/product/productentry/product_entry.dart';
 import '../../misc/constant.dart';
 import '../../misc/product_helper.dart';
 import 'button/add_or_remove_wishlist_button.dart';
+import 'modified_svg_picture.dart';
 import 'modified_vertical_divider.dart';
+import 'tap_area.dart';
 
 class ProductDetailShortHeader extends StatelessWidget {
   final ProductDetail productDetail;
@@ -81,6 +84,21 @@ class ProductDetailShortHeader extends StatelessWidget {
             isTransparent: true,
             isAddToWishlist: selectedProductEntry.hasAddedToWishlist,
           ),
+          const SizedBox(width: 6),
+          const ModifiedVerticalDivider(
+            lineWidth: 1,
+            lineHeight: 20,
+            lineColor: Colors.black,
+          ),
+          const SizedBox(width: 8),
+          TapArea(
+            onTap: () => Share.share("https://m.masterbagasi.com/product/detail?slug=${selectedProductEntry.product.slug}&show=${selectedProductEntry.productEntryId}"),
+            child: ModifiedSvgPicture.asset(
+              Constant.vectorShare,
+              color: Theme.of(context).colorScheme.primary,
+              height: 26
+            )
+          )
         ]
       ) : Container()
     );
