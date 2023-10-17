@@ -7,7 +7,7 @@ import 'product_item.dart';
 
 class HorizontalProductItem extends ProductItem implements HorizontalScalable {
   final HorizontalScalableValue _horizontalScalableValue = HorizontalScalableValue(
-    scalableItemWidth: 180.0
+    scalableItemWidth: 180.0,
   );
 
   @override
@@ -36,7 +36,14 @@ class HorizontalProductItem extends ProductItem implements HorizontalScalable {
     onRemoveWishlist: onRemoveWishlist,
     onAddCart: onAddCart,
     onRemoveCart: onRemoveCart
-  );
+  ) {
+    _horizontalScalableValue.scalableItemWidthGetterChecking = (value) {
+      if (horizontalProductAppearance == HorizontalProductAppearance.onlyPicture) {
+        return 130.0;
+      }
+      return value;
+    };
+  }
 
   @override
   Widget priceWidget(BuildContext context, Widget nonDiscountPriceWidget, Widget discountPriceWidget) {
