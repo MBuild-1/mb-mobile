@@ -50,12 +50,40 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    TextTheme textTheme = Theme.of(context).textTheme.apply(fontFamily: "Roboto");
+    TextTheme textTheme = Theme.of(context).textTheme.apply(
+      fontFamily: "NunitoSans",
+    );
+    double? letterSpacing = -0.5;
     textTheme = textTheme.copyWith(
-      headline1: textTheme.headline1?.copyWith(color: Constant.colorTitle),
-      headline2: textTheme.headline2?.copyWith(color: Constant.colorTitle),
-      headline3: textTheme.headline3?.copyWith(color: Constant.colorTitle),
-      headline4: textTheme.headline4?.copyWith(color: Constant.colorTitle),
+      displayLarge: textTheme.displayLarge?.copyWith(letterSpacing: letterSpacing),
+      displayMedium: textTheme.displayMedium?.copyWith(letterSpacing: letterSpacing),
+      displaySmall: textTheme.displaySmall?.copyWith(letterSpacing: letterSpacing),
+      headlineLarge: textTheme.headlineLarge?.copyWith(letterSpacing: letterSpacing),
+      headlineMedium: textTheme.headlineMedium?.copyWith(letterSpacing: letterSpacing),
+      headlineSmall: textTheme.headlineSmall?.copyWith(letterSpacing: letterSpacing),
+      titleLarge: textTheme.titleLarge?.copyWith(letterSpacing: letterSpacing),
+      titleMedium: textTheme.titleMedium?.copyWith(letterSpacing: letterSpacing),
+      titleSmall: textTheme.titleSmall?.copyWith(letterSpacing: letterSpacing),
+      bodyLarge: textTheme.bodyLarge?.copyWith(letterSpacing: letterSpacing),
+      bodyMedium: textTheme.bodyMedium?.copyWith(letterSpacing: letterSpacing),
+      bodySmall: textTheme.bodySmall?.copyWith(letterSpacing: letterSpacing),
+      labelLarge: textTheme.labelLarge?.copyWith(letterSpacing: letterSpacing),
+      labelMedium: textTheme.labelMedium?.copyWith(letterSpacing: letterSpacing),
+      labelSmall: textTheme.labelSmall?.copyWith(letterSpacing: letterSpacing),
+    ).copyWith(
+      headline1: textTheme.headline1?.copyWith(color: Constant.colorTitle, letterSpacing: letterSpacing),
+      headline2: textTheme.headline2?.copyWith(color: Constant.colorTitle, letterSpacing: letterSpacing),
+      headline3: textTheme.headline3?.copyWith(color: Constant.colorTitle, letterSpacing: letterSpacing),
+      headline4: textTheme.headline4?.copyWith(color: Constant.colorTitle, letterSpacing: letterSpacing),
+      headline5: textTheme.headline5?.copyWith(letterSpacing: letterSpacing),
+      headline6: textTheme.headline6?.copyWith(letterSpacing: letterSpacing),
+      subtitle1: textTheme.subtitle1?.copyWith(letterSpacing: letterSpacing),
+      subtitle2: textTheme.subtitle2?.copyWith(letterSpacing: letterSpacing),
+      bodyText1: textTheme.bodyText1?.copyWith(letterSpacing: letterSpacing),
+      bodyText2: textTheme.bodyText2?.copyWith(letterSpacing: letterSpacing),
+      caption: textTheme.caption?.copyWith(letterSpacing: letterSpacing),
+      button: textTheme.button?.copyWith(letterSpacing: letterSpacing),
+      overline: textTheme.overline?.copyWith(letterSpacing: letterSpacing),
     );
     return MultiProvider(
       providers: [

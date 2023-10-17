@@ -13,7 +13,7 @@ class TapArea extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Theme(
-      data: ThemeData(
+      data: Theme.of(context).copyWith(
         highlightColor: Colors.transparent,
         splashFactory: NoSplash.splashFactory,
       ),
@@ -22,7 +22,6 @@ class TapArea extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           child: child,
-
         )
       )
     );

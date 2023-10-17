@@ -164,35 +164,45 @@ flutter:
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
   fonts:
-    - family: Roboto
+    - family: NunitoSans
       fonts:
-        - asset: assets/fonts/roboto_thin.ttf
-          weight: 100
-        - asset: assets/fonts/roboto_thin_italic.ttf
-          weight: 100
+        - asset: assets/fonts/nunito_sans_extra_light.ttf
+          weight: 200
+        - asset: assets/fonts/nunito_sans_extra_light_italic.ttf
+          weight: 200
           style: italic
-        - asset: assets/fonts/roboto_light.ttf
+        - asset: assets/fonts/nunito_sans_light.ttf
           weight: 300
-        - asset: assets/fonts/roboto_light_italic.ttf
+        - asset: assets/fonts/nunito_sans_light_italic.ttf
           weight: 300
           style: italic
-        - asset: assets/fonts/roboto_regular.ttf
+        - asset: assets/fonts/nunito_sans_regular.ttf
           weight: 400
-        - asset: assets/fonts/roboto_regular_italic.ttf
+        - asset: assets/fonts/nunito_sans_regular_italic.ttf
           weight: 400
           style: italic
-        - asset: assets/fonts/roboto_medium.ttf
+        - asset: assets/fonts/nunito_sans_medium.ttf
           weight: 500
-        - asset: assets/fonts/roboto_medium_italic.ttf
+        - asset: assets/fonts/nunito_sans_medium_italic.ttf
           weight: 500
           style: italic
-        - asset: assets/fonts/roboto_bold.ttf
+        - asset: assets/fonts/nunito_sans_semi_bold.ttf
+          weight: 600
+        - asset: assets/fonts/nunito_sans_semi_bold_italic.ttf
+          weight: 600
+          style: italic
+        - asset: assets/fonts/nunito_sans_bold.ttf
           weight: 700
-        - asset: assets/fonts/roboto_bold_italic.ttf
+        - asset: assets/fonts/nunito_sans_bold_italic.ttf
           weight: 700
           style: italic
-        - asset: assets/fonts/roboto_black.ttf
+        - asset: assets/fonts/nunito_sans_extra_bold.ttf
+          weight: 800
+        - asset: assets/fonts/nunito_sans_extra_bold_italic.ttf
+          weight: 800
+          style: italic
+        - asset: assets/fonts/nunito_sans_black.ttf
           weight: 900
-        - asset: assets/fonts/roboto_black_italic.ttf
+        - asset: assets/fonts/nunito_sans_black_italic.ttf
           weight: 900
           style: italic
