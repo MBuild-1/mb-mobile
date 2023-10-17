@@ -19,6 +19,7 @@ import '../../../misc/injector.dart';
 import '../../../misc/login_helper.dart';
 import '../../../misc/main_route_observer.dart';
 import '../../../misc/manager/controller_manager.dart';
+import '../../../misc/multi_language_string.dart';
 import '../../../misc/page_restoration_helper.dart';
 import '../../../misc/routeargument/main_menu_route_argument.dart';
 import '../../../misc/typedef.dart';
@@ -346,38 +347,44 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
           CustomBottomNavigationBar(
             type: BottomNavigationBarType.fixed,
             currentIndex: _customBottomNavigationBarSelectedIndex.currentSelectedMenuIndex,
-            selectedFontSize: 12.0,
-            unselectedFontSize: 12.0,
+            selectedFontSize: 9.0,
+            unselectedFontSize: 9.0,
             onTap: (selectedIndex) => _onItemTappedWithContext(selectedIndex, context),
             items: [
               CustomBottomNavigationBarItem(
                 icon: ModifiedSvgPicture.asset(Constant.vectorHomeUnselected, overrideDefaultColorWithSingleColor: false),
                 activeIcon: ModifiedSvgPicture.asset(Constant.vectorHomeSelected, overrideDefaultColorWithSingleColor: false),
-                label: 'Home'.tr,
+                label: 'Home',
                 hideLabelWhenInactive: false,
               ),
               CustomBottomNavigationBarItem(
                 icon: ModifiedSvgPicture.asset(Constant.vectorFeedUnselected, overrideDefaultColorWithSingleColor: false),
                 activeIcon: ModifiedSvgPicture.asset(Constant.vectorFeedSelected, overrideDefaultColorWithSingleColor: false),
-                label: 'Feed'.tr,
+                label: MultiLanguageString({
+                  Constant.textInIdLanguageKey: "Suguhan",
+                  Constant.textEnUsLanguageKey: "Feed"
+                }).toStringNonNull,
                 hideLabelWhenInactive: false
               ),
               CustomBottomNavigationBarItem(
                 icon: ModifiedSvgPicture.asset(Constant.vectorExploreUnselected, overrideDefaultColorWithSingleColor: false),
                 activeIcon: ModifiedSvgPicture.asset(Constant.vectorExploreSelected, overrideDefaultColorWithSingleColor: false),
-                label: 'Explore'.tr,
+                label: MultiLanguageString({
+                  Constant.textInIdLanguageKey: "Jelajah Nusantara",
+                  Constant.textEnUsLanguageKey: "Explore Nusantara"
+                }).toStringNonNull,
                 hideLabelWhenInactive: false
               ),
               CustomBottomNavigationBarItem(
                 icon: ModifiedSvgPicture.asset(Constant.vectorWishlistUnselected, overrideDefaultColorWithSingleColor: false),
                 activeIcon: ModifiedSvgPicture.asset(Constant.vectorWishlistSelected, overrideDefaultColorWithSingleColor: false),
-                label: 'Wishlist'.tr,
+                label: 'Wishlist',
                 hideLabelWhenInactive: false
               ),
               CustomBottomNavigationBarItem(
                 icon: ModifiedSvgPicture.asset(Constant.vectorMenuUnselected, overrideDefaultColorWithSingleColor: false),
                 activeIcon: ModifiedSvgPicture.asset(Constant.vectorMenuSelected, overrideDefaultColorWithSingleColor: false),
-                label: 'Menu'.tr,
+                label: 'Menu',
                 hideLabelWhenInactive: false
               ),
             ],
