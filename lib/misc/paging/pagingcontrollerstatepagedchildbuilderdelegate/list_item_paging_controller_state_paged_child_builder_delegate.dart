@@ -79,6 +79,8 @@ import '../../../presentation/widget/productbrand/circleproductbrand/vertical_ci
 import '../../../presentation/widget/productbrand/horizontal_product_brand_item.dart';
 import '../../../presentation/widget/productbrand/imageandbackgroundproductbrand/horizontal_image_and_background_product_brand_item.dart';
 import '../../../presentation/widget/productbrand/imageandbackgroundproductbrand/vertical_image_and_background_product_brand_item.dart';
+import '../../../presentation/widget/productbrand/squareglasstitleproductbrand/horizontal_square_glass_title_product_brand_item.dart';
+import '../../../presentation/widget/productbrand/squareglasstitleproductbrand/vertical_square_glass_title_product_brand_item.dart';
 import '../../../presentation/widget/productbrand/squareproductbrand/horizontal_square_product_brand_item.dart';
 import '../../../presentation/widget/productbrand/squareproductbrand/vertical_square_product_brand_item.dart';
 import '../../../presentation/widget/productbrand/vertical_product_brand_item.dart';
@@ -191,6 +193,9 @@ import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontro
 import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/imageandbackgroundproductbrandlistitemcontrollerstate/image_and_background_product_brand_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/imageandbackgroundproductbrandlistitemcontrollerstate/vertical_image_and_background_product_brand_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/product_brand_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/squareglasstitleproductbrandlistitemcontrollerstate/horizontal_square_glass_title_product_brand_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/squareglasstitleproductbrandlistitemcontrollerstate/square_glass_title_product_brand_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/squareglasstitleproductbrandlistitemcontrollerstate/vertical_square_glass_title_product_brand_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/squareproductbrandlistitemcontrollerstate/horizontal_square_product_brand_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/squareproductbrandlistitemcontrollerstate/square_product_brand_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/squareproductbrandlistitemcontrollerstate/vertical_square_product_brand_list_item_controller_state.dart';
@@ -298,6 +303,7 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
         }
         return CarouselListItem(
           padding: item.padding,
+          additionalPadding: item.additionalPadding,
           itemList: item.itemListItemControllerState,
           title: item.title,
           titleInterceptor: item.titleInterceptor,
@@ -416,6 +422,14 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
         return HorizontalSquareProductBrandItem(productBrand: item.productBrand);
       } else if (item is VerticalSquareProductBrandListItemControllerState) {
         return VerticalSquareProductBrandItem(productBrand: item.productBrand);
+      } else {
+        return Container();
+      }
+    } else if (item is SquareGlassTitleProductBrandListItemControllerState) {
+      if (item is HorizontalSquareGlassTitleProductBrandListItemControllerState) {
+        return HorizontalSquareGlassTitleProductBrandItem(productBrand: item.productBrand);
+      } else if (item is VerticalSquareGlassTitleProductBrandListItemControllerState) {
+        return VerticalSquareGlassTitleProductBrandItem(productBrand: item.productBrand);
       } else {
         return Container();
       }

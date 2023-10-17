@@ -32,6 +32,7 @@ class CarouselItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<List
       newItemTypeList.add(
         CarouselListItemControllerState(
           padding: oldItemType.padding,
+          additionalPadding: oldItemType.additionalPadding,
           betweenTitleDescriptionAndCarouselItemVerticalSpace: oldItemType.betweenTitleDescriptionAndCarouselItemVerticalSpace,
           itemListItemControllerState: newColumnChildListItemControllerState,
           title: oldItemType.title,

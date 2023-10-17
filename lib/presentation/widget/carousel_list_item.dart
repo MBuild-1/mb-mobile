@@ -3,6 +3,7 @@ import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../misc/carousellistitemtype/carousel_list_item_type.dart';
+import '../../misc/carousellistitemtype/default_carousel_list_item_type.dart';
 import '../../misc/carousellistitemtype/tile_carousel_list_item_Type.dart';
 import '../../misc/constant.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
@@ -15,6 +16,7 @@ import 'titleanddescriptionitem/title_and_description_item.dart';
 
 class CarouselListItem<T> extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
+  final EdgeInsetsGeometry? additionalPadding;
   final double? betweenTitleDescriptionAndCarouselItemVerticalSpace;
   final String title;
   final TitleInterceptor? titleInterceptor;
@@ -29,6 +31,7 @@ class CarouselListItem<T> extends StatelessWidget {
   const CarouselListItem({
     Key? key,
     this.padding,
+    this.additionalPadding,
     this.betweenTitleDescriptionAndCarouselItemVerticalSpace,
     this.title = "",
     this.titleInterceptor,
@@ -45,6 +48,7 @@ class CarouselListItem<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     return _InnerCarouselListItem<T>(
       padding: padding,
+      additionalPadding: additionalPadding,
       betweenTitleDescriptionAndCarouselItemVerticalSpace: betweenTitleDescriptionAndCarouselItemVerticalSpace,
       title: title,
       titleInterceptor: titleInterceptor,
@@ -62,6 +66,7 @@ class CarouselListItem<T> extends StatelessWidget {
 class ShimmerCarouselListItem<G extends ShimmerCarouselListItemGeneratorType> extends StatelessWidget {
   final WidgetBuilderWithItem<ListItemControllerState> builderWithItem;
   final EdgeInsetsGeometry? padding;
+  final EdgeInsetsGeometry? additionalPadding;
   final double? betweenTitleDescriptionAndCarouselItemVerticalSpace;
   final bool showTitleShimmer;
   final bool showDescriptionShimmer;
@@ -73,6 +78,7 @@ class ShimmerCarouselListItem<G extends ShimmerCarouselListItemGeneratorType> ex
     Key? key,
     required this.builderWithItem,
     this.padding,
+    this.additionalPadding,
     this.betweenTitleDescriptionAndCarouselItemVerticalSpace,
     required this.showTitleShimmer,
     required this.showDescriptionShimmer,
@@ -87,6 +93,7 @@ class ShimmerCarouselListItem<G extends ShimmerCarouselListItemGeneratorType> ex
       child: ModifiedShimmer.fromColors(
         child: _InnerCarouselListItem<ListItemControllerState>(
           padding: padding,
+          additionalPadding: additionalPadding,
           betweenTitleDescriptionAndCarouselItemVerticalSpace: betweenTitleDescriptionAndCarouselItemVerticalSpace,
           title: showTitleShimmer ? "Dummy Title" : "",
           description: showDescriptionShimmer ? "Dummy Description" : "",
@@ -102,6 +109,7 @@ class ShimmerCarouselListItem<G extends ShimmerCarouselListItemGeneratorType> ex
 
 class _InnerCarouselListItem<T> extends StatefulWidget {
   final EdgeInsetsGeometry? padding;
+  final EdgeInsetsGeometry? additionalPadding;
   final double? betweenTitleDescriptionAndCarouselItemVerticalSpace;
   final String title;
   final TitleInterceptor? titleInterceptor;
@@ -116,6 +124,7 @@ class _InnerCarouselListItem<T> extends StatefulWidget {
   const _InnerCarouselListItem({
     Key? key,
     this.padding,
+    this.additionalPadding,
     this.betweenTitleDescriptionAndCarouselItemVerticalSpace,
     required this.title,
     this.titleInterceptor,
@@ -155,96 +164,133 @@ class _InnerCarouselListItemState<T> extends State<_InnerCarouselListItem<T>> wi
       bottom = edgeInsetsDirectional.bottom;
     }
     bool hasBackgroundImage = widget.backgroundImage != null;
+    double effectiveBackgroundImageHeight = widget.backgroundImageHeight ?? 200;
     return Stack(
       children: [
-        if (hasBackgroundImage)
+        if (hasBackgroundImage && effectiveBackgroundImageHeight > 0.0)
           Container(
             clipBehavior: Clip.antiAlias,
             decoration: const BoxDecoration(),
             width: double.infinity,
-            height: widget.backgroundImageHeight ?? 200,
+            height: effectiveBackgroundImageHeight,
             child: FittedBox(
               fit: BoxFit.cover,
               child: widget.backgroundImage,
             )
           ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (hasBackgroundImage)
-              SizedBox(height: Constant.paddingListItem),
-            TitleAndDescriptionItem(
-              padding: EdgeInsets.only(
-                left: left ?? Constant.paddingListItem,
-                top: top ?? Constant.paddingListItem,
-                right: right ?? Constant.paddingListItem,
-              ),
-              title: widget.title,
-              titleInterceptor: widget.titleInterceptor,
-              description: widget.description,
-              descriptionInterceptor: widget.descriptionInterceptor,
-              verticalSpace: 0.3.h,
-            ),
-            if (!widget.title.isEmptyString || !widget.description.isEmptyString)
-              SizedBox(height: verticalSpace ?? Constant.paddingListItem),
-            Builder(
-              builder: (BuildContext context) {
-                CarouselListItemType? carouselListItemType = widget.carouselListItemType;
-                if (carouselListItemType is TileCarouselListItemType) {
-                  double spacing = 10.0;
-                  double count = 2;
-                  return SizedBox(
-                    width: double.infinity,
-                    child: Wrap(
-                      spacing: spacing,
-                      runSpacing: spacing,
-                      alignment: WrapAlignment.center,
-                      runAlignment: WrapAlignment.center,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: widget.itemList.take(4).map<Widget>((item) {
-                        Widget result = widget.builderWithItem(context, item);
-                        if (result is HorizontalScalable) {
-                          double width = (MediaQuery.of(context).size.width - (2 * Constant.paddingListItem) - (spacing * (count - 1))) / count;
-                          (result as HorizontalScalable).horizontalScalableValue.scalableItemWidth = width;
-                        }
-                        return result;
-                      }).toList(),
-                    ),
-                  );
-                }
-                return SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  scrollDirection: Axis.horizontal,
+        Builder(
+          builder: (context) {
+            Widget result = Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (hasBackgroundImage)
+                  SizedBox(height: Constant.paddingListItem),
+                TitleAndDescriptionItem(
                   padding: EdgeInsets.only(
                     left: left ?? Constant.paddingListItem,
+                    top: top ?? Constant.paddingListItem,
                     right: right ?? Constant.paddingListItem,
                   ),
-                  child: Builder(
-                    builder: (context) {
-                      List<Widget> itemMap = [];
-                      int i = 0;
-                      while (i < widget.itemList.length) {
-                        if (i > 0) {
-                          itemMap.add(SizedBox(width: 3.w));
-                        }
-                        itemMap.add(widget.builderWithItem(context, widget.itemList[i]));
-                        i++;
-                      }
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: itemMap,
+                  title: widget.title,
+                  titleInterceptor: widget.titleInterceptor,
+                  description: widget.description,
+                  descriptionInterceptor: widget.descriptionInterceptor,
+                  verticalSpace: 0.3.h,
+                ),
+                if (!widget.title.isEmptyString || !widget.description.isEmptyString)
+                  SizedBox(height: verticalSpace ?? Constant.paddingListItem),
+                Builder(
+                  builder: (BuildContext context) {
+                    CarouselListItemType? carouselListItemType = widget.carouselListItemType;
+                    if (carouselListItemType is TileCarouselListItemType) {
+                      double spacing = 10.0;
+                      double count = 2;
+                      return SizedBox(
+                        width: double.infinity,
+                        child: Wrap(
+                          spacing: spacing,
+                          runSpacing: spacing,
+                          alignment: WrapAlignment.center,
+                          runAlignment: WrapAlignment.center,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: widget.itemList.take(4).map<Widget>((item) {
+                            Widget result = widget.builderWithItem(context, item);
+                            if (result is HorizontalScalable) {
+                              double width = (MediaQuery.of(context).size.width - (2 * Constant.paddingListItem) - (spacing * (count - 1))) / count;
+                              (result as HorizontalScalable).horizontalScalableValue.scalableItemWidth = width;
+                            }
+                            return result;
+                          }).toList(),
+                        ),
                       );
-                    },
-                  )
+                    }
+                    double leftAdditional = 0.0;
+                    double rightAdditional = 0.0;
+                    EdgeInsetsGeometry? effectiveAdditionalPadding;
+                    if (carouselListItemType is DefaultCarouselListItemType) {
+                      effectiveAdditionalPadding = carouselListItemType.additionalPadding;
+                    } else {
+                      effectiveAdditionalPadding = widget.additionalPadding;
+                    }
+                    if (effectiveAdditionalPadding is EdgeInsets) {
+                      EdgeInsets edgeInsets = effectiveAdditionalPadding;
+                      leftAdditional = edgeInsets.left;
+                      rightAdditional = edgeInsets.right;
+                    } else if (effectiveAdditionalPadding is EdgeInsetsDirectional) {
+                      EdgeInsetsDirectional edgeInsetsDirectional = effectiveAdditionalPadding;
+                      leftAdditional = edgeInsetsDirectional.start;
+                      rightAdditional = edgeInsetsDirectional.end;
+                    }
+                    return SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      scrollDirection: Axis.horizontal,
+                      padding: EdgeInsets.only(
+                        left: (left ?? Constant.paddingListItem) + leftAdditional,
+                        right: (right ?? Constant.paddingListItem) + rightAdditional,
+                      ),
+                      child: Builder(
+                        builder: (context) {
+                          List<Widget> itemMap = [];
+                          int i = 0;
+                          while (i < widget.itemList.length) {
+                            if (i > 0) {
+                              itemMap.add(SizedBox(width: 3.w));
+                            }
+                            itemMap.add(widget.builderWithItem(context, widget.itemList[i]));
+                            i++;
+                          }
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: itemMap,
+                          );
+                        },
+                      )
+                    );
+                  }
+                ),
+                SizedBox(height: bottom ?? Constant.paddingListItem),
+                if (hasBackgroundImage)
+                  SizedBox(height: Constant.paddingListItem)
+              ],
+            );
+            if (effectiveBackgroundImageHeight <= 0.0) {
+              if (widget.backgroundImage is Image) {
+                Image backgroundImage = widget.backgroundImage as Image;
+                result = Container(
+                  child: result,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: backgroundImage.image,
+                      fit: BoxFit.cover
+                    )
+                  ),
                 );
               }
-            ),
-            SizedBox(height: bottom ?? Constant.paddingListItem),
-            if (hasBackgroundImage)
-              SizedBox(height: Constant.paddingListItem)
-          ],
-        ),
+            }
+            return result;
+          }
+        )
       ],
     );
   }

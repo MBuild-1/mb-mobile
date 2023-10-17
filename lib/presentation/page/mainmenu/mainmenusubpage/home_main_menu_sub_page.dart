@@ -21,6 +21,7 @@ import '../../../../misc/aspect_ratio_value.dart';
 import '../../../../misc/carouselbackground/asset_carousel_background.dart';
 import '../../../../misc/carouselbackground/carousel_background.dart';
 import '../../../../misc/carousellistitemtype/carousel_list_item_type.dart';
+import '../../../../misc/carousellistitemtype/default_carousel_list_item_type.dart';
 import '../../../../misc/carousellistitemtype/tile_carousel_list_item_Type.dart';
 import '../../../../misc/constant.dart';
 import '../../../../misc/controllercontentdelegate/wishlist_and_cart_controller_content_delegate.dart';
@@ -394,12 +395,14 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
             );
           } else if (data == Constant.carouselKeyChoiceBeautyBrand) {
             carouselBackground = AssetCarouselBackground(
-              assetImageName: Constant.imagePatternBlackSquare,
-              imageBackgroundHeight: 340
+              assetImageName: Constant.imageSelectedBeautyBrand,
+              imageBackgroundHeight: 0.0
             );
-            carouselListItemType = TileCarouselListItemType();
+            carouselListItemType = DefaultCarouselListItemType(
+              additionalPadding: const EdgeInsets.only(left: 120)
+            );
             additionalParameter = HorizontalBrandAppearanceParameterizedEntityAndListItemControllerStateMediatorParameter(
-              horizontalBrandAppearance: HorizontalBrandAppearance.squareAppearance
+              horizontalBrandAppearance: HorizontalBrandAppearance.squareWithGlassBackgroundTitleAppearance
             );
             titleInterceptor = (text, style) => titleArea(
               title: Text(text.toStringNonNull, style: style?.copyWith(color: Colors.white)),

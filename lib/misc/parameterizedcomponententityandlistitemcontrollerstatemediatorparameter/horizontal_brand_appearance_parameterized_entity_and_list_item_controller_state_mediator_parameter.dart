@@ -1,7 +1,7 @@
 import 'parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
 
 enum HorizontalBrandAppearance {
-  defaultAppearance, squareAppearance
+  defaultAppearance, squareAppearance, squareWithGlassBackgroundTitleAppearance
 }
 
 class HorizontalBrandAppearanceParameterizedEntityAndListItemControllerStateMediatorParameter extends ParameterizedEntityAndListItemControllerStateMediatorParameter {

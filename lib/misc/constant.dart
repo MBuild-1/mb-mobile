@@ -47,6 +47,7 @@ class _ConstantImpl {
   String get imageBadgeBlue => _getImagesAssets("badge_blue.png");
   String get imageBadgeOrange => _getImagesAssets("badge_orange.png");
   String get imagePersonalVerification => _getImagesAssets("personal_verification.png");
+  String get imageSelectedBeautyBrand => _getImagesAssets("selected_beauty_brand.png");
   String get imageEmptyError => _getImagesAssets("empty_error.png");
   String get imageEmptyErrorAddress => _getImagesAssets("empty_error_address.png");
   String get imageEmptyErrorCart => _getImagesAssets("empty_error_cart.png");

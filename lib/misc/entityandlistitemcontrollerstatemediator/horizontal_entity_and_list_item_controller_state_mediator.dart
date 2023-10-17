@@ -19,6 +19,7 @@ import '../controllerstate/listitemcontrollerstate/no_content_list_item_controll
 import '../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/circleproductbrandlistitemcontrollerstate/horizontal_circle_product_brand_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/horizontal_product_brand_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/imageandbackgroundproductbrandlistitemcontrollerstate/horizontal_image_and_background_product_brand_list_item_controller_state.dart';
+import '../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/squareglasstitleproductbrandlistitemcontrollerstate/horizontal_square_glass_title_product_brand_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/squareproductbrandlistitemcontrollerstate/horizontal_square_product_brand_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/productbundlelistitemcontrollerstate/horizontal_product_bundle_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/productcategorylistitemcontrollerstate/circleproductcategorylistitemcontrollerstate/horizontal_circle_product_category_list_item_controller_state.dart';
@@ -242,6 +243,10 @@ class HorizontalParameterizedEntityAndListItemControllerStateMediator extends Pa
         HorizontalBrandAppearance horizontalBrandAppearance = separatedParameter!.horizontalBrandAppearanceParameter!.horizontalBrandAppearance;
         if (horizontalBrandAppearance == HorizontalBrandAppearance.squareAppearance) {
           return HorizontalSquareProductBrandListItemControllerState(
+            productBrand: productBrand
+          );
+        } else if (horizontalBrandAppearance == HorizontalBrandAppearance.squareWithGlassBackgroundTitleAppearance) {
+          return HorizontalSquareGlassTitleProductBrandListItemControllerState(
             productBrand: productBrand
           );
         }

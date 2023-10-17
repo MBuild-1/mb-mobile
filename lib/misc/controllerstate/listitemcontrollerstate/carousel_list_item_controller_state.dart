@@ -9,6 +9,7 @@ import 'list_item_controller_state.dart';
 
 class CarouselListItemControllerState extends ListItemControllerState {
   EdgeInsetsGeometry? padding;
+  EdgeInsetsGeometry? additionalPadding;
   double? betweenTitleDescriptionAndCarouselItemVerticalSpace;
   List<ListItemControllerState> itemListItemControllerState;
   String title;
@@ -20,6 +21,7 @@ class CarouselListItemControllerState extends ListItemControllerState {
 
   CarouselListItemControllerState({
     this.padding,
+    this.additionalPadding,
     this.betweenTitleDescriptionAndCarouselItemVerticalSpace,
     this.itemListItemControllerState = const [],
     this.title = "",
