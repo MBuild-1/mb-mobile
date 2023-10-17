@@ -13,6 +13,7 @@ import '../../domain/entity/discussion/support_discussion_parameter.dart';
 import '../../domain/entity/product/product_in_discussion.dart';
 import '../../domain/entity/product/productdiscussion/create_product_discussion_parameter.dart';
 import '../../domain/entity/product/productdiscussion/product_discussion.dart';
+import '../../domain/entity/product/productdiscussion/product_discussion_based_user_parameter.dart';
 import '../../domain/entity/product/productdiscussion/product_discussion_dialog.dart';
 import '../../domain/entity/product/productdiscussion/product_discussion_list_parameter.dart';
 import '../../domain/entity/product/productdiscussion/product_discussion_user.dart';
@@ -20,6 +21,7 @@ import '../../domain/entity/product/productdiscussion/reply_product_discussion_p
 import '../../domain/entity/user/getuser/get_user_parameter.dart';
 import '../../domain/entity/user/user.dart';
 import '../../domain/usecase/create_product_discussion_use_case.dart';
+import '../../domain/usecase/get_product_discussion_based_user_use_case.dart';
 import '../../domain/usecase/get_product_discussion_use_case.dart';
 import '../../domain/usecase/get_support_discussion_use_case.dart';
 import '../../domain/usecase/get_user_use_case.dart';
@@ -71,6 +73,7 @@ class ProductDiscussionPage extends RestorableGetxPage<_ProductDiscussionPageRes
       ProductDiscussionController(
         controllerManager,
         Injector.locator<GetProductDiscussionUseCase>(),
+        Injector.locator<GetProductDiscussionBasedUserUseCase>(),
         Injector.locator<GetSupportDiscussionUseCase>(),
         Injector.locator<CreateProductDiscussionUseCase>(),
         Injector.locator<ReplyProductDiscussionUseCase>(),
@@ -217,6 +220,7 @@ class _StatefulProductDiscussionControllerMediatorWidgetState extends State<_Sta
   final PusherChannelsFlutter _pusher = PusherChannelsFlutter.getInstance();
 
   LoadDataResult<SupportDiscussion> _supportDiscussionLoadDataResult = NoLoadDataResult<SupportDiscussion>();
+  Map<String, LoadDataResult<SupportDiscussion>> _supportDiscussionForEachDiscussionIdLoadDataResult = {};
   final TextEditingController _productDiscussionTextEditingController = TextEditingController();
   final FocusNode _productDiscussionTextFocusNode = FocusNode();
   User? _loggedUser;
@@ -269,6 +273,22 @@ class _StatefulProductDiscussionControllerMediatorWidgetState extends State<_Sta
     setState(() {});
   }
 
+  void _loadSupportDiscussionForEachDiscussionId({
+    required String? productId,
+    required String? bundleId,
+    required String discussionId,
+  }) async {
+    _supportDiscussionForEachDiscussionIdLoadDataResult[discussionId] = IsLoadingLoadDataResult<SupportDiscussion>();
+    setState(() {});
+    _supportDiscussionForEachDiscussionIdLoadDataResult[discussionId] = await widget.productDiscussionController.getSupportDiscussionForEachDiscussionId(
+      SupportDiscussionParameter(
+        productId: productId,
+        bundleId: bundleId
+      )
+    );
+    setState(() {});
+  }
+
   Future<UserMessageResponseWrapper<ProductDiscussion>> getProductDiscussion() async {
     LoadDataResult<User> getUserLoadDataResult = await widget.productDiscussionController.getUser(
       GetUserParameter()
@@ -289,9 +309,17 @@ class _StatefulProductDiscussionControllerMediatorWidgetState extends State<_Sta
     }
     return UserMessageResponseWrapper(
       userLoadDataResult: getUserLoadDataResult,
-      valueLoadDataResult: await widget.productDiscussionController.getProductDiscussion(
-        ProductDiscussionParameter(productId: _productOrBundleId)
-      )
+      valueLoadDataResult: await () async {
+        if (widget.productDiscussionPageParameter.isBasedUser) {
+          return await widget.productDiscussionController.getProductDiscussionBasedUser(
+            ProductDiscussionBasedUserParameter()
+          );
+        } else {
+          return await widget.productDiscussionController.getProductDiscussion(
+            ProductDiscussionParameter(productId: _productOrBundleId)
+          );
+        }
+      }()
     );
   }
 
@@ -299,9 +327,24 @@ class _StatefulProductDiscussionControllerMediatorWidgetState extends State<_Sta
     UserMessageResponseWrapper<ProductDiscussion> productDiscussionLoadDataResult = await getProductDiscussion();
     User user = productDiscussionLoadDataResult.userLoadDataResult.resultIfSuccess!;
     _loggedUser = user;
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _loadSupportDiscussion();
-    });
+    if (!widget.productDiscussionPageParameter.isBasedUser) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        _loadSupportDiscussion();
+      });
+    } else {
+      if (productDiscussionLoadDataResult.valueLoadDataResult.isSuccess) {
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          ProductDiscussion productDiscussion = productDiscussionLoadDataResult.valueLoadDataResult.resultIfSuccess!;
+          for (ProductDiscussionDialog productDiscussionDialog in productDiscussion.productDiscussionDialogList) {
+            _loadSupportDiscussionForEachDiscussionId(
+              productId: productDiscussionDialog.productId,
+              bundleId: productDiscussionDialog.bundleId,
+              discussionId: productDiscussionDialog.id
+            );
+          }
+        });
+      }
+    }
     if (productDiscussionLoadDataResult.valueLoadDataResult.isSuccess) {
       if (_productDiscussionRouteCount == 1) {
         try {
@@ -328,19 +371,31 @@ class _StatefulProductDiscussionControllerMediatorWidgetState extends State<_Sta
           ProductDiscussionContainerListItemControllerState(
             productDiscussionListItemValue: _productDiscussionListItemValue!,
             onGetSupportDiscussion: () => _supportDiscussionLoadDataResult,
+            onGetSupportDiscussionBasedDiscussionId: () => _supportDiscussionForEachDiscussionIdLoadDataResult,
+            onGetIsBasedUser: () => widget.productDiscussionPageParameter.isBasedUser,
             onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
             onUpdateState: () => setState(() {}),
             onReplyProductDiscussionDialog: (productDiscussionDialog) {
               setState(() => _selectedReplyProductDiscussionDialog = productDiscussionDialog);
             },
             onGotoReplyProductDiscussionPage: (productDiscussionDialog) {
-              PageRestorationHelper.toProductDiscussionPage(
-                context, ProductDiscussionPageParameter(
-                  productId: widget.productDiscussionPageParameter.productId,
-                  bundleId: null,
-                  discussionProductId: productDiscussionDialog.id
-                )
-              );
+              if (widget.productDiscussionPageParameter.isBasedUser) {
+                PageRestorationHelper.toProductDiscussionPage(
+                  context, ProductDiscussionPageParameter(
+                    productId: productDiscussionDialog.productId,
+                    bundleId: null,
+                    discussionProductId: null
+                  )
+                );
+              } else {
+                PageRestorationHelper.toProductDiscussionPage(
+                  context, ProductDiscussionPageParameter(
+                    productId: widget.productDiscussionPageParameter.productId,
+                    bundleId: null,
+                    discussionProductId: productDiscussionDialog.id
+                  )
+                );
+              }
             },
             onGetDiscussionProductId: () => widget.productDiscussionPageParameter.discussionProductId,
             productDiscussionContainerInterceptingActionListItemControllerState: _defaultProductDiscussionContainerInterceptingActionListItemControllerState
@@ -472,103 +527,105 @@ class _StatefulProductDiscussionControllerMediatorWidgetState extends State<_Sta
                     ),
                     const SizedBox(height: 7.0),
                   ],
-                  Container(
-                    padding: const EdgeInsets.all(8.0),
-                    decoration: BoxDecoration(
-                      color: Constant.colorGrey4
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            focusNode: _productDiscussionTextFocusNode,
-                            controller: _productDiscussionTextEditingController,
-                            decoration: InputDecoration.collapsed(
-                              hintText: widget.productDiscussionPageParameter.discussionProductId != null ? "Type Reply Product Discussion".tr : "Type Product Discussion".tr,
+                  if (!widget.productDiscussionPageParameter.isBasedUser) ...[
+                    Container(
+                      padding: const EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                        color: Constant.colorGrey4
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              focusNode: _productDiscussionTextFocusNode,
+                              controller: _productDiscussionTextEditingController,
+                              decoration: InputDecoration.collapsed(
+                                hintText: widget.productDiscussionPageParameter.discussionProductId != null ? "Type Reply Product Discussion".tr : "Type Product Discussion".tr,
+                              ),
+                              keyboardType: TextInputType.multiline,
+                              textInputAction: TextInputAction.newline,
+                              minLines: 1,
+                              maxLines: 5
                             ),
-                            keyboardType: TextInputType.multiline,
-                            textInputAction: TextInputAction.newline,
-                            minLines: 1,
-                            maxLines: 5
                           ),
-                        ),
-                        SizedBox(
-                          width: 23,
-                          height: 23,
-                          child: TapArea(
-                            onTap: () async {
-                              String productDiscussionText = "";
-                              if (_productDiscussionListItemValue != null) {
-                                ProductDiscussionDialogListItemValue productDiscussionDialogListItemValue = ProductDiscussionDialog(
-                                  id: "",
-                                  productId: widget.productDiscussionPageParameter.productId,
-                                  bundleId: widget.productDiscussionPageParameter.bundleId,
-                                  userId: (_loggedUser?.id).toEmptyStringNonNull,
-                                  discussion: _productDiscussionTextEditingController.text,
-                                  discussionDate: DateTime.now(),
-                                  productDiscussionUser: ProductDiscussionUser(
-                                    id: (_loggedUser?.id).toEmptyStringNonNull,
-                                    name: (_loggedUser?.name).toEmptyStringNonNull,
-                                    role: (_loggedUser?.role) ?? 0,
-                                    email: (_loggedUser?.email).toEmptyStringNonNull,
-                                    avatar: (_loggedUser?.userProfile)?.avatar
-                                  ),
-                                  productInDiscussion: ProductInDiscussion(
+                          SizedBox(
+                            width: 23,
+                            height: 23,
+                            child: TapArea(
+                              onTap: () async {
+                                String productDiscussionText = "";
+                                if (_productDiscussionListItemValue != null) {
+                                  ProductDiscussionDialogListItemValue productDiscussionDialogListItemValue = ProductDiscussionDialog(
                                     id: "",
-                                    userId: "",
-                                    productBrandId: "",
-                                    name: "",
-                                    slug: "",
-                                    description: "",
-                                    productCategoryId: "",
-                                    provinceId: ""
-                                  ),
-                                ).toProductDiscussionDialogListItemValue()..isLoading = true;
-                                if (widget.productDiscussionPageParameter.discussionProductId == null) {
-                                  _productDiscussionListItemValue!.productDiscussionDetailListItemValue.productDiscussionDialogListItemValueList.add(
-                                    productDiscussionDialogListItemValue
-                                  );
-                                } else {
-                                  var productDiscussionDialogListItemValueList = _productDiscussionListItemValue!.productDiscussionDetailListItemValue.productDiscussionDialogListItemValueList;
-                                  var selectedProductDiscussionDialogListItemValueList = productDiscussionDialogListItemValueList.where((value) => value.productDiscussionDialogContainsListItemValue.id == widget.productDiscussionPageParameter.discussionProductId);
-                                  if (selectedProductDiscussionDialogListItemValueList.isNotEmpty) {
-                                    var selectedProductDiscussionDialogListItemValue = selectedProductDiscussionDialogListItemValueList.first;
-                                    selectedProductDiscussionDialogListItemValue.replyProductDiscussionDialogListItemValueList.add(productDiscussionDialogListItemValue);
-                                  }
-                                }
-                                if (_defaultProductDiscussionContainerInterceptingActionListItemControllerState.onUpdateProductDiscussionListItemValue != null) {
-                                  _defaultProductDiscussionContainerInterceptingActionListItemControllerState.onUpdateProductDiscussionListItemValue!(
-                                    _productDiscussionListItemValue!
-                                  );
-                                }
-                                productDiscussionText = _productDiscussionTextEditingController.text;
-                                _productDiscussionTextEditingController.clear();
-                                _scrollToDown();
-                              }
-                              if (widget.productDiscussionPageParameter.discussionProductId != null) {
-                                await widget.productDiscussionController.replyProductDiscussion(
-                                  ReplyProductDiscussionParameter(
-                                    discussionProductId: widget.productDiscussionPageParameter.discussionProductId!,
-                                    message: productDiscussionText
-                                  )
-                                );
-                              } else {
-                                await widget.productDiscussionController.createProductDiscussion(
-                                  CreateProductDiscussionParameter(
                                     productId: widget.productDiscussionPageParameter.productId,
                                     bundleId: widget.productDiscussionPageParameter.bundleId,
-                                    message: productDiscussionText
-                                  )
-                                );
-                              }
-                              await _refreshProductDiscussion();
-                            },
-                            child: ModifiedSvgPicture.asset(Constant.vectorSendMessage, overrideDefaultColorWithSingleColor: false),
+                                    userId: (_loggedUser?.id).toEmptyStringNonNull,
+                                    discussion: _productDiscussionTextEditingController.text,
+                                    discussionDate: DateTime.now(),
+                                    productDiscussionUser: ProductDiscussionUser(
+                                      id: (_loggedUser?.id).toEmptyStringNonNull,
+                                      name: (_loggedUser?.name).toEmptyStringNonNull,
+                                      role: (_loggedUser?.role) ?? 0,
+                                      email: (_loggedUser?.email).toEmptyStringNonNull,
+                                      avatar: (_loggedUser?.userProfile)?.avatar
+                                    ),
+                                    productInDiscussion: ProductInDiscussion(
+                                      id: "",
+                                      userId: "",
+                                      productBrandId: "",
+                                      name: "",
+                                      slug: "",
+                                      description: "",
+                                      productCategoryId: "",
+                                      provinceId: ""
+                                    ),
+                                  ).toProductDiscussionDialogListItemValue()..isLoading = true;
+                                  if (widget.productDiscussionPageParameter.discussionProductId == null) {
+                                    _productDiscussionListItemValue!.productDiscussionDetailListItemValue.productDiscussionDialogListItemValueList.add(
+                                      productDiscussionDialogListItemValue
+                                    );
+                                  } else {
+                                    var productDiscussionDialogListItemValueList = _productDiscussionListItemValue!.productDiscussionDetailListItemValue.productDiscussionDialogListItemValueList;
+                                    var selectedProductDiscussionDialogListItemValueList = productDiscussionDialogListItemValueList.where((value) => value.productDiscussionDialogContainsListItemValue.id == widget.productDiscussionPageParameter.discussionProductId);
+                                    if (selectedProductDiscussionDialogListItemValueList.isNotEmpty) {
+                                      var selectedProductDiscussionDialogListItemValue = selectedProductDiscussionDialogListItemValueList.first;
+                                      selectedProductDiscussionDialogListItemValue.replyProductDiscussionDialogListItemValueList.add(productDiscussionDialogListItemValue);
+                                    }
+                                  }
+                                  if (_defaultProductDiscussionContainerInterceptingActionListItemControllerState.onUpdateProductDiscussionListItemValue != null) {
+                                    _defaultProductDiscussionContainerInterceptingActionListItemControllerState.onUpdateProductDiscussionListItemValue!(
+                                      _productDiscussionListItemValue!
+                                    );
+                                  }
+                                  productDiscussionText = _productDiscussionTextEditingController.text;
+                                  _productDiscussionTextEditingController.clear();
+                                  _scrollToDown();
+                                }
+                                if (widget.productDiscussionPageParameter.discussionProductId != null) {
+                                  await widget.productDiscussionController.replyProductDiscussion(
+                                    ReplyProductDiscussionParameter(
+                                      discussionProductId: widget.productDiscussionPageParameter.discussionProductId!,
+                                      message: productDiscussionText
+                                    )
+                                  );
+                                } else {
+                                  await widget.productDiscussionController.createProductDiscussion(
+                                    CreateProductDiscussionParameter(
+                                      productId: widget.productDiscussionPageParameter.productId,
+                                      bundleId: widget.productDiscussionPageParameter.bundleId,
+                                      message: productDiscussionText
+                                    )
+                                  );
+                                }
+                                await _refreshProductDiscussion();
+                              },
+                              child: ModifiedSvgPicture.asset(Constant.vectorSendMessage, overrideDefaultColorWithSingleColor: false),
+                            )
                           )
-                        )
-                      ],
-                    )
-                  ),
+                        ],
+                      )
+                    ),
+                  ]
                 ],
               )
             )
@@ -583,11 +640,13 @@ class ProductDiscussionPageParameter {
   String? productId;
   String? bundleId;
   String? discussionProductId;
+  bool isBasedUser;
 
   ProductDiscussionPageParameter({
     required this.productId,
     required this.bundleId,
-    required this.discussionProductId
+    required this.discussionProductId,
+    this.isBasedUser = false
   });
 }
 
@@ -596,7 +655,8 @@ extension ProductDiscussionPageParameterExt on ProductDiscussionPageParameter {
     <String, dynamic>{
       "product_id": productId,
       "bundle_id": bundleId,
-      "discussion_product_id": discussionProductId
+      "discussion_product_id": discussionProductId,
+      "is_based_user": isBasedUser ? "1" : "0"
     }
   );
 }
@@ -608,6 +668,7 @@ extension ProductDiscussionPageParameterStringExt on String {
       productId: result["product_id"],
       bundleId: result["bundle_id"],
       discussionProductId: result["discussion_product_id"],
+      isBasedUser: result["is_based_user"] == "1" ? true : false
     );
   }
 }

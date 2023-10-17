@@ -9,6 +9,7 @@ import '../../../domain/dummy/userdummy/user_dummy.dart';
 import '../../../domain/entity/product/productdiscussion/create_product_discussion_parameter.dart';
 import '../../../domain/entity/product/productdiscussion/create_product_discussion_response.dart';
 import '../../../domain/entity/product/productdiscussion/product_discussion.dart';
+import '../../../domain/entity/product/productdiscussion/product_discussion_based_user_parameter.dart';
 import '../../../domain/entity/product/productdiscussion/product_discussion_list_parameter.dart';
 import '../../../domain/entity/product/productdiscussion/reply_product_discussion_parameter.dart';
 import '../../../domain/entity/product/productdiscussion/reply_product_discussion_response.dart';
@@ -27,6 +28,14 @@ class DefaultProductDiscussionDataSource implements ProductDiscussionDataSource 
     required this.userDummy,
     required this.productEntryDummy
   });
+
+  @override
+  FutureProcessing<ProductDiscussion> productDiscussionBasedUser(ProductDiscussionBasedUserParameter productDiscussionBasedUserParameter) {
+    return DioHttpClientProcessing((cancelToken) async {
+      return dio.get("/product/discussion/user", cancelToken: cancelToken)
+        .map<ProductDiscussion>(onMap: (value) => value.wrapResponse().mapFromResponseToProductDiscussion());
+    });
+  }
 
   @override
   FutureProcessing<ProductDiscussion> productDiscussion(ProductDiscussionParameter productDiscussionParameter) {

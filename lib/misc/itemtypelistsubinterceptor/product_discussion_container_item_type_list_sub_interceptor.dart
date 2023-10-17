@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import 'package:masterbagasi/misc/load_data_result.dart';
 
+import '../../domain/entity/discussion/support_discussion.dart';
 import '../../domain/entity/product/productdiscussion/product_discussion_dialog.dart';
 import '../../presentation/page/product_detail_page.dart';
 import '../../presentation/widget/modified_svg_picture.dart';
@@ -106,7 +107,15 @@ class ProductDiscussionContainerItemTypeListSubInterceptor extends ItemTypeListS
             VirtualSpacingListItemControllerState(height: 10)
           ],
           if (oldItemType is ProductDiscussionContainerListItemControllerState) ...[
-            verticalProductDiscussionListItemControllerState,
+            BuilderListItemControllerState(
+              buildListItemControllerState: () {
+                if (!oldItemType.onGetIsBasedUser()) {
+                  return verticalProductDiscussionListItemControllerState;
+                } else {
+                  return NoContentListItemControllerState();
+                }
+              }
+            ),
           ],
           BuilderListItemControllerState(
             buildListItemControllerState: () {
@@ -172,11 +181,40 @@ class ProductDiscussionContainerItemTypeListSubInterceptor extends ItemTypeListS
                 int k = 0;
                 List<CompoundListItemControllerState> productDiscussionDialogListItemControllerState = [];
                 while (k < productDiscussionDialogListItemValueList.length) {
+                  int kIndex = k;
                   ProductDiscussionDialogListItemValue productDiscussionDialogListItemValue = productDiscussionDialogListItemValueList[k];
                   ProductDiscussionDialog productDiscussionDialog = productDiscussionDialogListItemValueList[k].toProductDiscussionDialog();
                   productDiscussionDialogListItemControllerState.add(
                     CompoundListItemControllerState(
                       listItemControllerState: [
+                        BuilderListItemControllerState(
+                          buildListItemControllerState: () {
+                            if (oldItemType is ProductDiscussionContainerListItemControllerState) {
+                              if (!oldItemType.onGetIsBasedUser()) {
+                                return NoContentListItemControllerState();
+                              }
+                              Map<String, LoadDataResult<SupportDiscussion>> supportDiscussionBasedDiscussionId = oldItemType.onGetSupportDiscussionBasedDiscussionId();
+                              if (supportDiscussionBasedDiscussionId.containsKey(productDiscussionDialog.id)) {
+                                LoadDataResult<SupportDiscussion> supportDiscussionLoadDataResult = supportDiscussionBasedDiscussionId[productDiscussionDialog.id]!;
+                                return CompoundListItemControllerState(
+                                  listItemControllerState: [
+                                    VerticalProductDiscussionListItemControllerState(
+                                      productDiscussionDetailListItemValue: productDiscussionListItemValue.productDiscussionDetailListItemValue,
+                                      isExpanded: productDiscussionListItemValue.isExpanded,
+                                      errorProvider: oldItemType.onGetErrorProvider(),
+                                      supportDiscussionLoadDataResult: supportDiscussionLoadDataResult,
+                                      onProductDiscussionTap: null
+                                    ),
+                                  ]
+                                );
+                              } else {
+                                return NoContentListItemControllerState();
+                              }
+                            } else {
+                              return NoContentListItemControllerState();
+                            }
+                          }
+                        ),
                         VerticalProductDiscussionDialogListItemControllerState(
                           productDiscussionDialog: productDiscussionDialog,
                           isExpanded: productDiscussionDialogListItemValue.isExpanded,
@@ -193,7 +231,9 @@ class ProductDiscussionContainerItemTypeListSubInterceptor extends ItemTypeListS
                                   widgetSubstitution: (context, index) {
                                     List<ProductDiscussionDialog> replyProductDiscussionDialogList = productDiscussionDialog.replyProductDiscussionDialogList;
                                     void Function()? onTap;
+                                    bool isBasedUser = false;
                                     if (oldItemType is ProductDiscussionContainerListItemControllerState) {
+                                      isBasedUser = oldItemType.onGetIsBasedUser();
                                       if (oldItemType.onGetDiscussionProductId() != null) {
                                         return Container();
                                       }
@@ -205,25 +245,34 @@ class ProductDiscussionContainerItemTypeListSubInterceptor extends ItemTypeListS
                                       onTap: onTap,
                                       child: Row(
                                         children: [
-                                          Transform.rotate(
-                                            angle: !productDiscussionDialogListItemValue.isExpanded ? math.pi / 2 : -math.pi / 2,
-                                            child: ModifiedSvgPicture.asset(
-                                              Constant.vectorArrow,
-                                              height: 10,
-                                            )
-                                          ),
-                                          const SizedBox(width: 10),
-                                          if (replyProductDiscussionDialogList.isNotEmpty) ...[
+                                          if (!isBasedUser) ...[
+                                            Transform.rotate(
+                                              angle: !productDiscussionDialogListItemValue.isExpanded ? math.pi / 2 : -math.pi / 2,
+                                              child: ModifiedSvgPicture.asset(
+                                                Constant.vectorArrow,
+                                                height: 10,
+                                              )
+                                            ),
+                                            const SizedBox(width: 10),
+                                            if (replyProductDiscussionDialogList.isNotEmpty) ...[
+                                              Text(
+                                                "${"Answer".tr} (${replyProductDiscussionDialogList.length})",
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.bold
+                                                )
+                                              )
+                                            ] else ...[
+                                              Text(
+                                                "No Reply".tr,
+                                                style: const TextStyle()
+                                              )
+                                            ]
+                                          ] else ...[
                                             Text(
-                                              "${"Answer".tr} (${replyProductDiscussionDialogList.length})",
+                                              "More".tr,
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.bold
                                               )
-                                            )
-                                          ] else ...[
-                                            Text(
-                                              "No Reply".tr,
-                                              style: const TextStyle()
                                             )
                                           ]
                                         ]
@@ -235,7 +284,30 @@ class ProductDiscussionContainerItemTypeListSubInterceptor extends ItemTypeListS
                             ]
                           )
                         ),
-                        VirtualSpacingListItemControllerState(height: 16),
+                        BuilderListItemControllerState(
+                          buildListItemControllerState: () {
+                            if (oldItemType is ProductDiscussionContainerListItemControllerState) {
+                              if (!oldItemType.onGetIsBasedUser()) {
+                                return VirtualSpacingListItemControllerState(height: 16);
+                              }
+                              if (kIndex == productDiscussionDialogListItemValueList.length - 1) {
+                                return VirtualSpacingListItemControllerState(height: 16);
+                              }
+                              return CompoundListItemControllerState(
+                                listItemControllerState: [
+                                  VirtualSpacingListItemControllerState(height: 16),
+                                  PaddingContainerListItemControllerState(
+                                    padding: EdgeInsets.symmetric(horizontal: padding()),
+                                    paddingChildListItemControllerState: DividerListItemControllerState()
+                                  ),
+                                  VirtualSpacingListItemControllerState(height: 16),
+                                ]
+                              );
+                            } else {
+                              return VirtualSpacingListItemControllerState(height: 16);
+                            }
+                          }
+                        ),
                       ]
                     )
                   );

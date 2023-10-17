@@ -57,6 +57,7 @@ import '../../../widget/rx_consumer.dart';
 import '../../../widget/tap_area.dart';
 import '../../../widget/titleanddescriptionitem/title_and_description_item.dart';
 import '../../getx_page.dart';
+import '../../product_discussion_page.dart';
 
 class MenuMainMenuSubPage extends DefaultGetxPage {
   late final ControllerMember<MenuMainMenuSubController> _menuMainMenuSubController = ControllerMember<MenuMainMenuSubController>().addToControllerManager(controllerManager);
@@ -164,7 +165,14 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
             title: 'Chat'.tr,
           ),
           ProfileMenuListItemControllerState(
-            onTap: (context) {},
+            onTap: (context) => PageRestorationHelper.toProductDiscussionPage(
+              context, ProductDiscussionPageParameter(
+                productId: null,
+                bundleId: null,
+                discussionProductId: null,
+                isBasedUser: true
+              ),
+            ),
             icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorProductDiscussion, width: 20.0),
             title: 'Product Discussion'.tr,
           ),

@@ -7,18 +7,22 @@ import 'product_discussion_list_item_controller_state.dart';
 
 class ProductDiscussionContainerListItemControllerState extends BaseProductDiscussionContainerListItemControllerState {
   LoadDataResult<SupportDiscussion> Function() onGetSupportDiscussion;
+  bool Function() onGetIsBasedUser;
   ProductDiscussionContainerInterceptingActionListItemControllerState productDiscussionContainerInterceptingActionListItemControllerState;
   void Function(ProductDiscussionDialog) onReplyProductDiscussionDialog;
   String? Function() onGetDiscussionProductId;
+  Map<String, LoadDataResult<SupportDiscussion>> Function() onGetSupportDiscussionBasedDiscussionId;
 
   ProductDiscussionContainerListItemControllerState({
     required super.productDiscussionListItemValue,
     required this.onGetSupportDiscussion,
+    required this.onGetIsBasedUser,
     required super.onGetErrorProvider,
     required super.onUpdateState,
     required this.productDiscussionContainerInterceptingActionListItemControllerState,
     required this.onReplyProductDiscussionDialog,
     required this.onGetDiscussionProductId,
+    required this.onGetSupportDiscussionBasedDiscussionId,
     required super.onGotoReplyProductDiscussionPage,
   });
 }

@@ -167,6 +167,7 @@ import '../domain/usecase/get_product_detail_other_from_this_brand_product_entry
 import '../domain/usecase/get_product_detail_other_in_this_category_product_entry_list_use_case.dart';
 import '../domain/usecase/get_product_detail_other_interested_product_brand_list_use_case.dart';
 import '../domain/usecase/get_product_detail_use_case.dart';
+import '../domain/usecase/get_product_discussion_based_user_use_case.dart';
 import '../domain/usecase/get_product_discussion_use_case.dart';
 import '../domain/usecase/get_product_entry_header_content_use_case.dart';
 import '../domain/usecase/get_product_entry_with_condition_paging_use_case.dart';
@@ -559,6 +560,7 @@ class _Injector {
     locator.registerLazySingleton<GetProductBundleDetailUseCase>(() => GetProductBundleDetailUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetSupportDiscussionUseCase>(() => GetSupportDiscussionUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductDiscussionUseCase>(() => GetProductDiscussionUseCase(productDiscussionRepository: locator()));
+    locator.registerLazySingleton<GetProductDiscussionBasedUserUseCase>(() => GetProductDiscussionBasedUserUseCase(productDiscussionRepository: locator()));
     locator.registerLazySingleton<CreateProductDiscussionUseCase>(() => CreateProductDiscussionUseCase(productDiscussionRepository: locator()));
     locator.registerLazySingleton<ReplyProductDiscussionUseCase>(() => ReplyProductDiscussionUseCase(productDiscussionRepository: locator()));
     locator.registerLazySingleton<GetWishlistPagingUseCase>(() => GetWishlistPagingUseCase(productRepository: locator()));

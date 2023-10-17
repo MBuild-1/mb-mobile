@@ -3,12 +3,14 @@ import '../domain/entity/discussion/support_discussion_parameter.dart';
 import '../domain/entity/product/productdiscussion/create_product_discussion_parameter.dart';
 import '../domain/entity/product/productdiscussion/create_product_discussion_response.dart';
 import '../domain/entity/product/productdiscussion/product_discussion.dart';
+import '../domain/entity/product/productdiscussion/product_discussion_based_user_parameter.dart';
 import '../domain/entity/product/productdiscussion/product_discussion_list_parameter.dart';
 import '../domain/entity/product/productdiscussion/reply_product_discussion_parameter.dart';
 import '../domain/entity/product/productdiscussion/reply_product_discussion_response.dart';
 import '../domain/entity/user/getuser/get_user_parameter.dart';
 import '../domain/entity/user/getuser/get_user_response.dart';
 import '../domain/usecase/create_product_discussion_use_case.dart';
+import '../domain/usecase/get_product_discussion_based_user_use_case.dart';
 import '../domain/usecase/get_product_discussion_use_case.dart';
 import '../domain/usecase/get_support_discussion_use_case.dart';
 import '../domain/usecase/get_user_use_case.dart';
@@ -18,6 +20,7 @@ import 'base_getx_controller.dart';
 
 class ProductDiscussionController extends BaseGetxController {
   final GetProductDiscussionUseCase getProductDiscussionUseCase;
+  final GetProductDiscussionBasedUserUseCase getProductDiscussionBasedUserUseCase;
   final GetSupportDiscussionUseCase getSupportDiscussionUseCase;
   final CreateProductDiscussionUseCase createProductDiscussionUseCase;
   final ReplyProductDiscussionUseCase replyProductDiscussionUseCase;
@@ -26,6 +29,7 @@ class ProductDiscussionController extends BaseGetxController {
   ProductDiscussionController(
     super.controllerManager,
     this.getProductDiscussionUseCase,
+    this.getProductDiscussionBasedUserUseCase,
     this.getSupportDiscussionUseCase,
     this.createProductDiscussionUseCase,
     this.replyProductDiscussionUseCase,
@@ -38,9 +42,21 @@ class ProductDiscussionController extends BaseGetxController {
     );
   }
 
+  Future<LoadDataResult<ProductDiscussion>> getProductDiscussionBasedUser(ProductDiscussionBasedUserParameter productDiscussionBasedUserParameter) {
+    return getProductDiscussionBasedUserUseCase.execute(productDiscussionBasedUserParameter).future(
+      parameter: apiRequestManager.addRequestToCancellationPart("product-discussion-based-user", duplicate: true).value
+    );
+  }
+
   Future<LoadDataResult<SupportDiscussion>> getSupportDiscussion(SupportDiscussionParameter supportDiscussionParameter) {
     return getSupportDiscussionUseCase.execute(supportDiscussionParameter).future(
       parameter: apiRequestManager.addRequestToCancellationPart("support-discussion").value
+    );
+  }
+
+  Future<LoadDataResult<SupportDiscussion>> getSupportDiscussionForEachDiscussionId(SupportDiscussionParameter supportDiscussionParameter) {
+    return getSupportDiscussionUseCase.execute(supportDiscussionParameter).future(
+      parameter: apiRequestManager.addRequestToCancellationPart("support-discussion-for-each-product-discussion-id", duplicate: true).value
     );
   }
 
