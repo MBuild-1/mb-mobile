@@ -40,6 +40,7 @@ import '../../../domain/usecase/get_product_bundle_list_use_case.dart';
 import '../../../domain/usecase/get_product_category_list_use_case.dart';
 import '../../../domain/usecase/get_product_entry_with_condition_paging_use_case.dart';
 import '../../../domain/usecase/get_product_viral_list_use_case.dart';
+import '../../../domain/usecase/get_ready_to_eat_street_food_style_list_use_case.dart';
 import '../../../domain/usecase/get_selected_beauty_brands_list_use_case.dart';
 import '../../../domain/usecase/get_selected_fashion_brands_list_use_case.dart';
 import '../../../domain/usecase/get_shipping_price_contents_banner_use_case.dart';
@@ -72,6 +73,7 @@ class HomeMainMenuSubController extends BaseGetxController {
   final GetCoffeeAndTeaOriginIndonesiaListUseCase getCoffeeAndTeaOriginIndonesiaListUseCase;
   final GetBeautyProductIndonesiaListUseCase getBeautyProductIndonesiaListUseCase;
   final GetFashionProductIndonesiaListUseCase getFashionProductIndonesiaListUseCase;
+  final GetReadyToEatStreetFoodStyleListUseCase getReadyToEatStreetFoodStyleListUseCase;
   final GetOnlyForYouListUseCase getOnlyForYouListUseCase;
   final GetHandycraftsContentsBannerUseCase getHandycraftsContentsBannerUseCase;
   final GetKitchenContentsBannerUseCase getKitchenContentsBannerUseCase;
@@ -100,6 +102,7 @@ class HomeMainMenuSubController extends BaseGetxController {
     this.getCoffeeAndTeaOriginIndonesiaListUseCase,
     this.getBeautyProductIndonesiaListUseCase,
     this.getFashionProductIndonesiaListUseCase,
+    this.getReadyToEatStreetFoodStyleListUseCase,
     this.getOnlyForYouListUseCase,
     this.getHandycraftsContentsBannerUseCase,
     this.getKitchenContentsBannerUseCase,
@@ -368,6 +371,94 @@ class HomeMainMenuSubController extends BaseGetxController {
       ),
       DynamicItemCarouselHomeMainMenuComponentEntity(
         title: MultiLanguageString({
+          Constant.textEnUsLanguageKey: "Indonesia Kitchen Contents",
+          Constant.textInIdLanguageKey: "Isi Dapur Indonesia"
+        }),
+        onDynamicItemAction: (title, description, observer) async {
+          observer(title, description, IsLoadingLoadDataResult<ProductBundle>());
+          LoadDataResult<List<TransparentBanner>> transparentBannerListLoadDataResult = await getKitchenContentsBannerUseCase.execute().future(
+            parameter: apiRequestManager.addRequestToCancellationPart("indonesia-kitchen-contents").value
+          );
+          if (transparentBannerListLoadDataResult.isFailedBecauseCancellation) {
+            return;
+          }
+          observer(title, description, transparentBannerListLoadDataResult);
+        },
+        onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
+          if (_homeMainMenuDelegate != null) {
+            return CompoundListItemControllerState(
+              listItemControllerState: [
+                VirtualSpacingListItemControllerState(height: 16),
+                _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductCategoryCarousel(
+                  OnObserveLoadingLoadProductCategoryCarouselParameter()
+                ),
+                VirtualSpacingListItemControllerState(height: 16),
+              ]
+            );
+          }
+        },
+        onObserveSuccessDynamicItemActionState: (title, description, loadDataResult) {
+          List<TransparentBanner> transparentBannerList = loadDataResult.resultIfSuccess!;
+          if (_homeMainMenuDelegate != null) {
+            return _homeMainMenuDelegate!.onObserveSuccessLoadTransparentBanner(
+              _OnObserveSuccessLoadTransparentBannerParameter(
+                title: title,
+                description: description,
+                transparentBanner: transparentBannerList.first,
+                data: Constant.transparentBannerKeyKitchenContents
+              )
+            );
+          }
+          throw MessageError(title: "Home main menu delegate must be initialized");
+        },
+      ),
+      DynamicItemCarouselHomeMainMenuComponentEntity(
+        title: MultiLanguageString({
+          Constant.textEnUsLanguageKey: "Ready To Eat Street Food Style",
+          Constant.textInIdLanguageKey: "Siap Saji Ala Kaki Lima"
+        }),
+        onDynamicItemAction: (title, description, observer) async {
+          observer(title, description, IsLoadingLoadDataResult<List<ProductEntry>>());
+          LoadDataResult<List<ProductEntry>> productEntryPagingDataResult = await getReadyToEatStreetFoodStyleListUseCase.execute().future(
+            parameter: apiRequestManager.addRequestToCancellationPart("ready-to-eat-street-food-style").value
+          );
+          if (productEntryPagingDataResult.isFailedBecauseCancellation) {
+            return;
+          }
+          observer(title, description, productEntryPagingDataResult.map<List<ProductEntry>>(
+            (trainingPagingDataResult) => trainingPagingDataResult
+          ));
+        },
+        onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
+          if (_homeMainMenuDelegate != null) {
+            return CompoundListItemControllerState(
+              listItemControllerState: [
+                VirtualSpacingListItemControllerState(height: 16),
+                _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductCategoryCarousel(
+                  OnObserveLoadingLoadProductCategoryCarouselParameter()
+                ),
+                VirtualSpacingListItemControllerState(height: 16),
+              ]
+            );
+          }
+        },
+        onObserveSuccessDynamicItemActionState: (title, description, loadDataResult) {
+          List<ProductEntry> productEntryList = loadDataResult.resultIfSuccess!;
+          if (_homeMainMenuDelegate != null) {
+            return _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveSuccessLoadProductEntryCarousel(
+              OnObserveSuccessLoadProductEntryCarouselParameter(
+                title: title,
+                description: description,
+                productEntryList: productEntryList,
+                data: Constant.carouselKeyReadyToEatStreetFoodStyle
+              )
+            );
+          }
+          throw MessageError(title: "Home main menu delegate must be initialized");
+        },
+      ),
+      DynamicItemCarouselHomeMainMenuComponentEntity(
+        title: MultiLanguageString({
           Constant.textEnUsLanguageKey: "Sponsor Banner",
           Constant.textInIdLanguageKey: "Sponsor Banner"
         }),
@@ -469,18 +560,22 @@ class HomeMainMenuSubController extends BaseGetxController {
       ),
       DynamicItemCarouselHomeMainMenuComponentEntity(
         title: MultiLanguageString({
-          Constant.textEnUsLanguageKey: "Indonesia Kitchen Contents",
-          Constant.textInIdLanguageKey: "Isi Dapur Indonesia"
+          Constant.textEnUsLanguageKey: "Product Bundle Highlight",
+          Constant.textInIdLanguageKey: "Product Bundle Highlight"
         }),
         onDynamicItemAction: (title, description, observer) async {
           observer(title, description, IsLoadingLoadDataResult<ProductBundle>());
-          LoadDataResult<List<TransparentBanner>> transparentBannerListLoadDataResult = await getKitchenContentsBannerUseCase.execute().future(
-            parameter: apiRequestManager.addRequestToCancellationPart("indonesia-kitchen-contents").value
+          LoadDataResult<ProductBundle> productBundleHighlightDataResult = await getProductBundleHighlightUseCase.execute(
+            ProductBundleHighlightParameter()
+          ).future(
+            parameter: apiRequestManager.addRequestToCancellationPart("product-bundle-highlight").value
           );
-          if (transparentBannerListLoadDataResult.isFailedBecauseCancellation) {
+          if (productBundleHighlightDataResult.isFailedBecauseCancellation) {
             return;
           }
-          observer(title, description, transparentBannerListLoadDataResult);
+          observer(title, description, productBundleHighlightDataResult.map<ProductBundle>(
+            (productBundleHighlight) => productBundleHighlight
+          ));
         },
         onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
           if (_homeMainMenuDelegate != null) {
@@ -496,14 +591,13 @@ class HomeMainMenuSubController extends BaseGetxController {
           }
         },
         onObserveSuccessDynamicItemActionState: (title, description, loadDataResult) {
-          List<TransparentBanner> transparentBannerList = loadDataResult.resultIfSuccess!;
+          ProductBundle productBundle = loadDataResult.resultIfSuccess!;
           if (_homeMainMenuDelegate != null) {
-            return _homeMainMenuDelegate!.onObserveSuccessLoadTransparentBanner(
-              _OnObserveSuccessLoadTransparentBannerParameter(
+            return _homeMainMenuDelegate!.onObserveSuccessLoadProductBundleHighlight(
+              _OnObserveSuccessLoadProductBundleHighlightParameter(
                 title: title,
                 description: description,
-                transparentBanner: transparentBannerList.first,
-                data: Constant.transparentBannerKeyKitchenContents
+                productBundle: productBundle
               )
             );
           }
@@ -557,59 +651,13 @@ class HomeMainMenuSubController extends BaseGetxController {
       ),
       DynamicItemCarouselHomeMainMenuComponentEntity(
         title: MultiLanguageString({
-          Constant.textEnUsLanguageKey: "Product Bundle Highlight",
-          Constant.textInIdLanguageKey: "Product Bundle Highlight"
-        }),
-        onDynamicItemAction: (title, description, observer) async {
-          observer(title, description, IsLoadingLoadDataResult<ProductBundle>());
-          LoadDataResult<ProductBundle> productBundleHighlightDataResult = await getProductBundleHighlightUseCase.execute(
-            ProductBundleHighlightParameter()
-          ).future(
-            parameter: apiRequestManager.addRequestToCancellationPart("product-bundle-highlight").value
-          );
-          if (productBundleHighlightDataResult.isFailedBecauseCancellation) {
-            return;
-          }
-          observer(title, description, productBundleHighlightDataResult.map<ProductBundle>(
-            (productBundleHighlight) => productBundleHighlight
-          ));
-        },
-        onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
-          if (_homeMainMenuDelegate != null) {
-            return CompoundListItemControllerState(
-              listItemControllerState: [
-                VirtualSpacingListItemControllerState(height: 16),
-                _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductCategoryCarousel(
-                  OnObserveLoadingLoadProductCategoryCarouselParameter()
-                ),
-                VirtualSpacingListItemControllerState(height: 16),
-              ]
-            );
-          }
-        },
-        onObserveSuccessDynamicItemActionState: (title, description, loadDataResult) {
-          ProductBundle productBundle = loadDataResult.resultIfSuccess!;
-          if (_homeMainMenuDelegate != null) {
-            return _homeMainMenuDelegate!.onObserveSuccessLoadProductBundleHighlight(
-              _OnObserveSuccessLoadProductBundleHighlightParameter(
-                title: title,
-                description: description,
-                productBundle: productBundle
-              )
-            );
-          }
-          throw MessageError(title: "Home main menu delegate must be initialized");
-        },
-      ),
-      DynamicItemCarouselHomeMainMenuComponentEntity(
-        title: MultiLanguageString({
-          Constant.textEnUsLanguageKey: "Best Selling in Masterbagasi",
-          Constant.textInIdLanguageKey: "Terlaris di Masterbagasi"
+          Constant.textEnUsLanguageKey: "Teh & Coffee Origin Indonesia",
+          Constant.textInIdLanguageKey: "Teh & Kopi Asli Indonesia"
         }),
         onDynamicItemAction: (title, description, observer) async {
           observer(title, description, IsLoadingLoadDataResult<List<ProductEntry>>());
-          LoadDataResult<List<ProductEntry>> productEntryPagingDataResult = await getBestsellerInMasterbagasiListUseCase.execute().future(
-            parameter: apiRequestManager.addRequestToCancellationPart("bestselling-in-masterbagasi").value
+          LoadDataResult<List<ProductEntry>> productEntryPagingDataResult = await getCoffeeAndTeaOriginIndonesiaListUseCase.execute().future(
+            parameter: apiRequestManager.addRequestToCancellationPart("coffee-and-tea-origin-indonesia").value
           );
           if (productEntryPagingDataResult.isFailedBecauseCancellation) {
             return;
@@ -639,47 +687,7 @@ class HomeMainMenuSubController extends BaseGetxController {
                 title: title,
                 description: description,
                 productEntryList: productEntryList,
-                data: Constant.carouselKeyBestSellingInMasterBagasi
-              )
-            );
-          }
-          throw MessageError(title: "Home main menu delegate must be initialized");
-        },
-      ),
-      DynamicItemCarouselHomeMainMenuComponentEntity(
-        title: Constant.multiLanguageStringSelectedFashionBrands,
-        onDynamicItemAction: (title, description, observer) async {
-          observer(title, description, IsLoadingLoadDataResult<List<ProductBrand>>());
-          LoadDataResult<List<ProductBrand>> productEntryPagingDataResult = await getSelectedFashionBrandsListUseCase.execute().future(
-            parameter: apiRequestManager.addRequestToCancellationPart("selected-fashion-brands").value
-          );
-          if (productEntryPagingDataResult.isFailedBecauseCancellation) {
-            return;
-          }
-          observer(title, description, productEntryPagingDataResult);
-        },
-        onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
-          if (_homeMainMenuDelegate != null) {
-            return CompoundListItemControllerState(
-              listItemControllerState: [
-                VirtualSpacingListItemControllerState(height: 16),
-                _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductBrandCarousel(
-                  OnObserveLoadingLoadProductBrandCarouselParameter()
-                ),
-                VirtualSpacingListItemControllerState(height: 16),
-              ]
-            );
-          }
-        },
-        onObserveSuccessDynamicItemActionState: (title, description, loadDataResult) {
-          List<ProductBrand> productBrandList = loadDataResult.resultIfSuccess!;
-          if (_homeMainMenuDelegate != null) {
-            return _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveSuccessLoadProductBrandCarousel(
-              OnObserveSuccessLoadProductBrandCarouselParameter(
-                title: title,
-                description: description,
-                productBrandList: productBrandList,
-                data: Constant.carouselKeySelectedFashionBrands
+                data: Constant.carouselKeyCoffeeAndTeaOriginIndonesia
               )
             );
           }
@@ -730,14 +738,54 @@ class HomeMainMenuSubController extends BaseGetxController {
         },
       ),
       DynamicItemCarouselHomeMainMenuComponentEntity(
+        title: Constant.multiLanguageStringSelectedFashionBrands,
+        onDynamicItemAction: (title, description, observer) async {
+          observer(title, description, IsLoadingLoadDataResult<List<ProductBrand>>());
+          LoadDataResult<List<ProductBrand>> productEntryPagingDataResult = await getSelectedFashionBrandsListUseCase.execute().future(
+            parameter: apiRequestManager.addRequestToCancellationPart("selected-fashion-brands").value
+          );
+          if (productEntryPagingDataResult.isFailedBecauseCancellation) {
+            return;
+          }
+          observer(title, description, productEntryPagingDataResult);
+        },
+        onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
+          if (_homeMainMenuDelegate != null) {
+            return CompoundListItemControllerState(
+              listItemControllerState: [
+                VirtualSpacingListItemControllerState(height: 16),
+                _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductBrandCarousel(
+                  OnObserveLoadingLoadProductBrandCarouselParameter()
+                ),
+                VirtualSpacingListItemControllerState(height: 16),
+              ]
+            );
+          }
+        },
+        onObserveSuccessDynamicItemActionState: (title, description, loadDataResult) {
+          List<ProductBrand> productBrandList = loadDataResult.resultIfSuccess!;
+          if (_homeMainMenuDelegate != null) {
+            return _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveSuccessLoadProductBrandCarousel(
+              OnObserveSuccessLoadProductBrandCarouselParameter(
+                title: title,
+                description: description,
+                productBrandList: productBrandList,
+                data: Constant.carouselKeySelectedFashionBrands
+              )
+            );
+          }
+          throw MessageError(title: "Home main menu delegate must be initialized");
+        },
+      ),
+      DynamicItemCarouselHomeMainMenuComponentEntity(
         title: MultiLanguageString({
-          Constant.textEnUsLanguageKey: "Coffee & Tea Origin Indonesia",
-          Constant.textInIdLanguageKey: "Kopi & Teh Asli Indonesia"
+          Constant.textEnUsLanguageKey: "Indonesian Fashion Products",
+          Constant.textInIdLanguageKey: "Produk Fesyen Indonesia"
         }),
         onDynamicItemAction: (title, description, observer) async {
           observer(title, description, IsLoadingLoadDataResult<List<ProductEntry>>());
-          LoadDataResult<List<ProductEntry>> productEntryPagingDataResult = await getCoffeeAndTeaOriginIndonesiaListUseCase.execute().future(
-            parameter: apiRequestManager.addRequestToCancellationPart("coffee-and-tea-origin-indonesia").value
+          LoadDataResult<List<ProductEntry>> productEntryPagingDataResult = await getFashionProductIndonesiaListUseCase.execute().future(
+            parameter: apiRequestManager.addRequestToCancellationPart("fashiion-product-indonesia").value
           );
           if (productEntryPagingDataResult.isFailedBecauseCancellation) {
             return;
@@ -767,7 +815,47 @@ class HomeMainMenuSubController extends BaseGetxController {
                 title: title,
                 description: description,
                 productEntryList: productEntryList,
-                data: Constant.carouselKeyCoffeeAndTeaOriginIndonesia
+                data: Constant.carouselKeyFashionProductIndonesia
+              )
+            );
+          }
+          throw MessageError(title: "Home main menu delegate must be initialized");
+        },
+      ),
+      DynamicItemCarouselHomeMainMenuComponentEntity(
+        title: Constant.multiLanguageStringChoiceBeautyBrand,
+        onDynamicItemAction: (title, description, observer) async {
+          observer(title, description, IsLoadingLoadDataResult<List<ProductBrand>>());
+          LoadDataResult<List<ProductBrand>> productEntryPagingDataResult = await getSelectedBeautyBrandsListUseCase.execute().future(
+            parameter: apiRequestManager.addRequestToCancellationPart("choice-beauty-brand").value
+          );
+          if (productEntryPagingDataResult.isFailedBecauseCancellation) {
+            return;
+          }
+          observer(title, description, productEntryPagingDataResult);
+        },
+        onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
+          if (_homeMainMenuDelegate != null) {
+            return CompoundListItemControllerState(
+              listItemControllerState: [
+                VirtualSpacingListItemControllerState(height: 16),
+                _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductBrandCarousel(
+                  OnObserveLoadingLoadProductBrandCarouselParameter()
+                ),
+                VirtualSpacingListItemControllerState(height: 16),
+              ]
+            );
+          }
+        },
+        onObserveSuccessDynamicItemActionState: (title, description, loadDataResult) {
+          List<ProductBrand> productBrandList = loadDataResult.resultIfSuccess!;
+          if (_homeMainMenuDelegate != null) {
+            return _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveSuccessLoadProductBrandCarousel(
+              OnObserveSuccessLoadProductBrandCarouselParameter(
+                title: title,
+                description: description,
+                productBrandList: productBrandList,
+                data: Constant.carouselKeyChoiceBeautyBrand
               )
             );
           }
@@ -820,54 +908,14 @@ class HomeMainMenuSubController extends BaseGetxController {
         },
       ),
       DynamicItemCarouselHomeMainMenuComponentEntity(
-        title: Constant.multiLanguageStringChoiceBeautyBrand,
-        onDynamicItemAction: (title, description, observer) async {
-          observer(title, description, IsLoadingLoadDataResult<List<ProductBrand>>());
-          LoadDataResult<List<ProductBrand>> productEntryPagingDataResult = await getSelectedBeautyBrandsListUseCase.execute().future(
-            parameter: apiRequestManager.addRequestToCancellationPart("choice-beauty-brand").value
-          );
-          if (productEntryPagingDataResult.isFailedBecauseCancellation) {
-            return;
-          }
-          observer(title, description, productEntryPagingDataResult);
-        },
-        onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
-          if (_homeMainMenuDelegate != null) {
-            return CompoundListItemControllerState(
-              listItemControllerState: [
-                VirtualSpacingListItemControllerState(height: 16),
-                _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveLoadingLoadProductBrandCarousel(
-                  OnObserveLoadingLoadProductBrandCarouselParameter()
-                ),
-                VirtualSpacingListItemControllerState(height: 16),
-              ]
-            );
-          }
-        },
-        onObserveSuccessDynamicItemActionState: (title, description, loadDataResult) {
-          List<ProductBrand> productBrandList = loadDataResult.resultIfSuccess!;
-          if (_homeMainMenuDelegate != null) {
-            return _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveSuccessLoadProductBrandCarousel(
-              OnObserveSuccessLoadProductBrandCarouselParameter(
-                title: title,
-                description: description,
-                productBrandList: productBrandList,
-                data: Constant.carouselKeyChoiceBeautyBrand
-              )
-            );
-          }
-          throw MessageError(title: "Home main menu delegate must be initialized");
-        },
-      ),
-      DynamicItemCarouselHomeMainMenuComponentEntity(
         title: MultiLanguageString({
-          Constant.textEnUsLanguageKey: "Indonesian Fashion Products",
-          Constant.textInIdLanguageKey: "Produk Fesyen Indonesia"
+          Constant.textEnUsLanguageKey: "Best Selling in Masterbagasi",
+          Constant.textInIdLanguageKey: "Terlaris di Masterbagasi"
         }),
         onDynamicItemAction: (title, description, observer) async {
           observer(title, description, IsLoadingLoadDataResult<List<ProductEntry>>());
-          LoadDataResult<List<ProductEntry>> productEntryPagingDataResult = await getFashionProductIndonesiaListUseCase.execute().future(
-            parameter: apiRequestManager.addRequestToCancellationPart("fashiion-product-indonesia").value
+          LoadDataResult<List<ProductEntry>> productEntryPagingDataResult = await getBestsellerInMasterbagasiListUseCase.execute().future(
+            parameter: apiRequestManager.addRequestToCancellationPart("bestselling-in-masterbagasi").value
           );
           if (productEntryPagingDataResult.isFailedBecauseCancellation) {
             return;
@@ -897,7 +945,7 @@ class HomeMainMenuSubController extends BaseGetxController {
                 title: title,
                 description: description,
                 productEntryList: productEntryList,
-                data: Constant.carouselKeyFashionProductIndonesia
+                data: Constant.carouselKeyBestSellingInMasterBagasi
               )
             );
           }
@@ -971,6 +1019,7 @@ class HomeMainMenuSubControllerInjectionFactory {
   final GetBeautyProductIndonesiaListUseCase getBeautyProductIndonesiaListUseCase;
   final GetSelectedBeautyBrandsListUseCase getSelectedBeautyBrandsListUseCase;
   final GetFashionProductIndonesiaListUseCase getFashionProductIndonesiaListUseCase;
+  final GetReadyToEatStreetFoodStyleListUseCase getReadyToEatStreetFoodStyleListUseCase;
   final GetOnlyForYouListUseCase getOnlyForYouListUseCase;
   final GetHandycraftsContentsBannerUseCase getHandycraftsContentsBannerUseCase;
   final GetKitchenContentsBannerUseCase getKitchenContentsBannerUseCase;
@@ -995,6 +1044,7 @@ class HomeMainMenuSubControllerInjectionFactory {
     required this.getBeautyProductIndonesiaListUseCase,
     required this.getSelectedBeautyBrandsListUseCase,
     required this.getFashionProductIndonesiaListUseCase,
+    required this.getReadyToEatStreetFoodStyleListUseCase,
     required this.getOnlyForYouListUseCase,
     required this.getHandycraftsContentsBannerUseCase,
     required this.getKitchenContentsBannerUseCase,
@@ -1024,6 +1074,7 @@ class HomeMainMenuSubControllerInjectionFactory {
         getCoffeeAndTeaOriginIndonesiaListUseCase,
         getBeautyProductIndonesiaListUseCase,
         getFashionProductIndonesiaListUseCase,
+        getReadyToEatStreetFoodStyleListUseCase,
         getOnlyForYouListUseCase,
         getHandycraftsContentsBannerUseCase,
         getKitchenContentsBannerUseCase,

@@ -178,6 +178,7 @@ import '../domain/usecase/get_product_message_by_user_use_case.dart';
 import '../domain/usecase/get_product_viral_list_use_case.dart';
 import '../domain/usecase/get_product_viral_paging_use_case.dart';
 import '../domain/usecase/get_province_map_use_case.dart';
+import '../domain/usecase/get_ready_to_eat_street_food_style_list_use_case.dart';
 import '../domain/usecase/get_selected_beauty_brands_list_use_case.dart';
 import '../domain/usecase/get_selected_beauty_brands_paging_use_case.dart';
 import '../domain/usecase/get_selected_fashion_brands_list_use_case.dart';
@@ -277,6 +278,7 @@ class _Injector {
         getCoffeeAndTeaOriginIndonesiaListUseCase: locator(),
         getBeautyProductIndonesiaListUseCase: locator(),
         getFashionProductIndonesiaListUseCase: locator(),
+        getReadyToEatStreetFoodStyleListUseCase: locator(),
         getOnlyForYouListUseCase: locator(),
         getHandycraftsContentsBannerUseCase: locator(),
         getKitchenContentsBannerUseCase: locator(),
@@ -571,6 +573,7 @@ class _Injector {
     locator.registerLazySingleton<GetSelectedBeautyBrandsListUseCase>(() => GetSelectedBeautyBrandsListUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetSelectedBeautyBrandsPagingUseCase>(() => GetSelectedBeautyBrandsPagingUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetCoffeeAndTeaOriginIndonesiaListUseCase>(() => GetCoffeeAndTeaOriginIndonesiaListUseCase(productRepository: locator()));
+    locator.registerLazySingleton<GetReadyToEatStreetFoodStyleListUseCase>(() => GetReadyToEatStreetFoodStyleListUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetBeautyProductIndonesiaListUseCase>(() => GetBeautyProductIndonesiaListUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetFashionProductIndonesiaListUseCase>(() => GetFashionProductIndonesiaListUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetOnlyForYouListUseCase>(() => GetOnlyForYouListUseCase(productRepository: locator()));

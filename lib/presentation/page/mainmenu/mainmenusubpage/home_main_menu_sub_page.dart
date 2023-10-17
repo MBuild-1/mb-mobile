@@ -346,6 +346,19 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
                 )
               ),
             );
+          } else if (data == Constant.carouselKeyReadyToEatStreetFoodStyle) {
+            carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternBlue);
+            titleInterceptor = (text, style) => titleArea(
+              title: Text(text.toStringNonNull, style: style?.copyWith(color: Colors.white)),
+              onTapMore: () => PageRestorationHelper.toProductEntryPage(
+                context,
+                ProductEntryPageParameter(
+                  productEntryParameterMap: {
+                    "category": "siap-saji-ala-kaki-lima"
+                  }
+                )
+              ),
+            );
           } else if (data == Constant.carouselKeySnackForLyingAround) {
             carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternBlue);
             titleInterceptor = (text, style) => titleArea(
