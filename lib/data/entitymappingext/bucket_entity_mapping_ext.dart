@@ -1,4 +1,5 @@
 import 'package:masterbagasi/data/entitymappingext/cart_entity_mapping_ext.dart';
+import 'package:masterbagasi/data/entitymappingext/order_entity_mapping_ext.dart';
 import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 
 import '../../domain/entity/bucket/approveorrejectrequestbucket/approve_or_reject_request_bucket_response.dart';
@@ -45,7 +46,9 @@ extension BucketDetailEntityMappingExt on ResponseWrapper {
   }
 
   CheckoutBucketResponse mapFromResponseToCheckoutBucketResponse() {
-    return CheckoutBucketResponse();
+    return CheckoutBucketResponse(
+      order: ResponseWrapper(response).mapFromResponseToSharedCartOrder()
+    );
   }
 
   TriggerBucketReadyResponse mapFromResponseToTriggerBucketReadyResponse() {
@@ -91,6 +94,7 @@ extension BucketDetailEntityMappingExt on ResponseWrapper {
       bucketId: response["bucket_id"],
       userId: response["user_id"],
       hostBucket: ResponseWrapper(response["host_bucket"]).mapFromResponseToInt()!,
+      status: response["status"] != null ? ResponseWrapper(response["status"]).mapFromResponseToInt()! : -1,
       bucketUser: ResponseWrapper(response["user"]).mapFromResponseToBucketUser(),
       bucketCartList: response[isRequest ? "bucket_cart_list_request" : "bucket_cart_list"].map<Cart>(
         (bucketRequestResponse) => ResponseWrapper(bucketRequestResponse).mapFromResponseToCart([], [])

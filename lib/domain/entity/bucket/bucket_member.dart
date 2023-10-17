@@ -8,6 +8,7 @@ class BucketMember {
   int hostBucket;
   BucketUser bucketUser;
   List<Cart> bucketCartList;
+  int status;
 
   BucketMember({
     required this.id,
@@ -15,6 +16,7 @@ class BucketMember {
     required this.userId,
     required this.hostBucket,
     required this.bucketUser,
-    required this.bucketCartList
+    required this.bucketCartList,
+    required this.status
   });
 }

@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class ColorfulChip extends StatelessWidget {
   final String text;
   final Color color;
+  final Color? textColor;
 
   const ColorfulChip({
     super.key,
     required this.text,
-    required this.color
+    required this.color,
+    this.textColor
   });
 
   @override
@@ -20,7 +22,8 @@ class ColorfulChip extends StatelessWidget {
       ),
       child: Text(
         text,
-        style: const TextStyle(
+        style: TextStyle(
+          color: textColor,
           fontWeight: FontWeight.bold
         ),
       ),

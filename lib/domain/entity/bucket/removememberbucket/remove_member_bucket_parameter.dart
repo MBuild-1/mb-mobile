@@ -1,7 +1,7 @@
 class RemoveMemberBucketParameter {
-  String bucketId;
+  String userId;
 
   RemoveMemberBucketParameter({
-    required this.bucketId
+    required this.userId
   });
 }

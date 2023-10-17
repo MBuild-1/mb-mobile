@@ -85,7 +85,29 @@ class _PusherHelperImpl {
     } catch (e) {
       print("ERROR: $e");
     }
-    print("kereturn");
+    return pusherChannelsFlutter;
+  }
+
+  Future<PusherChannelsFlutter> connectSharedCartPusherChannel({
+    required PusherChannelsFlutter pusherChannelsFlutter,
+    required void Function(PusherEvent) onEvent,
+    required String bucketId,
+  }) async {
+    String getFirstChannelName() {
+      return "bucket-request";
+    }
+    try {
+      _initPusherChannels(
+        pusherChannelsFlutter: pusherChannelsFlutter,
+        onEvent: onEvent
+      );
+      await pusherChannelsFlutter.subscribe(
+        channelName: "${getFirstChannelName()}.$bucketId"
+      );
+      await pusherChannelsFlutter.connect();
+    } catch (e) {
+      print("ERROR: $e");
+    }
     return pusherChannelsFlutter;
   }
 }

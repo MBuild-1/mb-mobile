@@ -10,10 +10,12 @@ import '../../domain/entity/bucket/removememberbucket/remove_member_bucket_param
 import '../../domain/entity/bucket/removememberbucket/remove_member_bucket_response.dart';
 import '../../domain/entity/bucket/requestjoinbucket/request_join_bucket_parameter.dart';
 import '../../domain/entity/bucket/requestjoinbucket/request_join_bucket_response.dart';
+import '../../domain/entity/bucket/shared_cart_summary_parameter.dart';
 import '../../domain/entity/bucket/showbucketbyid/show_bucket_by_id_parameter.dart';
 import '../../domain/entity/bucket/showbucketbyid/show_bucket_by_id_response.dart';
 import '../../domain/entity/bucket/triggerbucketready/trigger_bucket_ready_parameter.dart';
 import '../../domain/entity/bucket/triggerbucketready/trigger_bucket_ready_response.dart';
+import '../../domain/entity/cart/cart_summary.dart';
 import '../../domain/repository/bucket_repository.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/processing/future_processing.dart';
@@ -64,5 +66,10 @@ class DefaultBucketRepository implements BucketRepository {
   @override
   FutureProcessing<LoadDataResult<TriggerBucketReadyResponse>> triggerBucketReady(TriggerBucketReadyParameter triggerBucketReadyParameter) {
     return bucketDataSource.triggerBucketReady(triggerBucketReadyParameter).mapToLoadDataResult<TriggerBucketReadyResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<CartSummary>> sharedCartSummary(SharedCartSummaryParameter sharedCartSummaryParameter) {
+    return bucketDataSource.sharedCartSummary(sharedCartSummaryParameter).mapToLoadDataResult<CartSummary>();
   }
 }

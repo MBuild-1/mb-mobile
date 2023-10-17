@@ -991,6 +991,7 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
           showDefaultCart: item.showDefaultCart,
           showCheck: item.showCheck,
           showBottom: item.showBottom,
+          canBeSelected: item.canBeSelected
         );
       } else if (item is VerticalCartListItemControllerState) {
         if (item is ShimmerVerticalCartListItemControllerState) {
@@ -1011,6 +1012,7 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
             showDefaultCart: item.showDefaultCart,
             showCheck: item.showCheck,
             showBottom: item.showBottom,
+            canBeSelected: item.canBeSelected,
           );
         }
       } else {

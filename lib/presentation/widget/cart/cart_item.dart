@@ -22,6 +22,7 @@ abstract class CartItem extends StatelessWidget {
   final bool showDefaultCart;
   final bool showCheck;
   final bool showBottom;
+  final bool canBeSelected;
   final void Function()? onChangeSelected;
   final void Function()? onAddToNotes;
   final void Function()? onChangeNotes;
@@ -44,6 +45,7 @@ abstract class CartItem extends StatelessWidget {
     required this.onChangeSelected,
     this.showCheck = true,
     this.showBottom = true,
+    required this.canBeSelected,
     this.onAddToNotes,
     this.onChangeNotes,
     this.onRemoveFromNotes,
@@ -239,7 +241,7 @@ abstract class CartItem extends StatelessWidget {
           ]
         ],
       ),
-      onChanged: onChangeSelected != null ? (bool? value) => onChangeSelected!() : null,
+      onChanged: onChangeSelected != null ? (canBeSelected ? (bool? value) => onChangeSelected!() : null) : null,
       reverse: true,
       spaceBetweenCheckListAndTitle: 4.w,
       spaceBetweenTitleAndContent: showDefaultCart ? 4.w : 0.0,

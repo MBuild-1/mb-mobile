@@ -183,6 +183,7 @@ import '../domain/usecase/get_selected_beauty_brands_list_use_case.dart';
 import '../domain/usecase/get_selected_beauty_brands_paging_use_case.dart';
 import '../domain/usecase/get_selected_fashion_brands_list_use_case.dart';
 import '../domain/usecase/get_selected_fashion_brands_paging_use_case.dart';
+import '../domain/usecase/get_shared_cart_summary_use_case.dart';
 import '../domain/usecase/get_shipping_price_contents_banner_use_case.dart';
 import '../domain/usecase/get_shipping_review_order_list_use_case.dart';
 import '../domain/usecase/get_short_my_cart_use_case.dart';
@@ -661,6 +662,7 @@ class _Injector {
     locator.registerLazySingleton<RemoveMemberBucketUseCase>(() => RemoveMemberBucketUseCase(bucketRepository: locator()));
     locator.registerLazySingleton<CheckBucketUseCase>(() => CheckBucketUseCase(bucketRepository: locator()));
     locator.registerLazySingleton<TriggerBucketReadyUseCase>(() => TriggerBucketReadyUseCase(bucketRepository: locator()));
+    locator.registerLazySingleton<GetSharedCartSummaryUseCase>(() => GetSharedCartSummaryUseCase(bucketRepository: locator()));
     locator.registerLazySingleton<CheckoutBucketUseCase>(() => CheckoutBucketUseCase(bucketRepository: locator()));
 
     // Repository

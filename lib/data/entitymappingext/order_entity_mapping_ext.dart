@@ -38,6 +38,15 @@ extension ProductEntityMappingExt on ResponseWrapper {
 }
 
 extension OrderDetailEntityMappingExt on ResponseWrapper {
+  Order mapFromResponseToSharedCartOrder() {
+    dynamic effectiveOrderSummary = response["detail"];
+    effectiveOrderSummary ??= response["summary"];
+    return Order(
+      orderSummary: ResponseWrapper(effectiveOrderSummary).mapFromResponseToOrderSummary(),
+      combinedOrder: ResponseWrapper(response).mapFromResponseToCombinedOrder(),
+    );
+  }
+
   Order mapFromResponseToOrder() {
     dynamic effectiveOrderSummary = response["detail"];
     effectiveOrderSummary ??= response["summary"];
@@ -48,9 +57,9 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
   }
 
   OrderSummary mapFromResponseToOrderSummary() {
-    dynamic finalSummaryResponse = response["final_summary"];
+    dynamic finalSummaryResponse = response != null ? response["final_summary"] : null;
     return OrderSummary(
-      summaryValue: ResponseWrapper(response["summary"]).mapFromResponseToSummaryValueList(),
+      summaryValue: response != null ? ResponseWrapper(response["summary"]).mapFromResponseToSummaryValueList() : [],
       finalSummaryValue: finalSummaryResponse != null ? ResponseWrapper(finalSummaryResponse).mapFromResponseToSummaryValueList() : [],
     );
   }

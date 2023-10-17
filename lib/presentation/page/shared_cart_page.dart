@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:masterbagasi/misc/ext/error_provider_ext.dart';
 import 'package:masterbagasi/misc/ext/future_ext.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/number_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 import 'package:provider/provider.dart';
+import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../controller/host_cart_controller.dart';
@@ -23,8 +25,10 @@ import '../../domain/entity/bucket/bucket_member.dart';
 import '../../domain/entity/bucket/removememberbucket/remove_member_bucket_parameter.dart';
 import '../../domain/entity/cart/cart.dart';
 import '../../domain/entity/cart/cart_list_parameter.dart';
+import '../../domain/entity/cart/cart_summary.dart';
 import '../../domain/entity/cart/host_cart.dart';
 import '../../domain/entity/cart/support_cart.dart';
+import '../../domain/entity/summaryvalue/summary_value.dart';
 import '../../domain/entity/user/user.dart';
 import '../../domain/entity/wishlist/support_wishlist.dart';
 import '../../domain/usecase/add_additional_item_use_case.dart';
@@ -38,6 +42,7 @@ import '../../domain/usecase/create_bucket_use_case.dart';
 import '../../domain/usecase/get_additional_item_use_case.dart';
 import '../../domain/usecase/get_cart_list_use_case.dart';
 import '../../domain/usecase/get_cart_summary_use_case.dart';
+import '../../domain/usecase/get_shared_cart_summary_use_case.dart';
 import '../../domain/usecase/get_user_use_case.dart';
 import '../../domain/usecase/remove_additional_item_use_case.dart';
 import '../../domain/usecase/remove_from_cart_use_case.dart';
@@ -49,6 +54,7 @@ import '../../misc/acceptordeclinesharedcartmemberparameter/accept_shared_cart_m
 import '../../misc/acceptordeclinesharedcartmemberparameter/decline_shared_cart_member_parameter.dart';
 import '../../misc/additionalloadingindicatorchecker/host_cart_additional_paging_result_parameter_checker.dart';
 import '../../misc/additionalloadingindicatorchecker/shared_cart_additional_paging_result_parameter_checker.dart';
+import '../../misc/constant.dart';
 import '../../misc/controllercontentdelegate/shared_cart_controller_content_delegate.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/cart_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/cart_list_item_controller_state.dart';
@@ -68,19 +74,28 @@ import '../../misc/injector.dart';
 import '../../misc/itemtypelistsubinterceptor/cart_item_type_list_sub_interceptor.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/controller_manager.dart';
+import '../../misc/navigation_helper.dart';
 import '../../misc/page_restoration_helper.dart';
 import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
+import '../../misc/pusher_helper.dart';
 import '../../misc/toast_helper.dart';
 import '../notifier/component_notifier.dart';
 import '../notifier/notification_notifier.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
+import '../widget/loaddataresultimplementer/load_data_result_implementer_directly.dart';
 import '../widget/modified_paged_list_view.dart';
+import '../widget/modified_shimmer.dart';
+import '../widget/modified_svg_picture.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
+import '../widget/tap_area.dart';
 import 'delivery_page.dart';
 import 'getx_page.dart';
+import 'dart:math' as math;
+
+import 'modaldialogpage/cart_summary_cart_modal_dialog_page.dart';
 
 class SharedCartPage extends RestorableGetxPage<_SharedCartPageRestoration> {
   late final ControllerMember<SharedCartController> _sharedCartController = ControllerMember<SharedCartController>().addToControllerManager(controllerManager);
@@ -95,7 +110,7 @@ class SharedCartPage extends RestorableGetxPage<_SharedCartPageRestoration> {
         Injector.locator<GetCartListUseCase>(),
         Injector.locator<AddToCartUseCase>(),
         Injector.locator<RemoveFromCartUseCase>(),
-        Injector.locator<GetCartSummaryUseCase>(),
+        Injector.locator<GetSharedCartSummaryUseCase>(),
         Injector.locator<GetAdditionalItemUseCase>(),
         Injector.locator<AddAdditionalItemUseCase>(),
         Injector.locator<ChangeAdditionalItemUseCase>(),
@@ -231,6 +246,7 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
   late final ScrollController _sharedCartScrollController;
   late final ModifiedPagingController<int, ListItemControllerState> _sharedCartListItemPagingController;
   late final PagingControllerState<int, ListItemControllerState> _sharedCartListItemPagingControllerState;
+  final PusherChannelsFlutter _pusher = PusherChannelsFlutter.getInstance();
   int _cartCount = 0;
   late int _selectedCartCount = 0;
   late double _selectedCartShoppingTotal = 0;
@@ -240,6 +256,7 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
   LoadDataResult<Bucket> _bucketLoadDataResult = NoLoadDataResult<Bucket>();
   LoadDataResult<BucketMember> _bucketMemberLoadDataResult = NoLoadDataResult<BucketMember>();
   LoadDataResult<List<Cart>> _cartListLoadDataResult = NoLoadDataResult<List<Cart>>();
+  LoadDataResult<CartSummary> _sharedCartSummaryLoadDataResult = NoLoadDataResult<CartSummary>();
   CartContainerInterceptingActionListItemControllerState _cartContainerInterceptingActionListItemControllerState = DefaultCartContainerInterceptingActionListItemControllerState();
   String? _bucketId;
   BucketMember? _expandedBucketMember;
@@ -300,9 +317,22 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
     await _updateSharedCartData();
     Bucket bucket = _bucketLoadDataResult.resultIfSuccess!;
     _bucketId = bucket.id;
+    try {
+      await _pusher.disconnect();
+    } catch (e) {
+      // No action something
+    }
+    await PusherHelper.connectSharedCartPusherChannel(
+      pusherChannelsFlutter: _pusher,
+      onEvent: _onEvent,
+      bucketId: _bucketId!,
+    );
     List<CartListItemControllerState> newCartListItemControllerStateList = _cartListLoadDataResult.isSuccess ? _cartListLoadDataResult.resultIfSuccess!.map<CartListItemControllerState>(
       (cart) => VerticalCartListItemControllerState(
-        isSelected: false,
+        isSelected: true,
+        showDefaultCart: false,
+        showCheck: false,
+        canBeSelected: false,
         cart: cart,
         onChangeQuantity: (quantity) {
           setState(() {
@@ -369,6 +399,7 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
                 _selectedCartCount = cartList.length;
                 _updateCartInformation();
               });
+              widget.sharedCartController.getSharedCartSummary(_bucketId!);
             },
             onCartChange: () {
               setState(() => _updateCartInformation());
@@ -384,11 +415,13 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
             },
             onGetBucketMember: () => _expandedBucketMember,
             onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
-            onRemoveSharedCartMember: (bucketMember) => widget.sharedCartController.removeMemberBucket(
-              RemoveMemberBucketParameter(
-                bucketId: bucketMember.id
-              )
-            ),
+            onRemoveSharedCartMember: (bucketMember) {
+              widget.sharedCartController.removeMemberBucket(
+                RemoveMemberBucketParameter(
+                  userId: bucketMember.userId
+                )
+              );
+            },
             cartContainerStateStorageListItemControllerState: DefaultCartContainerStateStorageListItemControllerState(),
             cartContainerActionListItemControllerState: _DefaultSharedCartContainerActionListItemControllerState(
               getAdditionalItemList: (additionalItemListParameter) => widget.sharedCartController.getAdditionalItem(additionalItemListParameter),
@@ -441,7 +474,7 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
           e: e
         ),
         onCheckoutBucketRequestProcessSuccessCallback: (checkoutBucketResponse) async {
-          ToastHelper.showToast("${"Success shared cart transaction".tr}.");
+          NavigationHelper.navigationAfterPurchaseProcess(context, checkoutBucketResponse.order);
         },
         onShowApproveOrRejectRequestBucketProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
         onShowApproveOrRejectRequestBucketProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
@@ -474,6 +507,11 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
           await _updateSharedCartData();
           setState(() {});
         },
+        onShowSharedCartSummaryProcessCallback: (cartSummaryLoadDataResult) async {
+          setState(() {
+            _sharedCartSummaryLoadDataResult = cartSummaryLoadDataResult;
+          });
+        },
       )
     );
     return Scaffold(
@@ -504,25 +542,116 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
                   children: [
                     Row(
                       children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text("Shopping Total".tr),
-                                const SizedBox(height: 4),
-                                Text(_selectedCartShoppingTotal.toRupiah(withFreeTextIfZero: false), style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold
-                                )),
-                              ]
-                            ),
-                          ],
+                        Expanded(
+                          child: LoadDataResultImplementerDirectly<CartSummary>(
+                            loadDataResult: _sharedCartSummaryLoadDataResult,
+                            errorProvider: Injector.locator<ErrorProvider>(),
+                            onImplementLoadDataResultDirectly: (cartSummaryLoadDataResult, errorProviderOutput) {
+                              bool hasLoadingShimmer = cartSummaryLoadDataResult.isNotLoading || cartSummaryLoadDataResult.isLoading;
+                              Widget result = Wrap(
+                                crossAxisAlignment: WrapCrossAlignment.end,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Shopping Total".tr,
+                                        style: TextStyle(
+                                          backgroundColor: hasLoadingShimmer ? Colors.grey : null
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Builder(
+                                        builder: (context) {
+                                          String text = "No Loading";
+                                          if (cartSummaryLoadDataResult.isLoading) {
+                                            text = "Is Loading";
+                                          } else if (cartSummaryLoadDataResult.isSuccess) {
+                                            SummaryValue finalCartSummaryValue = cartSummaryLoadDataResult.resultIfSuccess!.finalSummaryValue.first;
+                                            if (finalCartSummaryValue.type == "currency") {
+                                              if (finalCartSummaryValue.value is num) {
+                                                text = (finalCartSummaryValue.value as num).toRupiah(withFreeTextIfZero: false);
+                                              } else {
+                                                text = double.parse(finalCartSummaryValue.value as String).toRupiah(withFreeTextIfZero: false);
+                                              }
+                                            } else {
+                                              text = finalCartSummaryValue.value;
+                                            }
+                                          } else if (cartSummaryLoadDataResult.isFailed) {
+                                            text = errorProviderOutput.onGetErrorProviderResult(
+                                              cartSummaryLoadDataResult.resultIfFailed!
+                                            ).toErrorProviderResultNonNull().message;
+                                          }
+                                          return Text(
+                                            text,
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                              backgroundColor: hasLoadingShimmer ? Colors.grey : null
+                                            )
+                                          );
+                                        }
+                                      ),
+                                    ]
+                                  ),
+                                  if (cartSummaryLoadDataResult.isSuccess) ...[
+                                    TapArea(
+                                      onTap: cartSummaryLoadDataResult.isSuccess ? () => DialogHelper.showModalBottomDialogPage<bool, CartSummary>(
+                                        context: context,
+                                        modalDialogPageBuilder: (context, parameter) => CartSummaryCartModalDialogPage(
+                                          cartSummary: parameter!
+                                        ),
+                                        parameter: cartSummaryLoadDataResult.resultIfSuccess!
+                                      ) : null,
+                                      child: SizedBox(
+                                        width: 40,
+                                        height: 30,
+                                        child: Stack(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.bottomCenter,
+                                              child: Transform.rotate(
+                                                angle: math.pi / 2,
+                                                child: SizedBox(
+                                                  child: ModifiedSvgPicture.asset(
+                                                    Constant.vectorArrow,
+                                                    height: 15,
+                                                  ),
+                                                )
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                  ]
+                                ]
+                              );
+                              return hasLoadingShimmer ? ModifiedShimmer.fromColors(
+                                child: result
+                              ) : result;
+                            }
+                          ),
                         ),
-                        const Expanded(
-                          child: SizedBox()
-                        ),
+                        // Row(
+                        //   crossAxisAlignment: CrossAxisAlignment.end,
+                        //   children: [
+                        //     Column(
+                        //       crossAxisAlignment: CrossAxisAlignment.start,
+                        //       children: [
+                        //         Text("Shopping Total".tr),
+                        //         const SizedBox(height: 4),
+                        //         Text(_selectedCartShoppingTotal.toRupiah(withFreeTextIfZero: false), style: const TextStyle(
+                        //           fontSize: 20,
+                        //           fontWeight: FontWeight.bold
+                        //         )),
+                        //       ]
+                        //     ),
+                        //   ],
+                        // ),
+                        // const Expanded(
+                        //   child: SizedBox()
+                        // ),
                         SizedOutlineGradientButton(
                           onPressed: _selectedCartCount == 0 ? null : () {
                             if (_bucketId != null) {
@@ -545,8 +674,15 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
     );
   }
 
+  void _onEvent(PusherEvent event) async {
+    print("Event: $event");
+    await _updateSharedCartData();
+    setState(() {});
+  }
+
   @override
   void dispose() {
+    _pusher.disconnect();
     super.dispose();
   }
 }

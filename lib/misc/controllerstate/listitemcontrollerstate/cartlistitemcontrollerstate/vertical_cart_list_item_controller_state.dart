@@ -7,6 +7,7 @@ class VerticalCartListItemControllerState extends CartListItemControllerState {
     super.showDefaultCart = true,
     super.showCheck = true,
     super.showBottom = true,
+    super.canBeSelected = true,
     super.onChangeSelected,
     super.onAddToNotes,
     super.onAddToWishlist,

@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:masterbagasi/data/entitymappingext/bucket_entity_mapping_ext.dart';
+import 'package:masterbagasi/data/entitymappingext/cart_entity_mapping_ext.dart';
 import 'package:masterbagasi/misc/ext/future_ext.dart';
 import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 
@@ -15,10 +16,12 @@ import '../../../domain/entity/bucket/removememberbucket/remove_member_bucket_pa
 import '../../../domain/entity/bucket/removememberbucket/remove_member_bucket_response.dart';
 import '../../../domain/entity/bucket/requestjoinbucket/request_join_bucket_parameter.dart';
 import '../../../domain/entity/bucket/requestjoinbucket/request_join_bucket_response.dart';
+import '../../../domain/entity/bucket/shared_cart_summary_parameter.dart';
 import '../../../domain/entity/bucket/showbucketbyid/show_bucket_by_id_parameter.dart';
 import '../../../domain/entity/bucket/showbucketbyid/show_bucket_by_id_response.dart';
 import '../../../domain/entity/bucket/triggerbucketready/trigger_bucket_ready_parameter.dart';
 import '../../../domain/entity/bucket/triggerbucketready/trigger_bucket_ready_response.dart';
+import '../../../domain/entity/cart/cart_summary.dart';
 import '../../../misc/processing/dio_http_client_processing.dart';
 import '../../../misc/processing/future_processing.dart';
 import 'bucket_data_source.dart';
@@ -47,7 +50,7 @@ class DefaultBucketDataSource implements BucketDataSource {
   @override
   FutureProcessing<RemoveMemberBucketResponse> removeMemberBucket(RemoveMemberBucketParameter removeMemberBucketParameter) {
     return DioHttpClientProcessing((cancelToken) {
-      return dio.delete("/user/bucket/remove/${removeMemberBucketParameter.bucketId}", cancelToken: cancelToken)
+      return dio.delete("/user/bucket/remove/${removeMemberBucketParameter.userId}", cancelToken: cancelToken)
         .map(onMap: (value) => value.wrapResponse().mapFromResponseToRemoveMemberBucketResponse());
     });
   }
@@ -110,6 +113,14 @@ class DefaultBucketDataSource implements BucketDataSource {
     return DioHttpClientProcessing((cancelToken) {
       return dio.post("/user/bucket/ready", cancelToken: cancelToken)
         .map(onMap: (value) => value.wrapResponse().mapFromResponseToTriggerBucketReadyResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<CartSummary> sharedCartSummary(SharedCartSummaryParameter sharedCartSummaryParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.get("/user/bucket/order/summary/${sharedCartSummaryParameter.bucketId}", cancelToken: cancelToken)
+        .map(onMap: (value) => value.wrapResponse().mapFromResponseToCartSummary());
     });
   }
 }

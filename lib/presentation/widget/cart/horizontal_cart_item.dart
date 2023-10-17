@@ -13,6 +13,7 @@ class HorizontalCartItem extends CartItem {
     required super.isSelected,
     super.showCheck = true,
     super.showBottom = true,
+    super.canBeSelected = true,
     super.showDefaultCart = true,
     super.onChangeSelected
   });

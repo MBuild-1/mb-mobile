@@ -19,6 +19,7 @@ import '../domain/entity/bucket/checkoutbucket/checkout_bucket_parameter.dart';
 import '../domain/entity/bucket/checkoutbucket/checkout_bucket_response.dart';
 import '../domain/entity/bucket/removememberbucket/remove_member_bucket_parameter.dart';
 import '../domain/entity/bucket/removememberbucket/remove_member_bucket_response.dart';
+import '../domain/entity/bucket/shared_cart_summary_parameter.dart';
 import '../domain/entity/bucket/showbucketbyid/show_bucket_by_id_parameter.dart';
 import '../domain/entity/bucket/showbucketbyid/show_bucket_by_id_response.dart';
 import '../domain/entity/bucket/triggerbucketready/trigger_bucket_ready_parameter.dart';
@@ -45,6 +46,7 @@ import '../domain/usecase/create_bucket_use_case.dart';
 import '../domain/usecase/get_additional_item_use_case.dart';
 import '../domain/usecase/get_cart_list_use_case.dart';
 import '../domain/usecase/get_cart_summary_use_case.dart';
+import '../domain/usecase/get_shared_cart_summary_use_case.dart';
 import '../domain/usecase/get_user_use_case.dart';
 import '../domain/usecase/remove_additional_item_use_case.dart';
 import '../domain/usecase/remove_from_cart_use_case.dart';
@@ -76,12 +78,13 @@ typedef _OnShowRemoveMemberRequestBucketProcessFailedCallback = Future<void> Fun
 typedef _OnShowTriggerBucketReadyProcessLoadingCallback = Future<void> Function();
 typedef _OnTriggerBucketReadyProcessSuccessCallback = Future<void> Function(TriggerBucketReadyResponse triggerBucketReadyResponse);
 typedef _OnShowTriggerBucketReadyProcessFailedCallback = Future<void> Function(dynamic e);
+typedef _OnShowSharedCartSummaryProcessCallback = Future<void> Function(LoadDataResult<CartSummary>);
 
 class SharedCartController extends BaseGetxController {
   final GetCartListUseCase getCartListUseCase;
   final AddToCartUseCase addToCartUseCase;
   final RemoveFromCartUseCase removeFromCartUseCase;
-  final GetCartSummaryUseCase getCartSummaryUseCase;
+  final GetSharedCartSummaryUseCase getSharedCartSummaryUseCase;
   final GetAdditionalItemUseCase getAdditionalItemUseCase;
   final AddAdditionalItemUseCase addAdditionalItemUseCase;
   final ChangeAdditionalItemUseCase changeAdditionalItemUseCase;
@@ -104,7 +107,7 @@ class SharedCartController extends BaseGetxController {
     this.getCartListUseCase,
     this.addToCartUseCase,
     this.removeFromCartUseCase,
-    this.getCartSummaryUseCase,
+    this.getSharedCartSummaryUseCase,
     this.getAdditionalItemUseCase,
     this.addAdditionalItemUseCase,
     this.changeAdditionalItemUseCase,
@@ -124,12 +127,6 @@ class SharedCartController extends BaseGetxController {
   Future<LoadDataResult<List<Cart>>> getCartList(CartListParameter cartListParameter) {
     return getCartListUseCase.execute(cartListParameter).future(
       parameter: apiRequestManager.addRequestToCancellationPart("cart").value
-    );
-  }
-
-  Future<LoadDataResult<CartSummary>> getCartSummary(CartSummaryParameter cartSummaryParameter) {
-    return getCartSummaryUseCase.execute(cartSummaryParameter).future(
-      parameter: apiRequestManager.addRequestToCancellationPart("cart-summary").value
     );
   }
 
@@ -223,7 +220,7 @@ class SharedCartController extends BaseGetxController {
   void approveOrRejectRequestBucket(ApproveOrRejectRequestBucketParameter approveOrRejectRequestBucketParameter) async {
     if (_mainSharedCartDelegate != null) {
       _mainSharedCartDelegate!.onUnfocusAllWidget();
-      _mainSharedCartDelegate!.onShowAddToWishlistRequestProcessLoadingCallback();
+      _mainSharedCartDelegate!.onShowApproveOrRejectRequestBucketProcessLoadingCallback();
       LoadDataResult<ApproveOrRejectRequestBucketResponse> approveOrRejectRequestBucketResponseLoadDataResult = await approveOrRejectRequestBucketUseCase.execute(
         approveOrRejectRequestBucketParameter
       ).future(
@@ -231,9 +228,9 @@ class SharedCartController extends BaseGetxController {
       );
       _mainSharedCartDelegate!.onCartBack();
       if (approveOrRejectRequestBucketResponseLoadDataResult.isSuccess) {
-        _mainSharedCartDelegate!.onAddToWishlistRequestProcessSuccessCallback();
+        _mainSharedCartDelegate!.onApproveOrRejectRequestBucketProcessSuccessCallback(approveOrRejectRequestBucketResponseLoadDataResult.resultIfSuccess!);
       } else {
-        _mainSharedCartDelegate!.onShowAddToWishlistRequestProcessFailedCallback(approveOrRejectRequestBucketResponseLoadDataResult.resultIfFailed);
+        _mainSharedCartDelegate!.onShowApproveOrRejectRequestBucketProcessFailedCallback(approveOrRejectRequestBucketResponseLoadDataResult.resultIfFailed);
       }
     }
   }
@@ -334,6 +331,20 @@ class SharedCartController extends BaseGetxController {
       }
     }
   }
+
+  void getSharedCartSummary(String bucketId) async {
+    if (_mainSharedCartDelegate != null) {
+      _mainSharedCartDelegate!.onShowSharedCartSummaryProcessCallback(IsLoadingLoadDataResult<CartSummary>());
+      LoadDataResult<CartSummary> cartSummaryLoadDataResult = await getSharedCartSummaryUseCase.execute(
+        SharedCartSummaryParameter(
+          bucketId: bucketId
+        )
+      ).future(
+        parameter: apiRequestManager.addRequestToCancellationPart("shared-cart-summary").value
+      );
+      _mainSharedCartDelegate!.onShowSharedCartSummaryProcessCallback(cartSummaryLoadDataResult);
+    }
+  }
 }
 
 class MainSharedCartDelegate {
@@ -357,6 +368,7 @@ class MainSharedCartDelegate {
   _OnShowTriggerBucketReadyProcessLoadingCallback onShowTriggerBucketReadyProcessLoadingCallback;
   _OnTriggerBucketReadyProcessSuccessCallback onTriggerBucketReadyProcessSuccessCallback;
   _OnShowTriggerBucketReadyProcessFailedCallback onShowTriggerBucketReadyProcessFailedCallback;
+  _OnShowSharedCartSummaryProcessCallback onShowSharedCartSummaryProcessCallback;
 
   MainSharedCartDelegate({
     required this.onUnfocusAllWidget,
@@ -378,6 +390,7 @@ class MainSharedCartDelegate {
     required this.onShowRemoveMemberRequestBucketProcessFailedCallback,
     required this.onShowTriggerBucketReadyProcessLoadingCallback,
     required this.onTriggerBucketReadyProcessSuccessCallback,
-    required this.onShowTriggerBucketReadyProcessFailedCallback
+    required this.onShowTriggerBucketReadyProcessFailedCallback,
+    required this.onShowSharedCartSummaryProcessCallback
   });
 }
