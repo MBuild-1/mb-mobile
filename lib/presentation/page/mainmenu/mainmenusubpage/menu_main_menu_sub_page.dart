@@ -159,7 +159,7 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
             title: 'Favorite Brand'.tr,
           ),
           ProfileMenuListItemControllerState(
-            onTap: (context) => PageRestorationHelper.toInboxPage(context),
+            onTap: (context) => PageRestorationHelper.toHelpChatPage(context),
             icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorInbox2, width: 20.0),
             title: 'Chat'.tr,
           ),
@@ -224,20 +224,6 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
             title: 'Account Privation'.tr,
             description: "${'Manage data usage and connected accounts'.tr}."
           ),
-          // SpacingListItemControllerState(),
-          // ProfileDropdownMenuListItemControllerState(
-          //   onUpdateState: () => setState(() {}),
-          //   isExpand: false,
-          //   title: 'Apps Configuration'.tr,
-          //   profileMenuListItemControllerStateList: [
-          //     ProfileMenuListItemControllerState(
-          //       onTap: (context) {},
-          //       icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorAccountPrivacy, width: 20.0),
-          //       title: 'Account Privation'.tr,
-          //       description: "${'Manage data usage and connected accounts'.tr}."
-          //     ),
-          //   ]
-          // ),
           SpacingListItemControllerState(),
           ProfileDropdownMenuListItemControllerState(
             onUpdateState: () => setState(() {}),
