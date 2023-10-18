@@ -39,6 +39,8 @@ import '../data/datasource/productdatasource/default_product_data_source.dart';
 import '../data/datasource/productdatasource/product_data_source.dart';
 import '../data/datasource/productdiscussiondatasource/default_product_discussion_data_source.dart';
 import '../data/datasource/productdiscussiondatasource/product_discussion_data_source.dart';
+import '../data/datasource/searchdatasource/default_search_data_source.dart';
+import '../data/datasource/searchdatasource/search_data_source.dart';
 import '../data/datasource/userdatasource/default_user_data_source.dart';
 import '../data/datasource/userdatasource/user_data_source.dart';
 import '../data/repository/default_address_repository.dart';
@@ -55,6 +57,7 @@ import '../data/repository/default_notification_repository.dart';
 import '../data/repository/default_order_repository.dart';
 import '../data/repository/default_product_discussion_repository.dart';
 import '../data/repository/default_product_repository.dart';
+import '../data/repository/default_search_repository.dart';
 import '../data/repository/default_user_repository.dart';
 import '../domain/dummy/addressdummy/address_dummy.dart';
 import '../domain/dummy/addressdummy/address_user_dummy.dart';
@@ -87,6 +90,7 @@ import '../domain/repository/notification_repository.dart';
 import '../domain/repository/order_repository.dart';
 import '../domain/repository/product_discussion_repository.dart';
 import '../domain/repository/product_repository.dart';
+import '../domain/repository/search_repository.dart';
 import '../domain/repository/user_repository.dart';
 import '../domain/usecase/add_additional_item_use_case.dart';
 import '../domain/usecase/add_address_use_case.dart';
@@ -217,6 +221,7 @@ import '../domain/usecase/remove_wishlist_use_case.dart';
 import '../domain/usecase/reply_product_discussion_use_case.dart';
 import '../domain/usecase/repurchase_use_case.dart';
 import '../domain/usecase/request_join_bucket_use_case.dart';
+import '../domain/usecase/search_use_case.dart';
 import '../domain/usecase/show_bucket_by_id_use_case.dart';
 import '../domain/usecase/take_friend_cart_use_case.dart';
 import '../domain/usecase/trigger_bucket_ready_use_case.dart';
@@ -664,6 +669,7 @@ class _Injector {
     locator.registerLazySingleton<TriggerBucketReadyUseCase>(() => TriggerBucketReadyUseCase(bucketRepository: locator()));
     locator.registerLazySingleton<GetSharedCartSummaryUseCase>(() => GetSharedCartSummaryUseCase(bucketRepository: locator()));
     locator.registerLazySingleton<CheckoutBucketUseCase>(() => CheckoutBucketUseCase(bucketRepository: locator()));
+    locator.registerLazySingleton<SearchUseCase>(() => SearchUseCase(searchRepository: locator()));
 
     // Repository
     locator.registerLazySingleton<UserRepository>(() => DefaultUserRepository(userDataSource: locator()));
@@ -690,6 +696,7 @@ class _Injector {
     locator.registerLazySingleton<ChatRepository>(() => DefaultChatRepository(chatDataSource: locator()));
     locator.registerLazySingleton<NotificationRepository>(() => DefaultNotificationRepository(notificationDataSource: locator()));
     locator.registerLazySingleton<BucketRepository>(() => DefaultBucketRepository(bucketDataSource: locator()));
+    locator.registerLazySingleton<SearchRepository>(() => DefaultSearchRepository(searchDataSource: locator()));
 
     // Data Sources
     locator.registerLazySingleton<UserDataSource>(() => DefaultUserDataSource(dio: locator()));
@@ -721,6 +728,13 @@ class _Injector {
     locator.registerLazySingleton<ChatDataSource>(() => DefaultChatDataSource(dio: locator()));
     locator.registerLazySingleton<NotificationDataSource>(() => DefaultNotificationDataSource(dio: locator()));
     locator.registerLazySingleton<BucketDataSource>(() => DefaultBucketDataSource(dio: locator()));
+    locator.registerLazySingleton<SearchDataSource>(
+      () => DefaultSearchDataSource(
+        dio: locator(),
+        productDataSource: locator(),
+        cartDataSource: locator()
+      )
+    );
 
     // Dio
     locator.registerLazySingleton<Dio>(() => DioHttpClient.of());

@@ -1,12 +1,13 @@
 import '../../cart/support_cart.dart';
 import '../../discussion/support_discussion.dart';
 import '../../order/support_order_product.dart';
+import '../../search/support_search.dart';
 import '../../wishlist/support_wishlist.dart';
 import '../product.dart';
 import '../product_appearance_data.dart';
 import '../productvariant/product_variant.dart';
 
-class ProductEntry implements ProductEntryAppearanceData, SupportCart, SupportWishlist, SupportOrderProduct, SupportDiscussion {
+class ProductEntry implements ProductEntryAppearanceData, SupportCart, SupportWishlist, SupportOrderProduct, SupportDiscussion, SupportSearch {
   String id;
   @override
   String productId;

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
+import 'package:masterbagasi/misc/ext/paging_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:provider/provider.dart';
 
@@ -11,8 +12,11 @@ import '../../controller/search_controller.dart';
 import '../../domain/entity/cart/support_cart.dart';
 import '../../domain/entity/product/product_with_condition_paging_parameter.dart';
 import '../../domain/entity/product/productentry/product_entry.dart';
+import '../../domain/entity/search/search_parameter.dart';
+import '../../domain/entity/search/search_response.dart';
 import '../../domain/entity/wishlist/support_wishlist.dart';
 import '../../domain/usecase/get_product_entry_with_condition_paging_use_case.dart';
+import '../../domain/usecase/search_use_case.dart';
 import '../../misc/constant.dart';
 import '../../misc/controllercontentdelegate/wishlist_and_cart_controller_content_delegate.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
@@ -57,6 +61,7 @@ class SearchPage extends RestorableGetxPage<_SearchPageRestoration> {
       SearchController(
         controllerManager,
         Injector.locator<GetProductEntryWithConditionPagingUseCase>(),
+        Injector.locator<SearchUseCase>(),
         Injector.locator<WishlistAndCartControllerContentDelegate>()
       ),
       tag: pageName
@@ -217,16 +222,19 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _searchListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? listItemControllerStateList) async {
-    LoadDataResult<PagingDataResult<ProductEntry>> productEntryLoadDataResult = await widget.searchController.getProductEntrySearch(
-      ProductWithConditionPagingParameter(
-        page: pageKey,
-        withCondition: {"product": _searchTextEditingController.text},
-        onInterceptProductPagingDataResult: (productEntryPagingDataResult) {
-          if (productEntryPagingDataResult.itemList.isEmpty) {
-            throw SearchNotFoundError();
-          }
-          return productEntryPagingDataResult;
-        }
+    LoadDataResult<SearchResponse> searchResponseLoadDataResult = await widget.searchController.search(
+      SearchParameter(
+        query: _searchTextEditingController.text
+      )
+    );
+    LoadDataResult<PagingDataResult<ProductEntry>> productEntryLoadDataResult = searchResponseLoadDataResult.map<PagingDataResult<ProductEntry>>(
+      (value) => PagingDataResult<ProductEntry>(
+        page: 1,
+        totalPage: 1,
+        totalItem: value.searchResultList.length,
+        itemList: value.searchResultList.map<ProductEntry>(
+          (searchResult) => searchResult as ProductEntry
+        ).toList()
       )
     );
     return productEntryLoadDataResult.map<PagingResult<ListItemControllerState>>((productEntryPaging) {

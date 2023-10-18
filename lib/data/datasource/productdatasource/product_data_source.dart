@@ -69,6 +69,7 @@ abstract class ProductDataSource {
   FutureProcessing<List<ProductEntry>> productDetailOtherInThisCategoryProductEntryList(ProductDetailOtherInThisCategoryProductEntryListParameter productDetailOtherInThisCategoryProductEntryListParameter);
   FutureProcessing<List<ProductBrand>> productDetailOtherInterestedProductBrandListParameter(ProductDetailOtherInterestedProductBrandListParameter productDetailOtherInterestedProductBrandListParameter);
   FutureProcessing<List<Wishlist>> wishlistList(WishlistListParameter wishlistListParameter);
+  FutureProcessing<List<Wishlist>> wishlistListIgnoringLoginError(WishlistListParameter wishlistListParameter);
   FutureProcessing<PagingDataResult<Wishlist>> wishlistPaging(WishlistPagingParameter wishlistPagingParameter);
   FutureProcessing<AddWishlistResponse> addWishlist(AddWishlistParameter addWishlistParameter);
   FutureProcessing<RemoveWishlistResponse> removeWishlist(RemoveWishlistParameter removeWishlistParameter);

@@ -87,7 +87,7 @@ class DefaultProductDataSource implements ProductDataSource {
   @override
   FutureProcessing<List<ProductBundle>> productBundleList(ProductBundleListParameter productBundleListParameter) {
     return DioHttpClientProcessing((cancelToken) async {
-      List<Wishlist> wishlistListResult = await _wishlistListIgnoringLoginError(WishlistListParameter()).future(parameter: cancelToken);
+      List<Wishlist> wishlistListResult = await wishlistListIgnoringLoginError(WishlistListParameter()).future(parameter: cancelToken);
       List<Cart> cartListResult = await cartDataSource.cartListIgnoringLoginError(CartListParameter()).future(parameter: cancelToken);
       return await dio.get("/product/bundle", cancelToken: cancelToken)
         .map<List<ProductBundle>>(onMap: (value) => value.wrapResponse().mapFromResponseToProductBundleList(wishlistListResult, cartListResult));
@@ -143,7 +143,7 @@ class DefaultProductDataSource implements ProductDataSource {
   @override
   FutureProcessing<List<ProductEntry>> productWithConditionList(ProductWithConditionListParameter productWithConditionListParameter) {
     return DioHttpClientProcessing((cancelToken) async {
-      List<Wishlist> wishlistListResult = await _wishlistListIgnoringLoginError(WishlistListParameter()).future(parameter: cancelToken);
+      List<Wishlist> wishlistListResult = await wishlistListIgnoringLoginError(WishlistListParameter()).future(parameter: cancelToken);
       List<Cart> cartListResult = await cartDataSource.cartListIgnoringLoginError(CartListParameter()).future(parameter: cancelToken);
       String withConditionParameterPath = productWithConditionListParameter.withCondition.isNotEmptyString ? "/${productWithConditionListParameter.withCondition}" : "";
       return await dio.get("/product$withConditionParameterPath", cancelToken: cancelToken)
@@ -187,7 +187,7 @@ class DefaultProductDataSource implements ProductDataSource {
   @override
   FutureProcessing<PagingDataResult<ProductBundle>> productBundlePaging(ProductBundlePagingParameter productBundlePagingParameter) {
     return DioHttpClientProcessing((cancelToken) async {
-      List<Wishlist> wishlistListResult = await _wishlistListIgnoringLoginError(WishlistListParameter()).future(parameter: cancelToken);
+      List<Wishlist> wishlistListResult = await wishlistListIgnoringLoginError(WishlistListParameter()).future(parameter: cancelToken);
       List<Cart> cartListResult = await cartDataSource.cartListIgnoringLoginError(CartListParameter()).future(parameter: cancelToken);
       String pageParameterPath = "/?pageNumber=${productBundlePagingParameter.itemEachPageCount}&page=${productBundlePagingParameter.page}";
       return await dio.get("/bundling$pageParameterPath", cancelToken: cancelToken)
@@ -198,7 +198,7 @@ class DefaultProductDataSource implements ProductDataSource {
   @override
   FutureProcessing<ProductBundle> productBundleHighlight(ProductBundleHighlightParameter productBundleHighlightParameter) {
     return DioHttpClientProcessing((cancelToken) async {
-      List<Wishlist> wishlistListResult = await _wishlistListIgnoringLoginError(WishlistListParameter()).future(parameter: cancelToken);
+      List<Wishlist> wishlistListResult = await wishlistListIgnoringLoginError(WishlistListParameter()).future(parameter: cancelToken);
       List<Cart> cartListResult = await cartDataSource.cartListIgnoringLoginError(CartListParameter()).future(parameter: cancelToken);
       String pageParameterPath = "/?pageNumber=1&page=1";
       return await dio.get("/bundling$pageParameterPath", cancelToken: cancelToken)
@@ -220,7 +220,7 @@ class DefaultProductDataSource implements ProductDataSource {
       ...productWithConditionPagingParameter.withCondition
     };
     return DioHttpClientProcessing((cancelToken) async {
-      List<Wishlist> wishlistListResult = await _wishlistListIgnoringLoginError(WishlistListParameter()).future(parameter: cancelToken);
+      List<Wishlist> wishlistListResult = await wishlistListIgnoringLoginError(WishlistListParameter()).future(parameter: cancelToken);
       List<Cart> cartListResult = await cartDataSource.cartListIgnoringLoginError(CartListParameter()).future(parameter: cancelToken);
       var productEntryResultPagingDataResult = await dio.get("/product/entry", queryParameters: queryParameters, cancelToken: cancelToken)
         .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductEntryPaging(wishlistListResult, cartListResult));
@@ -235,7 +235,7 @@ class DefaultProductDataSource implements ProductDataSource {
   FutureProcessing<ProductDetail> productDetail(ProductDetailParameter productDetailParameter) {
     return DioHttpClientProcessing((cancelToken) async {
       List<FavoriteProductBrand> favoriteProductBrandListResult = await _favoriteProductBrandListIgnoringLoginError(FavoriteProductBrandListParameter()).future(parameter: cancelToken);
-      List<Wishlist> wishlistListResult = await _wishlistListIgnoringLoginError(WishlistListParameter()).future(parameter: cancelToken);
+      List<Wishlist> wishlistListResult = await wishlistListIgnoringLoginError(WishlistListParameter()).future(parameter: cancelToken);
       List<Cart> cartListResult = await cartDataSource.cartListIgnoringLoginError(CartListParameter()).future(parameter: cancelToken);
       return await dio.get("/product/${productDetailParameter.productId}", cancelToken: cancelToken)
         .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductDetail(wishlistListResult, favoriteProductBrandListResult, cartListResult));
@@ -274,7 +274,7 @@ class DefaultProductDataSource implements ProductDataSource {
   @override
   FutureProcessing<ProductBundleDetail> productBundleDetail(ProductBundleDetailParameter productBundleDetailParameter) {
     return DioHttpClientProcessing((cancelToken) async {
-      List<Wishlist> wishlistListResult = await _wishlistListIgnoringLoginError(WishlistListParameter()).future(parameter: cancelToken);
+      List<Wishlist> wishlistListResult = await wishlistListIgnoringLoginError(WishlistListParameter()).future(parameter: cancelToken);
       List<Cart> cartListResult = await cartDataSource.cartListIgnoringLoginError(CartListParameter()).future(parameter: cancelToken);
       return await dio.get("/bundling/${productBundleDetailParameter.productBundleId}", cancelToken: cancelToken)
         .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductBundleDetail(wishlistListResult, cartListResult));
@@ -284,7 +284,7 @@ class DefaultProductDataSource implements ProductDataSource {
   @override
   FutureProcessing<List<ProductEntry>> productDetailFromYourSearchProductEntryList(ProductDetailFromYourSearchProductEntryListParameter productDetailFromYourSearchProductEntryListParameter) {
     return DioHttpClientProcessing((cancelToken) async {
-      List<Wishlist> wishlistListResult = await _wishlistListIgnoringLoginError(WishlistListParameter()).future(parameter: cancelToken);
+      List<Wishlist> wishlistListResult = await wishlistListIgnoringLoginError(WishlistListParameter()).future(parameter: cancelToken);
       List<Cart> cartListResult = await cartDataSource.cartListIgnoringLoginError(CartListParameter()).future(parameter: cancelToken);
       return await dio.get("/product/entry", queryParameters: {"fyp": true, "page": 1, "pageNumber": 10}, cancelToken: cancelToken)
         .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductEntryPaging(wishlistListResult, cartListResult).itemList);
@@ -294,7 +294,7 @@ class DefaultProductDataSource implements ProductDataSource {
   @override
   FutureProcessing<List<ProductEntry>> productDetailOtherChosenForYouProductEntryList(ProductDetailOtherChosenForYouProductEntryListParameter productDetailOtherChosenForYouProductEntryListParameter) {
     return DioHttpClientProcessing((cancelToken) async {
-      List<Wishlist> wishlistListResult = await _wishlistListIgnoringLoginError(WishlistListParameter()).future(parameter: cancelToken);
+      List<Wishlist> wishlistListResult = await wishlistListIgnoringLoginError(WishlistListParameter()).future(parameter: cancelToken);
       List<Cart> cartListResult = await cartDataSource.cartListIgnoringLoginError(CartListParameter()).future(parameter: cancelToken);
       return dio.get("/product/entry", queryParameters: {"fyp": true, "page": 1, "pageNumber": 10}, cancelToken: cancelToken)
         .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductEntryPaging(wishlistListResult, cartListResult).itemList);
@@ -304,7 +304,7 @@ class DefaultProductDataSource implements ProductDataSource {
   @override
   FutureProcessing<List<ProductEntry>> productDetailOtherFromThisBrandProductEntryList(ProductDetailOtherFromThisBrandProductEntryListParameter productDetailOtherFromThisBrandProductEntryListParameter) {
     return DioHttpClientProcessing((cancelToken) async {
-      List<Wishlist> wishlistListResult = await _wishlistListIgnoringLoginError(WishlistListParameter()).future(parameter: cancelToken);
+      List<Wishlist> wishlistListResult = await wishlistListIgnoringLoginError(WishlistListParameter()).future(parameter: cancelToken);
       List<Cart> cartListResult = await cartDataSource.cartListIgnoringLoginError(CartListParameter()).future(parameter: cancelToken);
       return await dio.get("/product/entry", queryParameters: {"brand": productDetailOtherFromThisBrandProductEntryListParameter.brandSlug, "page": 1, "pageNumber": 10}, cancelToken: cancelToken)
         .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductEntryPaging(wishlistListResult, cartListResult).itemList);
@@ -314,7 +314,7 @@ class DefaultProductDataSource implements ProductDataSource {
   @override
   FutureProcessing<List<ProductEntry>> productDetailOtherInThisCategoryProductEntryList(ProductDetailOtherInThisCategoryProductEntryListParameter productDetailOtherInThisCategoryProductEntryListParameter) {
     return DioHttpClientProcessing((cancelToken) async {
-      List<Wishlist> wishlistListResult = await _wishlistListIgnoringLoginError(WishlistListParameter()).future(parameter: cancelToken);
+      List<Wishlist> wishlistListResult = await wishlistListIgnoringLoginError(WishlistListParameter()).future(parameter: cancelToken);
       List<Cart> cartListResult = await cartDataSource.cartListIgnoringLoginError(CartListParameter()).future(parameter: cancelToken);
       return dio.get("/product/entry", queryParameters: {"category": productDetailOtherInThisCategoryProductEntryListParameter.categorySlug, "page": 1, "pageNumber": 10}, cancelToken: cancelToken)
         .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductEntryPaging(wishlistListResult, cartListResult).itemList);
@@ -344,7 +344,8 @@ class DefaultProductDataSource implements ProductDataSource {
     });
   }
 
-  FutureProcessing<List<Wishlist>> _wishlistListIgnoringLoginError(WishlistListParameter wishlistListParameter) {
+  @override
+  FutureProcessing<List<Wishlist>> wishlistListIgnoringLoginError(WishlistListParameter wishlistListParameter) {
     return DioHttpClientProcessing((cancelToken) async {
       try {
         return await wishlistList(wishlistListParameter).future(parameter: cancelToken);
