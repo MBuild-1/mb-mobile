@@ -242,6 +242,7 @@ import '../../errorprovider/error_provider.dart';
 import '../../injector.dart';
 import '../../listitempagingparameterinjection/list_item_paging_parameter_injection.dart';
 import '../../load_data_result.dart';
+import '../../login_helper.dart';
 import '../../page_restoration_helper.dart';
 import '../../product_helper.dart';
 import '../../productentryheaderbackground/product_entry_header_background.dart';
@@ -805,12 +806,14 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
         }
         return TapArea(
           onTap: () async {
-            await DialogHelper.showModalBottomDialogPage<bool, String>(
-              context: context,
-              modalDialogPageBuilder: (context, parameter) => SelectAddressModalDialogPage(
-                onAddressSelectedChanged: item.onAddressSelectedChanged,
-              )
-            );
+            LoginHelper.checkingLogin(context, () {
+              DialogHelper.showModalBottomDialogPage<bool, String>(
+                context: context,
+                modalDialogPageBuilder: (context, parameter) => SelectAddressModalDialogPage(
+                  onAddressSelectedChanged: item.onAddressSelectedChanged,
+                )
+              );
+            });
           },
           child: Container(
             padding: const EdgeInsets.all(16.0),
