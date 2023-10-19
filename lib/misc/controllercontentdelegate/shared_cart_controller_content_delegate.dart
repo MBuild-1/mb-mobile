@@ -90,9 +90,12 @@ class SharedCartDelegateFactory {
         if (e is DioError) {
           dynamic data = e.response?.data;
           if (data is Map<String, dynamic>) {
-            String message = data["meta"]["message"];
-            if (message.toLowerCase().contains("bucket not found")) {
+            String message = (data["meta"]["message"] as String).toLowerCase();
+            if (message.contains("you need join or create bucket")) {
               DialogHelper.showSharedCartOptionsPrompt(onGetBuildContext());
+              return;
+            } else if (message.contains("your request has not been accepted by the host")) {
+              DialogHelper.showWaitingRequestJoinBucketIsAccepted(onGetBuildContext());
               return;
             }
           }

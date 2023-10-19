@@ -274,7 +274,9 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Reply Product Discussion": "Balas Diskusi Produk",
       "No Reply": "Belum Ada Balasan",
       "Reply": "Balas",
-      "Application Configuration": "Pengaturan Aplikasi"
+      "Application Configuration": "Pengaturan Aplikasi",
+      "Exit": "Keluar",
+      "Request Again": "Request Lagi"
     }
   };
 

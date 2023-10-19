@@ -294,18 +294,79 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
     }
   }
 
-  Future<void> _updateSharedCartData() async {
+  Future<void> _updateSharedCartData({bool generateErrorWhileInitOrRefresh = false}) async {
+    int milliseconds = 10;
+
     _userLoadDataResult = await widget.sharedCartController.getUser();
+    if (_userLoadDataResult.isFailed) {
+      if (!_userLoadDataResult.isFailedBecauseCancellation) {
+        void setError() async {
+          await Future.delayed(Duration(milliseconds: milliseconds));
+          _sharedCartListItemPagingController.errorFirstPageOuterProcess = _userLoadDataResult.resultIfFailed;
+        }
+        if (generateErrorWhileInitOrRefresh) {
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) => setError());
+        } else {
+          setError();
+        }
+        return;
+      }
+    }
     _bucketLoadDataResult = (await widget.sharedCartController.showBucketByLoggedUserId()).map<Bucket>(
       (value) => value.bucket
     );
+    if (_bucketLoadDataResult.isFailed) {
+      if (!_bucketLoadDataResult.isFailedBecauseCancellation) {
+        void setError() async {
+          await Future.delayed(Duration(milliseconds: milliseconds));
+          _sharedCartListItemPagingController.errorFirstPageOuterProcess = _bucketLoadDataResult.resultIfFailed;
+        }
+        if (generateErrorWhileInitOrRefresh) {
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) => setError());
+        } else {
+          setError();
+        }
+        return;
+      }
+    }
     _bucketMemberLoadDataResult = await widget.sharedCartController.getBucketMember(
       bucketLoadDataResult: _bucketLoadDataResult,
       parameterUserLoadDataResult: _userLoadDataResult,
     );
+    if (_bucketMemberLoadDataResult.isFailed) {
+      if (!_bucketMemberLoadDataResult.isFailedBecauseCancellation) {
+        void setError() async {
+          await Future.delayed(Duration(milliseconds: milliseconds));
+          _sharedCartListItemPagingController.errorFirstPageOuterProcess = _bucketMemberLoadDataResult.resultIfFailed;
+        }
+        if (generateErrorWhileInitOrRefresh) {
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) => setError());
+        } else {
+          setError();
+        }
+        return;
+      }
+    }
     _cartListLoadDataResult = await widget.sharedCartController.getSharedCartList(
       bucketMemberParameterLoadDataResult: _bucketMemberLoadDataResult
     );
+    if (_cartListLoadDataResult.isFailed) {
+      if (!_cartListLoadDataResult.isFailedBecauseCancellation) {
+        void setError() async {
+          await Future.delayed(Duration(milliseconds: milliseconds));
+          _sharedCartListItemPagingController.errorFirstPageOuterProcess = _cartListLoadDataResult.resultIfFailed;
+        }
+        if (generateErrorWhileInitOrRefresh) {
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) => setError());
+        } else {
+          setError();
+        }
+        return;
+      }
+    }
+    if (!generateErrorWhileInitOrRefresh) {
+      _sharedCartListItemPagingController.errorFirstPageOuterProcess = null;
+    }
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _sharedCartListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? cartListItemControllerStateList) async {
@@ -314,7 +375,7 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
       Provider.of<NotificationNotifier>(context, listen: false).loadCartLoadDataResult();
       Provider.of<ComponentNotifier>(context, listen: false).updateCart();
     });
-    await _updateSharedCartData();
+    await _updateSharedCartData(generateErrorWhileInitOrRefresh: true);
     Bucket bucket = _bucketLoadDataResult.resultIfSuccess!;
     _bucketId = bucket.id;
     try {
@@ -327,40 +388,9 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
       onEvent: _onEvent,
       bucketId: _bucketId!,
     );
-    List<CartListItemControllerState> newCartListItemControllerStateList = _cartListLoadDataResult.isSuccess ? _cartListLoadDataResult.resultIfSuccess!.map<CartListItemControllerState>(
-      (cart) => VerticalCartListItemControllerState(
-        isSelected: true,
-        showDefaultCart: false,
-        showCheck: false,
-        canBeSelected: false,
-        cart: cart,
-        onChangeQuantity: (quantity) {
-          setState(() {
-            int newQuantity = quantity;
-            if (newQuantity < 1) {
-              newQuantity = 1;
-            }
-            cart.quantity = newQuantity;
-            _updateCartInformation();
-          });
-        },
-        onAddToWishlist: () => widget.sharedCartController.addToWishlist(cart.supportCart as SupportWishlist),
-        onRemoveCart: () {
-          widget.sharedCartController.removeCart(cart);
-          _updateCartInformation();
-        },
-      )
-    ).toList() : [];
     return SuccessLoadDataResult(
       value: PagingDataResult<ListItemControllerState>(
         itemList: [
-          PaddingContainerListItemControllerState(
-            padding: EdgeInsets.all(4.w),
-            paddingChildListItemControllerState: HostCartIndicatorListItemControllerState(
-              hostCart: HostCart(username: bucket.bucketUsername)
-            )
-          ),
-          SpacingListItemControllerState(),
           SharedCartContainerListItemControllerState(
             bucketLoadDataResult: () => _bucketLoadDataResult,
             bucketMemberLoadDataResult: () => _bucketMemberLoadDataResult,
@@ -387,7 +417,7 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
                 )
               );
             },
-            cartListItemControllerStateList: newCartListItemControllerStateList,
+            cartListItemControllerStateList: [],
             onUpdateState: () => setState(() {}),
             onScrollToAdditionalItemsSection: () => _sharedCartScrollController.jumpTo(
               _sharedCartScrollController.position.maxScrollExtent
@@ -403,9 +433,7 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
             },
             onCartChange: () {
               setState(() => _updateCartInformation());
-              if (_cartCount == 0) {
-                _sharedCartListItemPagingController.errorFirstPageOuterProcess = CartEmptyError();
-              }
+              widget.sharedCartController.getSharedCartSummary(_bucketId!);
             },
             onExpandBucketMemberRequest: (bucketMember) {
               setState(() => _expandedBucketMember = bucketMember);
@@ -483,8 +511,7 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
           e: e
         ),
         onApproveOrRejectRequestBucketProcessSuccessCallback: (approveOrRejectRequestBucketResponse) async {
-          await _updateSharedCartData();
-          setState(() {});
+          _updateSharedCartDataAndState();
         },
         onShowRemoveMemberRequestBucketProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
         onShowRemoveMemberRequestBucketProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
@@ -493,8 +520,7 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
           e: e
         ),
         onRemoveMemberRequestBucketProcessSuccessCallback: (removeMemberBucketResponse) async {
-          await _updateSharedCartData();
-          setState(() {});
+          _updateSharedCartDataAndState();
         },
         onShowTriggerBucketReadyProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
         onShowTriggerBucketReadyProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
@@ -504,8 +530,7 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
         ),
         onTriggerBucketReadyProcessSuccessCallback: (removeMemberBucketResponse) async {
           ToastHelper.showToast("${"Success mark this cart to be checkout by host".tr}.");
-          await _updateSharedCartData();
-          setState(() {});
+          _updateSharedCartDataAndState();
         },
         onShowSharedCartSummaryProcessCallback: (cartSummaryLoadDataResult) async {
           setState(() {
@@ -674,8 +699,11 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
     );
   }
 
-  void _onEvent(PusherEvent event) async {
-    print("Event: $event");
+  void _onEvent(PusherEvent event) {
+    _updateSharedCartDataAndState();
+  }
+
+  void _updateSharedCartDataAndState() async {
     await _updateSharedCartData();
     setState(() {});
   }

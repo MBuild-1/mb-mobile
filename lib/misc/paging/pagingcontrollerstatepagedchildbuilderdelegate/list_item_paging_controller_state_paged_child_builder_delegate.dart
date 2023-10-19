@@ -1033,7 +1033,8 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
     } else if (item is HostCartMemberIndicatorListItemControllerState) {
       return HostCartMemberIndicator(
         bucketMember: item.bucketMember,
-        memberNo: item.memberNo
+        memberNo: item.memberNo,
+        isMe: item.isMe
       );
     } else if (item is AdditionalItemListItemControllerState) {
       return AdditionalItemWidget(

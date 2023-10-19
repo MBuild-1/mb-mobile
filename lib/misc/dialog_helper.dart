@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:masterbagasi/misc/ext/get_ext.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:sizer/sizer.dart';
 
 import '../controller/crop_picture_controller.dart';
@@ -19,6 +20,7 @@ import '../presentation/widget/modifiedappbar/modified_app_bar.dart';
 import '../presentation/widget/profile_menu_item.dart';
 import 'constant.dart';
 import 'errorprovider/error_provider.dart';
+import 'multi_language_string.dart';
 import 'page_restoration_helper.dart';
 import 'typedef.dart';
 import 'widget_helper.dart';
@@ -281,7 +283,7 @@ class _DialogHelperImpl {
                                   if (result != null) {
                                     if (result) {
                                       Navigator.of(context).pop();
-                                      PageRestorationHelper.toSharedCartPage(context);
+                                      showRequestJoinBucketIsSuccess(context);
                                     }
                                   }
                                 },
@@ -336,9 +338,85 @@ class _DialogHelperImpl {
       context: context,
       prompt: (context) => Column(
         children: [
-          Text("Feature Coming Soon".tr, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+          Text("Feature Coming Soon".tr, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18), textAlign: TextAlign.center),
           const SizedBox(height: 4),
           Text("${"We apologize for the inconvenience caused".tr}.\r\n${"We're almost done".tr}.", textAlign: TextAlign.center),
+          const SizedBox(height: 4),
+        ]
+      ),
+      onOkPromptButtonTap: (_) async {
+        Get.back();
+      },
+    );
+  }
+
+  void showWaitingRequestJoinBucketIsAccepted(BuildContext context) {
+    DialogHelper.showPromptYesNoDialog(
+      context: context,
+      prompt: (context) => Column(
+        children: [
+          Text(
+            MultiLanguageString({
+              Constant.textEnUsLanguageKey: "Your Request Has Not Been Accepted By The Host",
+              Constant.textInIdLanguageKey: "Request Anda Belum Diterima Oleh Host"
+            }).toEmptyStringNonNull,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18
+            ),
+            textAlign: TextAlign.center
+          ),
+          const SizedBox(height: 4),
+          Text(
+            MultiLanguageString({
+              Constant.textEnUsLanguageKey: "For now, your Request Has Not Been Accepted By The Host. Please wait.",
+              Constant.textInIdLanguageKey: "Untuk sekarang, request Anda belum diterima oleh host. Mohon menunggu."
+            }).toEmptyStringNonNull,
+            textAlign: TextAlign.center
+          ),
+          const SizedBox(height: 4),
+        ]
+      ),
+      noPromptButton: (context, action) {
+        return Text("Exit".tr);
+      },
+      yesPromptButton: (context, action) {
+        return Text("Request Again".tr);
+      },
+      onNoPromptButtonTap: (_) async {
+        Get.back();
+      },
+      onYesPromptButtonTap: (_) async {
+        Get.back();
+        showSharedCartOptionsPrompt(context);
+      },
+    );
+  }
+
+  void showRequestJoinBucketIsSuccess(BuildContext context) {
+    DialogHelper.showPromptOkDialog(
+      context: context,
+      prompt: (context) => Column(
+        children: [
+          Text(
+            MultiLanguageString({
+              Constant.textEnUsLanguageKey: "You Have Requested To Join",
+              Constant.textInIdLanguageKey: "Anda Sudah Request Join"
+            }).toEmptyStringNonNull,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18
+            ),
+            textAlign: TextAlign.center
+          ),
+          const SizedBox(height: 4),
+          Text(
+            MultiLanguageString({
+              Constant.textEnUsLanguageKey: "For now, your Request Has Not Been Accepted By The Host. Please wait.",
+              Constant.textInIdLanguageKey: "Untuk sekarang, request Anda belum diterima oleh host. Mohon menunggu."
+            }).toEmptyStringNonNull,
+            textAlign: TextAlign.center
+          ),
           const SizedBox(height: 4),
         ]
       ),

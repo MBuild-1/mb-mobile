@@ -9,7 +9,9 @@ import '../../domain/entity/additionalitem/remove_additional_item_response.dart'
 import '../../domain/entity/bucket/bucket.dart';
 import '../../domain/entity/bucket/bucket_member.dart';
 import '../../domain/entity/cart/cart.dart';
+import '../../domain/entity/cart/host_cart.dart';
 import '../../domain/entity/user/user.dart';
+import '../../domain/entity/wishlist/support_wishlist.dart';
 import '../../presentation/page/modaldialogpage/add_additional_item_modal_dialog_page.dart';
 import '../../presentation/widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../../presentation/widget/colorful_chip.dart';
@@ -28,6 +30,7 @@ import '../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/v
 import '../controllerstate/listitemcontrollerstate/compound_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/divider_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/failed_prompt_indicator_list_item_controller_state.dart';
+import '../controllerstate/listitemcontrollerstate/host_cart_indicator_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/host_cart_member_indicator_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/loading_list_item_controller_state.dart';
@@ -38,6 +41,7 @@ import '../controllerstate/listitemcontrollerstate/spacing_list_item_controller_
 import '../controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/widget_substitution_list_item_controller_state.dart';
 import '../dialog_helper.dart';
+import '../error/cart_empty_error.dart';
 import '../error/message_error.dart';
 import '../error_helper.dart';
 import '../itemtypelistinterceptor/itemtypelistinterceptorchecker/list_item_controller_state_item_type_list_interceptor_checker.dart';
@@ -67,7 +71,50 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
     ListItemControllerState oldItemType = oldItemTypeWrapper.listItemControllerState;
     if (oldItemType is CartContainerListItemControllerState) {
       int j = 0;
-      List<CartListItemControllerState> cartListItemControllerStateList = oldItemType.cartListItemControllerStateList;
+      List<CartListItemControllerState> cartListItemControllerStateList = [];
+      if (oldItemType is! SharedCartContainerListItemControllerState) {
+        cartListItemControllerStateList = oldItemType.cartListItemControllerStateList;
+      } else {
+        SharedCartContainerListItemControllerState sharedCartContainerListItemControllerState = oldItemType;
+        bool allSuccessLoadData = sharedCartContainerListItemControllerState.userLoadDataResult().isSuccess
+            && sharedCartContainerListItemControllerState.bucketLoadDataResult().isSuccess
+            && sharedCartContainerListItemControllerState.bucketMemberLoadDataResult().isSuccess
+            && sharedCartContainerListItemControllerState.cartListLoadDataResult().isSuccess;
+        if (!allSuccessLoadData) {
+          return true;
+        }
+        LoadDataResult<Bucket> bucketLoadDataResult = sharedCartContainerListItemControllerState.bucketLoadDataResult();
+        Bucket bucket = bucketLoadDataResult.resultIfSuccess!;
+        newItemTypeList.addAll(<ListItemControllerState>[
+          PaddingContainerListItemControllerState(
+            padding: EdgeInsets.all(padding()),
+            paddingChildListItemControllerState: HostCartIndicatorListItemControllerState(
+              hostCart: HostCart(username: bucket.bucketUsername)
+            )
+          ),
+          SpacingListItemControllerState(),
+        ]);
+        Iterable<BucketMember> bucketMemberIterable = bucket.bucketMemberList.where(
+          (bucketMember) => bucketMember.hostBucket == 1
+        );
+        if (bucketMemberIterable.isNotEmpty) {
+          BucketMember bucketMember = bucketMemberIterable.first;
+          cartListItemControllerStateList = bucketMember.bucketCartList.map<CartListItemControllerState>(
+            (cart) => VerticalCartListItemControllerState(
+              isSelected: true,
+              showDefaultCart: false,
+              showCheck: false,
+              canBeSelected: false,
+              cart: cart,
+              onChangeQuantity: null,
+              onAddToWishlist: null,
+              onRemoveCart: null,
+            )
+          ).toList();
+        } else {
+          cartListItemControllerStateList = [];
+        }
+      }
       CartHeaderListItemControllerState cartHeaderListItemControllerState = CartHeaderListItemControllerState(
         isSelected: false,
         onChangeSelected: () {
@@ -100,21 +147,32 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
       }
       int selectedCount = 0;
       List<Cart> selectedCart = [];
-      while (j < cartListItemControllerStateList.length) {
-        CartListItemControllerState cartListItemControllerState = cartListItemControllerStateList[j];
-        if (cartListItemControllerState.isSelected) {
-          selectedCount += 1;
-          selectedCart.add(cartListItemControllerState.cart);
+      if (cartListItemControllerStateList.isNotEmpty) {
+        while (j < cartListItemControllerStateList.length) {
+          CartListItemControllerState cartListItemControllerState = cartListItemControllerStateList[j];
+          if (cartListItemControllerState.isSelected) {
+            selectedCount += 1;
+            selectedCart.add(cartListItemControllerState.cart);
+          }
+          newItemTypeList.addAll(<ListItemControllerState>[
+            if (j > 0) SpacingListItemControllerState(),
+            cartListItemControllerState
+          ]);
+          j++;
+          cartListItemControllerState.onChangeSelected = () {
+            cartListItemControllerState.isSelected = !cartListItemControllerState.isSelected;
+            oldItemType.onUpdateState();
+          };
         }
-        newItemTypeList.addAll(<ListItemControllerState>[
-          if (j > 0) SpacingListItemControllerState(),
-          cartListItemControllerState
-        ]);
-        j++;
-        cartListItemControllerState.onChangeSelected = () {
-          cartListItemControllerState.isSelected = !cartListItemControllerState.isSelected;
-          oldItemType.onUpdateState();
-        };
+      } else {
+        if (oldItemType is SharedCartContainerListItemControllerState) {
+          newItemTypeList.add(
+            FailedPromptIndicatorListItemControllerState(
+              e: CartEmptyError(),
+              errorProvider: oldItemType.onGetErrorProvider()
+            )
+          );
+        }
       }
       if (selectedCount == cartListItemControllerStateList.length) {
         cartHeaderListItemControllerState.isSelected = true;
@@ -329,12 +387,6 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
         LoadDataResult<Bucket> bucketLoadDataResult = sharedCartContainerListItemControllerState.bucketLoadDataResult();
         LoadDataResult<BucketMember> bucketMemberLoadDataResult = sharedCartContainerListItemControllerState.bucketMemberLoadDataResult();
         LoadDataResult<User> userLoadDataResult = sharedCartContainerListItemControllerState.userLoadDataResult();
-        if (bucketMemberLoadDataResult.isSuccess) {
-          BucketMember bucketMember = bucketMemberLoadDataResult.resultIfSuccess!;
-          if (bucketMember.hostBucket != 1) {
-            return true;
-          }
-        }
         newItemTypeList.add(VirtualSpacingListItemControllerState(height: 10.0));
         newItemTypeList.add(
           WidgetSubstitutionListItemControllerState(
@@ -443,7 +495,8 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
                         rowChildListItemControllerState: [
                           HostCartMemberIndicatorListItemControllerState(
                             bucketMember: bucketMember,
-                            memberNo: isRequest ? 0 : i + 1
+                            memberNo: isRequest ? 0 : i + 1,
+                            isMe: bucketMember.userId == userLoadDataResult.resultIfSuccess!.id
                           ),
                           if (bucketMember.status > -1) ...[
                             NonExpandedItemInRowChildControllerState(
@@ -551,9 +604,10 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
         }
         Bucket bucket = bucketLoadDataResult.resultIfSuccess!;
         bool hasBucketMember = false;
+        // bucket.userId != bucketMember.userId
         hasBucketMember = iterateBucketMember(
           bucketMemberList: bucket.bucketMemberList.where(
-            (bucketMember) => bucket.userId != bucketMember.userId && bucketMember.hostBucket != 1
+            (bucketMember) => bucketMember.hostBucket != 1
           ).toList(),
           isRequest: false
         );
