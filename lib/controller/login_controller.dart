@@ -125,6 +125,9 @@ class LoginController extends BaseGetxController {
     if (result is DioError) {
       dynamic data = result.response?.data;
       if (data is Map<String, dynamic>) {
+        if (!data.containsKey("meta")) {
+          return false;
+        }
         String message = data["meta"]["message"];
         if (message.toLowerCase() == "you must input your pin") {
           String dataString = jsonEncode(data["data"]);
