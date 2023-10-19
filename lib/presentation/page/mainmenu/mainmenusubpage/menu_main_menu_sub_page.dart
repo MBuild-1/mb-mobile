@@ -292,7 +292,7 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
           ),
           SpacingListItemControllerState(),
           ProfileMenuListItemControllerState(
-            onTap: (context) => widget.menuMainMenuSubController.logout(),
+            onTap: (context) => DialogHelper.showPromptLogout(context, widget.menuMainMenuSubController.logout),
             title: 'Sign Out'.tr,
             icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorLogout, width: 20.0, height: 13.0),
           ),

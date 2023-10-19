@@ -304,6 +304,33 @@ class _DialogHelperImpl {
     );
   }
 
+  void showPromptLogout(BuildContext context, void Function() logout) {
+    DialogHelper.showPromptYesNoDialog(
+      context: context,
+      prompt: (context) => Column(
+        children: [
+          Text("Logout".tr, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18), textAlign: TextAlign.center),
+          const SizedBox(height: 4),
+          Text(
+            MultiLanguageString({
+              Constant.textEnUsLanguageKey: "Are you sure to logout?",
+              Constant.textInIdLanguageKey: "Apakah anda yakin ingin logout?"
+            }).toEmptyStringNonNull,
+            textAlign: TextAlign.center
+          ),
+          const SizedBox(height: 4),
+        ]
+      ),
+      onYesPromptButtonTap: (_) async {
+        Get.back();
+        logout();
+      },
+      onNoPromptButtonTap: (_) async {
+        Get.back();
+      },
+    );
+  }
+
   void showPromptUnderConstruction(BuildContext context) {
     DialogHelper.showPromptOkDialog(
       context: context,
