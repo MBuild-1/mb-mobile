@@ -40,6 +40,7 @@ import 'country_delivery_review_media_view_page.dart';
 import 'getx_page.dart';
 import 'inbox_page.dart';
 import 'notification_page.dart';
+import 'search_page.dart';
 
 class CountryDeliveryReviewPage extends RestorableGetxPage<_CountryDeliveryReviewPageRestoration> {
   final String countryId;
@@ -77,7 +78,7 @@ class CountryDeliveryReviewPage extends RestorableGetxPage<_CountryDeliveryRevie
   }
 }
 
-class _CountryDeliveryReviewPageRestoration extends MixableGetxPageRestoration with CountryDeliveryReviewPageRestorationMixin, CountryDeliveryReviewMediaViewPageRestorationMixin, NotificationPageRestorationMixin, CartPageRestorationMixin, InboxPageRestorationMixin {
+class _CountryDeliveryReviewPageRestoration extends MixableGetxPageRestoration with CountryDeliveryReviewPageRestorationMixin, CountryDeliveryReviewMediaViewPageRestorationMixin, NotificationPageRestorationMixin, CartPageRestorationMixin, InboxPageRestorationMixin, SearchPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
