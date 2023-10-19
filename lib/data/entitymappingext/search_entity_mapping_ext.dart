@@ -55,13 +55,13 @@ extension SearchDetailEntityMappingExt on ResponseWrapper {
   }
 
   List<T> _mapFromResponseToSearchRelatedList<T extends SearchRelated>(T Function(SearchRelatedParameter) callback) {
-    return response["buckets"].map<T>(
+    return response != null ? response["buckets"].map<T>(
       (searchRelatedResponse) => callback(
         SearchRelatedParameter(
           key: searchRelatedResponse["key"],
           count: searchRelatedResponse["doc_count"]
         )
       )
-    ).toList();
+    ).toList() : [];
   }
 }

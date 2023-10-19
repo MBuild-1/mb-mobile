@@ -6,6 +6,7 @@ import 'searchrelated/province_search_related.dart';
 class SearchParameter {
   SearchSortBy? searchSortBy;
   String? query;
+  String? suggest;
   int? priceMin;
   int? priceMax;
   BrandSearchRelated? brandSearchRelated;
@@ -15,6 +16,7 @@ class SearchParameter {
   SearchParameter({
     this.searchSortBy,
     this.query,
+    this.suggest,
     this.priceMin,
     this.priceMax,
     this.brandSearchRelated,

@@ -182,7 +182,7 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
             title: 'Delivery Review'.tr,
           ),
           ProfileMenuListItemControllerState(
-            onTap: (context) => PageRestorationHelper.toHelpPage(context),
+            onTap: (context) => PageRestorationHelper.toNotificationPage(context),
             icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorSupportMessage, width: 20.0),
             title: 'Update'.tr,
           ),

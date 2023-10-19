@@ -42,24 +42,7 @@ class CoreSearchAppBar extends SearchAppBar {
   );
 
   @override
-  ActionTitleBuilder? get actionTitleBuilder {
-    if (!showFilterIconButton) {
-      return null;
-    }
-    return (context) => Row(
-      children: [
-        SizedBox(width: 2.w),
-        IconButton(
-          onPressed: onTapSearchFilterIcon ?? () {}, //() => PageRestorationHelper.toSearchFilterPage(context),
-          icon: SvgPicture.asset(
-            "", //Constant.vectorFilter,
-            color: Color.lerp(Colors.white, Theme.of(context).colorScheme.primary, value),
-            width: 10.w
-          )
-        )
-      ]
-    );
-  }
+  ActionTitleBuilder? get actionTitleBuilder => null;
 
   @override
   TextFieldBuilder get textFieldBuilder {
@@ -94,26 +77,54 @@ class CoreSearchAppBar extends SearchAppBar {
             Icon(Icons.search, color: Constant.colorGrey8),
             const SizedBox(width: 5),
             Expanded(
-              child: TextField(
-                controller: searchTextEditingController,
-                decoration: InputDecoration.collapsed(
-                  hintText: "Search in Masterbagasi".tr,
-                  hintStyle: TextStyle(
-                    color: Constant.colorGrey8
-                  )
-                ),
-                onEditingComplete: onSearch != null ? () {
-                  if (searchTextEditingController != null) {
-                    onSearch!(searchTextEditingController!.text);
+              child: Builder(
+                builder: (context) {
+                  Widget textField = TextField(
+                    controller: searchTextEditingController,
+                    decoration: InputDecoration.collapsed(
+                      hintText: "Search in Masterbagasi".tr,
+                      hintStyle: TextStyle(
+                        color: Constant.colorGrey8
+                      )
+                    ),
+                    onEditingComplete: onSearch != null ? () {
+                      if (searchTextEditingController != null) {
+                        onSearch!(searchTextEditingController!.text);
+                      }
+                    } : null,
+                    textInputAction: TextInputAction.done,
+                    style: TextStyle(
+                      color: Colors.grey.shade600,
+                      fontSize: 14
+                    ),
+                    focusNode: searchFocusNode
+                  );
+                  VoidCallback? effectiveOnSearchTextFieldTapped;
+                  if (onSearchTextFieldTapped != null) {
+                    effectiveOnSearchTextFieldTapped = onSearchTextFieldTapped!;
+                  } else {
+                    effectiveOnSearchTextFieldTapped = () {
+                      PageRestorationHelper.toSearchPage(context);
+                    };
                   }
-                } : null,
-                textInputAction: TextInputAction.done,
-                style: TextStyle(
-                  color: Colors.grey.shade600,
-                  fontSize: 14
-                ),
-              ),
+                  return readOnly ? TapArea(
+                    onTap: effectiveOnSearchTextFieldTapped,
+                    child: IgnorePointer(
+                      child: ExcludeFocus(
+                        child: textField
+                      )
+                    ),
+                  ) : textField;
+                }
+              )
             ),
+            const SizedBox(width: 5),
+            if (showFilterIconButton) ...[
+              TapArea(
+                onTap: onTapSearchFilterIcon ?? () {},
+                child: Icon(Icons.filter_list, color: Constant.colorGrey8),
+              )
+            ]
           ]
         )
       );
@@ -126,19 +137,18 @@ class CoreSearchAppBar extends SearchAppBar {
       return super.titleInterceptor;
     }
     return (context, oldTitle) {
-      return IgnorePointer(
-        child: ExcludeFocus(
-          child: Row(
-            children: [
-              Expanded(
-                child: SizedBox(
-                  height: searchTextFieldHeight,
-                  child: textFieldBuilder(context)
-                )
-              ),
-              if (actionTitleBuilder != null) actionTitleBuilder!(context),
-            ]
-          )
+      return Material(
+        borderRadius: Constant.inputBorderRadius,
+        child: Row(
+          children: [
+            Expanded(
+              child: SizedBox(
+                height: searchTextFieldHeight,
+                child: textFieldBuilder(context)
+              )
+            ),
+            if (actionTitleBuilder != null) actionTitleBuilder!(context),
+          ]
         )
       );
     };

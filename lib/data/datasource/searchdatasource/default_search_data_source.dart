@@ -36,6 +36,7 @@ class DefaultSearchDataSource implements SearchDataSource {
       List<Cart> cartListResult = await cartDataSource.cartListIgnoringLoginError(CartListParameter()).future(parameter: cancelToken);
       Map<String, dynamic> queryParameters = <String, dynamic> {
         if (searchParameter.query.isNotEmptyString) "q": searchParameter.query!,
+        if (searchParameter.suggest.isNotEmptyString) "suggest": searchParameter.suggest!,
         if (searchParameter.searchSortBy != null) "sortBy": searchParameter.searchSortBy!.value,
         if (searchParameter.priceMin != null) "pmin": searchParameter.priceMin!,
         if (searchParameter.priceMax != null) "pmax": searchParameter.priceMax!,

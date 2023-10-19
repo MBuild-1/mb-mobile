@@ -23,6 +23,7 @@ import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_
 import '../../misc/controllerstate/listitemcontrollerstate/load_data_result_dynamic_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/searchlistitemcontrollerstate/search_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
+import '../../misc/dialog_helper.dart';
 import '../../misc/entityandlistitemcontrollerstatemediator/horizontal_component_entity_parameterized_entity_and_list_item_controller_state_mediator.dart';
 import '../../misc/error/search_not_found_error.dart';
 import '../../misc/errorprovider/error_provider.dart';
@@ -43,6 +44,7 @@ import '../widget/background_app_bar_scaffold.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/core_search_app_bar.dart';
 import 'getx_page.dart';
+import 'modaldialogpage/search_filter_modal_dialog_page.dart';
 import 'product_detail_page.dart';
 
 class SearchPage extends RestorableGetxPage<_SearchPageRestoration> {
@@ -190,6 +192,7 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
   late final ModifiedPagingController<int, ListItemControllerState> _searchListItemPagingController;
   late final PagingControllerState<int, ListItemControllerState> _searchListItemPagingControllerState;
   final TextEditingController _searchTextEditingController = TextEditingController();
+  LoadDataResult<SearchResponse> _searchResponseLoadDataResult = NoLoadDataResult<SearchResponse>();
   final FocusNode _searchFocusNode = FocusNode();
 
   int _searchStatus = 0;
@@ -222,12 +225,12 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _searchListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? listItemControllerStateList) async {
-    LoadDataResult<SearchResponse> searchResponseLoadDataResult = await widget.searchController.search(
+    _searchResponseLoadDataResult = await widget.searchController.search(
       SearchParameter(
         query: _searchTextEditingController.text
       )
     );
-    LoadDataResult<PagingDataResult<ProductEntry>> productEntryLoadDataResult = searchResponseLoadDataResult.map<PagingDataResult<ProductEntry>>(
+    LoadDataResult<PagingDataResult<ProductEntry>> productEntryLoadDataResult = _searchResponseLoadDataResult.map<PagingDataResult<ProductEntry>>(
       (value) => PagingDataResult<ProductEntry>(
         page: 1,
         totalPage: 1,
@@ -280,31 +283,62 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
         }
       )
     );
-    return BackgroundAppBarScaffold(
-      backgroundAppBarImage: _searchAppBarBackgroundAssetImage,
-      appBar: CoreSearchAppBar(
-        value: 0.0,
-        showFilterIconButton: false,
-        onSearch: (search) {
+    return WillPopScope(
+      onWillPop: () async {
+        if (_searchStatus == -1) {
           FocusScope.of(context).unfocus();
           setState(() => _searchStatus = 1);
-          if (_searchCount > 0) {
-            _searchListItemPagingController.refresh();
-          }
-          _searchCount += 1;
-        },
-        readOnly: false,
-        searchTextEditingController: _searchTextEditingController,
-        onSearchTextFieldTapped: () {},
-        searchFocusNode: _searchFocusNode,
-      ),
-      body: Expanded(
-        child: _searchStatus == 0 ? Container() : ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
-          pagingControllerState: _searchListItemPagingControllerState,
-          onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
-            pagingControllerState: pagingControllerState!
-          ),
-          pullToRefresh: true
+          return false;
+        }
+        return true;
+      },
+      child: BackgroundAppBarScaffold(
+        backgroundAppBarImage: _searchAppBarBackgroundAssetImage,
+        appBar: CoreSearchAppBar(
+          value: 0.0,
+          showFilterIconButton: _searchStatus == 1 && _searchResponseLoadDataResult.isSuccess,
+          onSearch: (search) async {
+            FocusScope.of(context).unfocus();
+            if (_searchCount > 0) {
+              _searchListItemPagingController.refresh();
+            }
+            _searchCount += 1;
+            await Future.delayed(const Duration(milliseconds: 50));
+            setState(() => _searchStatus = 1);
+          },
+          onTapSearchFilterIcon: () async {
+            dynamic result = await DialogHelper.showModalBottomDialogPage<bool, SearchFilterModalDialogPageParameter>(
+              context: context,
+              modalDialogPageBuilder: (context, parameter) => SearchFilterModalDialogPage(
+                searchFilterModalDialogPageParameter: parameter!,
+              ),
+              parameter: const SearchFilterModalDialogPageParameter(
+                brandSearchRelatedList: [],
+                categorySearchRelatedList: [],
+                provinceSearchRelatedList: []
+              )
+            );
+            if (result is SearchFilterModalDialogPageResponse) {
+
+            }
+          },
+          readOnly: _searchStatus == 1,
+          searchTextEditingController: _searchTextEditingController,
+          onSearchTextFieldTapped: () async {
+            setState(() => _searchStatus = -1);
+            await Future.delayed(const Duration(milliseconds: 50));
+            _searchFocusNode.requestFocus();
+          },
+          searchFocusNode: _searchFocusNode,
+        ),
+        body: Expanded(
+          child: _searchStatus >= 1 ? ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
+            pagingControllerState: _searchListItemPagingControllerState,
+            onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
+              pagingControllerState: pagingControllerState!
+            ),
+            pullToRefresh: true
+          ) : Container(),
         ),
       ),
     );
