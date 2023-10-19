@@ -120,14 +120,16 @@ class MenuProfileHeader extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          "Register MB Affiliation".tr,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold
+                        Expanded(
+                          child: Text(
+                            "Register MB Affiliation".tr,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold
+                            ),
+                            textAlign: TextAlign.center,
+                            overflow: TextOverflow.ellipsis
                           ),
-                          textAlign: TextAlign.center,
-                          overflow: TextOverflow.ellipsis
                         ),
                         const SizedBox(width: 10),
                         ModifiedSvgPicture.asset(
