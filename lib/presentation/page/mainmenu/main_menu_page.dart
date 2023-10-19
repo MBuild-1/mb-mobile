@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/presentation/page/product_detail_page.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 import '../../../controller/base_getx_controller.dart';
 import '../../../controller/mainmenucontroller/main_menu_controller.dart';
@@ -285,6 +286,7 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
   @override
   void initState() {
     super.initState();
+    _initOneSignalEvent();
     _onItemTapped(
       CustomBottomNavigationBarSelectedIndex(
         currentSelectedViewMenuIndex: 0,
@@ -298,6 +300,25 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
       ),
       context
     );
+  }
+
+  void _initOneSignalEvent() {
+    OneSignal.Notifications.addClickListener(_onClickListener);
+    OneSignal.Notifications.addForegroundWillDisplayListener(_onForegroundWillDisplayListener);
+  }
+
+  void _onClickListener(OSNotificationClickEvent osNotificationClickEvent) {
+    print('NOTIFICATION CLICK LISTENER CALLED WITH EVENT: ${osNotificationClickEvent.notification.jsonRepresentation()}');
+  }
+
+  void _onForegroundWillDisplayListener(OSNotificationWillDisplayEvent osNotificationWillDisplayEvent) {
+    print('NOTIFICATION WILL DISPLAY LISTENER CALLED WITH: ${osNotificationWillDisplayEvent.notification.jsonRepresentation()}');
+
+    /// Display Notification, preventDefault to not display
+    osNotificationWillDisplayEvent.preventDefault();
+
+    /// notification.display() to display after preventing default
+    osNotificationWillDisplayEvent.notification.display();
   }
 
   @override

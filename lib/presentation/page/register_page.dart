@@ -2,7 +2,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/misc/ext/validation_result_ext.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
@@ -227,6 +229,7 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
           GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
           return googleSignInAuthentication.idToken;
         },
+        onGetPushNotificationSubscriptionId: () => OneSignal.User.pushSubscription.id.toEmptyStringNonNull
       )
     );
     return Scaffold(

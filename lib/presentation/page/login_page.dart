@@ -6,8 +6,10 @@ import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:masterbagasi/misc/ext/error_provider_ext.dart';
 import 'package:masterbagasi/misc/ext/future_ext.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/misc/ext/validation_result_ext.dart';
 import 'package:masterbagasi/misc/temp_login_data_while_input_pin_helper.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
@@ -22,6 +24,7 @@ import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
 import '../../misc/inputdecoration/default_input_decoration.dart';
+import '../../misc/load_data_result.dart';
 import '../../misc/login_helper.dart';
 import '../../misc/main_route_observer.dart';
 import '../../misc/manager/controller_manager.dart';
@@ -239,6 +242,9 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
     );
     widget.statefulLoginControllerMediatorWidgetDelegate.onLoginProcess = () async {
       DialogHelper.showLoadingDialog(context);
+      if (await widget.loginController.loginOneSignal()) {
+        return;
+      }
       await LoginHelper.saveToken(
         TempLoginDataWhileInputPinHelper.getTempLoginDataWhileInputPin().result
       ).future();
@@ -252,7 +258,7 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
     widget.loginController.setLoginDelegate(
       LoginDelegate(
         onUnfocusAllWidget: () => FocusScope.of(context).unfocus(),
-        onGetEmailLoginInput: () => _emailTextEditingController.text,
+        onGetEmailLoginInput: () => _emailTextEditingController.text.trim(),
         onGetPasswordLoginInput: () => _passwordTextEditingController.text,
         onLoginBack: () => Get.back(),
         onShowLoginRequestProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
@@ -277,6 +283,20 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
         onSaveTempData: (data) async {
           await TempLoginDataWhileInputPinHelper.saveTempLoginDataWhileInputPin(data).future();
         },
+        onLoginIntoOneSignal: (externalId) async {
+          try {
+            await OneSignal.login(externalId);
+            return SuccessLoadDataResult<String>(
+              value: externalId
+            );
+          } catch (e, stackTrace) {
+            return FailedLoadDataResult<String>(
+              e: e,
+              stackTrace: stackTrace
+            );
+          }
+        },
+        onGetPushNotificationSubscriptionId: () => OneSignal.User.pushSubscription.id.toEmptyStringNonNull
       )
     );
     return Scaffold(

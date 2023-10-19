@@ -35,6 +35,7 @@ import '../../base_getx_controller.dart';
 typedef _OnShowLogoutRequestProcessLoadingCallback = Future<void> Function();
 typedef _OnLogoutRequestProcessSuccessCallback = Future<void> Function();
 typedef _OnShowLogoutRequestProcessFailedCallback = Future<void> Function(dynamic e);
+typedef _OnLogoutIntoOneSignal = Future<LoadDataResult<void>> Function();
 typedef _OnDeleteToken = Future<void> Function();
 
 class MenuMainMenuSubController extends BaseGetxController {
@@ -148,11 +149,13 @@ class MenuMainMenuSubController extends BaseGetxController {
       ).future(
         parameter: apiRequestManager.addRequestToCancellationPart('logout').value
       );
-      Get.back();
       await _menuMainMenuSubDelegate!.onDeleteToken().getLoadDataResult();
       if (logoutLoadDataResult.isSuccess) {
+        await _menuMainMenuSubDelegate!.onLogoutIntoOneSignal();
+        Get.back();
         _menuMainMenuSubDelegate!.onLogoutRequestProcessSuccessCallback();
       } else {
+        Get.back();
         if (logoutLoadDataResult.isFailedBecauseUnauthenticated) {
           _menuMainMenuSubDelegate!.onLogoutRequestProcessSuccessCallback();
         } else {
@@ -198,6 +201,7 @@ class MenuMainMenuSubDelegate {
   _OnShowLogoutRequestProcessLoadingCallback onShowLogoutRequestProcessLoadingCallback;
   _OnLogoutRequestProcessSuccessCallback onLogoutRequestProcessSuccessCallback;
   _OnShowLogoutRequestProcessFailedCallback onShowLogoutRequestProcessFailedCallback;
+  _OnLogoutIntoOneSignal onLogoutIntoOneSignal;
 
   MenuMainMenuSubDelegate({
     required this.onObserveLoadProductDelegate,
@@ -206,7 +210,8 @@ class MenuMainMenuSubDelegate {
     required this.onDeleteToken,
     required this.onShowLogoutRequestProcessLoadingCallback,
     required this.onLogoutRequestProcessSuccessCallback,
-    required this.onShowLogoutRequestProcessFailedCallback
+    required this.onShowLogoutRequestProcessFailedCallback,
+    required this.onLogoutIntoOneSignal
   });
 }
 

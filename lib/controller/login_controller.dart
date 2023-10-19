@@ -24,6 +24,7 @@ import 'base_getx_controller.dart';
 
 typedef _OnGetLoginInput = String Function();
 typedef _OnLoginBack = void Function();
+typedef _OnLoginIntoOneSignal = Future<LoadDataResult<String>> Function(String);
 typedef _OnShowLoginRequestProcessLoadingCallback = Future<void> Function();
 typedef _OnLoginRequestProcessSuccessCallback = Future<void> Function();
 typedef _OnShowLoginRequestProcessFailedCallback = Future<void> Function(dynamic e);
@@ -72,11 +73,15 @@ class LoginController extends BaseGetxController {
           LoginParameter(
             email: _loginDelegate!.onGetEmailLoginInput(),
             password: _loginDelegate!.onGetPasswordLoginInput(),
+            pushNotificationSubscriptionId: _loginDelegate!.onGetPushNotificationSubscriptionId()
           )
         ).future(
           parameter: apiRequestManager.addRequestToCancellationPart('login').value
         );
         if (loginLoadDataResult.isSuccess) {
+          if (await loginOneSignal()) {
+            return;
+          }
           await LoginHelper.saveToken(loginLoadDataResult.resultIfSuccess!.token).future();
           Get.back();
           _loginDelegate!.onLoginRequestProcessSuccessCallback();
@@ -100,12 +105,16 @@ class LoginController extends BaseGetxController {
         _loginDelegate!.onShowLoginRequestProcessLoadingCallback();
         LoadDataResult<LoginWithGoogleResponse> loginWithGoogleLoadDataResult = await loginWithGoogleUseCase.execute(
           LoginWithGoogleParameter(
-            idToken: idToken!
+            idToken: idToken!,
+            pushNotificationSubscriptionId: _loginDelegate!.onGetPushNotificationSubscriptionId()
           )
         ).future(
           parameter: apiRequestManager.addRequestToCancellationPart('login-with-google').value
         );
         if (loginWithGoogleLoadDataResult.isSuccess) {
+          if (await loginOneSignal()) {
+            return;
+          }
           await LoginHelper.saveToken(loginWithGoogleLoadDataResult.resultIfSuccess!.token).future();
           Get.back();
           _loginDelegate!.onLoginRequestProcessSuccessCallback();
@@ -140,6 +149,16 @@ class LoginController extends BaseGetxController {
     }
     return false;
   }
+
+  Future<bool> loginOneSignal() async {
+    LoadDataResult<String> oneSignalLoginResult = await _loginDelegate!.onLoginIntoOneSignal(_loginDelegate!.onGetEmailLoginInput());
+    if (oneSignalLoginResult.isFailed) {
+      Get.back();
+      _loginDelegate!.onShowLoginRequestProcessFailedCallback(oneSignalLoginResult.resultIfFailed);
+      return true;
+    }
+    return false;
+  }
 }
 
 class LoginDelegate {
@@ -153,6 +172,8 @@ class LoginDelegate {
   _OnRequestPin onRequestPin;
   _OnLoginWithGoogle onLoginWithGoogle;
   _OnSaveTempData onSaveTempData;
+  _OnLoginIntoOneSignal onLoginIntoOneSignal;
+  OnGetPushNotificationSubscriptionId onGetPushNotificationSubscriptionId;
 
   LoginDelegate({
     required this.onUnfocusAllWidget,
@@ -164,7 +185,9 @@ class LoginDelegate {
     required this.onShowLoginRequestProcessFailedCallback,
     required this.onRequestPin,
     required this.onLoginWithGoogle,
-    required this.onSaveTempData
+    required this.onSaveTempData,
+    required this.onLoginIntoOneSignal,
+    required this.onGetPushNotificationSubscriptionId
   });
 }
 

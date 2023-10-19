@@ -56,3 +56,4 @@ typedef OnShowRepurchaseProcessFailedCallback = Future<void> Function(dynamic e)
 typedef OnShowCheckSharedCartRequestProcessLoadingCallback = Future<void> Function();
 typedef OnCheckSharedCartRequestProcessSuccessCallback = Future<void> Function(CheckBucketResponse);
 typedef OnShowCheckSharedCartRequestProcessFailedCallback = Future<void> Function(dynamic e);
+typedef OnGetPushNotificationSubscriptionId = String Function();

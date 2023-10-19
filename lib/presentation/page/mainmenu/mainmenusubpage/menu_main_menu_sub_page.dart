@@ -5,6 +5,7 @@ import 'package:masterbagasi/misc/controllerstate/listitemcontrollerstate/virtua
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
@@ -398,6 +399,14 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
         onLogoutRequestProcessSuccessCallback: () async {
           Provider.of<NotificationNotifier>(context, listen: false).resetNotification();
           PageRestorationHelper.toMainMenuPage(context, Constant.restorableRouteFuturePushAndRemoveUntil);
+        },
+        onLogoutIntoOneSignal: () async {
+          try {
+            await OneSignal.logout();
+            return SuccessLoadDataResult<String>(value: "");
+          } catch (e, stackTrace) {
+            return FailedLoadDataResult<String>(e: e, stackTrace: stackTrace);
+          }
         }
       )
     );

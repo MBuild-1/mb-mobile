@@ -55,7 +55,7 @@ class DefaultUserDataSource implements UserDataSource {
       }
     );
     return DioHttpClientProcessing((cancelToken) {
-      return dio.post("/auth/login", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+      return dio.post("/auth/login", data: formData, queryParameters: {"device_id": loginParameter.pushNotificationSubscriptionId}, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
         .map<LoginResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToLoginResponse());
     });
   }
@@ -68,7 +68,7 @@ class DefaultUserDataSource implements UserDataSource {
       }
     );
     return DioHttpClientProcessing((cancelToken) {
-      return dio.post("/auth/google", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+      return dio.post("/auth/google", data: formData, queryParameters: {"device_id": loginWithGoogleParameter.pushNotificationSubscriptionId}, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
         .map<LoginWithGoogleResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToLoginWithGoogleResponse());
     });
   }
@@ -84,7 +84,7 @@ class DefaultUserDataSource implements UserDataSource {
       }
     );
     return DioHttpClientProcessing((cancelToken) {
-      return dio.post("/auth/register", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+      return dio.post("/auth/register", data: formData, queryParameters: {"device_id": registerParameter.pushNotificationSubscriptionId}, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
         .map<RegisterResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToRegisterResponse());
     });
   }
@@ -97,7 +97,7 @@ class DefaultUserDataSource implements UserDataSource {
       }
     );
     return DioHttpClientProcessing((cancelToken) {
-      return dio.post("/auth/google", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+      return dio.post("/auth/google", data: formData, queryParameters: {"device_id": registerWithGoogleParameter.pushNotificationSubscriptionId}, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
         .map<RegisterWithGoogleResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToRegisterWithGoogleResponse());
     });
   }

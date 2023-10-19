@@ -87,7 +87,8 @@ class RegisterController extends BaseGetxController {
             email: _registerDelegate!.onGetEmailRegisterInput(),
             name: _registerDelegate!.onGetNameRegisterInput(),
             password: _registerDelegate!.onGetPasswordRegisterInput(),
-            passwordConfirmation: _registerDelegate!.onGetPasswordConfirmationRegisterInput()
+            passwordConfirmation: _registerDelegate!.onGetPasswordConfirmationRegisterInput(),
+            pushNotificationSubscriptionId: _registerDelegate!.onGetPushNotificationSubscriptionId()
           )
         ).future(
           parameter: apiRequestManager.addRequestToCancellationPart('register').value
@@ -111,7 +112,8 @@ class RegisterController extends BaseGetxController {
         _registerDelegate!.onShowRegisterRequestProcessLoadingCallback();
         LoadDataResult<RegisterWithGoogleResponse> registerWithGoogleLoadDataResult = await registerWithGoogleUseCase.execute(
           RegisterWithGoogleParameter(
-            idToken: idToken!
+            idToken: idToken!,
+            pushNotificationSubscriptionId: _registerDelegate!.onGetPushNotificationSubscriptionId()
           )
         ).future(
           parameter: apiRequestManager.addRequestToCancellationPart('register-with-google').value
@@ -139,6 +141,7 @@ class RegisterDelegate {
   _OnRegisterRequestProcessSuccessCallback onRegisterRequestProcessSuccessCallback;
   _OnShowRegisterRequestProcessFailedCallback onShowRegisterRequestProcessFailedCallback;
   _OnRegisterWithGoogle onRegisterWithGoogle;
+  OnGetPushNotificationSubscriptionId onGetPushNotificationSubscriptionId;
 
   RegisterDelegate({
     required this.onUnfocusAllWidget,
@@ -150,6 +153,7 @@ class RegisterDelegate {
     required this.onShowRegisterRequestProcessLoadingCallback,
     required this.onRegisterRequestProcessSuccessCallback,
     required this.onShowRegisterRequestProcessFailedCallback,
-    required this.onRegisterWithGoogle
+    required this.onRegisterWithGoogle,
+    required this.onGetPushNotificationSubscriptionId
   });
 }
