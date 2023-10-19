@@ -20,6 +20,7 @@ import '../../misc/string_util.dart';
 import '../widget/affiliate_user_candidate_indicator.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
+import '../widget/normal_text_style_for_appbar.dart';
 import '../widget/rx_consumer.dart';
 import '../widget/tap_area.dart';
 import 'getx_page.dart';
@@ -194,7 +195,7 @@ class _StatefulAffiliateControllerMediatorWidgetState extends State<_StatefulAff
                     }
                   );
                 },
-                child: DefaultTextStyle(
+                child: NormalTextStyleForAppBar(
                   style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold),
                   softWrap: false,
                   overflow: TextOverflow.ellipsis,

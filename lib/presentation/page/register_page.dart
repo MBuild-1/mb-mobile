@@ -29,6 +29,7 @@ import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/field.dart';
 import '../widget/modified_text_field.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
+import '../widget/normal_text_style_for_appbar.dart';
 import '../widget/password_obscurer.dart';
 import '../widget/rx_consumer.dart';
 import 'getx_page.dart';
@@ -236,7 +237,7 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
             Expanded(
               child: title ?? Container()
             ),
-            DefaultTextStyle(
+            NormalTextStyleForAppBar(
               style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold),
               softWrap: false,
               overflow: TextOverflow.ellipsis,

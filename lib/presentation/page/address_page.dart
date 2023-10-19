@@ -30,6 +30,7 @@ import '../../misc/toast_helper.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
+import '../widget/normal_text_style_for_appbar.dart';
 import 'getx_page.dart';
 import 'modify_address_page.dart';
 
@@ -291,7 +292,7 @@ class _StatefulAddressControllerMediatorWidgetState extends State<_StatefulAddre
               Expanded(
                 child: title ?? Container()
               ),
-              DefaultTextStyle(
+              NormalTextStyleForAppBar(
                 style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold),
                 softWrap: false,
                 overflow: TextOverflow.ellipsis,
