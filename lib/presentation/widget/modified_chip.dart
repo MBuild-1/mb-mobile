@@ -129,6 +129,7 @@ class ModifiedChipButton extends StatefulWidget {
   final Color? backgroundColor;
   final Color? unselectedBackgroundColor;
   final bool isSelected;
+  final bool canSelectAndUnselect;
   final VoidCallback? onTap;
   final ShapeBorder? border;
   final ShapeBorder? unselectedBorder;
@@ -142,6 +143,7 @@ class ModifiedChipButton extends StatefulWidget {
     this.backgroundColor,
     this.unselectedBackgroundColor,
     required this.isSelected,
+    this.canSelectAndUnselect = false,
     this.onTap,
     this.border,
     this.unselectedBorder,
@@ -211,7 +213,7 @@ class _ModificationChipButtonState extends State<ModifiedChipButton> with Materi
       color: effectiveBackgroundColor,
       animationDuration: Duration.zero,
       child: InkWell(
-        onTap: widget.isSelected ? null : widget.onTap,
+        onTap: widget.canSelectAndUnselect ? widget.onTap : (widget.isSelected ? null : widget.onTap),
         customBorder: effectiveBorder,
         child: Padding(
           padding: widget.padding ?? const EdgeInsets.symmetric(vertical: 8.0, horizontal: 11.0),

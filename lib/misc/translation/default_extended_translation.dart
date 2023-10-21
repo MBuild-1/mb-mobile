@@ -276,7 +276,14 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Reply": "Balas",
       "Application Configuration": "Pengaturan Aplikasi",
       "Exit": "Keluar",
-      "Request Again": "Request Lagi"
+      "Request Again": "Request Lagi",
+      "Search History": "Riwayat Pencarian",
+      "Last Seen Search History": "Riwayat Terakhir Dilihat",
+      "Sort By": "Sorting Berdasarkan",
+      "Price Range": "Rentang Harga",
+      "Price From": "Harga Dari",
+      "Price To": "Harga Ke",
+      "No Value": "Tidak Ada Nilai"
     }
   };
 

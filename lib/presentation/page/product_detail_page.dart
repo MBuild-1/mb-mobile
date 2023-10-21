@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -17,6 +19,8 @@ import '../../domain/entity/product/product_detail_parameter.dart';
 import '../../domain/entity/product/productdiscussion/product_discussion.dart';
 import '../../domain/entity/product/productentry/product_entry.dart';
 import '../../domain/entity/product/productvariant/product_variant.dart';
+import '../../domain/entity/search/store_search_last_seen_history_parameter.dart';
+import '../../domain/entity/search/storesearchlastseenhistoryparametervalue/product_entry_store_search_last_seen_history_parameter_value.dart';
 import '../../domain/entity/wishlist/support_wishlist.dart';
 import '../../domain/usecase/add_to_cart_use_case.dart';
 import '../../domain/usecase/get_product_category_list_use_case.dart';
@@ -28,6 +32,7 @@ import '../../domain/usecase/get_product_detail_other_interested_product_brand_l
 import '../../domain/usecase/get_product_detail_use_case.dart';
 import '../../domain/usecase/get_product_discussion_use_case.dart';
 import '../../domain/usecase/purchase_direct_use_case.dart';
+import '../../domain/usecase/store_search_last_seen_history_use_case.dart';
 import '../../misc/additionalloadingindicatorchecker/product_detail_additional_paging_result_parameter_checker.dart';
 import '../../misc/carouselbackground/asset_carousel_background.dart';
 import '../../misc/carouselbackground/carousel_background.dart';
@@ -119,6 +124,7 @@ class ProductDetailPage extends RestorableGetxPage<_ProductDetailPageRestoration
         Injector.locator<PurchaseDirectUseCase>(),
         Injector.locator<AddToCartUseCase>(),
         Injector.locator<GetProductDiscussionUseCase>(),
+        Injector.locator<StoreSearchLastSeenHistoryUseCase>(),
         Injector.locator<WishlistAndCartControllerContentDelegate>(),
         Injector.locator<ProductBrandFavoriteControllerContentDelegate>()
       ),
@@ -277,6 +283,8 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
   late ColorfulChipTabBarController _productVariantColorfulChipTabBarController;
   String _selectedProductEntryId = "";
   LoadDataResult<ProductDetail> _productDetailLoadDataResult = NoLoadDataResult<ProductDetail>();
+  Timer? _timer;
+  bool _startTimer = false;
 
   @override
   void initState() {
@@ -337,6 +345,27 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
           }
         }
         a++;
+      }
+      if (!_startTimer) {
+        _startTimer = true;
+        _timer = Timer(
+          const Duration(seconds: 5),
+          () {
+            int productEntryIndex = _productVariantColorfulChipTabBarController.value;
+            ProductEntry? selectedProductEntry = ProductHelper.getSelectedProductEntry(
+              productEntryList, productEntryIndex
+            );
+            if (selectedProductEntry != null) {
+              widget.productDetailController.storeSearchLastSeenHistoryResponse(
+                StoreSearchLastSeenHistoryParameter(
+                  storeSearchLastSeenHistoryParameterValue: ProductEntryStoreSearchLastSeenHistoryParameterValue(
+                    productEntryId: selectedProductEntry.productEntryId
+                  )
+                )
+              );
+            }
+          }
+        );
       }
       return PagingDataResult<ListItemControllerState>(
         page: 1,
@@ -872,6 +901,7 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
 
   @override
   void dispose() {
+    _timer?.cancel();
     super.dispose();
   }
 }

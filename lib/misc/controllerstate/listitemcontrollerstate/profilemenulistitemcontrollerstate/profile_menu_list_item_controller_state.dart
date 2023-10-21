@@ -11,6 +11,7 @@ class ProfileMenuListItemControllerState extends ListItemControllerState {
   String? description;
   DescriptionInterceptor? descriptionInterceptor;
   Color? color;
+  EdgeInsetsGeometry? padding;
 
   ProfileMenuListItemControllerState({
     required this.onTap,
@@ -19,6 +20,7 @@ class ProfileMenuListItemControllerState extends ListItemControllerState {
     this.titleInterceptor,
     this.description,
     this.descriptionInterceptor,
-    this.color
+    this.color,
+    this.padding
   });
 }

@@ -6,8 +6,18 @@ import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../../../domain/entity/cart/cart.dart';
 import '../../../domain/entity/cart/cart_list_parameter.dart';
+import '../../../domain/entity/search/search_history_parameter.dart';
+import '../../../domain/entity/search/search_history_response.dart';
+import '../../../domain/entity/search/search_last_seen_history_parameter.dart';
+import '../../../domain/entity/search/search_last_seen_history_response.dart';
 import '../../../domain/entity/search/search_parameter.dart';
 import '../../../domain/entity/search/search_response.dart';
+import '../../../domain/entity/search/store_keyword_for_search_history_parameter.dart';
+import '../../../domain/entity/search/store_keyword_for_search_history_response.dart';
+import '../../../domain/entity/search/store_search_last_seen_history_parameter.dart';
+import '../../../domain/entity/search/store_search_last_seen_history_response.dart';
+import '../../../domain/entity/search/storesearchlastseenhistoryparametervalue/product_entry_store_search_last_seen_history_parameter_value.dart';
+import '../../../domain/entity/search/storesearchlastseenhistoryparametervalue/store_search_last_seen_history_parameter_value.dart';
 import '../../../domain/entity/wishlist/wishlist.dart';
 import '../../../domain/entity/wishlist/wishlist_list_parameter.dart';
 import '../../../misc/error/search_not_found_error.dart';
@@ -50,6 +60,43 @@ class DefaultSearchDataSource implements SearchDataSource {
         throw SearchNotFoundError();
       }
       return searchResponse;
+    });
+  }
+
+  @override
+  FutureProcessing<SearchHistoryResponse> searchHistory(SearchHistoryParameter searchHistoryParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.get("/history-search/user", cancelToken: cancelToken)
+        .map<SearchHistoryResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToSearchHistoryResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<SearchLastSeenHistoryResponse> searchLastSeenHistory(SearchLastSeenHistoryParameter searchLastSeenHistoryParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.get("/history-search/last-seen", cancelToken: cancelToken)
+        .map<SearchLastSeenHistoryResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToSearchLastSeenHistoryResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<StoreKeywordForSearchHistoryResponse> storeKeywordForSearchHistory(StoreKeywordForSearchHistoryParameter storeKeywordForSearchHistoryParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.post("/history-search/${Uri.encodeComponent(storeKeywordForSearchHistoryParameter.keyword)}", cancelToken: cancelToken)
+        .map<StoreKeywordForSearchHistoryResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToStoreKeywordForSearchHistoryResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<StoreSearchLastSeenHistoryResponse> storeSearchLastSeenHistory(StoreSearchLastSeenHistoryParameter storeSearchLastSeenHistoryParameter) {
+    return DioHttpClientProcessing((cancelToken) async {
+      String id = "";
+      StoreSearchLastSeenHistoryParameterValue storeSearchLastSeenHistoryParameterValue = storeSearchLastSeenHistoryParameter.storeSearchLastSeenHistoryParameterValue;
+      if (storeSearchLastSeenHistoryParameterValue is ProductEntryStoreSearchLastSeenHistoryParameterValue) {
+        id = storeSearchLastSeenHistoryParameterValue.productEntryId;
+      }
+      return await dio.post("/history-search/last-seen/$id", cancelToken: cancelToken)
+        .map<StoreSearchLastSeenHistoryResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToStoreSearchLastSeenHistoryResponse());
     });
   }
 }

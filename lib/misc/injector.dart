@@ -221,8 +221,12 @@ import '../domain/usecase/remove_wishlist_use_case.dart';
 import '../domain/usecase/reply_product_discussion_use_case.dart';
 import '../domain/usecase/repurchase_use_case.dart';
 import '../domain/usecase/request_join_bucket_use_case.dart';
+import '../domain/usecase/search_history_use_case.dart';
+import '../domain/usecase/search_last_seen_history_use_case.dart';
 import '../domain/usecase/search_use_case.dart';
 import '../domain/usecase/show_bucket_by_id_use_case.dart';
+import '../domain/usecase/store_keyword_for_search_history_use_case.dart';
+import '../domain/usecase/store_search_last_seen_history_use_case.dart';
 import '../domain/usecase/take_friend_cart_use_case.dart';
 import '../domain/usecase/trigger_bucket_ready_use_case.dart';
 import '../domain/usecase/update_current_selected_address_use_case.dart';
@@ -670,6 +674,10 @@ class _Injector {
     locator.registerLazySingleton<GetSharedCartSummaryUseCase>(() => GetSharedCartSummaryUseCase(bucketRepository: locator()));
     locator.registerLazySingleton<CheckoutBucketUseCase>(() => CheckoutBucketUseCase(bucketRepository: locator()));
     locator.registerLazySingleton<SearchUseCase>(() => SearchUseCase(searchRepository: locator()));
+    locator.registerLazySingleton<SearchHistoryUseCase>(() => SearchHistoryUseCase(searchRepository: locator()));
+    locator.registerLazySingleton<SearchLastSeenHistoryUseCase>(() => SearchLastSeenHistoryUseCase(searchRepository: locator()));
+    locator.registerLazySingleton<StoreKeywordForSearchHistoryUseCase>(() => StoreKeywordForSearchHistoryUseCase(searchRepository: locator()));
+    locator.registerLazySingleton<StoreSearchLastSeenHistoryUseCase>(() => StoreSearchLastSeenHistoryUseCase(searchRepository: locator()));
 
     // Repository
     locator.registerLazySingleton<UserRepository>(() => DefaultUserRepository(userDataSource: locator()));

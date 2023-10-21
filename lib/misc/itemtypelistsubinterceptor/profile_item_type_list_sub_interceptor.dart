@@ -42,7 +42,8 @@ class ProfileItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListI
             titleInterceptor: oldItemType.titleInterceptor,
             description: oldItemType.description,
             descriptionInterceptor: oldItemType.descriptionInterceptor,
-            color: oldItemType.color
+            color: oldItemType.color,
+            padding: oldItemType.padding
           )
         )
       );

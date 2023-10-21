@@ -25,6 +25,8 @@ import '../domain/entity/product/productcategory/product_category.dart';
 import '../domain/entity/product/productdiscussion/product_discussion.dart';
 import '../domain/entity/product/productdiscussion/product_discussion_list_parameter.dart';
 import '../domain/entity/product/productentry/product_entry.dart';
+import '../domain/entity/search/store_search_last_seen_history_parameter.dart';
+import '../domain/entity/search/store_search_last_seen_history_response.dart';
 import '../domain/usecase/add_to_cart_use_case.dart';
 import '../domain/usecase/get_my_cart_use_case.dart';
 import '../domain/usecase/get_product_category_list_use_case.dart';
@@ -36,6 +38,7 @@ import '../domain/usecase/get_product_detail_other_interested_product_brand_list
 import '../domain/usecase/get_product_detail_use_case.dart';
 import '../domain/usecase/get_product_discussion_use_case.dart';
 import '../domain/usecase/purchase_direct_use_case.dart';
+import '../domain/usecase/store_search_last_seen_history_use_case.dart';
 import '../misc/constant.dart';
 import '../misc/controllercontentdelegate/product_brand_favorite_controller_content_delegate.dart';
 import '../misc/controllercontentdelegate/wishlist_and_cart_controller_content_delegate.dart';
@@ -67,6 +70,7 @@ class ProductDetailController extends BaseGetxController {
   final PurchaseDirectUseCase purchaseDirectUseCase;
   final AddToCartUseCase addToCartUseCase;
   final GetProductDiscussionUseCase getProductDiscussionUseCase;
+  final StoreSearchLastSeenHistoryUseCase storeSearchLastSeenHistoryUseCase;
   final WishlistAndCartControllerContentDelegate wishlistAndCartControllerContentDelegate;
   final ProductBrandFavoriteControllerContentDelegate productBrandFavoriteControllerContentDelegate;
   ProductDetailMainMenuDelegate? _productDetailMainMenuDelegate;
@@ -83,6 +87,7 @@ class ProductDetailController extends BaseGetxController {
     this.purchaseDirectUseCase,
     this.addToCartUseCase,
     this.getProductDiscussionUseCase,
+    this.storeSearchLastSeenHistoryUseCase,
     this.wishlistAndCartControllerContentDelegate,
     this.productBrandFavoriteControllerContentDelegate
   ) {
@@ -93,6 +98,12 @@ class ProductDetailController extends BaseGetxController {
   Future<LoadDataResult<ProductDetail>> getProductDetail(ProductDetailParameter productDetailParameter) {
     return getProductDetailUseCase.execute(productDetailParameter).future(
       parameter: apiRequestManager.addRequestToCancellationPart("product-detail").value
+    );
+  }
+
+  Future<LoadDataResult<StoreSearchLastSeenHistoryResponse>> storeSearchLastSeenHistoryResponse(StoreSearchLastSeenHistoryParameter storeSearchLastSeenHistoryParameter) {
+    return storeSearchLastSeenHistoryUseCase.execute(storeSearchLastSeenHistoryParameter).future(
+      parameter: apiRequestManager.addRequestToCancellationPart("store-search-last-seen-history").value
     );
   }
 

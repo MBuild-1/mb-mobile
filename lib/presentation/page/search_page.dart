@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -12,16 +14,29 @@ import '../../controller/search_controller.dart';
 import '../../domain/entity/cart/support_cart.dart';
 import '../../domain/entity/product/product_with_condition_paging_parameter.dart';
 import '../../domain/entity/product/productentry/product_entry.dart';
+import '../../domain/entity/search/search_history_parameter.dart';
+import '../../domain/entity/search/search_history_response.dart';
+import '../../domain/entity/search/search_last_seen_history_parameter.dart';
+import '../../domain/entity/search/search_last_seen_history_response.dart';
 import '../../domain/entity/search/search_parameter.dart';
 import '../../domain/entity/search/search_response.dart';
+import '../../domain/entity/search/store_keyword_for_search_history_parameter.dart';
+import '../../domain/entity/search/store_keyword_for_search_history_response.dart';
 import '../../domain/entity/wishlist/support_wishlist.dart';
 import '../../domain/usecase/get_product_entry_with_condition_paging_use_case.dart';
+import '../../domain/usecase/search_history_use_case.dart';
+import '../../domain/usecase/search_last_seen_history_use_case.dart';
 import '../../domain/usecase/search_use_case.dart';
+import '../../domain/usecase/store_keyword_for_search_history_use_case.dart';
+import '../../domain/usecase/store_search_last_seen_history_use_case.dart';
+import '../../misc/additionalloadingindicatorchecker/typing_search_additional_paging_result_parameter_checker.dart';
 import '../../misc/constant.dart';
 import '../../misc/controllercontentdelegate/wishlist_and_cart_controller_content_delegate.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/load_data_result_dynamic_list_item_controller_state.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/no_content_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/searchlistitemcontrollerstate/search_container_list_item_controller_state.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/searchlistitemcontrollerstate/typing_search_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
 import '../../misc/dialog_helper.dart';
 import '../../misc/entityandlistitemcontrollerstatemediator/horizontal_component_entity_parameterized_entity_and_list_item_controller_state_mediator.dart';
@@ -38,6 +53,12 @@ import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_it
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
 import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/horizontal_dynamic_item_carousel_parametered_component_entity_and_list_item_controller_state_mediator_parameter.dart';
+import '../../misc/typingsearchlistitemclick/brand_typing_search_list_item_click.dart';
+import '../../misc/typingsearchlistitemclick/category_typing_search_list_item_click.dart';
+import '../../misc/typingsearchlistitemclick/default_typing_search_list_item_click.dart';
+import '../../misc/typingsearchlistitemclick/history_typing_search_list_item_click.dart';
+import '../../misc/typingsearchlistitemclick/last_seen_history_typing_search_list_item_click.dart';
+import '../../misc/typingsearchlistitemclick/product_typing_search_list_item_click.dart';
 import '../notifier/component_notifier.dart';
 import '../notifier/notification_notifier.dart';
 import '../widget/background_app_bar_scaffold.dart';
@@ -64,7 +85,10 @@ class SearchPage extends RestorableGetxPage<_SearchPageRestoration> {
         controllerManager,
         Injector.locator<GetProductEntryWithConditionPagingUseCase>(),
         Injector.locator<SearchUseCase>(),
-        Injector.locator<WishlistAndCartControllerContentDelegate>()
+        Injector.locator<WishlistAndCartControllerContentDelegate>(),
+        Injector.locator<StoreKeywordForSearchHistoryUseCase>(),
+        Injector.locator<SearchHistoryUseCase>(),
+        Injector.locator<SearchLastSeenHistoryUseCase>(),
       ),
       tag: pageName
     );
@@ -191,12 +215,22 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
   late AssetImage _searchAppBarBackgroundAssetImage;
   late final ModifiedPagingController<int, ListItemControllerState> _searchListItemPagingController;
   late final PagingControllerState<int, ListItemControllerState> _searchListItemPagingControllerState;
+  late final ModifiedPagingController<int, ListItemControllerState> _typingSearchListItemPagingController;
+  late final PagingControllerState<int, ListItemControllerState> _typingSearchListItemPagingControllerState;
   final TextEditingController _searchTextEditingController = TextEditingController();
+  String? _lastSearch = "";
+  bool _beginSearch = false;
+  bool _beginSaveOriginalSearchResponse = false;
   LoadDataResult<SearchResponse> _searchResponseLoadDataResult = NoLoadDataResult<SearchResponse>();
+  LoadDataResult<SearchResponse> _typingSearchResponseLoadDataResult = NoLoadDataResult<SearchResponse>();
+  LoadDataResult<SearchHistoryResponse> _searchHistoryResponseLoadDataResult = NoLoadDataResult<SearchHistoryResponse>();
+  LoadDataResult<SearchLastSeenHistoryResponse> _searchLastSeenHistoryResponseLoadDataResult = NoLoadDataResult<SearchLastSeenHistoryResponse>();
+  SearchResponse? _originalSearchResponse;
+  Timer? _timer;
   final FocusNode _searchFocusNode = FocusNode();
+  SearchFilterModalDialogPageResponse? _searchFilterModalDialogPageResponse;
 
   int _searchStatus = 0;
-  int _searchCount = 0;
 
   @override
   void initState() {
@@ -216,6 +250,35 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
       onPageKeyNext: (pageKey) => pageKey + 1
     );
     _searchListItemPagingControllerState.isPagingControllerExist = true;
+    _typingSearchListItemPagingController = ModifiedPagingController<int, ListItemControllerState>(
+      firstPageKey: 1,
+      // ignore: invalid_use_of_protected_member
+      apiRequestManager: widget.searchController.apiRequestManager,
+      additionalPagingResultParameterChecker: TypingSearchAdditionalPagingResultParameterChecker()
+    );
+    _typingSearchListItemPagingControllerState = PagingControllerState(
+      pagingController: _typingSearchListItemPagingController,
+      isPagingControllerExist: false
+    );
+    _typingSearchListItemPagingControllerState.pagingController.addPageRequestListenerWithItemListForLoadDataResult(
+      listener: _typingSearchListItemPagingControllerStateListener,
+      onPageKeyNext: (pageKey) => pageKey + 1
+    );
+    _typingSearchListItemPagingControllerState.isPagingControllerExist = true;
+    _searchTextEditingController.addListener(_searchTextEditingListener);
+  }
+
+  void _searchTextEditingListener() {
+    if (_lastSearch != _searchTextEditingController.text.trim()) {
+      _lastSearch = _searchTextEditingController.text.trim();
+      if (_timer != null) {
+        _timer?.cancel();
+      }
+      _timer = Timer(
+        const Duration(milliseconds: 300),
+        () => _updateTypingSearchState()
+      );
+    }
   }
 
   @override
@@ -225,11 +288,55 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _searchListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? listItemControllerStateList) async {
-    _searchResponseLoadDataResult = await widget.searchController.search(
-      SearchParameter(
-        query: _searchTextEditingController.text
-      )
+    LoadDataResult<PagingResult<ListItemControllerState>> noContent() {
+      return SuccessLoadDataResult<PagingResult<ListItemControllerState>>(
+        value: PagingDataResult<ListItemControllerState>(
+          page: 1,
+          totalPage: 1,
+          totalItem: 1,
+          itemList: [
+            NoContentListItemControllerState()
+          ],
+        )
+      );
+    }
+    if (!_beginSearch) {
+      return noContent();
+    }
+    _searchResponseLoadDataResult = NoLoadDataResult<SearchResponse>();
+    LoadDataResult<StoreKeywordForSearchHistoryResponse> storeKeywordForSearchHistoryLoadDataResult = await widget.searchController.storeKeywordForSearchHistory(
+      StoreKeywordForSearchHistoryParameter(
+        keyword: _searchTextEditingController.text.trim()
+      ),
     );
+    if (storeKeywordForSearchHistoryLoadDataResult.isFailed) {
+      if (!storeKeywordForSearchHistoryLoadDataResult.isFailedBecauseCancellation) {
+        return storeKeywordForSearchHistoryLoadDataResult.map((_) => throw UnimplementedError());
+      } else {
+        return noContent();
+      }
+    }
+    SearchParameter searchParameter = SearchParameter(
+      query: _searchTextEditingController.text.trim()
+    );
+    if (_searchFilterModalDialogPageResponse != null) {
+      searchParameter.searchSortBy = _searchFilterModalDialogPageResponse!.searchSortBy;
+      searchParameter.priceMin = _searchFilterModalDialogPageResponse!.priceMin;
+      searchParameter.priceMax = _searchFilterModalDialogPageResponse!.priceMax;
+      searchParameter.brandSearchRelated = _searchFilterModalDialogPageResponse!.brandSearchRelated;
+      searchParameter.provinceSearchRelated = _searchFilterModalDialogPageResponse!.provinceSearchRelated;
+      searchParameter.categorySearchRelated = _searchFilterModalDialogPageResponse!.categorySearchRelated;
+    }
+    _searchResponseLoadDataResult = await widget.searchController.search(searchParameter, "search");
+    if (_beginSaveOriginalSearchResponse) {
+      _beginSaveOriginalSearchResponse = false;
+      if (_searchResponseLoadDataResult.isSuccess) {
+        _originalSearchResponse = _searchResponseLoadDataResult.resultIfSuccess;
+      }
+    }
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      setState(() {});
+    });
     LoadDataResult<PagingDataResult<ProductEntry>> productEntryLoadDataResult = _searchResponseLoadDataResult.map<PagingDataResult<ProductEntry>>(
       (value) => PagingDataResult<ProductEntry>(
         page: 1,
@@ -269,6 +376,92 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
     });
   }
 
+  Future<void> _typingSearch() async {
+    if (_searchTextEditingController.text.trim().isNotEmptyString) {
+      _typingSearchResponseLoadDataResult = await widget.searchController.search(
+        SearchParameter(
+          suggest: _searchTextEditingController.text.trim()
+        ),
+        "typing-search"
+      );
+    }
+    await _historySearchAndLastSeenHistorySearch();
+  }
+
+  Future<void> _historySearchAndLastSeenHistorySearch() async {
+    _searchHistoryResponseLoadDataResult = await widget.searchController.searchHistory(
+      SearchHistoryParameter(),
+    );
+    _searchLastSeenHistoryResponseLoadDataResult = await widget.searchController.searchLastSeenHistory(
+      SearchLastSeenHistoryParameter(),
+    );
+  }
+
+  void _updateTypingSearchState() async {
+    await _typingSearch();
+    setState(() {});
+  }
+
+  Future<LoadDataResult<PagingResult<ListItemControllerState>>> _typingSearchListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? listItemControllerStateList) async {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      await _historySearchAndLastSeenHistorySearch();
+      setState(() {});
+    });
+    return SuccessLoadDataResult<PagingResult<ListItemControllerState>>(
+      value: PagingDataResult<ListItemControllerState>(
+        page: 1,
+        totalPage: 1,
+        totalItem: 1,
+        itemList: [
+          TypingSearchContainerListItemControllerState(
+            searchResponseLoadDataResult: () => _typingSearchResponseLoadDataResult,
+            searchHistoryResponseLoadDataResult: () => _searchHistoryResponseLoadDataResult,
+            searchLastSeenHistoryResponseLoadDataResult: () => _searchLastSeenHistoryResponseLoadDataResult,
+            onGetSearchText: () => _searchTextEditingController.text.trim(),
+            onTypingSearchListItemClick: (typingSearchListItemClick) {
+              if (typingSearchListItemClick is DefaultTypingSearchListItemClick) {
+                _searchTextEditingController.text = typingSearchListItemClick.text;
+                _search();
+              } else if (typingSearchListItemClick is BrandTypingSearchListItemClick) {
+                _searchTextEditingController.text = typingSearchListItemClick.brandName;
+                _search();
+              } else if (typingSearchListItemClick is CategoryTypingSearchListItemClick) {
+                _searchTextEditingController.text = typingSearchListItemClick.categoryName;
+                _search();
+              } else if (typingSearchListItemClick is ProductTypingSearchListItemClick) {
+                _searchTextEditingController.text = typingSearchListItemClick.productName;
+                _search();
+              } else if (typingSearchListItemClick is HistoryTypingSearchListItemClick) {
+                _searchTextEditingController.text = typingSearchListItemClick.text;
+                _search();
+              } else if (typingSearchListItemClick is LastSeenHistoryTypingSearchListItemClick) {
+                _searchTextEditingController.text = typingSearchListItemClick.lastSeenRelatedName;
+                _search();
+              }
+            }
+          )
+        ],
+      )
+    );
+  }
+
+  void _search({
+    bool resetFilter = true,
+    bool saveOriginalSearchResponse = true
+  }) async {
+    if (resetFilter) {
+      _searchFilterModalDialogPageResponse = null;
+    }
+    FocusScope.of(context).unfocus();
+    _beginSearch = true;
+    if (saveOriginalSearchResponse) {
+      _beginSaveOriginalSearchResponse = true;
+    }
+    _searchListItemPagingController.refresh();
+    await Future.delayed(const Duration(milliseconds: 50));
+    setState(() => _searchStatus = 1);
+  }
+
   @override
   Widget build(BuildContext context) {
     widget.searchController.wishlistAndCartControllerContentDelegate.setWishlistAndCartDelegate(
@@ -285,9 +478,12 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
     );
     return WillPopScope(
       onWillPop: () async {
+        FocusScope.of(context).unfocus();
         if (_searchStatus == -1) {
-          FocusScope.of(context).unfocus();
-          setState(() => _searchStatus = 1);
+          setState(() {
+            _searchStatus = 1;
+            _beginSearch = false;
+          });
           return false;
         }
         return true;
@@ -296,35 +492,51 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
         backgroundAppBarImage: _searchAppBarBackgroundAssetImage,
         appBar: CoreSearchAppBar(
           value: 0.0,
-          showFilterIconButton: _searchStatus == 1 && _searchResponseLoadDataResult.isSuccess,
-          onSearch: (search) async {
-            FocusScope.of(context).unfocus();
-            if (_searchCount > 0) {
-              _searchListItemPagingController.refresh();
+          showFilterIconButton: () {
+            if (_searchStatus == 1 && _searchResponseLoadDataResult.isSuccess) {
+              SearchResponse searchResponse = _searchResponseLoadDataResult.resultIfSuccess!;
+              return true;
+            } else if (_searchStatus == 1 && _searchResponseLoadDataResult.isFailed && _originalSearchResponse != null) {
+              return true;
             }
-            _searchCount += 1;
-            await Future.delayed(const Duration(milliseconds: 50));
-            setState(() => _searchStatus = 1);
-          },
+            return false;
+          }(),
+          onSearch: (search) => _search(),
           onTapSearchFilterIcon: () async {
-            dynamic result = await DialogHelper.showModalBottomDialogPage<bool, SearchFilterModalDialogPageParameter>(
+            if (_originalSearchResponse == null) {
+              return;
+            }
+            SearchResponse searchResponse = _originalSearchResponse!;
+            dynamic result = await DialogHelper.showModalBottomDialogPage<SearchFilterModalDialogPageResponse, SearchFilterModalDialogPageParameter>(
               context: context,
               modalDialogPageBuilder: (context, parameter) => SearchFilterModalDialogPage(
                 searchFilterModalDialogPageParameter: parameter!,
               ),
-              parameter: const SearchFilterModalDialogPageParameter(
-                brandSearchRelatedList: [],
-                categorySearchRelatedList: [],
-                provinceSearchRelatedList: []
+              parameter: SearchFilterModalDialogPageParameter(
+                brandSearchRelatedList: searchResponse.brandSearchRelatedList,
+                categorySearchRelatedList: searchResponse.categorySearchRelatedList,
+                provinceSearchRelatedList: searchResponse.provinceSearchRelatedList,
+                lastBrandSearchRelated: _searchFilterModalDialogPageResponse != null ? _searchFilterModalDialogPageResponse!.brandSearchRelated : null,
+                lastCategorySearchRelated: _searchFilterModalDialogPageResponse != null ? _searchFilterModalDialogPageResponse!.categorySearchRelated : null,
+                lastProvinceSearchRelated: _searchFilterModalDialogPageResponse != null ? _searchFilterModalDialogPageResponse!.provinceSearchRelated : null,
+                lastSearchSortBy: _searchFilterModalDialogPageResponse != null ? _searchFilterModalDialogPageResponse!.searchSortBy : null,
+                lastPriceMin: _searchFilterModalDialogPageResponse != null ? _searchFilterModalDialogPageResponse!.priceMin : null,
+                lastPriceMax: _searchFilterModalDialogPageResponse != null ? _searchFilterModalDialogPageResponse!.priceMax : null,
               )
             );
             if (result is SearchFilterModalDialogPageResponse) {
-
+              _searchFilterModalDialogPageResponse = result;
+              _search(
+                resetFilter: false,
+                saveOriginalSearchResponse: false
+              );
             }
           },
           readOnly: _searchStatus == 1,
           searchTextEditingController: _searchTextEditingController,
+          filterIconButtonColor: _searchFilterModalDialogPageResponse.hasFilterResponse ? Theme.of(context).colorScheme.primary : null,
           onSearchTextFieldTapped: () async {
+            _updateTypingSearchState();
             setState(() => _searchStatus = -1);
             await Future.delayed(const Duration(milliseconds: 50));
             _searchFocusNode.requestFocus();
@@ -332,20 +544,75 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
           searchFocusNode: _searchFocusNode,
         ),
         body: Expanded(
-          child: _searchStatus >= 1 ? ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
-            pagingControllerState: _searchListItemPagingControllerState,
-            onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
-              pagingControllerState: pagingControllerState!
-            ),
-            pullToRefresh: true
-          ) : Container(),
+          child: IndexedStack(
+            index: () {
+              if (_searchStatus < 0) {
+                return 0;
+              }
+              return _searchStatus;
+            }(),
+            children: [
+              _buildModifiedPageListView(
+                pagingControllerState: _typingSearchListItemPagingControllerState,
+                pullToRefresh: false
+              ),
+              _buildModifiedPageListView(
+                pagingControllerState: _searchListItemPagingControllerState,
+                pullToRefresh: true
+              ),
+            ],
+          )
         ),
       ),
     );
   }
 
+  Widget _buildModifiedPageListView({
+    required PagingControllerState<int, ListItemControllerState> pagingControllerState,
+    required bool pullToRefresh
+  }) {
+    return ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
+      pagingControllerState: pagingControllerState,
+      onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
+        pagingControllerState: pagingControllerState!
+      ),
+      pullToRefresh: pullToRefresh
+    );
+  }
+
   @override
   void dispose() {
+    _timer?.cancel();
+    _searchTextEditingController.removeListener(_searchTextEditingListener);
+    _searchTextEditingController.dispose();
     super.dispose();
+  }
+}
+
+extension on SearchFilterModalDialogPageResponse? {
+  bool get hasFilterResponse {
+    if (this == null) {
+      return false;
+    }
+    int filterCount = 0;
+    if (this!.searchSortBy != null) {
+      filterCount += 1;
+    }
+    if (this!.priceMin != null) {
+      filterCount += 1;
+    }
+    if (this!.priceMax != null) {
+      filterCount += 1;
+    }
+    if (this!.brandSearchRelated != null) {
+      filterCount += 1;
+    }
+    if (this!.categorySearchRelated != null) {
+      filterCount += 1;
+    }
+    if (this!.provinceSearchRelated != null) {
+      filterCount += 1;
+    }
+    return filterCount > 0;
   }
 }

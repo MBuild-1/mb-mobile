@@ -13,6 +13,7 @@ import 'search_app_bar.dart';
 class CoreSearchAppBar extends SearchAppBar {
   final bool readOnly;
   final bool showFilterIconButton;
+  final Color? filterIconButtonColor;
   final VoidCallback? onTapSearchFilterIcon;
 
   CoreSearchAppBar({
@@ -26,6 +27,7 @@ class CoreSearchAppBar extends SearchAppBar {
     TextEditingController? searchTextEditingController,
     this.readOnly = true,
     required this.showFilterIconButton,
+    this.filterIconButtonColor,
     this.onTapSearchFilterIcon,
     FocusNode? searchFocusNode
   }) : super(
@@ -122,7 +124,7 @@ class CoreSearchAppBar extends SearchAppBar {
             if (showFilterIconButton) ...[
               TapArea(
                 onTap: onTapSearchFilterIcon ?? () {},
-                child: Icon(Icons.filter_list, color: Constant.colorGrey8),
+                child: Icon(Icons.filter_list, color: filterIconButtonColor == null ? Constant.colorGrey8 : filterIconButtonColor!),
               )
             ]
           ]

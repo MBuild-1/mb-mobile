@@ -1,4 +1,4 @@
-import 'search_sort_by.dart';
+import 'searchsortby/search_sort_by.dart';
 import 'searchrelated/brand_search_related.dart';
 import 'searchrelated/category_search_related.dart';
 import 'searchrelated/province_search_related.dart';

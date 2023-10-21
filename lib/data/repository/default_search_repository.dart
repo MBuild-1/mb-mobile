@@ -1,5 +1,13 @@
+import '../../domain/entity/search/search_history_parameter.dart';
+import '../../domain/entity/search/search_history_response.dart';
+import '../../domain/entity/search/search_last_seen_history_parameter.dart';
+import '../../domain/entity/search/search_last_seen_history_response.dart';
 import '../../domain/entity/search/search_parameter.dart';
 import '../../domain/entity/search/search_response.dart';
+import '../../domain/entity/search/store_keyword_for_search_history_parameter.dart';
+import '../../domain/entity/search/store_keyword_for_search_history_response.dart';
+import '../../domain/entity/search/store_search_last_seen_history_parameter.dart';
+import '../../domain/entity/search/store_search_last_seen_history_response.dart';
 import '../../domain/repository/search_repository.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/processing/future_processing.dart';
@@ -15,5 +23,25 @@ class DefaultSearchRepository implements SearchRepository {
   @override
   FutureProcessing<LoadDataResult<SearchResponse>> search(SearchParameter searchParameter) {
     return searchDataSource.search(searchParameter).mapToLoadDataResult<SearchResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<SearchHistoryResponse>> searchHistory(SearchHistoryParameter searchHistoryParameter) {
+    return searchDataSource.searchHistory(searchHistoryParameter).mapToLoadDataResult<SearchHistoryResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<SearchLastSeenHistoryResponse>> searchLastSeenHistory(SearchLastSeenHistoryParameter searchLastSeenHistoryParameter) {
+    return searchDataSource.searchLastSeenHistory(searchLastSeenHistoryParameter).mapToLoadDataResult<SearchLastSeenHistoryResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<StoreKeywordForSearchHistoryResponse>> storeKeywordForSearchHistory(StoreKeywordForSearchHistoryParameter storeKeywordForSearchHistoryParameter) {
+    return searchDataSource.storeKeywordForSearchHistory(storeKeywordForSearchHistoryParameter).mapToLoadDataResult<StoreKeywordForSearchHistoryResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<StoreSearchLastSeenHistoryResponse>> storeSearchLastSeenHistory(StoreSearchLastSeenHistoryParameter storeSearchLastSeenHistoryParameter) {
+    return searchDataSource.storeSearchLastSeenHistory(storeSearchLastSeenHistoryParameter).mapToLoadDataResult<StoreSearchLastSeenHistoryResponse>();
   }
 }
