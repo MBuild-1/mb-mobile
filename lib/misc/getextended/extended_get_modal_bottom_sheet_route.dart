@@ -50,6 +50,9 @@ class ExtendedGetModalBottomSheetRoute<T> extends GetModalBottomSheetRoute<T> {
   @override
   Widget buildPage(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
     Widget builtWidget = super.buildPage(context, animation, secondaryAnimation);
+    builtWidget = !removeTop ? SafeArea(
+      child: builtWidget
+    ) : builtWidget;
     return routePageBuilderInterceptor != null ? routePageBuilderInterceptor!(
       builtWidget, context, animation, secondaryAnimation
     ) : ExtendedGetModalBottomSheetWidget(
