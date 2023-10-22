@@ -1,21 +1,28 @@
 import 'package:intl/intl.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
+import 'package:masterbagasi/misc/multi_language_string.dart';
 
+import 'constant.dart';
 import 'dateformat/anthony_input_date_format.dart';
 
 class _DateUtilImpl {
-  DateFormat standardDateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
-  DateFormat standardDateFormat2 = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'");
-  DateFormat standardDateFormat3 = DateFormat("yyyy-MM-dd");
-  DateFormat standardDateFormat4 = DateFormat("dd MMMM yyyy");
-  DateFormat standardDateFormat5 = DateFormat("MMMM yyyy");
-  DateFormat standardDateFormat6 = DateFormat("dd MMMM yyyy HH:mm:ss");
-  DateFormat standardDateFormat7 = DateFormat("dd MMM yyyy");
-  DateFormat standardDateFormat8 = DateFormat("dd MMM yyyy HH:mm:ss");
-  DateFormat standardDateFormat9 = DateFormat("dd MMM");
-  DateFormat standardDateFormat10 = DateFormat("dd MMMM yyyy, HH:mm:ss");
-  DateFormat standardTimeFormat = DateFormat("HH:mm:ss");
-  DateFormat standardHourMinuteTimeFormat = DateFormat("HH:mm");
-  DateFormat anthonyInputDateFormat = AnthonyInputDateFormat();
+  String get _currentLocale => MultiLanguageString({
+    Constant.textEnUsLanguageKey: "en_US",
+    Constant.textInIdLanguageKey: "id"
+  }).toEmptyStringNonNull;
+  DateFormat get standardDateFormat => DateFormat("yyyy-MM-dd HH:mm:ss", _currentLocale);
+  DateFormat get standardDateFormat2 => DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", _currentLocale);
+  DateFormat get standardDateFormat3 => DateFormat("yyyy-MM-dd", _currentLocale);
+  DateFormat get standardDateFormat4 => DateFormat("dd MMMM yyyy", _currentLocale);
+  DateFormat get standardDateFormat5 => DateFormat("MMMM yyyy", _currentLocale);
+  DateFormat get standardDateFormat6 => DateFormat("dd MMMM yyyy HH:mm:ss", _currentLocale);
+  DateFormat get standardDateFormat7 => DateFormat("dd MMM yyyy", _currentLocale);
+  DateFormat get standardDateFormat8 => DateFormat("dd MMM yyyy HH:mm:ss", _currentLocale);
+  DateFormat get standardDateFormat9 => DateFormat("dd MMM", _currentLocale);
+  DateFormat get standardDateFormat10 => DateFormat("dd MMMM yyyy, HH:mm:ss", _currentLocale);
+  DateFormat get standardTimeFormat => DateFormat("HH:mm:ss", _currentLocale);
+  DateFormat get standardHourMinuteTimeFormat => DateFormat("HH:mm", _currentLocale);
+  DateFormat get anthonyInputDateFormat => AnthonyInputDateFormat();
 
   String formatDateBasedTodayOrNot(DateTime? willBeFormatting) {
     return willBeFormatting == null ? "(Empty)" : (
