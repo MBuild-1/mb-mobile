@@ -34,6 +34,7 @@ import '../affiliate_page.dart';
 import '../cart_page.dart';
 import '../country_delivery_review_page.dart';
 import '../deliveryreview/delivery_review_page.dart';
+import '../edit_profile_page.dart';
 import '../favorite_product_brand_page.dart';
 import '../help_chat_page.dart';
 import '../help_page.dart';
@@ -138,6 +139,15 @@ class MainMenuPage extends RestorableGetxPage<_MainMenuPageRestoration> {
           }
         }
       }
+    },
+    onCompleteEditProfilePage: (result) {
+      if (result != null) {
+        if (result) {
+          if (MainRouteObserver.onRefreshProfile != null) {
+            MainRouteObserver.onRefreshProfile!();
+          }
+        }
+      }
     }
   );
 
@@ -159,17 +169,21 @@ class MainMenuPage extends RestorableGetxPage<_MainMenuPageRestoration> {
   }
 }
 
-class _MainMenuPageRestoration extends MixableGetxPageRestoration with MainMenuPageRestorationMixin, LoginPageRestorationMixin, ProductEntryPageRestorationMixin, ProductDetailPageRestorationMixin, ProductCategoryDetailPageRestorationMixin, ProductBundlePageRestorationMixin, ProductBundleDetailPageRestorationMixin, CartPageRestorationMixin, ProductBrandPageRestorationMixin, WebViewerPageRestorationMixin, OrderPageRestorationMixin, DeliveryReviewPageRestorationMixin, FavoriteProductBrandPageRestorationMixin, ProductDiscussionPageRestorationMixin, MainMenuPageRestorationMixin, AddressPageRestorationMixin, InboxPageRestorationMixin, AffiliatePageRestorationMixin, MsmePartnerPageRestorationMixin, CountryDeliveryReviewPageRestorationMixin, HelpPageRestorationMixin, HelpChatPageRestorationMixin, SearchPageRestorationMixin, NotificationPageRestorationMixin, VideoPageRestorationMixin, NewsPageRestorationMixin, NewsDetailPageRestorationMixin, AccountSecurityPageRestorationMixin, SharedCartPageRestorationMixin {
+class _MainMenuPageRestoration extends MixableGetxPageRestoration with MainMenuPageRestorationMixin, LoginPageRestorationMixin, ProductEntryPageRestorationMixin, ProductDetailPageRestorationMixin, ProductCategoryDetailPageRestorationMixin, ProductBundlePageRestorationMixin, ProductBundleDetailPageRestorationMixin, CartPageRestorationMixin, ProductBrandPageRestorationMixin, WebViewerPageRestorationMixin, OrderPageRestorationMixin, DeliveryReviewPageRestorationMixin, FavoriteProductBrandPageRestorationMixin, ProductDiscussionPageRestorationMixin, MainMenuPageRestorationMixin, AddressPageRestorationMixin, InboxPageRestorationMixin, AffiliatePageRestorationMixin, MsmePartnerPageRestorationMixin, CountryDeliveryReviewPageRestorationMixin, HelpPageRestorationMixin, HelpChatPageRestorationMixin, SearchPageRestorationMixin, NotificationPageRestorationMixin, VideoPageRestorationMixin, NewsPageRestorationMixin, NewsDetailPageRestorationMixin, AccountSecurityPageRestorationMixin, SharedCartPageRestorationMixin, EditProfilePageRestorationMixin {
   final RouteCompletionCallback<bool?>? _onCompleteAddressPage;
+  final RouteCompletionCallback<bool?>? _onCompleteEditProfilePage;
 
   _MainMenuPageRestoration({
-    RouteCompletionCallback<bool?>? onCompleteAddressPage
-  }) : _onCompleteAddressPage = onCompleteAddressPage;
+    RouteCompletionCallback<bool?>? onCompleteAddressPage,
+    RouteCompletionCallback<bool?>? onCompleteEditProfilePage
+  }) : _onCompleteAddressPage = onCompleteAddressPage,
+      _onCompleteEditProfilePage = onCompleteEditProfilePage;
 
   @override
   // ignore: unnecessary_overrides
   void initState() {
     onCompleteSelectAddress = _onCompleteAddressPage;
+    onCompleteEditProfile = _onCompleteEditProfilePage;
     super.initState();
   }
 
@@ -439,6 +453,7 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
   @override
   void dispose() {
     MainRouteObserver.onRefreshAddress = null;
+    MainRouteObserver.onRefreshProfile = null;
     MainRouteObserver.onRefreshCartInMainMenu = null;
     MainRouteObserver.onRefreshWishlistInMainMenu = null;
     MainRouteObserver.onChangeSelectedProvince = null;

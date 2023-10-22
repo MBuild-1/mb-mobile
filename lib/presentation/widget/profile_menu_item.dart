@@ -46,13 +46,19 @@ class ProfileMenuItem extends StatelessWidget {
           child: IconTitleAndDescriptionListItem(
             title: title,
             description: description,
-            titleInterceptor: titleInterceptor ?? (title, titleTextStyle) {
+            titleInterceptor: (title, titleTextStyle) {
+              if (titleInterceptor != null) {
+                return titleInterceptor!(title, const TextStyle(fontWeight: FontWeight.bold));
+              }
               return Text(
                 title,
                 style: const TextStyle(fontWeight: FontWeight.bold)
               );
             },
-            descriptionInterceptor: descriptionInterceptor ?? (description, descriptionTextStyle) {
+            descriptionInterceptor: (description, descriptionTextStyle) {
+              if (descriptionInterceptor != null) {
+                return descriptionInterceptor!(description, const TextStyle(color: Colors.grey));
+              }
               return Text(
                 description,
                 style: const TextStyle(color: Colors.grey)

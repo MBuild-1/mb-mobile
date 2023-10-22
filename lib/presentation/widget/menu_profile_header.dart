@@ -51,7 +51,7 @@ class MenuProfileHeader extends StatelessWidget {
         Material(
           borderRadius: BorderRadius.circular(8.0),
           child: InkWell(
-            onTap: userLoadDataResult.isLoading ? null : () {},
+            onTap: userLoadDataResult.isLoading ? null : () => PageRestorationHelper.toEditProfilePage(context),
             child: Padding(
               padding: EdgeInsets.all(Constant.paddingListItem),
               child: Row(

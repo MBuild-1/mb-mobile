@@ -116,6 +116,7 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
     );
     _menuMainMenuSubListItemPagingControllerState.isPagingControllerExist = true;
     MainRouteObserver.controllerMediatorMap[Constant.subPageKeyMenuMainMenu] = refreshMenuMainMenu;
+    MainRouteObserver.onRefreshProfile = refreshMenuMainMenu;
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _wishlistMainMenuListItemPagingControllerStateListener(int pageKey) async {

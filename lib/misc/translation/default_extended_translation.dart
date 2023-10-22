@@ -16,6 +16,7 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "or register with": "atau daftar dengan",
       "This input must be an email": "Inputannya harus berupa email",
       "Email is required": "Email dibutuhkan",
+      "Gender is required": "Jenis kelamin dibutuhkan",
       "Login": "Masuk",
       "Register": "Daftar",
       "Name is required": "Nama dibutuhkan",
@@ -65,6 +66,16 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Add New Item": "Tambah Barang Baru",
       "Change New Item": "Ubah Barang Baru",
       "Name": "Nama",
+      "Input Name": "Masukan Nama",
+      "Type Name": "Ketikan Nama",
+      "Email": "Email",
+      "Input Email": "Masukan Email",
+      "Type Email": "Ketikan Email",
+      "Gender": "Jenis Kelamin",
+      "Date Birth": "Tanggal Lahir",
+      "Place Birth": "Tempat Lahir",
+      "Input Place Birth": "Masukan Tempat Lahir",
+      "Type Place Birth": "Ketikan Tempat Lahir",
       "Enter name": "Masukan nama",
       "Estimation Price": "Estimasi Harga",
       "Enter estimation price": "Masukan estimasi harga",
@@ -197,6 +208,8 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Address": "Alamat",
       "Address is required": "Alamat dibutuhkan",
       "Phone Number": "Nomor Telepon",
+      "Input Phone Number": "Masukan Nomor Telepon",
+      "Type Phone Number": "Ketikan Nomor Telepon",
       "Phone number is required": "Nomor telepon dibutuhkan",
       "Zip Code": "Kode Pos",
       "Zip code is required": "Kode pos dibutuhkan",
@@ -287,7 +300,9 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Price To": "Harga Ke",
       "Input Price To": "Masukan Harga Ke",
       "Type Price To": "Ketikan Harga Ke",
-      "No Value": "Tidak Ada Nilai"
+      "No Value": "Tidak Ada Nilai",
+      "Empty": "Kosong",
+      "Profile": "Profil"
     }
   };
 

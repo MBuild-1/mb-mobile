@@ -45,9 +45,12 @@ class TitleAndDescriptionItem extends StatelessWidget {
     TextStyle? lastTitleTextStyle = Theme.of(context).textTheme.titleMedium?.copyWith(
       fontWeight: FontWeight.bold
     );
+    if (titleInterceptor != null) {
+      return titleInterceptor!(title, lastTitleTextStyle);
+    }
     return _interceptWithContainer(
       context,
-      titleInterceptor != null ? titleInterceptor!(title, lastTitleTextStyle) : Text(
+      Text(
         title,
         style: lastTitleTextStyle!
       )
@@ -57,9 +60,12 @@ class TitleAndDescriptionItem extends StatelessWidget {
   @protected
   Widget descriptionWidget(BuildContext context, String description) {
     TextStyle? lastDescriptionTextStyle = const TextStyle();
+    if (descriptionInterceptor != null) {
+      descriptionInterceptor!(description, lastDescriptionTextStyle);
+    }
     return _interceptWithContainer(
       context,
-      descriptionInterceptor != null ? descriptionInterceptor!(description, lastDescriptionTextStyle) : Text(
+      Text(
         description,
         style: lastDescriptionTextStyle
       )

@@ -18,6 +18,7 @@ import '../presentation/page/coupon_page.dart';
 import '../presentation/page/crop_picture_page.dart';
 import '../presentation/page/delivery_page.dart';
 import '../presentation/page/deliveryreview/delivery_review_page.dart';
+import '../presentation/page/edit_profile_page.dart';
 import '../presentation/page/favorite_product_brand_page.dart';
 import '../presentation/page/getx_page.dart';
 import '../presentation/page/help_chat_page.dart';
@@ -533,6 +534,17 @@ class _PageRestorationHelperImpl {
       PageRestorationHelper.findPageRestorationMixin<PersonalVerificationPageRestorationMixin>(
         onGetxPageRestorationFound: (restoration) {
           restoration.personalVerificationPageRestorableRouteFuture.present();
+        },
+        context: context
+      );
+    });
+  }
+
+  void toEditProfilePage(BuildContext context) {
+    LoginHelper.checkingLogin(context, () {
+      PageRestorationHelper.findPageRestorationMixin<EditProfilePageRestorationMixin>(
+        onGetxPageRestorationFound: (restoration) {
+          restoration.editProfilePageRestorableRouteFuture.present();
         },
         context: context
       );
