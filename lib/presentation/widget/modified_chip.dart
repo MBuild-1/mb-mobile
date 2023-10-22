@@ -125,6 +125,7 @@ class ModifiedChip extends Chip {
 
 class ModifiedChipButton extends StatefulWidget {
   final Widget label;
+  final Widget? Function(TextStyle?)? labelInterceptor;
   final StatedLabelStyleFunction? statedLabelStyleFunction;
   final Color? backgroundColor;
   final Color? unselectedBackgroundColor;
@@ -139,6 +140,7 @@ class ModifiedChipButton extends StatefulWidget {
   const ModifiedChipButton({
     Key? key,
     required this.label,
+    this.labelInterceptor,
     this.statedLabelStyleFunction,
     this.backgroundColor,
     this.unselectedBackgroundColor,
@@ -192,11 +194,16 @@ class _ModificationChipButtonState extends State<ModifiedChipButton> with Materi
       ?? Constant.colorDefaultChip;
     Color effectiveUnselectedBackgroundColor = Colors.white.withOpacity(0);
     BorderRadius borderRadius = widget.borderRadius ?? const BorderRadius.all(Radius.circular(16.0));
+    TextStyle? newTextStyle = effectiveStatedLabelStyleFunction(resolvedLabelStyle, effectiveSelectedBackgroundColor, effectiveUnselectedBackgroundColor, widget.isSelected) ?? resolvedLabelStyle;
     if (labelText is Text) {
       labelText = Text(
         labelText.data ?? "",
-        style: effectiveStatedLabelStyleFunction(resolvedLabelStyle, effectiveSelectedBackgroundColor, effectiveUnselectedBackgroundColor, widget.isSelected) ?? resolvedLabelStyle
+        style: newTextStyle
       );
+    }
+    if (widget.labelInterceptor != null) {
+      Widget? newLabel = widget.labelInterceptor!(newTextStyle);
+      labelText = newLabel ?? labelText;
     }
     ShapeBorder effectiveSelectedBorder = widget.border ?? RoundedRectangleBorder(borderRadius: borderRadius);
     ShapeBorder effectiveUnselectedBorder = widget.unselectedBorder ?? RoundedRectangleBorder(

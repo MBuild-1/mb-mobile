@@ -13,6 +13,7 @@ class ColorfulChipTabBar extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final bool isWrap;
   final bool? canSelectAndUnselect;
+  final Widget? Function(TextStyle?, ColorfulChipTabBarData)? chipLabelInterceptor;
 
   const ColorfulChipTabBar({
     Key? key,
@@ -20,7 +21,8 @@ class ColorfulChipTabBar extends StatelessWidget {
     required this.colorfulChipTabBarController,
     this.padding,
     this.isWrap = true,
-    this.canSelectAndUnselect
+    this.canSelectAndUnselect,
+    this.chipLabelInterceptor
   }) : super(key: key);
 
   @override
@@ -32,12 +34,16 @@ class ColorfulChipTabBar extends StatelessWidget {
       required List<Widget> result,
     }) {
       ColorfulChipTabBarData data = colorfulChipTabBarDataList[i];
+      Widget? Function(TextStyle?)? effectiveChipLabelInterceptor() {
+        return chipLabelInterceptor != null ? (textStyle) => chipLabelInterceptor!(textStyle, data) : null;
+      }
       bool effectiveCanSelectAndUnselect = false;
       if (colorfulChipTabBarController is ColorfulChipTabBarController) {
         effectiveCanSelectAndUnselect = canSelectAndUnselect ?? (colorfulChipTabBarController is CanSelectAndUnselectColorfulChipTabBarController);
         result.add(
           ModifiedChipButton(
             label: Text(data.title.toStringNonNull),
+            labelInterceptor: effectiveChipLabelInterceptor(),
             backgroundColor: Constant.colorTrainingPreEmploymentChip(context),
             isSelected: i == value,
             canSelectAndUnselect: effectiveCanSelectAndUnselect,
@@ -75,6 +81,7 @@ class ColorfulChipTabBar extends StatelessWidget {
         result.add(
           ModifiedChipButton(
             label: Text(data.title.toStringNonNull),
+            labelInterceptor: effectiveChipLabelInterceptor(),
             backgroundColor: Constant.colorTrainingPreEmploymentChip(context),
             isSelected: isSelected,
             canSelectAndUnselect: effectiveCanSelectAndUnselect,

@@ -355,7 +355,10 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
         resultListItemControllerState = [
           SearchContainerListItemControllerState(
             productEntryList: productEntryPaging.itemList,
+            onGetColorfulChipTabBarColor: () => Theme.of(context).colorScheme.primary,
+            searchFilterModalDialogPageResponse: () => _searchFilterModalDialogPageResponse,
             onUpdateState: () => setState(() {}),
+            onGotoFilterModalDialog: _gotoFilterPage,
             onRemoveWishlistWithProductAppearanceData: (productAppearanceData) => widget.searchController.wishlistAndCartControllerContentDelegate.removeFromWishlist(productAppearanceData as SupportWishlist),
             onAddWishlistWithProductAppearanceData: (productAppearanceData) => widget.searchController.wishlistAndCartControllerContentDelegate.addToWishlist(productAppearanceData as SupportWishlist),
             onAddProductCart: (productAppearanceData) => widget.searchController.wishlistAndCartControllerContentDelegate.addToCart(productAppearanceData as SupportCart),
@@ -462,6 +465,37 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
     setState(() => _searchStatus = 1);
   }
 
+  void _gotoFilterPage() async {
+    if (_originalSearchResponse == null) {
+      return;
+    }
+    SearchResponse searchResponse = _originalSearchResponse!;
+    dynamic result = await DialogHelper.showModalBottomDialogPage<SearchFilterModalDialogPageResponse, SearchFilterModalDialogPageParameter>(
+      context: context,
+      modalDialogPageBuilder: (context, parameter) => SearchFilterModalDialogPage(
+        searchFilterModalDialogPageParameter: parameter!,
+      ),
+      parameter: SearchFilterModalDialogPageParameter(
+        brandSearchRelatedList: searchResponse.brandSearchRelatedList,
+        categorySearchRelatedList: searchResponse.categorySearchRelatedList,
+        provinceSearchRelatedList: searchResponse.provinceSearchRelatedList,
+        lastBrandSearchRelated: _searchFilterModalDialogPageResponse != null ? _searchFilterModalDialogPageResponse!.brandSearchRelated : null,
+        lastCategorySearchRelated: _searchFilterModalDialogPageResponse != null ? _searchFilterModalDialogPageResponse!.categorySearchRelated : null,
+        lastProvinceSearchRelated: _searchFilterModalDialogPageResponse != null ? _searchFilterModalDialogPageResponse!.provinceSearchRelated : null,
+        lastSearchSortBy: _searchFilterModalDialogPageResponse != null ? _searchFilterModalDialogPageResponse!.searchSortBy : null,
+        lastPriceMin: _searchFilterModalDialogPageResponse != null ? _searchFilterModalDialogPageResponse!.priceMin : null,
+        lastPriceMax: _searchFilterModalDialogPageResponse != null ? _searchFilterModalDialogPageResponse!.priceMax : null,
+      )
+    );
+    if (result is SearchFilterModalDialogPageResponse) {
+      _searchFilterModalDialogPageResponse = result.hasFilterResponse ? result : null;
+      _search(
+        resetFilter: false,
+        saveOriginalSearchResponse: false
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     widget.searchController.wishlistAndCartControllerContentDelegate.setWishlistAndCartDelegate(
@@ -494,7 +528,6 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
           value: 0.0,
           showFilterIconButton: () {
             if (_searchStatus == 1 && _searchResponseLoadDataResult.isSuccess) {
-              SearchResponse searchResponse = _searchResponseLoadDataResult.resultIfSuccess!;
               return true;
             } else if (_searchStatus == 1 && _searchResponseLoadDataResult.isFailed && _originalSearchResponse != null) {
               return true;
@@ -502,36 +535,7 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
             return false;
           }(),
           onSearch: (search) => _search(),
-          onTapSearchFilterIcon: () async {
-            if (_originalSearchResponse == null) {
-              return;
-            }
-            SearchResponse searchResponse = _originalSearchResponse!;
-            dynamic result = await DialogHelper.showModalBottomDialogPage<SearchFilterModalDialogPageResponse, SearchFilterModalDialogPageParameter>(
-              context: context,
-              modalDialogPageBuilder: (context, parameter) => SearchFilterModalDialogPage(
-                searchFilterModalDialogPageParameter: parameter!,
-              ),
-              parameter: SearchFilterModalDialogPageParameter(
-                brandSearchRelatedList: searchResponse.brandSearchRelatedList,
-                categorySearchRelatedList: searchResponse.categorySearchRelatedList,
-                provinceSearchRelatedList: searchResponse.provinceSearchRelatedList,
-                lastBrandSearchRelated: _searchFilterModalDialogPageResponse != null ? _searchFilterModalDialogPageResponse!.brandSearchRelated : null,
-                lastCategorySearchRelated: _searchFilterModalDialogPageResponse != null ? _searchFilterModalDialogPageResponse!.categorySearchRelated : null,
-                lastProvinceSearchRelated: _searchFilterModalDialogPageResponse != null ? _searchFilterModalDialogPageResponse!.provinceSearchRelated : null,
-                lastSearchSortBy: _searchFilterModalDialogPageResponse != null ? _searchFilterModalDialogPageResponse!.searchSortBy : null,
-                lastPriceMin: _searchFilterModalDialogPageResponse != null ? _searchFilterModalDialogPageResponse!.priceMin : null,
-                lastPriceMax: _searchFilterModalDialogPageResponse != null ? _searchFilterModalDialogPageResponse!.priceMax : null,
-              )
-            );
-            if (result is SearchFilterModalDialogPageResponse) {
-              _searchFilterModalDialogPageResponse = result;
-              _search(
-                resetFilter: false,
-                saveOriginalSearchResponse: false
-              );
-            }
-          },
+          onTapSearchFilterIcon: _gotoFilterPage,
           readOnly: _searchStatus == 1,
           searchTextEditingController: _searchTextEditingController,
           filterIconButtonColor: _searchFilterModalDialogPageResponse.hasFilterResponse ? Theme.of(context).colorScheme.primary : null,
