@@ -38,6 +38,7 @@ import '../../itemtypelistsubinterceptor/shimmer_container_item_type_list_sub_in
 import '../../itemtypelistsubinterceptor/stack_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/verticalgriditemtypelistsubinterceptor/vertical_grid_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/video_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/widget_substitution_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/wishlist_item_type_list_sub_interceptor.dart';
 import '../../typedef.dart';
 import '../item_type_list_interceptor_parameter.dart';
@@ -273,6 +274,11 @@ class ListItemControllerStateItemTypeInterceptorChecker extends ItemTypeListInte
       listItemControllerStateItemTypeInterceptorChecker: this
     ),
     NewsItemTypeListSubInterceptor(
+      padding: padding,
+      itemSpacing: itemSpacing,
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
+    WidgetSubstitutionItemTypeListSubInterceptor(
       padding: padding,
       itemSpacing: itemSpacing,
       listItemControllerStateItemTypeInterceptorChecker: this

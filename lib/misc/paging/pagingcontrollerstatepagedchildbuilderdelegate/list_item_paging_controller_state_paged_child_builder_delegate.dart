@@ -289,7 +289,7 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
   @override
   ItemWidgetBuilder<ListItemControllerState> get itemBuilder => _itemBuilder;
 
-  Widget _itemBuilder<ListItemControllerState>(BuildContext context, ListItemControllerState item, int index) {
+  Widget _itemBuilder(BuildContext context, ListItemControllerState item, int index) {
     if (item is FailedPromptIndicatorListItemControllerState) {
       return WidgetHelper.buildFailedPromptIndicatorFromErrorProvider(context: context, errorProvider: item.errorProvider, e: item.e);
     } else if (item is CarouselListItemControllerState || item is ShimmerCarouselListItemControllerState) {
@@ -662,12 +662,25 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
       );
     } else if (item is WidgetSubstitutionListItemControllerState) {
       return item.widgetSubstitution(context, index);
+    } else if (item is WidgetSubstitutionWithInjectionListItemControllerState) {
+      List<ListItemControllerState> widgetSubstitutionListItemControllerStateList = [];
+      if (item.onInjectListItemControllerState != null) {
+        widgetSubstitutionListItemControllerStateList.addAll(
+          item.onInjectListItemControllerState!()
+        );
+      }
+      List<Widget> result = [];
+      for (int i = 0; i < widgetSubstitutionListItemControllerStateList.length; i++) {
+        Widget columnChild = _itemBuilder(context, widgetSubstitutionListItemControllerStateList[i], index);
+        result.add(columnChild);
+      }
+      return item.widgetSubstitutionWithInjection(context, index, result);
     } else if (item is IconTitleAndDescriptionListItemControllerState) {
       return IconTitleAndDescriptionListItem(
         title: item.title,
         description: item.description,
         titleAndDescriptionItemInterceptor: item.titleAndDescriptionItemInterceptor,
-        icon: item.iconListItemControllerState != null ? _itemBuilder(context, item.iconListItemControllerState, index) : null,
+        icon: item.iconListItemControllerState != null ? _itemBuilder(context, item.iconListItemControllerState!, index) : null,
         space: item.space,
         verticalSpace: item.verticalSpace,
       );
