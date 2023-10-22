@@ -282,7 +282,11 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Sort By": "Sorting Berdasarkan",
       "Price Range": "Rentang Harga",
       "Price From": "Harga Dari",
+      "Input Price From": "Masukan Harga Dari",
+      "Type Price From": "Ketikan Harga Dari",
       "Price To": "Harga Ke",
+      "Input Price To": "Masukan Harga Ke",
+      "Type Price To": "Ketikan Harga Ke",
       "No Value": "Tidak Ada Nilai"
     }
   };
