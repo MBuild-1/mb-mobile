@@ -97,8 +97,8 @@ class SearchItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListIt
                   Constant.textInIdLanguageKey: "Hasil Pencarian"
                 }).toEmptyStringNonNull,
                 description: MultiLanguageString({
-                  Constant.textEnUsLanguageKey: "There are ${oldItemType.searchResultCount} search result ${hasSearchFilter ? " with filter:" : "."}",
-                  Constant.textInIdLanguageKey: "Terdapat ${oldItemType.searchResultCount} hasil pencarian ${hasSearchFilter ? " dengan filter:" : "."}"
+                  Constant.textEnUsLanguageKey: "There are ${oldItemType.searchResultCount} search result${hasSearchFilter ? " with filter:" : "."}",
+                  Constant.textInIdLanguageKey: "Terdapat ${oldItemType.searchResultCount} hasil pencarian${hasSearchFilter ? " dengan filter:" : "."}"
                 }).toEmptyStringNonNull,
                 verticalSpace: 0.3.h,
               ),
