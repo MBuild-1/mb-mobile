@@ -304,20 +304,24 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
       return noContent();
     }
     _searchResponseLoadDataResult = NoLoadDataResult<SearchResponse>();
-    LoadDataResult<StoreKeywordForSearchHistoryResponse> storeKeywordForSearchHistoryLoadDataResult = await widget.searchController.storeKeywordForSearchHistory(
-      StoreKeywordForSearchHistoryParameter(
-        keyword: _searchTextEditingController.text.trim()
-      ),
-    );
-    if (storeKeywordForSearchHistoryLoadDataResult.isFailed) {
-      if (!storeKeywordForSearchHistoryLoadDataResult.isFailedBecauseCancellation) {
-        return storeKeywordForSearchHistoryLoadDataResult.map((_) => throw UnimplementedError());
-      } else {
-        return noContent();
+    if (pageKey == 1) {
+      LoadDataResult<StoreKeywordForSearchHistoryResponse> storeKeywordForSearchHistoryLoadDataResult = await widget.searchController.storeKeywordForSearchHistory(
+        StoreKeywordForSearchHistoryParameter(
+          keyword: _searchTextEditingController.text.trim()
+        ),
+      );
+      if (storeKeywordForSearchHistoryLoadDataResult.isFailed) {
+        if (!storeKeywordForSearchHistoryLoadDataResult.isFailedBecauseCancellation) {
+          return storeKeywordForSearchHistoryLoadDataResult.map((_) => throw UnimplementedError());
+        } else {
+          return noContent();
+        }
       }
     }
     SearchParameter searchParameter = SearchParameter(
-      query: _searchTextEditingController.text.trim()
+      query: _searchTextEditingController.text.trim(),
+      page: pageKey,
+      pageSize: 30
     );
     if (_searchFilterModalDialogPageResponse != null) {
       searchParameter.searchSortBy = _searchFilterModalDialogPageResponse!.searchSortBy;
@@ -328,10 +332,25 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
       searchParameter.categorySearchRelated = _searchFilterModalDialogPageResponse!.categorySearchRelated;
     }
     _searchResponseLoadDataResult = await widget.searchController.search(searchParameter, "search");
-    if (_beginSaveOriginalSearchResponse) {
-      _beginSaveOriginalSearchResponse = false;
-      if (_searchResponseLoadDataResult.isSuccess) {
-        _originalSearchResponse = _searchResponseLoadDataResult.resultIfSuccess;
+    if (_searchResponseLoadDataResult.isFailed) {
+      if (_searchResponseLoadDataResult.isFailedBecauseCancellation) {
+        return noContent();
+      }
+    }
+    if (pageKey == 1) {
+      if (_beginSaveOriginalSearchResponse) {
+        _beginSaveOriginalSearchResponse = false;
+        if (_searchResponseLoadDataResult.isSuccess) {
+          _originalSearchResponse = _searchResponseLoadDataResult.resultIfSuccess;
+        }
+      }
+    }
+    if (pageKey > 1) {
+      if (_searchResponseLoadDataResult.isFailed) {
+        dynamic e = _searchResponseLoadDataResult.resultIfFailed!;
+        if (e is SearchNotFoundError) {
+          return noContent();
+        }
       }
     }
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -339,10 +358,10 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
     });
     LoadDataResult<PagingDataResult<ProductEntry>> productEntryLoadDataResult = _searchResponseLoadDataResult.map<PagingDataResult<ProductEntry>>(
       (value) => PagingDataResult<ProductEntry>(
-        page: 1,
-        totalPage: 1,
-        totalItem: value.searchResultList.length,
-        itemList: value.searchResultList.map<ProductEntry>(
+        page: value.paginatedSearchResultList.isNotEmpty ? 1 : 2,
+        totalPage: 2,
+        totalItem: value.paginatedSearchResultList.length,
+        itemList: value.paginatedSearchResultList.map<ProductEntry>(
           (searchResult) => searchResult as ProductEntry
         ).toList()
       )
@@ -354,6 +373,7 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
         totalItem = 1;
         resultListItemControllerState = [
           SearchContainerListItemControllerState(
+            searchResultCount: _searchResponseLoadDataResult.resultIfSuccess!.searchResultCount,
             productEntryList: productEntryPaging.itemList,
             onGetColorfulChipTabBarColor: () => Theme.of(context).colorScheme.primary,
             searchFilterModalDialogPageResponse: () => _searchFilterModalDialogPageResponse,

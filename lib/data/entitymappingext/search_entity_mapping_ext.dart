@@ -22,7 +22,8 @@ extension SearchEntityMappingExt on ResponseWrapper {
     dynamic hitsResponse = response["hits"];
     dynamic aggregationsResponse = response["aggregations"];
     return SearchResponse(
-      searchResultList: (hitsResponse["hits"] as List<dynamic>).map<SupportSearch>(
+      searchResultCount: hitsResponse["total"]["value"],
+      paginatedSearchResultList: (hitsResponse["hits"] as List<dynamic>).map<SupportSearch>(
         (responseValue) => ResponseWrapper(responseValue["_source"]).mapFromResponseToSupportSearch(wishlistList, cartList)
       ).toList(),
       brandSearchRelatedList: aggregationsResponse != null ? ResponseWrapper(aggregationsResponse["related_brands"]).mapFromResponseToBrandSearchRelatedList() : [],

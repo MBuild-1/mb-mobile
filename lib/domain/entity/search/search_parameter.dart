@@ -9,6 +9,8 @@ class SearchParameter {
   String? suggest;
   int? priceMin;
   int? priceMax;
+  int? page;
+  int? pageSize;
   BrandSearchRelated? brandSearchRelated;
   CategorySearchRelated? categorySearchRelated;
   ProvinceSearchRelated? provinceSearchRelated;
@@ -19,6 +21,8 @@ class SearchParameter {
     this.suggest,
     this.priceMin,
     this.priceMax,
+    this.page,
+    this.pageSize,
     this.brandSearchRelated,
     this.categorySearchRelated,
     this.provinceSearchRelated

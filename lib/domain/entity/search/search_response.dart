@@ -5,14 +5,16 @@ import 'searchrelated/province_search_related.dart';
 import 'support_search.dart';
 
 class SearchResponse {
-  List<SupportSearch> searchResultList;
+  int searchResultCount;
+  List<SupportSearch> paginatedSearchResultList;
   List<BrandSearchRelated> brandSearchRelatedList;
   List<CategorySearchRelated> categorySearchRelatedList;
   List<ProvinceSearchRelated> provinceSearchRelatedList;
   List<ProductSearchRelated> productSearchRelatedList;
 
   SearchResponse({
-    required this.searchResultList,
+    required this.searchResultCount,
+    required this.paginatedSearchResultList,
     required this.brandSearchRelatedList,
     required this.categorySearchRelatedList,
     required this.provinceSearchRelatedList,

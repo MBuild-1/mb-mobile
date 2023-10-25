@@ -53,10 +53,12 @@ class DefaultSearchDataSource implements SearchDataSource {
         if (searchParameter.brandSearchRelated != null) "reb": searchParameter.brandSearchRelated!.searchRelatedParameter.key,
         if (searchParameter.categorySearchRelated != null) "rec": searchParameter.categorySearchRelated!.searchRelatedParameter.key,
         if (searchParameter.provinceSearchRelated != null) "rep": searchParameter.provinceSearchRelated!.searchRelatedParameter.key,
+        if (searchParameter.page != null) "from": searchParameter.pageSize! * (searchParameter.page! - 1),
+        if (searchParameter.page != null) "size": searchParameter.pageSize!
       };
       var searchResponse = await dio.get("/elastic/entry/search", queryParameters: queryParameters, cancelToken: cancelToken)
         .map<SearchResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToSearchResponse(wishlistListResult, cartListResult));
-      if (searchResponse.searchResultList.isEmpty) {
+      if (searchResponse.paginatedSearchResultList.isEmpty) {
         throw SearchNotFoundError();
       }
       return searchResponse;

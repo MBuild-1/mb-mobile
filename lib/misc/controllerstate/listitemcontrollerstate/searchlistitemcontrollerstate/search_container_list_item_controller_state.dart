@@ -6,6 +6,7 @@ import '../../../../presentation/widget/product/product_item.dart';
 import '../list_item_controller_state.dart';
 
 class SearchContainerListItemControllerState extends ListItemControllerState {
+  int searchResultCount;
   List<ProductEntry> productEntryList;
   Color Function() onGetColorfulChipTabBarColor;
   void Function() onUpdateState;
@@ -16,6 +17,7 @@ class SearchContainerListItemControllerState extends ListItemControllerState {
   OnAddCartWithProductAppearanceData onAddProductCart;
 
   SearchContainerListItemControllerState({
+    required this.searchResultCount,
     required this.productEntryList,
     required this.onGetColorfulChipTabBarColor,
     required this.onUpdateState,

@@ -97,8 +97,8 @@ class SearchItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListIt
                   Constant.textInIdLanguageKey: "Hasil Pencarian"
                 }).toEmptyStringNonNull,
                 description: MultiLanguageString({
-                  Constant.textEnUsLanguageKey: "There are ${oldItemType.productEntryList.length} search result${hasSearchFilter ? " with filter:" : "."}",
-                  Constant.textInIdLanguageKey: "Terdapat ${oldItemType.productEntryList.length} hasil pencarian${hasSearchFilter ? " dengan filter:" : "."}"
+                  Constant.textEnUsLanguageKey: "There are ${oldItemType.searchResultCount} search result ${hasSearchFilter ? " with filter:" : "."}",
+                  Constant.textInIdLanguageKey: "Terdapat ${oldItemType.searchResultCount} hasil pencarian ${hasSearchFilter ? " dengan filter:" : "."}"
                 }).toEmptyStringNonNull,
                 verticalSpace: 0.3.h,
               ),
@@ -271,8 +271,8 @@ class SearchItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListIt
         if (oldItemType.onGetSearchText().isNotEmptyString) {
           // Suggestion
           int k = 0;
-          while (k < searchResponse.searchResultList.length) {
-            ProductEntry productEntry = searchResponse.searchResultList[k] as ProductEntry;
+          while (k < searchResponse.paginatedSearchResultList.length) {
+            ProductEntry productEntry = searchResponse.paginatedSearchResultList[k] as ProductEntry;
             listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
               i,
               ListItemControllerStateWrapper(
