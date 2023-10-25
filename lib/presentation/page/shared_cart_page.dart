@@ -536,7 +536,6 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
           _updateSharedCartDataAndState();
         },
         onShowSharedCartSummaryProcessCallback: (cartSummaryLoadDataResult) async {
-          print("Cart summary: $cartSummaryLoadDataResult");
           setState(() {
             _sharedCartSummaryLoadDataResult = cartSummaryLoadDataResult;
           });
