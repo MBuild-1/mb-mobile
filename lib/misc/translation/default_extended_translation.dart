@@ -303,7 +303,8 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "No Value": "Tidak Ada Nilai",
       "Empty": "Kosong",
       "Profile": "Profil",
-      "Change Profile Avatar": "Ganti Avatar Profil"
+      "Change Profile Avatar": "Ganti Avatar Profil",
+      "Confirm Arrived": "Konfirmasi Sampai"
     }
   };
 

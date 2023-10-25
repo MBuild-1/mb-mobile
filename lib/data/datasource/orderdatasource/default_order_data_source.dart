@@ -8,6 +8,8 @@ import 'package:masterbagasi/misc/ext/string_ext.dart';
 import '../../../domain/entity/additionalitem/additional_item.dart';
 import '../../../domain/entity/cart/cart.dart';
 import '../../../domain/entity/cart/support_cart.dart';
+import '../../../domain/entity/order/arrived_order_request.dart';
+import '../../../domain/entity/order/arrived_order_response.dart';
 import '../../../domain/entity/order/combined_order.dart';
 import '../../../domain/entity/order/create_order_parameter.dart';
 import '../../../domain/entity/order/order.dart';
@@ -121,6 +123,14 @@ class DefaultOrderDataSource implements OrderDataSource {
     return DioHttpClientProcessing((cancelToken) {
       return dio.get("/user/order/${orderBasedIdParameter.orderId}", cancelToken: cancelToken)
         .map<Order>(onMap: (value) => value.wrapResponse().mapFromResponseToOrder());
+    });
+  }
+
+  @override
+  FutureProcessing<ArrivedOrderResponse> arrivedOrder(ArrivedOrderParameter arrivedOrderParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.post("/user/order/arrived/${arrivedOrderParameter.combinedOrderId}", cancelToken: cancelToken)
+        .map<ArrivedOrderResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToArrivedOrderResponse());
     });
   }
 }

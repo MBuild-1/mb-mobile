@@ -8,6 +8,7 @@ import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../../domain/entity/additionalitem/additional_item.dart';
+import '../../domain/entity/order/arrived_order_response.dart';
 import '../../domain/entity/order/combined_order.dart';
 import '../../domain/entity/order/order.dart';
 import '../../domain/entity/order/order_detail.dart';
@@ -195,5 +196,9 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
     } else {
       throw MessageError(message: "Support order product not suitable");
     }
+  }
+
+  ArrivedOrderResponse mapFromResponseToArrivedOrderResponse() {
+    return ArrivedOrderResponse();
   }
 }

@@ -117,6 +117,7 @@ class _StatefulWaitingToBeReviewedDeliveryReviewSubControllerMediatorWidgetState
         OrderContainerListItemControllerState(
           orderList: [],
           onOrderTap: (order) {},
+          onConfirmArrived: (order) {},
           onBuyAgainTap: widget.onBuyAgainTap,
           onUpdateState: () => setState(() {}),
           orderTabColorfulChipTabBarController: _orderTabColorfulChipTabBarController,

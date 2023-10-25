@@ -11,6 +11,7 @@ class OrderContainerListItemControllerState extends ListItemControllerState {
   void Function() onUpdateState;
   void Function(CombinedOrder) onOrderTap;
   void Function(CombinedOrder) onBuyAgainTap;
+  void Function(CombinedOrder) onConfirmArrived;
   ColorfulChipTabBarController orderTabColorfulChipTabBarController;
   List<ColorfulChipTabBarData> orderColorfulChipTabBarDataList;
   ErrorProvider errorProvider;
@@ -22,6 +23,7 @@ class OrderContainerListItemControllerState extends ListItemControllerState {
     required this.onUpdateState,
     required this.onOrderTap,
     required this.onBuyAgainTap,
+    required this.onConfirmArrived,
     required this.orderTabColorfulChipTabBarController,
     required this.orderColorfulChipTabBarDataList,
     required this.errorProvider,

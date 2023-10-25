@@ -52,7 +52,8 @@ class OrderItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListIte
       List<VerticalOrderListItemControllerState> verticalOrderListItemControllerStateList = oldItemType.orderList.map<VerticalOrderListItemControllerState>(
         (order) => VerticalOrderListItemControllerState(
           order: order,
-          onBuyAgainTap: oldItemType.onBuyAgainTap
+          onBuyAgainTap: oldItemType.onBuyAgainTap,
+          onConfirmArrived: oldItemType.onConfirmArrived
         )
       ).toList();
       List<ListItemControllerState> newListItemControllerState = [];

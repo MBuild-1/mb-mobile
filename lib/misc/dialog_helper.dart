@@ -333,6 +333,33 @@ class _DialogHelperImpl {
     );
   }
 
+  void showPromptConfirmArrived(BuildContext context, void Function() confirmArrived) {
+    DialogHelper.showPromptYesNoDialog(
+      context: context,
+      prompt: (context) => Column(
+        children: [
+          Text("Confirm Arrived".tr, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18), textAlign: TextAlign.center),
+          const SizedBox(height: 4),
+          Text(
+            MultiLanguageString({
+              Constant.textEnUsLanguageKey: "Are you sure to confirm arrived?",
+              Constant.textInIdLanguageKey: "Apakah anda yakin ingin konfirmasi sampai?"
+            }).toEmptyStringNonNull,
+            textAlign: TextAlign.center
+          ),
+          const SizedBox(height: 4),
+        ]
+      ),
+      onYesPromptButtonTap: (_) async {
+        Get.back();
+        confirmArrived();
+      },
+      onNoPromptButtonTap: (_) async {
+        Get.back();
+      },
+    );
+  }
+
   void showPromptUnderConstruction(BuildContext context) {
     DialogHelper.showPromptOkDialog(
       context: context,

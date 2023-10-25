@@ -102,6 +102,7 @@ import '../domain/usecase/answer_help_conversation_use_case.dart';
 import '../domain/usecase/answer_order_conversation_use_case.dart';
 import '../domain/usecase/answer_product_conversation_use_case.dart';
 import '../domain/usecase/approve_or_reject_request_bucket_use_case.dart';
+import '../domain/usecase/arrived_order_use_case.dart';
 import '../domain/usecase/change_additional_item_use_case.dart';
 import '../domain/usecase/change_address_use_case.dart';
 import '../domain/usecase/change_password_use_case.dart';
@@ -640,6 +641,7 @@ class _Injector {
     locator.registerLazySingleton<GetOrderPagingUseCase>(() => GetOrderPagingUseCase(orderRepository: locator()));
     locator.registerLazySingleton<GetShippingReviewOrderListUseCase>(() => GetShippingReviewOrderListUseCase(orderRepository: locator()));
     locator.registerLazySingleton<GetOrderBasedIdUseCase>(() => GetOrderBasedIdUseCase(orderRepository: locator()));
+    locator.registerLazySingleton<ArrivedOrderUseCase>(() => ArrivedOrderUseCase(orderRepository: locator()));
     locator.registerLazySingleton<CheckRatesForVariousCountriesUseCase>(() => CheckRatesForVariousCountriesUseCase(cargoRepository: locator()));
     locator.registerLazySingleton<GetCountryListUseCase>(() => GetCountryListUseCase(addressRepository: locator()));
     locator.registerLazySingleton<GetCountryPagingUseCase>(() => GetCountryPagingUseCase(addressRepository: locator()));

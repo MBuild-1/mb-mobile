@@ -4,29 +4,24 @@ import 'package:masterbagasi/misc/ext/number_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../domain/entity/delivery/delivery_review.dart';
 import '../../../domain/entity/order/combined_order.dart';
 import '../../../domain/entity/order/order_product_detail.dart';
-import '../../../domain/entity/order/support_order_product.dart';
 import '../../../misc/constant.dart';
 import '../../../misc/date_util.dart';
 import '../../../misc/dialog_helper.dart';
-import '../../../misc/main_route_observer.dart';
 import '../../../misc/multi_language_string.dart';
 import '../../../misc/page_restoration_helper.dart';
-import '../../../misc/string_util.dart';
-import '../../page/modaldialogpage/give_review_delivery_review_detail_modal_dialog_page.dart';
 import '../button/custombutton/sized_outline_gradient_button.dart';
 import '../colorful_chip.dart';
 import '../modified_divider.dart';
 import '../modified_svg_picture.dart';
-import '../modifiedcachednetworkimage/product_modified_cached_network_image.dart';
 import 'order_conclusion_item.dart';
 import 'order_product_detail_item.dart';
 
 abstract class OrderItem extends StatelessWidget {
   final CombinedOrder order;
   final void Function(CombinedOrder) onBuyAgainTap;
+  final void Function(CombinedOrder) onConfirmArrived;
 
   @protected
   double? get itemWidth;
@@ -34,7 +29,8 @@ abstract class OrderItem extends StatelessWidget {
   const OrderItem({
     super.key,
     required this.order,
-    required this.onBuyAgainTap
+    required this.onBuyAgainTap,
+    required this.onConfirmArrived
   });
 
   @override
@@ -100,28 +96,51 @@ abstract class OrderItem extends StatelessWidget {
                     ),
                     Builder(
                       builder: (context) {
+                        List<Widget> rowWidget = [];
+                        void addRowWidget(Widget newWidget) {
+                          rowWidget.addAll([
+                            if (rowWidget.isNotEmpty) ...[
+                              const SizedBox(width: 10),
+                            ],
+                            newWidget
+                          ]);
+                        }
                         bool showPayButton = false;
                         if (order.orderProduct.orderDetail.status == "pending") {
                           showPayButton = true;
                         }
                         if (showPayButton) {
-                          return SizedOutlineGradientButton(
-                            onPressed: () async {
-                              DialogHelper.showLoadingDialog(context);
-                              await launchUrl(
-                                Uri.parse("https://app.midtrans.com/snap/v2/vtweb/${order.orderProduct.orderDetail.snapToken}"),
-                                mode: LaunchMode.externalApplication
-                              );
-                              Get.back();
-                            },
-                            text: "Pay".tr,
-                            customPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                            outlineGradientButtonType: OutlineGradientButtonType.solid,
-                            outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
+                          addRowWidget(
+                            SizedOutlineGradientButton(
+                              onPressed: () async {
+                                DialogHelper.showLoadingDialog(context);
+                                await launchUrl(
+                                  Uri.parse("https://app.midtrans.com/snap/v2/vtweb/${order.orderProduct.orderDetail.snapToken}"),
+                                  mode: LaunchMode.externalApplication
+                                );
+                                Get.back();
+                              },
+                              text: "Pay".tr,
+                              customPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                              outlineGradientButtonType: OutlineGradientButtonType.solid,
+                              outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
+                            )
                           );
-                        } else {
-                          return Container();
                         }
+                        if (order.status.toLowerCase() == "sedang dikirim") {
+                          addRowWidget(
+                            SizedOutlineGradientButton(
+                              onPressed:() => onConfirmArrived(order),
+                              text: "Confirm Arrived".tr,
+                              customPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                              outlineGradientButtonType: OutlineGradientButtonType.solid,
+                              outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
+                            )
+                          );
+                        }
+                        return Row(
+                          children: rowWidget
+                        );
                       }
                     ),
                   ],

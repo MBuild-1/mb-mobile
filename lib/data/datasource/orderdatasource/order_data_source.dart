@@ -1,3 +1,5 @@
+import '../../../domain/entity/order/arrived_order_request.dart';
+import '../../../domain/entity/order/arrived_order_response.dart';
 import '../../../domain/entity/order/combined_order.dart';
 import '../../../domain/entity/order/create_order_parameter.dart';
 import '../../../domain/entity/order/order.dart';
@@ -16,4 +18,5 @@ abstract class OrderDataSource {
   FutureProcessing<List<CombinedOrder>> shippingReviewOrderList(ShippingReviewOrderListParameter shippingReviewOrderListParameter);
   FutureProcessing<PagingDataResult<CombinedOrder>> orderPaging(OrderPagingParameter orderPagingParameter);
   FutureProcessing<Order> orderBasedId(OrderBasedIdParameter orderBasedIdParameter);
+  FutureProcessing<ArrivedOrderResponse> arrivedOrder(ArrivedOrderParameter arrivedOrderParameter);
 }

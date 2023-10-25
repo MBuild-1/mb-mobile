@@ -1122,6 +1122,7 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
         return VerticalOrderItem(
           order: item.order,
           onBuyAgainTap: item.onBuyAgainTap,
+          onConfirmArrived: item.onConfirmArrived,
         );
       } else if (item is IsRunningOrderListItemControllerState) {
         return IsRunningOrderItem(

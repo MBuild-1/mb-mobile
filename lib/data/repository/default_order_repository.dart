@@ -1,3 +1,7 @@
+import 'package:masterbagasi/domain/entity/order/arrived_order_request.dart';
+
+import 'package:masterbagasi/domain/entity/order/arrived_order_response.dart';
+
 import '../../domain/entity/order/combined_order.dart';
 import '../../domain/entity/order/create_order_parameter.dart';
 import '../../domain/entity/order/order.dart';
@@ -47,5 +51,10 @@ class DefaultOrderRepository implements OrderRepository {
   @override
   FutureProcessing<LoadDataResult<Order>> orderBasedId(OrderBasedIdParameter orderBasedIdParameter) {
     return orderDataSource.orderBasedId(orderBasedIdParameter).mapToLoadDataResult<Order>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<ArrivedOrderResponse>> arrivedOrder(ArrivedOrderParameter arrivedOrderParameter) {
+    return orderDataSource.arrivedOrder(arrivedOrderParameter).mapToLoadDataResult<ArrivedOrderResponse>();
   }
 }

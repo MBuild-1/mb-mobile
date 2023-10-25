@@ -4,7 +4,8 @@ class VerticalOrderItem extends OrderItem {
   const VerticalOrderItem({
     super.key,
     required super.order,
-    required super.onBuyAgainTap
+    required super.onBuyAgainTap,
+    required super.onConfirmArrived
   });
 
   @override
