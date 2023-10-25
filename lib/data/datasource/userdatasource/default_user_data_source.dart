@@ -120,16 +120,21 @@ class DefaultUserDataSource implements UserDataSource {
 
   @override
   FutureProcessing<EditUserResponse> editUser(EditUserParameter editUserParameter) {
-    return DioHttpClientProcessing((cancelToken) {
-      dynamic formData = <String, dynamic>{
-        if (editUserParameter.name.isNotEmptyString) "name": editUserParameter.name,
-        if (editUserParameter.email.isNotEmptyString) "email": editUserParameter.email,
-        if (editUserParameter.gender.isNotEmptyString) "gender": editUserParameter.gender,
-        if (editUserParameter.birthDateTime != null) "date_birth": DateUtil.standardDateFormat.format(editUserParameter.birthDateTime!),
-        if (editUserParameter.placeBirth.isNotEmptyString) "place_birth": editUserParameter.placeBirth,
-        if (editUserParameter.phoneNumber.isNotEmptyString) "phone_number": editUserParameter.phoneNumber
-      };
-      return dio.put("/user/profile", data: formData, cancelToken: cancelToken)
+    return DioHttpClientProcessing((cancelToken) async {
+      print("Avatar: ${editUserParameter.avatar.toStringNonNull}");
+      dynamic formData = FormData.fromMap(
+        <String, dynamic>{
+          "_method": "PUT",
+          if (editUserParameter.avatar.isNotEmptyString) "avatar": await MultipartFile.fromFile(editUserParameter.avatar!),
+          if (editUserParameter.name.isNotEmptyString) "name": editUserParameter.name,
+          if (editUserParameter.email.isNotEmptyString) "email": editUserParameter.email,
+          if (editUserParameter.gender.isNotEmptyString) "gender": editUserParameter.gender,
+          if (editUserParameter.birthDateTime != null) "date_birth": DateUtil.standardDateFormat.format(editUserParameter.birthDateTime!),
+          if (editUserParameter.placeBirth.isNotEmptyString) "place_birth": editUserParameter.placeBirth,
+          if (editUserParameter.phoneNumber.isNotEmptyString) "phone_number": editUserParameter.phoneNumber
+        }
+      );
+      return dio.post("/user/profile", data: formData, cancelToken: cancelToken)
         .map<EditUserResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToEditUserResponse());
     });
   }

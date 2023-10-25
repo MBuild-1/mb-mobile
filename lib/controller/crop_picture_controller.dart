@@ -21,12 +21,17 @@ class CropPictureParameter {
 
 extension CropPictureParameterExt on CropPictureParameter {
   String toEncodeBase64String() {
-    if (!(parameter is String || parameter is Map)) {
+    dynamic effectiveParameter;
+    if (parameter == null) {
+      effectiveParameter = "";
+    } else if (!(parameter is String || parameter is Map)) {
       throw MessageError(message: "Parameter must be a string or map");
+    } else {
+      effectiveParameter = parameter;
     }
     return StringUtil.encodeBase64StringFromJson(
       <String, dynamic>{
-        if (parameter != null) "parameter": parameter,
+        if (effectiveParameter != null) "parameter": effectiveParameter,
         "picture_path": picturePath,
         if (cropAspectRatio != null) "crop_aspect_ratio": cropAspectRatio
       }

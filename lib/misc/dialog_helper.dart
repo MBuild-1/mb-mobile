@@ -441,7 +441,16 @@ class _DialogHelperImpl {
               children: [
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-                  child: Text("Select Image With".tr, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold))
+                  child: Text(
+                    MultiLanguageString({
+                      Constant.textEnUsLanguageKey: "Select Image With",
+                      Constant.textInIdLanguageKey: "Pilih Gambar Dengan"
+                    }).toStringNonNull,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold
+                    )
+                  )
                 ),
                 ProfileMenuItem(
                   onTap: () async {
@@ -467,7 +476,10 @@ class _DialogHelperImpl {
                     }
                   },
                   icon: (BuildContext context) => const Icon(Icons.image),
-                  title: 'Gallery'.tr,
+                  title: MultiLanguageString({
+                    Constant.textEnUsLanguageKey: "Gallery",
+                    Constant.textInIdLanguageKey: "Galeri"
+                  }).toStringNonNull,
                 ),
                 ProfileMenuItem(
                   onTap: () async {
@@ -493,7 +505,10 @@ class _DialogHelperImpl {
                     }
                   },
                   icon: (BuildContext context) => const Icon(Icons.camera),
-                  title: 'Camera'.tr,
+                  title: MultiLanguageString({
+                    Constant.textEnUsLanguageKey: "Camera",
+                    Constant.textInIdLanguageKey: "Kamera"
+                  }).toStringNonNull
                 ),
                 if (onRemoveImage != null)
                   ProfileMenuItem(
@@ -502,7 +517,10 @@ class _DialogHelperImpl {
                       Get.back();
                     },
                     icon: (BuildContext context) => const Icon(Icons.delete),
-                    title: 'Remove Image'.tr,
+                    title: MultiLanguageString({
+                      Constant.textEnUsLanguageKey: "Remove Image",
+                      Constant.textInIdLanguageKey: "Hapus Gambar"
+                    }).toStringNonNull
                   )
               ],
             ),

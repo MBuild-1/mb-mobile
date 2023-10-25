@@ -302,7 +302,8 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Type Price To": "Ketikan Harga Ke",
       "No Value": "Tidak Ada Nilai",
       "Empty": "Kosong",
-      "Profile": "Profil"
+      "Profile": "Profil",
+      "Change Profile Avatar": "Ganti Avatar Profil"
     }
   };
 

@@ -1,8 +1,10 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
+import 'package:sizer/sizer.dart';
 
 import '../../controller/edit_profile_controller.dart';
 import '../../domain/entity/user/edituser/edit_user_parameter.dart';
@@ -11,28 +13,37 @@ import '../../domain/entity/user/user.dart';
 import '../../domain/usecase/edit_user_use_case.dart';
 import '../../domain/usecase/get_user_use_case.dart';
 import '../../misc/additionalloadingindicatorchecker/edit_profile_additional_paging_result_parameter_checker.dart';
+import '../../misc/constant.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/profilemenulistitemcontrollerstate/profile_menu_list_item_controller_state.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/widget_substitution_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
 import '../../misc/date_util.dart';
 import '../../misc/dialog_helper.dart';
 import '../../misc/edit_profile_helper.dart';
 import '../../misc/errorprovider/error_provider.dart';
+import '../../misc/gender.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/controller_manager.dart';
+import '../../misc/multi_language_string.dart';
 import '../../misc/page_restoration_helper.dart';
 import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
+import '../../misc/string_util.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
+import '../widget/profile_picture_cache_network_image.dart';
+import '../widget/tap_area.dart';
 import 'crop_picture_page.dart';
 import 'getx_page.dart';
 import 'modaldialogpage/input_value_modal_dialog_page.dart';
+import 'modaldialogpage/select_provinces_modal_dialog_page.dart';
+import 'modaldialogpage/select_value_modal_dialog_page.dart';
 
 class EditProfilePage extends RestorableGetxPage<_EditProfilePageRestoration> {
   late final ControllerMember<EditProfileController> _editProfileController = ControllerMember<EditProfileController>().addToControllerManager(controllerManager);
@@ -60,13 +71,35 @@ class EditProfilePage extends RestorableGetxPage<_EditProfilePageRestoration> {
   }
 
   @override
-  _EditProfilePageRestoration createPageRestoration() => _EditProfilePageRestoration();
+  _EditProfilePageRestoration createPageRestoration() => _EditProfilePageRestoration(
+    onCompleteSetProfilePicture: (cropPictureSerializedJsonResult) {
+      if (cropPictureSerializedJsonResult != null) {
+        Get.back();
+        Map<String, dynamic> result = StringUtil.decodeBase64StringToJson(cropPictureSerializedJsonResult);
+        String imagePath = result["image_path"];
+        _editProfileController.controller.editProfile(
+          EditUserParameter(
+            avatar: imagePath
+          )
+        );
+      } else {
+        Get.back();
+      }
+    }
+  );
 }
 
 class _EditProfilePageRestoration extends MixableGetxPageRestoration with CropPicturePageRestorationMixin {
+  final RouteCompletionCallback<String?>? _onCompleteSetProfilePicture;
+
+  _EditProfilePageRestoration({
+    RouteCompletionCallback<String?>? onCompleteSetProfilePicture
+  }) : _onCompleteSetProfilePicture = onCompleteSetProfilePicture;
+
   @override
   // ignore: unnecessary_overrides
   void initState() {
+    onCompleteSetProfilePicture = _onCompleteSetProfilePicture;
     super.initState();
   }
 
@@ -179,6 +212,23 @@ class _StatefulEditProfileControllerMediatorWidgetState extends State<_StatefulE
   late final ModifiedPagingController<int, ListItemControllerState> _editProfileListItemPagingController;
   late final PagingControllerState<int, ListItemControllerState> _editProfileListItemPagingControllerState;
 
+  final List<Gender> _genderList = <Gender>[
+    Gender(
+      value: "Male",
+      text: MultiLanguageString({
+        Constant.textEnUsLanguageKey: "Male",
+        Constant.textInIdLanguageKey: "Laki-laki"
+      })
+    ),
+    Gender(
+      value: "Female",
+      text: MultiLanguageString({
+        Constant.textEnUsLanguageKey: "Female",
+        Constant.textInIdLanguageKey: "Perempuan"
+      })
+    ),
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -223,8 +273,45 @@ class _StatefulEditProfileControllerMediatorWidgetState extends State<_StatefulE
       }
     }
     return userLoadDataResult.map<PagingResult<ListItemControllerState>>((user) {
+      Gender? getGenderBasedUserGender() {
+        Iterable<Gender> gender = _genderList.where((gender) => user.userProfile.gender == gender.value);
+        if (gender.isEmpty) {
+          return null;
+        }
+        return gender.first;
+      }
       return PagingDataResult<ListItemControllerState>(
         itemList: [
+          WidgetSubstitutionListItemControllerState(
+            widgetSubstitution: (context, index) {
+              void onTap() async {
+                DialogHelper.showSelectingImageDialog(
+                  context, cropAspectRatio: 1.0
+                );
+              }
+              return Column(
+                children: [
+                  TapArea(
+                    onTap: onTap,
+                    child: ProfilePictureCacheNetworkImage(
+                      profileImageUrl: user.userProfile.avatar.toEmptyStringNonNull,
+                      dimension: 20.w
+                    ),
+                  ),
+                  const SizedBox(height: 10.0),
+                  TapArea(
+                    onTap: onTap,
+                    child: Text(
+                      "Change Profile Avatar".tr,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary
+                      ),
+                    )
+                  )
+                ],
+              );
+            }
+          ),
           ProfileMenuListItemControllerState(
             onTap: (context) => editTextProfileField(
               context: context,
@@ -264,22 +351,35 @@ class _StatefulEditProfileControllerMediatorWidgetState extends State<_StatefulE
             icon: null
           ),
           ProfileMenuListItemControllerState(
-            onTap: (context) => editTextProfileField(
-              context: context,
-              inputValueModalDialogPageParameter: InputValueModalDialogPageParameter(
-                value: user.userProfile.gender.toEmptyStringNonNull,
-                title: () => 'Gender'.tr,
-                inputTitle: () => 'Gender'.tr,
-                inputHint: () => 'Gender'.tr,
-                inputSubmitText: () => "Submit".tr,
-                requiredMessage: () => "${"Gender is required".tr}.",
-              ),
-              onConfigureEditUserParameter: (result) => EditUserParameter(
-                gender: result
-              )
-            ),
+            onTap: (context) async {
+              dynamic result = await DialogHelper.showModalDialogPage<Gender, SelectValueModalDialogPageParameter<Gender>>(
+                context: context,
+                modalDialogPageBuilder: (context, parameter) => SelectValueModalDialogPage(
+                  selectValueModalDialogPageParameter: parameter!,
+                ),
+                parameter: SelectValueModalDialogPageParameter<Gender>(
+                  valueList: _genderList,
+                  title: MultiLanguageString({
+                    Constant.textEnUsLanguageKey: "Select Gender",
+                    Constant.textInIdLanguageKey: "Pilih Jenis Kelamin"
+                  }).toEmptyStringNonNull,
+                  onConvertToStringForItemText: (gender) => gender.text.toStringNonNull,
+                  onConvertToStringForComparing: (gender) => (gender?.value).toEmptyStringNonNull,
+                  selectedValue: () {
+                    return getGenderBasedUserGender();
+                  }()
+                ),
+              );
+              if (result is Gender) {
+                editProfile(
+                  EditUserParameter(gender: result.value)
+                );
+              }
+            },
             title: 'Gender'.tr,
-            titleInterceptor: EditProfileHelper.setTitleInterceptor(user.userProfile.gender.toStringNonNull),
+            titleInterceptor: EditProfileHelper.setTitleInterceptor(
+              (getGenderBasedUserGender()?.text).toEmptyStringNonNull
+            ),
             icon: null
           ),
           ProfileMenuListItemControllerState(

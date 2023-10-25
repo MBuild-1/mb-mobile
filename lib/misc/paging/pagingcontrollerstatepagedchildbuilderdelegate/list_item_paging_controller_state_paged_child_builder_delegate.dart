@@ -96,6 +96,7 @@ import '../../../presentation/widget/productdiscussion/vertical_product_discussi
 import '../../../presentation/widget/prompt_indicator.dart';
 import '../../../presentation/widget/province/vertical_province_item.dart';
 import '../../../presentation/widget/province_map_header_list_item.dart';
+import '../../../presentation/widget/selectvalue/vertical_select_value_item.dart';
 import '../../../presentation/widget/sharedcart/shared_cart_member_item.dart';
 import '../../../presentation/widget/shimmer_carousel_item.dart';
 import '../../../presentation/widget/address/shipping_address_indicator.dart';
@@ -222,6 +223,8 @@ import '../../controllerstate/listitemcontrollerstate/selectcountrieslistitemcon
 import '../../controllerstate/listitemcontrollerstate/selectcountrieslistitemcontrollerstate/vertical_country_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/selectprovinceslistitemcontrollerstate/province_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/selectprovinceslistitemcontrollerstate/vertical_province_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/selectvaluelistitemcontrollerstate/select_value_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/selectvaluelistitemcontrollerstate/vertical_select_value_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/shimmer_container_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/shipping_address_indicator_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/stack_container_list_item_controller_state.dart';
@@ -1099,6 +1102,17 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
           province: item.province,
           isSelected: item.isSelected,
           onSelectProvince: item.onSelectProvince
+        );
+      } else {
+        return Container();
+      }
+    } else if (item is SelectValueListItemControllerState) {
+      if (item is VerticalSelectValueListItemControllerState) {
+        return VerticalSelectValueItem(
+          value: item.value,
+          isSelected: item.isSelected,
+          onSelectValue: item.onSelectValue,
+          onConvertToStringForItemText: item.onConvertToStringForItemText
         );
       } else {
         return Container();

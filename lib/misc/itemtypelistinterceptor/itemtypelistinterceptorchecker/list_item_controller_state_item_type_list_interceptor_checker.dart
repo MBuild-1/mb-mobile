@@ -34,6 +34,7 @@ import '../../itemtypelistsubinterceptor/province_item_type_list_sub_interceptor
 import '../../itemtypelistsubinterceptor/row_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/search_filter_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/search_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/select_value_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/shimmer_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/stack_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/verticalgriditemtypelistsubinterceptor/vertical_grid_item_type_list_sub_interceptor.dart';
@@ -274,6 +275,11 @@ class ListItemControllerStateItemTypeInterceptorChecker extends ItemTypeListInte
       listItemControllerStateItemTypeInterceptorChecker: this
     ),
     NewsItemTypeListSubInterceptor(
+      padding: padding,
+      itemSpacing: itemSpacing,
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
+    SelectValueItemTypeListSubInterceptor(
       padding: padding,
       itemSpacing: itemSpacing,
       listItemControllerStateItemTypeInterceptorChecker: this

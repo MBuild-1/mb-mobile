@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:image_crop/image_crop.dart';
 import 'package:image/image.dart' as img;
+import 'package:image_crop/image_crop.dart' hide Crop, CropState;
 import 'package:image_size_getter/file_input.dart';
 import 'package:image_size_getter/image_size_getter.dart';
 
@@ -14,6 +14,7 @@ import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/manager/controller_manager.dart';
 import '../../misc/string_util.dart';
+import '../widget/modified_crop.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import 'getx_page.dart';
 
@@ -59,7 +60,7 @@ class CropPicturePage extends RestorableGetxPage<_CropPicturePageRestoration> {
                   statefulCropPictureDelegate._onCropPicture!();
                 }
               },
-              child: const Icon(Icons.check)
+              child: const Icon(Icons.check, color: Colors.black)
             )
           ],
         ),
@@ -218,6 +219,8 @@ class _StatefulCropPicturePageState extends State<_StatefulCropPicturePage> {
   final GlobalKey<CropState> _cropStateKey = GlobalKey<CropState>();
   late File _imageFile;
 
+  Size _finalSize(File file) => ImageSizeGetter.getSize(FileInput(file));
+
   @override
   void initState() {
     super.initState();
@@ -233,6 +236,7 @@ class _StatefulCropPicturePageState extends State<_StatefulCropPicturePage> {
         Crop.file(
           _imageFile,
           key: _cropStateKey,
+          scale: 1.0,
           aspectRatio: widget.cropAspectRatio ?? 1.0,
           alwaysShowGrid: true,
         )
@@ -256,7 +260,7 @@ class _StatefulCropPicturePageState extends State<_StatefulCropPicturePage> {
     );
     int finalResizedWidth = 0;
     int finalResizedHeight = 0;
-    Size finalSize = ImageSizeGetter.getSize(FileInput(file));
+    Size finalSize = _finalSize(file);
     if (finalSize.width < 128 || finalSize.height < 128) {
       finalResizedWidth = 128;
       finalResizedHeight = 128;

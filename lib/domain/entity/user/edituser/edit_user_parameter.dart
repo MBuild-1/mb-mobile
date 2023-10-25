@@ -5,6 +5,7 @@ class EditUserParameter {
   DateTime? birthDateTime;
   String? placeBirth;
   String? phoneNumber;
+  String? avatar;
 
   EditUserParameter({
     this.name,
@@ -12,6 +13,7 @@ class EditUserParameter {
     this.gender,
     this.birthDateTime,
     this.placeBirth,
-    this.phoneNumber
+    this.phoneNumber,
+    this.avatar
   });
 }
