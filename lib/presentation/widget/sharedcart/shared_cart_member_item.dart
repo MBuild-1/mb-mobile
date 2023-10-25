@@ -17,8 +17,12 @@ class SharedCartMemberItem extends StatelessWidget {
   final double shoppingItemWeightTotal;
   final bool isExpanded;
   final void Function()? onTapDelete;
+  final void Function()? onTapReady;
   final void Function()? onTapMore;
   final void Function(SharedCartAcceptOrDeclineMemberResult)? onAcceptOrDeclineMember;
+  final bool showReadyButton;
+  final bool showDeleteButton;
+  final int readyStatus;
 
   const SharedCartMemberItem({
     super.key,
@@ -26,9 +30,13 @@ class SharedCartMemberItem extends StatelessWidget {
     required this.shoppingItemTotal,
     required this.shoppingItemWeightTotal,
     required this.onTapDelete,
+    required this.onTapReady,
     required this.isExpanded,
     required this.onTapMore,
-    required this.onAcceptOrDeclineMember
+    required this.onAcceptOrDeclineMember,
+    required this.showReadyButton,
+    required this.showDeleteButton,
+    required this.readyStatus
   });
 
   @override
@@ -127,41 +135,70 @@ class SharedCartMemberItem extends StatelessWidget {
                       ],
                     )
                   ] else ...[
-                    Row(
-                      children: [
-                        Expanded(
-                          child: SizedOutlineGradientButton(
-                            onPressed: onTapDelete,
-                            text: MultiLanguageString({
-                              Constant.textInIdLanguageKey: "Hapus",
-                              Constant.textEnUsLanguageKey: "Delete"
-                            }).toStringNonNull,
-                            outlineGradientButtonType: OutlineGradientButtonType.outline,
-                            outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
-                          )
-                        ),
-                        const SizedBox(width: 10.0),
-                        Expanded(
-                          child: SizedOutlineGradientButton(
-                            onPressed: onTapMore,
-                            text: () {
-                              if (!isExpanded) {
-                                return MultiLanguageString({
-                                  Constant.textInIdLanguageKey: "Selengkapnya",
-                                  Constant.textEnUsLanguageKey: "More"
-                                });
-                              } else {
-                                return MultiLanguageString({
-                                  Constant.textInIdLanguageKey: "Sembunyikan",
-                                  Constant.textEnUsLanguageKey: "Hide"
-                                });
-                              }
-                            }().toStringNonNull,
-                            outlineGradientButtonType: OutlineGradientButtonType.solid,
-                            outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
-                          )
-                        )
-                      ],
+                    Builder(
+                      builder: (context) {
+                        bool isTapDelete = showDeleteButton && onTapDelete != null;
+                        bool isTapReady = showReadyButton && onTapReady != null;
+                        bool isNotTapDeleteAndNotReady = !isTapDelete && !isTapReady;
+                        bool isReady = readyStatus == 1;
+                        return Row(
+                          children: [
+                            if (!isNotTapDeleteAndNotReady) ...[
+                              Expanded(
+                                child: SizedOutlineGradientButton(
+                                  onPressed: () {
+                                    if (isTapDelete) {
+                                      return onTapDelete;
+                                    } else if (isTapReady) {
+                                      return onTapReady;
+                                    }
+                                    return null;
+                                  }(),
+                                  text: () {
+                                    if (isTapDelete) {
+                                      return MultiLanguageString({
+                                        Constant.textInIdLanguageKey: "Hapus",
+                                        Constant.textEnUsLanguageKey: "Delete"
+                                      });
+                                    } else if (isTapReady) {
+                                      // If "Ready" then show "Not Ready" text, because this purpose of this button is to make "Not Ready" if tapped.
+                                      // Else if "Not Ready" then show "Ready" text, because this purpose of this button is to make "Ready" if tapped.
+                                      return MultiLanguageString({
+                                        Constant.textInIdLanguageKey: isReady ? "Tidak Siap" : "Siap",
+                                        Constant.textEnUsLanguageKey: isReady ? "Not Ready" : "Ready"
+                                      });
+                                    }
+                                    return null;
+                                  }().toStringNonNull,
+                                  outlineGradientButtonType: OutlineGradientButtonType.outline,
+                                  outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
+                                )
+                              ),
+                              const SizedBox(width: 10.0),
+                            ],
+                            Expanded(
+                              child: SizedOutlineGradientButton(
+                                onPressed: onTapMore,
+                                text: () {
+                                  if (!isExpanded) {
+                                    return MultiLanguageString({
+                                      Constant.textInIdLanguageKey: "Selengkapnya",
+                                      Constant.textEnUsLanguageKey: "More"
+                                    });
+                                  } else {
+                                    return MultiLanguageString({
+                                      Constant.textInIdLanguageKey: "Sembunyikan",
+                                      Constant.textEnUsLanguageKey: "Hide"
+                                    });
+                                  }
+                                }().toStringNonNull,
+                                outlineGradientButtonType: OutlineGradientButtonType.solid,
+                                outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
+                              )
+                            )
+                          ],
+                        );
+                      }
                     )
                   ]
                 ]

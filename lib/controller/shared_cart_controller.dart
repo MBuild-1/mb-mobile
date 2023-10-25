@@ -342,6 +342,9 @@ class SharedCartController extends BaseGetxController {
       ).future(
         parameter: apiRequestManager.addRequestToCancellationPart("shared-cart-summary").value
       );
+      if (cartSummaryLoadDataResult.isFailedBecauseCancellation) {
+        return;
+      }
       _mainSharedCartDelegate!.onShowSharedCartSummaryProcessCallback(cartSummaryLoadDataResult);
     }
   }

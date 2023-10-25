@@ -1267,9 +1267,13 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
         shoppingItemTotal: shoppingItemTotal,
         shoppingItemWeightTotal: shoppingItemWeightTotal,
         onTapDelete: item.onTapDelete,
+        onTapReady: item.onTapReady,
         onTapMore: item.onTapMore,
+        showReadyButton: item.showReadyButton,
+        showDeleteButton: item.showDeleteButton,
         isExpanded: item.isExpanded,
         onAcceptOrDeclineMember: item.onAcceptOrDeclineMember,
+        readyStatus: item.readyStatus,
       );
     } else {
       return Container();

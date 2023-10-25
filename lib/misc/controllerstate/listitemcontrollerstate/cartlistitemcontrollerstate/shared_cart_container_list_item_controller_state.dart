@@ -18,6 +18,7 @@ class SharedCartContainerListItemControllerState extends CartContainerListItemCo
   ErrorProvider Function() onGetErrorProvider;
   void Function(AcceptOrDeclineSharedCartMemberParameter) onAcceptOrDeclineSharedCart;
   void Function(BucketMember) onRemoveSharedCartMember;
+  void Function(BucketMember) onTriggerReady;
 
   SharedCartContainerListItemControllerState({
     required this.bucketLoadDataResult,
@@ -30,6 +31,7 @@ class SharedCartContainerListItemControllerState extends CartContainerListItemCo
     required this.onGetErrorProvider,
     required this.onAcceptOrDeclineSharedCart,
     required this.onRemoveSharedCartMember,
+    required this.onTriggerReady,
     required super.cartListItemControllerStateList,
     required super.onUpdateState,
     required super.onScrollToAdditionalItemsSection,

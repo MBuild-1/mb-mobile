@@ -450,6 +450,9 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
                 )
               );
             },
+            onTriggerReady: (bucketMember) {
+              widget.sharedCartController.triggerBucketReady();
+            },
             cartContainerStateStorageListItemControllerState: DefaultCartContainerStateStorageListItemControllerState(),
             cartContainerActionListItemControllerState: _DefaultSharedCartContainerActionListItemControllerState(
               getAdditionalItemList: (additionalItemListParameter) => widget.sharedCartController.getAdditionalItem(additionalItemListParameter),
@@ -533,6 +536,7 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
           _updateSharedCartDataAndState();
         },
         onShowSharedCartSummaryProcessCallback: (cartSummaryLoadDataResult) async {
+          print("Cart summary: $cartSummaryLoadDataResult");
           setState(() {
             _sharedCartSummaryLoadDataResult = cartSummaryLoadDataResult;
           });
@@ -635,14 +639,20 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
                                           children: [
                                             Align(
                                               alignment: Alignment.bottomCenter,
-                                              child: Transform.rotate(
-                                                angle: math.pi / 2,
-                                                child: SizedBox(
-                                                  child: ModifiedSvgPicture.asset(
-                                                    Constant.vectorArrow,
-                                                    height: 15,
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Transform.rotate(
+                                                    angle: math.pi / 2,
+                                                    child: SizedBox(
+                                                      child: ModifiedSvgPicture.asset(
+                                                        Constant.vectorArrow,
+                                                        height: 15,
+                                                      ),
+                                                    )
                                                   ),
-                                                )
+                                                  const SizedBox(height: 4)
+                                                ],
                                               ),
                                             ),
                                           ],
@@ -677,16 +687,26 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
                         // const Expanded(
                         //   child: SizedBox()
                         // ),
-                        SizedOutlineGradientButton(
-                          onPressed: _selectedCartCount == 0 ? null : () {
-                            if (_bucketId != null) {
-                              widget.sharedCartController.createOrder(_bucketId!);
+                        Builder(
+                          builder: (context) {
+                            if (_bucketMemberLoadDataResult.isSuccess) {
+                              BucketMember loggedUserBucketMember = _bucketMemberLoadDataResult.resultIfSuccess!;
+                              if (loggedUserBucketMember.hostBucket == 1) {
+                                return SizedOutlineGradientButton(
+                                  onPressed: _selectedCartCount == 0 ? null : () {
+                                    if (_bucketId != null) {
+                                      widget.sharedCartController.createOrder(_bucketId!);
+                                    }
+                                  },
+                                  width: 120,
+                                  text: "${"Checkout".tr} ($_selectedCartCount)",
+                                  outlineGradientButtonType: OutlineGradientButtonType.solid,
+                                  outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
+                                );
+                              }
                             }
-                          },
-                          width: 120,
-                          text: "${"Checkout".tr} ($_selectedCartCount)",
-                          outlineGradientButtonType: OutlineGradientButtonType.solid,
-                          outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
+                            return const SizedBox();
+                          }
                         )
                       ],
                     )

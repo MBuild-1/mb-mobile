@@ -387,6 +387,15 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
         LoadDataResult<Bucket> bucketLoadDataResult = sharedCartContainerListItemControllerState.bucketLoadDataResult();
         LoadDataResult<BucketMember> bucketMemberLoadDataResult = sharedCartContainerListItemControllerState.bucketMemberLoadDataResult();
         LoadDataResult<User> userLoadDataResult = sharedCartContainerListItemControllerState.userLoadDataResult();
+        Bucket bucket = bucketLoadDataResult.resultIfSuccess!;
+        Iterable<BucketMember> bucketMemberIterable = bucket.bucketMemberList.where(
+          (bucketMember) => bucketMember.userId == userLoadDataResult.resultIfSuccess!.id
+        );
+        int loggedUserHostBucket = -1;
+        if (bucketMemberIterable.isNotEmpty) {
+          BucketMember bucketMember = bucketMemberIterable.first;
+          loggedUserHostBucket = bucketMember.hostBucket;
+        }
         newItemTypeList.add(VirtualSpacingListItemControllerState(height: 10.0));
         newItemTypeList.add(
           WidgetSubstitutionListItemControllerState(
@@ -542,6 +551,12 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
                         onTapDelete: () {
                           sharedCartContainerListItemControllerState.onRemoveSharedCartMember(bucketMember);
                         },
+                        onTapReady: () {
+                          sharedCartContainerListItemControllerState.onTriggerReady(bucketMember);
+                        },
+                        showDeleteButton: loggedUserHostBucket == 1,
+                        showReadyButton: loggedUserHostBucket == 0,
+                        readyStatus: bucketMember.status,
                         onAcceptOrDeclineMember: isRequest ? (value) {
                           if (value == SharedCartAcceptOrDeclineMemberResult.accept) {
                             sharedCartContainerListItemControllerState.onAcceptOrDeclineSharedCart(
@@ -602,7 +617,6 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
           }
           return true;
         }
-        Bucket bucket = bucketLoadDataResult.resultIfSuccess!;
         bool hasBucketMember = false;
         // bucket.userId != bucketMember.userId
         hasBucketMember = iterateBucketMember(

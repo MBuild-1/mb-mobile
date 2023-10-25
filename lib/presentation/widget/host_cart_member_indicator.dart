@@ -40,7 +40,7 @@ class HostCartMemberIndicator extends StatelessWidget {
                       Constant.textEnUsLanguageKey: "Me",
                       Constant.textInIdLanguageKey: "Saya"
                     });
-                    return " ${isMeMultiLanguageString.toStringNonNull}";
+                    return " (${isMeMultiLanguageString.toStringNonNull})";
                   }() : "";
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0),
