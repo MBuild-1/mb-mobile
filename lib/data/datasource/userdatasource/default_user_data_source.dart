@@ -121,7 +121,6 @@ class DefaultUserDataSource implements UserDataSource {
   @override
   FutureProcessing<EditUserResponse> editUser(EditUserParameter editUserParameter) {
     return DioHttpClientProcessing((cancelToken) async {
-      print("Avatar: ${editUserParameter.avatar.toStringNonNull}");
       dynamic formData = FormData.fromMap(
         <String, dynamic>{
           "_method": "PUT",
