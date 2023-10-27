@@ -2,6 +2,8 @@ import '../../misc/load_data_result.dart';
 import '../../misc/processing/future_processing.dart';
 import '../entity/changepassword/change_password_parameter.dart';
 import '../entity/changepassword/change_password_response.dart';
+import '../entity/forgotpassword/forgot_password_parameter.dart';
+import '../entity/forgotpassword/forgot_password_response.dart';
 import '../entity/login/login_parameter.dart';
 import '../entity/login/login_response.dart';
 import '../entity/login/login_with_google_parameter.dart';
@@ -32,4 +34,5 @@ abstract class UserRepository {
   FutureProcessing<LoadDataResult<ChangePasswordResponse>> changePassword(ChangePasswordParameter changePasswordParameter);
   FutureProcessing<LoadDataResult<CheckActivePinResponse>> checkActivePin(CheckActivePinParameter checkActivePinParameter);
   FutureProcessing<LoadDataResult<ModifyPinResponse>> modifyPin(ModifyPinParameter modifyPinParameter);
+  FutureProcessing<LoadDataResult<ForgotPasswordResponse>> forgotPassword(ForgotPasswordParameter forgotPasswordParameter);
 }

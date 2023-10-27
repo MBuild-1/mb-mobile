@@ -117,6 +117,7 @@ import '../domain/usecase/create_order_use_case.dart';
 import '../domain/usecase/create_product_conversation_use_case.dart';
 import '../domain/usecase/create_product_discussion_use_case.dart';
 import '../domain/usecase/edit_user_use_case.dart';
+import '../domain/usecase/forgot_password_use_case.dart';
 import '../domain/usecase/get_additional_item_use_case.dart';
 import '../domain/usecase/get_address_based_id_use_case.dart';
 import '../domain/usecase/get_address_list_use_case.dart';
@@ -548,6 +549,7 @@ class _Injector {
     locator.registerLazySingleton<CheckActivePinUseCase>(() => CheckActivePinUseCase(userRepository: locator()));
     locator.registerLazySingleton<GetUserUseCase>(() => GetUserUseCase(userRepository: locator()));
     locator.registerLazySingleton<EditUserUseCase>(() => EditUserUseCase(userRepository: locator()));
+    locator.registerLazySingleton<ForgotPasswordUseCase>(() => ForgotPasswordUseCase(userRepository: locator()));
     locator.registerLazySingleton<GetProductBrandListUseCase>(() => GetProductBrandListUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductBrandPagingUseCase>(() => GetProductBrandPagingUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetFavoriteProductBrandPagingUseCase>(() => GetFavoriteProductBrandPagingUseCase(productRepository: locator()));

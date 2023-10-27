@@ -1,5 +1,7 @@
 import '../../../domain/entity/changepassword/change_password_parameter.dart';
 import '../../../domain/entity/changepassword/change_password_response.dart';
+import '../../../domain/entity/forgotpassword/forgot_password_parameter.dart';
+import '../../../domain/entity/forgotpassword/forgot_password_response.dart';
 import '../../../domain/entity/login/login_parameter.dart';
 import '../../../domain/entity/login/login_response.dart';
 import '../../../domain/entity/login/login_with_google_parameter.dart';
@@ -31,4 +33,5 @@ abstract class UserDataSource {
   FutureProcessing<ChangePasswordResponse> changePassword(ChangePasswordParameter changePasswordParameter);
   FutureProcessing<CheckActivePinResponse> checkActivePin(CheckActivePinParameter checkActivePinParameter);
   FutureProcessing<ModifyPinResponse> modifyPin(ModifyPinParameter modifyPinParameter);
+  FutureProcessing<ForgotPasswordResponse> forgotPassword(ForgotPasswordParameter forgotPasswordParameter);
 }

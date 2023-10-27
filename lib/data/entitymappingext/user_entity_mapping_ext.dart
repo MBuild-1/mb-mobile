@@ -1,6 +1,7 @@
 import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 
 import '../../domain/entity/changepassword/change_password_response.dart';
+import '../../domain/entity/forgotpassword/forgot_password_response.dart';
 import '../../domain/entity/login/login_response.dart';
 import '../../domain/entity/login/login_with_google_response.dart';
 import '../../domain/entity/logout/logout_response.dart';
@@ -95,6 +96,10 @@ extension UserEntityMappingExt on ResponseWrapper {
     return CheckActivePinResponse(
       active: response["active"]
     );
+  }
+
+  ForgotPasswordResponse mapFromResponseToForgotPasswordResponse() {
+    return ForgotPasswordResponse();
   }
 }
 

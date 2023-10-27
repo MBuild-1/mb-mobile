@@ -8,6 +8,8 @@ import 'package:masterbagasi/misc/ext/future_ext.dart';
 import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
+import '../../../domain/entity/forgotpassword/forgot_password_parameter.dart';
+import '../../../domain/entity/forgotpassword/forgot_password_response.dart';
 import '../../../domain/entity/login/login_parameter.dart';
 import '../../../domain/entity/login/login_response.dart';
 import '../../../domain/entity/login/login_with_google_parameter.dart';
@@ -254,6 +256,19 @@ class DefaultUserDataSource implements UserDataSource {
           }
         }
       );
+    });
+  }
+
+  @override
+  FutureProcessing<ForgotPasswordResponse> forgotPassword(ForgotPasswordParameter forgotPasswordParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      FormData formData = FormData.fromMap(
+        <String, dynamic> {
+          "email": forgotPasswordParameter.email
+        }
+      );
+      return dio.post("/forgot-password", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+        .map<ForgotPasswordResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToForgotPasswordResponse());
     });
   }
 }

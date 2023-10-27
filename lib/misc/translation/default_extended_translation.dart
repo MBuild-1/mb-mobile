@@ -304,7 +304,9 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Empty": "Kosong",
       "Profile": "Profil",
       "Change Profile Avatar": "Ganti Avatar Profil",
-      "Confirm Arrived": "Konfirmasi Sampai"
+      "Confirm Arrived": "Konfirmasi Sampai",
+      "Forgot Password": "Lupa Kata Sandi",
+      "Please check your email for next step": "Silahkan cek email anda untuk langkah selanjutnya"
     }
   };
 
@@ -318,6 +320,15 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
           ),
           TextSpan(
             text: "Sign Up",
+            style: TextStyle(color: Constant.colorHyperlink),
+            recognizer: signUpTapGestureRecognizer
+          ),
+        ]
+      ),
+      'Forgot Password': (signUpTapGestureRecognizer) => TextSpan(
+        children: <InlineSpan>[
+          TextSpan(
+            text: "Forgot password?",
             style: TextStyle(color: Constant.colorHyperlink),
             recognizer: signUpTapGestureRecognizer
           ),
@@ -361,6 +372,15 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
           ),
           TextSpan(
             text: "Daftar",
+            style: TextStyle(color: Constant.colorHyperlink),
+            recognizer: signUpTapGestureRecognizer
+          ),
+        ]
+      ),
+      'Forgot Password': (signUpTapGestureRecognizer) => TextSpan(
+        children: <InlineSpan>[
+          TextSpan(
+            text: "Lupa kata sandi?",
             style: TextStyle(color: Constant.colorHyperlink),
             recognizer: signUpTapGestureRecognizer
           ),

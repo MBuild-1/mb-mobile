@@ -20,6 +20,7 @@ import '../presentation/page/delivery_page.dart';
 import '../presentation/page/deliveryreview/delivery_review_page.dart';
 import '../presentation/page/edit_profile_page.dart';
 import '../presentation/page/favorite_product_brand_page.dart';
+import '../presentation/page/forgot_password_page.dart';
 import '../presentation/page/getx_page.dart';
 import '../presentation/page/help_chat_page.dart';
 import '../presentation/page/help_page.dart';
@@ -85,6 +86,15 @@ class _PageRestorationHelperImpl {
     PageRestorationHelper.findPageRestorationMixin<LoginPageRestorationMixin>(
       onGetxPageRestorationFound: (restoration) {
         restoration.loginPageRestorableRouteFuture.present(restorableRouteFuturePushParameter);
+      },
+      context: context
+    );
+  }
+
+  void toForgotPasswordPage(BuildContext context) {
+    PageRestorationHelper.findPageRestorationMixin<ForgotPasswordPageRestorationMixin>(
+      onGetxPageRestorationFound: (restoration) {
+        restoration.forgotPasswordPageRestorableRouteFuture.present();
       },
       context: context
     );

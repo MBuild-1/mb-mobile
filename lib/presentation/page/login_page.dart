@@ -41,6 +41,7 @@ import '../widget/normal_text_style_for_appbar.dart';
 import '../widget/password_obscurer.dart';
 import '../widget/rx_consumer.dart';
 import 'accountsecurity/modify_pin_page.dart';
+import 'forgot_password_page.dart';
 import 'getx_page.dart';
 import 'register_page.dart';
 
@@ -86,7 +87,7 @@ class LoginPage extends RestorableGetxPage<_LoginPageRestoration> {
   }
 }
 
-class _LoginPageRestoration extends MixableGetxPageRestoration with RegisterPageRestorationMixin, ModifyPinPageRestorationMixin {
+class _LoginPageRestoration extends MixableGetxPageRestoration with RegisterPageRestorationMixin, ForgotPasswordPageRestorationMixin, ModifyPinPageRestorationMixin {
   final RouteCompletionCallback<bool?>? _onCompleteInputPin;
 
   _LoginPageRestoration({
@@ -407,6 +408,20 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
                     validator: value,
                   )
                 ),
+                SizedBox(height: 2.h),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Builder(
+                      builder: (context) {
+                        _forgotPasswordTapGestureRecognizer.onTap = () {
+                          PageRestorationHelper.toForgotPasswordPage(context);
+                        };
+                        return Text.rich("Forgot Password".trTextSpan(parameter: _forgotPasswordTapGestureRecognizer));
+                      }
+                    ),
+                  ],
+                ),
                 SizedBox(height: 3.h),
                 SizedOutlineGradientButton(
                   width: double.infinity,
@@ -442,7 +457,7 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
                 Builder(
                   builder: (context) {
                     _signUpTapGestureRecognizer.onTap = () {
-                      PageRestorationHelper.toRegisterPage(context);
+                      PageRestorationHelper.toForgotPasswordPage(context);
                     };
                     return Text.rich("New to MasterBagasi".trTextSpan(parameter: _signUpTapGestureRecognizer));
                   }
