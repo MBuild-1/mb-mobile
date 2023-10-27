@@ -269,6 +269,8 @@ class _ConstantImpl {
   String get textLoading => "Loading".tr;
   String get textEnUsLanguageKey => "en_US";
   String get textInIdLanguageKey => "in_ID";
+  String get textTermAndConditionsUrl => "https://m.masterbagasi.com/terms-and-conditions";
+  String get textPrivacyPolicyUrl => "https://m.masterbagasi.com/privacy-policy";
 
   String get carouselKeyIndonesianCategoryProduct => "carousel_key_indonesian_category_product";
   String get carouselKeyIndonesianOriginalBrand => "carousel_key_indonesian_original_brand";

@@ -24,6 +24,7 @@ import '../../misc/manager/controller_manager.dart';
 import '../../misc/navigation_helper.dart';
 import '../../misc/page_restoration_helper.dart';
 import '../../misc/recognizer/sign_up_recognizer.dart';
+import '../../misc/string_util.dart';
 import '../../misc/validation/validator/compoundvalidator/password_compound_validator.dart';
 import '../../misc/validation/validator/validator.dart';
 import '../notifier/login_notifier.dart';
@@ -35,6 +36,7 @@ import '../widget/normal_text_style_for_appbar.dart';
 import '../widget/password_obscurer.dart';
 import '../widget/rx_consumer.dart';
 import 'getx_page.dart';
+import 'web_viewer_page.dart';
 
 class RegisterPage extends RestorableGetxPage<_RegisterPageRestoration> {
   late final ControllerMember<RegisterController> _registerController = ControllerMember<RegisterController>().addToControllerManager(controllerManager);
@@ -65,7 +67,7 @@ class RegisterPage extends RestorableGetxPage<_RegisterPageRestoration> {
   }
 }
 
-class _RegisterPageRestoration extends MixableGetxPageRestoration {
+class _RegisterPageRestoration extends MixableGetxPageRestoration with WebViewerPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
@@ -389,6 +391,20 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
                 SizedBox(height: 2.h),
                 Builder(
                   builder: (context) {
+                    _termAndConditionsTapGestureRecognizer.onTap = () {
+                      PageRestorationHelper.toWebViewerPage(
+                        context, <String, dynamic>{
+                          Constant.textEncodedUrlKey: StringUtil.encodeBase64String(Constant.textTermAndConditionsUrl)
+                        }
+                      );
+                    };
+                    _privacyPolicyTapGestureRecognizer.onTap = () {
+                      PageRestorationHelper.toWebViewerPage(
+                        context, <String, dynamic>{
+                          Constant.textEncodedUrlKey: StringUtil.encodeBase64String(Constant.textPrivacyPolicyUrl)
+                        }
+                      );
+                    };
                     return Text.rich(
                       "By signing up".trTextSpan(
                         parameter: SignUpRecognizer(

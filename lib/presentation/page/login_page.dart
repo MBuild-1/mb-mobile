@@ -457,7 +457,7 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
                 Builder(
                   builder: (context) {
                     _signUpTapGestureRecognizer.onTap = () {
-                      PageRestorationHelper.toForgotPasswordPage(context);
+                      PageRestorationHelper.toRegisterPage(context);
                     };
                     return Text.rich("New to MasterBagasi".trTextSpan(parameter: _signUpTapGestureRecognizer));
                   }

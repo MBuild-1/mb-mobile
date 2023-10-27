@@ -255,7 +255,7 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
                 onTap: (context) {
                   PageRestorationHelper.toWebViewerPage(
                     context, <String, dynamic>{
-                      Constant.textEncodedUrlKey: StringUtil.encodeBase64String("https://m.masterbagasi.com/terms-and-conditions")
+                      Constant.textEncodedUrlKey: StringUtil.encodeBase64String(Constant.textTermAndConditionsUrl)
                     }
                   );
                 },
@@ -266,7 +266,7 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
                 onTap: (context) {
                   PageRestorationHelper.toWebViewerPage(
                     context, <String, dynamic>{
-                      Constant.textEncodedUrlKey: StringUtil.encodeBase64String("https://m.masterbagasi.com/privacy-policy")
+                      Constant.textEncodedUrlKey: StringUtil.encodeBase64String(Constant.textPrivacyPolicyUrl)
                     }
                   );
                 },
