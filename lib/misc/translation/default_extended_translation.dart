@@ -306,7 +306,8 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Change Profile Avatar": "Ganti Avatar Profil",
       "Confirm Arrived": "Konfirmasi Sampai",
       "Forgot Password": "Lupa Kata Sandi",
-      "Please check your email for next step": "Silahkan cek email anda untuk langkah selanjutnya"
+      "Please check your email for next step": "Silahkan cek email anda untuk langkah selanjutnya",
+      "Press again to exit": "Tekan sekali lagi untuk keluar"
     }
   };
 

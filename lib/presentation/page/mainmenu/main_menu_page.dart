@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -25,6 +27,7 @@ import '../../../misc/multi_language_string.dart';
 import '../../../misc/page_restoration_helper.dart';
 import '../../../misc/pusher_helper.dart';
 import '../../../misc/routeargument/main_menu_route_argument.dart';
+import '../../../misc/toast_helper.dart';
 import '../../../misc/typedef.dart';
 import '../../widget/custom_bottom_navigation_bar.dart';
 import '../../widget/modified_svg_picture.dart';
@@ -308,6 +311,8 @@ class _StatefulMainMenuControllerMediatorWidget extends StatefulWidget {
 class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMainMenuControllerMediatorWidget> {
   late CustomBottomNavigationBarSelectedIndex _customBottomNavigationBarSelectedIndex;
   final TapGestureRecognizer _signInTapGestureRecognizer = TapGestureRecognizer();
+  Timer? _timer;
+  bool _canBack = false;
 
   final PusherChannelsFlutter _pusher = PusherChannelsFlutter.getInstance();
 
@@ -370,86 +375,104 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       widget.mainMenuController.checkLoginStatus();
     });
-    return Material(
-      child: Column(
-        children: [
-          Expanded(
-            child: IndexedStack(
-              index: _customBottomNavigationBarSelectedIndex.currentSelectedViewMenuIndex,
-              children: [
-                HomeMainMenuSubPage(ancestorPageName: widget.pageName),
-                FeedMainMenuSubPage(ancestorPageName: widget.pageName),
-                ExploreNusantaraMainMenuSubPage(ancestorPageName: widget.pageName),
-                WishlistMainMenuSubPage(ancestorPageName: widget.pageName),
-                MenuMainMenuSubPage(ancestorPageName: widget.pageName),
-              ],
-            )
-          ),
-          RxConsumer<bool>(
-            rxValue: widget.mainMenuController.isLoginRx,
-            onConsumeValue: (context, isLogin) => !isLogin ? Container(
-              color: Constant.colorLightRed,
-              padding: EdgeInsets.all(Constant.paddingListItem),
-              child: Row(
+    return WillPopScope(
+      onWillPop: () async {
+        if (_canBack) {
+          return true;
+        } else {
+          if (_timer != null) {
+            _timer?.cancel();
+          }
+          _timer = Timer(
+            const Duration(milliseconds: 1000),
+            () => _canBack = false
+          );
+          _canBack = true;
+          ToastHelper.showToast("Press again to exit".tr);
+        }
+        return false;
+      },
+      child: Material(
+        child: Column(
+          children: [
+            Expanded(
+              child: IndexedStack(
+                index: _customBottomNavigationBarSelectedIndex.currentSelectedViewMenuIndex,
                 children: [
-                  ModifiedSvgPicture.asset(Constant.vectorBag, overrideDefaultColorWithSingleColor: false),
-                  const SizedBox(width: 10),
-                  Builder(
-                    builder: (context) {
-                      _signInTapGestureRecognizer.onTap = () => PageRestorationHelper.toLoginPage(context, Constant.restorableRouteFuturePush);
-                      return Text.rich("Miss Indonesian Food".trTextSpan(parameter: _signInTapGestureRecognizer));
-                    }
-                  )
-                ]
-              ),
-            ) : Container(),
-          ),
-          CustomBottomNavigationBar(
-            type: BottomNavigationBarType.fixed,
-            currentIndex: _customBottomNavigationBarSelectedIndex.currentSelectedMenuIndex,
-            selectedFontSize: 9.0,
-            unselectedFontSize: 9.0,
-            onTap: (selectedIndex) => _onItemTappedWithContext(selectedIndex, context),
-            items: [
-              CustomBottomNavigationBarItem(
-                icon: ModifiedSvgPicture.asset(Constant.vectorHomeUnselected, overrideDefaultColorWithSingleColor: false),
-                activeIcon: ModifiedSvgPicture.asset(Constant.vectorHomeSelected, overrideDefaultColorWithSingleColor: false),
-                label: 'Home',
-                hideLabelWhenInactive: false,
-              ),
-              CustomBottomNavigationBarItem(
-                icon: ModifiedSvgPicture.asset(Constant.vectorFeedUnselected, overrideDefaultColorWithSingleColor: false),
-                activeIcon: ModifiedSvgPicture.asset(Constant.vectorFeedSelected, overrideDefaultColorWithSingleColor: false),
-                label: MultiLanguageString({
-                  Constant.textInIdLanguageKey: "Suguhan",
-                  Constant.textEnUsLanguageKey: "Feed"
-                }).toStringNonNull,
-                hideLabelWhenInactive: false
-              ),
-              CustomBottomNavigationBarItem(
-                icon: ModifiedSvgPicture.asset(Constant.vectorExploreUnselected, overrideDefaultColorWithSingleColor: false),
-                activeIcon: ModifiedSvgPicture.asset(Constant.vectorExploreSelected, overrideDefaultColorWithSingleColor: false),
-                label: MultiLanguageString({
-                  Constant.textInIdLanguageKey: "Jelajah Nusantara",
-                  Constant.textEnUsLanguageKey: "Explore Nusantara"
-                }).toStringNonNull,
-                hideLabelWhenInactive: false
-              ),
-              CustomBottomNavigationBarItem(
-                icon: ModifiedSvgPicture.asset(Constant.vectorWishlistUnselected, overrideDefaultColorWithSingleColor: false),
-                activeIcon: ModifiedSvgPicture.asset(Constant.vectorWishlistSelected, overrideDefaultColorWithSingleColor: false),
-                label: 'Wishlist',
-                hideLabelWhenInactive: false
-              ),
-              CustomBottomNavigationBarItem(
-                icon: ModifiedSvgPicture.asset(Constant.vectorMenuUnselected, overrideDefaultColorWithSingleColor: false),
-                activeIcon: ModifiedSvgPicture.asset(Constant.vectorMenuSelected, overrideDefaultColorWithSingleColor: false),
-                label: 'Menu',
-                hideLabelWhenInactive: false
-              ),
-            ],
-          ),
-        ],
+                  HomeMainMenuSubPage(ancestorPageName: widget.pageName),
+                  FeedMainMenuSubPage(ancestorPageName: widget.pageName),
+                  ExploreNusantaraMainMenuSubPage(ancestorPageName: widget.pageName),
+                  WishlistMainMenuSubPage(ancestorPageName: widget.pageName),
+                  MenuMainMenuSubPage(ancestorPageName: widget.pageName),
+                ],
+              )
+            ),
+            RxConsumer<bool>(
+              rxValue: widget.mainMenuController.isLoginRx,
+              onConsumeValue: (context, isLogin) => !isLogin ? Container(
+                color: Constant.colorLightRed,
+                padding: EdgeInsets.all(Constant.paddingListItem),
+                child: Row(
+                  children: [
+                    ModifiedSvgPicture.asset(Constant.vectorBag, overrideDefaultColorWithSingleColor: false),
+                    const SizedBox(width: 10),
+                    Builder(
+                      builder: (context) {
+                        _signInTapGestureRecognizer.onTap = () => PageRestorationHelper.toLoginPage(context, Constant.restorableRouteFuturePush);
+                        return Text.rich("Miss Indonesian Food".trTextSpan(parameter: _signInTapGestureRecognizer));
+                      }
+                    )
+                  ]
+                ),
+              ) : Container(),
+            ),
+            CustomBottomNavigationBar(
+              type: BottomNavigationBarType.fixed,
+              currentIndex: _customBottomNavigationBarSelectedIndex.currentSelectedMenuIndex,
+              selectedFontSize: 9.0,
+              unselectedFontSize: 9.0,
+              onTap: (selectedIndex) => _onItemTappedWithContext(selectedIndex, context),
+              items: [
+                CustomBottomNavigationBarItem(
+                  icon: ModifiedSvgPicture.asset(Constant.vectorHomeUnselected, overrideDefaultColorWithSingleColor: false),
+                  activeIcon: ModifiedSvgPicture.asset(Constant.vectorHomeSelected, overrideDefaultColorWithSingleColor: false),
+                  label: 'Home',
+                  hideLabelWhenInactive: false,
+                ),
+                CustomBottomNavigationBarItem(
+                  icon: ModifiedSvgPicture.asset(Constant.vectorFeedUnselected, overrideDefaultColorWithSingleColor: false),
+                  activeIcon: ModifiedSvgPicture.asset(Constant.vectorFeedSelected, overrideDefaultColorWithSingleColor: false),
+                  label: MultiLanguageString({
+                    Constant.textInIdLanguageKey: "Suguhan",
+                    Constant.textEnUsLanguageKey: "Feed"
+                  }).toStringNonNull,
+                  hideLabelWhenInactive: false
+                ),
+                CustomBottomNavigationBarItem(
+                  icon: ModifiedSvgPicture.asset(Constant.vectorExploreUnselected, overrideDefaultColorWithSingleColor: false),
+                  activeIcon: ModifiedSvgPicture.asset(Constant.vectorExploreSelected, overrideDefaultColorWithSingleColor: false),
+                  label: MultiLanguageString({
+                    Constant.textInIdLanguageKey: "Jelajah Nusantara",
+                    Constant.textEnUsLanguageKey: "Explore Nusantara"
+                  }).toStringNonNull,
+                  hideLabelWhenInactive: false
+                ),
+                CustomBottomNavigationBarItem(
+                  icon: ModifiedSvgPicture.asset(Constant.vectorWishlistUnselected, overrideDefaultColorWithSingleColor: false),
+                  activeIcon: ModifiedSvgPicture.asset(Constant.vectorWishlistSelected, overrideDefaultColorWithSingleColor: false),
+                  label: 'Wishlist',
+                  hideLabelWhenInactive: false
+                ),
+                CustomBottomNavigationBarItem(
+                  icon: ModifiedSvgPicture.asset(Constant.vectorMenuUnselected, overrideDefaultColorWithSingleColor: false),
+                  activeIcon: ModifiedSvgPicture.asset(Constant.vectorMenuSelected, overrideDefaultColorWithSingleColor: false),
+                  label: 'Menu',
+                  hideLabelWhenInactive: false
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -489,6 +512,7 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
     MainRouteObserver.onRefreshWishlistInMainMenu = null;
     MainRouteObserver.onChangeSelectedProvince = null;
     _pusher.disconnect();
+    _timer?.cancel();
     super.dispose();
   }
 }
