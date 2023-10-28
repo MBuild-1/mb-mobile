@@ -14,7 +14,7 @@ class MainMenuController extends BaseGetxController {
   MainMenuController(
     ControllerManager? controllerManager,
   ) : super(controllerManager) {
-    isLoginRx = false.obs;
+    isLoginRx = true.obs;
   }
 
   void checkLoginStatus({bool reset = false}) async {

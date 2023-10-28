@@ -16,6 +16,8 @@ class _MainRouteObserver extends RouteObserver {
   Map<String, void Function()?> get controllerMediatorMap => _controllerMediatorMap;
   Map<String, void Function()?> _onRefreshProductDiscussion = {};
   Map<String, void Function()?> get onRefreshProductDiscussion => _onRefreshProductDiscussion;
+  Map<String, bool?> _subMainMenuVisibility = {};
+  Map<String, bool?> get subMainMenuVisibility => _subMainMenuVisibility;
 
   void Function(int)? onChangeMainMenuTap;
   void Function()? onRefreshWishlistInMainMenu;
@@ -42,6 +44,9 @@ class _MainRouteObserver extends RouteObserver {
       for (var key in newRouteMap.keys) key: null
     };
     _onRefreshProductDiscussion = {
+      for (var key in newRouteMap.keys) key: null
+    };
+    _subMainMenuVisibility = {
       for (var key in newRouteMap.keys) key: null
     };
   }

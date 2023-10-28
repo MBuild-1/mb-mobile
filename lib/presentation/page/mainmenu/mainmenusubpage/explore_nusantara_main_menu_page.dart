@@ -15,6 +15,7 @@ import '../../../../misc/load_data_result.dart';
 import '../../../../misc/main_route_observer.dart';
 import '../../../../misc/manager/controller_manager.dart';
 import '../../../../misc/page_restoration_helper.dart';
+import '../../../../misc/widget_helper.dart';
 import '../../../widget/background_app_bar_scaffold.dart';
 import '../../../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../../../widget/loaddataresultimplementer/load_data_result_implementer.dart';
@@ -86,207 +87,210 @@ class _StatefulExploreNusantaraMainMenuSubControllerMediatorWidgetState extends 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       widget.exploreNusantaraMainMenuSubController.loadProvinceMap();
     });
-    return BackgroundAppBarScaffold(
-      backgroundAppBarImage: _exploreNusantaraAppBarBackgroundAssetImage,
-      appBar: MainMenuSearchAppBar(value: 0.0),
-      body: Expanded(
-        child: Stack(
-          children: [
-            RxConsumer<ExploreNusantaraMainMenuControllerState>(
-              rxValue: widget.exploreNusantaraMainMenuSubController.exploreNusantaraMainMenuControllerStateRx,
-              onConsumeValue: (context, value) {
-                if (value.provinceMapListLoadDataResult.isSuccess) {
-                  return Stack(
-                    children: [
-                      Builder(
-                        builder: (context) {
-                          ProvinceMap provinceMap = value.selectedProvinceMap!;
-                          String banner = provinceMap.bannerMobile.isNotEmptyString ? provinceMap.bannerMobile.toEmptyStringNonNull : provinceMap.bannerDesktop.toEmptyStringNonNull;
-                          return SizedBox(
+    return WidgetHelper.checkVisibility(
+      MainRouteObserver.subMainMenuVisibility[Constant.subPageKeyExploreNusantaraMainMenu],
+      () => BackgroundAppBarScaffold(
+        backgroundAppBarImage: _exploreNusantaraAppBarBackgroundAssetImage,
+        appBar: MainMenuSearchAppBar(value: 0.0),
+        body: Expanded(
+          child: Stack(
+            children: [
+              RxConsumer<ExploreNusantaraMainMenuControllerState>(
+                rxValue: widget.exploreNusantaraMainMenuSubController.exploreNusantaraMainMenuControllerStateRx,
+                onConsumeValue: (context, value) {
+                  if (value.provinceMapListLoadDataResult.isSuccess) {
+                    return Stack(
+                      children: [
+                        Builder(
+                          builder: (context) {
+                            ProvinceMap provinceMap = value.selectedProvinceMap!;
+                            String banner = provinceMap.bannerMobile.isNotEmptyString ? provinceMap.bannerMobile.toEmptyStringNonNull : provinceMap.bannerDesktop.toEmptyStringNonNull;
+                            return SizedBox(
+                              width: MediaQuery.of(context).size.width,
+                              child: AspectRatio(
+                                aspectRatio: Constant.aspectRatioValueExploreNusantaraBanner.toDouble(),
+                                child: ExploreNusantaraBackgroundModifiedCachedNetworkImage(imageUrl: banner),
+                              ),
+                            );
+                          }
+                        ),
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: SizedBox(
                             width: MediaQuery.of(context).size.width,
                             child: AspectRatio(
-                              aspectRatio: Constant.aspectRatioValueExploreNusantaraBanner.toDouble(),
-                              child: ExploreNusantaraBackgroundModifiedCachedNetworkImage(imageUrl: banner),
-                            ),
-                          );
-                        }
-                      ),
-                      Align(
-                        alignment: Alignment.bottomCenter,
-                        child: SizedBox(
-                          width: MediaQuery.of(context).size.width,
-                          child: AspectRatio(
-                            aspectRatio: Constant.aspectRatioValueExploreNusantaraBackground.toDouble(),
-                            child: ExploreNusantaraBackgroundModifiedCachedNetworkImage(
-                              imageUrl: value.selectedProvinceMap!.background.toEmptyStringNonNull
+                              aspectRatio: Constant.aspectRatioValueExploreNusantaraBackground.toDouble(),
+                              child: ExploreNusantaraBackgroundModifiedCachedNetworkImage(
+                                imageUrl: value.selectedProvinceMap!.background.toEmptyStringNonNull
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ]
-                  );
-                } else {
-                  return Container();
+                      ]
+                    );
+                  } else {
+                    return Container();
+                  }
                 }
-              }
-            ),
-            Center(
-              child: Container(
-                width: MediaQuery.of(context).size.width,
-                height: 400,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                    colors: [
-                      Theme.of(context).canvasColor.withOpacity(0.0),
-                      Theme.of(context).canvasColor,
-                      Theme.of(context).canvasColor,
-                      Theme.of(context).canvasColor.withOpacity(0.0),
-                    ],
-                    stops: const [
-                      0.0, 0.2, 0.8, 1.0
-                    ]
-                  )
+              ),
+              Center(
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 400,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                      colors: [
+                        Theme.of(context).canvasColor.withOpacity(0.0),
+                        Theme.of(context).canvasColor,
+                        Theme.of(context).canvasColor,
+                        Theme.of(context).canvasColor.withOpacity(0.0),
+                      ],
+                      stops: const [
+                        0.0, 0.2, 0.8, 1.0
+                      ]
+                    )
+                  ),
                 ),
               ),
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    "Welcome To Nusantara".tr,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "Welcome To Nusantara".tr,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 20.0),
-                  RxConsumer<ExploreNusantaraMainMenuControllerState>(
-                    rxValue: widget.exploreNusantaraMainMenuSubController.exploreNusantaraMainMenuControllerStateRx,
-                    onConsumeValue: (context, value) => LoadDataResultImplementer<List<ProvinceMap>>(
-                      loadDataResult: value.provinceMapListLoadDataResult,
-                      errorProvider: Injector.locator<ErrorProvider>(),
-                      onSuccessLoadDataResultWidget: (provinceMapList) {
-                        double width = MediaQuery.of(context).size.width;
-                        double height = width * 350.0 / 1000.0;
-                        return SizedBox(
-                          width: width,
-                          height: height,
-                          child: ModifiedCanvasTouchDetector(
-                            builder: (context) => CustomPaint(
-                              painter: ExploreNusantaraMapCustomPainter(
-                                context: context,
-                                provinceMapList: provinceMapList,
-                                selectedProvinceMap: value.selectedProvinceMap,
-                                onSelectProvinceMap: (provinceMap) {
-                                  widget.exploreNusantaraMainMenuSubController.selectProvinceMap(provinceMap);
-                                },
+                    const SizedBox(height: 20.0),
+                    RxConsumer<ExploreNusantaraMainMenuControllerState>(
+                      rxValue: widget.exploreNusantaraMainMenuSubController.exploreNusantaraMainMenuControllerStateRx,
+                      onConsumeValue: (context, value) => LoadDataResultImplementer<List<ProvinceMap>>(
+                        loadDataResult: value.provinceMapListLoadDataResult,
+                        errorProvider: Injector.locator<ErrorProvider>(),
+                        onSuccessLoadDataResultWidget: (provinceMapList) {
+                          double width = MediaQuery.of(context).size.width;
+                          double height = width * 350.0 / 1000.0;
+                          return SizedBox(
+                            width: width,
+                            height: height,
+                            child: ModifiedCanvasTouchDetector(
+                              builder: (context) => CustomPaint(
+                                painter: ExploreNusantaraMapCustomPainter(
+                                  context: context,
+                                  provinceMapList: provinceMapList,
+                                  selectedProvinceMap: value.selectedProvinceMap,
+                                  onSelectProvinceMap: (provinceMap) {
+                                    widget.exploreNusantaraMainMenuSubController.selectProvinceMap(provinceMap);
+                                  },
+                                )
                               )
                             )
-                          )
-                        );
-                      }
+                          );
+                        }
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 10.0),
-                  RxConsumer<ExploreNusantaraMainMenuControllerState>(
-                    rxValue: widget.exploreNusantaraMainMenuSubController.exploreNusantaraMainMenuControllerStateRx,
-                    onConsumeValue: (context, value) {
-                      if (value.provinceMapListLoadDataResult.isSuccess) {
-                        return Column(
-                          children: [
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width,
-                              height: 200,
-                              child: ExploreNusantaraModifiedCachedNetworkImage(
-                                imageUrl: value.selectedProvinceMap!.icon.toEmptyStringNonNull
+                    const SizedBox(height: 10.0),
+                    RxConsumer<ExploreNusantaraMainMenuControllerState>(
+                      rxValue: widget.exploreNusantaraMainMenuSubController.exploreNusantaraMainMenuControllerStateRx,
+                      onConsumeValue: (context, value) {
+                        if (value.provinceMapListLoadDataResult.isSuccess) {
+                          return Column(
+                            children: [
+                              SizedBox(
+                                width: MediaQuery.of(context).size.width,
+                                height: 200,
+                                child: ExploreNusantaraModifiedCachedNetworkImage(
+                                  imageUrl: value.selectedProvinceMap!.icon.toEmptyStringNonNull
+                                ),
                               ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
-                              child: SizedBox(
-                                height: 45,
-                                child: Stack(
-                                  children: [
-                                    IgnorePointer(
-                                      child: SizedOutlineGradientButton(
-                                        onPressed: () {},
-                                        text: "",
-                                        outlineGradientButtonType: OutlineGradientButtonType.solid,
-                                        outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
+                                child: SizedBox(
+                                  height: 45,
+                                  child: Stack(
+                                    children: [
+                                      IgnorePointer(
+                                        child: SizedOutlineGradientButton(
+                                          onPressed: () {},
+                                          text: "",
+                                          outlineGradientButtonType: OutlineGradientButtonType.solid,
+                                          outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
+                                        ),
                                       ),
-                                    ),
-                                    Row(
-                                      children: [
-                                        SizedBox(
-                                          width: 30,
-                                          child: TapArea(
-                                            onTap: () => widget.exploreNusantaraMainMenuSubController.previousProvinceMap(),
-                                            child: Transform.rotate(
-                                              angle: -math.pi,
+                                      Row(
+                                        children: [
+                                          SizedBox(
+                                            width: 30,
+                                            child: TapArea(
+                                              onTap: () => widget.exploreNusantaraMainMenuSubController.previousProvinceMap(),
+                                              child: Transform.rotate(
+                                                angle: -math.pi,
+                                                child: ModifiedSvgPicture.asset(
+                                                  Constant.vectorArrow,
+                                                  color: Colors.white,
+                                                  height: 10,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: TapArea(
+                                              onTap: () => PageRestorationHelper.toProductEntryPage(
+                                                context,
+                                                ProductEntryPageParameter(
+                                                  productEntryParameterMap: {
+                                                    "province": value.selectedProvinceMap!.slug,
+                                                    "province_id": value.selectedProvinceMap!.id
+                                                  }
+                                                )
+                                              ),
+                                              child: Center(
+                                                child: Text(
+                                                  value.selectedProvinceMap!.name,
+                                                  style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold
+                                                  )
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: 30,
+                                            child: TapArea(
+                                              onTap: () => widget.exploreNusantaraMainMenuSubController.nextProvinceMap(),
                                               child: ModifiedSvgPicture.asset(
                                                 Constant.vectorArrow,
                                                 color: Colors.white,
                                                 height: 10,
                                               ),
-                                            ),
-                                          ),
-                                        ),
-                                        Expanded(
-                                          child: TapArea(
-                                            onTap: () => PageRestorationHelper.toProductEntryPage(
-                                              context,
-                                              ProductEntryPageParameter(
-                                                productEntryParameterMap: {
-                                                  "province": value.selectedProvinceMap!.slug,
-                                                  "province_id": value.selectedProvinceMap!.id
-                                                }
-                                              )
-                                            ),
-                                            child: Center(
-                                              child: Text(
-                                                value.selectedProvinceMap!.name,
-                                                style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold
-                                                )
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 30,
-                                          child: TapArea(
-                                            onTap: () => widget.exploreNusantaraMainMenuSubController.nextProvinceMap(),
-                                            child: ModifiedSvgPicture.asset(
-                                              Constant.vectorArrow,
-                                              color: Colors.white,
-                                              height: 10,
-                                            ),
+                                            )
                                           )
-                                        )
-                                      ],
-                                    ),
-                                  ],
-                                )
+                                        ],
+                                      ),
+                                    ],
+                                  )
+                                ),
                               ),
-                            ),
-                          ]
-                        );
-                      } else {
-                        return Container();
+                            ]
+                          );
+                        } else {
+                          return Container();
+                        }
                       }
-                    }
-                  )
-                ]
-              )
-            ),
-          ]
+                    )
+                  ]
+                )
+              ),
+            ]
+          ),
         ),
-      ),
+      )
     );
   }
 }

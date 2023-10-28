@@ -171,22 +171,25 @@ class _StatefulWishlistMainMenuSubControllerMediatorWidgetState extends State<_S
         }
       )
     );
-    return BackgroundAppBarScaffold(
-      backgroundAppBarImage: _wishlistAppBarBackgroundAssetImage,
-      appBar: MainMenuSearchAppBar(value: 0.0),
-      body: Expanded(
-        child: WidgetHelper.checkingLogin(
-          context,
-          () => ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
-            pagingControllerState: _wishlistMainMenuSubListItemPagingControllerState,
-            onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
-              pagingControllerState: pagingControllerState!
+    return WidgetHelper.checkVisibility(
+      MainRouteObserver.subMainMenuVisibility[Constant.subPageKeyWishlistMainMenu],
+      () => BackgroundAppBarScaffold(
+        backgroundAppBarImage: _wishlistAppBarBackgroundAssetImage,
+        appBar: MainMenuSearchAppBar(value: 0.0),
+        body: Expanded(
+          child: WidgetHelper.checkingLogin(
+            context,
+            () => ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
+              pagingControllerState: _wishlistMainMenuSubListItemPagingControllerState,
+              onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
+                pagingControllerState: pagingControllerState!
+              ),
+              pullToRefresh: true
             ),
-            pullToRefresh: true
-          ),
-          Injector.locator<ErrorProvider>()
-        )
-      ),
+            Injector.locator<ErrorProvider>()
+          )
+        ),
+      )
     );
   }
 }

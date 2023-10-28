@@ -134,6 +134,16 @@ class _WidgetHelperImpl {
       ),
     );
   }
+
+  Widget checkVisibility(bool? visibility, Widget Function() resultIfVisibilityIsTrue) {
+    if (visibility == null) {
+      return const SizedBox();
+    }
+    if (visibility) {
+      return resultIfVisibilityIsTrue();
+    }
+    return const SizedBox();
+  }
 }
 
 // ignore: non_constant_identifier_names

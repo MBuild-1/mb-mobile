@@ -429,61 +429,64 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
         onGetErrorProvider: () => Injector.locator<ErrorProvider>()
       )
     );
-    return Scaffold(
-      body: WidgetHelper.checkingLogin(
-        context,
-        () => Column(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: _menuAppBarBackgroundAssetImage,
-                  fit: BoxFit.cover
+    return WidgetHelper.checkVisibility(
+      MainRouteObserver.subMainMenuVisibility[Constant.subPageKeyMenuMainMenu],
+      () => Scaffold(
+        body: WidgetHelper.checkingLogin(
+          context,
+          () => Column(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: _menuAppBarBackgroundAssetImage,
+                    fit: BoxFit.cover
+                  )
+                ),
+                child: Column(
+                  children: [
+                    OpacityModifiedAppBar(
+                      value: 0.0,
+                      titleInterceptor: (context, title) => Row(
+                        children: [
+                          Text(
+                            "Main Menu".tr,
+                            style: const TextStyle(
+                              color: Colors.white
+                            )
+                          ),
+                        ],
+                      ),
+                    ),
+                    RxConsumer<LoadDataResultWrapper<User>>(
+                      rxValue: widget.menuMainMenuSubController.userLoadDataResultWrapperRx,
+                      onConsumeValue: (context, userLoadDataResultWrapper) {
+                        return Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: MenuProfileHeader(
+                            errorProvider: Injector.locator<ErrorProvider>(),
+                            userLoadDataResult: userLoadDataResultWrapper.loadDataResult,
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 )
               ),
-              child: Column(
-                children: [
-                  OpacityModifiedAppBar(
-                    value: 0.0,
-                    titleInterceptor: (context, title) => Row(
-                      children: [
-                        Text(
-                          "Main Menu".tr,
-                          style: const TextStyle(
-                            color: Colors.white
-                          )
-                        ),
-                      ],
-                    ),
+              Expanded(
+                child: ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
+                  pagingControllerState: _menuMainMenuSubListItemPagingControllerState,
+                  onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
+                    pagingControllerState: pagingControllerState!
                   ),
-                  RxConsumer<LoadDataResultWrapper<User>>(
-                    rxValue: widget.menuMainMenuSubController.userLoadDataResultWrapperRx,
-                    onConsumeValue: (context, userLoadDataResultWrapper) {
-                      return Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: MenuProfileHeader(
-                          errorProvider: Injector.locator<ErrorProvider>(),
-                          userLoadDataResult: userLoadDataResultWrapper.loadDataResult,
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              )
-            ),
-            Expanded(
-              child: ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
-                pagingControllerState: _menuMainMenuSubListItemPagingControllerState,
-                onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
-                  pagingControllerState: pagingControllerState!
+                  pullToRefresh: true
                 ),
-                pullToRefresh: true
               ),
-            ),
-          ],
+            ],
+          ),
+          Injector.locator<ErrorProvider>()
         ),
-        Injector.locator<ErrorProvider>()
-      ),
+      )
     );
   }
 }

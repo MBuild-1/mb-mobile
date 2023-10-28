@@ -69,6 +69,7 @@ import '../../../../misc/parameterizedcomponententityandlistitemcontrollerstatem
 import '../../../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../../../../misc/shimmercarousellistitemgenerator/factory/product_bundle_shimmer_carousel_list_item_generator_factory.dart';
 import '../../../../misc/shimmercarousellistitemgenerator/type/product_bundle_shimmer_carousel_list_item_generator_type.dart';
+import '../../../../misc/widget_helper.dart';
 import '../../../notifier/component_notifier.dart';
 import '../../../notifier/notification_notifier.dart';
 import '../../../widget/background_app_bar_scaffold.dart';
@@ -912,18 +913,21 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
         setBanner: (bannerData) => _banner = bannerData
       )
     );
-    return BackgroundAppBarScaffold(
-      backgroundAppBarImage: _homeAppBarBackgroundAssetImage,
-      appBar: MainMenuSearchAppBar(value: 0.0),
-      body: Expanded(
-        child: ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
-          pagingControllerState: _homeMainMenuSubListItemPagingControllerState,
-          onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
-            pagingControllerState: pagingControllerState!
+    return WidgetHelper.checkVisibility(
+      MainRouteObserver.subMainMenuVisibility[Constant.subPageKeyHomeMainMenu],
+      () => BackgroundAppBarScaffold(
+        backgroundAppBarImage: _homeAppBarBackgroundAssetImage,
+        appBar: MainMenuSearchAppBar(value: 0.0),
+        body: Expanded(
+          child: ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
+            pagingControllerState: _homeMainMenuSubListItemPagingControllerState,
+            onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
+              pagingControllerState: pagingControllerState!
+            ),
+            pullToRefresh: true
           ),
-          pullToRefresh: true
         ),
-      ),
+      )
     );
   }
 }

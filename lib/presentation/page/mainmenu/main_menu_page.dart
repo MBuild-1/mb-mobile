@@ -78,7 +78,9 @@ class MainMenuPage extends RestorableGetxPage<_MainMenuPageRestoration> {
           if (onRefresh != null) {
             onRefresh();
           }
-        }
+        },
+        () => MainRouteObserver.subMainMenuVisibility[Constant.subPageKeyHomeMainMenu] = false,
+        () => MainRouteObserver.subMainMenuVisibility[Constant.subPageKeyHomeMainMenu] = true,
       ],
       [
         ControllerMember<FeedMainMenuSubController>().addToControllerManager(controllerManager),
@@ -88,7 +90,9 @@ class MainMenuPage extends RestorableGetxPage<_MainMenuPageRestoration> {
           if (onRefresh != null) {
             onRefresh();
           }
-        }
+        },
+        () => MainRouteObserver.subMainMenuVisibility[Constant.subPageKeyFeedMainMenu] = false,
+        () => MainRouteObserver.subMainMenuVisibility[Constant.subPageKeyFeedMainMenu] = true
       ],
       [
         ControllerMember<ExploreNusantaraMainMenuSubController>().addToControllerManager(controllerManager),
@@ -98,7 +102,9 @@ class MainMenuPage extends RestorableGetxPage<_MainMenuPageRestoration> {
           if (onRefresh != null) {
             onRefresh();
           }
-        }
+        },
+        () => MainRouteObserver.subMainMenuVisibility[Constant.subPageKeyExploreNusantaraMainMenu] = false,
+        () => MainRouteObserver.subMainMenuVisibility[Constant.subPageKeyExploreNusantaraMainMenu] = true
       ],
       [
         ControllerMember<WishlistMainMenuSubController>().addToControllerManager(controllerManager),
@@ -108,7 +114,9 @@ class MainMenuPage extends RestorableGetxPage<_MainMenuPageRestoration> {
           if (onRefresh != null) {
             onRefresh();
           }
-        }
+        },
+        () => MainRouteObserver.subMainMenuVisibility[Constant.subPageKeyWishlistMainMenu] = false,
+        () => MainRouteObserver.subMainMenuVisibility[Constant.subPageKeyWishlistMainMenu] = true
       ],
       [
         ControllerMember<MenuMainMenuSubController>().addToControllerManager(controllerManager),
@@ -118,7 +126,9 @@ class MainMenuPage extends RestorableGetxPage<_MainMenuPageRestoration> {
           if (onRefresh != null) {
             onRefresh();
           }
-        }
+        },
+        () => MainRouteObserver.subMainMenuVisibility[Constant.subPageKeyMenuMainMenu] = false,
+        () => MainRouteObserver.subMainMenuVisibility[Constant.subPageKeyMenuMainMenu] = true
       ]
     ];
   }
@@ -318,6 +328,14 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
       ),
       context
     );
+
+    for (int i = 0; i < widget.mainMenuSubControllerList.length; i++) {
+      if (i == 0) {
+        widget.mainMenuSubControllerList[i][4]();
+        continue;
+      }
+      widget.mainMenuSubControllerList[i][3]();
+    }
     PusherHelper.initPusherChannels(
       pusherChannelsFlutter: _pusher
     );
@@ -444,6 +462,7 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
   void _onItemTappedWithContext(CustomBottomNavigationBarSelectedIndex selectedIndex, BuildContext context) {
     _customBottomNavigationBarSelectedIndex = selectedIndex;
     _firstInitTabChildWidget(selectedIndex);
+    _setWidgetVisibilityToTrue(selectedIndex);
     setState(() {});
   }
 
@@ -455,6 +474,11 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
         controller.initController();
       }
     }
+  }
+
+  void _setWidgetVisibilityToTrue(CustomBottomNavigationBarSelectedIndex selectedIndex) {
+    int selectedViewIndex = selectedIndex.currentSelectedViewMenuIndex;
+    widget.mainMenuSubControllerList[selectedViewIndex][4]();
   }
 
   @override
