@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../../controller/inbox_controller.dart';
 import '../../domain/entity/faq/faq.dart';
@@ -14,7 +15,7 @@ import '../../misc/controllerstate/listitemcontrollerstate/faqlistitemcontroller
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/profilemenulistitemcontrollerstate/profile_menu_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
-import '../../misc/dialog_helper.dart';
+import '../../misc/error/message_error.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
@@ -25,21 +26,30 @@ import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
+import '../../misc/string_util.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modified_svg_picture.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
-import '../widget/titleanddescriptionitem/title_and_description_item.dart';
 import 'chathistory/chat_history_page.dart';
 import 'deliveryreview/delivery_review_page.dart';
 import 'getx_page.dart';
 import 'help_chat_page.dart';
 import 'help_page.dart';
 import 'product_discussion_page.dart';
+import 'web_viewer_page.dart';
 
 class InboxPage extends RestorableGetxPage<_InboxPageRestoration> {
+  final InboxPageParameter inboxPageParameter;
+
   late final ControllerMember<InboxController> _inboxController = ControllerMember<InboxController>().addToControllerManager(controllerManager);
 
-  InboxPage({Key? key}) : super(key: key, pageRestorationId: () => "inbox-page");
+  InboxPage({
+    Key? key,
+    required this.inboxPageParameter
+  }) : super(
+    key: key,
+    pageRestorationId: () => "inbox-page"
+  );
 
   @override
   void onSetController() {
@@ -59,13 +69,14 @@ class InboxPage extends RestorableGetxPage<_InboxPageRestoration> {
   Widget buildPage(BuildContext context) {
     return Scaffold(
       body: _StatefulInboxControllerMediatorWidget(
+        inboxPageParameter: inboxPageParameter,
         inboxController: _inboxController.controller,
       ),
     );
   }
 }
 
-class _InboxPageRestoration extends MixableGetxPageRestoration with InboxPageRestorationMixin, ProductDiscussionPageRestorationMixin, DeliveryReviewPageRestorationMixin, HelpPageRestorationMixin, HelpChatPageRestorationMixin, ChatHistoryPageRestorationMixin {
+class _InboxPageRestoration extends MixableGetxPageRestoration with InboxPageRestorationMixin, ProductDiscussionPageRestorationMixin, DeliveryReviewPageRestorationMixin, HelpPageRestorationMixin, HelpChatPageRestorationMixin, ChatHistoryPageRestorationMixin, WebViewerPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
@@ -86,11 +97,23 @@ class _InboxPageRestoration extends MixableGetxPageRestoration with InboxPageRes
 }
 
 class InboxPageGetPageBuilderAssistant extends GetPageBuilderAssistant {
-  @override
-  GetPageBuilder get pageBuilder => (() => InboxPage());
+  final InboxPageParameter inboxPageParameter;
+
+  InboxPageGetPageBuilderAssistant({
+    required this.inboxPageParameter
+  });
 
   @override
-  GetPageBuilder get pageWithOuterGetxBuilder => (() => GetxPageBuilder.buildRestorableGetxPage(InboxPage()));
+  GetPageBuilder get pageBuilder => (() => InboxPage(
+    inboxPageParameter: inboxPageParameter,
+  ));
+
+  @override
+  GetPageBuilder get pageWithOuterGetxBuilder => (
+    () => GetxPageBuilder.buildRestorableGetxPage(
+      InboxPage(inboxPageParameter: inboxPageParameter)
+    )
+  );
 }
 
 mixin InboxPageRestorationMixin on MixableGetxPageRestoration {
@@ -127,8 +150,16 @@ class InboxPageRestorableRouteFuture extends GetRestorableRouteFuture {
   }
 
   static Route<void>? _getRoute([Object? arguments]) {
+    if (arguments is! String) {
+      throw MessageError(message: "Arguments must be a String");
+    }
+    InboxPageParameter inboxPageParameter = arguments.toInboxPageParameter();
     return GetExtended.toWithGetPageRouteReturnValue<void>(
-      GetxPageBuilder.buildRestorableGetxPageBuilder(InboxPageGetPageBuilderAssistant())
+      GetxPageBuilder.buildRestorableGetxPageBuilder(
+        InboxPageGetPageBuilderAssistant(
+          inboxPageParameter: inboxPageParameter
+        )
+      ),
     );
   }
 
@@ -155,9 +186,11 @@ class InboxPageRestorableRouteFuture extends GetRestorableRouteFuture {
 }
 
 class _StatefulInboxControllerMediatorWidget extends StatefulWidget {
+  final InboxPageParameter inboxPageParameter;
   final InboxController inboxController;
 
   const _StatefulInboxControllerMediatorWidget({
+    required this.inboxPageParameter,
     required this.inboxController
   });
 
@@ -198,46 +231,51 @@ class _StatefulInboxControllerMediatorWidgetState extends State<_StatefulInboxCo
     return faqPagingLoadDataResult.map<PagingResult<ListItemControllerState>>((faqList) {
       return PagingDataResult<ListItemControllerState>(
         itemList: [
-          ProfileMenuListItemControllerState(
-            onTap: (context) => PageRestorationHelper.toChatHistoryPage(context),
-            icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorChat, color: iconColor, width: 20.0),
-            title: 'Chat'.tr,
-            description: "Your private conversations".tr,
-            descriptionInterceptor: descriptionInterceptor
-          ),
-          DividerListItemControllerState(),
-          // ProfileMenuListItemControllerState(
-          //   onTap: (context) => PageRestorationHelper.toProductDiscussionPage(context),
-          //   icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorProductDiscussion2, color: iconColor, width: 20.0),
-          //   title: 'Product Discussion'.tr,
-          //   description: "Ask questions about the product".tr,
-          //   descriptionInterceptor: descriptionInterceptor
-          // ),
-          // DividerListItemControllerState(),
-          ProfileMenuListItemControllerState(
-            onTap: (context) => PageRestorationHelper.toDeliveryReviewPage(context),
-            icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorDeliveryReview2, color: iconColor, width: 20.0),
-            title: 'Delivery Review'.tr,
-            description: "Please rate the shipping review".tr,
-            descriptionInterceptor: descriptionInterceptor
-          ),
-          DividerListItemControllerState(),
-          ProfileMenuListItemControllerState(
-            onTap: (context) => PageRestorationHelper.toHelpChatPage(context),
-            icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorSupportMessage, color: iconColor, width: 20.0),
-            title: 'Support Message'.tr,
-            description: "Monitor the status of assistance from Master Bagasi".tr,
-            descriptionInterceptor: descriptionInterceptor
-          ),
-          FaqContainerListItemControllerState(
-            faqListItemValueList: faqList.map<FaqListItemValue>((faq) {
-              return FaqListItemValue(
-                faq: faq,
-                isExpanded: false
-              );
-            }).toList(),
-            onUpdateState: () => setState(() {})
-          )
+          if (widget.inboxPageParameter.showInboxMenu) ...[
+            ProfileMenuListItemControllerState(
+              onTap: (context) => PageRestorationHelper.toChatHistoryPage(context),
+              icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorChat, color: iconColor, width: 20.0),
+              title: 'Chat'.tr,
+              description: "Your private conversations".tr,
+              descriptionInterceptor: descriptionInterceptor
+            ),
+            DividerListItemControllerState(),
+            // ProfileMenuListItemControllerState(
+            //   onTap: (context) => PageRestorationHelper.toProductDiscussionPage(context),
+            //   icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorProductDiscussion2, color: iconColor, width: 20.0),
+            //   title: 'Product Discussion'.tr,
+            //   description: "Ask questions about the product".tr,
+            //   descriptionInterceptor: descriptionInterceptor
+            // ),
+            // DividerListItemControllerState(),
+            ProfileMenuListItemControllerState(
+              onTap: (context) => PageRestorationHelper.toDeliveryReviewPage(context),
+              icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorDeliveryReview2, color: iconColor, width: 20.0),
+              title: 'Delivery Review'.tr,
+              description: "Please rate the shipping review".tr,
+              descriptionInterceptor: descriptionInterceptor
+            ),
+            DividerListItemControllerState(),
+            ProfileMenuListItemControllerState(
+              onTap: (context) => PageRestorationHelper.toHelpChatPage(context),
+              icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorSupportMessage, color: iconColor, width: 20.0),
+              title: 'Support Message'.tr,
+              description: "Monitor the status of assistance from Master Bagasi".tr,
+              descriptionInterceptor: descriptionInterceptor
+            ),
+          ],
+          if (widget.inboxPageParameter.showFaq) ...[
+            FaqContainerListItemControllerState(
+              faqListItemValueList: faqList.map<FaqListItemValue>((faq) {
+                return FaqListItemValue(
+                  faq: faq,
+                  isExpanded: false
+                );
+              }).toList(),
+              onUpdateState: () => setState(() {}),
+              showHeader: widget.inboxPageParameter.showInboxMenu
+            )
+          ]
         ],
         page: 1,
         totalPage: 1,
@@ -252,7 +290,7 @@ class _StatefulInboxControllerMediatorWidgetState extends State<_StatefulInboxCo
       appBar: ModifiedAppBar(
         titleInterceptor: (context, title) => Row(
           children: [
-            Text("Inbox".tr),
+            Text(widget.inboxPageParameter.title ?? "Inbox".tr),
           ],
         ),
       ),
@@ -271,6 +309,39 @@ class _StatefulInboxControllerMediatorWidgetState extends State<_StatefulInboxCo
           ]
         )
       ),
+    );
+  }
+}
+
+class InboxPageParameter {
+  bool showInboxMenu;
+  bool showFaq;
+  String? title;
+
+  InboxPageParameter({
+    required this.showInboxMenu,
+    required this.showFaq,
+    this.title
+  });
+}
+
+extension InboxPageParameterExt on InboxPageParameter {
+  String toEncodeBase64String() => StringUtil.encodeBase64StringFromJson(
+    <String, dynamic>{
+      "show_inbox_menu": showInboxMenu ? 1 : 0,
+      "show_faq": showFaq ? 1 : 0,
+      if (title.isNotEmptyString) "title": title
+    }
+  );
+}
+
+extension InboxPageParameterStringExt on String {
+  InboxPageParameter toInboxPageParameter() {
+    dynamic result = StringUtil.decodeBase64StringToJson(this);
+    return InboxPageParameter(
+      showInboxMenu: result["show_inbox_menu"] == 1,
+      showFaq: result["show_faq"] == 1,
+      title: result["title"] as String?
     );
   }
 }

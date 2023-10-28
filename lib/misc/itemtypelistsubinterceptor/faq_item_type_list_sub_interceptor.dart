@@ -48,28 +48,30 @@ class FaqItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItemC
         )
       ).toList();
       List<ListItemControllerState> newListItemControllerState = [];
-      List<InlineSpan> inlineSpanList = [
-        const TextSpan(text: "FAQ ", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        const TextSpan(text: "(Frequently Asked Question)", style: TextStyle(color: Colors.grey)),
-      ];
-      ListItemControllerState faqHeaderListItemControllerState = WidgetSubstitutionListItemControllerState(
-        widgetSubstitution: (context, index) => Container(
-          padding: const EdgeInsets.all(16.0),
-          color: Constant.colorDarkBlue,
-          child: Row(
-            children: [
-              Text.rich(
-                TextSpan(
-                  children: inlineSpanList
+      if (oldItemType.showHeader) {
+        List<InlineSpan> inlineSpanList = [
+          const TextSpan(text: "FAQ ", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          const TextSpan(text: "(Frequently Asked Question)", style: TextStyle(color: Colors.grey)),
+        ];
+        ListItemControllerState faqHeaderListItemControllerState = WidgetSubstitutionListItemControllerState(
+          widgetSubstitution: (context, index) => Container(
+            padding: const EdgeInsets.all(16.0),
+            color: Constant.colorDarkBlue,
+            child: Row(
+              children: [
+                Text.rich(
+                  TextSpan(
+                    children: inlineSpanList
+                  )
                 )
-              )
-            ],
+              ],
+            ),
           ),
-        ),
-      );
-      listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
-        i, ListItemControllerStateWrapper(faqHeaderListItemControllerState), oldItemTypeList, newListItemControllerState
-      );
+        );
+        listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
+          i, ListItemControllerStateWrapper(faqHeaderListItemControllerState), oldItemTypeList, newListItemControllerState
+        );
+      }
       int j = 0;
       while (j < faqListItemControllerStateList.length) {
         ListItemControllerState listItemControllerState = CompoundListItemControllerState(

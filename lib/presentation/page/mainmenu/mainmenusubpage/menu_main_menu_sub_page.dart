@@ -58,6 +58,7 @@ import '../../../widget/rx_consumer.dart';
 import '../../../widget/tap_area.dart';
 import '../../../widget/titleanddescriptionitem/title_and_description_item.dart';
 import '../../getx_page.dart';
+import '../../inbox_page.dart';
 import '../../product_discussion_page.dart';
 
 class MenuMainMenuSubPage extends DefaultGetxPage {
@@ -187,6 +188,17 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
             onTap: (context) => PageRestorationHelper.toNotificationPage(context),
             icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorSupportMessage, width: 20.0),
             title: 'Update'.tr,
+          ),
+          ProfileMenuListItemControllerState(
+            onTap: (context) => PageRestorationHelper.toInboxPage(
+              context, inboxPageParameter: InboxPageParameter(
+                showInboxMenu: false,
+                showFaq: true,
+                title: 'FAQ'.tr
+              )
+            ),
+            icon: (BuildContext context) => const Icon(Icons.question_mark, size: 20.0),
+            title: 'FAQ'.tr,
           ),
           ProfileMenuListItemControllerState(
             onTap: (context) => widget.menuMainMenuSubController.sharedCartControllerContentDelegate.checkSharedCart(),

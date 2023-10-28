@@ -351,11 +351,17 @@ class _PageRestorationHelperImpl {
     });
   }
 
-  void toInboxPage(BuildContext context) {
+  void toInboxPage(BuildContext context, {InboxPageParameter? inboxPageParameter}) {
     LoginHelper.checkingLogin(context, () {
+      InboxPageParameter effectiveInboxPageParameter = inboxPageParameter ?? InboxPageParameter(
+        showFaq: true,
+        showInboxMenu: true
+      );
       PageRestorationHelper.findPageRestorationMixin<InboxPageRestorationMixin>(
         onGetxPageRestorationFound: (restoration) {
-          restoration.inboxPageRestorableRouteFuture.present();
+          restoration.inboxPageRestorableRouteFuture.present(
+            effectiveInboxPageParameter.toEncodeBase64String()
+          );
         },
         context: context
       );
