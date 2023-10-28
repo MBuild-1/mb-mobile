@@ -77,7 +77,7 @@ class IntroductionPageViewChildrenBuilder extends PreloadPageViewChildrenBuilder
     double top = 100.0
   }) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 4.h, horizontal: 7.w),
+      padding: EdgeInsets.symmetric(vertical: 0, horizontal: 7.w),
       child: Stack(
         children: [
           Positioned(
@@ -116,7 +116,7 @@ class IntroductionPageViewChildrenBuilder extends PreloadPageViewChildrenBuilder
     double top = 100.0
   }) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 4.h, horizontal: 7.w),
+      padding: EdgeInsets.symmetric(vertical: 0, horizontal: 7.w),
       child: Stack(
         children: [
           Positioned(
