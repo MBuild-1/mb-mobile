@@ -834,7 +834,7 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
             });
           },
           child: Container(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
             color: Constant.colorDarkBlue,
             child: Row(
               children: [
