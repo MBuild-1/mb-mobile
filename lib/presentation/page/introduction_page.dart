@@ -215,7 +215,7 @@ class _IntroductionPageViewState extends State<_IntroductionPageView> {
           )
         ),
         Padding(
-          padding: EdgeInsets.symmetric(vertical: 7.h),
+          padding: EdgeInsets.symmetric(vertical: 4.h),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
