@@ -43,7 +43,7 @@ class OrderConclusionItem extends StatelessWidget {
                     SizedOutlineGradientButton(
                       onPressed: () async {
                         DialogHelper.showLoadingDialog(context);
-                        WebHelper.launchUrl(
+                        await WebHelper.launchUrl(
                           Uri.parse("https://app.midtrans.com/snap/v2/vtweb/${order.orderProduct.orderDetail.snapToken}")
                         );
                         Get.back();
@@ -95,9 +95,10 @@ class OrderConclusionItem extends StatelessWidget {
                   SizedOutlineGradientButton(
                     onPressed: () async {
                       DialogHelper.showLoadingDialog(context);
-                      WebHelper.launchUrl(
+                      await WebHelper.launchUrl(
                         Uri.parse("https://app.midtrans.com/snap/v2/vtweb/${order.orderShipping!.orderDetail.snapToken}")
                       );
+                      Get.back();
                     },
                     text: "Pay".tr,
                     customPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),

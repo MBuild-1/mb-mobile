@@ -6,9 +6,9 @@ import 'package:flutter_web_browser/flutter_web_browser.dart';
 import 'constant.dart';
 
 class _WebHelperImpl {
-  void launchUrl(Uri uri) {
+  Future<void> launchUrl(Uri uri) async {
     if (Platform.isAndroid) {
-      FlutterWebBrowser.openWebPage(
+      return await FlutterWebBrowser.openWebPage(
         url: uri.toString(),
         customTabsOptions: CustomTabsOptions(
           colorScheme: CustomTabsColorScheme.dark,
@@ -25,7 +25,7 @@ class _WebHelperImpl {
         ),
       );
     } else if (Platform.isIOS) {
-      FlutterWebBrowser.openWebPage(
+      return await FlutterWebBrowser.openWebPage(
         url: uri.toString(),
         safariVCOptions: SafariViewControllerOptions(
           barCollapsingEnabled: true,
