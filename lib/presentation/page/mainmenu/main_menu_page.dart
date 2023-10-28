@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/presentation/page/product_detail_page.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 
 import '../../../controller/base_getx_controller.dart';
 import '../../../controller/mainmenucontroller/main_menu_controller.dart';
@@ -22,6 +23,7 @@ import '../../../misc/main_route_observer.dart';
 import '../../../misc/manager/controller_manager.dart';
 import '../../../misc/multi_language_string.dart';
 import '../../../misc/page_restoration_helper.dart';
+import '../../../misc/pusher_helper.dart';
 import '../../../misc/routeargument/main_menu_route_argument.dart';
 import '../../../misc/typedef.dart';
 import '../../widget/custom_bottom_navigation_bar.dart';
@@ -297,6 +299,8 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
   late CustomBottomNavigationBarSelectedIndex _customBottomNavigationBarSelectedIndex;
   final TapGestureRecognizer _signInTapGestureRecognizer = TapGestureRecognizer();
 
+  final PusherChannelsFlutter _pusher = PusherChannelsFlutter.getInstance();
+
   @override
   void initState() {
     super.initState();
@@ -313,6 +317,9 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
         currentSelectedViewMenuIndex: index
       ),
       context
+    );
+    PusherHelper.initPusherChannels(
+      pusherChannelsFlutter: _pusher
     );
   }
 
@@ -457,6 +464,7 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
     MainRouteObserver.onRefreshCartInMainMenu = null;
     MainRouteObserver.onRefreshWishlistInMainMenu = null;
     MainRouteObserver.onChangeSelectedProvince = null;
+    _pusher.disconnect();
     super.dispose();
   }
 }

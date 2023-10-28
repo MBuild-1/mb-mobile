@@ -286,7 +286,7 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<StatefulHelpC
       }
     }
     if (getHelpMessageByUserResponseLoadDataResult.valueLoadDataResult.isSuccess) {
-      await PusherHelper.connectChatPusherChannel(
+      await PusherHelper.subscribeChatPusherChannel(
         pusherChannelsFlutter: _pusher,
         onEvent: _onEvent,
         chatPusherChannelType: ChatPusherChannelType.help,
@@ -374,7 +374,7 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<StatefulHelpC
                             if (createHelpConversationResponseLoadDataResult.isSuccess) {
                               _helpConversationId = createHelpConversationResponseLoadDataResult.resultIfSuccess!.helpConversationId;
                             }
-                            await PusherHelper.connectChatPusherChannel(
+                            await PusherHelper.subscribeChatPusherChannel(
                               pusherChannelsFlutter: _pusher,
                               onEvent: _onEvent,
                               chatPusherChannelType: ChatPusherChannelType.help,
@@ -439,7 +439,7 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<StatefulHelpC
     }
   }
 
-  void _onEvent(PusherEvent event) {
+  dynamic _onEvent(dynamic event) {
     _refreshChat();
   }
 
@@ -447,7 +447,11 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<StatefulHelpC
   void dispose() {
     _helpTextFocusNode.dispose();
     _helpTextEditingController.dispose();
-    _pusher.disconnect();
+    PusherHelper.unsubscribeChatPusherChannel(
+      pusherChannelsFlutter: _pusher,
+      chatPusherChannelType: ChatPusherChannelType.help,
+      conversationId: _helpConversationId
+    );
     super.dispose();
   }
 }

@@ -297,7 +297,7 @@ class _StatefulOrderChatControllerMediatorWidgetState extends State<_StatefulOrd
       }
     }
     if (getOrderMessageByCombinedOrderResponseLoadDataResult.valueLoadDataResult.isSuccess) {
-      await PusherHelper.connectChatPusherChannel(
+      await PusherHelper.subscribeChatPusherChannel(
         pusherChannelsFlutter: _pusher,
         onEvent: _onEvent,
         chatPusherChannelType: ChatPusherChannelType.order,
@@ -433,14 +433,18 @@ class _StatefulOrderChatControllerMediatorWidgetState extends State<_StatefulOrd
     }
   }
 
-  void _onEvent(PusherEvent event) {
+  dynamic _onEvent(dynamic event) {
     _refreshChat();
   }
 
   @override
   void dispose() {
     _orderChatTextEditingController.dispose();
-    _pusher.disconnect();
+    PusherHelper.unsubscribeChatPusherChannel(
+      pusherChannelsFlutter: _pusher,
+      chatPusherChannelType: ChatPusherChannelType.order,
+      conversationId: _orderConversationId
+    );
     super.dispose();
   }
 }

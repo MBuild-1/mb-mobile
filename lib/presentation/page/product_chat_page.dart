@@ -295,7 +295,7 @@ class _StatefulProductChatControllerMediatorWidgetState extends State<_StatefulP
       }
     }
     if (getProductMessageByProductResponseLoadDataResult.valueLoadDataResult.isSuccess) {
-      await PusherHelper.connectChatPusherChannel(
+      await PusherHelper.subscribeChatPusherChannel(
         pusherChannelsFlutter: _pusher,
         onEvent: _onEvent,
         chatPusherChannelType: ChatPusherChannelType.product,
@@ -383,7 +383,7 @@ class _StatefulProductChatControllerMediatorWidgetState extends State<_StatefulP
                             if (createProductConversationResponseLoadDataResult.isSuccess) {
                               _productConversationId = createProductConversationResponseLoadDataResult.resultIfSuccess!.productConversationId;
                             }
-                            await PusherHelper.connectChatPusherChannel(
+                            await PusherHelper.subscribeChatPusherChannel(
                               pusherChannelsFlutter: _pusher,
                               onEvent: _onEvent,
                               chatPusherChannelType: ChatPusherChannelType.product,
@@ -448,14 +448,18 @@ class _StatefulProductChatControllerMediatorWidgetState extends State<_StatefulP
     }
   }
 
-  void _onEvent(PusherEvent event) {
+  dynamic _onEvent(dynamic event) {
     _refreshChat();
   }
 
   @override
   void dispose() {
     _productChatTextEditingController.dispose();
-    _pusher.disconnect();
+    PusherHelper.unsubscribeChatPusherChannel(
+      pusherChannelsFlutter: _pusher,
+      chatPusherChannelType: ChatPusherChannelType.product,
+      conversationId: _productConversationId
+    );
     super.dispose();
   }
 }

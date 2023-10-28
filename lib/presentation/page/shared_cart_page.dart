@@ -379,11 +379,14 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
     Bucket bucket = _bucketLoadDataResult.resultIfSuccess!;
     _bucketId = bucket.id;
     try {
-      await _pusher.disconnect();
+      await PusherHelper.unsubscribeSharedCartPusherChannel(
+        pusherChannelsFlutter: _pusher,
+        bucketId: _bucketId!
+      );
     } catch (e) {
       // No action something
     }
-    await PusherHelper.connectSharedCartPusherChannel(
+    await PusherHelper.subscribeSharedCartPusherChannel(
       pusherChannelsFlutter: _pusher,
       onEvent: _onEvent,
       bucketId: _bucketId!,
@@ -718,7 +721,7 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
     );
   }
 
-  void _onEvent(PusherEvent event) {
+  dynamic _onEvent(dynamic event) {
     _updateSharedCartDataAndState();
   }
 

@@ -1,110 +1,131 @@
 import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 
 class _PusherHelperImpl {
-  Future<PusherChannelsFlutter> generateAndConnectChatPusherChannel({
-    required void Function(PusherEvent) onEvent,
-    required ChatPusherChannelType chatPusherChannelType,
-    required String conversationId
-  }) async {
-    PusherChannelsFlutter _pusher = PusherChannelsFlutter.getInstance();
-    return connectChatPusherChannel(
-      pusherChannelsFlutter: _pusher,
-      onEvent: onEvent,
-      chatPusherChannelType: chatPusherChannelType,
-      conversationId: conversationId
-    );
-  }
-
-  Future<void> _initPusherChannels({
+  Future<void> initPusherChannels({
     required PusherChannelsFlutter pusherChannelsFlutter,
-    required void Function(PusherEvent) onEvent
+    void Function(PusherEvent)? onEvent
   }) async {
     await pusherChannelsFlutter.init(
       apiKey: "aec3cf529553db66701a",
       cluster: "ap1",
       onEvent: onEvent,
     );
+    await pusherChannelsFlutter.connect();
   }
 
-  Future<PusherChannelsFlutter> connectChatPusherChannel({
+  String _getChatFirstChannelName(ChatPusherChannelType chatPusherChannelType) {
+    if (chatPusherChannelType == ChatPusherChannelType.help) {
+      return "help-messages";
+    } else if (chatPusherChannelType == ChatPusherChannelType.order) {
+      return "order-messages";
+    } else if (chatPusherChannelType == ChatPusherChannelType.product) {
+      return "product-messages";
+    } else {
+      return "";
+    }
+  }
+
+  Future<PusherChannelsFlutter> subscribeChatPusherChannel({
     required PusherChannelsFlutter pusherChannelsFlutter,
-    required void Function(PusherEvent) onEvent,
+    required dynamic Function(dynamic) onEvent,
     required ChatPusherChannelType chatPusherChannelType,
     required String conversationId,
   }) async {
-    String getFirstChannelName() {
-      if (chatPusherChannelType == ChatPusherChannelType.help) {
-        return "help-messages";
-      } else if (chatPusherChannelType == ChatPusherChannelType.order) {
-        return "order-messages";
-      } else if (chatPusherChannelType == ChatPusherChannelType.product) {
-        return "product-messages";
-      } else {
-        return "";
-      }
-    }
     try {
-      _initPusherChannels(
-        pusherChannelsFlutter: pusherChannelsFlutter,
+      await pusherChannelsFlutter.subscribe(
+        channelName: "${_getChatFirstChannelName(chatPusherChannelType)}.$conversationId",
         onEvent: onEvent
       );
-      await pusherChannelsFlutter.subscribe(
-        channelName: "${getFirstChannelName()}.$conversationId"
-      );
-      await pusherChannelsFlutter.connect();
     } catch (e) {
       print("ERROR: $e");
     }
     return pusherChannelsFlutter;
   }
 
-  Future<PusherChannelsFlutter> connectDiscussionPusherChannel({
+  Future<PusherChannelsFlutter> unsubscribeChatPusherChannel({
     required PusherChannelsFlutter pusherChannelsFlutter,
-    required void Function(PusherEvent) onEvent,
+    required ChatPusherChannelType chatPusherChannelType,
+    required String conversationId,
+  }) async {
+    try {
+      await pusherChannelsFlutter.unsubscribe(
+        channelName: "${_getChatFirstChannelName(chatPusherChannelType)}.$conversationId",
+      );
+    } catch (e) {
+      print("ERROR: $e");
+    }
+    return pusherChannelsFlutter;
+  }
+
+  String _getDiscussionFirstChannelName(DiscussionPusherChannelType discussionPusherChannelType) {
+    if (discussionPusherChannelType == DiscussionPusherChannelType.discussion) {
+      return "product-discussion";
+    } else if (discussionPusherChannelType == DiscussionPusherChannelType.subDiscussion) {
+      return "product-sub-discussion";
+    } else {
+      return "";
+    }
+  }
+
+  Future<PusherChannelsFlutter> subscribeDiscussionPusherChannel({
+    required PusherChannelsFlutter pusherChannelsFlutter,
+    required dynamic Function(dynamic) onEvent,
     required DiscussionPusherChannelType discussionPusherChannelType,
     required String productDiscussionId,
   }) async {
-    String getFirstChannelName() {
-      if (discussionPusherChannelType == DiscussionPusherChannelType.discussion) {
-        return "product-discussion";
-      } else if (discussionPusherChannelType == DiscussionPusherChannelType.subDiscussion) {
-        return "product-sub-discussion";
-      } else {
-        return "";
-      }
-    }
     try {
-      _initPusherChannels(
-        pusherChannelsFlutter: pusherChannelsFlutter,
+      await pusherChannelsFlutter.subscribe(
+        channelName: "${_getDiscussionFirstChannelName(discussionPusherChannelType)}.$productDiscussionId",
         onEvent: onEvent
       );
-      await pusherChannelsFlutter.subscribe(
-        channelName: "${getFirstChannelName()}.$productDiscussionId"
-      );
-      await pusherChannelsFlutter.connect();
     } catch (e) {
       print("ERROR: $e");
     }
     return pusherChannelsFlutter;
   }
 
-  Future<PusherChannelsFlutter> connectSharedCartPusherChannel({
+  Future<PusherChannelsFlutter> unsubscribeDiscussionPusherChannel({
     required PusherChannelsFlutter pusherChannelsFlutter,
-    required void Function(PusherEvent) onEvent,
+    required DiscussionPusherChannelType discussionPusherChannelType,
+    required String productDiscussionId,
+  }) async {
+    try {
+      await pusherChannelsFlutter.unsubscribe(
+        channelName: "${_getDiscussionFirstChannelName(discussionPusherChannelType)}.$productDiscussionId",
+      );
+    } catch (e) {
+      print("ERROR: $e");
+    }
+    return pusherChannelsFlutter;
+  }
+
+  String _getSharedCartFirstChannelName() {
+    return "bucket-request";
+  }
+
+  Future<PusherChannelsFlutter> subscribeSharedCartPusherChannel({
+    required PusherChannelsFlutter pusherChannelsFlutter,
+    required dynamic Function(dynamic) onEvent,
     required String bucketId,
   }) async {
-    String getFirstChannelName() {
-      return "bucket-request";
-    }
     try {
-      _initPusherChannels(
-        pusherChannelsFlutter: pusherChannelsFlutter,
-        onEvent: onEvent
-      );
       await pusherChannelsFlutter.subscribe(
-        channelName: "${getFirstChannelName()}.$bucketId"
+        channelName: "${_getSharedCartFirstChannelName()}.$bucketId"
       );
-      await pusherChannelsFlutter.connect();
+    } catch (e) {
+      print("ERROR: $e");
+    }
+    return pusherChannelsFlutter;
+  }
+
+  Future<PusherChannelsFlutter> unsubscribeSharedCartPusherChannel({
+    required PusherChannelsFlutter pusherChannelsFlutter,
+    required String bucketId,
+  }) async {
+    try {
+      await pusherChannelsFlutter.unsubscribe(
+        channelName: "${_getSharedCartFirstChannelName()}.$bucketId",
+      );
     } catch (e) {
       print("ERROR: $e");
     }
