@@ -27,6 +27,7 @@ import '../../misc/recognizer/sign_up_recognizer.dart';
 import '../../misc/string_util.dart';
 import '../../misc/validation/validator/compoundvalidator/password_compound_validator.dart';
 import '../../misc/validation/validator/validator.dart';
+import '../../misc/web_helper.dart';
 import '../notifier/login_notifier.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/field.dart';
@@ -392,18 +393,10 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
                 Builder(
                   builder: (context) {
                     _termAndConditionsTapGestureRecognizer.onTap = () {
-                      PageRestorationHelper.toWebViewerPage(
-                        context, <String, dynamic>{
-                          Constant.textEncodedUrlKey: StringUtil.encodeBase64String(Constant.textTermAndConditionsUrl)
-                        }
-                      );
+                      WebHelper.launchUrl(Uri.parse(Constant.textTermAndConditionsUrl));
                     };
                     _privacyPolicyTapGestureRecognizer.onTap = () {
-                      PageRestorationHelper.toWebViewerPage(
-                        context, <String, dynamic>{
-                          Constant.textEncodedUrlKey: StringUtil.encodeBase64String(Constant.textPrivacyPolicyUrl)
-                        }
-                      );
+                      WebHelper.launchUrl(Uri.parse(Constant.textPrivacyPolicyUrl));
                     };
                     return Text.rich(
                       "By signing up".trTextSpan(

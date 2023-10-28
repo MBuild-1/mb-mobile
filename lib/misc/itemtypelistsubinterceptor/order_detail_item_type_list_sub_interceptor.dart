@@ -40,6 +40,7 @@ import '../http_client.dart';
 import '../itemtypelistinterceptor/itemtypelistinterceptorchecker/list_item_controller_state_item_type_list_interceptor_checker.dart';
 import '../multi_language_string.dart';
 import '../typedef.dart';
+import '../web_helper.dart';
 import 'item_type_list_sub_interceptor.dart';
 
 class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItemControllerState> {
@@ -508,9 +509,8 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
             Expanded(
               child: SizedOutlineGradientButton(
                 onPressed: () {
-                  launchUrl(
-                    Uri.parse("${DioHttpClient.of().options.baseUrl}/user/order/generate/invoice/${order.combinedOrder.id}"),
-                    mode: LaunchMode.externalApplication
+                  WebHelper.launchUrl(
+                    Uri.parse("${DioHttpClient.of().options.baseUrl}/user/order/generate/invoice/${order.combinedOrder.id}")
                   );
                 },
                 text: "Open".tr,

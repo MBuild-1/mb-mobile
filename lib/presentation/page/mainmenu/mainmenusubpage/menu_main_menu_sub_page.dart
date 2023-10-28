@@ -45,6 +45,7 @@ import '../../../../misc/parameterizedcomponententityandlistitemcontrollerstatem
 import '../../../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/cart_refresh_delegate_parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../../../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/horizontal_dynamic_item_carousel_parametered_component_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../../../../misc/string_util.dart';
+import '../../../../misc/web_helper.dart';
 import '../../../../misc/widget_helper.dart';
 import '../../../notifier/notification_notifier.dart';
 import '../../../widget/background_app_bar_scaffold.dart';
@@ -254,33 +255,21 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
             profileMenuListItemControllerStateList: [
               ProfileMenuListItemControllerState(
                 onTap: (context) {
-                  PageRestorationHelper.toWebViewerPage(
-                    context, <String, dynamic>{
-                      Constant.textEncodedUrlKey: StringUtil.encodeBase64String("https://m.masterbagasi.com/about-us")
-                    }
-                  );
+                  WebHelper.launchUrl(Uri.parse("https://m.masterbagasi.com/about-us"));
                 },
                 icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorAboutMasterbagasi, width: 20.0),
                 title: 'About MasterBagasi'.tr
               ),
               ProfileMenuListItemControllerState(
                 onTap: (context) {
-                  PageRestorationHelper.toWebViewerPage(
-                    context, <String, dynamic>{
-                      Constant.textEncodedUrlKey: StringUtil.encodeBase64String(Constant.textTermAndConditionsUrl)
-                    }
-                  );
+                  WebHelper.launchUrl(Uri.parse(Constant.textTermAndConditionsUrl));
                 },
                 icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorTermsAndConditions, width: 20.0),
                 title: 'Terms & Conditions'.tr
               ),
               ProfileMenuListItemControllerState(
                 onTap: (context) {
-                  PageRestorationHelper.toWebViewerPage(
-                    context, <String, dynamic>{
-                      Constant.textEncodedUrlKey: StringUtil.encodeBase64String(Constant.textPrivacyPolicyUrl)
-                    }
-                  );
+                  WebHelper.launchUrl(Uri.parse(Constant.textPrivacyPolicyUrl));
                 },
                 icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorPrivacyPolicy, width: 20.0),
                 title: 'Privacy Policy'.tr

@@ -17,6 +17,7 @@ import '../../misc/manager/controller_manager.dart';
 import '../../misc/multi_language_string.dart';
 import '../../misc/page_restoration_helper.dart';
 import '../../misc/string_util.dart';
+import '../../misc/web_helper.dart';
 import '../widget/affiliate_user_candidate_indicator.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
@@ -189,11 +190,7 @@ class _StatefulAffiliateControllerMediatorWidgetState extends State<_StatefulAff
               ),
               TapArea(
                 onTap: () {
-                  PageRestorationHelper.toWebViewerPage(
-                    context, <String, dynamic>{
-                      Constant.textEncodedUrlKey: StringUtil.encodeBase64String("https://masterbagasi.com/affiliate")
-                    }
-                  );
+                  WebHelper.launchUrl(Uri.parse("https://masterbagasi.com/affiliate"));
                 },
                 child: NormalTextStyleForAppBar(
                   style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold),

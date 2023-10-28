@@ -18,6 +18,7 @@ import '../../../misc/getextended/get_restorable_route_future.dart';
 import '../../../misc/injector.dart';
 import '../../../misc/load_data_result.dart';
 import '../../../misc/manager/controller_manager.dart';
+import '../../../misc/web_helper.dart';
 import '../../widget/loaddataresultimplementer/load_data_result_implementer.dart';
 import '../../widget/modifiedappbar/modified_app_bar.dart';
 import '../../widget/modifiedcachednetworkimage/product_modified_cached_network_image.dart';
@@ -218,7 +219,7 @@ class _StatefulNewsDetailControllerMediatorWidgetState extends State<_StatefulNe
                             isSelectable: true,
                             onTapUrl: (url) async {
                               Uri uri = Uri.parse(url);
-                              await launchUrl(uri, mode: LaunchMode.externalApplication);
+                              WebHelper.launchUrl(uri);
                               return true;
                             },
                           ),

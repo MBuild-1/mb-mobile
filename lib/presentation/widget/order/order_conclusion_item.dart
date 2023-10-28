@@ -7,6 +7,7 @@ import '../../../domain/entity/delivery/delivery_review.dart';
 import '../../../domain/entity/order/combined_order.dart';
 import '../../../misc/dialog_helper.dart';
 import '../../../misc/main_route_observer.dart';
+import '../../../misc/web_helper.dart';
 import '../../page/modaldialogpage/give_review_delivery_review_detail_modal_dialog_page.dart';
 import '../button/custombutton/sized_outline_gradient_button.dart';
 
@@ -42,9 +43,8 @@ class OrderConclusionItem extends StatelessWidget {
                     SizedOutlineGradientButton(
                       onPressed: () async {
                         DialogHelper.showLoadingDialog(context);
-                        await launchUrl(
-                          Uri.parse("https://app.midtrans.com/snap/v2/vtweb/${order.orderProduct.orderDetail.snapToken}"),
-                          mode: LaunchMode.externalApplication
+                        WebHelper.launchUrl(
+                          Uri.parse("https://app.midtrans.com/snap/v2/vtweb/${order.orderProduct.orderDetail.snapToken}")
                         );
                         Get.back();
                       },
@@ -95,11 +95,9 @@ class OrderConclusionItem extends StatelessWidget {
                   SizedOutlineGradientButton(
                     onPressed: () async {
                       DialogHelper.showLoadingDialog(context);
-                      await launchUrl(
-                        Uri.parse("https://app.midtrans.com/snap/v2/vtweb/${order.orderShipping!.orderDetail.snapToken}"),
-                        mode: LaunchMode.externalApplication
+                      WebHelper.launchUrl(
+                        Uri.parse("https://app.midtrans.com/snap/v2/vtweb/${order.orderShipping!.orderDetail.snapToken}")
                       );
-                      Get.back();
                     },
                     text: "Pay".tr,
                     customPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),

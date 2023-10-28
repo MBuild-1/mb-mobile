@@ -2,15 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/navigator_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
-import 'package:masterbagasi/misc/string_util.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:masterbagasi/misc/web_helper.dart';
 
 import '../domain/entity/order/order.dart';
 import '../presentation/widget/material_ignore_pointer.dart';
-import 'constant.dart';
 import 'dialog_helper.dart';
 import 'main_route_observer.dart';
-import 'page_restoration_helper.dart';
 import 'routeargument/login_route_argument.dart';
 import 'routeargument/main_menu_route_argument.dart';
 
@@ -46,10 +43,7 @@ class _NavigationHelperImpl {
                       BuildContext mainMenuBuildContext = buildContextEventFunction();
                       MaterialIgnorePointer.of(mainMenuBuildContext)?.ignoring = false;
                       DialogHelper.showLoadingDialog(mainMenuBuildContext);
-                      await launchUrl(
-                        Uri.parse("https://app.midtrans.com/snap/v2/vtweb/${order.combinedOrder.orderProduct.orderDetail.snapToken}"),
-                        mode: LaunchMode.externalApplication
-                      );
+                      WebHelper.launchUrl(Uri.parse("https://app.midtrans.com/snap/v2/vtweb/${order.combinedOrder.orderProduct.orderDetail.snapToken}"));
                       Get.back();
                     }
                     MainRouteObserver.disposingEventRouteMap[targetRouteName] = null;

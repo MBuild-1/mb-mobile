@@ -5,6 +5,7 @@ import '../../../domain/entity/faq/faq.dart';
 import '../../../misc/constant.dart';
 import '../../../misc/page_restoration_helper.dart';
 import '../../../misc/string_util.dart';
+import '../../../misc/web_helper.dart';
 
 class FaqDetailItem extends StatelessWidget {
   final Faq faq;
@@ -26,11 +27,7 @@ class FaqDetailItem extends StatelessWidget {
         faq.content,
         textStyle: const TextStyle(fontSize: 13),
         onTapUrl: (url) async {
-          PageRestorationHelper.toWebViewerPage(
-            context, <String, dynamic>{
-              Constant.textEncodedUrlKey: StringUtil.encodeBase64String(url)
-            }
-          );
+          WebHelper.launchUrl(Uri.parse(url));
           return true;
         },
       )

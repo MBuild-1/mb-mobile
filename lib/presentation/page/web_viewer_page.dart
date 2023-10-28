@@ -157,6 +157,7 @@ class _StatefulWebViewerPage extends StatefulWidget {
 }
 
 class _StatefulWebViewerPageState extends State<_StatefulWebViewerPage> {
+  final GlobalKey _webViewKey = GlobalKey();
   WebViewController? _webViewController;
   late ParameterLinkInput _webViewParameterLinkInput;
   late String _url = "";

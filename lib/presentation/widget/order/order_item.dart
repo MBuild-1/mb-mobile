@@ -11,6 +11,7 @@ import '../../../misc/date_util.dart';
 import '../../../misc/dialog_helper.dart';
 import '../../../misc/multi_language_string.dart';
 import '../../../misc/page_restoration_helper.dart';
+import '../../../misc/web_helper.dart';
 import '../button/custombutton/sized_outline_gradient_button.dart';
 import '../colorful_chip.dart';
 import '../modified_divider.dart';
@@ -114,9 +115,8 @@ abstract class OrderItem extends StatelessWidget {
                             SizedOutlineGradientButton(
                               onPressed: () async {
                                 DialogHelper.showLoadingDialog(context);
-                                await launchUrl(
-                                  Uri.parse("https://app.midtrans.com/snap/v2/vtweb/${order.orderProduct.orderDetail.snapToken}"),
-                                  mode: LaunchMode.externalApplication
+                                WebHelper.launchUrl(
+                                  Uri.parse("https://app.midtrans.com/snap/v2/vtweb/${order.orderProduct.orderDetail.snapToken}")
                                 );
                                 Get.back();
                               },
