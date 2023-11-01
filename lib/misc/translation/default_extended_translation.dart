@@ -11,6 +11,7 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Next": "Selanjutnya",
       "Skip": "Lewati",
       "Finish": "Selesai",
+      "Not Finish": "Belum Selesai",
       "Other Method": "Metode Lain",
       "or login with": "atau login dengan",
       "or register with": "atau daftar dengan",
@@ -307,7 +308,10 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Confirm Arrived": "Konfirmasi Sampai",
       "Forgot Password": "Lupa Kata Sandi",
       "Please check your email for next step": "Silahkan cek email anda untuk langkah selanjutnya",
-      "Press again to exit": "Tekan sekali lagi untuk keluar"
+      "Press again to exit": "Tekan sekali lagi untuk keluar",
+      "Product Payment": "Pembayaran Produk",
+      "Product Delivery": "Pengiriman Produk",
+      "Mark All": "Tandai Semua"
     }
   };
 

@@ -209,7 +209,9 @@ import '../domain/usecase/login_use_case.dart';
 import '../domain/usecase/login_with_google_use_case.dart';
 import '../domain/usecase/logout_use_case.dart';
 import '../domain/usecase/modify_pin_use_case.dart';
+import '../domain/usecase/notification_order_status_use_case.dart';
 import '../domain/usecase/purchase_direct_use_case.dart';
+import '../domain/usecase/read_all_notification_use_case.dart';
 import '../domain/usecase/register_use_case.dart';
 import '../domain/usecase/register_with_google_use_case.dart';
 import '../domain/usecase/remove_additional_item_use_case.dart';
@@ -668,6 +670,8 @@ class _Injector {
     locator.registerLazySingleton<GetNotificationByUserListUseCase>(() => GetNotificationByUserListUseCase(notificationRepository: locator()));
     locator.registerLazySingleton<GetNotificationByUserPagingUseCase>(() => GetNotificationByUserPagingUseCase(notificationRepository: locator()));
     locator.registerLazySingleton<GetTransactionNotificationDetailUseCase>(() => GetTransactionNotificationDetailUseCase(notificationRepository: locator()));
+    locator.registerLazySingleton<NotificationOrderStatusUseCase>(() => NotificationOrderStatusUseCase(notificationRepository: locator()));
+    locator.registerLazySingleton<ReadAllNotificationUseCase>(() => ReadAllNotificationUseCase(notificationRepository: locator()));
     locator.registerLazySingleton<ShowBucketByIdUseCase>(() => ShowBucketByIdUseCase(bucketRepository: locator()));
     locator.registerLazySingleton<CreateBucketUseCase>(() => CreateBucketUseCase(bucketRepository: locator()));
     locator.registerLazySingleton<RequestJoinBucketUseCase>(() => RequestJoinBucketUseCase(bucketRepository: locator()));

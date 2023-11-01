@@ -1240,7 +1240,10 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
         shortNotification: item.shortNotification,
       );
     } else if (item is PurchaseSectionNotificationListItemControllerState) {
-      return const PurchaseSectionNotificationItem();
+      return PurchaseSectionNotificationItem(
+        step: item.step,
+        isLoadingStep: item.isLoadingStep
+      );
     } else if (item is ProductChatHistoryListItemControllerState) {
       return ProductChatHistoryItem(
         getProductMessageByUserResponseMember: item.getProductMessageByUserResponseMember,

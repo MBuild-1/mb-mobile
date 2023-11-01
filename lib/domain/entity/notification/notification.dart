@@ -7,7 +7,7 @@ class Notification {
   String title;
   String type;
   String subtype;
-  String combinedOrderId;
+  String? combinedOrderId;
   String message;
   String? orderId;
   int isRead;

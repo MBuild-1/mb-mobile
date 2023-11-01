@@ -107,10 +107,15 @@ class _ConstantImpl {
   String get vectorDirectChat => _getVectorsAssets("direct_chat.svg");
   String get vectorSendMessage => _getVectorsAssets("send_message.svg");
   String get vectorStep1WaitingConfirmation => _getVectorsAssets("step_1_waiting_confirmation.svg");
+  String get vectorStep1WaitingConfirmationGreyscale => _getVectorsAssets("step_1_waiting_confirmation_greyscale.svg");
   String get vectorStep2IsBeingProcessed => _getVectorsAssets("step_2_is_being_processed.svg");
+  String get vectorStep2IsBeingProcessedGreyscale => _getVectorsAssets("step_2_is_being_processed_greyscale.svg");
   String get vectorStep3ReadyToSend => _getVectorsAssets("step_3_ready_to_send.svg");
+  String get vectorStep3ReadyToSendGreyscale => _getVectorsAssets("step_3_ready_to_send_greyscale.svg");
   String get vectorStep4IsSending => _getVectorsAssets("step_4_is_sending.svg");
+  String get vectorStep4IsSendingGreyscale => _getVectorsAssets("step_4_is_sending_greyscale.svg");
   String get vectorStep5IsArrived => _getVectorsAssets("step_5_is_arrived.svg");
+  String get vectorStep5IsArrivedGreyscale => _getVectorsAssets("step_5_is_arrived_greyscale.svg");
   String get vectorPinLock => _getVectorsAssets("pin_lock.svg");
   String get vectorNotificationIconCart => _getVectorsAssets("notification_icon_cart.svg");
   String get vectorNotificationIconInbox => _getVectorsAssets("notification_icon_inbox.svg");
@@ -142,9 +147,12 @@ class _ConstantImpl {
   Color get colorDarkGrey => const Color.fromRGBO(105, 105, 105, 1);
   Color get colorBrown => const Color.fromRGBO(191, 105, 25, 1);
   Color get colorSuccessGreen => const Color.fromRGBO(67, 147, 108, 1);
+  Color get colorSuccessLightGreen => const Color.fromRGBO(199, 246, 212, 1);
   Color get colorDarkBlack => const Color.fromRGBO(57, 57, 57, 1);
   Color get colorSurfaceBlue => const Color.fromRGBO(209, 233, 238, 1);
   Color get colorDarkBlue => const Color.fromRGBO(37, 37, 140, 1);
+  Color get colorDarkBlue2 => const Color.fromRGBO(32, 107, 126, 1);
+  Color get colorLightBlue => const Color.fromRGBO(199, 239, 251, 1);
   Color get colorLightOrange => const Color.fromRGBO(255, 208, 191, 1);
 
   Color get colorMain => const Color.fromRGBO(255, 66, 0, 1);

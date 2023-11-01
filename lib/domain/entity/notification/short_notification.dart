@@ -6,12 +6,13 @@ class ShortNotification {
   String title;
   String type;
   String subtype;
-  String combinedOrderId;
+  String? combinedOrderId;
   String message;
   String? orderId;
   int isRead;
   UserNotification userNotification;
-  String orderCode;
+  String? orderCode;
+  DateTime? createdDate;
 
   ShortNotification({
     required this.id,
@@ -24,6 +25,7 @@ class ShortNotification {
     required this.orderId,
     required this.isRead,
     required this.userNotification,
-    required this.orderCode
+    required this.orderCode,
+    required this.createdDate
   });
 }

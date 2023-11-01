@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart' hide Notification;
 import 'package:get/get.dart';
+import 'package:masterbagasi/misc/ext/future_ext.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:provider/provider.dart';
 
 import '../../controller/notification_controller.dart';
-import '../../domain/entity/notification/notification.dart';
 import '../../domain/entity/notification/notification_by_user_paging_parameter.dart';
+import '../../domain/entity/notification/notification_order_status_parameter.dart';
 import '../../domain/entity/notification/short_notification.dart';
 import '../../domain/usecase/get_notification_by_user_paging_use_case.dart';
 import '../../domain/usecase/get_transaction_notification_detail_use_case.dart';
+import '../../domain/usecase/notification_order_status_use_case.dart';
+import '../../domain/usecase/read_all_notification_use_case.dart';
 import '../../misc/constant.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/notificationlistitemcontrollerstate/notification_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
+import '../../misc/dialog_helper.dart';
 import '../../misc/error/message_error.dart';
 import '../../misc/error_helper.dart';
 import '../../misc/errorprovider/error_provider.dart';
@@ -29,6 +33,7 @@ import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
+import '../../misc/toast_helper.dart';
 import '../notifier/notification_notifier.dart';
 import '../widget/colorful_chip_tab_bar.dart';
 import '../widget/modified_paged_list_view.dart';
@@ -48,6 +53,8 @@ class NotificationPage extends RestorableGetxPage<_NotificationPageRestoration> 
         controllerManager,
         Injector.locator<GetNotificationByUserPagingUseCase>(),
         Injector.locator<GetTransactionNotificationDetailUseCase>(),
+        Injector.locator<NotificationOrderStatusUseCase>(),
+        Injector.locator<ReadAllNotificationUseCase>()
       ),
       tag: pageName
     );
@@ -170,13 +177,16 @@ class _StatefulNotificationControllerMediatorWidgetState extends State<_Stateful
   late final PagingControllerState<int, ListItemControllerState> _notificationListItemPagingControllerState;
   late ColorfulChipTabBarController _notificationTabColorfulChipTabBarController;
   late List<ColorfulChipTabBarData> _notificationColorfulChipTabBarDataList;
+  LoadDataResult<int> _purchaseStatusLoadDataResult = NoLoadDataResult<int>();
   String _status = "transaction";
 
   final ValueNotifier<dynamic> _fillerErrorValueNotifier = ValueNotifier(null);
+  late NotificationNotifier _notificationNotifier;
 
   @override
   void initState() {
     super.initState();
+    _notificationNotifier = Provider.of<NotificationNotifier>(context, listen: false);
     _notificationScrollController = ScrollController();
     _notificationListItemPagingController = ModifiedPagingController<int, ListItemControllerState>(
       firstPageKey: 1,
@@ -221,20 +231,44 @@ class _StatefulNotificationControllerMediatorWidgetState extends State<_Stateful
     });
   }
 
+  void _loadNotificationPurchaseStatus() async {
+    _purchaseStatusLoadDataResult = IsLoadingLoadDataResult<int>();
+    setState(() {});
+    _purchaseStatusLoadDataResult = await widget.notificationController.notificationOrderStatus(
+      NotificationOrderStatusParameter()
+    ).map<int>(
+      (value) => value.orderStatus
+    );
+    if (_purchaseStatusLoadDataResult.isFailedBecauseCancellation) {
+      return;
+    }
+    setState(() {});
+  }
+
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _notificationListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? notificationListItemControllerStateList) async {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      Provider.of<NotificationNotifier>(context, listen: false).loadNotificationLoadDataResult();
       _fillerErrorValueNotifier.value = null;
     });
     List<ListItemControllerState> resultListItemControllerState = [];
     if (pageKey == 1) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        _notificationNotifier.loadNotificationLoadDataResult();
+        _loadNotificationPurchaseStatus();
+      });
       resultListItemControllerState = [
         NotificationContainerListItemControllerState(
           notificationList: [],
           onNotificationTap: (notification) {},
           onUpdateState: () => setState(() {}),
+          onMarkAllNotification: () => widget.notificationController.readAllNotification(_status),
+          onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
           notificationTabColorfulChipTabBarController: _notificationTabColorfulChipTabBarController,
-          notificationColorfulChipTabBarDataList: _notificationColorfulChipTabBarDataList
+          notificationColorfulChipTabBarDataList: _notificationColorfulChipTabBarDataList,
+          purchaseStatusLoadDataResult: () => _purchaseStatusLoadDataResult,
+          notificationLoadDataResult: () => _notificationNotifier.notificationLoadDataResult,
+          transactionNotificationLoadDataResult: () => _notificationNotifier.transactionNotificationLoadDataResult,
+          infoNotificationLoadDataResult: () => _notificationNotifier.infoNotificationLoadDataResult,
+          promoNotificationLoadDataResult: () => _notificationNotifier.promoNotificationLoadDataResult
         )
       ];
       return SuccessLoadDataResult<PagingDataResult<ListItemControllerState>>(
@@ -246,54 +280,17 @@ class _StatefulNotificationControllerMediatorWidgetState extends State<_Stateful
         )
       );
     } else {
-      if (_status != "transaction") {
-        if (_status == "info") {
-          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-            _fillerErrorValueNotifier.value = FailedLoadDataResult.throwException(() {
-              throw ErrorHelper.generateMultiLanguageDioError(
-                MultiLanguageMessageError(
-                  title: MultiLanguageString({
-                    Constant.textEnUsLanguageKey: "No Information Notification Yet",
-                    Constant.textInIdLanguageKey: "Belum Ada Notifikasi Info",
-                  }),
-                  message: MultiLanguageString({
-                    Constant.textEnUsLanguageKey: "Notifications regarding your information will appear here.",
-                    Constant.textInIdLanguageKey: "Notifikasi terkait info kamu bakal muncul disini.",
-                  }),
-                )
-              );
-            })!.e;
-          });
-        } else if (_status == "promo") {
-          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-            _fillerErrorValueNotifier.value = FailedLoadDataResult.throwException(() {
-              throw ErrorHelper.generateMultiLanguageDioError(
-                MultiLanguageMessageError(
-                  title: MultiLanguageString({
-                    Constant.textEnUsLanguageKey: "No Promo Notification Yet",
-                    Constant.textInIdLanguageKey: "Belum Ada Notifikasi Promo",
-                  }),
-                  message: MultiLanguageString({
-                    Constant.textEnUsLanguageKey: "Notifications regarding your promo will appear here.",
-                    Constant.textInIdLanguageKey: "Notifikasi terkait promo kamu bakal muncul disini.",
-                  }),
-                )
-              );
-            })!.e;
-          });
-        }
-        return SuccessLoadDataResult<PagingDataResult<ListItemControllerState>>(
-          value: PagingDataResult<ListItemControllerState>(
-            itemList: [],
-            page: 2,
-            totalPage: 2,
-            totalItem: 0
-          )
-        );
-      }
       int effectivePageKey = pageKey - 1;
       LoadDataResult<PagingDataResult<ShortNotification>> shortNotificationPagingLoadDataResult = await widget.notificationController.getNotificationByUser(
-        NotificationByUserPagingParameter(page: effectivePageKey)
+        NotificationByUserPagingParameter(
+          page: effectivePageKey,
+          search: () {
+            if (_status == "transaction") {
+              return null;
+            }
+            return _status;
+          }()
+        )
       );
       if (shortNotificationPagingLoadDataResult.isSuccess) {
         if (shortNotificationPagingLoadDataResult.resultIfSuccess!.itemList.isEmpty) {
@@ -332,6 +329,21 @@ class _StatefulNotificationControllerMediatorWidgetState extends State<_Stateful
 
   @override
   Widget build(BuildContext context) {
+    widget.notificationController.setNotificationDelegate(
+      NotificationDelegate(
+        onUnfocusAllWidget: () => FocusScope.of(context).unfocus(),
+        onBack: () => Get.back(),
+        onShowReadAllNotificationRequestProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
+        onShowReadAllNotificationRequestProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
+          context: context,
+          errorProvider: Injector.locator<ErrorProvider>(),
+          e: e
+        ),
+        onReadAllNotificationRequestProcessSuccessCallback: (readAllNotificationResponse) async {
+          _notificationListItemPagingController.refresh();
+        },
+      )
+    );
     return Scaffold(
       appBar: ModifiedAppBar(
         titleInterceptor: (context, title) => Row(
@@ -340,20 +352,22 @@ class _StatefulNotificationControllerMediatorWidgetState extends State<_Stateful
           ],
         ),
       ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
-                pagingControllerState: _notificationListItemPagingControllerState,
-                onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
-                  pagingControllerState: pagingControllerState!
+      body: Consumer<NotificationNotifier>(
+        builder: (_, notificationNotifier, __) => SafeArea(
+          child: Column(
+            children: [
+              Expanded(
+                child: ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
+                  pagingControllerState: _notificationListItemPagingControllerState,
+                  onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
+                    pagingControllerState: pagingControllerState!
+                  ),
+                  pullToRefresh: true,
+                  onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
                 ),
-                pullToRefresh: true,
-                onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
               ),
-            ),
-          ]
+            ]
+          )
         )
       ),
     );
