@@ -7,8 +7,12 @@ import 'package:masterbagasi/presentation/page/web_viewer_page.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../controller/order_detail_controller.dart';
+import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderparameter/change_warehouse_in_order_parameter.dart';
+import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderparameter/remove_warehouse_in_order_parameter.dart';
+import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderresponse/modify_warehouse_in_order_response.dart';
 import '../../domain/entity/order/order.dart';
 import '../../domain/entity/order/order_based_id_parameter.dart';
+import '../../domain/usecase/add_warehouse_in_order_use_case.dart';
 import '../../domain/usecase/get_order_based_id_use_case.dart';
 import '../../misc/constant.dart';
 import '../../misc/controllercontentdelegate/repurchase_controller_content_delegate.dart';
@@ -17,6 +21,7 @@ import '../../misc/controllerstate/listitemcontrollerstate/orderlistitemcontroll
 import '../../misc/controllerstate/listitemcontrollerstate/title_and_description_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
 import '../../misc/date_util.dart';
+import '../../misc/dialog_helper.dart';
 import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
@@ -28,11 +33,13 @@ import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
+import '../../misc/toast_helper.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/colorful_chip.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import 'getx_page.dart';
+import 'modaldialogpage/modify_warehouse_in_order_modal_dialog_page.dart';
 import 'order_chat_page.dart';
 
 class OrderDetailPage extends RestorableGetxPage<_OrderDetailPageRestoration> {
@@ -51,7 +58,8 @@ class OrderDetailPage extends RestorableGetxPage<_OrderDetailPageRestoration> {
       OrderDetailController(
         controllerManager,
         Injector.locator<GetOrderBasedIdUseCase>(),
-        Injector.locator<RepurchaseControllerContentDelegate>()
+        Injector.locator<ModifyWarehouseInOrderUseCase>(),
+        Injector.locator<RepurchaseControllerContentDelegate>(),
       ),
       tag: pageName
     );
@@ -189,6 +197,9 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
   late final ModifiedPagingController<int, ListItemControllerState> _orderDetailListItemPagingController;
   late final PagingControllerState<int, ListItemControllerState> _orderDetailListItemPagingControllerState;
   String? _combinedOrderId;
+  void Function(ModifyWarehouseInOrderResponse)? _closeWithResultModifyWarehouseInOrderModalDialogPage;
+  void Function(Exception)? _errorModifyWarehouseInOrder;
+  double? _orderDetailScrollOffset;
 
   @override
   void initState() {
@@ -212,6 +223,11 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _orderDetailListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? orderDetailListItemControllerStateList) async {
+    double? tempScrollOffset;
+    if (_orderDetailScrollOffset != null) {
+      tempScrollOffset = _orderDetailScrollOffset;
+      _orderDetailScrollOffset = null;
+    }
     LoadDataResult<Order> orderDetailLoadDataResult = await widget.orderDetailController.getOrderBasedId(
       OrderBasedIdParameter(orderId: widget.orderId)
     );
@@ -219,6 +235,9 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
       if (orderDetailLoadDataResult.isSuccess) {
         _combinedOrderId = orderDetailLoadDataResult.resultIfSuccess!.combinedOrder.id;
         setState(() {});
+        if (tempScrollOffset != null) {
+          _orderDetailScrollController.jumpTo(tempScrollOffset);
+        }
       }
     });
     return orderDetailLoadDataResult.map<PagingResult<ListItemControllerState>>((orderDetail) {
@@ -226,6 +245,33 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
         itemList: <ListItemControllerState>[
           OrderDetailContainerListItemControllerState(
             order: orderDetail,
+            onModifyWarehouseInOrder: (modifyWarehouseInOrderParameter) async {
+              _closeWithResultModifyWarehouseInOrderModalDialogPage = null;
+              _errorModifyWarehouseInOrder = null;
+              if (modifyWarehouseInOrderParameter is RemoveWarehouseInOrderParameter) {
+                widget.orderDetailController.modifyWarehouseInOrder(modifyWarehouseInOrderParameter);
+                return;
+              }
+              dynamic result = await DialogHelper.showModalDialogPage<ModifyWarehouseInOrderResponse, ModifyWarehouseInOrderModalDialogPageParameter>(
+                context: context,
+                modalDialogPageBuilder: (context, parameter) => ModifyWarehouseInOrderModalDialogPage(
+                  modifyWarehouseInOrderModalDialogPageParameter: parameter!,
+                ),
+                parameter: ModifyWarehouseInOrderModalDialogPageParameter(
+                  modifyWarehouseInOrderParameter: modifyWarehouseInOrderParameter,
+                  modifyWarehouseInOrderAction: ModifyWarehouseInOrderAction(
+                    submitModifyWarehouse: (modifyWarehouseInOrderParameter, modifyWarehouseInOrderActionFurther) {
+                      _closeWithResultModifyWarehouseInOrderModalDialogPage = modifyWarehouseInOrderActionFurther.closeWithResult;
+                      _errorModifyWarehouseInOrder = modifyWarehouseInOrderActionFurther.showErrorDialog;
+                      widget.orderDetailController.modifyWarehouseInOrder(modifyWarehouseInOrderParameter);
+                    }
+                  )
+                )
+              );
+              if (result is ModifyWarehouseInOrderResponse) {
+                _saveLastScrollOffsetAndRefresh();
+              }
+            },
             onBuyAgainTap: (order) {
               widget.orderDetailController.repurchaseControllerContentDelegate.repurchase(order.id);
             },
@@ -239,12 +285,42 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
     });
   }
 
+  void _saveLastScrollOffsetAndRefresh() {
+    _orderDetailScrollOffset = _orderDetailScrollController.offset;
+    _orderDetailListItemPagingController.refresh();
+  }
+
   @override
   Widget build(BuildContext context) {
     widget.orderDetailController.repurchaseControllerContentDelegate.setRepurchaseDelegate(
       Injector.locator<RepurchaseDelegateFactory>().generateRepurchaseDelegate(
         onGetBuildContext: () => context,
         onGetErrorProvider: () => Injector.locator<ErrorProvider>()
+      )
+    );
+    widget.orderDetailController.setOrderDetailDelegate(
+      OrderDetailDelegate(
+        onUnfocusAllWidget: () => FocusScope.of(context).unfocus(),
+        onOrderDetailBack: () => Get.back(),
+        onShowModifyWarehouseInOrderRequestProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
+        onShowModifyWarehouseInOrderRequestProcessFailedCallback: (e) async {
+          if (_errorModifyWarehouseInOrder != null) {
+            _errorModifyWarehouseInOrder!(e);
+          } else {
+            DialogHelper.showFailedModalBottomDialogFromErrorProvider(
+              context: context,
+              errorProvider: Injector.locator<ErrorProvider>(),
+              e: e
+            );
+          }
+        },
+        onModifyWarehouseInOrderRequestProcessSuccessCallback: (modifyWarehouseInOrderResponse) async {
+          if (_closeWithResultModifyWarehouseInOrderModalDialogPage != null) {
+            _closeWithResultModifyWarehouseInOrderModalDialogPage!(modifyWarehouseInOrderResponse);
+          } else {
+            _saveLastScrollOffsetAndRefresh();
+          }
+        },
       )
     );
     return Scaffold(

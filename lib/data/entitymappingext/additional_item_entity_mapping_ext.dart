@@ -29,6 +29,7 @@ extension AdditionalItemDetailEntityMappingExt on ResponseWrapper {
       estimationWeight: ResponseWrapper(response["weight"]).mapFromResponseToDouble()!,
       estimationPrice: ResponseWrapper(response["price"]).mapFromResponseToDouble()!,
       quantity: response["quantity"],
+      notes: response["notes"] ?? ""
     );
   }
 }

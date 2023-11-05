@@ -2,8 +2,12 @@ import 'package:masterbagasi/domain/entity/order/arrived_order_request.dart';
 
 import 'package:masterbagasi/domain/entity/order/arrived_order_response.dart';
 
+import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderparameter/add_warehouse_in_order_parameter.dart';
+import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderparameter/modify_warehouse_in_order_parameter.dart';
+import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderresponse/add_warehouse_in_order_response.dart';
 import '../../domain/entity/order/combined_order.dart';
 import '../../domain/entity/order/create_order_parameter.dart';
+import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderresponse/modify_warehouse_in_order_response.dart';
 import '../../domain/entity/order/order.dart';
 import '../../domain/entity/order/order_based_id_parameter.dart';
 import '../../domain/entity/order/order_paging_parameter.dart';
@@ -56,5 +60,10 @@ class DefaultOrderRepository implements OrderRepository {
   @override
   FutureProcessing<LoadDataResult<ArrivedOrderResponse>> arrivedOrder(ArrivedOrderParameter arrivedOrderParameter) {
     return orderDataSource.arrivedOrder(arrivedOrderParameter).mapToLoadDataResult<ArrivedOrderResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<ModifyWarehouseInOrderResponse>> modifyWarehouseInOrder(ModifyWarehouseInOrderParameter modifyWarehouseInOrderParameter) {
+    return orderDataSource.modifyWarehouseInOrder(modifyWarehouseInOrderParameter).mapToLoadDataResult<ModifyWarehouseInOrderResponse>();
   }
 }

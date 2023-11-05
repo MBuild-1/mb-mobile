@@ -8,8 +8,11 @@ import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../../domain/entity/additionalitem/additional_item.dart';
+import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderresponse/add_warehouse_in_order_response.dart';
 import '../../domain/entity/order/arrived_order_response.dart';
 import '../../domain/entity/order/combined_order.dart';
+import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderresponse/change_warehouse_in_order_response.dart';
+import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderresponse/remove_warehouse_in_order_response.dart';
 import '../../domain/entity/order/order.dart';
 import '../../domain/entity/order/order_detail.dart';
 import '../../domain/entity/order/order_product.dart';
@@ -200,5 +203,17 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
 
   ArrivedOrderResponse mapFromResponseToArrivedOrderResponse() {
     return ArrivedOrderResponse();
+  }
+
+  AddWarehouseInOrderResponse mapFromResponseToAddWarehouseInOrderResponse() {
+    return AddWarehouseInOrderResponse();
+  }
+
+  ChangeWarehouseInOrderResponse mapFromResponseToChangeWarehouseInOrderResponse() {
+    return ChangeWarehouseInOrderResponse();
+  }
+
+  RemoveWarehouseInOrderResponse mapFromResponseToRemoveWarehouseInOrderResponse() {
+    return RemoveWarehouseInOrderResponse();
   }
 }

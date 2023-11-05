@@ -1058,6 +1058,7 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
       return AdditionalItemWidget(
         additionalItem: item.additionalItem,
         no: item.no,
+        onEditAdditionalItem: item.onEditAdditionalItem,
         onRemoveAdditionalItem: item.onRemoveAdditionalItem,
         onLoadAdditionalItem: item.onLoadAdditionalItem,
         showEditAndRemoveIcon: item.showEditAndRemoveIcon

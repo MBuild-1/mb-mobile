@@ -9,6 +9,11 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../domain/entity/additionalitem/additional_item.dart';
 import '../../domain/entity/address/address.dart';
 import '../../domain/entity/order/combined_order.dart';
+import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderitem/all_required_fields_warehouse_in_order_item.dart';
+import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderitem/optional_fields_warehouse_in_order_item.dart';
+import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderparameter/add_warehouse_in_order_parameter.dart';
+import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderparameter/change_warehouse_in_order_parameter.dart';
+import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderparameter/remove_warehouse_in_order_parameter.dart';
 import '../../domain/entity/order/order.dart';
 import '../../domain/entity/order/order_product_detail.dart';
 import '../../domain/entity/order/order_product_inventory.dart';
@@ -20,6 +25,7 @@ import '../../presentation/widget/order/order_conclusion_item.dart';
 import '../../presentation/widget/order/order_product_detail_item.dart';
 import '../../presentation/widget/order/order_product_inventory_item.dart';
 import '../../presentation/widget/order/order_send_to_warehouse_item.dart';
+import '../../presentation/widget/order/order_status_indicator.dart';
 import '../../presentation/widget/summary_widget.dart';
 import '../../presentation/widget/tap_area.dart';
 import '../constant.dart';
@@ -67,6 +73,8 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
       newListItemControllerState.add(SpacingListItemControllerState());
       _interceptForBasicOrderInformation(i, oldItemType, oldItemTypeList, newListItemControllerState);
       newListItemControllerState.add(SpacingListItemControllerState());
+      _interceptForAddressInformation(i, oldItemType, oldItemTypeList, newListItemControllerState);
+      newListItemControllerState.add(SpacingListItemControllerState());
       _interceptForTransactionOrderInformation(i, oldItemType, oldItemTypeList, newListItemControllerState);
       newListItemControllerState.add(SpacingListItemControllerState());
       _interceptForProductInventoryInformation(i, oldItemType, oldItemTypeList, newListItemControllerState);
@@ -96,33 +104,224 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
     newListItemControllerState.add(
       VirtualSpacingListItemControllerState(height: padding())
     );
-    ListItemControllerState transactionStatusListItemControllerState = TitleAndDescriptionListItemControllerState(
-      title: "Transaction Status".tr,
-      description: "test",
-      titleAndDescriptionItemInterceptor: (padding, title, titleWidget, description, descriptionWidget, titleAndDescriptionWidget, titleAndDescriptionWidgetList) {
-        titleAndDescriptionWidgetList[titleAndDescriptionWidgetList.length - 2] = const SizedBox(height: 5);
-        titleAndDescriptionWidgetList[titleAndDescriptionWidgetList.length - 1] = ColorfulChip(
-          text: order.combinedOrder.status,
-          color: Colors.grey.shade300
-        );
-        return titleAndDescriptionWidget;
-      },
-      padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem)
-    );
-    listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
-      i, ListItemControllerStateWrapper(transactionStatusListItemControllerState), oldItemTypeList, newListItemControllerState
-    );
-    newListItemControllerState.add(VirtualSpacingListItemControllerState(height: 20));
-    ListItemControllerState orderCodeListItemControllerState = TitleAndDescriptionListItemControllerState(
-      title: "Order Code".tr,
-      description: order.combinedOrder.orderCode,
+    ListItemControllerState transactionNumberStatusListItemControllerState = PaddingContainerListItemControllerState(
       padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-      verticalSpace: 5
+      paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
+        widgetSubstitution: (context, index) {
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Expanded(
+                child: Text(
+                  "Transaction Number".tr,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold
+                  )
+                ),
+              ),
+              const SizedBox(width: 10),
+              ColorfulChip(
+                text: order.combinedOrder.orderCode,
+                textStyle: const TextStyle(
+                  fontSize: 10.0,
+                  fontWeight: FontWeight.bold
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 3.0, horizontal: 8.0),
+                color: Constant.colorLightBlue2
+              )
+            ],
+          );
+        }
+      )
     );
     listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
-      i, ListItemControllerStateWrapper(orderCodeListItemControllerState), oldItemTypeList, newListItemControllerState
+      i, ListItemControllerStateWrapper(transactionNumberStatusListItemControllerState), oldItemTypeList, newListItemControllerState
     );
+    int getStatusStep(String status) {
+      List<String> statusList = [
+        "Menunggu Konfirmasi",
+        "Pesanan Diproses",
+        "Siap Dikirim",
+        "Sedang Dikirim",
+        "Sampai Tujuan"
+      ];
+      int index = -1;
+      for (int i = 0; i < statusList.length; i++) {
+        if (statusList[i].toLowerCase() == status.toLowerCase()) {
+          index = i;
+          break;
+        }
+      }
+      return index + 1;
+    }
     newListItemControllerState.add(VirtualSpacingListItemControllerState(height: 20));
+    ListItemControllerState statusListItemControllerState = PaddingContainerListItemControllerState(
+      padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+      paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
+        widgetSubstitution: (context, index) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Status".tr,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold
+                )
+              ),
+              const SizedBox(height: 10),
+              OrderStatusIndicator(
+                step: getStatusStep(order.combinedOrder.status),
+                isLoadingStep: false
+              )
+            ],
+          );
+        }
+      )
+    );
+    listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
+      i, ListItemControllerStateWrapper(statusListItemControllerState), oldItemTypeList, newListItemControllerState
+    );
+    if (getStatusStep(order.combinedOrder.status) > 0) {
+      newListItemControllerState.add(VirtualSpacingListItemControllerState(height: 20));
+      ListItemControllerState productPaymentListItemControllerState = PaddingContainerListItemControllerState(
+        padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+        paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
+          widgetSubstitution: (context, index) {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Expanded(
+                  child: Text(
+                    "Product Payment".tr,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold
+                    )
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Builder(
+                  builder: (context) {
+                    late String chipText;
+                    Color? chipTextColor;
+                    late Color chipColor;
+                    if (order.combinedOrder.orderProduct.orderDetail.status == "pending") {
+                      chipText = "Not Finish".tr;
+                      chipTextColor = Colors.white;
+                      chipColor = Constant.colorRedDanger;
+                    } else {
+                      chipText = "Finish".tr;
+                      chipColor = Constant.colorSuccessLightGreen;
+                    }
+                    return ColorfulChip(
+                      text: chipText,
+                      textStyle: TextStyle(
+                        fontSize: 10.0,
+                        fontWeight: FontWeight.bold,
+                        color: chipTextColor
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 3.0, horizontal: 8.0),
+                      color: chipColor
+                    );
+                  }
+                )
+              ],
+            );
+          }
+        )
+      );
+      listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
+        i, ListItemControllerStateWrapper(productPaymentListItemControllerState), oldItemTypeList, newListItemControllerState
+      );
+      if (getStatusStep(order.combinedOrder.status) >= 3) {
+        newListItemControllerState.add(VirtualSpacingListItemControllerState(height: 12));
+        ListItemControllerState productPaymentListItemControllerState = PaddingContainerListItemControllerState(
+          padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+          paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
+            widgetSubstitution: (context, index) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: Text(
+                      "Product Delivery".tr,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold
+                      )
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Builder(
+                    builder: (context) {
+                      late String chipText;
+                      Color? chipTextColor;
+                      late Color chipColor;
+                      if (order.combinedOrder.status.toLowerCase() == "siap dikirim") {
+                        chipText = MultiLanguageString({
+                          Constant.textEnUsLanguageKey: "Not Yet Sent",
+                          Constant.textInIdLanguageKey: "Belum Dikirim"
+                        }).toString();
+                        chipColor = Constant.colorRedDanger;
+                        chipTextColor = Colors.white;
+                      } else if (order.combinedOrder.status.toLowerCase() == "sedang dikirim") {
+                        chipText = MultiLanguageString({
+                          Constant.textEnUsLanguageKey: "Is Sending",
+                          Constant.textInIdLanguageKey: "Sedang Dikirim"
+                        }).toString();
+                        chipColor = Constant.colorYellow;
+                      } else {
+                        chipText = "Finish".tr;
+                        chipColor = Constant.colorSuccessLightGreen;
+                      }
+                      return ColorfulChip(
+                        text: chipText,
+                        textStyle: TextStyle(
+                          fontSize: 10.0,
+                          fontWeight: FontWeight.bold,
+                          color: chipTextColor
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 3.0, horizontal: 8.0),
+                        color: chipColor
+                      );
+                    }
+                  )
+                ],
+              );
+            }
+          )
+        );
+        listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
+          i, ListItemControllerStateWrapper(productPaymentListItemControllerState), oldItemTypeList, newListItemControllerState
+        );
+      }
+    }
+    ListItemControllerState orderConclusionItemListItemControllerState = PaddingContainerListItemControllerState(
+      padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+      paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
+        widgetSubstitution: (BuildContext context, int index) => OrderConclusionItem(
+          order: order.combinedOrder,
+          inOrderDetail: true,
+          onBuyAgainTap: orderDetailContainerListItemControllerState.onBuyAgainTap,
+        )
+      )
+    );
+    listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
+      i, ListItemControllerStateWrapper(orderConclusionItemListItemControllerState), oldItemTypeList, newListItemControllerState
+    );
+    newListItemControllerState.add(
+      VirtualSpacingListItemControllerState(height: padding())
+    );
+  }
+
+  void _interceptForAddressInformation(
+    int i,
+    OrderDetailContainerListItemControllerState orderDetailContainerListItemControllerState,
+    List<ListItemControllerState> oldItemTypeList,
+    List<ListItemControllerState> newListItemControllerState
+  ) {
+    Order order = orderDetailContainerListItemControllerState.order;
+    newListItemControllerState.add(
+      VirtualSpacingListItemControllerState(height: padding())
+    );
     ListItemControllerState paymentTypeListItemControllerState = TitleAndDescriptionListItemControllerState(
       title: "Address".tr,
       description: order.combinedOrder.orderProduct.userAddress?.address,
@@ -286,6 +485,32 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
     );
     ListItemControllerState paymentTypeListItemControllerState = TitleAndDescriptionListItemControllerState(
       title: "Order Send to Warehouse List".tr,
+      titleInterceptor: (text, textStyle) => Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Text(
+              text,
+              style: textStyle
+            ),
+          ),
+          TapArea(
+            onTap: () => orderDetailContainerListItemControllerState.onModifyWarehouseInOrder(
+              AddWarehouseInOrderParameter(
+                orderProductId: order.orderProductId,
+                allRequiredFieldsWarehouseInOrderItemList: []
+              )
+            ),
+            child: Text(
+              "Add Item".tr,
+              style: TextStyle(
+                color: Constant.colorMain,
+                fontWeight: FontWeight.bold
+              )
+            ),
+          )
+        ]
+      ),
       padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem)
     );
     listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
@@ -318,8 +543,26 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
                     AdditionalItemListItemControllerState(
                       additionalItem: additionalItem,
                       no: index + 1,
+                      onEditAdditionalItem: (additionalItem) => orderDetailContainerListItemControllerState.onModifyWarehouseInOrder(
+                        ChangeWarehouseInOrderParameter(
+                          orderProductId: order.orderProductId,
+                          id: additionalItem.id,
+                          optionalFieldsWarehouseInOrderItem: OptionalFieldsWarehouseInOrderItem(
+                            name: additionalItem.name,
+                            weight: additionalItem.estimationWeight,
+                            price: additionalItem.estimationPrice.toInt(),
+                            quantity: additionalItem.quantity,
+                            notes: additionalItem.notes
+                          )
+                        )
+                      ),
+                      onRemoveAdditionalItem: (additionalItem) => orderDetailContainerListItemControllerState.onModifyWarehouseInOrder(
+                        RemoveWarehouseInOrderParameter(
+                          warehouseInOrderItemId: additionalItem.id
+                        )
+                      ),
                       onLoadAdditionalItem: () {},
-                      showEditAndRemoveIcon: false
+                      showEditAndRemoveIcon: true
                     )
                   ]
                 )
@@ -445,19 +688,6 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
     );
     listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
       i, ListItemControllerStateWrapper(orderSummaryDetailTypeListItemControllerState), oldItemTypeList, newListItemControllerState
-    );
-    ListItemControllerState orderConclusionItemListItemControllerState = PaddingContainerListItemControllerState(
-      padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-      paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
-        widgetSubstitution: (BuildContext context, int index) => OrderConclusionItem(
-          order: order.combinedOrder,
-          inOrderDetail: true,
-          onBuyAgainTap: orderDetailContainerListItemControllerState.onBuyAgainTap,
-        )
-      )
-    );
-    listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
-      i, ListItemControllerStateWrapper(orderConclusionItemListItemControllerState), oldItemTypeList, newListItemControllerState
     );
     newListItemControllerState.add(
       VirtualSpacingListItemControllerState(height: padding())

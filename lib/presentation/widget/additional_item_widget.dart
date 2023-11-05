@@ -12,6 +12,7 @@ import 'tap_area.dart';
 class AdditionalItemWidget extends StatelessWidget {
   final AdditionalItem additionalItem;
   final int? no;
+  final void Function(AdditionalItem)? onEditAdditionalItem;
   final void Function(AdditionalItem)? onRemoveAdditionalItem;
   final void Function() onLoadAdditionalItem;
   final bool showEditAndRemoveIcon;
@@ -20,6 +21,7 @@ class AdditionalItemWidget extends StatelessWidget {
     super.key,
     required this.additionalItem,
     this.no,
+    this.onEditAdditionalItem,
     this.onRemoveAdditionalItem,
     required this.onLoadAdditionalItem,
     required this.showEditAndRemoveIcon
@@ -43,6 +45,10 @@ class AdditionalItemWidget extends StatelessWidget {
                 const SizedBox(width: 12),
                 TapArea(
                   onTap: () async {
+                    if (onEditAdditionalItem != null) {
+                      onEditAdditionalItem!(additionalItem);
+                      return;
+                    }
                     dynamic result = await DialogHelper.showModalDialogPage<String, String>(
                       context: context,
                       modalDialogPageBuilder: (context, parameter) => AddAdditionalItemModalDialogPage(

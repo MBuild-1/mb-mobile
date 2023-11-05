@@ -8,10 +8,21 @@ import 'package:masterbagasi/misc/ext/string_ext.dart';
 import '../../../domain/entity/additionalitem/additional_item.dart';
 import '../../../domain/entity/cart/cart.dart';
 import '../../../domain/entity/cart/support_cart.dart';
+import '../../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderitem/all_required_fields_warehouse_in_order_item.dart';
+import '../../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderitem/optional_fields_warehouse_in_order_item.dart';
+import '../../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderparameter/add_warehouse_in_order_parameter.dart';
+import '../../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderparameter/change_warehouse_in_order_parameter.dart';
+import '../../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderparameter/modify_warehouse_in_order_parameter.dart';
+import '../../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderparameter/remove_warehouse_in_order_parameter.dart';
+import '../../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderparameter/support_order_product_id_mixin.dart';
+import '../../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderresponse/add_warehouse_in_order_response.dart';
 import '../../../domain/entity/order/arrived_order_request.dart';
 import '../../../domain/entity/order/arrived_order_response.dart';
 import '../../../domain/entity/order/combined_order.dart';
 import '../../../domain/entity/order/create_order_parameter.dart';
+import '../../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderresponse/change_warehouse_in_order_response.dart';
+import '../../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderresponse/modify_warehouse_in_order_response.dart';
+import '../../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderresponse/remove_warehouse_in_order_response.dart';
 import '../../../domain/entity/order/order.dart';
 import '../../../domain/entity/order/order_based_id_parameter.dart';
 import '../../../domain/entity/order/order_paging_parameter.dart';
@@ -19,6 +30,7 @@ import '../../../domain/entity/order/purchase_direct_parameter.dart';
 import '../../../domain/entity/order/repurchase_parameter.dart';
 import '../../../domain/entity/order/shipping_review_order_list_parameter.dart';
 import '../../../domain/entity/product/productbundle/product_bundle.dart';
+import '../../../misc/error/message_error.dart';
 import '../../../misc/load_data_result.dart';
 import '../../../misc/option_builder.dart';
 import '../../../misc/paging/pagingresult/paging_data_result.dart';
@@ -131,6 +143,50 @@ class DefaultOrderDataSource implements OrderDataSource {
     return DioHttpClientProcessing((cancelToken) {
       return dio.post("/user/order/arrived/${arrivedOrderParameter.combinedOrderId}", cancelToken: cancelToken)
         .map<ArrivedOrderResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToArrivedOrderResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<ModifyWarehouseInOrderResponse> modifyWarehouseInOrder(ModifyWarehouseInOrderParameter modifyWarehouseInOrderParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      Map<String, dynamic> data = {};
+      late Future<ModifyWarehouseInOrderResponse> onModifyWarehouseInOrder;
+      if (modifyWarehouseInOrderParameter is SupportOrderProductIdMixin) {
+        data["order_product_id"] = modifyWarehouseInOrderParameter.orderProductId;
+      }
+      if (modifyWarehouseInOrderParameter is AddWarehouseInOrderParameter) {
+        List<AllRequiredFieldsWarehouseInOrderItem> allRequiredFieldsWarehouseInOrderItemList = modifyWarehouseInOrderParameter.allRequiredFieldsWarehouseInOrderItemList;
+        data["other_order_product_list"] = allRequiredFieldsWarehouseInOrderItemList.map<Map<String, dynamic>>((item) => {
+          "type": "sendToWH",
+          "name" : item.name,
+          "price": item.price,
+          "weight": item.weight,
+          "quantity": item.quantity,
+          "notes": item.notes
+        }).toList();
+        onModifyWarehouseInOrder = dio.post("/user/order/sendtowh", data: data, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+          .map<AddWarehouseInOrderResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToAddWarehouseInOrderResponse());
+      } else if (modifyWarehouseInOrderParameter is ChangeWarehouseInOrderParameter) {
+        OptionalFieldsWarehouseInOrderItem optionalFieldsWarehouseInOrderItem = modifyWarehouseInOrderParameter.optionalFieldsWarehouseInOrderItem;
+        data["other_order_product_list"] = [
+          {
+            "type": "sendToWH",
+            if (optionalFieldsWarehouseInOrderItem.name.isNotEmptyString) "name" : optionalFieldsWarehouseInOrderItem.name,
+            if (optionalFieldsWarehouseInOrderItem.price != null) "price": optionalFieldsWarehouseInOrderItem.price,
+            if (optionalFieldsWarehouseInOrderItem.weight != null) "weight": optionalFieldsWarehouseInOrderItem.weight,
+            if (optionalFieldsWarehouseInOrderItem.quantity != null) "quantity": optionalFieldsWarehouseInOrderItem.quantity,
+            if (optionalFieldsWarehouseInOrderItem.notes.isNotEmptyString) "notes": optionalFieldsWarehouseInOrderItem.notes
+          }
+        ];
+        onModifyWarehouseInOrder = dio.put("/user/order/sendtowh/${modifyWarehouseInOrderParameter.id}", data: data, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+          .map<ChangeWarehouseInOrderResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToChangeWarehouseInOrderResponse());
+      } else if (modifyWarehouseInOrderParameter is RemoveWarehouseInOrderParameter) {
+        onModifyWarehouseInOrder = dio.delete("/user/order/sendtowh/${modifyWarehouseInOrderParameter.warehouseInOrderItemId}", data: data, cancelToken: cancelToken)
+          .map<RemoveWarehouseInOrderResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToRemoveWarehouseInOrderResponse());
+      } else {
+        throw MessageError(message: "Modify warehouse in order parameter is not suitable.");
+      }
+      return onModifyWarehouseInOrder;
     });
   }
 }

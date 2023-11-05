@@ -311,7 +311,8 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Press again to exit": "Tekan sekali lagi untuk keluar",
       "Product Payment": "Pembayaran Produk",
       "Product Delivery": "Pengiriman Produk",
-      "Mark All": "Tandai Semua"
+      "Mark All": "Tandai Semua",
+      "Transaction Number": "Nomor Transaksi"
     }
   };
 
