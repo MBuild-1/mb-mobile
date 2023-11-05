@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
-import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/misc/translation/default_extended_translation.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
@@ -18,13 +17,12 @@ import 'domain/usecase/get_user_use_case.dart';
 import 'misc/constant.dart';
 import 'misc/getextended/extended_get_material_app.dart';
 import 'misc/injector.dart';
-import 'misc/login_helper.dart';
 import 'misc/main_route_observer.dart';
 import 'presentation/notifier/login_notifier.dart';
 import 'presentation/notifier/component_notifier.dart';
 import 'presentation/notifier/notification_notifier.dart';
-import 'presentation/page/introduction_page.dart';
-import 'presentation/page/mainmenu/main_menu_page.dart';
+import 'presentation/page/getx_page.dart';
+import 'presentation/page/redirector_page.dart';
 
 void main() async {
   Injector.init();
@@ -106,16 +104,7 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           title: 'MasterBagasi',
           smartManagement: SmartManagement.onlyBuilder,
-          onGenerateRoute: (routeSettings) {
-            if (routeSettings.name == "/") {
-              if (LoginHelper.getTokenWithBearer().result.isNotEmptyString) {
-                return MainMenuPageRestorableRouteFuture.getRoute();
-              } else {
-                return IntroductionPageRestorableRouteFuture.getRoute();
-              }
-            }
-            return null;
-          },
+          home: GetxPageBuilder.buildRestorableGetxPage(RedirectorPage()),
           defaultTransition: Transition.topLevel,
           translations: DefaultExtendedTranslation(),
           locale: Locale(Constant.textInIdLanguageKey),

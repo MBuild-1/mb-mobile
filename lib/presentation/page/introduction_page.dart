@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -51,6 +53,28 @@ class IntroductionPage extends RestorableGetxPage<_IntroductionPageRestoration> 
   }
 }
 
+mixin IntroductionPageRestorationMixin on MixableGetxPageRestoration {
+  late IntroductionPageRestorableRouteFuture introductionPageRestorableRouteFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    introductionPageRestorableRouteFuture = IntroductionPageRestorableRouteFuture(restorationId: restorationIdWithPageName('introduction-page-route'));
+  }
+
+  @override
+  void restoreState(Restorator restorator, RestorationBucket? oldBucket, bool initialRestore) {
+    super.restoreState(restorator, oldBucket, initialRestore);
+    introductionPageRestorableRouteFuture.restoreState(restorator, oldBucket, initialRestore);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    introductionPageRestorableRouteFuture.dispose();
+  }
+}
+
 class _IntroductionPageRestoration extends MixableGetxPageRestoration with MainMenuPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
@@ -86,7 +110,18 @@ class IntroductionPageRestorableRouteFuture extends GetRestorableRouteFuture {
     _pageRoute = RestorableRouteFuture<void>(
       onPresent: (NavigatorState navigator, Object? arguments) {
         if (arguments is String) {
-          if (arguments == Constant.restorableRouteFuturePushAndRemoveUntil) {
+          String pushMode = arguments;
+          try {
+            var decodedJson = json.decode(arguments) as Map<String, dynamic>;
+            if (decodedJson.containsKey("push_mode")) {
+              pushMode = decodedJson["push_mode"];
+            } else {
+              pushMode = "";
+            }
+          } on FormatException {
+            // Not action occurred
+          }
+          if (pushMode == Constant.restorableRouteFuturePushAndRemoveUntil) {
             return navigator.restorablePushAndRemoveUntil(_pageRouteBuilder, (route) => false, arguments: arguments);
           } else {
             return navigator.restorablePush(_pageRouteBuilder, arguments: arguments);
@@ -99,8 +134,20 @@ class IntroductionPageRestorableRouteFuture extends GetRestorableRouteFuture {
   }
 
   static Route<void>? getRoute([Object? arguments]) {
+    bool hasTransition = true;
+    if (arguments is String) {
+      try {
+        var decodedJson = json.decode(arguments) as Map<String, dynamic>;
+        if (decodedJson.containsKey("has_transition")) {
+          hasTransition = decodedJson["has_transition"] == 1;
+        }
+      } on FormatException {
+        // Not action occurred
+      }
+    }
     return GetExtended.toWithGetPageRouteReturnValue<void>(
-      GetxPageBuilder.buildRestorableGetxPageBuilder(IntroductionPageGetPageBuilderAssistant())
+      GetxPageBuilder.buildRestorableGetxPageBuilder(IntroductionPageGetPageBuilderAssistant()),
+      duration: hasTransition ? null : Duration.zero
     );
   }
 

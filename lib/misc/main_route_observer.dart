@@ -31,6 +31,7 @@ class _MainRouteObserver extends RouteObserver {
     _routeMap = {
       for (var key in newRouteMap.keys) key: RouteWrapper(
         restorationValue: newRouteMap[key] ?? 1,
+        lastRestorationValue: -1,
         requestLoginChangeValue: 0
       )
     };
@@ -91,6 +92,7 @@ class _MainRouteObserver extends RouteObserver {
     _routeMap[route.settings.name ?? ""] = RouteWrapper(
       route: route,
       restorationValue: 0,
+      lastRestorationValue: -1,
       requestLoginChangeValue: 0
     );
     _updateModifyRouteKeyMapValue(route);
@@ -118,6 +120,7 @@ class _MainRouteObserver extends RouteObserver {
       _routeMap[newRoute.settings.name ?? ""] = RouteWrapper(
         route: newRoute,
         restorationValue: 0,
+        lastRestorationValue: -1,
         requestLoginChangeValue: 0
       );
       _updateModifyRouteKeyMapValue(newRoute);
@@ -150,12 +153,14 @@ final _MainRouteObserver MainRouteObserver = _MainRouteObserver();
 class RouteWrapper {
   Route? route;
   int restorationValue;
+  int lastRestorationValue;
   int requestLoginChangeValue;
   void Function()? onLoginChange;
 
   RouteWrapper({
     this.route,
     required this.restorationValue,
+    required this.lastRestorationValue,
     required this.requestLoginChangeValue,
     this.onLoginChange,
   });

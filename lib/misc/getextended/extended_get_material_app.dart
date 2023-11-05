@@ -326,14 +326,12 @@ class ExtendedGetMaterialApp extends StatelessWidget {
   }
 
   Widget defaultBuilder(BuildContext context, Widget? child) {
-    Widget wrappedChildResult = SomethingCounter(
-      child: MaterialIgnorePointer(
-        child: child ?? const Material()
+    Widget wrappedChildResult = child ?? const Material();
+    return SomethingCounter(
+      child: Directionality(
+        textDirection: textDirection ?? (rtlLanguages.contains(Get.locale?.languageCode) ? TextDirection.rtl : TextDirection.ltr),
+        child: builder == null ? wrappedChildResult : builder!(context, wrappedChildResult),
       )
-    );
-    return Directionality(
-      textDirection: textDirection ?? (rtlLanguages.contains(Get.locale?.languageCode) ? TextDirection.rtl : TextDirection.ltr),
-      child: builder == null ? wrappedChildResult : builder!(context, wrappedChildResult),
     );
   }
 

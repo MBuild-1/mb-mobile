@@ -110,7 +110,9 @@ class _GetxPageBuilder {
     while (true) {
       if (MainRouteObserver.checkRouteNameExists(newRouteName)) {
         if (MainRouteObserver.routeMap[newRouteName] != null) {
-          if (MainRouteObserver.routeMap[newRouteName]?.restorationValue == 1) {
+          int? restorationValue = MainRouteObserver.routeMap[newRouteName]?.restorationValue;
+          if (restorationValue == 1) {
+            MainRouteObserver.routeMap[newRouteName]?.lastRestorationValue = restorationValue!;
             MainRouteObserver.routeMap[newRouteName]?.restorationValue = 0;
           } else {
             newRouteName = "$newRawRouteName-$i";

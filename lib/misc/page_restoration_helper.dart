@@ -26,6 +26,7 @@ import '../presentation/page/help_chat_page.dart';
 import '../presentation/page/help_page.dart';
 import '../presentation/page/host_cart_page.dart';
 import '../presentation/page/inbox_page.dart';
+import '../presentation/page/introduction_page.dart';
 import '../presentation/page/login_page.dart';
 import '../presentation/page/mainmenu/main_menu_page.dart';
 import '../presentation/page/modify_address_page.dart';
@@ -565,6 +566,15 @@ class _PageRestorationHelperImpl {
         context: context
       );
     });
+  }
+
+  void toIntroductionPage(BuildContext context, String restorableRouteFuturePushParameter) {
+    PageRestorationHelper.findPageRestorationMixin<IntroductionPageRestorationMixin>(
+      onGetxPageRestorationFound: (restoration) {
+        restoration.introductionPageRestorableRouteFuture.present(restorableRouteFuturePushParameter);
+      },
+      context: context
+    );
   }
 }
 

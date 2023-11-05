@@ -233,8 +233,18 @@ you can only use widgets and widget functions here''';
       routeName ??= "/${page.runtimeType}";
     }
     routeName = cleanRouteName(routeName);
+    bool allLastRestorationValueEqual1 = true;
+    for (var mapEntry in MainRouteObserver.routeMap.entries) {
+      if (mapEntry.value?.lastRestorationValue != 1) {
+        allLastRestorationValueEqual1 = false;
+      }
+    }
     if (preventDuplicates && routeName == MainRouteObserver.getCurrentRoute()) {
-      return null;
+      if (allLastRestorationValueEqual1) {
+        // Because it's in restoration mode, prevent duplicate checking is ignored.
+      } else {
+        return null;
+      }
     }
     return ExtendedGetPageRoute<T>(
       opaque: opaque ?? true,

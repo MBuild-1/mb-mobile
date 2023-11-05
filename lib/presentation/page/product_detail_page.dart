@@ -197,7 +197,7 @@ mixin ProductDetailPageRestorationMixin on MixableGetxPageRestoration {
   @override
   void initState() {
     super.initState();
-    productDetailPageRestorableRouteFuture = ProductDetailPageRestorableRouteFuture(restorationId: restorationIdWithPageName('login-route'));
+    productDetailPageRestorableRouteFuture = ProductDetailPageRestorableRouteFuture(restorationId: restorationIdWithPageName('product-detail-route'));
   }
 
   @override

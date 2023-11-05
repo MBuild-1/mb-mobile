@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -252,7 +253,18 @@ class MainMenuPageRestorableRouteFuture extends GetRestorableRouteFuture {
     _pageRoute = RestorableRouteFuture<void>(
       onPresent: (NavigatorState navigator, Object? arguments) {
         if (arguments is String) {
-          if (arguments == Constant.restorableRouteFuturePushAndRemoveUntil) {
+          String pushMode = arguments;
+          try {
+            var decodedJson = json.decode(arguments) as Map<String, dynamic>;
+            if (decodedJson.containsKey("push_mode")) {
+              pushMode = decodedJson["push_mode"];
+            } else {
+              pushMode = "";
+            }
+          } on FormatException {
+            // Not action occurred
+          }
+          if (pushMode == Constant.restorableRouteFuturePushAndRemoveUntil) {
             return navigator.restorablePushAndRemoveUntil(_pageRouteBuilder, (route) => false, arguments: arguments);
           } else {
             return navigator.restorablePush(_pageRouteBuilder, arguments: arguments);
@@ -265,9 +277,21 @@ class MainMenuPageRestorableRouteFuture extends GetRestorableRouteFuture {
   }
 
   static Route<void>? getRoute([Object? arguments]) {
+    bool hasTransition = true;
+    if (arguments is String) {
+      try {
+        var decodedJson = json.decode(arguments) as Map<String, dynamic>;
+        if (decodedJson.containsKey("has_transition")) {
+          hasTransition = decodedJson["has_transition"] == 1;
+        }
+      } on FormatException {
+        // Not action occurred
+      }
+    }
     return GetExtended.toWithGetPageRouteReturnValue<void>(
       GetxPageBuilder.buildRestorableGetxPageBuilder(MainMenuPageGetPageBuilderAssistant()),
       arguments: MainMenuRouteArgument(),
+      duration: hasTransition ? null : Duration.zero
     );
   }
 

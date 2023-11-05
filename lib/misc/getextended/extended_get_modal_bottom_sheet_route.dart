@@ -80,37 +80,8 @@ class ExtendedGetModalBottomSheetWidget extends StatefulWidget {
 }
 
 class ExtendedGetModalBottomSheetWidgetState extends State<ExtendedGetModalBottomSheetWidget> {
-  bool _hasCreatedAnimationStatusListener = false;
-
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      if (!_hasCreatedAnimationStatusListener) {
-        _hasCreatedAnimationStatusListener = true;
-        widget.animation.addStatusListener((animationStatus) {
-          var materialIgnorePointerState = MaterialIgnorePointer.of(context);
-          if (animationStatus == AnimationStatus.completed) {
-            WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-              materialIgnorePointerState?.ignoring = false;
-            });
-          } else if (animationStatus == AnimationStatus.dismissed) {
-            WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-              materialIgnorePointerState?.resetIgnoring();
-            });
-          }
-        });
-      }
-    });
-    return WillPopScope(
-      onWillPop: () {
-        Completer<bool> boolCompleter = Completer();
-        MaterialIgnorePointer.of(context)?.ignoring = true;
-        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          boolCompleter.complete(true);
-        });
-        return boolCompleter.future;
-      },
-      child: widget.child
-    );
+    return widget.child;
   }
 }

@@ -422,7 +422,9 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
 
   void _updateTypingSearchState() async {
     await _typingSearch();
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _typingSearchListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? listItemControllerStateList) async {

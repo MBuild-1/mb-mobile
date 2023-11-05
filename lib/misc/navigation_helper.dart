@@ -34,14 +34,14 @@ class _NavigationHelperImpl {
           if (targetRoute != null) {
             if (!targetRoute.settings.name.isEmptyString) {
               WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                MaterialIgnorePointer.of(context)?.ignoring = true;
+                //MaterialIgnorePointer.of(context)?.ignoring = true;
                 String targetRouteName = (targetRoute.settings.name).toEmptyStringNonNull;
                 MainRouteObserver.disposingEventRouteMap[targetRouteName] = () {
                   WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
                     BuildContext Function()? buildContextEventFunction = MainRouteObserver.buildContextEventRouteMap[mainMenuRouteKey];
                     if (buildContextEventFunction != null) {
                       BuildContext mainMenuBuildContext = buildContextEventFunction();
-                      MaterialIgnorePointer.of(mainMenuBuildContext)?.ignoring = false;
+                      //MaterialIgnorePointer.of(mainMenuBuildContext)?.ignoring = false;
                       DialogHelper.showLoadingDialog(mainMenuBuildContext);
                       WebHelper.launchUrl(Uri.parse("https://app.midtrans.com/snap/v2/vtweb/${order.combinedOrder.orderProduct.orderDetail.snapToken}"));
                       Get.back();

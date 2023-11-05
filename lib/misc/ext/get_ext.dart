@@ -31,7 +31,6 @@ extension ModifiedExtensionBottomSheet on GetInterface {
     Completer<T?> pushResultCompleter = Completer();
     FocusScope.of(context).unfocus();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      MaterialIgnorePointer.of(context)?.ignoring = true;
       GetModalBottomSheetRoute<T> getModalBottomSheetRoute = ExtendedGetModalBottomSheetRoute<T>(
         builder: (_) => bottomsheet,
         isPersistent: persistent,
@@ -72,7 +71,6 @@ extension ModifiedExtensionDialog on GetInterface {
     Completer<T?> pushResultCompleter = Completer();
     FocusScope.of(context).unfocus();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      MaterialIgnorePointer.of(context)?.ignoring = true;
       final CapturedThemes themes = InheritedTheme.capture(
         from: context,
         to: Navigator.of(
