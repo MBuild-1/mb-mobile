@@ -1,11 +1,16 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:get/utils.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
+import 'package:masterbagasi/misc/ext/validation_result_ext.dart';
 import 'package:validators/validators.dart';
 
 import 'constant.dart';
 import 'multi_language_string.dart';
+import 'validation/validation_result.dart';
+import 'validation/validationresult/is_phone_number_success_validation_result.dart';
+import 'validation/validator/validator.dart';
 
 class _StringUtilImpl {
   static const _sizeSuffixes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
@@ -159,6 +164,29 @@ class _StringUtilImpl {
 
   String tokenWithBearer(String tokenWithoutBearer) {
     return "Bearer $tokenWithoutBearer";
+  }
+
+  String effectiveEmailOrPhoneNumber(String emailOrPhoneNumber, Validator emailOrPhoneNumberValidator) {
+    // ignore: invalid_use_of_protected_member
+    ValidationResult emailOrPhoneNumberValidationResult = emailOrPhoneNumberValidator.validating();
+    if (emailOrPhoneNumberValidationResult.isSuccess) {
+      if (emailOrPhoneNumberValidationResult is IsPhoneNumberSuccessValidationResult) {
+        String result = "";
+        for (int i = 0; i < emailOrPhoneNumber.length; i++) {
+          String c = emailOrPhoneNumber[i];
+          if (c.isNum) {
+            result += c;
+          }
+          if (result.length == 1) {
+            if (result == "0") {
+              result = "62";
+            }
+          }
+        }
+        return result;
+      }
+    }
+    return emailOrPhoneNumber;
   }
 }
 

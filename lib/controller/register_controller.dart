@@ -38,6 +38,7 @@ import '../misc/registerstep/register_step_wrapper.dart';
 import '../misc/registerstep/second_register_step.dart';
 import '../misc/registerstep/send_register_otp_register_step.dart';
 import '../misc/registerstep/verify_register_step.dart';
+import '../misc/string_util.dart';
 import '../misc/typedef.dart';
 import '../misc/validation/validation_result.dart';
 import '../misc/validation/validationresult/is_email_success_validation_result.dart';
@@ -249,33 +250,13 @@ class RegisterController extends BaseGetxController {
     if (_registerDelegate != null) {
       _registerDelegate!.onUnfocusAllWidget();
       if (registerValidatorGroup.validate()) {
-        String effectiveEmailOrPhoneNumber() {
-          String emailOrPhoneNumber = _registerDelegate!.onGetEmailOrPhoneNumberRegisterInput();
-          // ignore: invalid_use_of_protected_member
-          ValidationResult emailOrPhoneNumberValidationResult = _emailOrPhoneNumberValidator.validating();
-          if (emailOrPhoneNumberValidationResult.isSuccess) {
-            if (emailOrPhoneNumberValidationResult is IsPhoneNumberSuccessValidationResult) {
-              String result = "";
-              for (int i = 0; i < emailOrPhoneNumber.length; i++) {
-                String c = emailOrPhoneNumber[i];
-                if (c.isNum) {
-                  result += c;
-                }
-                if (result.length == 1) {
-                  if (result == "0") {
-                    result = "62";
-                  }
-                }
-              }
-              return result;
-            }
-          }
-          return emailOrPhoneNumber;
-        }
         _registerDelegate!.onShowRegisterRequestProcessLoadingCallback();
         LoadDataResult<RegisterFirstStepResponse> registerFirstStepLoadDataResult = await registerFirstStepUseCase.execute(
           RegisterFirstStepParameter(
-            emailOrPhoneNumber: effectiveEmailOrPhoneNumber()
+            emailOrPhoneNumber: StringUtil.effectiveEmailOrPhoneNumber(
+              _registerDelegate!.onGetEmailOrPhoneNumberRegisterInput(),
+              _emailOrPhoneNumberValidator
+            )
           )
         ).future(
           parameter: apiRequestManager.addRequestToCancellationPart('register-first-step').value

@@ -63,13 +63,20 @@ class DefaultUserDataSource implements UserDataSource {
   FutureProcessing<LoginResponse> login(LoginParameter loginParameter) {
     FormData formData = FormData.fromMap(
       <String, dynamic> {
-        "email": loginParameter.email,
+        "credential": loginParameter.credential,
         "password": loginParameter.password
       }
     );
     return DioHttpClientProcessing((cancelToken) {
-      return dio.post("/auth/login", data: formData, queryParameters: {"device_id": loginParameter.pushNotificationSubscriptionId}, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
-        .map<LoginResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToLoginResponse());
+      return dio.post(
+        "/auth/login",
+        data: formData,
+        queryParameters: {"device_id": loginParameter.pushNotificationSubscriptionId},
+        cancelToken: cancelToken,
+        options: OptionsBuilder.multipartData().withBaseUrl(dio.options.baseUrl.replaceAll("v1", "v1.1")).buildExtended()
+      ).map<LoginResponse>(
+        onMap: (value) => value.wrapResponse().mapFromResponseToLoginResponse()
+      );
     });
   }
 
@@ -373,7 +380,7 @@ class DefaultUserDataSource implements UserDataSource {
           "email": forgotPasswordParameter.email
         }
       );
-      return dio.post("/forgot-password", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+      return dio.post("/create/reset-password", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
         .map<ForgotPasswordResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToForgotPasswordResponse());
     });
   }

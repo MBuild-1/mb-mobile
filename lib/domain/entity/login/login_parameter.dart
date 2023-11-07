@@ -1,10 +1,10 @@
 class LoginParameter {
-  String email;
+  String credential;
   String password;
   String pushNotificationSubscriptionId;
 
   LoginParameter({
-    required this.email,
+    required this.credential,
     required this.password,
     required this.pushNotificationSubscriptionId,
   });

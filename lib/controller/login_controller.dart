@@ -16,7 +16,9 @@ import '../domain/usecase/login_with_google_use_case.dart';
 import '../misc/error/validation_error.dart';
 import '../misc/load_data_result.dart';
 import '../misc/login_helper.dart';
+import '../misc/string_util.dart';
 import '../misc/typedef.dart';
+import '../misc/validation/validator/email_or_phone_number_validator.dart';
 import '../misc/validation/validator/email_validator.dart';
 import '../misc/validation/validator/validator.dart';
 import '../misc/validation/validatorgroup/login_validator_group.dart';
@@ -36,26 +38,35 @@ class LoginController extends BaseGetxController {
   final LoginUseCase loginUseCase;
   final LoginWithGoogleUseCase loginWithGoogleUseCase;
 
+  late EmailOrPhoneNumberValidator _emailOrPhoneNumberValidator;
   late Rx<Validator> emailValidatorRx;
   late Rx<Validator> passwordValidatorRx;
   late final LoginValidatorGroup loginValidatorGroup;
 
   LoginDelegate? _loginDelegate;
 
+  String get _effectiveEmailAndPhoneNumberLoginInput {
+    return StringUtil.effectiveEmailOrPhoneNumber(
+      _loginDelegate!.onGetEmailAndPhoneNumberLoginInput(),
+      _emailOrPhoneNumberValidator
+    );
+  }
+
   LoginController(
     ControllerManager? controllerManager,
     this.loginUseCase,
     this.loginWithGoogleUseCase
   ) : super(controllerManager) {
+    _emailOrPhoneNumberValidator = EmailOrPhoneNumberValidator(
+      emailOrPhoneNumber: () => _loginDelegate!.onGetEmailAndPhoneNumberLoginInput()
+    );
     loginValidatorGroup = LoginValidatorGroup(
-      emailValidator: EmailValidator(
-        email: () => _loginDelegate!.onGetEmailLoginInput()
-      ),
+      emailOrPhoneNumberValidator: _emailOrPhoneNumberValidator,
       passwordValidator: Validator(
-        onValidate: () => !_loginDelegate!.onGetEmailLoginInput().isEmptyString ? SuccessValidationResult() : FailedValidationResult(e: ValidationError(message: "${"Password is required".tr}."))
+        onValidate: () => !_loginDelegate!.onGetEmailAndPhoneNumberLoginInput().isEmptyString ? SuccessValidationResult() : FailedValidationResult(e: ValidationError(message: "${"Password is required".tr}."))
       )
     );
-    emailValidatorRx = loginValidatorGroup.emailValidator.obs;
+    emailValidatorRx = loginValidatorGroup.emailOrPhoneNumberValidator.obs;
     passwordValidatorRx = loginValidatorGroup.passwordValidator.obs;
   }
 
@@ -71,7 +82,7 @@ class LoginController extends BaseGetxController {
         _loginDelegate!.onShowLoginRequestProcessLoadingCallback();
         LoadDataResult<LoginResponse> loginLoadDataResult = await loginUseCase.execute(
           LoginParameter(
-            email: _loginDelegate!.onGetEmailLoginInput(),
+            credential: _effectiveEmailAndPhoneNumberLoginInput,
             password: _loginDelegate!.onGetPasswordLoginInput(),
             pushNotificationSubscriptionId: _loginDelegate!.onGetPushNotificationSubscriptionId()
           )
@@ -151,7 +162,7 @@ class LoginController extends BaseGetxController {
   }
 
   Future<bool> loginOneSignal() async {
-    LoadDataResult<String> oneSignalLoginResult = await _loginDelegate!.onLoginIntoOneSignal(_loginDelegate!.onGetEmailLoginInput());
+    LoadDataResult<String> oneSignalLoginResult = await _loginDelegate!.onLoginIntoOneSignal(_effectiveEmailAndPhoneNumberLoginInput);
     if (oneSignalLoginResult.isFailed) {
       Get.back();
       _loginDelegate!.onShowLoginRequestProcessFailedCallback(oneSignalLoginResult.resultIfFailed);
@@ -163,7 +174,7 @@ class LoginController extends BaseGetxController {
 
 class LoginDelegate {
   OnUnfocusAllWidget onUnfocusAllWidget;
-  _OnGetLoginInput onGetEmailLoginInput;
+  _OnGetLoginInput onGetEmailAndPhoneNumberLoginInput;
   _OnLoginBack onLoginBack;
   _OnGetLoginInput onGetPasswordLoginInput;
   _OnShowLoginRequestProcessLoadingCallback onShowLoginRequestProcessLoadingCallback;
@@ -177,7 +188,7 @@ class LoginDelegate {
 
   LoginDelegate({
     required this.onUnfocusAllWidget,
-    required this.onGetEmailLoginInput,
+    required this.onGetEmailAndPhoneNumberLoginInput,
     required this.onLoginBack,
     required this.onGetPasswordLoginInput,
     required this.onShowLoginRequestProcessLoadingCallback,

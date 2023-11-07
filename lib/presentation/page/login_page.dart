@@ -259,7 +259,7 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
     widget.loginController.setLoginDelegate(
       LoginDelegate(
         onUnfocusAllWidget: () => FocusScope.of(context).unfocus(),
-        onGetEmailLoginInput: () => _emailTextEditingController.text.trim(),
+        onGetEmailAndPhoneNumberLoginInput: () => _emailTextEditingController.text.trim(),
         onGetPasswordLoginInput: () => _passwordTextEditingController.text,
         onLoginBack: () => Get.back(),
         onShowLoginRequestProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
@@ -372,7 +372,7 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
                       isError: validationResult.isFailed,
                       controller: _emailTextEditingController,
                       decoration: DefaultInputDecoration(
-                        label: Text("Email".tr),
+                        label: Text("Email Or Phone Number".tr),
                         labelStyle: const TextStyle(color: Colors.black),
                         floatingLabelStyle: const TextStyle(color: Colors.black),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
