@@ -125,6 +125,7 @@ class _ConstantImpl {
   String get vectorPrivacyPolicy => _getVectorsAssets("privacy_policy.svg");
   String get vectorIntellectualPropertyRights => _getVectorsAssets("intellectual_property_rights.svg");
   String get vectorReviewThisApplication => _getVectorsAssets("review_this_application.svg");
+  String get vectorWhatsappLogo => _getVectorsAssets("whatsapp_logo.svg");
 
   Color get colorYellow => const Color.fromRGBO(244, 184, 43, 1);
   Color get colorLightRed => const Color.fromRGBO(255, 236, 230, 1);

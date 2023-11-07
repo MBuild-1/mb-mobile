@@ -16,7 +16,10 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "or login with": "atau login dengan",
       "or register with": "atau daftar dengan",
       "This input must be an email": "Inputannya harus berupa email",
+      "This input must be an email or phone number": "Inputannya harus berupa email atau nomor telepon",
       "Email is required": "Email dibutuhkan",
+      "Email Or Phone Number": "Email Atau Nomor Telepon",
+      "Email or phone number is required": "Email atau nomor telepon dibutuhkan",
       "Gender is required": "Jenis kelamin dibutuhkan",
       "Login": "Masuk",
       "Register": "Daftar",
@@ -312,7 +315,9 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Product Payment": "Pembayaran Produk",
       "Product Delivery": "Pengiriman Produk",
       "Mark All": "Tandai Semua",
-      "Transaction Number": "Nomor Transaksi"
+      "Transaction Number": "Nomor Transaksi",
+      "No Email": "Tidak Ada Email",
+      "Cancel Register": "Batalkan Pendaftaran"
     }
   };
 

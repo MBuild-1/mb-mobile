@@ -35,7 +35,7 @@ class AffiliateUserCandidateIndicator extends StatelessWidget {
     } else if (userLoadDataResult.isSuccess) {
       User user = userLoadDataResult.resultIfSuccess!;
       title = user.name.isEmptyString ? user.name.toStringNonNullWithCustomText(text: noName) : user.name.toStringNonNullWithCustomText(text: noName);
-      description = user.email.toStringNonNullWithCustomText(text: "No Email".tr);
+      description = user.email.isEmptyString ? (user.userProfile.phoneNumber.isEmptyString ? "No Email".tr : user.userProfile.phoneNumber!) : user.email;
       profileImageUrl = user.userProfile.avatar.toEmptyStringNonNull;
     } else if (userLoadDataResult.isFailed) {
       ErrorProviderResult errorProviderResult = errorProvider.onGetErrorProviderResult(userLoadDataResult.resultIfFailed!).toErrorProviderResultNonNull();

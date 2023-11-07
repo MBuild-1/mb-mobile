@@ -12,10 +12,18 @@ import '../../domain/entity/pin/checkactivepin/check_active_pin_parameter.dart';
 import '../../domain/entity/pin/checkactivepin/check_active_pin_response.dart';
 import '../../domain/entity/pin/modifypin/modifypinparameter/modify_pin_parameter.dart';
 import '../../domain/entity/pin/modifypin/modifypinresponse/modify_pin_response.dart';
+import '../../domain/entity/register/register_first_step_parameter.dart';
+import '../../domain/entity/register/register_first_step_response.dart';
 import '../../domain/entity/register/register_parameter.dart';
 import '../../domain/entity/register/register_response.dart';
+import '../../domain/entity/register/register_second_step_parameter.dart';
+import '../../domain/entity/register/register_second_step_response.dart';
 import '../../domain/entity/register/register_with_google_parameter.dart';
 import '../../domain/entity/register/register_with_google_response.dart';
+import '../../domain/entity/register/sendregisterotp/sendregisterotpparameter/send_register_otp_parameter.dart';
+import '../../domain/entity/register/sendregisterotp/sendregisterotpresponse/send_register_otp_response.dart';
+import '../../domain/entity/register/verify_register_parameter.dart';
+import '../../domain/entity/register/verify_register_response.dart';
 import '../../domain/entity/user/edituser/edit_user_parameter.dart';
 import '../../domain/entity/user/edituser/edit_user_response.dart';
 import '../../domain/entity/user/getuser/get_user_parameter.dart';
@@ -85,5 +93,25 @@ class DefaultUserRepository implements UserRepository {
   @override
   FutureProcessing<LoadDataResult<ForgotPasswordResponse>> forgotPassword(ForgotPasswordParameter forgotPasswordParameter) {
     return userDataSource.forgotPassword(forgotPasswordParameter).mapToLoadDataResult<ForgotPasswordResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<RegisterFirstStepResponse>> registerFirstStep(RegisterFirstStepParameter registerFirstStepParameter) {
+    return userDataSource.registerFirstStep(registerFirstStepParameter).mapToLoadDataResult<RegisterFirstStepResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<SendRegisterOtpResponse>> sendRegisterOtp(SendRegisterOtpParameter sendRegisterOtpParameter) {
+    return userDataSource.sendRegisterOtp(sendRegisterOtpParameter).mapToLoadDataResult<SendRegisterOtpResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<VerifyRegisterResponse>> verifyRegister(VerifyRegisterParameter verifyRegisterParameter) {
+    return userDataSource.verifyRegister(verifyRegisterParameter).mapToLoadDataResult<VerifyRegisterResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<RegisterSecondStepResponse>> registerSecondStep(RegisterSecondStepParameter registerSecondStepParameter) {
+    return userDataSource.registerSecondStep(registerSecondStepParameter).mapToLoadDataResult<RegisterSecondStepResponse>();
   }
 }

@@ -1,4 +1,5 @@
 import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../../domain/entity/changepassword/change_password_response.dart';
 import '../../domain/entity/forgotpassword/forgot_password_response.dart';
@@ -12,11 +13,21 @@ import '../../domain/entity/pin/modifypin/modifypinresponse/modify_pin_response.
 import '../../domain/entity/pin/modifypin/modifypinresponse/remove_modify_pin_response.dart';
 import '../../domain/entity/pin/modifypin/modifypinresponse/validate_modify_pin_response.dart';
 import '../../domain/entity/pin/modifypin/modifypinresponse/validate_while_login_modify_pin_response.dart';
+import '../../domain/entity/register/register_first_step_response.dart';
 import '../../domain/entity/register/register_response.dart';
+import '../../domain/entity/register/register_second_step_response.dart';
 import '../../domain/entity/register/register_with_google_response.dart';
+import '../../domain/entity/register/sendregisterotp/sendregisterotpparameter/email_send_register_otp_parameter.dart';
+import '../../domain/entity/register/sendregisterotp/sendregisterotpparameter/send_register_otp_parameter.dart';
+import '../../domain/entity/register/sendregisterotp/sendregisterotpparameter/wa_send_register_otp_parameter.dart';
+import '../../domain/entity/register/sendregisterotp/sendregisterotpresponse/email_send_register_otp_response.dart';
+import '../../domain/entity/register/sendregisterotp/sendregisterotpresponse/send_register_otp_response.dart';
+import '../../domain/entity/register/sendregisterotp/sendregisterotpresponse/wa_send_register_otp_response.dart';
+import '../../domain/entity/register/verify_register_response.dart';
 import '../../domain/entity/user/edituser/edit_user_response.dart';
 import '../../domain/entity/user/getuser/get_user_response.dart';
 import '../../domain/entity/user/user.dart';
+import '../../misc/error/message_error.dart';
 import '../../misc/response_wrapper.dart';
 
 extension UserEntityMappingExt on ResponseWrapper {
@@ -33,6 +44,44 @@ extension UserEntityMappingExt on ResponseWrapper {
       token: response["access_token"],
       tokenType: response["token_type"],
       expiresIn: response["expires_in"]
+    );
+  }
+
+  RegisterFirstStepResponse mapFromResponseToRegisterFirstStepResponse() {
+    return RegisterFirstStepResponse(
+      emailActive: response["email_active"],
+      phoneActive: response["phone_active"],
+      credential: response["credential"],
+    );
+  }
+
+  VerifyRegisterResponse mapFromResponseToVerifyRegisterResponse() {
+    return VerifyRegisterResponse(
+      credential: response["credential"]
+    );
+  }
+
+  SendRegisterOtpResponse mapFromResponseToSendRegisterOtpResponse(SendRegisterOtpParameter sendRegisterOtpParameter) {
+    dynamic credential = response["credential"];
+    if (sendRegisterOtpParameter is EmailSendRegisterOtpParameter) {
+      return EmailSendRegisterOtpResponse(
+        credential: credential
+      );
+    } else if (sendRegisterOtpParameter is WaSendRegisterOtpParameter) {
+      return WaSendRegisterOtpResponse(
+        credential: credential
+      );
+    } else {
+      throw MessageError(title: "Send register otp parameter is not suitable");
+    }
+  }
+
+  RegisterSecondStepResponse mapFromResponseToRegisterSecondStepResponse() {
+    RegisterResponse registerResponse = ResponseWrapper(response).mapFromResponseToRegisterResponse();
+    return RegisterSecondStepResponse(
+      token: registerResponse.token,
+      tokenType: registerResponse.tokenType,
+      expiresIn: registerResponse.expiresIn
     );
   }
 
@@ -108,7 +157,7 @@ extension UserDetailEntityMappingExt on ResponseWrapper {
     return User(
       id: response["id"],
       name: response["name"],
-      email: response["email"],
+      email: (response["email"] as String?).toEmptyStringNonNull,
       role: response["role"],
       userProfile: ResponseWrapper(response["user_profile"]).mapFromResponseToUserProfile(),
       createdAt: ResponseWrapper(response["created_at"]).mapFromResponseToDateTime()!

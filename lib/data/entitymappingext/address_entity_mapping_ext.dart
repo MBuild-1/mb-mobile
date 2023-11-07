@@ -111,6 +111,7 @@ extension AddressDetailEntityMappingExt on ResponseWrapper {
       zoneId: response["zone_id"],
       name: response["name"],
       code: response["code"],
+      phoneCode: response["phone_code"],
       zone: ResponseWrapper(response["zone"]).mapFromResponseToZone()
     );
   }

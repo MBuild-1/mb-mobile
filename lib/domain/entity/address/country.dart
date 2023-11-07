@@ -5,6 +5,7 @@ class Country {
   String zoneId;
   String name;
   String code;
+  String phoneCode;
   Zone zone;
 
   Country({
@@ -12,6 +13,7 @@ class Country {
     required this.zoneId,
     required this.name,
     required this.code,
+    required this.phoneCode,
     required this.zone
   });
 }

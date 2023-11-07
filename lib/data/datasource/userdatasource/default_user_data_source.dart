@@ -25,15 +25,26 @@ import '../../../domain/entity/pin/modifypin/modifypinparameter/validate_while_l
 import '../../../domain/entity/pin/modifypin/modifypinresponse/modify_pin_response.dart';
 import '../../../domain/entity/pin/modifypin/modifypinparameter/remove_modify_pin_parameter.dart';
 import '../../../domain/entity/pin/modifypin/modifypinparameter/validate_modify_pin_parameter.dart';
+import '../../../domain/entity/register/register_first_step_parameter.dart';
+import '../../../domain/entity/register/register_first_step_response.dart';
 import '../../../domain/entity/register/register_parameter.dart';
 import '../../../domain/entity/register/register_response.dart';
+import '../../../domain/entity/register/register_second_step_parameter.dart';
+import '../../../domain/entity/register/register_second_step_response.dart';
 import '../../../domain/entity/register/register_with_google_parameter.dart';
 import '../../../domain/entity/register/register_with_google_response.dart';
+import '../../../domain/entity/register/sendregisterotp/sendregisterotpparameter/email_send_register_otp_parameter.dart';
+import '../../../domain/entity/register/sendregisterotp/sendregisterotpparameter/wa_send_register_otp_parameter.dart';
+import '../../../domain/entity/register/sendregisterotp/sendregisterotpresponse/send_register_otp_response.dart';
+import '../../../domain/entity/register/sendregisterotp/sendregisterotpparameter/send_register_otp_parameter.dart';
+import '../../../domain/entity/register/verify_register_parameter.dart';
+import '../../../domain/entity/register/verify_register_response.dart';
 import '../../../domain/entity/user/edituser/edit_user_parameter.dart';
 import '../../../domain/entity/user/edituser/edit_user_response.dart';
 import '../../../domain/entity/user/getuser/get_user_parameter.dart';
 import '../../../domain/entity/user/getuser/get_user_response.dart';
 import '../../../misc/date_util.dart';
+import '../../../misc/error/message_error.dart';
 import '../../../misc/http_client.dart';
 import '../../../misc/option_builder.dart';
 import '../../../misc/processing/dio_http_client_processing.dart';
@@ -72,6 +83,101 @@ class DefaultUserDataSource implements UserDataSource {
     return DioHttpClientProcessing((cancelToken) {
       return dio.post("/auth/google", data: formData, queryParameters: {"device_id": loginWithGoogleParameter.pushNotificationSubscriptionId}, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
         .map<LoginWithGoogleResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToLoginWithGoogleResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<RegisterFirstStepResponse> registerFirstStep(RegisterFirstStepParameter registerFirstStepParameter) {
+    FormData formData = FormData.fromMap(
+      <String, dynamic> {
+        "credential": registerFirstStepParameter.emailOrPhoneNumber
+      }
+    );
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.post(
+        "/auth/check/credential",
+        data: formData,
+        cancelToken: cancelToken,
+        options: OptionsBuilder.multipartData().withBaseUrl(dio.options.baseUrl.replaceAll("v1", "v1.1")).buildExtended()
+      ).map<RegisterFirstStepResponse>(
+        onMap: (value) => value.wrapResponse().mapFromResponseToRegisterFirstStepResponse()
+      );
+    });
+  }
+
+  @override
+  FutureProcessing<SendRegisterOtpResponse> sendRegisterOtp(SendRegisterOtpParameter sendRegisterOtpParameter) {
+    FormData formData = FormData.fromMap(
+      <String, dynamic> {
+        "credential": sendRegisterOtpParameter.credential
+      }
+    );
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.post(
+        () {
+          if (sendRegisterOtpParameter is EmailSendRegisterOtpParameter) {
+            return "/auth/send/otp/email";
+          } else if (sendRegisterOtpParameter is WaSendRegisterOtpParameter) {
+            return "/verify/otp/wa";
+          } else {
+            throw MessageError(title: "Send register otp parameter is not suitable");
+          }
+        }(),
+        data: formData,
+        cancelToken: cancelToken,
+        options: () {
+          OptionsBuilder optionsBuilder = OptionsBuilder.multipartData();
+          if (sendRegisterOtpParameter is EmailSendRegisterOtpParameter) {
+            optionsBuilder.withBaseUrl(dio.options.baseUrl.replaceAll("v1", "v1.1"));
+          }
+          return optionsBuilder.buildExtended();
+        }()
+      ).map<SendRegisterOtpResponse>(
+        onMap: (value) {
+          return value.wrapResponse().mapFromResponseToSendRegisterOtpResponse(sendRegisterOtpParameter);
+        }
+      );
+    });
+  }
+
+  @override
+  FutureProcessing<VerifyRegisterResponse> verifyRegister(VerifyRegisterParameter verifyRegisterParameter) {
+    FormData formData = FormData.fromMap(
+      <String, dynamic> {
+        "credential": verifyRegisterParameter.credential,
+        "otp": verifyRegisterParameter.otp
+      }
+    );
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.post(
+        "/check/verify/otp",
+        data: formData,
+        cancelToken: cancelToken,
+      ).map<VerifyRegisterResponse>(
+        onMap: (value) => value.wrapResponse().mapFromResponseToVerifyRegisterResponse()
+      );
+    });
+  }
+
+  @override
+  FutureProcessing<RegisterSecondStepResponse> registerSecondStep(RegisterSecondStepParameter registerSecondStepParameter) {
+    FormData formData = FormData.fromMap(
+      <String, dynamic> {
+        "credential": registerSecondStepParameter.credential,
+        "name": registerSecondStepParameter.name,
+        "password": registerSecondStepParameter.password,
+        "password_confirmation": registerSecondStepParameter.passwordConfirmation
+      }
+    );
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.post(
+        "/auth/register",
+        data: formData,
+        cancelToken: cancelToken,
+        options: OptionsBuilder.multipartData().withBaseUrl(dio.options.baseUrl.replaceAll("v1", "v1.1")).buildExtended()
+      ).map<RegisterSecondStepResponse>(
+        onMap: (value) => value.wrapResponse().mapFromResponseToRegisterSecondStepResponse()
+      );
     });
   }
 

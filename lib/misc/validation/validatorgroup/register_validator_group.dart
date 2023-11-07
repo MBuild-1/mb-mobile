@@ -1,19 +1,12 @@
-import '../validator/compoundvalidator/password_compound_validator.dart';
 import '../validator/validator.dart';
 import 'validator_group.dart';
 
 class RegisterValidatorGroup extends ValidatorGroup {
-  Validator emailValidator;
-  Validator nameValidator;
-  PasswordCompoundValidator passwordCompoundValidator;
+  Validator emailOrPhoneNumberValidator;
 
   RegisterValidatorGroup({
-    required this.emailValidator,
-    required this.nameValidator,
-    required this.passwordCompoundValidator
+    required this.emailOrPhoneNumberValidator
   }) {
-    validatorList.add(emailValidator);
-    validatorList.add(nameValidator);
-    validatorList.add(passwordCompoundValidator);
+    validatorList.add(emailOrPhoneNumberValidator);
   }
 }
