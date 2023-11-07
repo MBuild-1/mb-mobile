@@ -47,6 +47,7 @@ import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
 import '../../misc/list_item_controller_state_helper.dart';
 import '../../misc/load_data_result.dart';
+import '../../misc/login_helper.dart';
 import '../../misc/manager/controller_manager.dart';
 import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
@@ -305,17 +306,23 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
     }
     _searchResponseLoadDataResult = NoLoadDataResult<SearchResponse>();
     if (pageKey == 1) {
-      LoadDataResult<StoreKeywordForSearchHistoryResponse> storeKeywordForSearchHistoryLoadDataResult = await widget.searchController.storeKeywordForSearchHistory(
-        StoreKeywordForSearchHistoryParameter(
-          keyword: _searchTextEditingController.text.trim()
-        ),
-      );
-      if (storeKeywordForSearchHistoryLoadDataResult.isFailed) {
-        if (!storeKeywordForSearchHistoryLoadDataResult.isFailedBecauseCancellation) {
-          return storeKeywordForSearchHistoryLoadDataResult.map((_) => throw UnimplementedError());
-        } else {
-          return noContent();
+      LoadDataResult<PagingResult<ListItemControllerState>>? finalStoreKeywordForSearchHistoryLoadDataResult;
+      LoginHelper.checkingLogin(context, () async {
+        LoadDataResult<StoreKeywordForSearchHistoryResponse> storeKeywordForSearchHistoryLoadDataResult = await widget.searchController.storeKeywordForSearchHistory(
+          StoreKeywordForSearchHistoryParameter(
+            keyword: _searchTextEditingController.text.trim()
+          ),
+        );
+        if (storeKeywordForSearchHistoryLoadDataResult.isFailed) {
+          if (!storeKeywordForSearchHistoryLoadDataResult.isFailedBecauseCancellation) {
+            finalStoreKeywordForSearchHistoryLoadDataResult = storeKeywordForSearchHistoryLoadDataResult.map((_) => throw UnimplementedError());
+          } else {
+            finalStoreKeywordForSearchHistoryLoadDataResult = noContent();
+          }
         }
+      });
+      if (finalStoreKeywordForSearchHistoryLoadDataResult != null) {
+        return finalStoreKeywordForSearchHistoryLoadDataResult!;
       }
     }
     SearchParameter searchParameter = SearchParameter(
