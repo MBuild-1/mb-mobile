@@ -168,6 +168,7 @@ class DefaultOrderDataSource implements OrderDataSource {
           .map<AddWarehouseInOrderResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToAddWarehouseInOrderResponse());
       } else if (modifyWarehouseInOrderParameter is ChangeWarehouseInOrderParameter) {
         OptionalFieldsWarehouseInOrderItem optionalFieldsWarehouseInOrderItem = modifyWarehouseInOrderParameter.optionalFieldsWarehouseInOrderItem;
+        data["_method"] = "post";
         data["other_order_product_list"] = [
           {
             "type": "sendToWH",
