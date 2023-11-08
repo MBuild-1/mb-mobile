@@ -168,18 +168,15 @@ class DefaultOrderDataSource implements OrderDataSource {
           .map<AddWarehouseInOrderResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToAddWarehouseInOrderResponse());
       } else if (modifyWarehouseInOrderParameter is ChangeWarehouseInOrderParameter) {
         OptionalFieldsWarehouseInOrderItem optionalFieldsWarehouseInOrderItem = modifyWarehouseInOrderParameter.optionalFieldsWarehouseInOrderItem;
-        data["_method"] = "post";
-        data["other_order_product_list"] = [
-          {
-            "type": "sendToWH",
-            if (optionalFieldsWarehouseInOrderItem.name.isNotEmptyString) "name" : optionalFieldsWarehouseInOrderItem.name,
-            if (optionalFieldsWarehouseInOrderItem.price != null) "price": optionalFieldsWarehouseInOrderItem.price,
-            if (optionalFieldsWarehouseInOrderItem.weight != null) "weight": optionalFieldsWarehouseInOrderItem.weight,
-            if (optionalFieldsWarehouseInOrderItem.quantity != null) "quantity": optionalFieldsWarehouseInOrderItem.quantity,
-            if (optionalFieldsWarehouseInOrderItem.notes.isNotEmptyString) "notes": optionalFieldsWarehouseInOrderItem.notes
-          }
-        ];
-        onModifyWarehouseInOrder = dio.put("/user/order/sendtowh/${modifyWarehouseInOrderParameter.id}", data: data, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+        data["_method"] = "PUT";
+        data.addAll({
+          if (optionalFieldsWarehouseInOrderItem.name.isNotEmptyString) "name" : optionalFieldsWarehouseInOrderItem.name,
+          if (optionalFieldsWarehouseInOrderItem.price != null) "price": optionalFieldsWarehouseInOrderItem.price,
+          if (optionalFieldsWarehouseInOrderItem.weight != null) "weight": optionalFieldsWarehouseInOrderItem.weight,
+          if (optionalFieldsWarehouseInOrderItem.quantity != null) "quantity": optionalFieldsWarehouseInOrderItem.quantity,
+          if (optionalFieldsWarehouseInOrderItem.notes.isNotEmptyString) "notes": optionalFieldsWarehouseInOrderItem.notes
+        });
+        onModifyWarehouseInOrder = dio.post("/user/order/sendtowh/${modifyWarehouseInOrderParameter.id}", data: data, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
           .map<ChangeWarehouseInOrderResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToChangeWarehouseInOrderResponse());
       } else if (modifyWarehouseInOrderParameter is RemoveWarehouseInOrderParameter) {
         onModifyWarehouseInOrder = dio.delete("/user/order/sendtowh/${modifyWarehouseInOrderParameter.warehouseInOrderItemId}", data: data, cancelToken: cancelToken)
