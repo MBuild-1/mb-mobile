@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
+import 'package:provider/provider.dart';
 
 import '../../controller/inbox_controller.dart';
 import '../../domain/entity/faq/faq.dart';
@@ -27,14 +29,17 @@ import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_it
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
 import '../../misc/string_util.dart';
+import '../notifier/notification_notifier.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modified_svg_picture.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
+import '../widget/notification_icon_indicator.dart';
 import 'chathistory/chat_history_page.dart';
 import 'deliveryreview/delivery_review_page.dart';
 import 'getx_page.dart';
 import 'help_chat_page.dart';
 import 'help_page.dart';
+import 'notification_page.dart';
 import 'product_discussion_page.dart';
 import 'web_viewer_page.dart';
 
@@ -76,7 +81,7 @@ class InboxPage extends RestorableGetxPage<_InboxPageRestoration> {
   }
 }
 
-class _InboxPageRestoration extends MixableGetxPageRestoration with InboxPageRestorationMixin, ProductDiscussionPageRestorationMixin, DeliveryReviewPageRestorationMixin, HelpPageRestorationMixin, HelpChatPageRestorationMixin, ChatHistoryPageRestorationMixin, WebViewerPageRestorationMixin {
+class _InboxPageRestoration extends MixableGetxPageRestoration with InboxPageRestorationMixin, ProductDiscussionPageRestorationMixin, DeliveryReviewPageRestorationMixin, HelpPageRestorationMixin, HelpChatPageRestorationMixin, ChatHistoryPageRestorationMixin, WebViewerPageRestorationMixin, NotificationPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
@@ -202,10 +207,12 @@ class _StatefulInboxControllerMediatorWidgetState extends State<_StatefulInboxCo
   late final ScrollController _inboxScrollController;
   late final ModifiedPagingController<int, ListItemControllerState> _inboxListItemPagingController;
   late final PagingControllerState<int, ListItemControllerState> _inboxListItemPagingControllerState;
+  late NotificationNotifier _notificationNotifier;
 
   @override
   void initState() {
     super.initState();
+    _notificationNotifier = Provider.of<NotificationNotifier>(context, listen: false);
     _inboxScrollController = ScrollController();
     _inboxListItemPagingController = ModifiedPagingController<int, ListItemControllerState>(
       firstPageKey: 1,
@@ -234,7 +241,10 @@ class _StatefulInboxControllerMediatorWidgetState extends State<_StatefulInboxCo
           if (widget.inboxPageParameter.showInboxMenu) ...[
             ProfileMenuListItemControllerState(
               onTap: (context) => PageRestorationHelper.toChatHistoryPage(context),
-              icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorChat, color: iconColor, width: 20.0),
+              icon: (BuildContext context) => NotificationIconIndicator(
+                notificationNumber: _notificationNotifier.inboxLoadDataResult.resultIfSuccess ?? 0,
+                icon: ModifiedSvgPicture.asset(Constant.vectorChat, color: iconColor, width: 20.0),
+              ),
               title: 'Chat'.tr,
               description: "Your private conversations".tr,
               descriptionInterceptor: descriptionInterceptor
@@ -250,17 +260,23 @@ class _StatefulInboxControllerMediatorWidgetState extends State<_StatefulInboxCo
             // DividerListItemControllerState(),
             ProfileMenuListItemControllerState(
               onTap: (context) => PageRestorationHelper.toDeliveryReviewPage(context),
-              icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorDeliveryReview2, color: iconColor, width: 20.0),
+              icon: (BuildContext context) => NotificationIconIndicator(
+                notificationNumber: 0,
+                icon: ModifiedSvgPicture.asset(Constant.vectorDeliveryReview2, color: iconColor, width: 20.0),
+              ),
               title: 'Delivery Review'.tr,
               description: "Please rate the shipping review".tr,
               descriptionInterceptor: descriptionInterceptor
             ),
             DividerListItemControllerState(),
             ProfileMenuListItemControllerState(
-              onTap: (context) => PageRestorationHelper.toHelpChatPage(context),
-              icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorSupportMessage, color: iconColor, width: 20.0),
-              title: 'Support Message'.tr,
-              description: "Monitor the status of assistance from Master Bagasi".tr,
+              onTap: (context) => PageRestorationHelper.toNotificationPage(context),
+              icon: (BuildContext context) => NotificationIconIndicator(
+                notificationNumber: 0,
+                icon: ModifiedSvgPicture.asset(Constant.vectorSupportMessage, color: iconColor, width: 20.0),
+              ),
+              title: 'Update'.tr,
+              description: "View notification updates".tr,
               descriptionInterceptor: descriptionInterceptor
             ),
           ],
@@ -294,19 +310,21 @@ class _StatefulInboxControllerMediatorWidgetState extends State<_StatefulInboxCo
           ],
         ),
       ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
-                pagingControllerState: _inboxListItemPagingControllerState,
-                onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
-                  pagingControllerState: pagingControllerState!
+      body: Consumer<NotificationNotifier>(
+        builder: (_, notificationNotifier, __) => SafeArea(
+          child: Column(
+            children: [
+              Expanded(
+                child: ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
+                  pagingControllerState: _inboxListItemPagingControllerState,
+                  onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
+                    pagingControllerState: pagingControllerState!
+                  ),
+                  pullToRefresh: true
                 ),
-                pullToRefresh: true
               ),
-            ),
-          ]
+            ]
+          )
         )
       ),
     );
