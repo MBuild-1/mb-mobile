@@ -344,6 +344,12 @@ class _StatefulAccountSecurityControllerMediatorWidgetState extends State<_State
                             Constant.textInIdLanguageKey: 'Ganti PIN Master Bagasi'.tr,
                             Constant.textEnUsLanguageKey: 'Change PIN Master Bagasi'.tr,
                           }).toString(),
+                          titleInterceptor: (text, textStyle) => Text(
+                            text,
+                            style: textStyle?.copyWith(
+                              backgroundColor: Colors.grey
+                            )
+                          ),
                           descriptionInterceptor: descriptionInterceptor,
                           icon: null
                         ),
