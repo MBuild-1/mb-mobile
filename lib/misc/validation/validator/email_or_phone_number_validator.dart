@@ -1,7 +1,9 @@
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
+import '../../constant.dart';
 import '../../error/validation_error.dart';
+import '../../multi_language_string.dart';
 import '../validation_result.dart';
 import '../validationresult/is_email_success_validation_result.dart';
 import '../validationresult/is_phone_number_success_validation_result.dart';
@@ -28,7 +30,19 @@ class EmailOrPhoneNumberValidator extends Validator {
     if (emailOrPhoneNumberValue.isEmptyString) {
       return FailedValidationResult(e: ValidationError(message: "${"Email or phone number is required".tr}."));
     } else if (!(emailOrPhoneNumberValue.isEmail || emailOrPhoneNumberValue.isPhoneNumber)) {
-      return FailedValidationResult(e: ValidationError(message: "${"This input must be an email or phone number".tr}."));
+      late String suggestion;
+      if (emailOrPhoneNumberValue.contains('@') || emailOrPhoneNumberValue.contains('.') || !GetUtils.isNumericOnly(emailOrPhoneNumberValue)) {
+        suggestion = MultiLanguageString({
+          Constant.textInIdLanguageKey: "Anda mungkin sedang mengetikan email.\r\nContoh: example@gmail.com.",
+          Constant.textEnUsLanguageKey: "You might be typing an email.\r\nExample: example@gmail.com."
+        }).toStringNonNull;
+      } else {
+        suggestion = MultiLanguageString({
+          Constant.textInIdLanguageKey: "Anda mungkin sedang mengetikan nomor telepon.\r\nContoh: 628888888888.",
+          Constant.textEnUsLanguageKey: "You might be typing a phone number.\r\nExample: 628888888888."
+        }).toStringNonNull;
+      }
+      return FailedValidationResult(e: ValidationError(message: "${"This input must be an email or phone number".tr}.\r\n$suggestion"));
     } else {
       if (_onValidateAfterValidateEmailOrPhoneNumberFormat != null) {
         _onValidateAfterValidateEmailOrPhoneNumberFormat!();
