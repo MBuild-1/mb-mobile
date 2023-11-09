@@ -7,6 +7,7 @@ class ProductBrandDummy {
     return ProductBrand(
       id: "",
       name: "",
+      description: null,
       slug: "",
       icon: "",
       bannerDesktop: "",
@@ -18,6 +19,7 @@ class ProductBrandDummy {
     return ProductBrand(
       id: "1",
       name: "Product Brand Sample",
+      description: "Product brand description.",
       slug: "product-brand-slug",
       icon: null,
       bannerDesktop: null,

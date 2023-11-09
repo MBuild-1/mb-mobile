@@ -8,6 +8,7 @@ class SelectedProductBrand extends ProductBrand {
     required super.id,
     required super.name,
     required super.slug,
+    required super.description,
     required super.icon,
     required super.bannerDesktop,
     required super.bannerMobile,

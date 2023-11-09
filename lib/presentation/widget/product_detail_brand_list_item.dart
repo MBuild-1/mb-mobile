@@ -6,6 +6,7 @@ import 'package:sizer/sizer.dart';
 import '../../domain/entity/product/productbrand/product_brand.dart';
 import '../../misc/aspect_ratio_value.dart';
 import '../../misc/constant.dart';
+import '../../misc/dialog_helper.dart';
 import 'button/custombutton/sized_outline_gradient_button.dart';
 import 'modifiedcachednetworkimage/brand_modified_cached_network_image.dart';
 import 'modifiedcachednetworkimage/modified_cached_network_image.dart';
@@ -61,38 +62,72 @@ class ProductDetailBrandListItem extends StatelessWidget {
                     ),
                     const SizedBox(width: 10),
                     Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: Text(
-                          productBrand.name,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold
-                          )
+                      child: SizedBox(
+                        height: 36,
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            productBrand.name,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ),
                     ),
                     const SizedBox(width: 10),
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        SizedOutlineGradientButton(
-                          onPressed: () {
-                            if (!productBrand.isAddedToFavorite) {
-                              if (onAddToFavoriteProductBrand != null) {
-                                onAddToFavoriteProductBrand!(productBrand);
-                              }
-                            } else {
-                              if (onRemoveFromFavoriteProductBrand != null) {
-                                onRemoveFromFavoriteProductBrand!(productBrand);
-                              }
-                            }
-                          },
-                          text: !productBrand.isAddedToFavorite ? "Favoritkan" : "Hapus Dari Favorit",
-                          outlineGradientButtonType: OutlineGradientButtonType.solid,
-                          outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
-                        ),
-                      ]
+                    Builder(
+                      builder: (context) {
+                        String text = !productBrand.isAddedToFavorite ? "Favoritkan" : "Hapus Dari Favorit";
+                        return Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            SizedOutlineGradientButton(
+                              height: 36,
+                              onPressed: () {
+                                if (!productBrand.isAddedToFavorite) {
+                                  if (onAddToFavoriteProductBrand != null) {
+                                    onAddToFavoriteProductBrand!(productBrand);
+                                  }
+                                } else {
+                                  if (onRemoveFromFavoriteProductBrand != null) {
+                                    onRemoveFromFavoriteProductBrand!(productBrand);
+                                  }
+                                }
+                              },
+                              text: !productBrand.isAddedToFavorite ? "Favoritkan" : "Hapus Dari Favorit",
+                              childInterceptor: (textStyle) => Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                                  child: Text(
+                                    text,
+                                    style: textStyle?.copyWith(fontSize: 12.0)
+                                  ),
+                                ),
+                              ),
+                              outlineGradientButtonType: OutlineGradientButtonType.solid,
+                              outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
+                            ),
+                            const SizedBox(width: 6),
+                            SizedOutlineGradientButton(
+                              height: 36,
+                              onPressed: productBrand.description.isNotEmptyString ? () => DialogHelper.showProductBrandDescription(
+                                context: context,
+                                productBrand: productBrand
+                              ) : null,
+                              text: "",
+                              childInterceptor: (textStyle) => const Center(
+                                child: Icon(Icons.info_outline, color: Colors.white, size: 18.0)
+                              ),
+                              outlineGradientButtonType: OutlineGradientButtonType.solid,
+                              outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
+                            ),
+                          ]
+                        );
+                      }
                     )
                   ]
                 )

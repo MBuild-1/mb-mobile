@@ -320,6 +320,7 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "No Email": "Tidak Ada Email",
       "Cancel Register": "Batalkan Pendaftaran",
       "Product Category": "Kategori Produk",
+      "Description": "Deskripsi"
     }
   };
 

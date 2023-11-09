@@ -8,6 +8,7 @@ import 'package:sizer/sizer.dart';
 
 import '../controller/crop_picture_controller.dart';
 import '../domain/entity/address/address.dart';
+import '../domain/entity/product/productbrand/product_brand.dart';
 import '../presentation/page/getx_page.dart';
 import '../presentation/page/modaldialogpage/add_host_cart_modal_dialog_page.dart';
 import '../presentation/page/modaldialogpage/modal_dialog_page.dart';
@@ -17,6 +18,7 @@ import '../presentation/widget/modified_divider.dart';
 import '../presentation/widget/modified_loading_indicator.dart';
 import '../presentation/widget/modified_svg_picture.dart';
 import '../presentation/widget/modifiedappbar/modified_app_bar.dart';
+import '../presentation/widget/modifiedcachednetworkimage/modified_cached_network_image.dart';
 import '../presentation/widget/profile_menu_item.dart';
 import 'constant.dart';
 import 'errorprovider/error_provider.dart';
@@ -477,6 +479,50 @@ class _DialogHelperImpl {
       onOkPromptButtonTap: (_) async {
         Get.back();
       },
+    );
+  }
+
+  void showProductBrandDescription({
+    required BuildContext context,
+    required ProductBrand productBrand
+  }) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          insetPadding: const EdgeInsets.all(16.0),
+          child: SizedBox(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AspectRatio(
+                    aspectRatio: Constant.aspectRatioValueBrandImage.toDouble(),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: ModifiedCachedNetworkImage(
+                        imageUrl: productBrand.bannerMobile.isNotEmptyString ? productBrand.bannerMobile! : productBrand.bannerDesktop.toEmptyStringNonNull,
+                      )
+                    )
+                  ),
+                  const SizedBox(height: 14),
+                  Text(
+                    "${"Description".tr}:",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold
+                    )
+                  ),
+                  const SizedBox(height: 10),
+                  Text(productBrand.description.toStringNonNull),
+                ],
+              ),
+            ),
+          ),
+        );
+      }
     );
   }
 
