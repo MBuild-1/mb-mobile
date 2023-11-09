@@ -25,6 +25,38 @@ class _PusherHelperImpl {
     }
   }
 
+  String _getChatCountChannelName() {
+    return "chat-count";
+  }
+
+  Future<PusherChannelsFlutter> subscribeChatCountPusherChannel({
+    required PusherChannelsFlutter pusherChannelsFlutter,
+    required dynamic Function(dynamic) onEvent
+  }) async {
+    try {
+      await pusherChannelsFlutter.subscribe(
+        channelName: _getChatCountChannelName(),
+        onEvent: onEvent
+      );
+    } catch (e) {
+      print("ERROR: $e");
+    }
+    return pusherChannelsFlutter;
+  }
+
+  Future<PusherChannelsFlutter> unsubscribeChatCountPusherChannel({
+    required PusherChannelsFlutter pusherChannelsFlutter
+  }) async {
+    try {
+      await pusherChannelsFlutter.unsubscribe(
+        channelName: _getChatCountChannelName()
+      );
+    } catch (e) {
+      print("ERROR: $e");
+    }
+    return pusherChannelsFlutter;
+  }
+
   Future<PusherChannelsFlutter> subscribeChatPusherChannel({
     required PusherChannelsFlutter pusherChannelsFlutter,
     required dynamic Function(dynamic) onEvent,

@@ -352,7 +352,6 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
   Timer? _timer;
   bool _canBack = false;
   late NotificationNotifier _notificationNotifier;
-  LoadDataResult<GetHelpMessageByUserResponse>? _getHelpMessageByUserResponse;
 
   final PusherChannelsFlutter _pusher = PusherChannelsFlutter.getInstance();
 
@@ -365,18 +364,7 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
     );
     _initMainMenuPage();
     MainRouteObserver.onResetInitMainMenu = () {
-      try {
-        if (_getHelpMessageByUserResponse != null) {
-          PusherHelper.unsubscribeChatPusherChannel(
-            pusherChannelsFlutter: _pusher,
-            chatPusherChannelType: ChatPusherChannelType.help,
-            conversationId: _getHelpMessageByUserResponse!.resultIfSuccess!.id
-          );
-          _getHelpMessageByUserResponse = null;
-        }
-      } catch (e) {
-        // Nothing
-      }
+      _unsubscribeChatCount();
       _initMainMenuPage();
       for (int i = 0; i < widget.mainMenuSubControllerList.length; i++) {
         widget.mainMenuSubControllerList[i][2]();
@@ -384,27 +372,27 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
       setState(() {});
     };
     _notificationNotifier = Provider.of<NotificationNotifier>(context, listen: false);
-    _subscribeHelpChat();
+    _subscribeChatCount();
   }
 
-  void _subscribeHelpChat() async {
-    _getHelpMessageByUserResponse = await widget.mainMenuController.getHelpMessageByUser(
-      GetHelpMessageByUserParameter()
+  void _subscribeChatCount() async {
+    PusherHelper.subscribeChatCountPusherChannel(
+      pusherChannelsFlutter: _pusher,
+      onEvent: _onChatCountEvent
     );
-    if (_getHelpMessageByUserResponse!.isSuccess) {
-      PusherHelper.subscribeChatPusherChannel(
-        pusherChannelsFlutter: _pusher,
-        onEvent: _onHelpChatEvent,
-        chatPusherChannelType: ChatPusherChannelType.help,
-        conversationId: _getHelpMessageByUserResponse!.resultIfSuccess!.id,
+  }
+
+  void _unsubscribeChatCount() {
+    try {
+      PusherHelper.unsubscribeChatCountPusherChannel(
+        pusherChannelsFlutter: _pusher
       );
+    } catch (e) {
+      // Nothing
     }
   }
 
-  dynamic _onHelpChatEvent(dynamic event) {
-    if (MainRouteObserver.onRefreshChat != null) {
-      MainRouteObserver.onRefreshChat!();
-    }
+  dynamic _onChatCountEvent(dynamic event) {
     _notificationNotifier.loadInboxLoadDataResult();
   }
 
@@ -592,10 +580,9 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
 
   @override
   void dispose() {
-    print("Dispose hmmmmm");
+    _unsubscribeChatCount();
     MainRouteObserver.onRefreshAddress = null;
     MainRouteObserver.onRefreshProfile = null;
-    MainRouteObserver.onRefreshChat = null;
     MainRouteObserver.onRefreshCartInMainMenu = null;
     MainRouteObserver.onRefreshWishlistInMainMenu = null;
     MainRouteObserver.onChangeSelectedProvince = null;

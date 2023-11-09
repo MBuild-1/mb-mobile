@@ -24,7 +24,6 @@ class _MainRouteObserver extends RouteObserver {
   void Function()? onRefreshAddress;
   void Function()? onRefreshProfile;
   void Function()? onRefreshCartInMainMenu;
-  void Function()? onRefreshChat;
   void Function(ProvinceMap)? onChangeSelectedProvince;
   void Function()? onResetInitMainMenu;
   RefreshDeliveryReview? onRefreshDeliveryReview;

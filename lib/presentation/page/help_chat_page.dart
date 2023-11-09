@@ -39,7 +39,6 @@ import '../../misc/error/empty_chat_error.dart';
 import '../../misc/injector.dart';
 import '../../misc/itemtypelistsubinterceptor/chat_item_type_list_sub_interceptor.dart';
 import '../../misc/load_data_result.dart';
-import '../../misc/main_route_observer.dart';
 import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
@@ -231,7 +230,6 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<StatefulHelpC
     if (widget.onGetTextFocusNode != null) {
       widget.onGetTextFocusNode!(_helpTextFocusNode);
     }
-    MainRouteObserver.onRefreshChat = () => _refreshChat();
   }
 
   Future<UserMessageResponseWrapper<GetHelpMessageByUserResponse>> getHelpMessageByUser() async {
@@ -288,6 +286,14 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<StatefulHelpC
           )
         );
       }
+    }
+    if (getHelpMessageByUserResponseLoadDataResult.valueLoadDataResult.isSuccess) {
+      await PusherHelper.subscribeChatPusherChannel(
+        pusherChannelsFlutter: _pusher,
+        onEvent: _onEvent,
+        chatPusherChannelType: ChatPusherChannelType.help,
+        conversationId: getHelpMessageByUserResponseLoadDataResult.valueLoadDataResult.resultIfSuccess!.id,
+      );
     }
     return getHelpMessageByUserResponseLoadDataResult.valueLoadDataResult.map<PagingResult<ListItemControllerState>>((getHelpMessageByUserResponse) {
       _helpConversationId = getHelpMessageByUserResponse.id;
@@ -443,6 +449,11 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<StatefulHelpC
   void dispose() {
     _helpTextFocusNode.dispose();
     _helpTextEditingController.dispose();
+    PusherHelper.unsubscribeChatPusherChannel(
+      pusherChannelsFlutter: _pusher,
+      chatPusherChannelType: ChatPusherChannelType.help,
+      conversationId: _helpConversationId
+    );
     super.dispose();
   }
 }
