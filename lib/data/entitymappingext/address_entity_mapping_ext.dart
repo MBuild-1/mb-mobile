@@ -26,6 +26,7 @@
 }*/
 
 import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../../domain/entity/address/add_address_response.dart';
 import '../../domain/entity/address/address.dart';
@@ -79,7 +80,7 @@ extension AddressDetailEntityMappingExt on ResponseWrapper {
     }
     return Address(
       id: response["id"],
-      email: response["email"],
+      email: (response["email"] as String?).toEmptyStringNonNull,
       name: response["name"],
       userId: response["user_id"],
       label: response["label"],
@@ -101,7 +102,7 @@ extension AddressDetailEntityMappingExt on ResponseWrapper {
       id: response["id"],
       name: response["name"],
       role: response["role"],
-      email: response["email"],
+      email: (response["email"] as String?).toEmptyStringNonNull
     );
   }
 

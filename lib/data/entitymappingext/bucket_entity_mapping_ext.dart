@@ -1,6 +1,7 @@
 import 'package:masterbagasi/data/entitymappingext/cart_entity_mapping_ext.dart';
 import 'package:masterbagasi/data/entitymappingext/order_entity_mapping_ext.dart';
 import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../../domain/entity/bucket/approveorrejectrequestbucket/approve_or_reject_request_bucket_response.dart';
 import '../../domain/entity/bucket/bucket.dart';
@@ -79,7 +80,7 @@ extension BucketDetailEntityMappingExt on ResponseWrapper {
       id: response["id"],
       name: response["name"],
       role: ResponseWrapper(response["role"]).mapFromResponseToInt()!,
-      email: response["email"]
+      email: (response["email"] as String?).toEmptyStringNonNull
     );
   }
 

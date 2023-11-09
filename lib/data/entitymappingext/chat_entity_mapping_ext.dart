@@ -1,6 +1,7 @@
 import 'package:masterbagasi/data/entitymappingext/user_entity_mapping_ext.dart';
 import 'package:masterbagasi/domain/entity/chat/help/get_help_message_by_user_response.dart';
 import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../../domain/entity/chat/help/answer_help_conversation_response.dart';
 import '../../domain/entity/chat/help/create_help_conversation_response.dart';
@@ -89,7 +90,7 @@ extension HelpChatDetailEntityMappingExt on ResponseWrapper {
     return UserChat(
       id: response["id"],
       name: response["name"],
-      email: response["email"],
+      email: (response["email"] as String?).toEmptyStringNonNull,
       role: response["role"],
       createdAt: ResponseWrapper(response["created_at"]).mapFromResponseToDateTime()!
     );

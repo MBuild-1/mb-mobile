@@ -1,6 +1,7 @@
 import 'package:masterbagasi/data/entitymappingext/product_entity_mapping_ext.dart';
 import 'package:masterbagasi/data/entitymappingext/province_entity_mapping_ext.dart';
 import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../../domain/entity/cart/cart.dart';
 import '../../domain/entity/product/product.dart';
@@ -521,7 +522,7 @@ extension ProductDiscussionDetailEntityMappingExt on ResponseWrapper {
       id: response["id"],
       name: response["name"],
       role: response["role"],
-      email: response["email"],
+      email: (response["email"] as String?).toEmptyStringNonNull,
       avatar: response["user_profile"]["avatar"],
     );
   }

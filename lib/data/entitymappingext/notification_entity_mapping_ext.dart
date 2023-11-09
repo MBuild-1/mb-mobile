@@ -1,5 +1,6 @@
 import 'package:masterbagasi/data/entitymappingext/order_entity_mapping_ext.dart';
 import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../../domain/entity/notification/notification.dart';
 import '../../domain/entity/notification/notification_order_status_response.dart';
@@ -64,7 +65,7 @@ extension NotificationDetailEntityMappingExt on ResponseWrapper {
       id: response["id"],
       name: response["name"],
       role: response["role"],
-      email: response["email"],
+      email: (response["email"] as String?).toEmptyStringNonNull,
       createdAt: response["created_at"] != null ? ResponseWrapper(response["created_at"]).mapFromResponseToDateTime() : null
     );
   }
