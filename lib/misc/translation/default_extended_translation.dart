@@ -318,7 +318,8 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Mark All": "Tandai Semua",
       "Transaction Number": "Nomor Transaksi",
       "No Email": "Tidak Ada Email",
-      "Cancel Register": "Batalkan Pendaftaran"
+      "Cancel Register": "Batalkan Pendaftaran",
+      "Product Category": "Kategori Produk",
     }
   };
 

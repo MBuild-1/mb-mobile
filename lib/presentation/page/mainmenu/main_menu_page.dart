@@ -64,6 +64,7 @@ import '../product_brand_page.dart';
 import '../product_bundle_detail_page.dart';
 import '../product_bundle_page.dart';
 import '../product_category_detail_page.dart';
+import '../product_category_page.dart';
 import '../product_discussion_page.dart';
 import '../product_entry_page.dart';
 import '../search_page.dart';
@@ -199,7 +200,7 @@ class MainMenuPage extends RestorableGetxPage<_MainMenuPageRestoration> {
   }
 }
 
-class _MainMenuPageRestoration extends MixableGetxPageRestoration with MainMenuPageRestorationMixin, LoginPageRestorationMixin, ProductEntryPageRestorationMixin, ProductDetailPageRestorationMixin, ProductCategoryDetailPageRestorationMixin, ProductBundlePageRestorationMixin, ProductBundleDetailPageRestorationMixin, CartPageRestorationMixin, ProductBrandPageRestorationMixin, WebViewerPageRestorationMixin, OrderPageRestorationMixin, DeliveryReviewPageRestorationMixin, FavoriteProductBrandPageRestorationMixin, ProductDiscussionPageRestorationMixin, MainMenuPageRestorationMixin, AddressPageRestorationMixin, InboxPageRestorationMixin, AffiliatePageRestorationMixin, MsmePartnerPageRestorationMixin, CountryDeliveryReviewPageRestorationMixin, HelpPageRestorationMixin, HelpChatPageRestorationMixin, SearchPageRestorationMixin, NotificationPageRestorationMixin, VideoPageRestorationMixin, NewsPageRestorationMixin, NewsDetailPageRestorationMixin, AccountSecurityPageRestorationMixin, SharedCartPageRestorationMixin, EditProfilePageRestorationMixin {
+class _MainMenuPageRestoration extends MixableGetxPageRestoration with MainMenuPageRestorationMixin, LoginPageRestorationMixin, ProductEntryPageRestorationMixin, ProductDetailPageRestorationMixin, ProductCategoryDetailPageRestorationMixin, ProductBundlePageRestorationMixin, ProductBundleDetailPageRestorationMixin, CartPageRestorationMixin, ProductBrandPageRestorationMixin, WebViewerPageRestorationMixin, OrderPageRestorationMixin, DeliveryReviewPageRestorationMixin, FavoriteProductBrandPageRestorationMixin, ProductDiscussionPageRestorationMixin, MainMenuPageRestorationMixin, AddressPageRestorationMixin, InboxPageRestorationMixin, AffiliatePageRestorationMixin, MsmePartnerPageRestorationMixin, CountryDeliveryReviewPageRestorationMixin, HelpPageRestorationMixin, HelpChatPageRestorationMixin, SearchPageRestorationMixin, NotificationPageRestorationMixin, VideoPageRestorationMixin, NewsPageRestorationMixin, NewsDetailPageRestorationMixin, AccountSecurityPageRestorationMixin, SharedCartPageRestorationMixin, EditProfilePageRestorationMixin, ProductCategoryPageRestorationMixin {
   final RouteCompletionCallback<bool?>? _onCompleteAddressPage;
   final RouteCompletionCallback<bool?>? _onCompleteEditProfilePage;
 

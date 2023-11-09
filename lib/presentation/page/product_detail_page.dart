@@ -115,7 +115,6 @@ class ProductDetailPage extends RestorableGetxPage<_ProductDetailPageRestoration
       ProductDetailController(
         controllerManager,
         Injector.locator<GetProductDetailUseCase>(),
-        Injector.locator<GetProductCategoryListUseCase>(),
         Injector.locator<GetProductDetailOtherChosenForYouProductEntryListUseCase>(),
         Injector.locator<GetProductDetailOtherFromThisBrandProductEntryListUseCase>(),
         Injector.locator<GetProductDetailOtherInThisCategoryProductEntryListUseCase>(),

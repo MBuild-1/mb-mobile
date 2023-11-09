@@ -41,6 +41,7 @@ import '../presentation/page/product_brand_page.dart';
 import '../presentation/page/product_bundle_detail_page.dart';
 import '../presentation/page/product_bundle_page.dart';
 import '../presentation/page/product_category_detail_page.dart';
+import '../presentation/page/product_category_page.dart';
 import '../presentation/page/product_chat_page.dart';
 import '../presentation/page/product_detail_page.dart';
 import '../presentation/page/product_discussion_page.dart';
@@ -170,6 +171,15 @@ class _PageRestorationHelperImpl {
     PageRestorationHelper.findPageRestorationMixin<ProductBrandPageRestorationMixin>(
       onGetxPageRestorationFound: (restoration) {
         restoration.productBrandPageRestorableRouteFuture.present(productBrandPageParameter.toEncodeBase64String());
+      },
+      context: context
+    );
+  }
+
+  void toProductCategoryPage(BuildContext context) {
+    PageRestorationHelper.findPageRestorationMixin<ProductCategoryPageRestorationMixin>(
+      onGetxPageRestorationFound: (restoration) {
+        restoration.productCategoryPageRestorableRouteFuture.present();
       },
       context: context
     );

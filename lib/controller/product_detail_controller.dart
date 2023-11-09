@@ -61,7 +61,6 @@ typedef _OnShowBuyDirectlyRequestProcessFailedCallback = Future<void> Function(d
 
 class ProductDetailController extends BaseGetxController {
   final GetProductDetailUseCase getProductDetailUseCase;
-  final GetProductCategoryListUseCase getProductCategoryListUseCase;
   final GetProductDetailOtherChosenForYouProductEntryListUseCase getProductDetailOtherChosenForYouProductEntryListUseCase;
   final GetProductDetailOtherFromThisBrandProductEntryListUseCase getProductDetailOtherFromThisBrandProductEntryListUseCase;
   final GetProductDetailOtherInThisCategoryProductEntryListUseCase getProductDetailOtherInThisCategoryProductEntryListUseCase;
@@ -78,7 +77,6 @@ class ProductDetailController extends BaseGetxController {
   ProductDetailController(
     super.controllerManager,
     this.getProductDetailUseCase,
-    this.getProductCategoryListUseCase,
     this.getProductDetailOtherChosenForYouProductEntryListUseCase,
     this.getProductDetailOtherFromThisBrandProductEntryListUseCase,
     this.getProductDetailOtherInThisCategoryProductEntryListUseCase,
