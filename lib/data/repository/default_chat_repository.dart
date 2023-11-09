@@ -6,6 +6,8 @@ import '../../domain/entity/chat/help/get_help_message_by_conversation_parameter
 import '../../domain/entity/chat/help/get_help_message_by_conversation_response.dart';
 import '../../domain/entity/chat/help/get_help_message_by_user_parameter.dart';
 import '../../domain/entity/chat/help/get_help_message_by_user_response.dart';
+import '../../domain/entity/chat/help/get_help_message_notification_count_parameter.dart';
+import '../../domain/entity/chat/help/get_help_message_notification_count_response.dart';
 import '../../domain/entity/chat/help/update_read_status_help_conversation_parameter.dart';
 import '../../domain/entity/chat/help/update_read_status_help_conversation_response.dart';
 import '../../domain/entity/chat/order/answer_order_conversation_parameter.dart';
@@ -50,6 +52,11 @@ class DefaultChatRepository implements ChatRepository {
   }
 
   @override
+  FutureProcessing<LoadDataResult<AnswerHelpConversationResponse>> answerHelpConversationVersion1Point1(AnswerHelpConversationParameter answerHelpConversationParameter) {
+    return chatDataSource.answerHelpConversationVersion1Point1(answerHelpConversationParameter).mapToLoadDataResult<AnswerHelpConversationResponse>();
+  }
+
+  @override
   FutureProcessing<LoadDataResult<CreateHelpConversationResponse>> createHelpConversation(CreateHelpConversationParameter createHelpConversationParameter) {
     return chatDataSource.createHelpConversation(createHelpConversationParameter).mapToLoadDataResult<CreateHelpConversationResponse>();
   }
@@ -67,6 +74,11 @@ class DefaultChatRepository implements ChatRepository {
   @override
   FutureProcessing<LoadDataResult<GetHelpMessageByUserResponse>> getHelpMessageByUser(GetHelpMessageByUserParameter getHelpMessageByUserParameter) {
     return chatDataSource.getHelpMessageByUserResponse(getHelpMessageByUserParameter).mapToLoadDataResult<GetHelpMessageByUserResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<GetHelpMessageNotificationCountResponse>> getHelpMessageNotificationCount(GetHelpMessageNotificationCountParameter getHelpMessageNotificationCountParameter) {
+    return chatDataSource.getHelpMessageNotificationCount(getHelpMessageNotificationCountParameter).mapToLoadDataResult<GetHelpMessageNotificationCountResponse>();
   }
 
   @override

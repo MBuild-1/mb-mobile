@@ -6,6 +6,7 @@ import 'package:sizer/sizer.dart';
 import '../../../../controller/chathistorycontroller/chathistorysubpagecontroller/help_chat_history_sub_controller.dart';
 import '../../../../controller/help_chat_controller.dart';
 import '../../../../domain/usecase/answer_help_conversation_use_case.dart';
+import '../../../../domain/usecase/answer_help_conversation_version_1_point_1_use_case.dart';
 import '../../../../domain/usecase/create_help_conversation_use_case.dart';
 import '../../../../domain/usecase/get_help_message_by_user_use_case.dart';
 import '../../../../domain/usecase/get_user_use_case.dart';
@@ -42,6 +43,7 @@ class HelpChatHistorySubPage extends DefaultGetxPage {
         Injector.locator<GetHelpMessageByUserUseCase>(),
         Injector.locator<CreateHelpConversationUseCase>(),
         Injector.locator<AnswerHelpConversationUseCase>(),
+        Injector.locator<AnswerHelpConversationVersion1Point1UseCase>(),
         Injector.locator<GetUserUseCase>()
       ),
       tag: ancestorPageName

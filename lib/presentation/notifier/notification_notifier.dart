@@ -3,10 +3,11 @@ import 'package:masterbagasi/misc/ext/future_ext.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 
 import '../../domain/entity/cart/cart_list_parameter.dart';
+import '../../domain/entity/chat/help/get_help_message_notification_count_parameter.dart';
 import '../../domain/entity/notification/notification_by_user_list_parameter.dart';
-import '../../domain/entity/notification/notification_by_user_paging_parameter.dart';
 import '../../domain/entity/notification/short_notification.dart';
 import '../../domain/usecase/get_cart_list_use_case.dart';
+import '../../domain/usecase/get_help_message_notification_count_use_case.dart';
 import '../../domain/usecase/get_notification_by_user_list_use_case.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/api_request_manager.dart';
@@ -16,6 +17,7 @@ class NotificationNotifier extends ChangeNotifier {
 
   final GetNotificationByUserListUseCase getNotificationByUserListUseCase;
   final GetCartListUseCase getCartListUseCase;
+  final GetHelpMessageNotificationCountUseCase getHelpMessageNotificationCountUseCase;
 
   LoadDataResult<int> _notificationLoadDataResult = NoLoadDataResult<int>();
   LoadDataResult<int> get notificationLoadDataResult => _notificationLoadDataResult;
@@ -34,7 +36,8 @@ class NotificationNotifier extends ChangeNotifier {
 
   NotificationNotifier({
     required this.getNotificationByUserListUseCase,
-    required this.getCartListUseCase
+    required this.getCartListUseCase,
+    required this.getHelpMessageNotificationCountUseCase
   }) {
     apiRequestManager = ApiRequestManager();
     notifyListeners();
@@ -88,8 +91,14 @@ class NotificationNotifier extends ChangeNotifier {
   }
 
   void loadInboxLoadDataResult() async {
-    _inboxLoadDataResult = SuccessLoadDataResult<int>(
-      value: 0
+    _inboxLoadDataResult = IsLoadingLoadDataResult<int>();
+    notifyListeners();
+    _inboxLoadDataResult = await getHelpMessageNotificationCountUseCase.execute(
+      GetHelpMessageNotificationCountParameter()
+    ).future(
+      parameter: apiRequestManager.addRequestToCancellationPart("inbox").value
+    ).map<int>(
+      (value) => value.unreadMessagesUserTwo
     );
     notifyListeners();
   }

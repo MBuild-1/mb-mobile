@@ -5,6 +5,7 @@ import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 import '../../domain/entity/chat/help/answer_help_conversation_response.dart';
 import '../../domain/entity/chat/help/create_help_conversation_response.dart';
 import '../../domain/entity/chat/help/get_help_message_by_conversation_response.dart';
+import '../../domain/entity/chat/help/get_help_message_notification_count_response.dart';
 import '../../domain/entity/chat/help/help_message.dart';
 import '../../domain/entity/chat/help/update_read_status_help_conversation_response.dart';
 import '../../domain/entity/chat/order/answer_order_conversation_response.dart';
@@ -154,6 +155,12 @@ extension HelpChatDetailEntityMappingExt on ResponseWrapper {
       deletedAt: deletedAt != null ? ResponseWrapper(deletedAt).mapFromResponseToDateTime() : null,
       readStatus: response["read_status"],
       userChat: ResponseWrapper(response["user"]).mapFromResponseToUserChat()
+    );
+  }
+
+  GetHelpMessageNotificationCountResponse mapFromResponseToGetHelpMessageNotificationCountResponse() {
+    return GetHelpMessageNotificationCountResponse(
+      unreadMessagesUserTwo: response["unread_messages_user_two"]
     );
   }
 

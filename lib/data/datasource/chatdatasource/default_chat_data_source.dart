@@ -11,6 +11,8 @@ import '../../../domain/entity/chat/help/get_help_message_by_conversation_parame
 import '../../../domain/entity/chat/help/get_help_message_by_conversation_response.dart';
 import '../../../domain/entity/chat/help/get_help_message_by_user_parameter.dart';
 import '../../../domain/entity/chat/help/get_help_message_by_user_response.dart';
+import '../../../domain/entity/chat/help/get_help_message_notification_count_parameter.dart';
+import '../../../domain/entity/chat/help/get_help_message_notification_count_response.dart';
 import '../../../domain/entity/chat/help/update_read_status_help_conversation_parameter.dart';
 import '../../../domain/entity/chat/help/update_read_status_help_conversation_response.dart';
 import '../../../domain/entity/chat/order/answer_order_conversation_parameter.dart';
@@ -76,6 +78,25 @@ class DefaultChatDataSource implements ChatDataSource {
   }
 
   @override
+  FutureProcessing<AnswerHelpConversationResponse> answerHelpConversationVersion1Point1(AnswerHelpConversationParameter answerHelpConversationParameter) {
+    FormData formData = FormData.fromMap(
+      <String, dynamic> {
+        "message": answerHelpConversationParameter.message
+      }
+    );
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.post(
+        "/chat-help/${answerHelpConversationParameter.helpConversationId}/message",
+        data: formData,
+        cancelToken: cancelToken,
+        options: OptionsBuilder.multipartData().withBaseUrl(dio.options.baseUrl.replaceAll("v1", "v1.1")).buildExtended()
+      ).map<AnswerHelpConversationResponse>(
+        onMap: (value) => value.wrapResponse().mapFromResponseToAnswerHelpConversationResponse()
+      );
+    });
+  }
+
+  @override
   FutureProcessing<UpdateReadStatusHelpConversationResponse> updateReadStatusHelpConversation(UpdateReadStatusHelpConversationParameter updateReadStatusHelpConversationParameter) {
     return DioHttpClientProcessing((cancelToken) {
       return dio.post("/chat-help/update-status/${updateReadStatusHelpConversationParameter.helpConversationId}", cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
@@ -96,6 +117,19 @@ class DefaultChatDataSource implements ChatDataSource {
     return DioHttpClientProcessing((cancelToken) {
       return dio.get("/chat-help/user", cancelToken: cancelToken)
         .map<GetHelpMessageByUserResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToGetHelpMessageByUserResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<GetHelpMessageNotificationCountResponse> getHelpMessageNotificationCount(GetHelpMessageNotificationCountParameter getHelpMessageNotificationCountParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.get(
+        "/chat-help/user/show/message",
+        cancelToken: cancelToken,
+        options: OptionsBuilder.withBaseUrl(dio.options.baseUrl.replaceAll("v1", "v1.1")).buildExtended()
+      ).map<GetHelpMessageNotificationCountResponse>(
+        onMap: (value) => value.wrapResponse().mapFromResponseToGetHelpMessageNotificationCountResponse()
+      );
     });
   }
 

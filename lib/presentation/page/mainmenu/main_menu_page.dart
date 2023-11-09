@@ -4,9 +4,11 @@ import 'dart:convert';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/presentation/page/product_detail_page.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 
 import '../../../controller/base_getx_controller.dart';
@@ -16,11 +18,16 @@ import '../../../controller/mainmenucontroller/mainmenusubpagecontroller/feed_ma
 import '../../../controller/mainmenucontroller/mainmenusubpagecontroller/home_main_menu_sub_controller.dart';
 import '../../../controller/mainmenucontroller/mainmenusubpagecontroller/menu_main_menu_sub_controller.dart';
 import '../../../controller/mainmenucontroller/mainmenusubpagecontroller/wishlist_main_menu_sub_controller.dart';
+import '../../../domain/entity/chat/help/get_help_message_by_user_parameter.dart';
+import '../../../domain/entity/chat/help/get_help_message_by_user_response.dart';
+import '../../../domain/usecase/get_help_message_by_user_use_case.dart';
+import '../../../domain/usecase/get_help_message_notification_count_use_case.dart';
 import '../../../misc/constant.dart';
 import '../../../misc/dialog_helper.dart';
 import '../../../misc/getextended/get_extended.dart';
 import '../../../misc/getextended/get_restorable_route_future.dart';
 import '../../../misc/injector.dart';
+import '../../../misc/load_data_result.dart';
 import '../../../misc/login_helper.dart';
 import '../../../misc/main_route_observer.dart';
 import '../../../misc/manager/controller_manager.dart';
@@ -30,6 +37,7 @@ import '../../../misc/pusher_helper.dart';
 import '../../../misc/routeargument/main_menu_route_argument.dart';
 import '../../../misc/toast_helper.dart';
 import '../../../misc/typedef.dart';
+import '../../notifier/notification_notifier.dart';
 import '../../widget/custom_bottom_navigation_bar.dart';
 import '../../widget/modified_svg_picture.dart';
 import '../../widget/rx_consumer.dart';
@@ -139,7 +147,13 @@ class MainMenuPage extends RestorableGetxPage<_MainMenuPageRestoration> {
 
   @override
   void onSetController() {
-    _mainMenuController.controller = GetExtended.put<MainMenuController>(MainMenuController(controllerManager), tag: pageName);
+    _mainMenuController.controller = GetExtended.put<MainMenuController>(
+      MainMenuController(
+        controllerManager,
+        Injector.locator<GetHelpMessageByUserUseCase>()
+      ),
+      tag: pageName
+    );
     for (var mainMenuSubController in _mainMenuSubControllerList) {
       (mainMenuSubController[0] as ControllerMember).controller = (mainMenuSubController[1] as GetControllerFromGetPut)();
     }
@@ -337,6 +351,8 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
   final TapGestureRecognizer _signInTapGestureRecognizer = TapGestureRecognizer();
   Timer? _timer;
   bool _canBack = false;
+  late NotificationNotifier _notificationNotifier;
+  LoadDataResult<GetHelpMessageByUserResponse>? _getHelpMessageByUserResponse;
 
   final PusherChannelsFlutter _pusher = PusherChannelsFlutter.getInstance();
 
@@ -532,6 +548,7 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
   void dispose() {
     MainRouteObserver.onRefreshAddress = null;
     MainRouteObserver.onRefreshProfile = null;
+    MainRouteObserver.onRefreshChat = null;
     MainRouteObserver.onRefreshCartInMainMenu = null;
     MainRouteObserver.onRefreshWishlistInMainMenu = null;
     MainRouteObserver.onChangeSelectedProvince = null;

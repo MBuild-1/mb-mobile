@@ -26,6 +26,7 @@ import '../../domain/entity/user/getuser/get_user_parameter.dart';
 import '../../domain/entity/user/getuser/get_user_response.dart';
 import '../../domain/entity/user/user.dart';
 import '../../domain/usecase/answer_help_conversation_use_case.dart';
+import '../../domain/usecase/answer_help_conversation_version_1_point_1_use_case.dart';
 import '../../domain/usecase/create_help_conversation_use_case.dart';
 import '../../domain/usecase/get_help_message_by_user_use_case.dart';
 import '../../domain/usecase/get_user_use_case.dart';
@@ -38,6 +39,7 @@ import '../../misc/error/empty_chat_error.dart';
 import '../../misc/injector.dart';
 import '../../misc/itemtypelistsubinterceptor/chat_item_type_list_sub_interceptor.dart';
 import '../../misc/load_data_result.dart';
+import '../../misc/main_route_observer.dart';
 import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
@@ -62,6 +64,7 @@ class HelpChatPage extends RestorableGetxPage<_HelpChatPageRestoration> {
         Injector.locator<GetHelpMessageByUserUseCase>(),
         Injector.locator<CreateHelpConversationUseCase>(),
         Injector.locator<AnswerHelpConversationUseCase>(),
+        Injector.locator<AnswerHelpConversationVersion1Point1UseCase>(),
         Injector.locator<GetUserUseCase>()
       ),
       tag: pageName
@@ -228,6 +231,7 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<StatefulHelpC
     if (widget.onGetTextFocusNode != null) {
       widget.onGetTextFocusNode!(_helpTextFocusNode);
     }
+    MainRouteObserver.onRefreshChat = () => _refreshChat();
   }
 
   Future<UserMessageResponseWrapper<GetHelpMessageByUserResponse>> getHelpMessageByUser() async {
@@ -284,14 +288,6 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<StatefulHelpC
           )
         );
       }
-    }
-    if (getHelpMessageByUserResponseLoadDataResult.valueLoadDataResult.isSuccess) {
-      await PusherHelper.subscribeChatPusherChannel(
-        pusherChannelsFlutter: _pusher,
-        onEvent: _onEvent,
-        chatPusherChannelType: ChatPusherChannelType.help,
-        conversationId: getHelpMessageByUserResponseLoadDataResult.valueLoadDataResult.resultIfSuccess!.id,
-      );
     }
     return getHelpMessageByUserResponseLoadDataResult.valueLoadDataResult.map<PagingResult<ListItemControllerState>>((getHelpMessageByUserResponse) {
       _helpConversationId = getHelpMessageByUserResponse.id;
@@ -383,7 +379,7 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<StatefulHelpC
                             _isFirstEmpty = false;
                             setState(() => _showLoadingIndicatorInTextField = false);
                           } else {
-                            widget.helpChatController.answerHelpConversation(
+                            widget.helpChatController.answerHelpConversationVersion1Point1(
                               AnswerHelpConversationParameter(
                                 helpConversationId: _helpConversationId,
                                 message: _helpTextEditingController.text
@@ -447,11 +443,6 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<StatefulHelpC
   void dispose() {
     _helpTextFocusNode.dispose();
     _helpTextEditingController.dispose();
-    PusherHelper.unsubscribeChatPusherChannel(
-      pusherChannelsFlutter: _pusher,
-      chatPusherChannelType: ChatPusherChannelType.help,
-      conversationId: _helpConversationId
-    );
     super.dispose();
   }
 }

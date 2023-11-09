@@ -251,6 +251,7 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Ask questions about the product": "Tanya jawab seputar produk",
       "Please rate the shipping review": "Berikan penilaian ulasan pengiriman",
       "Monitor the status of assistance from Master Bagasi": "Pantau status bantuan dari Master Bagasi",
+      "View notification updates": "Lihat update notifikasi",
       "Affiliate": "Affiliasi",
       "Learn": "Pelajari",
       "Register Now": "Daftar Sekarang",
