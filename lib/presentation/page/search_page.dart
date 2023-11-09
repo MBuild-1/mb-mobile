@@ -307,20 +307,24 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
     _searchResponseLoadDataResult = NoLoadDataResult<SearchResponse>();
     if (pageKey == 1) {
       LoadDataResult<PagingResult<ListItemControllerState>>? finalStoreKeywordForSearchHistoryLoadDataResult;
-      LoginHelper.checkingLogin(context, () async {
-        LoadDataResult<StoreKeywordForSearchHistoryResponse> storeKeywordForSearchHistoryLoadDataResult = await widget.searchController.storeKeywordForSearchHistory(
-          StoreKeywordForSearchHistoryParameter(
-            keyword: _searchTextEditingController.text.trim()
-          ),
-        );
-        if (storeKeywordForSearchHistoryLoadDataResult.isFailed) {
-          if (!storeKeywordForSearchHistoryLoadDataResult.isFailedBecauseCancellation) {
-            finalStoreKeywordForSearchHistoryLoadDataResult = storeKeywordForSearchHistoryLoadDataResult.map((_) => throw UnimplementedError());
-          } else {
-            finalStoreKeywordForSearchHistoryLoadDataResult = noContent();
+      LoginHelper.checkingLogin(
+        context,
+        () async {
+          LoadDataResult<StoreKeywordForSearchHistoryResponse> storeKeywordForSearchHistoryLoadDataResult = await widget.searchController.storeKeywordForSearchHistory(
+            StoreKeywordForSearchHistoryParameter(
+              keyword: _searchTextEditingController.text.trim()
+            ),
+          );
+          if (storeKeywordForSearchHistoryLoadDataResult.isFailed) {
+            if (!storeKeywordForSearchHistoryLoadDataResult.isFailedBecauseCancellation) {
+              finalStoreKeywordForSearchHistoryLoadDataResult = storeKeywordForSearchHistoryLoadDataResult.map((_) => throw UnimplementedError());
+            } else {
+              finalStoreKeywordForSearchHistoryLoadDataResult = noContent();
+            }
           }
-        }
-      });
+        },
+        resultIfHasNotBeenLogin: () {},
+      );
       if (finalStoreKeywordForSearchHistoryLoadDataResult != null) {
         return finalStoreKeywordForSearchHistoryLoadDataResult!;
       }

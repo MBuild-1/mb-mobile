@@ -122,6 +122,22 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _wishlistMainMenuListItemPagingControllerStateListener(int pageKey) async {
+    bool isLogin = false;
+    LoginHelper.checkingLogin(
+      context,
+      () => isLogin = true,
+      resultIfHasNotBeenLogin: () {}
+    );
+    if (!isLogin) {
+      return SuccessLoadDataResult<PagingResult<ListItemControllerState>>(
+        value: PagingDataResult<ListItemControllerState>(
+          page: 1,
+          totalPage: 1,
+          totalItem: 1,
+          itemList: [NoContentListItemControllerState()]
+        )
+      );
+    }
     HorizontalComponentEntityParameterizedEntityAndListItemControllerStateMediator componentEntityMediator = Injector.locator<HorizontalComponentEntityParameterizedEntityAndListItemControllerStateMediator>();
     HorizontalDynamicItemCarouselParameterizedEntityAndListItemControllerStateMediatorParameter carouselParameterizedEntityMediator = HorizontalDynamicItemCarouselParameterizedEntityAndListItemControllerStateMediatorParameter(
       onSetState: () => setState(() {}),
@@ -473,9 +489,10 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
               ),
             ],
           ),
-          Injector.locator<ErrorProvider>()
+          Injector.locator<ErrorProvider>(),
+          withIndexedStack: true
         ),
-      )
+      ),
     );
   }
 }

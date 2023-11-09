@@ -112,27 +112,40 @@ class _WidgetHelperImpl {
     );
   }
 
-  Widget checkingLogin(BuildContext context, Widget Function() resultIfHasBeenLogin, ErrorProvider errorProvider) {
-    if (LoginHelper.getTokenWithBearer().result.isNotEmpty) {
+  Widget checkingLogin(BuildContext context, Widget Function() resultIfHasBeenLogin, ErrorProvider errorProvider, {bool withIndexedStack = false}) {
+    Widget notLogin() {
+      return Center(
+        child: LoadDataResultImplementerDirectlyWithDefault<String>(
+          errorProvider: errorProvider,
+          loadDataResult: FailedLoadDataResult.throwException(() => throw TokenEmptyError())!,
+          onImplementLoadDataResultDirectlyWithDefault: (loadDataResult, errorProvider, defaultLoadDataResultWidget) {
+            return defaultLoadDataResultWidget.failedLoadDataResultWithButtonWidget(
+              context,
+              loadDataResult as FailedLoadDataResult<String>,
+              errorProvider,
+              failedLoadDataResultConfig: FailedLoadDataResultConfig(
+                onPressed: () => PageRestorationHelper.toLoginPage(context, Constant.restorableRouteFuturePush),
+                buttonText: "Login".tr
+              )
+            );
+          }
+        ),
+      );
+    }
+    bool loginTokenIsNotEmpty = LoginHelper.getTokenWithBearer().result.isNotEmpty;
+    if (withIndexedStack) {
+      return IndexedStack(
+        index: loginTokenIsNotEmpty ? 0 : 1,
+        children: [
+          resultIfHasBeenLogin(),
+          notLogin()
+        ],
+      );
+    }
+    if (loginTokenIsNotEmpty) {
       return resultIfHasBeenLogin();
     }
-    return Center(
-      child: LoadDataResultImplementerDirectlyWithDefault<String>(
-        errorProvider: errorProvider,
-        loadDataResult: FailedLoadDataResult.throwException(() => throw TokenEmptyError())!,
-        onImplementLoadDataResultDirectlyWithDefault: (loadDataResult, errorProvider, defaultLoadDataResultWidget) {
-          return defaultLoadDataResultWidget.failedLoadDataResultWithButtonWidget(
-            context,
-            loadDataResult as FailedLoadDataResult<String>,
-            errorProvider,
-            failedLoadDataResultConfig: FailedLoadDataResultConfig(
-              onPressed: () => PageRestorationHelper.toLoginPage(context, Constant.restorableRouteFuturePush),
-              buttonText: "Login".tr
-            )
-          );
-        }
-      ),
-    );
+    return notLogin();
   }
 
   Widget checkVisibility(bool? visibility, Widget Function() resultIfVisibilityIsTrue) {

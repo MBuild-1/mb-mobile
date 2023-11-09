@@ -14,17 +14,19 @@ abstract class _LoginHelperImpl {
   FutureProcessing<LoadDataResult<void>> saveToken(String tokenWithoutBearer);
   DefaultProcessing<String> getTokenWithBearer();
   FutureProcessing<LoadDataResult<void>> deleteToken();
-  void checkingLogin(BuildContext context, void Function() resultIfHasBeenLogin);
+  void checkingLogin(BuildContext context, void Function() resultIfHasBeenLogin, {void Function()? resultIfHasNotBeenLogin});
 }
 
 class _DefaultLoginHelperImpl implements _LoginHelperImpl {
   @override
-  void checkingLogin(BuildContext context, void Function() resultIfHasBeenLogin) {
+  void checkingLogin(BuildContext context, void Function() resultIfHasBeenLogin, {void Function()? resultIfHasNotBeenLogin}) {
     if (!LoginHelper.getTokenWithBearer().result.isEmptyString) {
       resultIfHasBeenLogin();
       return;
     }
-    PageRestorationHelper.toLoginPage(context, Constant.restorableRouteFuturePush);
+    if (resultIfHasNotBeenLogin == null) {
+      PageRestorationHelper.toLoginPage(context, Constant.restorableRouteFuturePush);
+    }
   }
 
   @override

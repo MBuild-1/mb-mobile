@@ -13,6 +13,7 @@ import '../../../../misc/additionalloadingindicatorchecker/wishlist_sub_addition
 import '../../../../misc/constant.dart';
 import '../../../../misc/controllercontentdelegate/wishlist_and_cart_controller_content_delegate.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
+import '../../../../misc/controllerstate/listitemcontrollerstate/no_content_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/wishlistlistitemcontrollerstate/wishlist_container_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/paging_controller_state.dart';
 import '../../../../misc/error/empty_error.dart';
@@ -21,6 +22,7 @@ import '../../../../misc/injector.dart';
 import '../../../../misc/itemtypelistsubinterceptor/wishlist_item_type_list_sub_interceptor.dart';
 import '../../../../misc/list_item_controller_state_helper.dart';
 import '../../../../misc/load_data_result.dart';
+import '../../../../misc/login_helper.dart';
 import '../../../../misc/main_route_observer.dart';
 import '../../../../misc/manager/controller_manager.dart';
 import '../../../../misc/paging/modified_paging_controller.dart';
@@ -102,6 +104,22 @@ class _StatefulWishlistMainMenuSubControllerMediatorWidgetState extends State<_S
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _wishlistMainMenuListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? listItemControllerStateList) async {
+    bool isLogin = false;
+    LoginHelper.checkingLogin(
+      context,
+      () => isLogin = true,
+      resultIfHasNotBeenLogin: () {}
+    );
+    if (!isLogin) {
+      return SuccessLoadDataResult<PagingResult<ListItemControllerState>>(
+        value: PagingDataResult<ListItemControllerState>(
+          page: 1,
+          totalPage: 1,
+          totalItem: 1,
+          itemList: [NoContentListItemControllerState()]
+        )
+      );
+    }
     LoadDataResult<PagingDataResult<Wishlist>> wishlistPagingLoadDataResult = await widget.wishlistMainMenuSubController.getWishlistPaging(
       WishlistPagingParameter(page: pageKey)
     );
@@ -186,7 +204,8 @@ class _StatefulWishlistMainMenuSubControllerMediatorWidgetState extends State<_S
               ),
               pullToRefresh: true
             ),
-            Injector.locator<ErrorProvider>()
+            Injector.locator<ErrorProvider>(),
+            withIndexedStack: true
           )
         ),
       )
