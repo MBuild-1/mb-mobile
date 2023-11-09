@@ -455,7 +455,21 @@ class SearchItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListIt
                       lastSeenRelatedSlug: searchLastSeenHistory.slug
                     )
                   ),
-                  icon: (BuildContext context) => const Icon(Icons.remove_red_eye),
+                  icon: (BuildContext context) => SizedBox(
+                    width: 30,
+                    child: AspectRatio(
+                      aspectRatio: 1.0,
+                      child: Stack(
+                        children: [
+                          ClipRRect(
+                            child: ProductModifiedCachedNetworkImage(
+                              imageUrl: searchLastSeenHistory.imageUrl,
+                            )
+                          ),
+                        ],
+                      )
+                    ),
+                  ),
                   title: searchLastSeenHistory.name,
                   titleInterceptor: (title, titleTextStyle) => Text(title),
                   padding: EdgeInsets.symmetric(horizontal: padding(), vertical: 8.0)
