@@ -1,7 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/material.dart' hide SearchDelegate;
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
@@ -24,6 +23,7 @@ import '../../domain/entity/search/store_keyword_for_search_history_parameter.da
 import '../../domain/entity/search/store_keyword_for_search_history_response.dart';
 import '../../domain/entity/wishlist/support_wishlist.dart';
 import '../../domain/usecase/get_product_entry_with_condition_paging_use_case.dart';
+import '../../domain/usecase/remove_all_search_history_use_case.dart';
 import '../../domain/usecase/search_history_use_case.dart';
 import '../../domain/usecase/search_last_seen_history_use_case.dart';
 import '../../domain/usecase/search_use_case.dart';
@@ -90,6 +90,7 @@ class SearchPage extends RestorableGetxPage<_SearchPageRestoration> {
         Injector.locator<StoreKeywordForSearchHistoryUseCase>(),
         Injector.locator<SearchHistoryUseCase>(),
         Injector.locator<SearchLastSeenHistoryUseCase>(),
+        Injector.locator<RemoveAllSearchHistoryUseCase>()
       ),
       tag: pageName
     );
@@ -474,6 +475,9 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
                 _searchTextEditingController.text = typingSearchListItemClick.lastSeenRelatedName;
                 _search();
               }
+            },
+            onRemoveAllSearchHistory: () {
+              widget.searchController.removeAllSearchLastSeenHistory();
             }
           )
         ],
@@ -541,6 +545,25 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
           context.read<ComponentNotifier>().updateCart();
           context.read<NotificationNotifier>().loadCartLoadDataResult();
         }
+      )
+    );
+    widget.searchController.setSearchDelegate(
+      SearchDelegate(
+        onUnfocusAllWidget: () => FocusScope.of(context).unfocus(),
+        onSearchBack: () => Get.back(),
+        onShowRemoveAllSearchHistoryRequestProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
+        onRemoveAllSearchHistoryRequestProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
+          context: context,
+          errorProvider: Injector.locator<ErrorProvider>(),
+          e: e
+        ),
+        onRemoveAllSearchHistoryRequestProcessSuccessCallback: () async {
+          if (_searchHistoryResponseLoadDataResult.isSuccess) {
+            var searchHistoryResponse = _searchHistoryResponseLoadDataResult.resultIfSuccess!;
+            searchHistoryResponse.searchHistoryList.clear();
+            setState(() {});
+          }
+        },
       )
     );
     return WillPopScope(

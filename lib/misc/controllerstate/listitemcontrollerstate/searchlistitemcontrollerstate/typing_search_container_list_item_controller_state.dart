@@ -11,12 +11,14 @@ class TypingSearchContainerListItemControllerState extends ListItemControllerSta
   LoadDataResult<SearchLastSeenHistoryResponse> Function() searchLastSeenHistoryResponseLoadDataResult;
   String Function() onGetSearchText;
   void Function(TypingSearchListItemClick) onTypingSearchListItemClick;
+  void Function()? onRemoveAllSearchHistory;
 
   TypingSearchContainerListItemControllerState({
     required this.searchResponseLoadDataResult,
     required this.searchHistoryResponseLoadDataResult,
     required this.searchLastSeenHistoryResponseLoadDataResult,
     required this.onGetSearchText,
-    required this.onTypingSearchListItemClick
+    required this.onTypingSearchListItemClick,
+    required this.onRemoveAllSearchHistory
   });
 }

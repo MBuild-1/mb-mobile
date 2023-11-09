@@ -221,6 +221,7 @@ import '../domain/usecase/register_use_case.dart';
 import '../domain/usecase/register_with_google_use_case.dart';
 import '../domain/usecase/remove_additional_item_use_case.dart';
 import '../domain/usecase/remove_address_use_case.dart';
+import '../domain/usecase/remove_all_search_history_use_case.dart';
 import '../domain/usecase/remove_from_cart_directly_use_case.dart';
 import '../domain/usecase/remove_from_cart_use_case.dart';
 import '../domain/usecase/remove_from_favorite_product_brand_use_case.dart';
@@ -698,6 +699,7 @@ class _Injector {
     locator.registerLazySingleton<SearchUseCase>(() => SearchUseCase(searchRepository: locator()));
     locator.registerLazySingleton<SearchHistoryUseCase>(() => SearchHistoryUseCase(searchRepository: locator()));
     locator.registerLazySingleton<SearchLastSeenHistoryUseCase>(() => SearchLastSeenHistoryUseCase(searchRepository: locator()));
+    locator.registerLazySingleton<RemoveAllSearchHistoryUseCase>(() => RemoveAllSearchHistoryUseCase(searchRepository: locator()));
     locator.registerLazySingleton<StoreKeywordForSearchHistoryUseCase>(() => StoreKeywordForSearchHistoryUseCase(searchRepository: locator()));
     locator.registerLazySingleton<StoreSearchLastSeenHistoryUseCase>(() => StoreSearchLastSeenHistoryUseCase(searchRepository: locator()));
 

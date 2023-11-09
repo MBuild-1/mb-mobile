@@ -16,6 +16,7 @@ import '../../domain/entity/search/searchrelated/category_search_related.dart';
 import '../../domain/entity/search/searchrelated/product_search_related.dart';
 import '../../presentation/page/modaldialogpage/search_filter_modal_dialog_page.dart';
 import '../../presentation/widget/colorful_chip_tab_bar.dart';
+import '../../presentation/widget/modifiedcachednetworkimage/product_modified_cached_network_image.dart';
 import '../../presentation/widget/tap_area.dart';
 import '../constant.dart';
 import '../controllerstate/listitemcontrollerstate/builder_list_item_controller_state.dart';
@@ -242,7 +243,7 @@ class SearchItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListIt
     } else if (oldItemType is TypingSearchContainerListItemControllerState) {
       List<ListItemControllerState> newListItemControllerStateList = [];
 
-      void addTitle(String title) {
+      void addTitle(String title, {Widget? icon}) {
         listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
           i,
           ListItemControllerStateWrapper(
@@ -252,7 +253,18 @@ class SearchItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListIt
                 PaddingContainerListItemControllerState(
                   padding: EdgeInsets.symmetric(horizontal: padding()),
                   paddingChildListItemControllerState: TitleAndDescriptionListItemControllerState(
-                    title: title
+                    title: title,
+                    titleInterceptor: (title, titleTextStyle) => Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            title.toStringNonNull,
+                            style: titleTextStyle,
+                          )
+                        ),
+                        if (icon != null) icon
+                      ],
+                    )
                   )
                 ),
                 VirtualSpacingListItemControllerState(height: 5)
@@ -400,7 +412,13 @@ class SearchItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListIt
         }
         effectiveSearchHistoryList = effectiveSearchHistoryList.toSet().toList();
         if (effectiveSearchHistoryList.isNotEmpty) {
-          addTitle("Search History".tr);
+          addTitle(
+            "Search History".tr,
+            icon: TapArea(
+              onTap: oldItemType.onRemoveAllSearchHistory,
+              child: const Icon(Icons.delete, size: 20.0)
+            ),
+          );
           int k = 0;
           while (k < effectiveSearchHistoryList.length) {
             String searchHistory = effectiveSearchHistoryList[k];

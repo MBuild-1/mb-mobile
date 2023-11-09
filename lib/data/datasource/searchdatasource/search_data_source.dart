@@ -1,3 +1,5 @@
+import '../../../domain/entity/search/remove_all_search_history_parameter.dart';
+import '../../../domain/entity/search/remove_all_search_history_response.dart';
 import '../../../domain/entity/search/search_history_parameter.dart';
 import '../../../domain/entity/search/search_history_response.dart';
 import '../../../domain/entity/search/search_last_seen_history_parameter.dart';
@@ -14,6 +16,7 @@ abstract class SearchDataSource {
   FutureProcessing<SearchResponse> search(SearchParameter searchParameter);
   FutureProcessing<SearchHistoryResponse> searchHistory(SearchHistoryParameter searchHistoryParameter);
   FutureProcessing<SearchLastSeenHistoryResponse> searchLastSeenHistory(SearchLastSeenHistoryParameter searchLastSeenHistoryParameter);
+  FutureProcessing<RemoveAllSearchHistoryResponse> removeAllSearchHistory(RemoveAllSearchHistoryParameter removeAllSearchHistoryParameter);
   FutureProcessing<StoreKeywordForSearchHistoryResponse> storeKeywordForSearchHistory(StoreKeywordForSearchHistoryParameter storeKeywordForSearchHistoryParameter);
   FutureProcessing<StoreSearchLastSeenHistoryResponse> storeSearchLastSeenHistory(StoreSearchLastSeenHistoryParameter storeSearchLastSeenHistoryParameter);
 }

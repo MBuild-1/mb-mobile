@@ -1,3 +1,5 @@
+import '../../domain/entity/search/remove_all_search_history_parameter.dart';
+import '../../domain/entity/search/remove_all_search_history_response.dart';
 import '../../domain/entity/search/search_history_parameter.dart';
 import '../../domain/entity/search/search_history_response.dart';
 import '../../domain/entity/search/search_last_seen_history_parameter.dart';
@@ -33,6 +35,11 @@ class DefaultSearchRepository implements SearchRepository {
   @override
   FutureProcessing<LoadDataResult<SearchLastSeenHistoryResponse>> searchLastSeenHistory(SearchLastSeenHistoryParameter searchLastSeenHistoryParameter) {
     return searchDataSource.searchLastSeenHistory(searchLastSeenHistoryParameter).mapToLoadDataResult<SearchLastSeenHistoryResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<RemoveAllSearchHistoryResponse>> removeAllSearchHistory(RemoveAllSearchHistoryParameter removeAllSearchHistoryParameter) {
+    return searchDataSource.removeAllSearchHistory(removeAllSearchHistoryParameter).mapToLoadDataResult<RemoveAllSearchHistoryResponse>();
   }
 
   @override

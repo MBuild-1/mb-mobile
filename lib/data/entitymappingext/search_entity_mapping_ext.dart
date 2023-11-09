@@ -1,6 +1,7 @@
 import 'package:masterbagasi/data/entitymappingext/product_entity_mapping_ext.dart';
 
 import '../../domain/entity/cart/cart.dart';
+import '../../domain/entity/search/remove_all_search_history_response.dart';
 import '../../domain/entity/search/search_history_response.dart';
 import '../../domain/entity/search/search_last_seen_history_response.dart';
 import '../../domain/entity/search/search_response.dart';
@@ -62,6 +63,10 @@ extension SearchEntityMappingExt on ResponseWrapper {
         }
       ).toList()
     );
+  }
+
+  RemoveAllSearchHistoryResponse mapFromResponseToRemoveAllSearchLastSeenHistoryResponse() {
+    return RemoveAllSearchHistoryResponse();
   }
 
   StoreKeywordForSearchHistoryResponse mapFromResponseToStoreKeywordForSearchHistoryResponse() {
