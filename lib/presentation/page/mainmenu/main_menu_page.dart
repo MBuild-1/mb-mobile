@@ -360,6 +360,55 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
   void initState() {
     super.initState();
     _initOneSignalEvent();
+    PusherHelper.initPusherChannels(
+      pusherChannelsFlutter: _pusher
+    );
+    _initMainMenuPage();
+    MainRouteObserver.onResetInitMainMenu = () {
+      try {
+        if (_getHelpMessageByUserResponse != null) {
+          PusherHelper.unsubscribeChatPusherChannel(
+            pusherChannelsFlutter: _pusher,
+            chatPusherChannelType: ChatPusherChannelType.help,
+            conversationId: _getHelpMessageByUserResponse!.resultIfSuccess!.id
+          );
+          _getHelpMessageByUserResponse = null;
+        }
+      } catch (e) {
+        // Nothing
+      }
+      _initMainMenuPage();
+      for (int i = 0; i < widget.mainMenuSubControllerList.length; i++) {
+        widget.mainMenuSubControllerList[i][2]();
+      }
+      setState(() {});
+    };
+    _notificationNotifier = Provider.of<NotificationNotifier>(context, listen: false);
+    _subscribeHelpChat();
+  }
+
+  void _subscribeHelpChat() async {
+    _getHelpMessageByUserResponse = await widget.mainMenuController.getHelpMessageByUser(
+      GetHelpMessageByUserParameter()
+    );
+    if (_getHelpMessageByUserResponse!.isSuccess) {
+      PusherHelper.subscribeChatPusherChannel(
+        pusherChannelsFlutter: _pusher,
+        onEvent: _onHelpChatEvent,
+        chatPusherChannelType: ChatPusherChannelType.help,
+        conversationId: _getHelpMessageByUserResponse!.resultIfSuccess!.id,
+      );
+    }
+  }
+
+  dynamic _onHelpChatEvent(dynamic event) {
+    if (MainRouteObserver.onRefreshChat != null) {
+      MainRouteObserver.onRefreshChat!();
+    }
+    _notificationNotifier.loadInboxLoadDataResult();
+  }
+
+  void _initMainMenuPage() {
     _onItemTapped(
       CustomBottomNavigationBarSelectedIndex(
         currentSelectedViewMenuIndex: 0,
@@ -373,7 +422,6 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
       ),
       context
     );
-
     for (int i = 0; i < widget.mainMenuSubControllerList.length; i++) {
       if (i == 0) {
         widget.mainMenuSubControllerList[i][4]();
@@ -381,9 +429,6 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
       }
       widget.mainMenuSubControllerList[i][3]();
     }
-    PusherHelper.initPusherChannels(
-      pusherChannelsFlutter: _pusher
-    );
   }
 
   void _initOneSignalEvent() {
@@ -392,17 +437,18 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
   }
 
   void _onClickListener(OSNotificationClickEvent osNotificationClickEvent) {
-    print('NOTIFICATION CLICK LISTENER CALLED WITH EVENT: ${osNotificationClickEvent.notification.jsonRepresentation()}');
+    print("Notification clik: ${osNotificationClickEvent.notification.jsonRepresentation()}");
+    PageRestorationHelper.toDeliveryReviewPage(context);
   }
 
   void _onForegroundWillDisplayListener(OSNotificationWillDisplayEvent osNotificationWillDisplayEvent) {
-    print('NOTIFICATION WILL DISPLAY LISTENER CALLED WITH: ${osNotificationWillDisplayEvent.notification.jsonRepresentation()}');
-
     /// Display Notification, preventDefault to not display
     osNotificationWillDisplayEvent.preventDefault();
 
     /// notification.display() to display after preventing default
     osNotificationWillDisplayEvent.notification.display();
+
+    print("Notification clik foreground: ${osNotificationWillDisplayEvent.notification.jsonRepresentation()}");
   }
 
   @override
@@ -546,14 +592,18 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
 
   @override
   void dispose() {
+    print("Dispose hmmmmm");
     MainRouteObserver.onRefreshAddress = null;
     MainRouteObserver.onRefreshProfile = null;
     MainRouteObserver.onRefreshChat = null;
     MainRouteObserver.onRefreshCartInMainMenu = null;
     MainRouteObserver.onRefreshWishlistInMainMenu = null;
     MainRouteObserver.onChangeSelectedProvince = null;
+    MainRouteObserver.onResetInitMainMenu = null;
     _pusher.disconnect();
     _timer?.cancel();
+    OneSignal.Notifications.removeClickListener(_onClickListener);
+    OneSignal.Notifications.removeForegroundWillDisplayListener(_onForegroundWillDisplayListener);
     super.dispose();
   }
 }

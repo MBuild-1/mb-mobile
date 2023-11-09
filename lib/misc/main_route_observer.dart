@@ -26,6 +26,7 @@ class _MainRouteObserver extends RouteObserver {
   void Function()? onRefreshCartInMainMenu;
   void Function()? onRefreshChat;
   void Function(ProvinceMap)? onChangeSelectedProvince;
+  void Function()? onResetInitMainMenu;
   RefreshDeliveryReview? onRefreshDeliveryReview;
 
   void applyNewRouteMapFromRouteKeyMap(Map<String, int> newRouteMap) {

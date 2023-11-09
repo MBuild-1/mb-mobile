@@ -416,7 +416,9 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
         ),
         onLogoutRequestProcessSuccessCallback: () async {
           Provider.of<NotificationNotifier>(context, listen: false).resetNotification();
-          PageRestorationHelper.toMainMenuPage(context, Constant.restorableRouteFuturePushAndRemoveUntil);
+          if (MainRouteObserver.onResetInitMainMenu != null) {
+            MainRouteObserver.onResetInitMainMenu!();
+          }
         },
         onLogoutIntoOneSignal: () async {
           try {
