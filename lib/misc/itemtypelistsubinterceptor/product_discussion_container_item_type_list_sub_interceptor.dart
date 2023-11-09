@@ -158,7 +158,7 @@ class ProductDiscussionContainerItemTypeListSubInterceptor extends ItemTypeListS
           if (verticalProductDiscussionListItemControllerState.isExpanded)
             BuilderListItemControllerState(
               buildListItemControllerState: () {
-                if (productDiscussionDialogListItemValueList.isEmpty) {
+                if (productDiscussionDialogListItemValueList.isEmpty && oldItemType is ShortProductDiscussionContainerListItemControllerState) {
                   return CompoundListItemControllerState(
                     listItemControllerState: [
                       VirtualSpacingListItemControllerState(height: 5),

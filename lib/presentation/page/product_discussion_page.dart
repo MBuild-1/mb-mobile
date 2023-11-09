@@ -31,6 +31,8 @@ import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_
 import '../../misc/controllerstate/listitemcontrollerstate/productdiscussionlistitemcontrollerstate/product_discussion_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/productdiscussionlistitemcontrollerstate/product_discussion_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
+import '../../misc/error/message_error.dart';
+import '../../misc/error_helper.dart';
 import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
@@ -229,6 +231,7 @@ class _StatefulProductDiscussionControllerMediatorWidgetState extends State<_Sta
   final DefaultProductDiscussionContainerInterceptingActionListItemControllerState _defaultProductDiscussionContainerInterceptingActionListItemControllerState = DefaultProductDiscussionContainerInterceptingActionListItemControllerState();
   ProductDiscussionListItemValue? _productDiscussionListItemValue;
   ProductDiscussionDialog? _selectedReplyProductDiscussionDialog;
+  final ValueNotifier<dynamic> _fillerErrorValueNotifier = ValueNotifier(null);
 
   void _scrollToDown() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -245,7 +248,8 @@ class _StatefulProductDiscussionControllerMediatorWidgetState extends State<_Sta
     _productDiscussionListItemPagingController = ModifiedPagingController<int, ListItemControllerState>(
       firstPageKey: 1,
       // ignore: invalid_use_of_protected_member
-      apiRequestManager: widget.productDiscussionController.apiRequestManager
+      apiRequestManager: widget.productDiscussionController.apiRequestManager,
+      fillerErrorValueNotifier: _fillerErrorValueNotifier
     );
     _productDiscussionListItemPagingControllerState = PagingControllerState(
       scrollController: _productDiscussionScrollController,
@@ -326,6 +330,9 @@ class _StatefulProductDiscussionControllerMediatorWidgetState extends State<_Sta
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _productDiscussionListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? orderListItemControllerStateList) async {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _fillerErrorValueNotifier.value = null;
+    });
     UserMessageResponseWrapper<ProductDiscussion> productDiscussionLoadDataResult = await getProductDiscussion();
     User user = productDiscussionLoadDataResult.userLoadDataResult.resultIfSuccess!;
     _loggedUser = user;
@@ -375,12 +382,16 @@ class _StatefulProductDiscussionControllerMediatorWidgetState extends State<_Sta
         }
       }
       MainRouteObserver.onRefreshProductDiscussion[getRouteMapKey(widget.onGetPageName())] = _refreshProductDiscussion;
-    }
-    return productDiscussionLoadDataResult.valueLoadDataResult.map<PagingResult<ListItemControllerState>>((productDiscussion) {
+      ProductDiscussion productDiscussion = productDiscussionLoadDataResult.valueLoadDataResult.resultIfSuccess!;
       _productDiscussionListItemValue = ProductDiscussionListItemValue(
         productDiscussionDetailListItemValue: productDiscussion.toProductDiscussionDetailListItemValue(),
         isExpanded: true
       );
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        _checkDiscussionEmpty();
+      });
+    }
+    return productDiscussionLoadDataResult.valueLoadDataResult.map<PagingResult<ListItemControllerState>>((productDiscussion) {
       return PagingDataResult<ListItemControllerState>(
         itemList: [
           ProductDiscussionContainerListItemControllerState(
@@ -436,6 +447,24 @@ class _StatefulProductDiscussionControllerMediatorWidgetState extends State<_Sta
         );
       }
     }
+    _checkDiscussionEmpty();
+  }
+
+  dynamic _getEmptyError() {
+    return FailedLoadDataResult.throwException(() {
+      throw ErrorHelper.generateMultiLanguageDioError(
+        MultiLanguageMessageError(
+          title: MultiLanguageString({
+            Constant.textEnUsLanguageKey: "Discussion Is Empty",
+            Constant.textInIdLanguageKey: "Diskusi Kosong",
+          }),
+          message: MultiLanguageString({
+            Constant.textEnUsLanguageKey: "In the future, discussion will appear here.",
+            Constant.textInIdLanguageKey: "Kedepannya, diskusi bakal muncul disini."
+          }),
+        )
+      );
+    })!.e;
   }
 
   dynamic _onEvent(dynamic event) {
@@ -454,6 +483,7 @@ class _StatefulProductDiscussionControllerMediatorWidgetState extends State<_Sta
   @override
   void dispose() {
     MainRouteObserver.onRefreshProductDiscussion.remove(getRouteMapKey(widget.onGetPageName()));
+    _fillerErrorValueNotifier.dispose();
     _productDiscussionTextFocusNode.dispose();
     _productDiscussionTextEditingController.dispose();
     super.dispose();
@@ -546,57 +576,58 @@ class _StatefulProductDiscussionControllerMediatorWidgetState extends State<_Sta
                   onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
                     pagingControllerState: pagingControllerState!
                   ),
-                  pullToRefresh: true
+                  pullToRefresh: true,
+                  onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (_selectedReplyProductDiscussionDialog != null) ...[
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                        decoration: BoxDecoration(
-                          color: Constant.colorGrey5
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    MultiLanguageString({
-                                      Constant.textEnUsLanguageKey: "Reply ${_selectedReplyProductDiscussionDialog!.productDiscussionUser.name}",
-                                      Constant.textInIdLanguageKey: "Membalas ${_selectedReplyProductDiscussionDialog!.productDiscussionUser.name}"
-                                    }).toEmptyStringNonNull,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold
+              if (!widget.productDiscussionPageParameter.isBasedUser) ...[
+                Container(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (_selectedReplyProductDiscussionDialog != null) ...[
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                          decoration: BoxDecoration(
+                            color: Constant.colorGrey5
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      MultiLanguageString({
+                                        Constant.textEnUsLanguageKey: "Reply ${_selectedReplyProductDiscussionDialog!.productDiscussionUser.name}",
+                                        Constant.textInIdLanguageKey: "Membalas ${_selectedReplyProductDiscussionDialog!.productDiscussionUser.name}"
+                                      }).toEmptyStringNonNull,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(height: 5.0),
-                                  Text(
-                                    _selectedReplyProductDiscussionDialog!.discussion
-                                  ),
-                                ],
+                                    const SizedBox(height: 5.0),
+                                    Text(
+                                      _selectedReplyProductDiscussionDialog!.discussion
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                            TapArea(
-                              onTap: () => setState(() => _selectedReplyProductDiscussionDialog = null),
-                              child: const Icon(
-                                Icons.close,
-                              ),
-                            )
-                          ],
+                              TapArea(
+                                onTap: () => setState(() => _selectedReplyProductDiscussionDialog = null),
+                                child: const Icon(
+                                  Icons.close,
+                                ),
+                              )
+                            ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 7.0),
-                    ],
-                    if (!widget.productDiscussionPageParameter.isBasedUser) ...[
+                        const SizedBox(height: 7.0),
+                      ],
                       Container(
                         padding: const EdgeInsets.all(8.0),
                         decoration: BoxDecoration(
@@ -666,6 +697,7 @@ class _StatefulProductDiscussionControllerMediatorWidgetState extends State<_Sta
                                         _productDiscussionListItemValue!
                                       );
                                     }
+                                    _checkDiscussionEmpty();
                                     productDiscussionText = _productDiscussionTextEditingController.text;
                                     _productDiscussionTextEditingController.clear();
                                     _scrollToDown();
@@ -695,14 +727,35 @@ class _StatefulProductDiscussionControllerMediatorWidgetState extends State<_Sta
                         )
                       ),
                     ]
-                  ],
+                  )
                 )
-              )
+              ]
             ]
           )
         ),
       ),
     );
+  }
+
+  void _checkDiscussionEmpty() {
+    if (widget.productDiscussionPageParameter.discussionProductId == null) {
+      if (_productDiscussionListItemValue!.productDiscussionDetailListItemValue.productDiscussionDialogListItemValueList.isEmpty) {
+        _fillerErrorValueNotifier.value = _getEmptyError();
+      } else {
+        _fillerErrorValueNotifier.value = null;
+      }
+    } else {
+      var productDiscussionDialogListItemValueList = _productDiscussionListItemValue!.productDiscussionDetailListItemValue.productDiscussionDialogListItemValueList;
+      var selectedProductDiscussionDialogListItemValueList = productDiscussionDialogListItemValueList.where((value) => value.productDiscussionDialogContainsListItemValue.id == widget.productDiscussionPageParameter.discussionProductId);
+      if (selectedProductDiscussionDialogListItemValueList.isNotEmpty) {
+        var selectedProductDiscussionDialogListItemValue = selectedProductDiscussionDialogListItemValueList.first;
+        if (selectedProductDiscussionDialogListItemValue.replyProductDiscussionDialogListItemValueList.isEmpty) {
+          _fillerErrorValueNotifier.value = _getEmptyError();
+        } else {
+          _fillerErrorValueNotifier.value = null;
+        }
+      }
+    }
   }
 }
 
