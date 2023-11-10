@@ -223,6 +223,7 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
   String? _lastSearch = "";
   bool _beginSearch = false;
   bool _beginSaveOriginalSearchResponse = false;
+  LoadDataResult<SearchResponse> _firstSearchResponseLoadDataResult = NoLoadDataResult<SearchResponse>();
   LoadDataResult<SearchResponse> _searchResponseLoadDataResult = NoLoadDataResult<SearchResponse>();
   LoadDataResult<SearchResponse> _typingSearchResponseLoadDataResult = NoLoadDataResult<SearchResponse>();
   LoadDataResult<SearchHistoryResponse> _searchHistoryResponseLoadDataResult = NoLoadDataResult<SearchHistoryResponse>();
@@ -307,6 +308,7 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
     }
     _searchResponseLoadDataResult = NoLoadDataResult<SearchResponse>();
     if (pageKey == 1) {
+      _firstSearchResponseLoadDataResult = NoLoadDataResult<SearchResponse>();
       LoadDataResult<PagingResult<ListItemControllerState>>? finalStoreKeywordForSearchHistoryLoadDataResult;
       LoginHelper.checkingLogin(
         context,
@@ -350,6 +352,7 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
       }
     }
     if (pageKey == 1) {
+      _firstSearchResponseLoadDataResult = _searchResponseLoadDataResult;
       if (_beginSaveOriginalSearchResponse) {
         _beginSaveOriginalSearchResponse = false;
         if (_searchResponseLoadDataResult.isSuccess) {
@@ -583,9 +586,9 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
         appBar: CoreSearchAppBar(
           value: 0.0,
           showFilterIconButton: () {
-            if (_searchStatus == 1 && _searchResponseLoadDataResult.isSuccess) {
+            if (_searchStatus == 1 && _firstSearchResponseLoadDataResult.isSuccess) {
               return true;
-            } else if (_searchStatus == 1 && _searchResponseLoadDataResult.isFailed && _originalSearchResponse != null) {
+            } else if (_searchStatus == 1 && _firstSearchResponseLoadDataResult.isFailed && _originalSearchResponse != null) {
               return true;
             }
             return false;
