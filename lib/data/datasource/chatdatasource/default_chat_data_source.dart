@@ -86,7 +86,7 @@ class DefaultChatDataSource implements ChatDataSource {
     );
     return DioHttpClientProcessing((cancelToken) {
       return dio.post(
-        "/chat-help/${answerHelpConversationParameter.helpConversationId}/message",
+        "/chat-help",
         data: formData,
         cancelToken: cancelToken,
         options: OptionsBuilder.multipartData().withBaseUrl(dio.options.baseUrl.replaceAll("v1", "v1.1")).buildExtended()
