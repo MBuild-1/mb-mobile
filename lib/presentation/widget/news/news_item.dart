@@ -65,7 +65,7 @@ abstract class NewsItem extends StatelessWidget {
                             Text(
                               news.title,
                               style: const TextStyle(
-                                fontSize: 17,
+                                fontSize: 15,
                                 fontWeight: FontWeight.bold,
                               ),
                               maxLines: 2,
@@ -84,6 +84,7 @@ abstract class NewsItem extends StatelessWidget {
                     child: Text(
                       "Read More".tr,
                       style: TextStyle(
+                        fontSize: 13,
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).colorScheme.primary
                       ),
