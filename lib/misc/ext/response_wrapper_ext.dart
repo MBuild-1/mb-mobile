@@ -13,7 +13,9 @@ extension MainStructureResponseWrapperExt on Response<dynamic> {
 
 extension DateTimeResponseWrapperExt on ResponseWrapper {
   DateTime? mapFromResponseToDateTime({DateFormat? dateFormat}) {
-    return response != null ? (dateFormat ?? DateUtil.anthonyInputDateFormat).parse(response) : null;
+    DateTime? fetchedDateTime = response != null ? (dateFormat ?? DateUtil.anthonyInputDateFormat).parse(response) : null;
+    Duration? timezoneOffset = fetchedDateTime?.timeZoneOffset;
+    return fetchedDateTime?.add(timezoneOffset!);
   }
 }
 
