@@ -732,7 +732,10 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
 
   @override
   void dispose() {
-    _pusher.disconnect();
+    PusherHelper.unsubscribeSharedCartPusherChannel(
+      pusherChannelsFlutter: _pusher,
+      bucketId: _bucketId!
+    );
     super.dispose();
   }
 }
