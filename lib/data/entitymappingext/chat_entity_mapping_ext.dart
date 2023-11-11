@@ -112,7 +112,7 @@ extension HelpChatDetailEntityMappingExt on ResponseWrapper {
         user: ResponseWrapper(userTwo).mapFromResponseToUser(),
         userChatStatus: ResponseWrapper(userTwo).mapFromResponseToUserChatStatus()
       ) : null,
-      helpMessageList: helpMessageList.toList()
+      helpMessageList: helpMessageList.reversed.toList()
     );
   }
 
@@ -137,7 +137,7 @@ extension HelpChatDetailEntityMappingExt on ResponseWrapper {
         userChatStatus: ResponseWrapper(userTwo).mapFromResponseToUserChatStatus()
       ) : null,
       unreadMessagesCount: helpResponse["unread_messages_count"] ?? 0,
-      helpMessageList: helpMessageList.toList(),
+      helpMessageList: helpMessageList.reversed.toList(),
     );
   }
 
