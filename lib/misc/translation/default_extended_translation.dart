@@ -293,7 +293,7 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "No Reply": "Belum Ada Balasan",
       "Reply": "Balas",
       "Application Configuration": "Pengaturan Aplikasi",
-      "Exit": "Keluar",
+      "Exit": "Tutup",
       "Request Again": "Request Lagi",
       "Search History": "Riwayat Pencarian",
       "Last Seen Search History": "Riwayat Terakhir Dilihat",
