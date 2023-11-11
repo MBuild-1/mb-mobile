@@ -115,8 +115,11 @@ class DefaultChatDataSource implements ChatDataSource {
   @override
   FutureProcessing<GetHelpMessageByUserResponse> getHelpMessageByUserResponse(GetHelpMessageByUserParameter getHelpMessageByUserParameter) {
     return DioHttpClientProcessing((cancelToken) {
-      return dio.get("/chat-help/user", cancelToken: cancelToken)
-        .map<GetHelpMessageByUserResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToGetHelpMessageByUserResponse());
+      return dio.get(
+        "/chat-help/user/message",
+        cancelToken: cancelToken,
+        options: OptionsBuilder.withBaseUrl(dio.options.baseUrl.replaceAll("v1", "v1.1")).buildExtended()
+      ).map<GetHelpMessageByUserResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToGetHelpMessageByUserResponse());
     });
   }
 

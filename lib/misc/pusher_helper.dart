@@ -26,7 +26,7 @@ class _PusherHelperImpl {
   }
 
   String _getChatCountChannelName() {
-    return "chat-count";
+    return "chat-count-event";
   }
 
   Future<PusherChannelsFlutter> subscribeChatCountPusherChannel({

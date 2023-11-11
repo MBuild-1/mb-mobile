@@ -117,11 +117,10 @@ extension HelpChatDetailEntityMappingExt on ResponseWrapper {
   }
 
   GetHelpMessageByUserResponse mapFromResponseToGetHelpMessageByUserResponse() {
-    List<dynamic> helpResponseList = response;
-    if (helpResponseList.isEmpty) {
+    dynamic helpResponse = response;
+    if (helpResponse.isEmpty) {
       throw EmptyChatError();
     }
-    dynamic helpResponse = helpResponseList.first;
     dynamic userOne = helpResponse["user_one"];
     dynamic userTwo = helpResponse["user_two"];
     List<HelpMessage> helpMessageList = helpResponse["help_messages"].map<HelpMessage>((helpMessageResponse) {
@@ -137,7 +136,7 @@ extension HelpChatDetailEntityMappingExt on ResponseWrapper {
         user: ResponseWrapper(userTwo).mapFromResponseToUser(),
         userChatStatus: ResponseWrapper(userTwo).mapFromResponseToUserChatStatus()
       ) : null,
-      unreadMessagesCount: helpResponse["unread_messages_count"],
+      unreadMessagesCount: helpResponse["unread_messages_count"] ?? 0,
       helpMessageList: helpMessageList.toList(),
     );
   }
