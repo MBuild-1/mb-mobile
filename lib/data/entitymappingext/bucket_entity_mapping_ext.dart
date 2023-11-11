@@ -1,3 +1,4 @@
+import 'package:masterbagasi/data/entitymappingext/additional_item_entity_mapping_ext.dart';
 import 'package:masterbagasi/data/entitymappingext/cart_entity_mapping_ext.dart';
 import 'package:masterbagasi/data/entitymappingext/order_entity_mapping_ext.dart';
 import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
@@ -100,6 +101,7 @@ extension BucketDetailEntityMappingExt on ResponseWrapper {
       bucketCartList: response[isRequest ? "bucket_cart_list_request" : "bucket_cart_list"].map<Cart>(
         (bucketRequestResponse) => ResponseWrapper(bucketRequestResponse).mapFromResponseToCart([], [])
       ).toList(),
+      bucketWarehouseAdditionalItemList: response["bucket_warehouse_lists"] != null ? ResponseWrapper(response["bucket_warehouse_lists"]).mapFromResponseToAdditionalItemList() : []
     );
   }
 }

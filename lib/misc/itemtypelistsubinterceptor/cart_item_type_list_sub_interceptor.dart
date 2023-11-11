@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
@@ -21,6 +22,7 @@ import '../acceptordeclinesharedcartmemberparameter/decline_shared_cart_member_p
 import '../constant.dart';
 import '../controllerstate/listitemcontrollerstate/additionalitemlistitemcontrollerstate/additional_item_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/additionalitemlistitemcontrollerstate/additional_item_summary_list_item_controller_state.dart';
+import '../controllerstate/listitemcontrollerstate/builder_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/cart_container_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/cart_header_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/cart_list_item_controller_state.dart';
@@ -93,6 +95,17 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
             )
           ),
           SpacingListItemControllerState(),
+          PaddingContainerListItemControllerState(
+            padding: EdgeInsets.symmetric(horizontal: padding()),
+            paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
+              widgetSubstitution: (context, index) {
+                return Text(
+                  "Cart".tr,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                );
+              }
+            )
+          ),
         ]);
         Iterable<BucketMember> bucketMemberIterable = bucket.bucketMemberList.where(
           (bucketMember) => bucketMember.hostBucket == 1
@@ -396,7 +409,66 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
           BucketMember bucketMember = bucketMemberIterable.first;
           loggedUserHostBucket = bucketMember.hostBucket;
         }
+        ListItemControllerState sharedCartHostWarehouseListItemControllerState = BuilderListItemControllerState(
+          buildListItemControllerState: () {
+            List<ListItemControllerState> sharedCartHostWarehouseListItemControllerStateList = [];
+            Iterable<BucketMember> hostBucketMemberIterable = bucket.bucketMemberList.where(
+              (bucketMember) => bucketMember.hostBucket == 1
+            );
+            if (hostBucketMemberIterable.isNotEmpty) {
+              BucketMember hostBucketMember = hostBucketMemberIterable.first;
+              if (hostBucketMember.bucketWarehouseAdditionalItemList.isNotEmpty) {
+                sharedCartHostWarehouseListItemControllerStateList.addAll([
+                  PaddingContainerListItemControllerState(
+                    padding: EdgeInsets.symmetric(horizontal: padding()),
+                    paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
+                      widgetSubstitution: (context, index) {
+                        return Text(
+                          "Warehouse".tr,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        );
+                      }
+                    )
+                  ),
+                  VirtualSpacingListItemControllerState(height: 16),
+                  ...hostBucketMember.bucketWarehouseAdditionalItemList.mapIndexed<ListItemControllerState>(
+                    (index, additionalItem) => PaddingContainerListItemControllerState(
+                      padding: EdgeInsets.symmetric(horizontal: padding()),
+                      paddingChildListItemControllerState: CompoundListItemControllerState(
+                        listItemControllerState: [
+                          if (index > 0) VirtualSpacingListItemControllerState(height: 10),
+                          AdditionalItemListItemControllerState(
+                            additionalItem: additionalItem,
+                            no: index + 1,
+                            onLoadAdditionalItem: () {},
+                            showEditAndRemoveIcon: false
+                          )
+                        ]
+                      )
+                    )
+                  )
+                ]);
+              }
+            }
+            return CompoundListItemControllerState(
+              listItemControllerState: sharedCartHostWarehouseListItemControllerStateList
+            );
+          }
+        );
+        listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
+          i,
+          ListItemControllerStateWrapper(sharedCartHostWarehouseListItemControllerState),
+          oldItemTypeList,
+          newItemTypeList
+        );
         newItemTypeList.add(VirtualSpacingListItemControllerState(height: 10.0));
+        newItemTypeList.add(
+          PaddingContainerListItemControllerState(
+            padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+            paddingChildListItemControllerState: DividerListItemControllerState()
+          )
+        );
+        newItemTypeList.add(VirtualSpacingListItemControllerState(height: 16.0));
         newItemTypeList.add(
           WidgetSubstitutionListItemControllerState(
             widgetSubstitution: (BuildContext context, int index) {
@@ -480,16 +552,61 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
             );
             List<ListItemControllerState> newBucketMemberCartListItemControllerStateList = [];
             if (resultBucketMember != null) {
-              newBucketMemberCartListItemControllerStateList.addAll(
-                resultBucketMember.bucketCartList.map(
-                  (cart) => VerticalCartListItemControllerState(
-                    cart: cart,
-                    isSelected: false,
-                    showCheck: false,
-                    showBottom: false
+              if (resultBucketMember.bucketCartList.isNotEmpty) {
+                newBucketMemberCartListItemControllerStateList.addAll([
+                  PaddingContainerListItemControllerState(
+                    padding: EdgeInsets.symmetric(horizontal: padding()),
+                    paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
+                      widgetSubstitution: (context, index) {
+                        return Text(
+                          "Cart".tr,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        );
+                      }
+                    )
+                  ),
+                  ...resultBucketMember.bucketCartList.map(
+                    (cart) => VerticalCartListItemControllerState(
+                      cart: cart,
+                      isSelected: false,
+                      showCheck: false,
+                      showBottom: false
+                    )
                   )
-                )
-              );
+                ]);
+              }
+              if (resultBucketMember.bucketWarehouseAdditionalItemList.isNotEmpty) {
+                newBucketMemberCartListItemControllerStateList.addAll([
+                  PaddingContainerListItemControllerState(
+                    padding: EdgeInsets.symmetric(horizontal: padding()),
+                    paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
+                      widgetSubstitution: (context, index) {
+                        return Text(
+                          "Warehouse".tr,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        );
+                      }
+                    )
+                  ),
+                  VirtualSpacingListItemControllerState(height: 16),
+                  ...resultBucketMember.bucketWarehouseAdditionalItemList.mapIndexed<ListItemControllerState>(
+                    (index, additionalItem) => PaddingContainerListItemControllerState(
+                      padding: EdgeInsets.symmetric(horizontal: padding()),
+                      paddingChildListItemControllerState: CompoundListItemControllerState(
+                        listItemControllerState: [
+                          if (index > 0) VirtualSpacingListItemControllerState(height: 10),
+                          AdditionalItemListItemControllerState(
+                            additionalItem: additionalItem,
+                            no: index + 1,
+                            onLoadAdditionalItem: () {},
+                            showEditAndRemoveIcon: false
+                          )
+                        ]
+                      )
+                    )
+                  )
+                ]);
+              }
             }
             ListItemControllerState newBucketMemberListItemControllerState = CompoundListItemControllerState(
               listItemControllerState: [
@@ -618,6 +735,7 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
           return true;
         }
         bool hasBucketMember = false;
+        bool hasRequestBucketMember = false;
         // bucket.userId != bucketMember.userId
         hasBucketMember = iterateBucketMember(
           bucketMemberList: bucket.bucketMemberList.where(
@@ -625,11 +743,13 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
           ).toList(),
           isRequest: false
         );
-        hasBucketMember = !hasBucketMember ? iterateBucketMember(
-          bucketMemberList: bucketLoadDataResult.resultIfSuccess!.bucketMemberRequestList,
-          isRequest: true
-        ) : hasBucketMember;
-        if (!hasBucketMember) {
+        if (loggedUserHostBucket == 1) {
+          hasRequestBucketMember = iterateBucketMember(
+            bucketMemberList: bucketLoadDataResult.resultIfSuccess!.bucketMemberRequestList,
+            isRequest: true
+          );
+        }
+        if (!hasBucketMember && !hasRequestBucketMember) {
           listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
             i,
             ListItemControllerStateWrapper(

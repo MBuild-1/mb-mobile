@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/error_provider_ext.dart';
@@ -260,6 +261,8 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
   CartContainerInterceptingActionListItemControllerState _cartContainerInterceptingActionListItemControllerState = DefaultCartContainerInterceptingActionListItemControllerState();
   String? _bucketId;
   BucketMember? _expandedBucketMember;
+  bool _hasKickedFromBucket = false;
+  final ValueNotifier<dynamic> _fillerErrorValueNotifier = ValueNotifier(null);
 
   @override
   void initState() {
@@ -269,7 +272,8 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
       firstPageKey: 1,
       // ignore: invalid_use_of_protected_member
       apiRequestManager: widget.sharedCartController.apiRequestManager,
-      additionalPagingResultParameterChecker: Injector.locator<SharedCartAdditionalPagingResultParameterChecker>()
+      additionalPagingResultParameterChecker: Injector.locator<SharedCartAdditionalPagingResultParameterChecker>(),
+      fillerErrorValueNotifier: _fillerErrorValueNotifier
     );
     _sharedCartListItemPagingControllerState = PagingControllerState(
       pagingController: _sharedCartListItemPagingController,
@@ -295,14 +299,14 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
   }
 
   Future<void> _updateSharedCartData({bool generateErrorWhileInitOrRefresh = false}) async {
-    int milliseconds = 10;
+    int milliseconds = 0;
 
-    _userLoadDataResult = await widget.sharedCartController.getUser();
-    if (_userLoadDataResult.isFailed) {
-      if (!_userLoadDataResult.isFailedBecauseCancellation) {
+    LoadDataResult<User> userLoadDataResult = await widget.sharedCartController.getUser();
+    if (userLoadDataResult.isFailed) {
+      if (!userLoadDataResult.isFailedBecauseCancellation) {
         void setError() async {
           await Future.delayed(Duration(milliseconds: milliseconds));
-          _sharedCartListItemPagingController.errorFirstPageOuterProcess = _userLoadDataResult.resultIfFailed;
+          _fillerErrorValueNotifier.value = userLoadDataResult.resultIfFailed;
         }
         if (generateErrorWhileInitOrRefresh) {
           WidgetsBinding.instance.addPostFrameCallback((timeStamp) => setError());
@@ -312,14 +316,14 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
         return;
       }
     }
-    _bucketLoadDataResult = (await widget.sharedCartController.showBucketByLoggedUserId()).map<Bucket>(
+    LoadDataResult<Bucket> bucketLoadDataResult = (await widget.sharedCartController.showBucketByLoggedUserId()).map<Bucket>(
       (value) => value.bucket
     );
-    if (_bucketLoadDataResult.isFailed) {
-      if (!_bucketLoadDataResult.isFailedBecauseCancellation) {
+    if (bucketLoadDataResult.isFailed) {
+      if (!bucketLoadDataResult.isFailedBecauseCancellation) {
         void setError() async {
           await Future.delayed(Duration(milliseconds: milliseconds));
-          _sharedCartListItemPagingController.errorFirstPageOuterProcess = _bucketLoadDataResult.resultIfFailed;
+          _fillerErrorValueNotifier.value = bucketLoadDataResult.resultIfFailed;
         }
         if (generateErrorWhileInitOrRefresh) {
           WidgetsBinding.instance.addPostFrameCallback((timeStamp) => setError());
@@ -329,15 +333,15 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
         return;
       }
     }
-    _bucketMemberLoadDataResult = await widget.sharedCartController.getBucketMember(
-      bucketLoadDataResult: _bucketLoadDataResult,
-      parameterUserLoadDataResult: _userLoadDataResult,
+    LoadDataResult<BucketMember> bucketMemberLoadDataResult = await widget.sharedCartController.getBucketMember(
+      bucketLoadDataResult: bucketLoadDataResult,
+      parameterUserLoadDataResult: userLoadDataResult,
     );
-    if (_bucketMemberLoadDataResult.isFailed) {
-      if (!_bucketMemberLoadDataResult.isFailedBecauseCancellation) {
+    if (bucketMemberLoadDataResult.isFailed) {
+      if (!bucketMemberLoadDataResult.isFailedBecauseCancellation) {
         void setError() async {
           await Future.delayed(Duration(milliseconds: milliseconds));
-          _sharedCartListItemPagingController.errorFirstPageOuterProcess = _bucketMemberLoadDataResult.resultIfFailed;
+          _fillerErrorValueNotifier.value = bucketMemberLoadDataResult.resultIfFailed;
         }
         if (generateErrorWhileInitOrRefresh) {
           WidgetsBinding.instance.addPostFrameCallback((timeStamp) => setError());
@@ -347,14 +351,14 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
         return;
       }
     }
-    _cartListLoadDataResult = await widget.sharedCartController.getSharedCartList(
-      bucketMemberParameterLoadDataResult: _bucketMemberLoadDataResult
+    LoadDataResult<List<Cart>> cartListLoadDataResult = await widget.sharedCartController.getSharedCartList(
+      bucketMemberParameterLoadDataResult: bucketMemberLoadDataResult
     );
-    if (_cartListLoadDataResult.isFailed) {
-      if (!_cartListLoadDataResult.isFailedBecauseCancellation) {
+    if (cartListLoadDataResult.isFailed) {
+      if (!cartListLoadDataResult.isFailedBecauseCancellation) {
         void setError() async {
           await Future.delayed(Duration(milliseconds: milliseconds));
-          _sharedCartListItemPagingController.errorFirstPageOuterProcess = _cartListLoadDataResult.resultIfFailed;
+          _fillerErrorValueNotifier.value = cartListLoadDataResult.resultIfFailed;
         }
         if (generateErrorWhileInitOrRefresh) {
           WidgetsBinding.instance.addPostFrameCallback((timeStamp) => setError());
@@ -365,7 +369,14 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
       }
     }
     if (!generateErrorWhileInitOrRefresh) {
-      _sharedCartListItemPagingController.errorFirstPageOuterProcess = null;
+      _fillerErrorValueNotifier.value = null;
+    }
+    if (userLoadDataResult.isSuccess && bucketLoadDataResult.isSuccess
+        && bucketMemberLoadDataResult.isSuccess && bucketMemberLoadDataResult.isSuccess) {
+      _userLoadDataResult = userLoadDataResult;
+      _bucketLoadDataResult = bucketLoadDataResult;
+      _bucketMemberLoadDataResult = bucketMemberLoadDataResult;
+      _cartListLoadDataResult = cartListLoadDataResult;
     }
   }
 
@@ -562,7 +573,8 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
                 onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
                   pagingControllerState: pagingControllerState!
                 ),
-                pullToRefresh: true
+                pullToRefresh: true,
+                onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
               ),
             ),
             if (_cartCount > 0)
@@ -728,6 +740,22 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
   void _updateSharedCartDataAndState() async {
     await _updateSharedCartData();
     setState(() {});
+    if (!_hasKickedFromBucket) {
+      if (_bucketLoadDataResult.isFailed) {
+        dynamic e = _bucketLoadDataResult.resultIfFailed;
+        if (e is DioError) {
+          dynamic data = e.response?.data;
+          if (data is Map<String, dynamic>) {
+            String message = (data["meta"]["message"] as String).toLowerCase();
+            if (message.contains("you need join or create bucket")) {
+              _hasKickedFromBucket = true;
+              Get.back();
+              return;
+            }
+          }
+        }
+      }
+    }
   }
 
   @override

@@ -91,7 +91,8 @@ class _ErrorHelperImpl {
       return lowerCaseMessage.contains("is empty")
         || lowerCaseMessage.contains("empty")
         || lowerCaseMessage.contains("not found")
-        || lowerCaseMessage.contains("will appear");
+        || lowerCaseMessage.contains("will appear")
+        || lowerCaseMessage.contains("there are not");
     }
     EmptyError generateEmptyErrorResult(String lowerCaseMessage) {
       EmptyErrorType emptyErrorType = EmptyErrorType.defaultEmpty;

@@ -284,12 +284,7 @@ class _StatefulNotificationControllerMediatorWidgetState extends State<_Stateful
       LoadDataResult<PagingDataResult<ShortNotification>> shortNotificationPagingLoadDataResult = await widget.notificationController.getNotificationByUser(
         NotificationByUserPagingParameter(
           page: effectivePageKey,
-          search: () {
-            if (_status == "transaction") {
-              return null;
-            }
-            return _status;
-          }()
+          search: _status
         )
       );
       if (shortNotificationPagingLoadDataResult.isSuccess) {

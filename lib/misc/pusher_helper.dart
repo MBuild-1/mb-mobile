@@ -135,6 +135,14 @@ class _PusherHelperImpl {
     return "bucket-request";
   }
 
+  String _getSharedCartBucketApprovedChannelName() {
+    return "bucket-approved";
+  }
+
+  String _getSharedCartBucketCartMirroringChannelName() {
+    return "cart-mirroring";
+  }
+
   Future<PusherChannelsFlutter> subscribeSharedCartPusherChannel({
     required PusherChannelsFlutter pusherChannelsFlutter,
     required dynamic Function(dynamic) onEvent,
@@ -142,7 +150,16 @@ class _PusherHelperImpl {
   }) async {
     try {
       await pusherChannelsFlutter.subscribe(
-        channelName: "${_getSharedCartFirstChannelName()}.$bucketId"
+        channelName: "${_getSharedCartFirstChannelName()}.$bucketId",
+        onEvent: onEvent
+      );
+      await pusherChannelsFlutter.subscribe(
+        channelName: "${_getSharedCartBucketApprovedChannelName()}.$bucketId",
+        onEvent: onEvent
+      );
+      await pusherChannelsFlutter.subscribe(
+        channelName: "${_getSharedCartBucketCartMirroringChannelName()}.$bucketId",
+        onEvent: onEvent
       );
     } catch (e) {
       print("ERROR: $e");
@@ -157,6 +174,12 @@ class _PusherHelperImpl {
     try {
       await pusherChannelsFlutter.unsubscribe(
         channelName: "${_getSharedCartFirstChannelName()}.$bucketId",
+      );
+      await pusherChannelsFlutter.unsubscribe(
+        channelName: "${_getSharedCartBucketApprovedChannelName()}.$bucketId",
+      );
+      await pusherChannelsFlutter.unsubscribe(
+        channelName: "${_getSharedCartBucketCartMirroringChannelName()}.$bucketId",
       );
     } catch (e) {
       print("ERROR: $e");
