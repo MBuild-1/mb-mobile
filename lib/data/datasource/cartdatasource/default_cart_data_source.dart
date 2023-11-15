@@ -270,10 +270,11 @@ class DefaultCartDataSource implements CartDataSource {
   @override
   FutureProcessing<UpdateCartQuantityResponse> updateCartQuantity(UpdateCartQuantityParameter updateCartQuantityParameter) {
     return DioHttpClientProcessing((cancelToken) {
-      dynamic data = {
+      FormData data = FormData.fromMap({
         "quantity": updateCartQuantityParameter.quantity,
-      };
-      return dio.patch("user/cart/${updateCartQuantityParameter.cartId}", data: data, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+        "_method": "PUT"
+      });
+      return dio.post("user/cart/${updateCartQuantityParameter.cartId}", data: data, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
         .map<UpdateCartQuantityResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToUpdateCartQuantityResponse());
     });
   }
