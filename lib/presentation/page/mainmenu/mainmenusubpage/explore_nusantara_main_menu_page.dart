@@ -160,39 +160,46 @@ class _StatefulExploreNusantaraMainMenuSubControllerMediatorWidgetState extends 
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      "Welcome To Nusantara".tr,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold
+                    const SizedBox(height: 16.0),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Text(
+                        "Welcome To Nusantara".tr,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold
+                        ),
                       ),
                     ),
                     const SizedBox(height: 20.0),
-                    RxConsumer<ExploreNusantaraMainMenuControllerState>(
-                      rxValue: widget.exploreNusantaraMainMenuSubController.exploreNusantaraMainMenuControllerStateRx,
-                      onConsumeValue: (context, value) => LoadDataResultImplementer<List<ProvinceMap>>(
-                        loadDataResult: value.provinceMapListLoadDataResult,
-                        errorProvider: Injector.locator<ErrorProvider>(),
-                        onSuccessLoadDataResultWidget: (provinceMapList) {
-                          double width = MediaQuery.of(context).size.width;
-                          double height = width * 350.0 / 1000.0;
-                          return SizedBox(
-                            width: width,
-                            height: height,
-                            child: ModifiedCanvasTouchDetector(
-                              builder: (context) => CustomPaint(
-                                painter: ExploreNusantaraMapCustomPainter(
-                                  context: context,
-                                  provinceMapList: provinceMapList,
-                                  selectedProvinceMap: value.selectedProvinceMap,
-                                  onSelectProvinceMap: (provinceMap) {
-                                    widget.exploreNusantaraMainMenuSubController.selectProvinceMap(provinceMap);
-                                  },
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: RxConsumer<ExploreNusantaraMainMenuControllerState>(
+                        rxValue: widget.exploreNusantaraMainMenuSubController.exploreNusantaraMainMenuControllerStateRx,
+                        onConsumeValue: (context, value) => LoadDataResultImplementer<List<ProvinceMap>>(
+                          loadDataResult: value.provinceMapListLoadDataResult,
+                          errorProvider: Injector.locator<ErrorProvider>(),
+                          onSuccessLoadDataResultWidget: (provinceMapList) {
+                            double width = MediaQuery.of(context).size.width;
+                            double height = width * 350.0 / 1000.0;
+                            return SizedBox(
+                              width: width,
+                              height: height,
+                              child: ModifiedCanvasTouchDetector(
+                                builder: (context) => CustomPaint(
+                                  painter: ExploreNusantaraMapCustomPainter(
+                                    context: context,
+                                    provinceMapList: provinceMapList,
+                                    selectedProvinceMap: value.selectedProvinceMap,
+                                    onSelectProvinceMap: (provinceMap) {
+                                      widget.exploreNusantaraMainMenuSubController.selectProvinceMap(provinceMap);
+                                    },
+                                  )
                                 )
                               )
-                            )
-                          );
-                        }
+                            );
+                          }
+                        ),
                       ),
                     ),
                     const SizedBox(height: 10.0),
