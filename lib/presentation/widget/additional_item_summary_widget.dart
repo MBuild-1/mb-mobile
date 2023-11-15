@@ -21,8 +21,8 @@ class AdditionalItemSummaryWidget extends StatelessWidget {
     int i = 0;
     while (i < additionalItemList.length) {
       AdditionalItem additionalItem = additionalItemList[i];
-      totalEstimationPrice += additionalItem.estimationPrice;
-      totalEstimationWeight += additionalItem.estimationWeight;
+      totalEstimationPrice += additionalItem.estimationPrice * additionalItem.quantity;
+      totalEstimationWeight += additionalItem.estimationWeight * additionalItem.quantity;
       i++;
     }
     return Column(
