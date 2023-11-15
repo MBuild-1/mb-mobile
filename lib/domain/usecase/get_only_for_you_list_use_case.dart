@@ -19,7 +19,7 @@ class GetOnlyForYouListUseCase {
         page: 1,
         itemEachPageCount: 10,
         withCondition: {
-          'fyp': true,
+          'best-seller': true,
         }
       )
     ).map(
