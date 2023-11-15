@@ -275,7 +275,8 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
             onBuyAgainTap: (order) {
               widget.orderDetailController.repurchaseControllerContentDelegate.repurchase(order.id);
             },
-            onUpdateState: () => setState(() {})
+            onUpdateState: () => setState(() {}),
+            onShowOrderListIsClosedDialog: () => DialogHelper.showOrderListIsClosed(context)
           )
         ],
         page: 1,

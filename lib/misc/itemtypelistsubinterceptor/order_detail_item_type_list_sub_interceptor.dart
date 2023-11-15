@@ -42,9 +42,11 @@ import '../controllerstate/listitemcontrollerstate/spacing_list_item_controller_
 import '../controllerstate/listitemcontrollerstate/title_and_description_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/widget_substitution_list_item_controller_state.dart';
+import '../dialog_helper.dart';
 import '../http_client.dart';
 import '../itemtypelistinterceptor/itemtypelistinterceptorchecker/list_item_controller_state_item_type_list_interceptor_checker.dart';
 import '../multi_language_string.dart';
+import '../page_restoration_helper.dart';
 import '../typedef.dart';
 import '../web_helper.dart';
 import 'item_type_list_sub_interceptor.dart';
@@ -479,6 +481,8 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
     List<ListItemControllerState> newListItemControllerState
   ) {
     CombinedOrder order = orderDetailContainerListItemControllerState.order.combinedOrder;
+    String inStatus = order.inStatus.toEmptyStringNonNull.toLowerCase();
+    bool canAddWarehouse = inStatus == "menunggu konfirmasi" || inStatus == "pesanan diproses" || inStatus == "orderlist sedang dibelanjakan" || inStatus == "orderlist sudah dibelanjakan";
     List<AdditionalItem> additionalItemList = order.orderProduct.additionalItemList;
     newListItemControllerState.add(
       VirtualSpacingListItemControllerState(height: padding())
@@ -495,16 +499,22 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
             ),
           ),
           TapArea(
-            onTap: () => orderDetailContainerListItemControllerState.onModifyWarehouseInOrder(
-              AddWarehouseInOrderParameter(
-                orderProductId: order.orderProductId,
-                allRequiredFieldsWarehouseInOrderItemList: []
-              )
-            ),
+            onTap: () {
+              if (canAddWarehouse) {
+                orderDetailContainerListItemControllerState.onModifyWarehouseInOrder(
+                  AddWarehouseInOrderParameter(
+                    orderProductId: order.orderProductId,
+                    allRequiredFieldsWarehouseInOrderItemList: []
+                  )
+                );
+              } else {
+                orderDetailContainerListItemControllerState.onShowOrderListIsClosedDialog();
+              }
+            },
             child: Text(
               "Add Item".tr,
               style: TextStyle(
-                color: Constant.colorMain,
+                color: canAddWarehouse ? Constant.colorMain : Constant.colorGrey6,
                 fontWeight: FontWeight.bold
               )
             ),

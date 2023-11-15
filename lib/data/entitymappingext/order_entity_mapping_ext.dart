@@ -80,6 +80,7 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
       picId: response["pic_id"],
       picTakeoverId: response["pic_takeover_id"],
       status: response["status"],
+      inStatus: response["in_status"],
       takeoverAt: response["takeover_at"] != null ? ResponseWrapper(response["takeover_at"]).mapFromResponseToDateTime() : null,
       review: response["review"],
       coupon: response["coupon"] != null ? ResponseWrapper(response["coupon"]).mapFromResponseToCoupon() : null,

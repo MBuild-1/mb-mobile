@@ -696,6 +696,39 @@ class _DialogHelperImpl {
     );
   }
 
+  void showOrderListIsClosed(BuildContext context) {
+    DialogHelper.showPromptOkDialog(
+      context: context,
+      prompt: (context) => Column(
+        children: [
+          Text(
+            MultiLanguageString({
+              Constant.textEnUsLanguageKey: "Orderlist is Closed",
+              Constant.textInIdLanguageKey: "Orderlist Sudah Ditutup"
+            }).toEmptyStringNonNull,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18
+            ),
+            textAlign: TextAlign.center
+          ),
+          const SizedBox(height: 4),
+          Text(
+            MultiLanguageString({
+              Constant.textEnUsLanguageKey: "Because orderlist is closed, you cannot add warehouse again.",
+              Constant.textInIdLanguageKey: "Karena orderlist sudah ditutup, Anda tidak dapat menambahkan warehouse lagi."
+            }).toEmptyStringNonNull,
+            textAlign: TextAlign.center
+          ),
+          const SizedBox(height: 4),
+        ]
+      ),
+      onOkPromptButtonTap: (_) async {
+        Get.back();
+      },
+    );
+  }
+
   Future<T?> showModalBottomSheetPage<T>({
     required BuildContext context,
     Color? backgroundColor = Colors.transparent,

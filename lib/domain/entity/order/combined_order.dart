@@ -15,6 +15,7 @@ class CombinedOrder {
   String? picId;
   String? picTakeoverId;
   String status;
+  String? inStatus;
   DateTime? takeoverAt;
   int review;
   Coupon? coupon;
@@ -35,6 +36,7 @@ class CombinedOrder {
     this.picId,
     this.picTakeoverId,
     required this.status,
+    required this.inStatus,
     this.takeoverAt,
     required this.review,
     this.coupon,
