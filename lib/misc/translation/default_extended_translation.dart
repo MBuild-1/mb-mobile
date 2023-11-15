@@ -64,7 +64,7 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Shared Cart": "Keranjang Bersama",
       "Host": "Tuan Rumah",
       "Add Send Additional Items": "Tambah Kirim Barang",
-      "Disable Send Additional Items": "Nonaktifkan Tambah Kirim Barang",
+      "Close Send Additional Items": "Tutup Tambah Kirim Barang",
       "Enter The Items You Want To Send Along With The Estimated Weight and Price": "Masukan Barang Yang Mau Dikirim Beserta Estimasi Berat dan Harga",
       "Add Item": "Tambah Barang",
       "Add New Item": "Tambah Barang Baru",

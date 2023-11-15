@@ -268,9 +268,12 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
           cartContainerStateStorageListItemControllerState._checkingAdditionalItemLoadDataResult = additionalItemListLoadDataResult;
           oldItemType.onUpdateState();
           if (additionalItemListLoadDataResult.isSuccess) {
-            onEnableOrDisableAdditionalItemClick(
-              scrollToAdditionalItemSection: false
-            );
+            List<AdditionalItem> checkingResultAdditionalItemList = additionalItemListLoadDataResult.resultIfSuccess!;
+            if (checkingResultAdditionalItemList.isNotEmpty) {
+              onEnableOrDisableAdditionalItemClick(
+                scrollToAdditionalItemSection: false
+              );
+            }
           }
         }
       }
@@ -333,7 +336,7 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
                       if (checkingAdditionalItemLoadDataResult.isSuccess || checkingAdditionalItemLoadDataResult.isFailed) {
                         String text = "Add Send Additional Items".tr;
                         if (cartContainerStateStorageListItemControllerState._enableSendAdditionalItems) {
-                          text = "Disable Send Additional Items".tr;
+                          text = "Close Send Additional Items".tr;
                         }
                         return Center(
                           child: Text(
