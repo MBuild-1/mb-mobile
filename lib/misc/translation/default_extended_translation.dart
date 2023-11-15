@@ -126,8 +126,8 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Account Privation": "Privasi Akun",
       "Manage data usage and connected accounts": "Atur penggunaan data & akun yang tersambung",
       "Apps Configuration": "Pengaturan Aplikasi",
-      "Regarding MasterBagasi": "Seputar MasterBagasi",
-      "About MasterBagasi": "Tentang MasterBagasi",
+      "Regarding Master Bagasi": "Seputar Master Bagasi",
+      "About Master Bagasi": "Tentang Master Bagasi",
       "Terms & Conditions": "Syarat & Ketentuan",
       "Privacy Policy": "Kebijakan Privasi",
       "Intellectual Rights and Property": "Hak dan Kekayaan Intelektual",
@@ -164,7 +164,7 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Remove Coupon": "Hapus Kupon",
       "Success add to wishlist": "Sukses tambahkan ke wishlist",
       "Delivered to": "Dikirim ke",
-      "Search in Masterbagasi": "Cari di Masterbagasi",
+      "Search in Master Bagasi": "Cari di Master Bagasi",
       "Our shipping price list": "Daftar harga pengiriman kami",
       "Not Selected": "Belum Dipilih",
       "Select Country": "Pilih Negara",
@@ -320,7 +320,8 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "No Email": "Tidak Ada Email",
       "Cancel Register": "Batalkan Pendaftaran",
       "Product Category": "Kategori Produk",
-      "Description": "Deskripsi"
+      "Description": "Deskripsi",
+      "Success mark this cart to be checkout by host": "Sukses menandai keranjang ini siap dicheckout oleh host"
     }
   };
 
@@ -330,7 +331,7 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       'New to MasterBagasi': (signUpTapGestureRecognizer) => TextSpan(
         children: <InlineSpan>[
           const TextSpan(
-            text: "Don't have a MasterBagasi account yet? ",
+            text: "Don't have a Master Bagasi account yet? ",
           ),
           TextSpan(
             text: "Sign Up",
@@ -367,12 +368,20 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       'Miss Indonesian Food': (loginTapGestureRecognizer) => TextSpan(
         children: <InlineSpan>[
           const TextSpan(
-            text: "Miss Indonesian Food? ",
-            style: TextStyle(fontWeight: FontWeight.bold)
+            text: "Miss Indonesian Food?\r\n",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.grey,
+              fontSize: 12.0
+            )
           ),
           TextSpan(
-            text: "let's login",
-            style: TextStyle(color: Constant.colorHyperlink, fontWeight: FontWeight.bold),
+            text: "let's login!",
+            style: TextStyle(
+              color: Constant.colorMain,
+              fontWeight: FontWeight.bold,
+              fontSize: 17.0
+            ),
             recognizer: loginTapGestureRecognizer
           ),
         ]
@@ -382,7 +391,7 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       'New to MasterBagasi': (signUpTapGestureRecognizer) => TextSpan(
         children: <InlineSpan>[
           const TextSpan(
-            text: "Belum punya akun MasterBagasi? ",
+            text: "Belum punya akun Master Bagasi? ",
           ),
           TextSpan(
             text: "Daftar",
@@ -419,11 +428,20 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       'Miss Indonesian Food': (loginTapGestureRecognizer) => TextSpan(
         children: <InlineSpan>[
           const TextSpan(
-            text: "Kangen Makanan Indonesia? ",
+            text: "Kangen Makanan Indonesia?\r\n",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.grey,
+              fontSize: 12.0
+            )
           ),
           TextSpan(
-            text: "masuk, yuk",
-            style: TextStyle(color: Constant.colorHyperlink),
+            text: "masuk, yuk!",
+            style: TextStyle(
+              color: Constant.colorMain,
+              fontWeight: FontWeight.bold,
+              fontSize: 17.0
+            ),
             recognizer: loginTapGestureRecognizer
           ),
         ]

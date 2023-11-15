@@ -84,7 +84,7 @@ class CoreSearchAppBar extends SearchAppBar {
                   Widget textField = TextField(
                     controller: searchTextEditingController,
                     decoration: InputDecoration.collapsed(
-                      hintText: "Search in Masterbagasi".tr,
+                      hintText: "Search in Master Bagasi".tr,
                       hintStyle: TextStyle(
                         color: Constant.colorGrey8
                       )

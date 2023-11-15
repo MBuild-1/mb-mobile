@@ -10,6 +10,7 @@ import 'package:masterbagasi/misc/ext/validation_result_ext.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:provider/provider.dart';
+import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../controller/login_controller.dart';
@@ -22,6 +23,7 @@ import '../../domain/entity/register/sendregisterotp/sendregisterotpresponse/sen
 import '../../domain/entity/register/sendregisterotp/sendregisterotpresponse/wa_send_register_otp_response.dart';
 import '../../domain/entity/register/verify_register_parameter.dart';
 import '../../domain/usecase/get_country_list_use_case.dart';
+import '../../domain/usecase/get_user_use_case.dart';
 import '../../domain/usecase/register_first_step_use_case.dart';
 import '../../domain/usecase/register_second_step_use_case.dart';
 import '../../domain/usecase/register_use_case.dart';
@@ -43,6 +45,7 @@ import '../../misc/manager/controller_manager.dart';
 import '../../misc/multi_language_string.dart';
 import '../../misc/navigation_helper.dart';
 import '../../misc/page_restoration_helper.dart';
+import '../../misc/pusher_helper.dart';
 import '../../misc/recognizer/sign_up_recognizer.dart';
 import '../../misc/registerstep/first_register_step.dart';
 import '../../misc/registerstep/register_step.dart';
@@ -64,6 +67,7 @@ import '../widget/modifiedappbar/modified_app_bar.dart';
 import '../widget/normal_text_style_for_appbar.dart';
 import '../widget/password_obscurer.dart';
 import '../widget/rx_consumer.dart';
+import '../widget/something_counter.dart';
 import '../widget/tap_area.dart';
 import 'getx_page.dart';
 import 'web_viewer_page.dart';
@@ -84,7 +88,8 @@ class RegisterPage extends RestorableGetxPage<_RegisterPageRestoration> {
         Injector.locator<SendRegisterOtpUseCase>(),
         Injector.locator<VerifyRegisterUseCase>(),
         Injector.locator<RegisterSecondStepUseCase>(),
-        Injector.locator<GetCountryListUseCase>()
+        Injector.locator<GetCountryListUseCase>(),
+        Injector.locator<GetUserUseCase>()
       ), tag: pageName
     );
   }
@@ -316,7 +321,8 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
           return googleSignInAuthentication.idToken;
         },
         onSaveToken: (token) => LoginHelper.saveToken(token).future(),
-        onGetPushNotificationSubscriptionId: () => OneSignal.User.pushSubscription.id.toEmptyStringNonNull
+        onGetPushNotificationSubscriptionId: () => OneSignal.User.pushSubscription.id.toEmptyStringNonNull,
+        onSubscribeChatCountRealtimeChannel: (userId) async => await SomethingCounter.of(context)?.subscribeChatCount(userId)
       )
     );
     return WillPopScope(

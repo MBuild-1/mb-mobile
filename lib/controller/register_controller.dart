@@ -5,7 +5,6 @@ import 'package:masterbagasi/misc/ext/rx_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/misc/ext/validation_result_ext.dart';
 
-import '../domain/entity/address/country.dart';
 import '../domain/entity/address/country_list_parameter.dart';
 import '../domain/entity/register/register_first_step_parameter.dart';
 import '../domain/entity/register/register_first_step_response.dart';
@@ -19,7 +18,10 @@ import '../domain/entity/register/sendregisterotp/sendregisterotpparameter/send_
 import '../domain/entity/register/sendregisterotp/sendregisterotpresponse/send_register_otp_response.dart';
 import '../domain/entity/register/verify_register_parameter.dart';
 import '../domain/entity/register/verify_register_response.dart';
+import '../domain/entity/user/getuser/get_user_parameter.dart';
+import '../domain/entity/user/user.dart';
 import '../domain/usecase/get_country_list_use_case.dart';
+import '../domain/usecase/get_user_use_case.dart';
 import '../domain/usecase/register_first_step_use_case.dart';
 import '../domain/usecase/register_second_step_use_case.dart';
 import '../domain/usecase/register_use_case.dart';
@@ -29,7 +31,6 @@ import '../domain/usecase/verify_register_use_case.dart';
 import '../misc/constant.dart';
 import '../misc/error/validation_error.dart';
 import '../misc/load_data_result.dart';
-import '../misc/login_helper.dart';
 import '../misc/manager/controller_manager.dart';
 import '../misc/multi_language_string.dart';
 import '../misc/registerstep/first_register_step.dart';
@@ -41,11 +42,9 @@ import '../misc/registerstep/verify_register_step.dart';
 import '../misc/string_util.dart';
 import '../misc/typedef.dart';
 import '../misc/validation/validation_result.dart';
-import '../misc/validation/validationresult/is_email_success_validation_result.dart';
 import '../misc/validation/validationresult/is_phone_number_success_validation_result.dart';
 import '../misc/validation/validator/compoundvalidator/password_compound_validator.dart';
 import '../misc/validation/validator/email_or_phone_number_validator.dart';
-import '../misc/validation/validator/email_validator.dart';
 import '../misc/validation/validator/validator.dart';
 import '../misc/validation/validatorgroup/register_second_step_validator_group.dart';
 import '../misc/validation/validatorgroup/register_validator_group.dart';
@@ -76,6 +75,7 @@ class RegisterController extends BaseGetxController {
   final VerifyRegisterUseCase verifyRegisterUseCase;
   final RegisterSecondStepUseCase registerSecondStepUseCase;
   final GetCountryListUseCase getCountryListUseCase;
+  final GetUserUseCase getUserUseCase;
 
   late final Validator _emailOrPhoneNumberValidator;
 
@@ -104,7 +104,8 @@ class RegisterController extends BaseGetxController {
     this.sendRegisterOtpUseCase,
     this.verifyRegisterUseCase,
     this.registerSecondStepUseCase,
-    this.getCountryListUseCase
+    this.getCountryListUseCase,
+    this.getUserUseCase
   ) : super(controllerManager) {
     // Register step
     RegisterStep firstRegisterStep = FirstRegisterStep(
@@ -350,15 +351,28 @@ class RegisterController extends BaseGetxController {
             name: _registerDelegate!.onGetNameRegisterInput(),
             password: _registerDelegate!.onGetPasswordRegisterInput(),
             passwordConfirmation: _registerDelegate!.onGetPasswordConfirmationRegisterInput(),
+            pushNotificationSubscriptionId: _registerDelegate!.onGetPushNotificationSubscriptionId()
           )
         ).future(
           parameter: apiRequestManager.addRequestToCancellationPart('register-second-step').value
         );
-        _registerDelegate!.onRegisterBack();
         if (registerSecondStepLoadDataResult.isSuccess) {
           await _registerDelegate!.onSaveToken(registerSecondStepLoadDataResult.resultIfSuccess!.token);
+          LoadDataResult<User> userLoadDataResult = await getUserUseCase.execute(
+            GetUserParameter()
+          ).future(
+            parameter: apiRequestManager.addRequestToCancellationPart('get-user-after-register').value
+          ).map<User>(
+            (getUserResponse) => getUserResponse.user
+          );
+          if (userLoadDataResult.isSuccess) {
+            User user = userLoadDataResult.resultIfSuccess!;
+            await _registerDelegate!.onSubscribeChatCountRealtimeChannel(user.id);
+          }
+          _registerDelegate!.onRegisterBack();
           _registerDelegate!.onRegisterRequestProcessSuccessCallback();
         } else {
+          _registerDelegate!.onRegisterBack();
           _registerDelegate!.onShowRegisterRequestProcessFailedCallback(registerSecondStepLoadDataResult.resultIfFailed);
         }
       }
@@ -381,11 +395,23 @@ class RegisterController extends BaseGetxController {
         ).future(
           parameter: apiRequestManager.addRequestToCancellationPart('register').value
         );
-        _registerDelegate!.onRegisterBack();
         if (registerLoadDataResult.isSuccess) {
           await _registerDelegate!.onSaveToken(registerLoadDataResult.resultIfSuccess!.token);
+          LoadDataResult<User> userLoadDataResult = await getUserUseCase.execute(
+            GetUserParameter()
+          ).future(
+            parameter: apiRequestManager.addRequestToCancellationPart('get-user-after-register').value
+          ).map<User>(
+            (getUserResponse) => getUserResponse.user
+          );
+          if (userLoadDataResult.isSuccess) {
+            User user = userLoadDataResult.resultIfSuccess!;
+            await _registerDelegate!.onSubscribeChatCountRealtimeChannel(user.id);
+          }
+          _registerDelegate!.onRegisterBack();
           _registerDelegate!.onRegisterRequestProcessSuccessCallback();
         } else {
+          _registerDelegate!.onRegisterBack();
           _registerDelegate!.onShowRegisterRequestProcessFailedCallback(registerLoadDataResult.resultIfFailed);
         }
       }
@@ -406,11 +432,23 @@ class RegisterController extends BaseGetxController {
         ).future(
           parameter: apiRequestManager.addRequestToCancellationPart('register-with-google').value
         );
-        _registerDelegate!.onRegisterBack();
         if (registerWithGoogleLoadDataResult.isSuccess) {
           await _registerDelegate!.onSaveToken(registerWithGoogleLoadDataResult.resultIfSuccess!.token);
+          LoadDataResult<User> userLoadDataResult = await getUserUseCase.execute(
+            GetUserParameter()
+          ).future(
+            parameter: apiRequestManager.addRequestToCancellationPart('get-user-after-register').value
+          ).map<User>(
+            (getUserResponse) => getUserResponse.user
+          );
+          if (userLoadDataResult.isSuccess) {
+            User user = userLoadDataResult.resultIfSuccess!;
+            await _registerDelegate!.onSubscribeChatCountRealtimeChannel(user.id);
+          }
+          _registerDelegate!.onRegisterBack();
           _registerDelegate!.onRegisterRequestProcessSuccessCallback();
         } else {
+          _registerDelegate!.onRegisterBack();
           _registerDelegate!.onShowRegisterRequestProcessFailedCallback(registerWithGoogleLoadDataResult.resultIfFailed);
         }
       }
@@ -460,6 +498,7 @@ class RegisterDelegate {
   _OnRegisterWithGoogle onRegisterWithGoogle;
   _OnSaveToken onSaveToken;
   OnGetPushNotificationSubscriptionId onGetPushNotificationSubscriptionId;
+  Future<void> Function(String) onSubscribeChatCountRealtimeChannel;
 
   RegisterDelegate({
     required this.onUnfocusAllWidget,
@@ -482,6 +521,7 @@ class RegisterDelegate {
     required this.onShowVerifyRegisterRequestProcessFailedCallback,
     required this.onRegisterWithGoogle,
     required this.onSaveToken,
-    required this.onGetPushNotificationSubscriptionId
+    required this.onGetPushNotificationSubscriptionId,
+    required this.onSubscribeChatCountRealtimeChannel
   });
 }

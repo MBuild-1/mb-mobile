@@ -15,10 +15,12 @@ import 'video/default_video_item.dart';
 
 class DefaultVideoCarouselListItem extends StatefulWidget {
   final LoadDataResult<List<DefaultVideo>> defaultVideoListLoadDataResult;
+  final bool footerAdditionalPadding;
 
   const DefaultVideoCarouselListItem({
     Key? key,
     required this.defaultVideoListLoadDataResult,
+    required this.footerAdditionalPadding
   }) : super(key: key);
 
   @override
@@ -70,7 +72,7 @@ class DefaultVideoCarouselListItemState extends State<DefaultVideoCarouselListIt
       child: Stack(
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(vertical: 30),
+            padding: EdgeInsets.only(top: 30, bottom: 30 + (widget.footerAdditionalPadding ? (Constant.mainMenuFooterHeight - Constant.paddingListItem) : 0)),
             color: Colors.black,
             child: Column(
               children: [

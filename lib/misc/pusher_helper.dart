@@ -31,11 +31,12 @@ class _PusherHelperImpl {
 
   Future<PusherChannelsFlutter> subscribeChatCountPusherChannel({
     required PusherChannelsFlutter pusherChannelsFlutter,
-    required dynamic Function(dynamic) onEvent
+    required dynamic Function(dynamic) onEvent,
+    required String userId
   }) async {
     try {
       await pusherChannelsFlutter.subscribe(
-        channelName: _getChatCountChannelName(),
+        channelName: "${_getChatCountChannelName()}.$userId",
         onEvent: onEvent
       );
     } catch (e) {
@@ -45,11 +46,12 @@ class _PusherHelperImpl {
   }
 
   Future<PusherChannelsFlutter> unsubscribeChatCountPusherChannel({
-    required PusherChannelsFlutter pusherChannelsFlutter
+    required PusherChannelsFlutter pusherChannelsFlutter,
+    required String userId
   }) async {
     try {
       await pusherChannelsFlutter.unsubscribe(
-        channelName: _getChatCountChannelName()
+        channelName: "${_getChatCountChannelName()}.$userId",
       );
     } catch (e) {
       print("ERROR: $e");

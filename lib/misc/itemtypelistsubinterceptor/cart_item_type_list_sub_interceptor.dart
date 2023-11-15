@@ -16,6 +16,7 @@ import '../../domain/entity/wishlist/support_wishlist.dart';
 import '../../presentation/page/modaldialogpage/add_additional_item_modal_dialog_page.dart';
 import '../../presentation/widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../../presentation/widget/colorful_chip.dart';
+import '../../presentation/widget/modified_loading_indicator.dart';
 import '../../presentation/widget/sharedcart/shared_cart_member_item.dart';
 import '../acceptordeclinesharedcartmemberparameter/accept_shared_cart_member_parameter.dart';
 import '../acceptordeclinesharedcartmemberparameter/decline_shared_cart_member_parameter.dart';
@@ -95,6 +96,9 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
             )
           ),
           SpacingListItemControllerState(),
+          VirtualSpacingListItemControllerState(
+            height: padding()
+          ),
           PaddingContainerListItemControllerState(
             padding: EdgeInsets.symmetric(horizontal: padding()),
             paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
@@ -195,6 +199,81 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
       CartContainerStateStorageListItemControllerState cartContainerStateStorageListItemControllerState = oldItemType.cartContainerStateStorageListItemControllerState;
       CartContainerActionListItemControllerState cartContainerActionListItemControllerState = oldItemType.cartContainerActionListItemControllerState;
       CartContainerInterceptingActionListItemControllerState cartContainerInterceptingActionListItemControllerState = oldItemType.cartContainerInterceptingActionListItemControllerState;
+      void loadAdditionalItem(bool scrollToAdditionalItemSection) async {
+        if (cartContainerStateStorageListItemControllerState is DefaultCartContainerStateStorageListItemControllerState) {
+          cartContainerStateStorageListItemControllerState._additionalItemLoadDataResult = IsLoadingLoadDataResult<List<AdditionalItem>>();
+          oldItemType.onUpdateState();
+          if (scrollToAdditionalItemSection) {
+            WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+              oldItemType.onScrollToAdditionalItemsSection();
+            });
+          }
+          LoadDataResult<List<AdditionalItem>> additionalItemListLoadDataResult = await cartContainerActionListItemControllerState.getAdditionalItemList(AdditionalItemListParameter());
+          if (additionalItemListLoadDataResult.isFailedBecauseCancellation) {
+            return;
+          }
+          if (additionalItemListLoadDataResult.isSuccess) {
+            oldItemType.additionalItemList.clear();
+            oldItemType.additionalItemList.addAll(additionalItemListLoadDataResult.resultIfSuccess!);
+          }
+          cartContainerStateStorageListItemControllerState._additionalItemLoadDataResult = additionalItemListLoadDataResult;
+          oldItemType.onUpdateState();
+          if (scrollToAdditionalItemSection) {
+            WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+              oldItemType.onScrollToAdditionalItemsSection();
+            });
+          }
+        }
+      }
+      void removeAdditionalItem(AdditionalItem additionalItem) async {
+        if (cartContainerStateStorageListItemControllerState is DefaultCartContainerStateStorageListItemControllerState) {
+          cartContainerStateStorageListItemControllerState._additionalItemLoadDataResult = IsLoadingLoadDataResult<List<AdditionalItem>>();
+          oldItemType.onUpdateState();
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            oldItemType.onScrollToAdditionalItemsSection();
+          });
+          LoadDataResult<RemoveAdditionalItemResponse> removeAdditionalItemResponseLoadDataResult = await cartContainerActionListItemControllerState.removeAdditionalItem(
+            RemoveAdditionalItemParameter(additionalItemId: additionalItem.id)
+          );
+          if (removeAdditionalItemResponseLoadDataResult.isFailedBecauseCancellation) {
+            return;
+          }
+          loadAdditionalItem(true);
+        }
+      }
+      void onEnableOrDisableAdditionalItemClick({bool scrollToAdditionalItemSection = true}) {
+        if (cartContainerStateStorageListItemControllerState is DefaultCartContainerStateStorageListItemControllerState) {
+          cartContainerStateStorageListItemControllerState._enableSendAdditionalItems = !cartContainerStateStorageListItemControllerState._enableSendAdditionalItems;
+          if (cartContainerStateStorageListItemControllerState._enableSendAdditionalItems) {
+            loadAdditionalItem(scrollToAdditionalItemSection);
+            if (scrollToAdditionalItemSection) {
+              WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                oldItemType.onScrollToAdditionalItemsSection();
+              });
+            }
+          } else {
+            oldItemType.additionalItemList.clear();
+          }
+          oldItemType.onUpdateState();
+        }
+      }
+      void checkAdditionalItem() async {
+        if (cartContainerStateStorageListItemControllerState is DefaultCartContainerStateStorageListItemControllerState) {
+          cartContainerStateStorageListItemControllerState._checkingAdditionalItemLoadDataResult = IsLoadingLoadDataResult<List<AdditionalItem>>();
+          oldItemType.onUpdateState();
+          LoadDataResult<List<AdditionalItem>> additionalItemListLoadDataResult = await cartContainerActionListItemControllerState.getAdditionalItemList(AdditionalItemListParameter());
+          if (additionalItemListLoadDataResult.isFailedBecauseCancellation) {
+            return;
+          }
+          cartContainerStateStorageListItemControllerState._checkingAdditionalItemLoadDataResult = additionalItemListLoadDataResult;
+          oldItemType.onUpdateState();
+          if (additionalItemListLoadDataResult.isSuccess) {
+            onEnableOrDisableAdditionalItemClick(
+              scrollToAdditionalItemSection: false
+            );
+          }
+        }
+      }
       if (cartContainerStateStorageListItemControllerState is DefaultCartContainerStateStorageListItemControllerState) {
         if (selectedCount != cartContainerStateStorageListItemControllerState._lastSelectedCount) {
           cartContainerStateStorageListItemControllerState._lastSelectedCount = selectedCount;
@@ -206,6 +285,12 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
           cartContainerStateStorageListItemControllerState._lastCartCount = cartListItemControllerStateList.length;
           WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
             oldItemType.onCartChange();
+          });
+        }
+        if (cartContainerStateStorageListItemControllerState._checkingAdditionalItemLoadDataResult is NoLoadDataResult<List<AdditionalItem>>) {
+          cartContainerStateStorageListItemControllerState._checkingAdditionalItemLoadDataResult = IsLoadingLoadDataResult<List<AdditionalItem>>();
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            checkAdditionalItem();
           });
         }
       }
@@ -224,44 +309,6 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
         };
         cartContainerInterceptingActionListItemControllerState._getCartCount = () => cartListItemControllerStateList.length;
       }
-      void loadAdditionalItem() async {
-        if (cartContainerStateStorageListItemControllerState is DefaultCartContainerStateStorageListItemControllerState) {
-          cartContainerStateStorageListItemControllerState._additionalItemLoadDataResult = IsLoadingLoadDataResult<List<AdditionalItem>>();
-          oldItemType.onUpdateState();
-          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-            oldItemType.onScrollToAdditionalItemsSection();
-          });
-          LoadDataResult<List<AdditionalItem>> additionalItemListLoadDataResult = await cartContainerActionListItemControllerState.getAdditionalItemList(AdditionalItemListParameter());
-          if (additionalItemListLoadDataResult.isFailedBecauseCancellation) {
-            return;
-          }
-          if (additionalItemListLoadDataResult.isSuccess) {
-            oldItemType.additionalItemList.clear();
-            oldItemType.additionalItemList.addAll(additionalItemListLoadDataResult.resultIfSuccess!);
-          }
-          cartContainerStateStorageListItemControllerState._additionalItemLoadDataResult = additionalItemListLoadDataResult;
-          oldItemType.onUpdateState();
-          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-            oldItemType.onScrollToAdditionalItemsSection();
-          });
-        }
-      }
-      void removeAdditionalItem(AdditionalItem additionalItem) async {
-        if (cartContainerStateStorageListItemControllerState is DefaultCartContainerStateStorageListItemControllerState) {
-          cartContainerStateStorageListItemControllerState._additionalItemLoadDataResult = IsLoadingLoadDataResult<List<AdditionalItem>>();
-          oldItemType.onUpdateState();
-          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-            oldItemType.onScrollToAdditionalItemsSection();
-          });
-          LoadDataResult<RemoveAdditionalItemResponse> removeAdditionalItemResponseLoadDataResult = await cartContainerActionListItemControllerState.removeAdditionalItem(
-            RemoveAdditionalItemParameter(additionalItemId: additionalItem.id)
-          );
-          if (removeAdditionalItemResponseLoadDataResult.isFailedBecauseCancellation) {
-            return;
-          }
-          loadAdditionalItem();
-        }
-      }
       if (oldItemType is! SharedCartContainerListItemControllerState) {
         newItemTypeList.add(VirtualSpacingListItemControllerState(height: 10.0));
         newItemTypeList.add(
@@ -272,28 +319,36 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
                 return SizedOutlineGradientButton(
                   onPressed: () {
                     if (cartContainerStateStorageListItemControllerState is DefaultCartContainerStateStorageListItemControllerState) {
-                      cartContainerStateStorageListItemControllerState._enableSendAdditionalItems = !cartContainerStateStorageListItemControllerState._enableSendAdditionalItems;
-                      if (cartContainerStateStorageListItemControllerState._enableSendAdditionalItems) {
-                        loadAdditionalItem();
-                        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                          oldItemType.onScrollToAdditionalItemsSection();
-                        });
-                      } else {
-                        oldItemType.additionalItemList.clear();
+                      var checkingAdditionalItemLoadDataResult = cartContainerStateStorageListItemControllerState._checkingAdditionalItemLoadDataResult;
+                      if (checkingAdditionalItemLoadDataResult.isSuccess || checkingAdditionalItemLoadDataResult.isFailed) {
+                        return onEnableOrDisableAdditionalItemClick;
                       }
-                      oldItemType.onUpdateState();
+                      return null;
                     }
-                  },
-                  text: () {
-                    String text = "Add Send Additional Items".tr;
-                    if (cartContainerStateStorageListItemControllerState is DefaultCartContainerStateStorageListItemControllerState) {
-                      if (cartContainerStateStorageListItemControllerState._enableSendAdditionalItems) {
-                        text = "Disable Send Additional Items".tr;
-                      }
-                    }
-                    return text;
                   }(),
-                  outlineGradientButtonType: OutlineGradientButtonType.solid,
+                  text: "",
+                  childInterceptor: (style) {
+                    if (cartContainerStateStorageListItemControllerState is DefaultCartContainerStateStorageListItemControllerState) {
+                      var checkingAdditionalItemLoadDataResult = cartContainerStateStorageListItemControllerState._checkingAdditionalItemLoadDataResult;
+                      if (checkingAdditionalItemLoadDataResult.isSuccess || checkingAdditionalItemLoadDataResult.isFailed) {
+                        String text = "Add Send Additional Items".tr;
+                        if (cartContainerStateStorageListItemControllerState._enableSendAdditionalItems) {
+                          text = "Disable Send Additional Items".tr;
+                        }
+                        return Center(
+                          child: Text(
+                            text,
+                            style: style
+                          ),
+                        );
+                      } else {
+                        return const Center(
+                          child: ModifiedLoadingIndicator()
+                        );
+                      }
+                    }
+                    return Container();
+                  },
                   outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
                 );
               }
@@ -331,7 +386,7 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
                         additionalItem: additionalItem,
                         no: i + 1,
                         onRemoveAdditionalItem: removeAdditionalItem,
-                        onLoadAdditionalItem: loadAdditionalItem
+                        onLoadAdditionalItem: () => loadAdditionalItem(true)
                       )
                     )
                   ]
@@ -357,7 +412,7 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
                             modalDialogPageBuilder: (context, parameter) => AddAdditionalItemModalDialogPage(),
                           );
                           if (result != null) {
-                            loadAdditionalItem();
+                            loadAdditionalItem(true);
                           }
                         },
                         child: Container(
@@ -793,6 +848,7 @@ class DefaultCartContainerStateStorageListItemControllerState extends CartContai
   int _lastSelectedCount = -1;
   int _lastCartCount = -1;
   bool _enableSendAdditionalItems = false;
+  LoadDataResult<List<AdditionalItem>> _checkingAdditionalItemLoadDataResult = NoLoadDataResult<List<AdditionalItem>>();
   LoadDataResult<List<AdditionalItem>> _additionalItemLoadDataResult = NoLoadDataResult<List<AdditionalItem>>();
 }
 

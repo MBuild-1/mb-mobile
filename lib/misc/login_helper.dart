@@ -19,13 +19,18 @@ abstract class _LoginHelperImpl {
 
 class _DefaultLoginHelperImpl implements _LoginHelperImpl {
   @override
-  void checkingLogin(BuildContext context, void Function() resultIfHasBeenLogin, {void Function()? resultIfHasNotBeenLogin}) {
+  void checkingLogin(BuildContext context, void Function() resultIfHasBeenLogin, {void Function()? resultIfHasNotBeenLogin, bool showLoginPageWhenHasCallbackIfHasNotBeenLogin = false}) {
     if (!LoginHelper.getTokenWithBearer().result.isEmptyString) {
       resultIfHasBeenLogin();
       return;
     }
     if (resultIfHasNotBeenLogin == null) {
       PageRestorationHelper.toLoginPage(context, Constant.restorableRouteFuturePush);
+    } else {
+      resultIfHasNotBeenLogin();
+      if (showLoginPageWhenHasCallbackIfHasNotBeenLogin) {
+        PageRestorationHelper.toLoginPage(context, Constant.restorableRouteFuturePush);
+      }
     }
   }
 

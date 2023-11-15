@@ -22,6 +22,8 @@ import '../../domain/entity/cart/remove_from_cart_response.dart';
 import '../../domain/entity/cart/shared_cart_paging_parameter.dart';
 import '../../domain/entity/cart/take_friend_cart_parameter.dart';
 import '../../domain/entity/cart/take_friend_cart_response.dart';
+import '../../domain/entity/cart/update_cart_quantity_parameter.dart';
+import '../../domain/entity/cart/update_cart_quantity_response.dart';
 import '../../domain/repository/cart_repository.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
@@ -103,5 +105,10 @@ class DefaultCartRepository implements CartRepository {
   @override
   FutureProcessing<LoadDataResult<RemoveAdditionalItemResponse>> removeAdditionalItem(RemoveAdditionalItemParameter removeAdditionalItemParameter) {
     return cartDataSource.removeAdditionalItem(removeAdditionalItemParameter).mapToLoadDataResult<RemoveAdditionalItemResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<UpdateCartQuantityResponse>> updateCartQuantity(UpdateCartQuantityParameter updateCartQuantityParameter) {
+    return cartDataSource.updateCartQuantity(updateCartQuantityParameter).mapToLoadDataResult<UpdateCartQuantityResponse>();
   }
 }

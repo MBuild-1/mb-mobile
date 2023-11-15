@@ -382,8 +382,30 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
             onGetProductEntryIndex: () {
               return _productVariantColorfulChipTabBarController.value;
             },
-            onAddWishlist: (productAppearanceData) => widget.productDetailController.wishlistAndCartControllerContentDelegate.addToWishlist(productAppearanceData as SupportWishlist),
-            onRemoveWishlist: (productAppearanceData) => widget.productDetailController.wishlistAndCartControllerContentDelegate.removeFromWishlist(productAppearanceData as SupportWishlist),
+            onAddWishlist: (productAppearanceData) => widget.productDetailController.wishlistAndCartControllerContentDelegate.addToWishlist(
+              productAppearanceData as SupportWishlist, () {
+                Completer<bool> checkingLoginCompleter = Completer<bool>();
+                LoginHelper.checkingLogin(
+                  context,
+                  () => checkingLoginCompleter.complete(true),
+                  resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
+                  showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
+                );
+                return checkingLoginCompleter.future;
+              }
+            ),
+            onRemoveWishlist: (productAppearanceData) => widget.productDetailController.wishlistAndCartControllerContentDelegate.removeFromWishlist(
+              productAppearanceData as SupportWishlist, () {
+                Completer<bool> checkingLoginCompleter = Completer<bool>();
+                LoginHelper.checkingLogin(
+                  context,
+                  () => checkingLoginCompleter.complete(true),
+                  resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
+                  showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
+                );
+                return checkingLoginCompleter.future;
+              }
+            ),
           ),
           VirtualSpacingListItemControllerState(height: 2.h),
           PaddingContainerListItemControllerState(
@@ -556,10 +578,32 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
               )
             ),
             onAddToFavoriteProductBrand: (productBrand) {
-              widget.productDetailController.productBrandFavoriteControllerContentDelegate.addToFavoriteProductBrand(productBrand);
+              widget.productDetailController.productBrandFavoriteControllerContentDelegate.addToFavoriteProductBrand(
+                productBrand, () {
+                  Completer<bool> checkingLoginCompleter = Completer<bool>();
+                  LoginHelper.checkingLogin(
+                    context,
+                    () => checkingLoginCompleter.complete(true),
+                    resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
+                    showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
+                  );
+                  return checkingLoginCompleter.future;
+                }
+              );
             },
             onRemoveFromFavoriteProductBrand: (favoriteProductBrand) {
-              widget.productDetailController.productBrandFavoriteControllerContentDelegate.removeFromFavoriteProductBrandBasedProductBrand(favoriteProductBrand);
+              widget.productDetailController.productBrandFavoriteControllerContentDelegate.removeFromFavoriteProductBrandBasedProductBrand(
+                favoriteProductBrand, () {
+                  Completer<bool> checkingLoginCompleter = Completer<bool>();
+                  LoginHelper.checkingLogin(
+                    context,
+                    () => checkingLoginCompleter.complete(true),
+                    resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
+                    showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
+                  );
+                  return checkingLoginCompleter.future;
+                }
+              );
             },
           ),
           VirtualSpacingListItemControllerState(height: 4.h),
@@ -604,11 +648,43 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
         () => CompoundParameterizedEntityAndListItemControllerStateMediatorParameter(
           parameterizedEntityAndListItemControllerStateMediatorParameterList: [
             WishlistDelegateParameterizedEntityAndListItemControllerStateMediatorParameter(
-              onAddToWishlist: (data) async => widget.productDetailController.wishlistAndCartControllerContentDelegate.addToWishlist(data),
-              onRemoveFromWishlist: (data) async => widget.productDetailController.wishlistAndCartControllerContentDelegate.removeFromWishlist(data),
+              onAddToWishlist: (data) async => widget.productDetailController.wishlistAndCartControllerContentDelegate.addToWishlist(
+                data, () {
+                  Completer<bool> checkingLoginCompleter = Completer<bool>();
+                  LoginHelper.checkingLogin(
+                    context,
+                    () => checkingLoginCompleter.complete(true),
+                    resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
+                    showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
+                  );
+                  return checkingLoginCompleter.future;
+                }
+              ),
+              onRemoveFromWishlist: (data) async => widget.productDetailController.wishlistAndCartControllerContentDelegate.removeFromWishlist(
+                data, () {
+                  Completer<bool> checkingLoginCompleter = Completer<bool>();
+                  LoginHelper.checkingLogin(
+                    context,
+                    () => checkingLoginCompleter.complete(true),
+                    resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
+                    showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
+                  );
+                  return checkingLoginCompleter.future;
+                }
+              ),
             ),
             CartDelegateParameterizedEntityAndListItemControllerStateMediatorParameter(
-              onAddCart: (data) async => widget.productDetailController.wishlistAndCartControllerContentDelegate.addToCart(data),
+              onAddCart: (data) async => widget.productDetailController.wishlistAndCartControllerContentDelegate.addToCart(
+                data, () {
+                  Completer<bool> checkingLoginCompleter = Completer<bool>();
+                  LoginHelper.checkingLogin(
+                    context, () => checkingLoginCompleter.complete(true),
+                    resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
+                    showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
+                  );
+                  return checkingLoginCompleter.future;
+                }
+              ),
             )
           ]
         )
@@ -617,11 +693,44 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
         () => CompoundParameterizedEntityAndListItemControllerStateMediatorParameter(
           parameterizedEntityAndListItemControllerStateMediatorParameterList: [
             WishlistDelegateParameterizedEntityAndListItemControllerStateMediatorParameter(
-              onAddToWishlist: (data) async => widget.productDetailController.wishlistAndCartControllerContentDelegate.addToWishlist(data),
-              onRemoveFromWishlist: (data) async => widget.productDetailController.wishlistAndCartControllerContentDelegate.removeFromWishlist(data),
+              onAddToWishlist: (data) async => widget.productDetailController.wishlistAndCartControllerContentDelegate.addToWishlist(
+                data, () {
+                  Completer<bool> checkingLoginCompleter = Completer<bool>();
+                  LoginHelper.checkingLogin(
+                    context,
+                    () => checkingLoginCompleter.complete(true),
+                    resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
+                    showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
+                  );
+                  return checkingLoginCompleter.future;
+                }
+              ),
+              onRemoveFromWishlist: (data) async => widget.productDetailController.wishlistAndCartControllerContentDelegate.removeFromWishlist(
+                data, () {
+                  Completer<bool> checkingLoginCompleter = Completer<bool>();
+                  LoginHelper.checkingLogin(
+                    context,
+                    () => checkingLoginCompleter.complete(true),
+                    resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
+                    showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
+                  );
+                  return checkingLoginCompleter.future;
+                }
+              ),
             ),
             CartDelegateParameterizedEntityAndListItemControllerStateMediatorParameter(
-              onAddCart: (data) async => widget.productDetailController.wishlistAndCartControllerContentDelegate.addToCart(data),
+              onAddCart: (data) async => widget.productDetailController.wishlistAndCartControllerContentDelegate.addToCart(
+                data, () {
+                  Completer<bool> checkingLoginCompleter = Completer<bool>();
+                  LoginHelper.checkingLogin(
+                    context,
+                    () => checkingLoginCompleter.complete(true),
+                    resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
+                    showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
+                  );
+                  return checkingLoginCompleter.future;
+                }
+              ),
             )
           ]
         )
@@ -808,7 +917,17 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
         onBuyDirectlyRequestProcessSuccessCallback: (order) async {
           NavigationHelper.navigationAfterPurchaseProcess(context, order);
         },
-        onBack: () => Get.back()
+        onBack: () => Get.back(),
+        onCheckingLogin: () {
+          Completer<bool> checkingLoginCompleter = Completer<bool>();
+          LoginHelper.checkingLogin(
+            context,
+            () => checkingLoginCompleter.complete(true),
+            resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
+            showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
+          );
+          return checkingLoginCompleter.future;
+        }
       )
     );
     widget.productDetailController.wishlistAndCartControllerContentDelegate.setWishlistAndCartDelegate(

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
@@ -33,6 +35,7 @@ import '../../misc/itemtypelistsubinterceptor/favorite_product_brand_item_type_l
 import '../../misc/itemtypelistsubinterceptor/verticalgriditemtypelistsubinterceptor/vertical_grid_item_type_list_sub_interceptor.dart';
 import '../../misc/list_item_controller_state_helper.dart';
 import '../../misc/load_data_result.dart';
+import '../../misc/login_helper.dart';
 import '../../misc/manager/controller_manager.dart';
 import '../../misc/page_restoration_helper.dart';
 import '../../misc/paging/modified_paging_controller.dart';
@@ -229,7 +232,18 @@ class _StatefulFavoriteProductBrandControllerMediatorWidgetState extends State<_
               )
             ),
             onRemoveFromFavoriteProductBrand: (favoriteProductBrand) {
-              widget.favoriteProductBrandController.productBrandFavoriteControllerContentDelegate.removeFromFavoriteProductBrand(favoriteProductBrand);
+              widget.favoriteProductBrandController.productBrandFavoriteControllerContentDelegate.removeFromFavoriteProductBrand(
+                favoriteProductBrand, () {
+                  Completer<bool> checkingLoginCompleter = Completer<bool>();
+                  LoginHelper.checkingLogin(
+                    context,
+                    () => checkingLoginCompleter.complete(true),
+                    resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
+                    showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
+                  );
+                  return checkingLoginCompleter.future;
+                }
+              );
             },
             onAfterRemoveFromFavoriteProductBrand: (favoriteProductBrandList) {
               if (favoriteProductBrandList.isEmpty) {

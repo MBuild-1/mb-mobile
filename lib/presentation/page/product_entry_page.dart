@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
@@ -37,6 +39,7 @@ import '../../misc/injector.dart';
 import '../../misc/itemtypelistsubinterceptor/verticalgriditemtypelistsubinterceptor/vertical_grid_item_type_list_sub_interceptor.dart';
 import '../../misc/list_item_controller_state_helper.dart';
 import '../../misc/load_data_result.dart';
+import '../../misc/login_helper.dart';
 import '../../misc/main_route_observer.dart';
 import '../../misc/manager/controller_manager.dart';
 import '../../misc/multi_language_string.dart';
@@ -261,9 +264,41 @@ class _StatefulProductEntryControllerMediatorWidgetState extends State<_Stateful
       Iterable<ListItemControllerState> verticalProductListItemControllerStateList = productEntryPaging.map<ListItemControllerState>(
         (productEntry) => VerticalProductListItemControllerState(
           productAppearanceData: productEntry,
-          onAddWishlist: (productAppearanceData) => widget.productEntryController.wishlistAndCartControllerContentDelegate.addToWishlist(productAppearanceData as SupportWishlist),
-          onRemoveWishlist: (productAppearanceData) => widget.productEntryController.wishlistAndCartControllerContentDelegate.removeFromWishlist(productAppearanceData as SupportWishlist),
-          onAddCart: (productAppearanceData) => widget.productEntryController.wishlistAndCartControllerContentDelegate.addToCart(productAppearanceData as SupportCart),
+          onAddWishlist: (productAppearanceData) => widget.productEntryController.wishlistAndCartControllerContentDelegate.addToWishlist(
+            productAppearanceData as SupportWishlist, () {
+              Completer<bool> checkingLoginCompleter = Completer<bool>();
+              LoginHelper.checkingLogin(
+                context,
+                () => checkingLoginCompleter.complete(true),
+                resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
+                showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
+              );
+              return checkingLoginCompleter.future;
+            }
+          ),
+          onRemoveWishlist: (productAppearanceData) => widget.productEntryController.wishlistAndCartControllerContentDelegate.removeFromWishlist(
+            productAppearanceData as SupportWishlist, () {
+              Completer<bool> checkingLoginCompleter = Completer<bool>();
+              LoginHelper.checkingLogin(
+                context,
+                () => checkingLoginCompleter.complete(true),
+                resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
+                showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
+              );
+              return checkingLoginCompleter.future;
+            }
+          ),
+          onAddCart: (productAppearanceData) => widget.productEntryController.wishlistAndCartControllerContentDelegate.addToCart(
+            productAppearanceData as SupportCart, () {
+              Completer<bool> checkingLoginCompleter = Completer<bool>();
+              LoginHelper.checkingLogin(
+                context, () => checkingLoginCompleter.complete(true),
+                resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
+                showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
+              );
+              return checkingLoginCompleter.future;
+            }
+          ),
         )
       ).itemList;
       int totalItem = productEntryPaging.totalItem;
@@ -356,10 +391,32 @@ class _StatefulProductEntryControllerMediatorWidgetState extends State<_Stateful
             productEntryHeaderContentResponseLoadDataResult: productEntryHeaderContentResponseLoadDataResult,
             errorProvider: Injector.locator<ErrorProvider>(),
             onAddToFavoriteProductBrand: (productBrand) {
-              widget.productEntryController.productBrandFavoriteControllerContentDelegate.addToFavoriteProductBrand(productBrand);
+              widget.productEntryController.productBrandFavoriteControllerContentDelegate.addToFavoriteProductBrand(
+                productBrand, () {
+                  Completer<bool> checkingLoginCompleter = Completer<bool>();
+                  LoginHelper.checkingLogin(
+                    context,
+                    () => checkingLoginCompleter.complete(true),
+                    resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
+                    showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
+                  );
+                  return checkingLoginCompleter.future;
+                }
+              );
             },
             onRemoveFromFavoriteProductBrand: (favoriteProductBrand) {
-              widget.productEntryController.productBrandFavoriteControllerContentDelegate.removeFromFavoriteProductBrandBasedProductBrand(favoriteProductBrand);
+              widget.productEntryController.productBrandFavoriteControllerContentDelegate.removeFromFavoriteProductBrandBasedProductBrand(
+                favoriteProductBrand, () {
+                  Completer<bool> checkingLoginCompleter = Completer<bool>();
+                  LoginHelper.checkingLogin(
+                    context,
+                    () => checkingLoginCompleter.complete(true),
+                    resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
+                    showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
+                  );
+                  return checkingLoginCompleter.future;
+                }
+              );
             },
             onSelectProvince: (provinceMap) {
               widget.productEntryPageParameter.productEntryParameterMap["province"] = provinceMap.slug;

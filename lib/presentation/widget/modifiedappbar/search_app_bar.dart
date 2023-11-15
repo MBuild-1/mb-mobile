@@ -64,7 +64,7 @@ abstract class SearchAppBar extends ModifiedAppBar {
         focusNode: searchFocusNode,
         decoration: SearchTextFieldHelper.searchTextFieldStyle(
           context, DefaultInputDecoration(
-            hintText: "Search in Masterbagasi".tr,
+            hintText: "Search in Master Bagasi".tr,
             filled: true,
             fillColor: Colors.transparent,
             prefixIcon: const Icon(Icons.search),

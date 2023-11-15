@@ -40,4 +40,14 @@ class LoginNotifier extends ChangeNotifier {
     );
     notifyListeners();
   }
+
+  Future<LoadDataResult<User>> loadUser() async {
+    return getUserUseCase.execute(
+      GetUserParameter()
+    ).future(
+      parameter: apiRequestManager.addRequestToCancellationPart("logged-user-profile").value
+    ).map<User>(
+      (getUserResponse) => getUserResponse.user
+    );
+  }
 }

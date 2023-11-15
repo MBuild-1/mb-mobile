@@ -8,6 +8,7 @@ import '../../domain/entity/cart/cart_summary.dart';
 import '../../domain/entity/cart/remove_from_cart_directly_response.dart';
 import '../../domain/entity/cart/remove_from_cart_response.dart';
 import '../../domain/entity/cart/support_cart.dart';
+import '../../domain/entity/cart/update_cart_quantity_response.dart';
 import '../../domain/entity/wishlist/wishlist.dart';
 import '../../misc/error/message_error.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
@@ -66,5 +67,9 @@ extension CartDetailEntityMappingExt on ResponseWrapper {
       summaryValue: ResponseWrapper(response["summary"]).mapFromResponseToSummaryValueList(),
       finalSummaryValue: ResponseWrapper(response["final_summary"]).mapFromResponseToSummaryValueList(),
     );
+  }
+
+  UpdateCartQuantityResponse mapFromResponseToUpdateCartQuantityResponse() {
+    return UpdateCartQuantityResponse();
   }
 }

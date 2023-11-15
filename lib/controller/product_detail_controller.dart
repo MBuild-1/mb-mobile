@@ -373,7 +373,7 @@ class ProductDetailController extends BaseGetxController {
       SupportCart? supportCart = _productDetailMainMenuDelegate!.onGetSupportCart();
       if (supportCart != null) {
         if (supportCart is ProductEntry) {
-          wishlistAndCartControllerContentDelegate.addToCart(supportCart);
+          wishlistAndCartControllerContentDelegate.addToCart(supportCart, _productDetailMainMenuDelegate!.onCheckingLogin);
         }
       }
     }
@@ -418,6 +418,7 @@ class ProductDetailMainMenuDelegate {
   _OnShowBuyDirectlyRequestProcessFailedCallback onShowBuyDirectlyRequestProcessFailedCallback;
   ListItemControllerState Function(_OnObserveLoadShortProductDiscussionParameter) onObserveLoadShortProductDiscussionDirectly;
   void Function() onBack;
+  Future<bool> Function() onCheckingLogin;
 
   ProductDetailMainMenuDelegate({
     required this.onObserveLoadProductDelegate,
@@ -430,7 +431,8 @@ class ProductDetailMainMenuDelegate {
     required this.onBuyDirectlyRequestProcessSuccessCallback,
     required this.onShowBuyDirectlyRequestProcessFailedCallback,
     required this.onObserveLoadShortProductDiscussionDirectly,
-    required this.onBack
+    required this.onBack,
+    required this.onCheckingLogin
   });
 }
 

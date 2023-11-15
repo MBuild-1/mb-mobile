@@ -241,6 +241,7 @@ import '../domain/usecase/store_keyword_for_search_history_use_case.dart';
 import '../domain/usecase/store_search_last_seen_history_use_case.dart';
 import '../domain/usecase/take_friend_cart_use_case.dart';
 import '../domain/usecase/trigger_bucket_ready_use_case.dart';
+import '../domain/usecase/update_cart_quantity_use_case.dart';
 import '../domain/usecase/update_current_selected_address_use_case.dart';
 import '../domain/usecase/update_read_status_help_conversation_use_case.dart';
 import '../domain/usecase/update_read_status_order_conversation_use_case.dart';
@@ -637,6 +638,7 @@ class _Injector {
     locator.registerLazySingleton<AddToCartUseCase>(() => AddToCartUseCase(cartRepository: locator()));
     locator.registerLazySingleton<RemoveFromCartUseCase>(() => RemoveFromCartUseCase(cartRepository: locator()));
     locator.registerLazySingleton<RemoveFromCartDirectlyUseCase>(() => RemoveFromCartDirectlyUseCase(cartRepository: locator()));
+    locator.registerLazySingleton<UpdateCartQuantityUseCase>(() => UpdateCartQuantityUseCase(cartRepository: locator()));
     locator.registerLazySingleton<AddHostCartUseCase>(() => AddHostCartUseCase(cartRepository: locator()));
     locator.registerLazySingleton<TakeFriendCartUseCase>(() => TakeFriendCartUseCase(cartRepository: locator()));
     locator.registerLazySingleton<GetCurrentSelectedAddressUseCase>(() => GetCurrentSelectedAddressUseCase(addressRepository: locator()));

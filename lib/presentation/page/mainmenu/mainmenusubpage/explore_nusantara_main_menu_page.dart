@@ -12,6 +12,7 @@ import '../../../../misc/custompainter/explore_nusantara_map_custom_painter.dart
 import '../../../../misc/errorprovider/error_provider.dart';
 import '../../../../misc/injector.dart';
 import '../../../../misc/load_data_result.dart';
+import '../../../../misc/login_helper.dart';
 import '../../../../misc/main_route_observer.dart';
 import '../../../../misc/manager/controller_manager.dart';
 import '../../../../misc/page_restoration_helper.dart';
@@ -79,7 +80,7 @@ class _StatefulExploreNusantaraMainMenuSubControllerMediatorWidgetState extends 
   }
 
   void refreshExploreNusantaraMainMenu() {
-    // Nothing
+    setState(() {});
   }
 
   @override
@@ -283,6 +284,22 @@ class _StatefulExploreNusantaraMainMenuSubControllerMediatorWidgetState extends 
                           return Container();
                         }
                       }
+                    ),
+                    Builder(
+                      builder: (BuildContext context) {
+                        bool isLogin = false;
+                        LoginHelper.checkingLogin(
+                          context,
+                          () => isLogin = true,
+                          resultIfHasNotBeenLogin: () => isLogin = false
+                        );
+                        if (!isLogin) {
+                          return SizedBox(
+                            height: Constant.mainMenuFooterHeight - Constant.paddingListItem
+                          );
+                        }
+                        return const SizedBox();
+                      },
                     )
                   ]
                 )

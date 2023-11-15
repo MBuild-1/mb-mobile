@@ -1,6 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
+import 'package:provider/provider.dart';
+import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 
+import '../../domain/entity/user/user.dart';
+import '../../misc/load_data_result.dart';
+import '../../misc/login_helper.dart';
 import '../../misc/main_route_observer.dart';
+import '../../misc/pusher_helper.dart';
+import '../notifier/login_notifier.dart';
+import '../notifier/notification_notifier.dart';
 
 class SomethingCounter extends StatefulWidget {
   // ignore: library_private_types_in_public_api
@@ -21,6 +30,48 @@ class SomethingCounter extends StatefulWidget {
 
 class _SomethingCounterState extends State<SomethingCounter> with RestorationMixin {
   final RestorableRouteKeyMap routeKeyMap = RestorableRouteKeyMap();
+  late LoginNotifier _loginNotifier;
+  late NotificationNotifier _notificationNotifier;
+
+  final PusherChannelsFlutter _pusher = PusherChannelsFlutter.getInstance();
+
+  @override
+  void initState() {
+    super.initState();
+    _loginNotifier = Provider.of<LoginNotifier>(context, listen: false);
+    _notificationNotifier = Provider.of<NotificationNotifier>(context, listen: false);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      LoginHelper.checkingLogin(context, () async {
+        LoadDataResult<User> userLoadDataResult = await _loginNotifier.loadUser();
+        if (userLoadDataResult.isSuccess) {
+          subscribeChatCount(userLoadDataResult.resultIfSuccess!.id);
+        }
+      });
+    });
+  }
+
+  Future<void> subscribeChatCount(String userId) async {
+    try {
+      await PusherHelper.subscribeChatCountPusherChannel(
+        pusherChannelsFlutter: _pusher,
+        onEvent: (event) => _notificationNotifier.loadInboxLoadDataResult(),
+        userId: userId
+      );
+    } catch (e) {
+      // Nothing
+    }
+  }
+
+  Future<void> unsubscribeChatCount(String userId) async {
+    try {
+      await PusherHelper.unsubscribeChatCountPusherChannel(
+        pusherChannelsFlutter: _pusher,
+        userId: userId
+      );
+    } catch (e) {
+      // Nothing
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

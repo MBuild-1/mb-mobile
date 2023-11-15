@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 
 import '../domain/entity/additionalitem/add_additional_item_parameter.dart';
@@ -14,6 +15,8 @@ import '../domain/entity/cart/cart_summary.dart';
 import '../domain/entity/cart/cart_summary_parameter.dart';
 import '../domain/entity/cart/remove_from_cart_parameter.dart';
 import '../domain/entity/cart/remove_from_cart_response.dart';
+import '../domain/entity/cart/update_cart_quantity_parameter.dart';
+import '../domain/entity/cart/update_cart_quantity_response.dart';
 import '../domain/entity/wishlist/add_wishlist_parameter.dart';
 import '../domain/entity/wishlist/add_wishlist_response.dart';
 import '../domain/entity/wishlist/support_wishlist.dart';
@@ -21,13 +24,12 @@ import '../domain/usecase/add_additional_item_use_case.dart';
 import '../domain/usecase/add_to_cart_use_case.dart';
 import '../domain/usecase/add_wishlist_use_case.dart';
 import '../domain/usecase/change_additional_item_use_case.dart';
-import '../domain/usecase/create_bucket_use_case.dart';
 import '../domain/usecase/get_additional_item_use_case.dart';
 import '../domain/usecase/get_cart_list_use_case.dart';
 import '../domain/usecase/get_cart_summary_use_case.dart';
 import '../domain/usecase/remove_additional_item_use_case.dart';
 import '../domain/usecase/remove_from_cart_use_case.dart';
-import '../domain/usecase/request_join_bucket_use_case.dart';
+import '../domain/usecase/update_cart_quantity_use_case.dart';
 import '../misc/controllercontentdelegate/shared_cart_controller_content_delegate.dart';
 import '../misc/load_data_result.dart';
 import '../misc/typedef.dart';
@@ -40,6 +42,9 @@ typedef _OnShowAddToWishlistRequestProcessFailedCallback = Future<void> Function
 typedef _OnShowRemoveCartRequestProcessLoadingCallback = Future<void> Function();
 typedef _OnRemoveCartRequestProcessSuccessCallback = Future<void> Function(Cart cart);
 typedef _OnShowRemoveCartRequestProcessFailedCallback = Future<void> Function(dynamic e);
+typedef _OnShowUpdateCartQuantityRequestProcessLoadingCallback = Future<bool> Function();
+typedef _OnUpdateCartQuantityRequestProcessSuccessCallback = Future<void> Function(UpdateCartQuantityResponse, Cart);
+typedef _OnShowUpdateCartQuantityRequestProcessFailedCallback = Future<void> Function(dynamic e, Cart);
 
 class CartController extends BaseGetxController {
   final GetCartListUseCase getCartListUseCase;
@@ -51,6 +56,7 @@ class CartController extends BaseGetxController {
   final ChangeAdditionalItemUseCase changeAdditionalItemUseCase;
   final RemoveAdditionalItemUseCase removeAdditionalItemUseCase;
   final AddWishlistUseCase addWishlistUseCase;
+  final UpdateCartQuantityUseCase updateCartQuantityUseCase;
 
   CartDelegate? _cartDelegate;
   final SharedCartControllerContentDelegate sharedCartControllerContentDelegate;
@@ -66,7 +72,8 @@ class CartController extends BaseGetxController {
     this.changeAdditionalItemUseCase,
     this.removeAdditionalItemUseCase,
     this.addWishlistUseCase,
-    this.sharedCartControllerContentDelegate
+    this.updateCartQuantityUseCase,
+    this.sharedCartControllerContentDelegate,
   ) {
     sharedCartControllerContentDelegate.setApiRequestManager(
       () => apiRequestManager
@@ -149,6 +156,31 @@ class CartController extends BaseGetxController {
       }
     }
   }
+
+  void updateCartQuantity(UpdateCartQuantityParameter updateCartQuantityParameter, Cart cart, void Function(CancelToken) onGetUpdateCartQuantityCancelToken) async {
+    if (_cartDelegate != null) {
+      _cartDelegate!.onUnfocusAllWidget();
+      bool supportBack = await _cartDelegate!.onShowUpdateCartQuantityRequestProcessLoadingCallback();
+      CancelToken updateCartQuantityCancelToken = apiRequestManager.addRequestToCancellationPart('update-cart-quantity.${updateCartQuantityParameter.cartId}').value;
+      onGetUpdateCartQuantityCancelToken(updateCartQuantityCancelToken);
+      LoadDataResult<UpdateCartQuantityResponse> updateCartQuantityResponseLoadDataResult = await updateCartQuantityUseCase.execute(
+        updateCartQuantityParameter
+      ).future(
+        parameter: updateCartQuantityCancelToken
+      );
+      if (supportBack) {
+        _cartDelegate!.onCartBack();
+      }
+      if (updateCartQuantityResponseLoadDataResult.isFailedBecauseCancellation) {
+        return;
+      }
+      if (updateCartQuantityResponseLoadDataResult.isSuccess) {
+        _cartDelegate!.onUpdateCartQuantityRequestProcessSuccessCallback(updateCartQuantityResponseLoadDataResult.resultIfSuccess!, cart);
+      } else {
+        _cartDelegate!.onShowUpdateCartQuantityRequestProcessFailedCallback(updateCartQuantityResponseLoadDataResult.resultIfFailed, cart);
+      }
+    }
+  }
 }
 
 class CartDelegate {
@@ -160,6 +192,9 @@ class CartDelegate {
   _OnShowRemoveCartRequestProcessLoadingCallback onShowRemoveCartRequestProcessLoadingCallback;
   _OnRemoveCartRequestProcessSuccessCallback onRemoveCartRequestProcessSuccessCallback;
   _OnShowRemoveCartRequestProcessFailedCallback onShowRemoveCartRequestProcessFailedCallback;
+  _OnShowUpdateCartQuantityRequestProcessLoadingCallback onShowUpdateCartQuantityRequestProcessLoadingCallback;
+  _OnUpdateCartQuantityRequestProcessSuccessCallback onUpdateCartQuantityRequestProcessSuccessCallback;
+  _OnShowUpdateCartQuantityRequestProcessFailedCallback onShowUpdateCartQuantityRequestProcessFailedCallback;
 
   CartDelegate({
     required this.onUnfocusAllWidget,
@@ -169,6 +204,9 @@ class CartDelegate {
     required this.onShowAddToWishlistRequestProcessFailedCallback,
     required this.onShowRemoveCartRequestProcessLoadingCallback,
     required this.onRemoveCartRequestProcessSuccessCallback,
-    required this.onShowRemoveCartRequestProcessFailedCallback
+    required this.onShowRemoveCartRequestProcessFailedCallback,
+    required this.onShowUpdateCartQuantityRequestProcessLoadingCallback,
+    required this.onUpdateCartQuantityRequestProcessSuccessCallback,
+    required this.onShowUpdateCartQuantityRequestProcessFailedCallback
   });
 }

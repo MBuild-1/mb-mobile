@@ -1,8 +1,12 @@
+import 'dart:async';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/number_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:provider/provider.dart';
 
 import '../../controller/cart_controller.dart';
@@ -18,6 +22,7 @@ import '../../domain/entity/cart/cart.dart';
 import '../../domain/entity/cart/cart_list_parameter.dart';
 import '../../domain/entity/cart/cart_paging_parameter.dart';
 import '../../domain/entity/cart/support_cart.dart';
+import '../../domain/entity/cart/update_cart_quantity_parameter.dart';
 import '../../domain/entity/wishlist/support_wishlist.dart';
 import '../../domain/usecase/add_additional_item_use_case.dart';
 import '../../domain/usecase/add_to_cart_use_case.dart';
@@ -29,6 +34,7 @@ import '../../domain/usecase/get_cart_summary_use_case.dart';
 import '../../domain/usecase/get_my_cart_use_case.dart';
 import '../../domain/usecase/remove_additional_item_use_case.dart';
 import '../../domain/usecase/remove_from_cart_use_case.dart';
+import '../../domain/usecase/update_cart_quantity_use_case.dart';
 import '../../misc/additionalloadingindicatorchecker/cart_additional_paging_result_parameter_checker.dart';
 import '../../misc/constant.dart';
 import '../../misc/controllercontentdelegate/shared_cart_controller_content_delegate.dart';
@@ -48,6 +54,7 @@ import '../../misc/itemtypelistsubinterceptor/cart_item_type_list_sub_intercepto
 import '../../misc/list_item_controller_state_helper.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/controller_manager.dart';
+import '../../misc/multi_language_string.dart';
 import '../../misc/page_restoration_helper.dart';
 import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
@@ -89,7 +96,8 @@ class CartPage extends RestorableGetxPage<_CartPageRestoration> {
         Injector.locator<ChangeAdditionalItemUseCase>(),
         Injector.locator<RemoveAdditionalItemUseCase>(),
         Injector.locator<AddWishlistUseCase>(),
-        Injector.locator<SharedCartControllerContentDelegate>()
+        Injector.locator<UpdateCartQuantityUseCase>(),
+        Injector.locator<SharedCartControllerContentDelegate>(),
       ),
       tag: pageName
     );
@@ -215,9 +223,13 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
   int _cartCount = 0;
   late int _selectedCartCount = 0;
   late double _selectedCartShoppingTotal = 0;
-  List<AdditionalItem> _additionalItemList = [];
+  final List<AdditionalItem> _additionalItemList = [];
   List<Cart> _selectedCartList = [];
+  bool _isLoadingUpdateCartQuantity = false;
   final CartContainerInterceptingActionListItemControllerState _cartContainerInterceptingActionListItemControllerState = DefaultCartContainerInterceptingActionListItemControllerState();
+  final Map<String, Timer> _updateCartQuantityTimerMap = {};
+  final Map<String, CancelToken> _updateCartQuantityCancelTokenMap = {};
+  final Map<String, bool> _isLoadingUpdatingCartQuantityMap = {};
 
   @override
   void initState() {
@@ -252,6 +264,11 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
     }
   }
 
+  void _updateIsLoadingUpdateCartQuantity() {
+    _isLoadingUpdateCartQuantity = _isLoadingUpdatingCartQuantityMap.isNotEmpty;
+    setState(() {});
+  }
+
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _cartListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? cartListItemControllerStateList) async {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       setState(() => _cartCount = 0);
@@ -266,20 +283,52 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
         (cart) => VerticalCartListItemControllerState(
           isSelected: false,
           cart: cart,
-          onChangeQuantity: (quantity) {
-            setState(() {
-              int newQuantity = quantity;
-              if (newQuantity < 1) {
-                newQuantity = 1;
+          onChangeQuantity: (oldQuantity, newQuantity) {
+            int effectiveNewQuantity = newQuantity;
+            if (effectiveNewQuantity < 1) {
+              effectiveNewQuantity = 1;
+              return;
+            }
+            if (_updateCartQuantityTimerMap[cart.id] != null) {
+              _updateCartQuantityTimerMap[cart.id]?.cancel();
+            }
+            CancelToken? cancelToken = _updateCartQuantityCancelTokenMap[cart.id];
+            if (cancelToken != null) {
+              cancelToken.cancel();
+            }
+            cart.quantity = effectiveNewQuantity;
+            _updateCartInformation();
+            _isLoadingUpdatingCartQuantityMap[cart.id] = true;
+            _updateIsLoadingUpdateCartQuantity();
+            setState(() {});
+            _updateCartQuantityTimerMap[cart.id] = Timer(
+              const Duration(milliseconds: 500),
+              () {
+                widget.cartController.updateCartQuantity(
+                  UpdateCartQuantityParameter(
+                    cartId: cart.id,
+                    quantity: newQuantity
+                  ),
+                  cart,
+                  (cancelToken) => _updateCartQuantityCancelTokenMap[cart.id] = cancelToken
+                );
               }
-              cart.quantity = newQuantity;
-              _updateCartInformation();
-            });
+            );
           },
           onAddToWishlist: () => widget.cartController.addToWishlist(cart.supportCart as SupportWishlist),
           onRemoveCart: () {
+            if (_updateCartQuantityTimerMap[cart.id] != null) {
+              _updateCartQuantityTimerMap[cart.id]?.cancel();
+            }
+            CancelToken? cancelToken = _updateCartQuantityCancelTokenMap[cart.id];
+            if (cancelToken != null) {
+              cancelToken.cancel();
+            }
+            _isLoadingUpdatingCartQuantityMap.remove(cart.id);
             widget.cartController.removeCart(cart);
             _updateCartInformation();
+            _updateIsLoadingUpdateCartQuantity();
+            setState(() {});
           },
         )
       ).toList();
@@ -350,6 +399,23 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
             Provider.of<ComponentNotifier>(context, listen: false).updateCart();
           }
         },
+        onShowUpdateCartQuantityRequestProcessLoadingCallback: () async {
+          return false;
+        },
+        onShowUpdateCartQuantityRequestProcessFailedCallback: (e, cart) async {
+          _isLoadingUpdatingCartQuantityMap.remove(cart.id);
+          _updateIsLoadingUpdateCartQuantity();
+          ToastHelper.showToast(
+            MultiLanguageString({
+              Constant.textEnUsLanguageKey: "Failed to update many items. Please try adding/removing more items.",
+              Constant.textInIdLanguageKey: "Gagal update banyak barang. Silahkan coba tambahkan/kurangi banyak barang lagi."
+            }).toStringNonNull
+          );
+        },
+        onUpdateCartQuantityRequestProcessSuccessCallback: (response, cart) async {
+          _isLoadingUpdatingCartQuantityMap.remove(cart.id);
+          _updateIsLoadingUpdateCartQuantity();
+        },
       )
     );
     widget.cartController.sharedCartControllerContentDelegate.setSharedCartDelegate(
@@ -410,20 +476,22 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
                           child: SizedBox()
                         ),
                         SizedOutlineGradientButton(
-                          onPressed: _selectedCartCount == 0 ? null : () {
-                            PageRestorationHelper.toDeliveryPage(
-                              context, DeliveryPageParameter(
-                                selectedCartIdList: _selectedCartList.map<List<String>>((cart) {
-                                  return <String>[cart.id, cart.quantity.toString()];
-                                }).toList(),
-                                selectedAdditionalItemIdList: _additionalItemList.map<String>((additionalItem) {
-                                  return additionalItem.id;
-                                }).toList(),
-                              )
-                            );
-                          },
+                          onPressed: _selectedCartCount == 0 ? null : (
+                            _isLoadingUpdateCartQuantity ? null : () {
+                              PageRestorationHelper.toDeliveryPage(
+                                context, DeliveryPageParameter(
+                                  selectedCartIdList: _selectedCartList.map<List<String>>((cart) {
+                                    return <String>[cart.id, cart.quantity.toString()];
+                                  }).toList(),
+                                  selectedAdditionalItemIdList: _additionalItemList.map<String>((additionalItem) {
+                                    return additionalItem.id;
+                                  }).toList(),
+                                )
+                              );
+                            }
+                          ),
                           width: 120,
-                          text: "${"Checkout".tr} ($_selectedCartCount)",
+                          text: _isLoadingUpdateCartQuantity ? "${"Loading".tr}..." : "${"Checkout".tr} ($_selectedCartCount)",
                           outlineGradientButtonType: OutlineGradientButtonType.solid,
                           outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
                         )
@@ -440,6 +508,9 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
 
   @override
   void dispose() {
+    for (var timerEntry in _updateCartQuantityTimerMap.entries) {
+      timerEntry.value.cancel();
+    }
     super.dispose();
   }
 }

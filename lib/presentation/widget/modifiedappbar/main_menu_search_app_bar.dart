@@ -63,7 +63,7 @@ class MainMenuSearchAppBar extends SearchAppBar {
               ],
               Icon(Icons.search, color: Constant.colorGrey8),
               const SizedBox(width: 5),
-              Text("Search in Masterbagasi".tr, style: TextStyle(color: Constant.colorGrey8, fontSize: 13)),
+              Text("Search in Master Bagasi".tr, style: TextStyle(color: Constant.colorGrey8, fontSize: 13)),
               const Spacer(),
               NotificationIconIndicator(
                 notificationNumber: notificationNotifier.notificationLoadDataResult.resultIfSuccess ?? 0,

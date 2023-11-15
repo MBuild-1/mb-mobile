@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
+import 'package:masterbagasi/misc/ext/future_ext.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/misc/manager/controller_manager.dart';
@@ -11,6 +12,9 @@ import '../domain/entity/login/login_parameter.dart';
 import '../domain/entity/login/login_response.dart';
 import '../domain/entity/login/login_with_google_parameter.dart';
 import '../domain/entity/login/login_with_google_response.dart';
+import '../domain/entity/user/getuser/get_user_parameter.dart';
+import '../domain/entity/user/user.dart';
+import '../domain/usecase/get_user_use_case.dart';
 import '../domain/usecase/login_use_case.dart';
 import '../domain/usecase/login_with_google_use_case.dart';
 import '../misc/error/validation_error.dart';
@@ -37,6 +41,7 @@ typedef _OnSaveTempData = Future<void> Function(String);
 class LoginController extends BaseGetxController {
   final LoginUseCase loginUseCase;
   final LoginWithGoogleUseCase loginWithGoogleUseCase;
+  final GetUserUseCase getUserUseCase;
 
   late EmailOrPhoneNumberValidator _emailOrPhoneNumberValidator;
   late Rx<Validator> emailValidatorRx;
@@ -55,7 +60,8 @@ class LoginController extends BaseGetxController {
   LoginController(
     ControllerManager? controllerManager,
     this.loginUseCase,
-    this.loginWithGoogleUseCase
+    this.loginWithGoogleUseCase,
+    this.getUserUseCase
   ) : super(controllerManager) {
     _emailOrPhoneNumberValidator = EmailOrPhoneNumberValidator(
       emailOrPhoneNumber: () => _loginDelegate!.onGetEmailAndPhoneNumberLoginInput()
@@ -94,6 +100,17 @@ class LoginController extends BaseGetxController {
             return;
           }
           await LoginHelper.saveToken(loginLoadDataResult.resultIfSuccess!.token).future();
+          LoadDataResult<User> userLoadDataResult = await getUserUseCase.execute(
+            GetUserParameter()
+          ).future(
+            parameter: apiRequestManager.addRequestToCancellationPart('get-user-after-login').value
+          ).map<User>(
+            (getUserResponse) => getUserResponse.user
+          );
+          if (userLoadDataResult.isSuccess) {
+            User user = userLoadDataResult.resultIfSuccess!;
+            await _loginDelegate!.onSubscribeChatCountRealtimeChannel(user.id);
+          }
           Get.back();
           _loginDelegate!.onLoginRequestProcessSuccessCallback();
         } else {
@@ -127,6 +144,17 @@ class LoginController extends BaseGetxController {
             return;
           }
           await LoginHelper.saveToken(loginWithGoogleLoadDataResult.resultIfSuccess!.token).future();
+          LoadDataResult<User> userLoadDataResult = await getUserUseCase.execute(
+            GetUserParameter()
+          ).future(
+            parameter: apiRequestManager.addRequestToCancellationPart('get-user-after-login').value
+          ).map<User>(
+            (getUserResponse) => getUserResponse.user
+          );
+          if (userLoadDataResult.isSuccess) {
+            User user = userLoadDataResult.resultIfSuccess!;
+            await _loginDelegate!.onSubscribeChatCountRealtimeChannel(user.id);
+          }
           Get.back();
           _loginDelegate!.onLoginRequestProcessSuccessCallback();
         } else {
@@ -185,6 +213,7 @@ class LoginDelegate {
   _OnSaveTempData onSaveTempData;
   _OnLoginIntoOneSignal onLoginIntoOneSignal;
   OnGetPushNotificationSubscriptionId onGetPushNotificationSubscriptionId;
+  Future<void> Function(String) onSubscribeChatCountRealtimeChannel;
 
   LoginDelegate({
     required this.onUnfocusAllWidget,
@@ -198,7 +227,8 @@ class LoginDelegate {
     required this.onLoginWithGoogle,
     required this.onSaveTempData,
     required this.onLoginIntoOneSignal,
-    required this.onGetPushNotificationSubscriptionId
+    required this.onGetPushNotificationSubscriptionId,
+    required this.onSubscribeChatCountRealtimeChannel
   });
 }
 

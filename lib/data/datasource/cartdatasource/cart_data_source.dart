@@ -22,6 +22,8 @@ import '../../../domain/entity/cart/remove_from_cart_response.dart';
 import '../../../domain/entity/cart/shared_cart_paging_parameter.dart';
 import '../../../domain/entity/cart/take_friend_cart_parameter.dart';
 import '../../../domain/entity/cart/take_friend_cart_response.dart';
+import '../../../domain/entity/cart/update_cart_quantity_parameter.dart';
+import '../../../domain/entity/cart/update_cart_quantity_response.dart';
 import '../../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../../misc/processing/future_processing.dart';
 
@@ -40,4 +42,5 @@ abstract class CartDataSource {
   FutureProcessing<AddAdditionalItemResponse> addAdditionalItem(AddAdditionalItemParameter addAdditionalItemParameter);
   FutureProcessing<ChangeAdditionalItemResponse> changeAdditionalItem(ChangeAdditionalItemParameter changeAdditionalItemParameter);
   FutureProcessing<RemoveAdditionalItemResponse> removeAdditionalItem(RemoveAdditionalItemParameter removeAdditionalItemParameter);
+  FutureProcessing<UpdateCartQuantityResponse> updateCartQuantity(UpdateCartQuantityParameter updateCartQuantityParameter);
 }

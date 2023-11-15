@@ -39,6 +39,7 @@ import '../../../domain/entity/chat/product/get_product_message_by_user_paramete
 import '../../../domain/entity/chat/product/get_product_message_by_user_response.dart';
 import '../../../domain/entity/chat/product/update_read_status_product_conversation_parameter.dart';
 import '../../../domain/entity/chat/product/update_read_status_product_conversation_response.dart';
+import '../../../misc/error/empty_chat_error.dart';
 import '../../../misc/option_builder.dart';
 import '../../../misc/processing/dio_http_client_processing.dart';
 import '../../../misc/processing/future_processing.dart';
@@ -114,7 +115,27 @@ class DefaultChatDataSource implements ChatDataSource {
 
   @override
   FutureProcessing<GetHelpMessageByUserResponse> getHelpMessageByUserResponse(GetHelpMessageByUserParameter getHelpMessageByUserParameter) {
-    return DioHttpClientProcessing((cancelToken) {
+    return DioHttpClientProcessing((cancelToken) async {
+      try {
+        GetHelpMessageByUserResponse getHelpMessageByUserResponse = await dio.get(
+          "/chat-help/user/message",
+          cancelToken: cancelToken,
+          options: OptionsBuilder.withBaseUrl(dio.options.baseUrl.replaceAll("v1", "v1.1")).buildExtended()
+        ).map<GetHelpMessageByUserResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToGetHelpMessageByUserResponse());
+        return getHelpMessageByUserResponse;
+      } on DioError catch (e) {
+        dynamic data = e.response?.data;
+        if (data is Map<String, dynamic>) {
+          if (data.containsKey("meta")) {
+            String message = data["meta"]["message"];
+            if (message.toLowerCase().contains("conversation not found")) {
+              throw EmptyChatError();
+            }
+          }
+        }
+      } catch (e) {
+        rethrow;
+      }
       return dio.get(
         "/chat-help/user/message",
         cancelToken: cancelToken,

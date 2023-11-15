@@ -15,6 +15,7 @@ import 'package:sizer/sizer.dart';
 
 import '../../controller/login_controller.dart';
 import '../../domain/entity/pin/modifypin/modifypinparameter/modify_pin_parameter.dart';
+import '../../domain/usecase/get_user_use_case.dart';
 import '../../domain/usecase/login_use_case.dart';
 import '../../domain/usecase/login_with_google_use_case.dart';
 import '../../misc/constant.dart';
@@ -40,6 +41,7 @@ import '../widget/modifiedappbar/modified_app_bar.dart';
 import '../widget/normal_text_style_for_appbar.dart';
 import '../widget/password_obscurer.dart';
 import '../widget/rx_consumer.dart';
+import '../widget/something_counter.dart';
 import 'accountsecurity/modify_pin_page.dart';
 import 'forgot_password_page.dart';
 import 'getx_page.dart';
@@ -58,7 +60,8 @@ class LoginPage extends RestorableGetxPage<_LoginPageRestoration> {
       LoginController(
         controllerManager,
         Injector.locator<LoginUseCase>(),
-        Injector.locator<LoginWithGoogleUseCase>()
+        Injector.locator<LoginWithGoogleUseCase>(),
+        Injector.locator<GetUserUseCase>()
       ), tag: pageName
     );
   }
@@ -297,7 +300,8 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
             );
           }
         },
-        onGetPushNotificationSubscriptionId: () => OneSignal.User.pushSubscription.id.toEmptyStringNonNull
+        onGetPushNotificationSubscriptionId: () => OneSignal.User.pushSubscription.id.toEmptyStringNonNull,
+        onSubscribeChatCountRealtimeChannel: (userId) async => await SomethingCounter.of(context)?.subscribeChatCount(userId)
       )
     );
     return Scaffold(

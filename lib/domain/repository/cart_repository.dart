@@ -25,6 +25,8 @@ import '../entity/cart/remove_from_cart_response.dart';
 import '../entity/cart/shared_cart_paging_parameter.dart';
 import '../entity/cart/take_friend_cart_parameter.dart';
 import '../entity/cart/take_friend_cart_response.dart';
+import '../entity/cart/update_cart_quantity_parameter.dart';
+import '../entity/cart/update_cart_quantity_response.dart';
 
 abstract class CartRepository {
   FutureProcessing<LoadDataResult<PagingDataResult<Cart>>> cartPaging(CartPagingParameter cartPagingParameter);
@@ -41,4 +43,5 @@ abstract class CartRepository {
   FutureProcessing<LoadDataResult<AddAdditionalItemResponse>> addAdditionalItem(AddAdditionalItemParameter addAdditionalItemParameter);
   FutureProcessing<LoadDataResult<ChangeAdditionalItemResponse>> changeAdditionalItem(ChangeAdditionalItemParameter changeAdditionalItemParameter);
   FutureProcessing<LoadDataResult<RemoveAdditionalItemResponse>> removeAdditionalItem(RemoveAdditionalItemParameter removeAdditionalItemParameter);
+  FutureProcessing<LoadDataResult<UpdateCartQuantityResponse>> updateCartQuantity(UpdateCartQuantityParameter updateCartQuantityParameter);
 }

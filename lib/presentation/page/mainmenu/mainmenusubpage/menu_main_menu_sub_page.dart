@@ -56,6 +56,7 @@ import '../../../widget/modifiedappbar/default_search_app_bar.dart';
 import '../../../widget/modifiedappbar/modified_app_bar.dart' hide TitleInterceptor;
 import '../../../widget/modifiedappbar/opacity_modified_app_bar.dart';
 import '../../../widget/rx_consumer.dart';
+import '../../../widget/something_counter.dart';
 import '../../../widget/tap_area.dart';
 import '../../../widget/titleanddescriptionitem/title_and_description_item.dart';
 import '../../getx_page.dart';
@@ -267,14 +268,21 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
           ProfileDropdownMenuListItemControllerState(
             onUpdateState: () => setState(() {}),
             isExpand: false,
-            title: 'Regarding MasterBagasi'.tr,
+            title: 'Regarding Master Bagasi'.tr,
             profileMenuListItemControllerStateList: [
               ProfileMenuListItemControllerState(
                 onTap: (context) {
                   WebHelper.launchUrl(Uri.parse("https://m.masterbagasi.com/about-us"));
                 },
                 icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorAboutMasterbagasi, width: 20.0),
-                title: 'About MasterBagasi'.tr
+                title: 'About Master Bagasi'.tr
+              ),
+              ProfileMenuListItemControllerState(
+                onTap: (context) {
+                  WebHelper.launchUrl(Uri.parse("https://m.masterbagasi.com/mb-care"));
+                },
+                icon: (BuildContext context) => const Icon(Icons.help_center, size: 20.0),
+                title: 'Master Bagasi Care'.tr
               ),
               ProfileMenuListItemControllerState(
                 onTap: (context) {
@@ -292,10 +300,10 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
               ),
               ProfileMenuListItemControllerState(
                 onTap: (context) {
-                  DialogHelper.showPromptUnderConstruction(context);
+                  WebHelper.launchUrl(Uri.parse("https://masterbagasi.com/contact-us"));
                 },
-                icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorIntellectualPropertyRights, width: 20.0),
-                title: 'Intellectual Rights and Property'.tr
+                icon: (BuildContext context) => const Icon(Icons.contact_support, size: 20.0),
+                title: 'Contact Us'.tr
               ),
               ProfileMenuListItemControllerState(
                 onTap: (context) async {
@@ -427,7 +435,8 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
           } catch (e, stackTrace) {
             return FailedLoadDataResult<String>(e: e, stackTrace: stackTrace);
           }
-        }
+        },
+        onUnsubscribeChatCountRealtimeChannel: (userId) async => await SomethingCounter.of(context)?.unsubscribeChatCount(userId)
       )
     );
     widget.menuMainMenuSubController.sharedCartControllerContentDelegate.setSharedCartDelegate(

@@ -264,13 +264,13 @@ class _StatefulHostCartControllerMediatorWidgetState extends State<_StatefulHost
         (cart) => VerticalCartListItemControllerState(
           isSelected: false,
           cart: cart,
-          onChangeQuantity: (quantity) {
+          onChangeQuantity: (oldQuantity, newQuantity) {
             setState(() {
-              int newQuantity = quantity;
-              if (newQuantity < 1) {
-                newQuantity = 1;
+              int effectiveNewQuantity = newQuantity;
+              if (effectiveNewQuantity < 1) {
+                effectiveNewQuantity = 1;
               }
-              cart.quantity = newQuantity;
+              cart.quantity = effectiveNewQuantity;
               _updateCartInformation();
             });
           },

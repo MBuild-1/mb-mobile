@@ -333,6 +333,7 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
     } else if (item is DefaultVideoCarouselListItemControllerState) {
       return DefaultVideoCarouselListItem(
         defaultVideoListLoadDataResult: item.defaultVideoListLoadDataResult,
+        footerAdditionalPadding: item.footerAdditionalPadding
       );
     } else if (item is DefaultVideoListItemControllerState) {
       return DefaultVideoItem(

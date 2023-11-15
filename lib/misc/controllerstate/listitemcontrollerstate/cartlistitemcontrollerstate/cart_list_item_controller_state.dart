@@ -14,7 +14,7 @@ abstract class CartListItemControllerState extends ListItemControllerState {
   void Function()? onRemoveFromNotes;
   void Function()? onRemoveCart;
   void Function()? onChangeNotes;
-  void Function(int)? onChangeQuantity;
+  void Function(int, int)? onChangeQuantity;
 
   CartListItemControllerState({
     required this.cart,

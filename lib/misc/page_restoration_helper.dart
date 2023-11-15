@@ -315,9 +315,7 @@ class _PageRestorationHelperImpl {
   }
 
   void toDeliveryReviewPage(BuildContext context) {
-    print("Delivery Review 1");
     LoginHelper.checkingLogin(context, () {
-      print("Delivery Review 2");
       PageRestorationHelper.findPageRestorationMixin<DeliveryReviewPageRestorationMixin>(
         onGetxPageRestorationFound: (restoration) {
           restoration.deliveryReviewPageRestorableRouteFuture.present();

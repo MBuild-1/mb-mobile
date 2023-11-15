@@ -144,17 +144,32 @@ class MenuMainMenuSubController extends BaseGetxController {
     if (_menuMainMenuSubDelegate != null) {
       _menuMainMenuSubDelegate!.onUnfocusAllWidget();
       _menuMainMenuSubDelegate!.onShowLogoutRequestProcessLoadingCallback();
+      LoadDataResult<User> userLoadDataResult = await getUserUseCase.execute(
+        GetUserParameter()
+      ).future(
+        parameter: apiRequestManager.addRequestToCancellationPart('get-user-after-logout').value
+      ).map<User>(
+        (getUserResponse) => getUserResponse.user
+      );
       LoadDataResult<LogoutResponse> logoutLoadDataResult = await logoutUseCase.execute(
         LogoutParameter()
       ).future(
         parameter: apiRequestManager.addRequestToCancellationPart('logout').value
       );
+      Future<void> unsubscribeChatCount() async {
+        if (userLoadDataResult.isSuccess) {
+          User user = userLoadDataResult.resultIfSuccess!;
+          await _menuMainMenuSubDelegate!.onUnsubscribeChatCountRealtimeChannel(user.id);
+        }
+      }
       await _menuMainMenuSubDelegate!.onDeleteToken().getLoadDataResult();
       if (logoutLoadDataResult.isSuccess) {
         await _menuMainMenuSubDelegate!.onLogoutIntoOneSignal();
+        await unsubscribeChatCount();
         Get.back();
         _menuMainMenuSubDelegate!.onLogoutRequestProcessSuccessCallback();
       } else {
+        await unsubscribeChatCount();
         Get.back();
         if (logoutLoadDataResult.isFailedBecauseUnauthenticated) {
           _menuMainMenuSubDelegate!.onLogoutRequestProcessSuccessCallback();
@@ -202,6 +217,7 @@ class MenuMainMenuSubDelegate {
   _OnLogoutRequestProcessSuccessCallback onLogoutRequestProcessSuccessCallback;
   _OnShowLogoutRequestProcessFailedCallback onShowLogoutRequestProcessFailedCallback;
   _OnLogoutIntoOneSignal onLogoutIntoOneSignal;
+  Future<void> Function(String) onUnsubscribeChatCountRealtimeChannel;
 
   MenuMainMenuSubDelegate({
     required this.onObserveLoadProductDelegate,
@@ -211,7 +227,8 @@ class MenuMainMenuSubDelegate {
     required this.onShowLogoutRequestProcessLoadingCallback,
     required this.onLogoutRequestProcessSuccessCallback,
     required this.onShowLogoutRequestProcessFailedCallback,
-    required this.onLogoutIntoOneSignal
+    required this.onLogoutIntoOneSignal,
+    required this.onUnsubscribeChatCountRealtimeChannel
   });
 }
 

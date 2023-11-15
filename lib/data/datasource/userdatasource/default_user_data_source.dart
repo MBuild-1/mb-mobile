@@ -181,6 +181,7 @@ class DefaultUserDataSource implements UserDataSource {
         "/auth/register",
         data: formData,
         cancelToken: cancelToken,
+        queryParameters: {"device_id": registerSecondStepParameter.pushNotificationSubscriptionId},
         options: OptionsBuilder.multipartData().withBaseUrl(dio.options.baseUrl.replaceAll("v1", "v1.1")).buildExtended()
       ).map<RegisterSecondStepResponse>(
         onMap: (value) => value.wrapResponse().mapFromResponseToRegisterSecondStepResponse()

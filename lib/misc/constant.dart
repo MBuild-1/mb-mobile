@@ -214,6 +214,8 @@ class _ConstantImpl {
   int get dummyLoadingTimeInSeconds => 1;
   double get bannerMarginTopHeight => 130.0;
   double get bannerIndicatorAreaHeight => 40.0;
+  double get mainMenuFooterContentHeight => 80.0;
+  double get mainMenuFooterHeight => mainMenuFooterContentHeight + paddingListItem * 2;
 
   AspectRatioValue get aspectRatioValueProductImage => AspectRatioValue(width: 1.0, height: 1.0);
   AspectRatioValue get aspectRatioValueImageCheckRatesForVariousCountries => AspectRatioValue(width: 360.0, height: 118.0);

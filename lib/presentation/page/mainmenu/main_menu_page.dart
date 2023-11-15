@@ -41,6 +41,7 @@ import '../../notifier/notification_notifier.dart';
 import '../../widget/custom_bottom_navigation_bar.dart';
 import '../../widget/modified_svg_picture.dart';
 import '../../widget/rx_consumer.dart';
+import '../../widget/tap_area.dart';
 import '../accountsecurity/account_security_page.dart';
 import '../accountsecurity/modify_pin_page.dart';
 import '../address_page.dart';
@@ -349,7 +350,6 @@ class _StatefulMainMenuControllerMediatorWidget extends StatefulWidget {
 
 class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMainMenuControllerMediatorWidget> {
   late CustomBottomNavigationBarSelectedIndex _customBottomNavigationBarSelectedIndex;
-  final TapGestureRecognizer _signInTapGestureRecognizer = TapGestureRecognizer();
   Timer? _timer;
   bool _canBack = false;
   late NotificationNotifier _notificationNotifier;
@@ -365,32 +365,14 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
     );
     _initMainMenuPage();
     MainRouteObserver.onResetInitMainMenu = () {
-      _unsubscribeChatCount();
       _initMainMenuPage();
       for (int i = 0; i < widget.mainMenuSubControllerList.length; i++) {
         widget.mainMenuSubControllerList[i][2]();
       }
       setState(() {});
+      widget.mainMenuController.checkLoginStatus(reset: true);
     };
     _notificationNotifier = Provider.of<NotificationNotifier>(context, listen: false);
-    _subscribeChatCount();
-  }
-
-  void _subscribeChatCount() async {
-    PusherHelper.subscribeChatCountPusherChannel(
-      pusherChannelsFlutter: _pusher,
-      onEvent: _onChatCountEvent
-    );
-  }
-
-  void _unsubscribeChatCount() {
-    try {
-      PusherHelper.unsubscribeChatCountPusherChannel(
-        pusherChannelsFlutter: _pusher
-      );
-    } catch (e) {
-      // Nothing
-    }
   }
 
   dynamic _onChatCountEvent(dynamic event) {
@@ -471,35 +453,107 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
         child: Column(
           children: [
             Expanded(
-              child: IndexedStack(
-                index: _customBottomNavigationBarSelectedIndex.currentSelectedViewMenuIndex,
+              child: Stack(
                 children: [
-                  HomeMainMenuSubPage(ancestorPageName: widget.pageName),
-                  FeedMainMenuSubPage(ancestorPageName: widget.pageName),
-                  ExploreNusantaraMainMenuSubPage(ancestorPageName: widget.pageName),
-                  WishlistMainMenuSubPage(ancestorPageName: widget.pageName),
-                  MenuMainMenuSubPage(ancestorPageName: widget.pageName),
+                  IndexedStack(
+                    index: _customBottomNavigationBarSelectedIndex.currentSelectedViewMenuIndex,
+                    children: [
+                      HomeMainMenuSubPage(ancestorPageName: widget.pageName),
+                      FeedMainMenuSubPage(ancestorPageName: widget.pageName),
+                      ExploreNusantaraMainMenuSubPage(ancestorPageName: widget.pageName),
+                      WishlistMainMenuSubPage(ancestorPageName: widget.pageName),
+                      MenuMainMenuSubPage(ancestorPageName: widget.pageName),
+                    ],
+                  ),
+                  Builder(
+                    builder: (context) {
+                      void login() => PageRestorationHelper.toLoginPage(context, Constant.restorableRouteFuturePush);
+                      return Align(
+                        alignment: Alignment.bottomCenter,
+                        child: RxConsumer<bool>(
+                          rxValue: widget.mainMenuController.isLoginRx,
+                          onConsumeValue: (context, isLogin) => !isLogin ? Container(
+                            padding: EdgeInsets.all(Constant.paddingListItem),
+                            height: Constant.mainMenuFooterHeight,
+                            color: Colors.transparent,
+                            child: Stack(
+                              children: [
+                                Builder(
+                                  builder: (context) {
+                                    return Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: SizedBox(
+                                        child: Row(
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            const SizedBox(
+                                              width: 80.0
+                                            ),
+                                            Expanded(
+                                              child: TapArea(
+                                                onTap: login,
+                                                child: Container(
+                                                  padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                                                  child: Text.rich(
+                                                    "Miss Indonesian Food".trTextSpan(),
+                                                    maxLines: 2,
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white,
+                                                    borderRadius: BorderRadius.circular(10.0).copyWith(
+                                                      topLeft: Radius.zero,
+                                                      bottomLeft: Radius.zero
+                                                    ),
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                        blurRadius: 5.0,
+                                                        spreadRadius: 1.0,
+                                                        color: Colors.black.withOpacity(0.5)
+                                                      )
+                                                    ]
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                ),
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: TapArea(
+                                    onTap: login,
+                                    child: Container(
+                                      width: 80,
+                                      height: Constant.mainMenuFooterContentHeight,
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: ModifiedSvgPicture.asset(Constant.vectorBag, overrideDefaultColorWithSingleColor: false),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(10.0),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            blurRadius: 5.0,
+                                            spreadRadius: 1.0,
+                                            color: Colors.black.withOpacity(0.5)
+                                          )
+                                        ]
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ]
+                            ),
+                          ) : Container(),
+                        ),
+                      );
+                    }
+                  ),
                 ],
               )
-            ),
-            RxConsumer<bool>(
-              rxValue: widget.mainMenuController.isLoginRx,
-              onConsumeValue: (context, isLogin) => !isLogin ? Container(
-                color: Constant.colorLightRed,
-                padding: EdgeInsets.all(Constant.paddingListItem),
-                child: Row(
-                  children: [
-                    ModifiedSvgPicture.asset(Constant.vectorBag, overrideDefaultColorWithSingleColor: false),
-                    const SizedBox(width: 10),
-                    Builder(
-                      builder: (context) {
-                        _signInTapGestureRecognizer.onTap = () => PageRestorationHelper.toLoginPage(context, Constant.restorableRouteFuturePush);
-                        return Text.rich("Miss Indonesian Food".trTextSpan(parameter: _signInTapGestureRecognizer));
-                      }
-                    )
-                  ]
-                ),
-              ) : Container(),
             ),
             CustomBottomNavigationBar(
               type: BottomNavigationBarType.fixed,
@@ -581,7 +635,6 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
 
   @override
   void dispose() {
-    _unsubscribeChatCount();
     MainRouteObserver.onRefreshAddress = null;
     MainRouteObserver.onRefreshProfile = null;
     MainRouteObserver.onRefreshCartInMainMenu = null;

@@ -59,25 +59,55 @@ class WishlistAndCartControllerContentDelegate extends ControllerContentDelegate
     required this.removeFromCartDirectlyUseCase
   });
 
-  void addToWishlist(SupportWishlist supportWishlist) async {
-    if (_wishlistAndCartDelegate != null && _onGetApiRequestManager != null) {
-      ApiRequestManager apiRequestManager = _onGetApiRequestManager!();
-      _wishlistAndCartDelegate!.onUnfocusAllWidget();
-      _wishlistAndCartDelegate!.onShowAddToWishlistRequestProcessLoadingCallback();
-      LoadDataResult<AddWishlistResponse> addWishlistResponseLoadDataResult = await addWishlistUseCase.execute(
-        AddWishlistParameter(supportWishlist: supportWishlist)
-      ).future(
-        parameter: apiRequestManager.addRequestToCancellationPart('add-to-wishlist').value
-      );
-      if (addWishlistResponseLoadDataResult.isSuccess) {
-        supportWishlist.hasAddedToWishlist = true;
-        _wishlistAndCartDelegate!.onAddToWishlistRequestProcessSuccessCallback();
-      } else {
+  void addToWishlist(SupportWishlist supportWishlist, Future<bool> Function() onCheckingLogin) async {
+    if ((await onCheckingLogin())) {
+      if (_wishlistAndCartDelegate != null && _onGetApiRequestManager != null) {
+        ApiRequestManager apiRequestManager = _onGetApiRequestManager!();
+        _wishlistAndCartDelegate!.onUnfocusAllWidget();
+        _wishlistAndCartDelegate!.onShowAddToWishlistRequestProcessLoadingCallback();
+        LoadDataResult<AddWishlistResponse> addWishlistResponseLoadDataResult = await addWishlistUseCase.execute(
+          AddWishlistParameter(supportWishlist: supportWishlist)
+        ).future(
+          parameter: apiRequestManager.addRequestToCancellationPart('add-to-wishlist').value
+        );
+        if (addWishlistResponseLoadDataResult.isSuccess) {
+          supportWishlist.hasAddedToWishlist = true;
+          _wishlistAndCartDelegate!.onAddToWishlistRequestProcessSuccessCallback();
+        } else {
+          LoadDataResult<RemoveWishlistResponse> removeWishlistResponseLoadDataResult = await removeWishlistBasedProductUseCase.execute(
+            RemoveWishlistBasedProductParameter(productEntryOrProductBundleId: supportWishlist.supportWishlistContentId)
+          ).future(
+            parameter: apiRequestManager.addRequestToCancellationPart('remove-from-wishlist').value
+          );
+          if (removeWishlistResponseLoadDataResult.isSuccess) {
+            supportWishlist.hasAddedToWishlist = false;
+            _wishlistAndCartDelegate!.onRemoveFromWishlistRequestProcessSuccessCallback(
+              Wishlist(
+                id: "",
+                supportWishlist: supportWishlist
+              )
+            );
+          } else {
+            _wishlistAndCartDelegate!.onShowRemoveFromWishlistRequestProcessFailedCallback(removeWishlistResponseLoadDataResult.resultIfFailed);
+          }
+        }
+        _wishlistAndCartDelegate!.onBack();
+      }
+    }
+  }
+
+  void removeFromWishlist(SupportWishlist supportWishlist, Future<bool> Function() onCheckingLogin) async {
+    if ((await onCheckingLogin())) {
+      if (_wishlistAndCartDelegate != null && _onGetApiRequestManager != null) {
+        ApiRequestManager apiRequestManager = _onGetApiRequestManager!();
+        _wishlistAndCartDelegate!.onUnfocusAllWidget();
+        _wishlistAndCartDelegate!.onShowRemoveFromWishlistRequestProcessLoadingCallback();
         LoadDataResult<RemoveWishlistResponse> removeWishlistResponseLoadDataResult = await removeWishlistBasedProductUseCase.execute(
           RemoveWishlistBasedProductParameter(productEntryOrProductBundleId: supportWishlist.supportWishlistContentId)
         ).future(
           parameter: apiRequestManager.addRequestToCancellationPart('remove-from-wishlist').value
         );
+        _wishlistAndCartDelegate!.onBack();
         if (removeWishlistResponseLoadDataResult.isSuccess) {
           supportWishlist.hasAddedToWishlist = false;
           _wishlistAndCartDelegate!.onRemoveFromWishlistRequestProcessSuccessCallback(
@@ -90,60 +120,102 @@ class WishlistAndCartControllerContentDelegate extends ControllerContentDelegate
           _wishlistAndCartDelegate!.onShowRemoveFromWishlistRequestProcessFailedCallback(removeWishlistResponseLoadDataResult.resultIfFailed);
         }
       }
-      _wishlistAndCartDelegate!.onBack();
     }
   }
 
-  void removeFromWishlist(SupportWishlist supportWishlist) async {
-    if (_wishlistAndCartDelegate != null && _onGetApiRequestManager != null) {
-      ApiRequestManager apiRequestManager = _onGetApiRequestManager!();
-      _wishlistAndCartDelegate!.onUnfocusAllWidget();
-      _wishlistAndCartDelegate!.onShowRemoveFromWishlistRequestProcessLoadingCallback();
-      LoadDataResult<RemoveWishlistResponse> removeWishlistResponseLoadDataResult = await removeWishlistBasedProductUseCase.execute(
-        RemoveWishlistBasedProductParameter(productEntryOrProductBundleId: supportWishlist.supportWishlistContentId)
-      ).future(
-        parameter: apiRequestManager.addRequestToCancellationPart('remove-from-wishlist').value
-      );
-      _wishlistAndCartDelegate!.onBack();
-      if (removeWishlistResponseLoadDataResult.isSuccess) {
-        supportWishlist.hasAddedToWishlist = false;
-        _wishlistAndCartDelegate!.onRemoveFromWishlistRequestProcessSuccessCallback(
-          Wishlist(
-            id: "",
-            supportWishlist: supportWishlist
-          )
+  void removeFromWishlistDirectly(Wishlist wishlist, Future<bool> Function() onCheckingLogin) async {
+    if ((await onCheckingLogin())) {
+      if (_wishlistAndCartDelegate != null && _onGetApiRequestManager != null) {
+        ApiRequestManager apiRequestManager = _onGetApiRequestManager!();
+        _wishlistAndCartDelegate!.onUnfocusAllWidget();
+        _wishlistAndCartDelegate!.onShowRemoveFromWishlistRequestProcessLoadingCallback();
+        LoadDataResult<RemoveWishlistResponse> removeWishlistResponseLoadDataResult = await removeWishlistUseCase.execute(
+          RemoveWishlistParameter(wishlistId: wishlist.id)
+        ).future(
+          parameter: apiRequestManager.addRequestToCancellationPart('remove-from-wishlist-directly').value
         );
-      } else {
-        _wishlistAndCartDelegate!.onShowRemoveFromWishlistRequestProcessFailedCallback(removeWishlistResponseLoadDataResult.resultIfFailed);
+        _wishlistAndCartDelegate!.onBack();
+        if (removeWishlistResponseLoadDataResult.isSuccess) {
+          _wishlistAndCartDelegate!.onRemoveFromWishlistRequestProcessSuccessCallback(wishlist);
+        } else {
+          _wishlistAndCartDelegate!.onShowRemoveFromWishlistRequestProcessFailedCallback(removeWishlistResponseLoadDataResult.resultIfFailed);
+        }
       }
     }
   }
 
-  void removeFromWishlistDirectly(Wishlist wishlist) async {
-    if (_wishlistAndCartDelegate != null && _onGetApiRequestManager != null) {
-      ApiRequestManager apiRequestManager = _onGetApiRequestManager!();
-      _wishlistAndCartDelegate!.onUnfocusAllWidget();
-      _wishlistAndCartDelegate!.onShowRemoveFromWishlistRequestProcessLoadingCallback();
-      LoadDataResult<RemoveWishlistResponse> removeWishlistResponseLoadDataResult = await removeWishlistUseCase.execute(
-        RemoveWishlistParameter(wishlistId: wishlist.id)
-      ).future(
-        parameter: apiRequestManager.addRequestToCancellationPart('remove-from-wishlist-directly').value
-      );
-      _wishlistAndCartDelegate!.onBack();
-      if (removeWishlistResponseLoadDataResult.isSuccess) {
-        _wishlistAndCartDelegate!.onRemoveFromWishlistRequestProcessSuccessCallback(wishlist);
-      } else {
-        _wishlistAndCartDelegate!.onShowRemoveFromWishlistRequestProcessFailedCallback(removeWishlistResponseLoadDataResult.resultIfFailed);
+  void addToCart(SupportCart supportCart, Future<bool> Function() onCheckingLogin, {bool canAddMultiple = false}) async {
+    if ((await onCheckingLogin())) {
+      if (_wishlistAndCartDelegate != null && _onGetApiRequestManager != null) {
+        ApiRequestManager apiRequestManager = _onGetApiRequestManager!();
+        _wishlistAndCartDelegate!.onUnfocusAllWidget();
+        _wishlistAndCartDelegate!.onShowAddCartRequestProcessLoadingCallback();
+        void removeFromCartLocalMethod() async {
+          LoadDataResult<RemoveFromCartDirectlyResponse> removeFromCartDirectlyResponseLoadDataResult = await removeFromCartDirectlyUseCase.execute(
+            RemoveFromCartDirectlyParameter(supportCart: supportCart)
+          ).future(
+            parameter: apiRequestManager.addRequestToCancellationPart('remove-from-cart').value
+          );
+          _wishlistAndCartDelegate!.onBack();
+          if (removeFromCartDirectlyResponseLoadDataResult.isSuccess) {
+            supportCart.hasAddedToCart = false;
+            _wishlistAndCartDelegate!.onRemoveCartRequestProcessSuccessCallback();
+          } else {
+            _wishlistAndCartDelegate!.onShowRemoveCartRequestProcessFailedCallback(removeFromCartDirectlyResponseLoadDataResult.resultIfFailed);
+          }
+        }
+        void addToCartLocalMethod() async {
+          LoadDataResult<AddToCartResponse> addToCartResponseLoadDataResult = await addToCartUseCase.execute(
+            AddToCartParameter(supportCart: supportCart, quantity: 1)
+          ).future(
+            parameter: apiRequestManager.addRequestToCancellationPart('add-to-cart').value
+          );
+          _wishlistAndCartDelegate!.onBack();
+          if (addToCartResponseLoadDataResult.isSuccess) {
+            supportCart.hasAddedToCart = true;
+            _wishlistAndCartDelegate!.onAddCartRequestProcessSuccessCallback();
+          } else {
+            _wishlistAndCartDelegate!.onShowAddCartRequestProcessFailedCallback(addToCartResponseLoadDataResult.resultIfFailed);
+          }
+        }
+        if (!canAddMultiple) {
+          LoadDataResult<List<Cart>> cartListLoadDataResult = await getCartListIgnoringLoginErrorUseCase.execute(
+            CartListParameter()
+          ).future(
+            parameter: apiRequestManager.addRequestToCancellationPart('add-to-cart').value
+          );
+          if (cartListLoadDataResult.isSuccess) {
+            List<Cart> cartList = cartListLoadDataResult.resultIfSuccess!;
+            Iterable<Cart> filteredCartIterated = cartList.where((cart) {
+              SupportCart iteratedSupportCart = cart.supportCart;
+              if (iteratedSupportCart is ProductEntry && supportCart is ProductEntry) {
+                return iteratedSupportCart.id == supportCart.id;
+              } else if (iteratedSupportCart is ProductBundle && supportCart is ProductBundle) {
+                return iteratedSupportCart.id == supportCart.id;
+              }
+              return false;
+            });
+            if (filteredCartIterated.isNotEmpty) {
+              removeFromCartLocalMethod();
+            } else {
+              addToCartLocalMethod();
+            }
+          } else {
+            _wishlistAndCartDelegate!.onShowAddCartRequestProcessFailedCallback(cartListLoadDataResult.resultIfFailed);
+          }
+          return;
+        }
+        addToCartLocalMethod();
       }
     }
   }
 
-  void addToCart(SupportCart supportCart, {bool canAddMultiple = false}) async {
-    if (_wishlistAndCartDelegate != null && _onGetApiRequestManager != null) {
-      ApiRequestManager apiRequestManager = _onGetApiRequestManager!();
-      _wishlistAndCartDelegate!.onUnfocusAllWidget();
-      _wishlistAndCartDelegate!.onShowAddCartRequestProcessLoadingCallback();
-      void removeFromCartLocalMethod() async {
+  void removeFromCart(SupportCart supportCart, Future<bool> Function() onCheckingLogin) async {
+    if ((await onCheckingLogin())) {
+      if (_wishlistAndCartDelegate != null && _onGetApiRequestManager != null) {
+        ApiRequestManager apiRequestManager = _onGetApiRequestManager!();
+        _wishlistAndCartDelegate!.onUnfocusAllWidget();
+        _wishlistAndCartDelegate!.onShowRemoveCartRequestProcessLoadingCallback();
         LoadDataResult<RemoveFromCartDirectlyResponse> removeFromCartDirectlyResponseLoadDataResult = await removeFromCartDirectlyUseCase.execute(
           RemoveFromCartDirectlyParameter(supportCart: supportCart)
         ).future(
@@ -154,79 +226,17 @@ class WishlistAndCartControllerContentDelegate extends ControllerContentDelegate
           supportCart.hasAddedToCart = false;
           _wishlistAndCartDelegate!.onRemoveCartRequestProcessSuccessCallback();
         } else {
-          _wishlistAndCartDelegate!.onShowRemoveCartRequestProcessFailedCallback(removeFromCartDirectlyResponseLoadDataResult.resultIfFailed);
-        }
-      }
-      void addToCartLocalMethod() async {
-        LoadDataResult<AddToCartResponse> addToCartResponseLoadDataResult = await addToCartUseCase.execute(
-          AddToCartParameter(supportCart: supportCart, quantity: 1)
-        ).future(
-          parameter: apiRequestManager.addRequestToCancellationPart('add-to-cart').value
-        );
-        _wishlistAndCartDelegate!.onBack();
-        if (addToCartResponseLoadDataResult.isSuccess) {
-          supportCart.hasAddedToCart = true;
-          _wishlistAndCartDelegate!.onAddCartRequestProcessSuccessCallback();
-        } else {
-          _wishlistAndCartDelegate!.onShowAddCartRequestProcessFailedCallback(addToCartResponseLoadDataResult.resultIfFailed);
-        }
-      }
-      if (!canAddMultiple) {
-        LoadDataResult<List<Cart>> cartListLoadDataResult = await getCartListIgnoringLoginErrorUseCase.execute(
-          CartListParameter()
-        ).future(
-          parameter: apiRequestManager.addRequestToCancellationPart('add-to-cart').value
-        );
-        if (cartListLoadDataResult.isSuccess) {
-          List<Cart> cartList = cartListLoadDataResult.resultIfSuccess!;
-          Iterable<Cart> filteredCartIterated = cartList.where((cart) {
-            SupportCart iteratedSupportCart = cart.supportCart;
-            if (iteratedSupportCart is ProductEntry && supportCart is ProductEntry) {
-              return iteratedSupportCart.id == supportCart.id;
-            } else if (iteratedSupportCart is ProductBundle && supportCart is ProductBundle) {
-              return iteratedSupportCart.id == supportCart.id;
-            }
-            return false;
-          });
-          if (filteredCartIterated.isNotEmpty) {
-            removeFromCartLocalMethod();
+          LoadDataResult<AddToCartResponse> addToCartResponseLoadDataResult = await addToCartUseCase.execute(
+            AddToCartParameter(supportCart: supportCart, quantity: 1)
+          ).future(
+            parameter: apiRequestManager.addRequestToCancellationPart('add-to-cart').value
+          );
+          if (addToCartResponseLoadDataResult.isSuccess) {
+            supportCart.hasAddedToCart = true;
+            _wishlistAndCartDelegate!.onAddCartRequestProcessSuccessCallback();
           } else {
-            addToCartLocalMethod();
+            _wishlistAndCartDelegate!.onShowAddCartRequestProcessFailedCallback(addToCartResponseLoadDataResult.resultIfFailed);
           }
-        } else {
-          _wishlistAndCartDelegate!.onShowAddCartRequestProcessFailedCallback(cartListLoadDataResult.resultIfFailed);
-        }
-        return;
-      }
-      addToCartLocalMethod();
-    }
-  }
-
-  void removeFromCart(SupportCart supportCart) async {
-    if (_wishlistAndCartDelegate != null && _onGetApiRequestManager != null) {
-      ApiRequestManager apiRequestManager = _onGetApiRequestManager!();
-      _wishlistAndCartDelegate!.onUnfocusAllWidget();
-      _wishlistAndCartDelegate!.onShowRemoveCartRequestProcessLoadingCallback();
-      LoadDataResult<RemoveFromCartDirectlyResponse> removeFromCartDirectlyResponseLoadDataResult = await removeFromCartDirectlyUseCase.execute(
-        RemoveFromCartDirectlyParameter(supportCart: supportCart)
-      ).future(
-        parameter: apiRequestManager.addRequestToCancellationPart('remove-from-cart').value
-      );
-      _wishlistAndCartDelegate!.onBack();
-      if (removeFromCartDirectlyResponseLoadDataResult.isSuccess) {
-        supportCart.hasAddedToCart = false;
-        _wishlistAndCartDelegate!.onRemoveCartRequestProcessSuccessCallback();
-      } else {
-        LoadDataResult<AddToCartResponse> addToCartResponseLoadDataResult = await addToCartUseCase.execute(
-          AddToCartParameter(supportCart: supportCart, quantity: 1)
-        ).future(
-          parameter: apiRequestManager.addRequestToCancellationPart('add-to-cart').value
-        );
-        if (addToCartResponseLoadDataResult.isSuccess) {
-          supportCart.hasAddedToCart = true;
-          _wishlistAndCartDelegate!.onAddCartRequestProcessSuccessCallback();
-        } else {
-          _wishlistAndCartDelegate!.onShowAddCartRequestProcessFailedCallback(addToCartResponseLoadDataResult.resultIfFailed);
         }
       }
     }

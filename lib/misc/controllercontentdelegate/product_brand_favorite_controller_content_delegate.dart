@@ -32,91 +32,97 @@ class ProductBrandFavoriteControllerContentDelegate extends ControllerContentDel
   ProductBrandFavoriteDelegate? _productBrandFavoriteDelegate;
   ApiRequestManager Function()? _onGetApiRequestManager;
 
-  void addToFavoriteProductBrand(ProductBrand productBrand) async {
-    if (_productBrandFavoriteDelegate != null && _onGetApiRequestManager != null) {
-      ApiRequestManager apiRequestManager = _onGetApiRequestManager!();
-      _productBrandFavoriteDelegate!.onUnfocusAllWidget();
-      _productBrandFavoriteDelegate!.onShowAddToFavoriteProductBrandRequestProcessLoadingCallback();
-      LoadDataResult<AddToFavoriteProductBrandResponse> addToFavoriteProductBrandResponseLoadDataResult = await addToFavoriteProductBrandUseCase.execute(
-        AddToFavoriteProductBrandParameter(productBrand: productBrand)
-      ).future(
-        parameter: apiRequestManager.addRequestToCancellationPart('add-to-favorite').value
-      );
-      if (addToFavoriteProductBrandResponseLoadDataResult.isSuccess) {
-        productBrand.isAddedToFavorite = true;
-        _productBrandFavoriteDelegate!.onAddToFavoriteProductBrandRequestProcessSuccessCallback();
-      } else {
-        _productBrandFavoriteDelegate!.onShowAddToFavoriteProductBrandProcessFailedCallback(addToFavoriteProductBrandResponseLoadDataResult.resultIfFailed);
-      }
-      _productBrandFavoriteDelegate!.onBack();
-    }
-  }
-
-  void removeFromFavoriteProductBrand(FavoriteProductBrand favoriteProductBrand) async {
-    if (_productBrandFavoriteDelegate != null && _onGetApiRequestManager != null) {
-      ApiRequestManager apiRequestManager = _onGetApiRequestManager!();
-      _productBrandFavoriteDelegate!.onUnfocusAllWidget();
-      _productBrandFavoriteDelegate!.onShowRemoveFromFavoriteProductBrandRequestProcessLoadingCallback();
-      LoadDataResult<RemoveFromFavoriteProductBrandResponse> removeFromFavoriteProductBrandResponseLoadDataResult = await removeFromFavoriteProductBrandUseCase.execute(
-        RemoveFromFavoriteProductBrandParameter(favoriteProductBrand: favoriteProductBrand)
-      ).future(
-        parameter: apiRequestManager.addRequestToCancellationPart('remove-from-favorite').value
-      );
-      _productBrandFavoriteDelegate!.onBack();
-      if (removeFromFavoriteProductBrandResponseLoadDataResult.isSuccess) {
-        favoriteProductBrand.productBrand.isAddedToFavorite = false;
-        _productBrandFavoriteDelegate!.onRemoveFromFavoriteProductBrandRequestProcessSuccessCallback(favoriteProductBrand);
-      } else {
-        _productBrandFavoriteDelegate!.onShowRemoveFromFavoriteProductBrandProcessFailedCallback(removeFromFavoriteProductBrandResponseLoadDataResult.resultIfFailed);
+  void addToFavoriteProductBrand(ProductBrand productBrand, Future<bool> Function() onCheckingLogin) async {
+    if ((await onCheckingLogin())) {
+      if (_productBrandFavoriteDelegate != null && _onGetApiRequestManager != null) {
+        ApiRequestManager apiRequestManager = _onGetApiRequestManager!();
+        _productBrandFavoriteDelegate!.onUnfocusAllWidget();
+        _productBrandFavoriteDelegate!.onShowAddToFavoriteProductBrandRequestProcessLoadingCallback();
+        LoadDataResult<AddToFavoriteProductBrandResponse> addToFavoriteProductBrandResponseLoadDataResult = await addToFavoriteProductBrandUseCase.execute(
+          AddToFavoriteProductBrandParameter(productBrand: productBrand)
+        ).future(
+          parameter: apiRequestManager.addRequestToCancellationPart('add-to-favorite').value
+        );
+        if (addToFavoriteProductBrandResponseLoadDataResult.isSuccess) {
+          productBrand.isAddedToFavorite = true;
+          _productBrandFavoriteDelegate!.onAddToFavoriteProductBrandRequestProcessSuccessCallback();
+        } else {
+          _productBrandFavoriteDelegate!.onShowAddToFavoriteProductBrandProcessFailedCallback(addToFavoriteProductBrandResponseLoadDataResult.resultIfFailed);
+        }
+        _productBrandFavoriteDelegate!.onBack();
       }
     }
   }
 
-  void removeFromFavoriteProductBrandBasedProductBrand(ProductBrand productBrand) async {
-    if (_productBrandFavoriteDelegate != null && _onGetApiRequestManager != null) {
-      ApiRequestManager apiRequestManager = _onGetApiRequestManager!();
-      _productBrandFavoriteDelegate!.onUnfocusAllWidget();
-      _productBrandFavoriteDelegate!.onShowRemoveFromFavoriteProductBrandRequestProcessLoadingCallback();
-      LoadDataResult<List<FavoriteProductBrand>> favoriteProductBrandListLoadDataResult = await getFavoriteProductBrandListUseCase.execute(
-        FavoriteProductBrandListParameter()
-      ).future(
-        parameter: apiRequestManager.addRequestToCancellationPart('favorite-product-brand-list').value
-      );
-      if (favoriteProductBrandListLoadDataResult.isSuccess) {
-        List<FavoriteProductBrand> favoriteProductBrandList = favoriteProductBrandListLoadDataResult.resultIfSuccess!;
-        Iterable<FavoriteProductBrand> favoriteProductBrandIterable = favoriteProductBrandList.where((favoriteProductBrand) => favoriteProductBrand.productBrand.id == productBrand.id);
-        if (favoriteProductBrandIterable.isNotEmpty) {
-          FavoriteProductBrand favoriteProductBrand = favoriteProductBrandIterable.first;
-          LoadDataResult<RemoveFromFavoriteProductBrandResponse> removeFromFavoriteProductBrandResponseLoadDataResult = await removeFromFavoriteProductBrandUseCase.execute(
-            RemoveFromFavoriteProductBrandParameter(favoriteProductBrand: favoriteProductBrand)
-          ).future(
-            parameter: apiRequestManager.addRequestToCancellationPart('remove-from-favorite-based-product-brand').value
-          );
-          _productBrandFavoriteDelegate!.onBack();
-          if (removeFromFavoriteProductBrandResponseLoadDataResult.isSuccess) {
-            productBrand.isAddedToFavorite = false;
-            _productBrandFavoriteDelegate!.onRemoveFromFavoriteProductBrandRequestProcessSuccessCallback(favoriteProductBrand);
+  void removeFromFavoriteProductBrand(FavoriteProductBrand favoriteProductBrand, Future<bool> Function() onCheckingLogin) async {
+    if ((await onCheckingLogin())) {
+      if (_productBrandFavoriteDelegate != null && _onGetApiRequestManager != null) {
+        ApiRequestManager apiRequestManager = _onGetApiRequestManager!();
+        _productBrandFavoriteDelegate!.onUnfocusAllWidget();
+        _productBrandFavoriteDelegate!.onShowRemoveFromFavoriteProductBrandRequestProcessLoadingCallback();
+        LoadDataResult<RemoveFromFavoriteProductBrandResponse> removeFromFavoriteProductBrandResponseLoadDataResult = await removeFromFavoriteProductBrandUseCase.execute(
+          RemoveFromFavoriteProductBrandParameter(favoriteProductBrand: favoriteProductBrand)
+        ).future(
+          parameter: apiRequestManager.addRequestToCancellationPart('remove-from-favorite').value
+        );
+        _productBrandFavoriteDelegate!.onBack();
+        if (removeFromFavoriteProductBrandResponseLoadDataResult.isSuccess) {
+          favoriteProductBrand.productBrand.isAddedToFavorite = false;
+          _productBrandFavoriteDelegate!.onRemoveFromFavoriteProductBrandRequestProcessSuccessCallback(favoriteProductBrand);
+        } else {
+          _productBrandFavoriteDelegate!.onShowRemoveFromFavoriteProductBrandProcessFailedCallback(removeFromFavoriteProductBrandResponseLoadDataResult.resultIfFailed);
+        }
+      }
+    }
+  }
+
+  void removeFromFavoriteProductBrandBasedProductBrand(ProductBrand productBrand, Future<bool> Function() onCheckingLogin) async {
+    if ((await onCheckingLogin())) {
+      if (_productBrandFavoriteDelegate != null && _onGetApiRequestManager != null) {
+        ApiRequestManager apiRequestManager = _onGetApiRequestManager!();
+        _productBrandFavoriteDelegate!.onUnfocusAllWidget();
+        _productBrandFavoriteDelegate!.onShowRemoveFromFavoriteProductBrandRequestProcessLoadingCallback();
+        LoadDataResult<List<FavoriteProductBrand>> favoriteProductBrandListLoadDataResult = await getFavoriteProductBrandListUseCase.execute(
+          FavoriteProductBrandListParameter()
+        ).future(
+          parameter: apiRequestManager.addRequestToCancellationPart('favorite-product-brand-list').value
+        );
+        if (favoriteProductBrandListLoadDataResult.isSuccess) {
+          List<FavoriteProductBrand> favoriteProductBrandList = favoriteProductBrandListLoadDataResult.resultIfSuccess!;
+          Iterable<FavoriteProductBrand> favoriteProductBrandIterable = favoriteProductBrandList.where((favoriteProductBrand) => favoriteProductBrand.productBrand.id == productBrand.id);
+          if (favoriteProductBrandIterable.isNotEmpty) {
+            FavoriteProductBrand favoriteProductBrand = favoriteProductBrandIterable.first;
+            LoadDataResult<RemoveFromFavoriteProductBrandResponse> removeFromFavoriteProductBrandResponseLoadDataResult = await removeFromFavoriteProductBrandUseCase.execute(
+              RemoveFromFavoriteProductBrandParameter(favoriteProductBrand: favoriteProductBrand)
+            ).future(
+              parameter: apiRequestManager.addRequestToCancellationPart('remove-from-favorite-based-product-brand').value
+            );
+            _productBrandFavoriteDelegate!.onBack();
+            if (removeFromFavoriteProductBrandResponseLoadDataResult.isSuccess) {
+              productBrand.isAddedToFavorite = false;
+              _productBrandFavoriteDelegate!.onRemoveFromFavoriteProductBrandRequestProcessSuccessCallback(favoriteProductBrand);
+            } else {
+              _productBrandFavoriteDelegate!.onShowRemoveFromFavoriteProductBrandProcessFailedCallback(removeFromFavoriteProductBrandResponseLoadDataResult.resultIfFailed);
+            }
           } else {
-            _productBrandFavoriteDelegate!.onShowRemoveFromFavoriteProductBrandProcessFailedCallback(removeFromFavoriteProductBrandResponseLoadDataResult.resultIfFailed);
+            _productBrandFavoriteDelegate!.onBack();
+            _productBrandFavoriteDelegate!.onShowRemoveFromFavoriteProductBrandProcessFailedCallback(
+              MultiLanguageMessageError(
+                title: MultiLanguageString({
+                  Constant.textEnUsLanguageKey: "Favorite Product Brand Is Not Found",
+                  Constant.textInIdLanguageKey: "Product Brand Favorit Tidak Ditemukan."
+                }),
+                message: MultiLanguageString({
+                  Constant.textEnUsLanguageKey: "For now, favorite product brand is not found.",
+                  Constant.textInIdLanguageKey: "Untuk sekarang, product brand favorit tidak ditemukan."
+                }),
+              )
+            );
           }
         } else {
           _productBrandFavoriteDelegate!.onBack();
-          _productBrandFavoriteDelegate!.onShowRemoveFromFavoriteProductBrandProcessFailedCallback(
-            MultiLanguageMessageError(
-              title: MultiLanguageString({
-                Constant.textEnUsLanguageKey: "Favorite Product Brand Is Not Found",
-                Constant.textInIdLanguageKey: "Product Brand Favorit Tidak Ditemukan."
-              }),
-              message: MultiLanguageString({
-                Constant.textEnUsLanguageKey: "For now, favorite product brand is not found.",
-                Constant.textInIdLanguageKey: "Untuk sekarang, product brand favorit tidak ditemukan."
-              }),
-            )
-          );
+          _productBrandFavoriteDelegate!.onShowRemoveFromFavoriteProductBrandProcessFailedCallback(favoriteProductBrandListLoadDataResult.resultIfFailed);
         }
-      } else {
-        _productBrandFavoriteDelegate!.onBack();
-        _productBrandFavoriteDelegate!.onShowRemoveFromFavoriteProductBrandProcessFailedCallback(favoriteProductBrandListLoadDataResult.resultIfFailed);
       }
     }
   }

@@ -4,8 +4,10 @@ import '../list_item_controller_state.dart';
 
 class DefaultVideoCarouselListItemControllerState extends ListItemControllerState {
   LoadDataResult<List<DefaultVideo>> defaultVideoListLoadDataResult;
+  bool footerAdditionalPadding;
 
   DefaultVideoCarouselListItemControllerState({
-    required this.defaultVideoListLoadDataResult
+    required this.defaultVideoListLoadDataResult,
+    required this.footerAdditionalPadding
   });
 }

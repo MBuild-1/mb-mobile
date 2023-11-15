@@ -253,9 +253,13 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
   late double _selectedCartShoppingTotal = 0;
   List<AdditionalItem> _additionalItemList = [];
   List<Cart> _selectedCartList = [];
+  LoadDataResult<User> _fetchedUserLoadDataResult = NoLoadDataResult<User>();
   LoadDataResult<User> _userLoadDataResult = NoLoadDataResult<User>();
+  LoadDataResult<Bucket> _fetchedBucketLoadDataResult = NoLoadDataResult<Bucket>();
   LoadDataResult<Bucket> _bucketLoadDataResult = NoLoadDataResult<Bucket>();
+  LoadDataResult<BucketMember> _fetchedBucketMemberLoadDataResult = NoLoadDataResult<BucketMember>();
   LoadDataResult<BucketMember> _bucketMemberLoadDataResult = NoLoadDataResult<BucketMember>();
+  LoadDataResult<List<Cart>> _fetchedCartListLoadDataResult = NoLoadDataResult<List<Cart>>();
   LoadDataResult<List<Cart>> _cartListLoadDataResult = NoLoadDataResult<List<Cart>>();
   LoadDataResult<CartSummary> _sharedCartSummaryLoadDataResult = NoLoadDataResult<CartSummary>();
   CartContainerInterceptingActionListItemControllerState _cartContainerInterceptingActionListItemControllerState = DefaultCartContainerInterceptingActionListItemControllerState();
@@ -301,12 +305,12 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
   Future<void> _updateSharedCartData({bool generateErrorWhileInitOrRefresh = false}) async {
     int milliseconds = 0;
 
-    LoadDataResult<User> userLoadDataResult = await widget.sharedCartController.getUser();
-    if (userLoadDataResult.isFailed) {
-      if (!userLoadDataResult.isFailedBecauseCancellation) {
+    _fetchedUserLoadDataResult = await widget.sharedCartController.getUser();
+    if (_fetchedUserLoadDataResult.isFailed) {
+      if (!_fetchedUserLoadDataResult.isFailedBecauseCancellation) {
         void setError() async {
           await Future.delayed(Duration(milliseconds: milliseconds));
-          _fillerErrorValueNotifier.value = userLoadDataResult.resultIfFailed;
+          _fillerErrorValueNotifier.value = _fetchedUserLoadDataResult.resultIfFailed;
         }
         if (generateErrorWhileInitOrRefresh) {
           WidgetsBinding.instance.addPostFrameCallback((timeStamp) => setError());
@@ -316,14 +320,14 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
         return;
       }
     }
-    LoadDataResult<Bucket> bucketLoadDataResult = (await widget.sharedCartController.showBucketByLoggedUserId()).map<Bucket>(
+    _fetchedBucketLoadDataResult = (await widget.sharedCartController.showBucketByLoggedUserId()).map<Bucket>(
       (value) => value.bucket
     );
-    if (bucketLoadDataResult.isFailed) {
-      if (!bucketLoadDataResult.isFailedBecauseCancellation) {
+    if (_fetchedBucketLoadDataResult.isFailed) {
+      if (!_fetchedBucketLoadDataResult.isFailedBecauseCancellation) {
         void setError() async {
           await Future.delayed(Duration(milliseconds: milliseconds));
-          _fillerErrorValueNotifier.value = bucketLoadDataResult.resultIfFailed;
+          _fillerErrorValueNotifier.value = _fetchedBucketLoadDataResult.resultIfFailed;
         }
         if (generateErrorWhileInitOrRefresh) {
           WidgetsBinding.instance.addPostFrameCallback((timeStamp) => setError());
@@ -333,15 +337,15 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
         return;
       }
     }
-    LoadDataResult<BucketMember> bucketMemberLoadDataResult = await widget.sharedCartController.getBucketMember(
-      bucketLoadDataResult: bucketLoadDataResult,
-      parameterUserLoadDataResult: userLoadDataResult,
+    _fetchedBucketMemberLoadDataResult = await widget.sharedCartController.getBucketMember(
+      bucketLoadDataResult: _fetchedBucketLoadDataResult,
+      parameterUserLoadDataResult: _fetchedUserLoadDataResult,
     );
-    if (bucketMemberLoadDataResult.isFailed) {
-      if (!bucketMemberLoadDataResult.isFailedBecauseCancellation) {
+    if (_fetchedBucketMemberLoadDataResult.isFailed) {
+      if (!_fetchedBucketMemberLoadDataResult.isFailedBecauseCancellation) {
         void setError() async {
           await Future.delayed(Duration(milliseconds: milliseconds));
-          _fillerErrorValueNotifier.value = bucketMemberLoadDataResult.resultIfFailed;
+          _fillerErrorValueNotifier.value = _fetchedBucketMemberLoadDataResult.resultIfFailed;
         }
         if (generateErrorWhileInitOrRefresh) {
           WidgetsBinding.instance.addPostFrameCallback((timeStamp) => setError());
@@ -351,14 +355,14 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
         return;
       }
     }
-    LoadDataResult<List<Cart>> cartListLoadDataResult = await widget.sharedCartController.getSharedCartList(
-      bucketMemberParameterLoadDataResult: bucketMemberLoadDataResult
+    _fetchedCartListLoadDataResult = await widget.sharedCartController.getSharedCartList(
+      bucketMemberParameterLoadDataResult: _fetchedBucketMemberLoadDataResult
     );
-    if (cartListLoadDataResult.isFailed) {
-      if (!cartListLoadDataResult.isFailedBecauseCancellation) {
+    if (_fetchedCartListLoadDataResult.isFailed) {
+      if (!_fetchedCartListLoadDataResult.isFailedBecauseCancellation) {
         void setError() async {
           await Future.delayed(Duration(milliseconds: milliseconds));
-          _fillerErrorValueNotifier.value = cartListLoadDataResult.resultIfFailed;
+          _fillerErrorValueNotifier.value = _fetchedCartListLoadDataResult.resultIfFailed;
         }
         if (generateErrorWhileInitOrRefresh) {
           WidgetsBinding.instance.addPostFrameCallback((timeStamp) => setError());
@@ -371,12 +375,12 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
     if (!generateErrorWhileInitOrRefresh) {
       _fillerErrorValueNotifier.value = null;
     }
-    if (userLoadDataResult.isSuccess && bucketLoadDataResult.isSuccess
-        && bucketMemberLoadDataResult.isSuccess && bucketMemberLoadDataResult.isSuccess) {
-      _userLoadDataResult = userLoadDataResult;
-      _bucketLoadDataResult = bucketLoadDataResult;
-      _bucketMemberLoadDataResult = bucketMemberLoadDataResult;
-      _cartListLoadDataResult = cartListLoadDataResult;
+    if (_fetchedUserLoadDataResult.isSuccess && _fetchedBucketLoadDataResult.isSuccess
+        && _fetchedBucketMemberLoadDataResult.isSuccess && _fetchedCartListLoadDataResult.isSuccess) {
+      _userLoadDataResult = _fetchedUserLoadDataResult;
+      _bucketLoadDataResult = _fetchedBucketLoadDataResult;
+      _bucketMemberLoadDataResult = _fetchedBucketMemberLoadDataResult;
+      _cartListLoadDataResult = _fetchedCartListLoadDataResult;
     }
   }
 
@@ -740,9 +744,10 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
   void _updateSharedCartDataAndState() async {
     await _updateSharedCartData();
     setState(() {});
+    widget.sharedCartController.getSharedCartSummary(_bucketId!);
     if (!_hasKickedFromBucket) {
-      if (_bucketLoadDataResult.isFailed) {
-        dynamic e = _bucketLoadDataResult.resultIfFailed;
+      if (_fetchedBucketLoadDataResult.isFailed) {
+        dynamic e = _fetchedBucketLoadDataResult.resultIfFailed;
         if (e is DioError) {
           dynamic data = e.response?.data;
           if (data is Map<String, dynamic>) {

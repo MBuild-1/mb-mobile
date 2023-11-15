@@ -22,6 +22,7 @@ import '../../../../misc/controllerstate/paging_controller_state.dart';
 import '../../../../misc/entityandlistitemcontrollerstatemediator/horizontal_component_entity_parameterized_entity_and_list_item_controller_state_mediator.dart';
 import '../../../../misc/injector.dart';
 import '../../../../misc/load_data_result.dart';
+import '../../../../misc/login_helper.dart';
 import '../../../../misc/main_route_observer.dart';
 import '../../../../misc/manager/controller_manager.dart';
 import '../../../../misc/on_observe_load_product_delegate.dart';
@@ -217,9 +218,16 @@ class _StatefulFeedMainMenuSubControllerMediatorWidgetState extends State<_State
           );
         },
         onObserveLoadTripDefaultVideoDirectly: (onObserveLoadTripDefaultVideoDirectlyParameter) {
+          bool isLogin = false;
+          LoginHelper.checkingLogin(
+            context,
+            () => isLogin = true,
+            resultIfHasNotBeenLogin: () => isLogin = false
+          );
           LoadDataResult<List<DefaultVideo>> defaultVideoListLoadDataResult = onObserveLoadTripDefaultVideoDirectlyParameter.tripDefaultVideoListLoadDataResult;
           return DefaultVideoCarouselListItemControllerState(
-            defaultVideoListLoadDataResult: defaultVideoListLoadDataResult
+            defaultVideoListLoadDataResult: defaultVideoListLoadDataResult,
+            footerAdditionalPadding: !isLogin
           );
         }
       )

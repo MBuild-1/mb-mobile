@@ -29,7 +29,7 @@ abstract class CartItem extends StatelessWidget {
   final void Function()? onRemoveFromNotes;
   final void Function()? onAddToWishlist;
   final void Function()? onRemoveCart;
-  final void Function(int)? onChangeQuantity;
+  final void Function(int, int)? onChangeQuantity;
 
   @protected
   double? get itemWidth;
@@ -220,7 +220,7 @@ abstract class CartItem extends StatelessWidget {
                 ),
                 const SizedBox(width: 20),
                 TapArea(
-                  onTap: onChangeQuantity != null ? () => onChangeQuantity!(cart.quantity - 1) : null,
+                  onTap: onChangeQuantity != null ? () => onChangeQuantity!(cart.quantity, cart.quantity - 1) : null,
                   child: ModifiedSvgPicture.asset(
                     Constant.vectorMinusCircle,
                     fit: BoxFit.fitHeight,
@@ -230,7 +230,7 @@ abstract class CartItem extends StatelessWidget {
                 Text(cart.quantity.toString()),
                 const SizedBox(width: 20),
                 TapArea(
-                  onTap: onChangeQuantity != null ? () => onChangeQuantity!(cart.quantity + 1) : null,
+                  onTap: onChangeQuantity != null ? () => onChangeQuantity!(cart.quantity, cart.quantity + 1) : null,
                   child: ModifiedSvgPicture.asset(
                     Constant.vectorPlusCircle,
                     fit: BoxFit.fitHeight,

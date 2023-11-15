@@ -30,6 +30,8 @@ import '../../../domain/entity/cart/shared_cart_paging_parameter.dart';
 import '../../../domain/entity/cart/support_cart.dart';
 import '../../../domain/entity/cart/take_friend_cart_parameter.dart';
 import '../../../domain/entity/cart/take_friend_cart_response.dart';
+import '../../../domain/entity/cart/update_cart_quantity_parameter.dart';
+import '../../../domain/entity/cart/update_cart_quantity_response.dart';
 import '../../../domain/entity/product/product_appearance_data.dart';
 import '../../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../../domain/entity/product/productentry/product_entry.dart';
@@ -262,6 +264,17 @@ class DefaultCartDataSource implements CartDataSource {
     return DioHttpClientProcessing((cancelToken) {
       return dio.delete("user/send-wh/${removeAdditionalItemParameter.additionalItemId}", cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
         .map<RemoveAdditionalItemResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToRemoveAdditionalItemResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<UpdateCartQuantityResponse> updateCartQuantity(UpdateCartQuantityParameter updateCartQuantityParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      dynamic data = {
+        "quantity": updateCartQuantityParameter.quantity,
+      };
+      return dio.patch("user/cart/${updateCartQuantityParameter.cartId}", data: data, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+        .map<UpdateCartQuantityResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToUpdateCartQuantityResponse());
     });
   }
 }
