@@ -352,17 +352,11 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
   late CustomBottomNavigationBarSelectedIndex _customBottomNavigationBarSelectedIndex;
   Timer? _timer;
   bool _canBack = false;
-  late NotificationNotifier _notificationNotifier;
-
-  final PusherChannelsFlutter _pusher = PusherChannelsFlutter.getInstance();
 
   @override
   void initState() {
     super.initState();
     _initOneSignalEvent();
-    PusherHelper.initPusherChannels(
-      pusherChannelsFlutter: _pusher
-    );
     _initMainMenuPage();
     MainRouteObserver.onResetInitMainMenu = () {
       _initMainMenuPage();
@@ -372,11 +366,6 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
       setState(() {});
       widget.mainMenuController.checkLoginStatus(reset: true);
     };
-    _notificationNotifier = Provider.of<NotificationNotifier>(context, listen: false);
-  }
-
-  dynamic _onChatCountEvent(dynamic event) {
-    _notificationNotifier.loadInboxLoadDataResult();
   }
 
   void _initMainMenuPage() {
@@ -641,7 +630,6 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
     MainRouteObserver.onRefreshWishlistInMainMenu = null;
     MainRouteObserver.onChangeSelectedProvince = null;
     MainRouteObserver.onResetInitMainMenu = null;
-    _pusher.disconnect();
     _timer?.cancel();
     OneSignal.Notifications.removeClickListener(_onClickListener);
     OneSignal.Notifications.removeForegroundWillDisplayListener(_onForegroundWillDisplayListener);

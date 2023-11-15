@@ -1,6 +1,11 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 
 class _PusherHelperImpl {
+  final Completer<bool> _pusherConnectedCompleter = Completer<bool>();
+
   Future<void> initPusherChannels({
     required PusherChannelsFlutter pusherChannelsFlutter,
     void Function(PusherEvent)? onEvent
@@ -10,7 +15,18 @@ class _PusherHelperImpl {
       cluster: "ap1",
       onEvent: onEvent,
     );
-    await pusherChannelsFlutter.connect();
+    while (true) {
+      try {
+        await pusherChannelsFlutter.connect();
+        if (kDebugMode) {
+          print("Pusher Connected");
+        }
+        _pusherConnectedCompleter.complete(true);
+        break;
+      } catch (e) {
+        // Repeat until connected
+      }
+    }
   }
 
   String _getChatFirstChannelName(ChatPusherChannelType chatPusherChannelType) {
@@ -35,7 +51,8 @@ class _PusherHelperImpl {
     required String userId
   }) async {
     try {
-      await pusherChannelsFlutter.subscribe(
+      await pusherChannelsFlutter.subscribeAfterPusherIsConnected(
+        pusherConnectedCompleter: _pusherConnectedCompleter,
         channelName: "${_getChatCountChannelName()}.$userId",
         onEvent: onEvent
       );
@@ -66,7 +83,8 @@ class _PusherHelperImpl {
     required String conversationId,
   }) async {
     try {
-      await pusherChannelsFlutter.subscribe(
+      await pusherChannelsFlutter.subscribeAfterPusherIsConnected(
+        pusherConnectedCompleter: _pusherConnectedCompleter,
         channelName: "${_getChatFirstChannelName(chatPusherChannelType)}.$conversationId",
         onEvent: onEvent
       );
@@ -108,7 +126,8 @@ class _PusherHelperImpl {
     required String productDiscussionId,
   }) async {
     try {
-      await pusherChannelsFlutter.subscribe(
+      await pusherChannelsFlutter.subscribeAfterPusherIsConnected(
+        pusherConnectedCompleter: _pusherConnectedCompleter,
         channelName: "${_getDiscussionFirstChannelName(discussionPusherChannelType)}.$productDiscussionId",
         onEvent: onEvent
       );
@@ -151,15 +170,18 @@ class _PusherHelperImpl {
     required String bucketId,
   }) async {
     try {
-      await pusherChannelsFlutter.subscribe(
+      await pusherChannelsFlutter.subscribeAfterPusherIsConnected(
+        pusherConnectedCompleter: _pusherConnectedCompleter,
         channelName: "${_getSharedCartFirstChannelName()}.$bucketId",
         onEvent: onEvent
       );
-      await pusherChannelsFlutter.subscribe(
+      await pusherChannelsFlutter.subscribeAfterPusherIsConnected(
+        pusherConnectedCompleter: _pusherConnectedCompleter,
         channelName: "${_getSharedCartBucketApprovedChannelName()}.$bucketId",
         onEvent: onEvent
       );
-      await pusherChannelsFlutter.subscribe(
+      await pusherChannelsFlutter.subscribeAfterPusherIsConnected(
+        pusherConnectedCompleter: _pusherConnectedCompleter,
         channelName: "${_getSharedCartBucketCartMirroringChannelName()}.$bucketId",
         onEvent: onEvent
       );
@@ -187,6 +209,30 @@ class _PusherHelperImpl {
       print("ERROR: $e");
     }
     return pusherChannelsFlutter;
+  }
+}
+
+extension on PusherChannelsFlutter {
+  Future<PusherChannel> subscribeAfterPusherIsConnected({
+    required Completer<bool> pusherConnectedCompleter,
+    required String channelName,
+    var onSubscriptionSucceeded,
+    var onSubscriptionError,
+    var onMemberAdded,
+    var onMemberRemoved,
+    var onEvent,
+    var onSubscriptionCount
+  }) async {
+    await pusherConnectedCompleter.future;
+    return await subscribe(
+      channelName: channelName,
+      onSubscriptionSucceeded: onSubscriptionSucceeded,
+      onSubscriptionError: onSubscriptionError,
+      onMemberAdded: onMemberAdded,
+      onMemberRemoved: onMemberRemoved,
+      onEvent: onEvent,
+      onSubscriptionCount: onSubscriptionCount
+    );
   }
 }
 

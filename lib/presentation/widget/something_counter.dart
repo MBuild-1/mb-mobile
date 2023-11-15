@@ -48,13 +48,18 @@ class _SomethingCounterState extends State<SomethingCounter> with RestorationMix
         }
       });
     });
+    PusherHelper.initPusherChannels(
+      pusherChannelsFlutter: _pusher
+    );
   }
 
   Future<void> subscribeChatCount(String userId) async {
     try {
       await PusherHelper.subscribeChatCountPusherChannel(
         pusherChannelsFlutter: _pusher,
-        onEvent: (event) => _notificationNotifier.loadInboxLoadDataResult(),
+        onEvent: (event) {
+          _notificationNotifier.loadInboxLoadDataResult();
+        },
         userId: userId
       );
     } catch (e) {
@@ -85,6 +90,12 @@ class _SomethingCounterState extends State<SomethingCounter> with RestorationMix
   void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
     registerForRestoration(routeKeyMap, 'route-key-map');
     MainRouteObserver.applyNewRouteMapFromRouteKeyMap(routeKeyMap.value.key);
+  }
+
+  @override
+  void dispose() {
+    _pusher.disconnect();
+    super.dispose();
   }
 }
 
