@@ -110,7 +110,12 @@ class _StatefulExploreNusantaraMainMenuSubControllerMediatorWidgetState extends 
                               width: MediaQuery.of(context).size.width,
                               child: AspectRatio(
                                 aspectRatio: Constant.aspectRatioValueExploreNusantaraBanner.toDouble(),
-                                child: ExploreNusantaraBackgroundModifiedCachedNetworkImage(imageUrl: banner),
+                                child: Stack(
+                                  children: [
+                                    ExploreNusantaraBackgroundModifiedCachedNetworkImage(imageUrl: banner),
+                                    Container(color: Colors.white.withOpacity(0.6)),
+                                  ],
+                                ),
                               ),
                             );
                           }
