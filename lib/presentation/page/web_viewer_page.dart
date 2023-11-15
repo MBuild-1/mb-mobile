@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
@@ -13,9 +14,11 @@ import '../../misc/error/message_error.dart';
 import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
+import '../../misc/http_client.dart';
 import '../../misc/injector.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/controller_manager.dart';
+import '../../misc/option_builder.dart';
 import '../../misc/parameter_link_helper.dart';
 import '../../misc/parameterlink/parameter_link_input.dart';
 import '../../misc/toast_helper.dart';
@@ -157,10 +160,10 @@ class _StatefulWebViewerPage extends StatefulWidget {
 }
 
 class _StatefulWebViewerPageState extends State<_StatefulWebViewerPage> {
-  final GlobalKey _webViewKey = GlobalKey();
-  WebViewController? _webViewController;
+  InAppWebViewController? _webViewController;
   late ParameterLinkInput _webViewParameterLinkInput;
   late String _url = "";
+  Map<String, dynamic>? _header;
   bool _isLoading = true;
   bool _canGoBack = false;
   bool _canGoForward = false;
@@ -171,14 +174,14 @@ class _StatefulWebViewerPageState extends State<_StatefulWebViewerPage> {
   @override
   void initState() {
     super.initState();
-    if (Platform.isAndroid) {
-      WebView.platform = SurfaceAndroidWebView();
-    }
     _webViewParameterLinkInput = ParameterLinkHelper.toParameterLinkInput(widget.webViewerParameterLink);
     if (_webViewParameterLinkInput.otherParameter is Map<String, dynamic>) {
       Map<String, dynamic> otherParameterMap =  _webViewParameterLinkInput.otherParameter as Map<String, dynamic>;
       if (otherParameterMap.containsKey(Constant.textEncodedUrlKey)) {
         _url = utf8.decode(base64.decode(otherParameterMap[Constant.textEncodedUrlKey]));
+      }
+      if (otherParameterMap.containsKey(Constant.textHeaderKey)) {
+        _header = json.decode(utf8.decode(base64.decode(otherParameterMap[Constant.textHeaderKey])));
       }
     }
   }
@@ -263,14 +266,16 @@ class _StatefulWebViewerPageState extends State<_StatefulWebViewerPage> {
                   barRadius: Radius.zero,
                 ),
               Expanded(
-                child: WebView(
-                  gestureNavigationEnabled: true,
-                  initialUrl: _url,
-                  javascriptMode: JavascriptMode.unrestricted,
-                  onWebViewCreated: (WebViewController webViewController) {
-                    _webViewController = webViewController;
-                  },
-                  onProgress: (int progress) async {
+                child: InAppWebView(
+                  initialUrlRequest: URLRequest(
+                    url: Uri.parse(_url),
+                    headers: _header != null ? _header!.map(
+                      (key, value) => MapEntry<String, String>(
+                        key, value as String
+                      )
+                    ) : null
+                  ),
+                  onProgressChanged: (controller, progress) async {
                     _progress = progress;
                     setState(() {});
                     if (_isLoading && _progress == 100) {
@@ -279,18 +284,24 @@ class _StatefulWebViewerPageState extends State<_StatefulWebViewerPage> {
                       _onPageStartedLoading();
                     }
                   },
-                  javascriptChannels: <JavascriptChannel>{_toasterJavascriptChannel(context)},
-                  navigationDelegate: (NavigationRequest request) {
-                    return NavigationDecision.navigate;
-                  },
-                  onPageStarted: (String url) => _onPageStartedLoading(),
-                  onPageFinished: (String url) async => await _onPageFinishedLoading(),
-                  onWebResourceError: (onWebResourceError) {
+                  onLoadStart: (controller, url) => _onPageStartedLoading(),
+                  onLoadStop: (controller, url) async => await _onPageFinishedLoading(),
+                  onLoadError: (InAppWebViewController controller, Uri? url, int code, String message) {
                     setState(() {
                       _webLoadingFailedLoadDataResult = FailedLoadDataResult.throwException<bool>(
                         () => throw MessageError(
                           title: "Web Cannot Be Loaded".tr,
-                          message: onWebResourceError.description
+                          message: message
+                        )
+                      );
+                    });
+                  },
+                  onLoadHttpError: (InAppWebViewController controller, Uri? url, int code, String message) {
+                    setState(() {
+                      _webLoadingFailedLoadDataResult = FailedLoadDataResult.throwException<bool>(
+                        () => throw MessageError(
+                          title: "Web Cannot Be Loaded".tr,
+                          message: message
                         )
                       );
                     });
@@ -316,7 +327,6 @@ class _StatefulWebViewerPageState extends State<_StatefulWebViewerPage> {
   Future<void> _onPageFinishedLoading() async {
     await _checkCanGoBackAndForwardEnabled();
     setState(() => _isLoading = false);
-    _webViewController?.scrollTo(0, 0);
   }
 
   void _onPageStartedLoading() {

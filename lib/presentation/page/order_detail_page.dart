@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
@@ -25,6 +26,7 @@ import '../../misc/dialog_helper.dart';
 import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
+import '../../misc/http_client.dart';
 import '../../misc/injector.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/controller_manager.dart';
@@ -34,6 +36,7 @@ import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_it
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
 import '../../misc/toast_helper.dart';
+import '../../misc/web_helper.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/colorful_chip.dart';
 import '../widget/modified_paged_list_view.dart';
@@ -41,6 +44,7 @@ import '../widget/modifiedappbar/modified_app_bar.dart';
 import 'getx_page.dart';
 import 'modaldialogpage/modify_warehouse_in_order_modal_dialog_page.dart';
 import 'order_chat_page.dart';
+import 'pdf_viewer_page.dart';
 
 class OrderDetailPage extends RestorableGetxPage<_OrderDetailPageRestoration> {
   late final ControllerMember<OrderDetailController> _orderDetailController = ControllerMember<OrderDetailController>().addToControllerManager(controllerManager);
@@ -77,7 +81,7 @@ class OrderDetailPage extends RestorableGetxPage<_OrderDetailPageRestoration> {
   }
 }
 
-class _OrderDetailPageRestoration extends MixableGetxPageRestoration with WebViewerPageRestorationMixin, OrderChatPageRestorationMixin {
+class _OrderDetailPageRestoration extends MixableGetxPageRestoration with WebViewerPageRestorationMixin, OrderChatPageRestorationMixin, PdfViewerPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
@@ -276,7 +280,22 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
               widget.orderDetailController.repurchaseControllerContentDelegate.repurchase(order.id);
             },
             onUpdateState: () => setState(() {}),
-            onShowOrderListIsClosedDialog: () => DialogHelper.showOrderListIsClosed(context)
+            onShowOrderListIsClosedDialog: () => DialogHelper.showOrderListIsClosed(context),
+            onOpenOrderInvoice: (combinedOrder) {
+              Dio dio = Injector.locator<Dio>();
+              PageRestorationHelper.toPdfViewerPage(
+                context, <String, dynamic>{
+                  Constant.textUrlKey: "${dio.options.baseUrl}user/order/generate/invoice/${combinedOrder.id}",
+                  Constant.textHeaderKey: () {
+                    if (dio is GetCommonOptions) {
+                      return (dio as GetCommonOptions).optionsWithTokenHeader.headers ?? <String, dynamic>{};
+                    }
+                    return <String, dynamic>{};
+                  }(),
+                  Constant.textFileNameKey: "${combinedOrder.orderCode}.pdf"
+                }
+              );
+            }
           )
         ],
         page: 1,

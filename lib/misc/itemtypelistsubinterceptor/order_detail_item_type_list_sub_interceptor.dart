@@ -3,13 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/order_purchasing_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
-import 'package:sizer/sizer.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../domain/entity/additionalitem/additional_item.dart';
 import '../../domain/entity/address/address.dart';
 import '../../domain/entity/order/combined_order.dart';
-import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderitem/all_required_fields_warehouse_in_order_item.dart';
 import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderitem/optional_fields_warehouse_in_order_item.dart';
 import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderparameter/add_warehouse_in_order_parameter.dart';
 import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderparameter/change_warehouse_in_order_parameter.dart';
@@ -17,14 +14,12 @@ import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderp
 import '../../domain/entity/order/order.dart';
 import '../../domain/entity/order/order_product_detail.dart';
 import '../../domain/entity/order/order_product_inventory.dart';
-import '../../presentation/widget/address/horizontal_address_item.dart';
 import '../../presentation/widget/address/vertical_address_item.dart';
 import '../../presentation/widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../../presentation/widget/colorful_chip.dart';
 import '../../presentation/widget/order/order_conclusion_item.dart';
 import '../../presentation/widget/order/order_product_detail_item.dart';
 import '../../presentation/widget/order/order_product_inventory_item.dart';
-import '../../presentation/widget/order/order_send_to_warehouse_item.dart';
 import '../../presentation/widget/order/order_status_indicator.dart';
 import '../../presentation/widget/summary_widget.dart';
 import '../../presentation/widget/tap_area.dart';
@@ -32,7 +27,6 @@ import '../constant.dart';
 import '../controllerstate/listitemcontrollerstate/additionalitemlistitemcontrollerstate/additional_item_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/additionalitemlistitemcontrollerstate/additional_item_summary_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/builder_list_item_controller_state.dart';
-import '../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/cart_container_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/compound_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/divider_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
@@ -42,13 +36,9 @@ import '../controllerstate/listitemcontrollerstate/spacing_list_item_controller_
 import '../controllerstate/listitemcontrollerstate/title_and_description_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/widget_substitution_list_item_controller_state.dart';
-import '../dialog_helper.dart';
-import '../http_client.dart';
 import '../itemtypelistinterceptor/itemtypelistinterceptorchecker/list_item_controller_state_item_type_list_interceptor_checker.dart';
 import '../multi_language_string.dart';
-import '../page_restoration_helper.dart';
 import '../typedef.dart';
-import '../web_helper.dart';
 import 'item_type_list_sub_interceptor.dart';
 
 class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItemControllerState> {
@@ -748,11 +738,7 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
           children: [
             Expanded(
               child: SizedOutlineGradientButton(
-                onPressed: () {
-                  WebHelper.launchUrl(
-                    Uri.parse("${DioHttpClient.of().options.baseUrl}/user/order/generate/invoice/${order.combinedOrder.id}")
-                  );
-                },
+                onPressed: () => orderDetailContainerListItemControllerState.onOpenOrderInvoice(order.combinedOrder),
                 text: "Open".tr,
                 customPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
                 outlineGradientButtonType: OutlineGradientButtonType.solid,

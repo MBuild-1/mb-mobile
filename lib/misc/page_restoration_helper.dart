@@ -37,6 +37,7 @@ import '../presentation/page/notification_page.dart';
 import '../presentation/page/order_chat_page.dart';
 import '../presentation/page/order_detail_page.dart';
 import '../presentation/page/order_page.dart';
+import '../presentation/page/pdf_viewer_page.dart';
 import '../presentation/page/product_brand_page.dart';
 import '../presentation/page/product_bundle_detail_page.dart';
 import '../presentation/page/product_bundle_page.dart';
@@ -269,6 +270,9 @@ class _PageRestorationHelperImpl {
           if (key == Constant.textUrlKey) {
             effectiveKey = Constant.textEncodedUrlKey;
             effectiveValue = base64.encode(utf8.encode(value));
+          } else if (key == Constant.textHeaderKey) {
+            effectiveKey = Constant.textHeaderKey;
+            effectiveValue = base64.encode(utf8.encode(json.encode(value)));
           } else {
             effectiveKey = key;
             effectiveValue = value;
@@ -276,6 +280,33 @@ class _PageRestorationHelperImpl {
           parameterString += "${parameterString.isEmpty ? "" : "&"}$effectiveKey=$effectiveValue";
         });
         restoration.webViewerPageRestorableRouteFuture.present(Uri.encodeFull("masterbagasi://webviewer?$parameterString"));
+      },
+      context: context
+    );
+  }
+
+  void toPdfViewerPage(BuildContext context, Map<String, dynamic> parameter) {
+    PageRestorationHelper.findPageRestorationMixin<PdfViewerPageRestorationMixin>(
+      onGetxPageRestorationFound: (restoration) {
+        String parameterString = "";
+        parameter.forEach((key, value) {
+          late String effectiveKey, effectiveValue;
+          if (key == Constant.textUrlKey) {
+            effectiveKey = Constant.textEncodedUrlKey;
+            effectiveValue = base64.encode(utf8.encode(value));
+          } else if (key == Constant.textHeaderKey) {
+            effectiveKey = Constant.textHeaderKey;
+            effectiveValue = base64.encode(utf8.encode(json.encode(value)));
+          } else if (key == Constant.textFileNameKey) {
+            effectiveKey = Constant.textFileNameKey;
+            effectiveValue = base64.encode(utf8.encode(value));
+          } else {
+            effectiveKey = key;
+            effectiveValue = value;
+          }
+          parameterString += "${parameterString.isEmpty ? "" : "&"}$effectiveKey=$effectiveValue";
+        });
+        restoration.pdfViewerPageRestorableRouteFuture.present(Uri.encodeFull("masterbagasi://webviewer?$parameterString"));
       },
       context: context
     );

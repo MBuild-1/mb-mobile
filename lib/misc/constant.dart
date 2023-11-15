@@ -276,6 +276,8 @@ class _ConstantImpl {
   String get textIdKey => 'id';
   String get textTypeKey => 'type';
   String get textUrlKey => 'url';
+  String get textHeaderKey => 'header';
+  String get textFileNameKey => 'file-name';
   String get textEncodedUrlKey => 'encoded-url';
   String get textEmpty => "(${"Empty".tr})";
   String get textLoading => "Loading".tr;

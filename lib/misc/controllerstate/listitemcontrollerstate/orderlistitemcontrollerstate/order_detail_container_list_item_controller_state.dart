@@ -9,12 +9,14 @@ class OrderDetailContainerListItemControllerState extends ListItemControllerStat
   void Function(ModifyWarehouseInOrderParameter) onModifyWarehouseInOrder;
   void Function(CombinedOrder) onBuyAgainTap;
   void Function() onShowOrderListIsClosedDialog;
+  void Function(CombinedOrder) onOpenOrderInvoice;
 
   OrderDetailContainerListItemControllerState({
     required this.order,
     required this.onUpdateState,
     required this.onModifyWarehouseInOrder,
     required this.onBuyAgainTap,
-    required this.onShowOrderListIsClosedDialog
+    required this.onShowOrderListIsClosedDialog,
+    required this.onOpenOrderInvoice
   });
 }

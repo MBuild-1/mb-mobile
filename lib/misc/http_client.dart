@@ -33,13 +33,20 @@ class _DioHttpClientOptionsImpl {
   }
 }
 
-class _ModifiedDio implements Dio {
+abstract class GetCommonOptions {
+  Options get optionsWithTokenHeader;
+}
+
+class _ModifiedDio implements Dio, GetCommonOptions {
   final Dio _wrappedDio;
   bool _closed = false;
 
   _ModifiedDio(this._wrappedDio);
 
   Options get _optionsWithTokenHeader => DioHttpClientOptions.createOptionsWithTokenHeader(LoginHelper.getTokenWithBearer().result);
+
+  @override
+  Options get optionsWithTokenHeader => _optionsWithTokenHeader;
 
   @override
   HttpClientAdapter get httpClientAdapter => _wrappedDio.httpClientAdapter;
