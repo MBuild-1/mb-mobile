@@ -84,7 +84,7 @@ class ModifyWarehouseInOrderModalDialogController extends ModalDialogController 
         }
       ),
       notesValidator: Validator(
-        onValidate: () => !_modifyWarehouseInOrderModalDialogDelegate!.onGetNotesInput().isEmptyString ? SuccessValidationResult() : FailedValidationResult(e: ValidationError(message: "${"Note is required".tr}."))
+        onValidate: () => SuccessValidationResult()
       ),
     );
     nameValidatorRx = modifyWarehouseInOrderValidatorGroup.nameValidator.obs;

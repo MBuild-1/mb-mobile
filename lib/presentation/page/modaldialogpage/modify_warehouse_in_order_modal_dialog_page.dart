@@ -365,38 +365,40 @@ class _StatefulModifyWarehouseInOrderControllerMediatorWidgetState extends State
                         if (modifyWarehouseInOrderParameter is ChangeWarehouseInOrderParameter) {
                           widget.modifyWarehouseInOrderModalDialogController.submit();
                         } else if (modifyWarehouseInOrderParameter is AddWarehouseInOrderParameter) {
-                          if (_localModifyWarehouseInOrderParameter is AddWarehouseInOrderParameter) {
-                            _additionalItemList.add(
-                              AdditionalItem(
-                                id: "",
-                                name: _nameTextEditingController.text,
-                                estimationPrice: double.parse(_priceTextEditingController.text),
-                                estimationWeight: double.parse(_weightTextEditingController.text),
-                                quantity: int.parse(_quantityTextEditingController.text),
-                                notes: _notesTextEditingController.text
-                              )
-                            );
-                            _additionalItemList.forEachIndexed(
-                              (index, additionalItem) => additionalItem.id = (index + 1).toString()
-                            );
-                          } else if (_localModifyWarehouseInOrderParameter is ChangeWarehouseInOrderParameter) {
-                            ChangeWarehouseInOrderParameter changeWarehouseInOrderParameter = _localModifyWarehouseInOrderParameter as ChangeWarehouseInOrderParameter;
-                            Iterable<AdditionalItem> additionalItemIterable = _additionalItemList.where(
-                              (additionalItem) => additionalItem.id == changeWarehouseInOrderParameter.id
-                            );
-                            if (additionalItemIterable.isNotEmpty) {
-                              AdditionalItem willBeEditAdditionalItem = additionalItemIterable.first;
-                              willBeEditAdditionalItem.name = _nameTextEditingController.text;
-                              willBeEditAdditionalItem.estimationPrice = double.parse(_priceTextEditingController.text);
-                              willBeEditAdditionalItem.estimationWeight = double.parse(_weightTextEditingController.text);
-                              willBeEditAdditionalItem.quantity = int.parse(_quantityTextEditingController.text);
-                              willBeEditAdditionalItem.notes = _notesTextEditingController.text;
+                          if (widget.modifyWarehouseInOrderModalDialogController.modifyWarehouseInOrderValidatorGroup.validate()) {
+                            if (_localModifyWarehouseInOrderParameter is AddWarehouseInOrderParameter) {
+                              _additionalItemList.add(
+                                AdditionalItem(
+                                  id: "",
+                                  name: _nameTextEditingController.text,
+                                  estimationPrice: double.parse(_priceTextEditingController.text),
+                                  estimationWeight: double.parse(_weightTextEditingController.text),
+                                  quantity: int.parse(_quantityTextEditingController.text),
+                                  notes: _notesTextEditingController.text
+                                )
+                              );
+                              _additionalItemList.forEachIndexed(
+                                (index, additionalItem) => additionalItem.id = (index + 1).toString()
+                              );
+                            } else if (_localModifyWarehouseInOrderParameter is ChangeWarehouseInOrderParameter) {
+                              ChangeWarehouseInOrderParameter changeWarehouseInOrderParameter = _localModifyWarehouseInOrderParameter as ChangeWarehouseInOrderParameter;
+                              Iterable<AdditionalItem> additionalItemIterable = _additionalItemList.where(
+                                (additionalItem) => additionalItem.id == changeWarehouseInOrderParameter.id
+                              );
+                              if (additionalItemIterable.isNotEmpty) {
+                                AdditionalItem willBeEditAdditionalItem = additionalItemIterable.first;
+                                willBeEditAdditionalItem.name = _nameTextEditingController.text;
+                                willBeEditAdditionalItem.estimationPrice = double.parse(_priceTextEditingController.text);
+                                willBeEditAdditionalItem.estimationWeight = double.parse(_weightTextEditingController.text);
+                                willBeEditAdditionalItem.quantity = int.parse(_quantityTextEditingController.text);
+                                willBeEditAdditionalItem.notes = _notesTextEditingController.text;
+                              }
+                              _additionalItemList.forEachIndexed(
+                                (index, additionalItem) => additionalItem.id = (index + 1).toString()
+                              );
                             }
-                            _additionalItemList.forEachIndexed(
-                              (index, additionalItem) => additionalItem.id = (index + 1).toString()
-                            );
+                            setState(() => _index = 0);
                           }
-                          setState(() => _index = 0);
                         }
                       },
                       text: "Submit".tr,
