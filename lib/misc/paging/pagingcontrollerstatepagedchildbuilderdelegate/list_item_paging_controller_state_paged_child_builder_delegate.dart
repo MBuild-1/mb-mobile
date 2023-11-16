@@ -1262,10 +1262,10 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
       double shoppingItemWeightTotal = 0.0;
       for (Cart cart in bucketMember.bucketCartList) {
         SupportCart supportCart = cart.supportCart;
-        shoppingItemTotal += supportCart.cartPrice;
+        shoppingItemTotal += supportCart.cartPrice * cart.quantity;
         if (supportCart is ProductAppearanceData) {
           ProductAppearanceData productAppearanceData = supportCart as ProductAppearanceData;
-          shoppingItemWeightTotal += productAppearanceData.weight;
+          shoppingItemWeightTotal += productAppearanceData.weight * cart.quantity;
         }
       }
       return SharedCartMemberItem(
