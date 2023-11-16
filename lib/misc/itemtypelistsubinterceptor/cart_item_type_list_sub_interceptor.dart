@@ -626,6 +626,7 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
                   ...resultBucketMember.bucketCartList.map(
                     (cart) => VerticalCartListItemControllerState(
                       cart: cart,
+                      showDefaultCart: false,
                       isSelected: false,
                       showCheck: false,
                       showBottom: false
@@ -669,7 +670,7 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
             ListItemControllerState newBucketMemberListItemControllerState = CompoundListItemControllerState(
               listItemControllerState: [
                 VirtualSpacingListItemControllerState(
-                  height: 24.0
+                  height: padding()
                 ),
                 PaddingContainerListItemControllerState(
                   padding: EdgeInsets.symmetric(horizontal: padding()),
