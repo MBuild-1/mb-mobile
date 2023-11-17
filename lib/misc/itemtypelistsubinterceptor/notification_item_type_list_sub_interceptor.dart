@@ -45,7 +45,10 @@ class NotificationItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
     ListItemControllerState oldItemType = oldItemTypeWrapper.listItemControllerState;
     if (oldItemType is NotificationContainerListItemControllerState) {
       List<NotificationListItemControllerState> notificationListItemControllerStateList = oldItemType.notificationList.map<NotificationListItemControllerState>(
-        (shortNotification) => NotificationListItemControllerState(shortNotification: shortNotification)
+        (shortNotification) => NotificationListItemControllerState(
+          shortNotification: shortNotification,
+          onTap: oldItemType.onNotificationTap(shortNotification)
+        )
       ).toList();
       List<ListItemControllerState> newListItemControllerState = [];
       newListItemControllerState.add(

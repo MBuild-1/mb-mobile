@@ -1240,6 +1240,7 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
     } else if (item is NotificationListItemControllerState) {
       return NotificationItem(
         shortNotification: item.shortNotification,
+        onTap: item.onTap
       );
     } else if (item is PurchaseSectionNotificationListItemControllerState) {
       return PurchaseSectionNotificationItem(

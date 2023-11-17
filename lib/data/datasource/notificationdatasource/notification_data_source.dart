@@ -5,6 +5,8 @@ import '../../../domain/entity/notification/notification_order_status_parameter.
 import '../../../domain/entity/notification/notification_order_status_response.dart';
 import '../../../domain/entity/notification/read_all_notification_parameter.dart';
 import '../../../domain/entity/notification/read_all_notification_response.dart';
+import '../../../domain/entity/notification/read_transaction_notification_parameter.dart';
+import '../../../domain/entity/notification/read_transaction_notification_response.dart';
 import '../../../domain/entity/notification/short_notification.dart';
 import '../../../domain/entity/notification/transaction_notification_detail_parameter.dart';
 import '../../../misc/paging/pagingresult/paging_data_result.dart';
@@ -16,4 +18,5 @@ abstract class NotificationDataSource {
   FutureProcessing<Notification> transactionNotificationDetail(TransactionNotificationDetailParameter transactionNotificationDetailParameter);
   FutureProcessing<NotificationOrderStatusResponse> notificationOrderStatus(NotificationOrderStatusParameter notificationOrderStatusParameter);
   FutureProcessing<ReadAllNotificationResponse> readAllNotification(ReadAllNotificationParameter readAllNotificationParameter);
+  FutureProcessing<ReadTransactionNotificationResponse> readTransactionNotification(ReadTransactionNotificationParameter readTransactionNotificationParameter);
 }

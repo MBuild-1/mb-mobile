@@ -50,12 +50,15 @@ class NotificationNotifier extends ChangeNotifier {
     loadCartLoadDataResult();
   }
 
-  void loadNotificationLoadDataResult() async {
+  Future<void> startLoadingNotificationLoadDataResult() async {
     _notificationLoadDataResult = IsLoadingLoadDataResult<int>();
     _transactionNotificationLoadDataResult = IsLoadingLoadDataResult<int>();
     _infoNotificationLoadDataResult = IsLoadingLoadDataResult<int>();
     _promoNotificationLoadDataResult = IsLoadingLoadDataResult<int>();
     notifyListeners();
+  }
+
+  Future<void> beginProcessLoadNotificationLoadDataResult() async {
     LoadDataResult<List<ShortNotification>> shortNotificationLoadDataResult = await getNotificationByUserListUseCase.execute(
       NotificationByUserListParameter()
     ).future(
@@ -88,6 +91,11 @@ class NotificationNotifier extends ChangeNotifier {
       (getUserResponse) => getUserResponse.length
     );
     notifyListeners();
+  }
+
+  void loadNotificationLoadDataResult() async {
+    await startLoadingNotificationLoadDataResult();
+    await beginProcessLoadNotificationLoadDataResult();
   }
 
   void loadInboxLoadDataResult() async {

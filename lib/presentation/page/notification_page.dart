@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart' hide Notification;
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/future_ext.dart';
@@ -14,6 +16,7 @@ import '../../domain/usecase/get_notification_by_user_paging_use_case.dart';
 import '../../domain/usecase/get_transaction_notification_detail_use_case.dart';
 import '../../domain/usecase/notification_order_status_use_case.dart';
 import '../../domain/usecase/read_all_notification_use_case.dart';
+import '../../domain/usecase/read_transaction_notification_use_case.dart';
 import '../../misc/constant.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/notificationlistitemcontrollerstate/notification_container_list_item_controller_state.dart';
@@ -29,6 +32,7 @@ import '../../misc/list_item_controller_state_helper.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/controller_manager.dart';
 import '../../misc/multi_language_string.dart';
+import '../../misc/page_restoration_helper.dart';
 import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
@@ -39,6 +43,7 @@ import '../widget/colorful_chip_tab_bar.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import 'getx_page.dart';
+import 'order_detail_page.dart';
 import 'order_page.dart';
 
 class NotificationPage extends RestorableGetxPage<_NotificationPageRestoration> {
@@ -54,7 +59,8 @@ class NotificationPage extends RestorableGetxPage<_NotificationPageRestoration> 
         Injector.locator<GetNotificationByUserPagingUseCase>(),
         Injector.locator<GetTransactionNotificationDetailUseCase>(),
         Injector.locator<NotificationOrderStatusUseCase>(),
-        Injector.locator<ReadAllNotificationUseCase>()
+        Injector.locator<ReadAllNotificationUseCase>(),
+        Injector.locator<ReadTransactionNotificationUseCase>()
       ),
       tag: pageName
     );
@@ -71,7 +77,7 @@ class NotificationPage extends RestorableGetxPage<_NotificationPageRestoration> 
   }
 }
 
-class _NotificationPageRestoration extends MixableGetxPageRestoration with OrderPageRestorationMixin {
+class _NotificationPageRestoration extends MixableGetxPageRestoration with OrderPageRestorationMixin, OrderDetailPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
@@ -182,6 +188,8 @@ class _StatefulNotificationControllerMediatorWidgetState extends State<_Stateful
 
   final ValueNotifier<dynamic> _fillerErrorValueNotifier = ValueNotifier(null);
   late NotificationNotifier _notificationNotifier;
+  List<ShortNotification> _shortNotificationList = [];
+  Completer<bool>? _readAllNotificationWhileNavigatingToOtherTabRequest;
 
   @override
   void initState() {
@@ -245,20 +253,35 @@ class _StatefulNotificationControllerMediatorWidgetState extends State<_Stateful
     setState(() {});
   }
 
+  void _completedReadAllNotificationWhileNavigatingToOtherTabRequestWithResultFalse() {
+    if (_readAllNotificationWhileNavigatingToOtherTabRequest != null) {
+      if (!_readAllNotificationWhileNavigatingToOtherTabRequest!.isCompleted) {
+        _readAllNotificationWhileNavigatingToOtherTabRequest!.complete(false);
+      }
+    }
+  }
+
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _notificationListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? notificationListItemControllerStateList) async {
+    _completedReadAllNotificationWhileNavigatingToOtherTabRequestWithResultFalse();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _fillerErrorValueNotifier.value = null;
     });
     List<ListItemControllerState> resultListItemControllerState = [];
     if (pageKey == 1) {
+      _shortNotificationList = [];
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        _notificationNotifier.loadNotificationLoadDataResult();
+        _notificationNotifier.startLoadingNotificationLoadDataResult();
         _loadNotificationPurchaseStatus();
       });
       resultListItemControllerState = [
         NotificationContainerListItemControllerState(
-          notificationList: [],
-          onNotificationTap: (notification) {},
+          notificationList: _shortNotificationList,
+          onNotificationTap: (value) {
+            if (_status == "transaction") {
+              return (shortNotification) => widget.notificationController.readTransactionNotification(shortNotification.id);
+            }
+            return null;
+          },
           onUpdateState: () => setState(() {}),
           onMarkAllNotification: () => widget.notificationController.readAllNotification(_status),
           onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
@@ -281,6 +304,24 @@ class _StatefulNotificationControllerMediatorWidgetState extends State<_Stateful
       );
     } else {
       int effectivePageKey = pageKey - 1;
+      if (_status == "info" || _status == "promo") {
+        _readAllNotificationWhileNavigatingToOtherTabRequest = Completer<bool>();
+        widget.notificationController.readAllNotificationWhileNavigatingToOtherTabRequest(_status);
+        bool result = await _readAllNotificationWhileNavigatingToOtherTabRequest!.future;
+        if (!result) {
+          return SuccessLoadDataResult<PagingDataResult<ListItemControllerState>>(
+            value: PagingDataResult<ListItemControllerState>(
+              itemList: resultListItemControllerState,
+              page: 2,
+              totalPage: 2,
+              totalItem: 0
+            )
+          );
+        }
+      }
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        _notificationNotifier.beginProcessLoadNotificationLoadDataResult();
+      });
       LoadDataResult<PagingDataResult<ShortNotification>> shortNotificationPagingLoadDataResult = await widget.notificationController.getNotificationByUser(
         NotificationByUserPagingParameter(
           page: effectivePageKey,
@@ -337,6 +378,47 @@ class _StatefulNotificationControllerMediatorWidgetState extends State<_Stateful
         onReadAllNotificationRequestProcessSuccessCallback: (readAllNotificationResponse) async {
           _notificationListItemPagingController.refresh();
         },
+        onShowReadAllNotificationWhileNavigatingToOtherTabRequestProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
+        onShowReadAllNotificationWhileNavigatingToOtherTabRequestProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
+          context: context,
+          errorProvider: Injector.locator<ErrorProvider>(),
+          e: e
+        ),
+        onReadAllNotificationWhileNavigatingToOtherTabRequestProcessSuccessCallback: (readAllNotificationResponse) async {
+          if (_status == "info" || _status == "promo") {
+            if (_readAllNotificationWhileNavigatingToOtherTabRequest != null) {
+              _readAllNotificationWhileNavigatingToOtherTabRequest!.complete(true);
+            }
+          }
+        },
+        onShowReadTransactionNotificationRequestProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
+        onShowReadTransactionNotificationRequestProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
+          context: context,
+          errorProvider: Injector.locator<ErrorProvider>(),
+          e: e
+        ),
+        onReadTransactionNotificationRequestProcessSuccessCallback: (readTransactionNotificationResponse, notificationId) async {
+          if (_status == "transaction") {
+            Iterable<ShortNotification> shortNotificationIterable = _shortNotificationList.where((shortNotification) => shortNotification.id == notificationId);
+            if (shortNotificationIterable.isNotEmpty) {
+              ShortNotification shortNotification = shortNotificationIterable.first;
+              shortNotification.isRead = 1;
+              setState(() {});
+              _notificationNotifier.loadNotificationLoadDataResult();
+              String effectiveCombinedOrderId = shortNotification.combinedOrderId.toEmptyStringNonNull;
+              if (effectiveCombinedOrderId.isEmptyString) {
+                ToastHelper.showToast(
+                  MultiLanguageString({
+                    Constant.textEnUsLanguageKey: "Order id tidak tersedia.",
+                    Constant.textInIdLanguageKey: "Order id is not available."
+                  }).toStringNonNull
+                );
+              } else {
+                PageRestorationHelper.toOrderDetailPage(context, effectiveCombinedOrderId);
+              }
+            }
+          }
+        },
       )
     );
     return Scaffold(
@@ -370,6 +452,7 @@ class _StatefulNotificationControllerMediatorWidgetState extends State<_Stateful
 
   @override
   void dispose() {
+    _completedReadAllNotificationWhileNavigatingToOtherTabRequestWithResultFalse();
     super.dispose();
   }
 }

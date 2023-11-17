@@ -5,6 +5,8 @@ import '../../domain/entity/notification/notification_order_status_parameter.dar
 import '../../domain/entity/notification/notification_order_status_response.dart';
 import '../../domain/entity/notification/read_all_notification_parameter.dart';
 import '../../domain/entity/notification/read_all_notification_response.dart';
+import '../../domain/entity/notification/read_transaction_notification_parameter.dart';
+import '../../domain/entity/notification/read_transaction_notification_response.dart';
 import '../../domain/entity/notification/short_notification.dart';
 import '../../domain/entity/notification/transaction_notification_detail_parameter.dart';
 import '../../domain/repository/notification_repository.dart';
@@ -43,5 +45,10 @@ class DefaultNotificationRepository implements NotificationRepository {
   @override
   FutureProcessing<LoadDataResult<ReadAllNotificationResponse>> readAllNotification(ReadAllNotificationParameter readAllNotificationParameter) {
     return notificationDataSource.readAllNotification(readAllNotificationParameter).mapToLoadDataResult<ReadAllNotificationResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<ReadTransactionNotificationResponse>> readTransactionNotification(ReadTransactionNotificationParameter readTransactionNotificationParameter) {
+    return notificationDataSource.readTransactionNotification(readTransactionNotificationParameter).mapToLoadDataResult<ReadTransactionNotificationResponse>();
   }
 }

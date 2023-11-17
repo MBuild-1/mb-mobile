@@ -5,6 +5,7 @@ import 'package:masterbagasi/misc/ext/string_ext.dart';
 import '../../domain/entity/notification/notification.dart';
 import '../../domain/entity/notification/notification_order_status_response.dart';
 import '../../domain/entity/notification/read_all_notification_response.dart';
+import '../../domain/entity/notification/read_transaction_notification_response.dart';
 import '../../domain/entity/notification/short_notification.dart';
 import '../../domain/entity/notification/user_notification.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
@@ -78,5 +79,9 @@ extension NotificationDetailEntityMappingExt on ResponseWrapper {
 
   ReadAllNotificationResponse mapFromResponseToReadAllNotificationResponse() {
     return ReadAllNotificationResponse();
+  }
+
+  ReadTransactionNotificationResponse mapFromResponseToReadTransactionNotificationResponse() {
+    return ReadTransactionNotificationResponse();
   }
 }

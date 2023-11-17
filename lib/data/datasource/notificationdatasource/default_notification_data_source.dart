@@ -11,6 +11,8 @@ import '../../../domain/entity/notification/notification_order_status_parameter.
 import '../../../domain/entity/notification/notification_order_status_response.dart';
 import '../../../domain/entity/notification/read_all_notification_parameter.dart';
 import '../../../domain/entity/notification/read_all_notification_response.dart';
+import '../../../domain/entity/notification/read_transaction_notification_parameter.dart';
+import '../../../domain/entity/notification/read_transaction_notification_response.dart';
 import '../../../domain/entity/notification/short_notification.dart';
 import '../../../domain/entity/notification/transaction_notification_detail_parameter.dart';
 import '../../../misc/paging/pagingresult/paging_data_result.dart';
@@ -73,6 +75,14 @@ class DefaultNotificationDataSource implements NotificationDataSource {
       };
       return dio.post("/notification/read-all", queryParameters: queryParameters, cancelToken: cancelToken)
         .map<ReadAllNotificationResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToReadAllNotificationResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<ReadTransactionNotificationResponse> readTransactionNotification(ReadTransactionNotificationParameter readTransactionNotificationParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.get("/notification/${readTransactionNotificationParameter.notificationId}/transaction", cancelToken: cancelToken)
+        .map<ReadTransactionNotificationResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToReadTransactionNotificationResponse());
     });
   }
 }

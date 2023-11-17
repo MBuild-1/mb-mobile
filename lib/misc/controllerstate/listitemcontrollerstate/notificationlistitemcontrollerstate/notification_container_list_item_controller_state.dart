@@ -8,7 +8,7 @@ import '../list_item_controller_state.dart';
 class NotificationContainerListItemControllerState extends ListItemControllerState {
   List<ShortNotification> notificationList;
   void Function() onUpdateState;
-  void Function(Notification) onNotificationTap;
+  void Function(ShortNotification)? Function(ShortNotification) onNotificationTap;
   void Function()? onMarkAllNotification;
   LoadDataResult<int> Function() purchaseStatusLoadDataResult;
   LoadDataResult<int> Function() notificationLoadDataResult;
