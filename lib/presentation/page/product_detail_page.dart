@@ -981,6 +981,7 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
                       child: SizedOutlineGradientButton(
                         text: '',
                         width: double.infinity,
+                        height: 36,
                         outlineGradientButtonType: OutlineGradientButtonType.outline,
                         onPressed: () => PageRestorationHelper.toProductChatPage(widget.productId, context),
                         child: const Icon(Icons.chat, size: 16)
@@ -990,6 +991,7 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
                     Expanded(
                       child: SizedOutlineGradientButton(
                         width: double.infinity,
+                        height: 36,
                         outlineGradientButtonType: OutlineGradientButtonType.outline,
                         onPressed: () => LoginHelper.checkingLogin(context, () {
                           widget.productDetailController.buyDirectly();
@@ -1001,6 +1003,7 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
                     Expanded(
                       child: SizedOutlineGradientButton(
                         width: double.infinity,
+                        height: 36,
                         outlineGradientButtonType: OutlineGradientButtonType.solid,
                         onPressed: () {
                           LoginHelper.checkingLogin(context, () {
