@@ -200,15 +200,15 @@ class _WidgetHelperImpl {
             Builder(
               builder: (context) {
                 void Function()? onPressed = !comingSoon ? (onAddCart != null ? () => onAddCart(productBundle) : null) : null;
-                Widget result = Expanded(
-                  child: AddOrRemoveCartButton(
-                    onAddCart: onPressed,
-                    isAddToCart: isAddToCart.isSuccess ? isAddToCart.resultIfSuccess! : false,
-                    isIcon: true,
-                    isLoading: !isAddToCart.isSuccess
-                  )
+                Widget result = AddOrRemoveCartButton(
+                  onAddCart: onPressed,
+                  isAddToCart: isAddToCart.isSuccess ? isAddToCart.resultIfSuccess! : false,
+                  isIcon: true,
+                  isLoading: !isAddToCart.isSuccess
                 );
-                return isAddToCart.isSuccess ? result : ModifiedShimmer.fromColors(child: result);
+                return Expanded(
+                  child: isAddToCart.isSuccess ? result : ModifiedShimmer.fromColors(child: result)
+                );
               }
             )
           ],
