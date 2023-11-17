@@ -1,8 +1,10 @@
 import '../../../domain/entity/wishlist/remove_wishlist_parameter.dart';
 import '../../../domain/entity/wishlist/remove_wishlist_response.dart';
 import '../../../domain/entity/wishlist/wishlist.dart';
+import '../../../domain/entity/wishlist/wishlist_list_parameter.dart';
 import '../../../domain/entity/wishlist/wishlist_paging_parameter.dart';
 import '../../../domain/usecase/add_to_cart_use_case.dart';
+import '../../../domain/usecase/get_wishlist_list_use_case.dart';
 import '../../../domain/usecase/get_wishlist_paging_use_case.dart';
 import '../../../domain/usecase/remove_wishlist_use_case.dart';
 import '../../../misc/controllercontentdelegate/wishlist_and_cart_controller_content_delegate.dart';
@@ -15,6 +17,7 @@ import '../../base_getx_controller.dart';
 
 class WishlistMainMenuSubController extends BaseGetxController {
   final GetWishlistPagingUseCase getWishlistPagingUseCase;
+  final GetWishlistListUseCase getWishlistListUseCase;
   final AddToCartUseCase addToCartUseCase;
   final RemoveWishlistUseCase removeWishlistUseCase;
   final WishlistAndCartControllerContentDelegate wishlistAndCartControllerContentDelegate;
@@ -22,6 +25,7 @@ class WishlistMainMenuSubController extends BaseGetxController {
   WishlistMainMenuSubController(
     super.controllerManager,
     this.getWishlistPagingUseCase,
+    this.getWishlistListUseCase,
     this.addToCartUseCase,
     this.removeWishlistUseCase,
     this.wishlistAndCartControllerContentDelegate
@@ -37,6 +41,12 @@ class WishlistMainMenuSubController extends BaseGetxController {
     );
   }
 
+  Future<LoadDataResult<List<Wishlist>>> getWishlistList(WishlistListParameter wishlistListParameter) {
+    return getWishlistListUseCase.execute(wishlistListParameter).future(
+      parameter: apiRequestManager.addRequestToCancellationPart("wishlist-list").value
+    );
+  }
+
   Future<LoadDataResult<RemoveWishlistResponse>> removeWishlist(RemoveWishlistParameter removeWishlistParameter) {
     return removeWishlistUseCase.execute(removeWishlistParameter).future(
       parameter: apiRequestManager.addRequestToCancellationPart("remove-wishlist").value
@@ -46,12 +56,14 @@ class WishlistMainMenuSubController extends BaseGetxController {
 
 class WishlistMainMenuSubControllerInjectionFactory {
   final GetWishlistPagingUseCase getWishlistPagingUseCase;
+  final GetWishlistListUseCase getWishlistListUseCase;
   final AddToCartUseCase addToCartUseCase;
   final RemoveWishlistUseCase removeWishlistUseCase;
   final WishlistAndCartControllerContentDelegate wishlistAndCartControllerContentDelegate;
 
   WishlistMainMenuSubControllerInjectionFactory({
     required this.getWishlistPagingUseCase,
+    required this.getWishlistListUseCase,
     required this.addToCartUseCase,
     required this.removeWishlistUseCase,
     required this.wishlistAndCartControllerContentDelegate
@@ -62,6 +74,7 @@ class WishlistMainMenuSubControllerInjectionFactory {
       WishlistMainMenuSubController(
         controllerManager,
         getWishlistPagingUseCase,
+        getWishlistListUseCase,
         addToCartUseCase,
         removeWishlistUseCase,
         wishlistAndCartControllerContentDelegate

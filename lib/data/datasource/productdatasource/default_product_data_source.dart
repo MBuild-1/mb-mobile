@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:masterbagasi/data/entitymappingext/product_entity_mapping_ext.dart';
 import 'package:masterbagasi/domain/dummy/productdummy/product_bundle_dummy.dart';
 import 'package:masterbagasi/misc/ext/future_ext.dart';
+import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/misc/option_builder.dart';
@@ -66,6 +67,7 @@ import '../../../misc/processing/dio_http_client_processing.dart';
 import '../../../misc/processing/dummy_future_processing.dart';
 import '../../../misc/processing/future_processing.dart';
 import '../../../misc/response_wrapper.dart';
+import '../../../misc/wishlist_helper.dart';
 import '../cartdatasource/cart_data_source.dart';
 import 'product_data_source.dart';
 
@@ -347,21 +349,15 @@ class DefaultProductDataSource implements ProductDataSource {
   @override
   FutureProcessing<List<Wishlist>> wishlistListIgnoringLoginError(WishlistListParameter wishlistListParameter) {
     return DioHttpClientProcessing((cancelToken) async {
-      try {
-        return await wishlistList(wishlistListParameter).future(parameter: cancelToken);
-      } on DioError catch (e) {
-        Error error = ErrorHelper.generatePleaseLoginFirstError(e);
-        if (error is PleaseLoginFirstError) {
-          return [];
-        } else {
-          error = ErrorHelper.generateEmptyError(e);
-          if (error is EmptyError) {
-            return [];
-          }
-        }
-        rethrow;
-      } catch (e) {
-        rethrow;
+      var result = await WishlistHelper.getWishlistListIgnoringLoginError(() {
+        return wishlistList(wishlistListParameter).mapToLoadDataResult<List<Wishlist>>().future(parameter: cancelToken);
+      });
+      if (result.isFailed) {
+        throw result.resultIfFailed;
+      } else if (result.isSuccess) {
+        return result.resultIfSuccess!;
+      } else {
+        return [];
       }
     });
   }

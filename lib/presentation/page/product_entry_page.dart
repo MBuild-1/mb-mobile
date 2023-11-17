@@ -54,6 +54,7 @@ import '../../misc/string_util.dart';
 import '../../misc/toast_helper.dart';
 import '../notifier/component_notifier.dart';
 import '../notifier/notification_notifier.dart';
+import '../notifier/product_notifier.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/default_search_app_bar.dart';
 import 'getx_page.dart';
@@ -368,7 +369,8 @@ class _StatefulProductEntryControllerMediatorWidgetState extends State<_Stateful
         onAddCartRequestProcessSuccessCallback: () async {
           context.read<ComponentNotifier>().updateCart();
           context.read<NotificationNotifier>().loadCartLoadDataResult();
-        }
+          context.read<ProductNotifier>().loadCartList();
+        },
       )
     );
     widget.productEntryController.productBrandFavoriteControllerContentDelegate.setProductBrandFavoriteDelegate(

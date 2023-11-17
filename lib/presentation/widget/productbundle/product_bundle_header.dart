@@ -5,6 +5,7 @@ import 'package:sizer/sizer.dart';
 
 import '../../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../../misc/constant.dart';
+import '../../../misc/widget_helper.dart';
 import '../button/add_or_remove_cart_button.dart';
 import '../button/add_or_remove_wishlist_button.dart';
 import '../button/custombutton/sized_outline_gradient_button.dart';
@@ -31,11 +32,7 @@ class ProductBundleHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     String soldCount = "No Sold Count".tr;
     BorderRadius borderRadius = BorderRadius.circular(16.0);
-    void onWishlist(void Function(ProductBundle)? onWishlistCallback) {
-      if (onWishlistCallback != null) {
-        onWishlistCallback(productBundle);
-      }
-    }
+    bool comingSoon = productBundle.price.isZeroResult.isZero;
     return SizedBox(
       width: MediaQuery.of(context).size.width,
       child: AspectRatio(
@@ -99,21 +96,13 @@ class ProductBundleHeader extends StatelessWidget {
                                   ],
                                 ),
                                 const SizedBox(height: 10),
-                                Row(
-                                  children: [
-                                    AddOrRemoveWishlistButton(
-                                      onAddWishlist: onAddWishlist != null ? () => onWishlist(onAddWishlist) : null,
-                                      onRemoveWishlist: onRemoveWishlist != null ? () => onWishlist(onRemoveWishlist) : null,
-                                      isAddToWishlist: productBundle.hasAddedToWishlist
-                                    ),
-                                    SizedBox(width: 1.5.w),
-                                    Expanded(
-                                      child: AddOrRemoveCartButton(
-                                        onAddCart: onAddCart != null ? () => onAddCart!(productBundle) : null,
-                                        isAddToCart: productBundle.hasAddedToCart,
-                                      )
-                                    )
-                                  ],
+                                WidgetHelper.productBundleWishlistAndCartIndicator(
+                                  productBundle: productBundle,
+                                  comingSoon: comingSoon,
+                                  onAddWishlist: onAddWishlist,
+                                  onRemoveWishlist: onRemoveWishlist,
+                                  onAddCart: onAddCart,
+                                  onRemoveCart: onRemoveCart
                                 )
                               ],
                             ),

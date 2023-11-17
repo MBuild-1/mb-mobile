@@ -82,6 +82,7 @@ import '../../misc/string_util.dart';
 import '../../misc/toast_helper.dart';
 import '../notifier/component_notifier.dart';
 import '../notifier/notification_notifier.dart';
+import '../notifier/product_notifier.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/colorful_chip_tab_bar.dart';
 import '../widget/modified_divider.dart';
@@ -939,8 +940,9 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
         onAddCartRequestProcessSuccessCallback: () async {
           context.read<ComponentNotifier>().updateCart();
           context.read<NotificationNotifier>().loadCartLoadDataResult();
+          context.read<ProductNotifier>().loadCartList();
           ToastHelper.showToast("${"Success add to cart".tr}.");
-        }
+        },
       )
     );
     widget.productDetailController.productBrandFavoriteControllerContentDelegate.setProductBrandFavoriteDelegate(

@@ -63,6 +63,7 @@ import '../../misc/paging/pagingresult/paging_result.dart';
 import '../../misc/toast_helper.dart';
 import '../notifier/component_notifier.dart';
 import '../notifier/notification_notifier.dart';
+import '../notifier/product_notifier.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modified_svg_picture.dart';
@@ -230,10 +231,12 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
   final Map<String, Timer> _updateCartQuantityTimerMap = {};
   final Map<String, CancelToken> _updateCartQuantityCancelTokenMap = {};
   final Map<String, bool> _isLoadingUpdatingCartQuantityMap = {};
+  late final ProductNotifier _productNotifier;
 
   @override
   void initState() {
     super.initState();
+    _productNotifier = Provider.of<ProductNotifier>(context, listen: false);
     _cartScrollController = ScrollController();
     _cartListItemPagingController = ModifiedPagingController<int, ListItemControllerState>(
       firstPageKey: 1,
@@ -275,9 +278,16 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
       Provider.of<NotificationNotifier>(context, listen: false).loadCartLoadDataResult();
       Provider.of<ComponentNotifier>(context, listen: false).updateCart();
     });
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _productNotifier.loadCartListFromData(IsLoadingLoadDataResult<List<Cart>>());
+    });
+    await Future.delayed(const Duration(milliseconds: 50));
     LoadDataResult<List<Cart>> cartListLoadDataResult = await widget.cartController.getCartList(
       CartListParameter()
     );
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _productNotifier.loadCartListFromData(cartListLoadDataResult);
+    });
     return cartListLoadDataResult.map<PagingResult<ListItemControllerState>>((cartList) {
       List<CartListItemControllerState> newCartListItemControllerStateList = cartList.map<CartListItemControllerState>(
         (cart) => VerticalCartListItemControllerState(
@@ -397,6 +407,7 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
             _cartContainerInterceptingActionListItemControllerState.removeCart!(cart);
             Provider.of<NotificationNotifier>(context, listen: false).loadCartLoadDataResult();
             Provider.of<ComponentNotifier>(context, listen: false).updateCart();
+            Provider.of<ProductNotifier>(context, listen: false).loadCartList();
           }
         },
         onShowUpdateCartQuantityRequestProcessLoadingCallback: () async {

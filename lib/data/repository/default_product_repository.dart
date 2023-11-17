@@ -259,6 +259,11 @@ class DefaultProductRepository implements ProductRepository {
   }
 
   @override
+  FutureProcessing<LoadDataResult<List<Wishlist>>> wishlistListIgnoringLoginError(WishlistListParameter wishlistListParameter) {
+    return productDataSource.wishlistListIgnoringLoginError(wishlistListParameter).mapToLoadDataResult<List<Wishlist>>();
+  }
+
+  @override
   FutureProcessing<LoadDataResult<PagingDataResult<Wishlist>>> wishlistPaging(WishlistPagingParameter wishlistPagingParameter) {
     return productDataSource.wishlistPaging(wishlistPagingParameter).mapToLoadDataResult<PagingDataResult<Wishlist>>();
   }

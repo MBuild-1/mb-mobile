@@ -75,6 +75,7 @@ import '../../../../misc/shimmercarousellistitemgenerator/type/product_bundle_sh
 import '../../../../misc/widget_helper.dart';
 import '../../../notifier/component_notifier.dart';
 import '../../../notifier/notification_notifier.dart';
+import '../../../notifier/product_notifier.dart';
 import '../../../widget/background_app_bar_scaffold.dart';
 import '../../../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../../../widget/modified_paged_list_view.dart';
@@ -258,6 +259,7 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
         onAddCartRequestProcessSuccessCallback: () async {
           context.read<ComponentNotifier>().updateCart();
           context.read<NotificationNotifier>().loadCartLoadDataResult();
+          context.read<ProductNotifier>().loadCartList();
         },
       )
     );

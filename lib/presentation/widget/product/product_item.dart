@@ -1,19 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/number_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
+import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../../domain/entity/cart/support_cart.dart';
 import '../../../domain/entity/product/product_appearance_data.dart';
+import '../../../domain/entity/wishlist/support_wishlist.dart';
 import '../../../domain/entity/wishlist/wishlist.dart';
 import '../../../misc/constant.dart';
+import '../../../misc/load_data_result.dart';
 import '../../../misc/page_restoration_helper.dart';
+import '../../notifier/product_notifier.dart';
 import '../../page/product_detail_page.dart';
 import '../badge_indicator.dart';
 import '../button/add_or_remove_cart_button.dart';
 import '../button/add_or_remove_wishlist_button.dart';
 import '../button/custombutton/sized_outline_gradient_button.dart';
 import '../modified_divider.dart';
+import '../modified_shimmer.dart';
 import '../modified_svg_picture.dart';
 import '../modified_vertical_divider.dart';
 import '../modifiedcachednetworkimage/product_modified_cached_network_image.dart';
@@ -208,21 +215,38 @@ abstract class ProductItem extends StatelessWidget {
                             ],
                           ),
                           const SizedBox(height: 10),
-                          Row(
-                            children: [
-                              AddOrRemoveWishlistButton(
-                                onAddWishlist: onAddWishlist != null ? () => onWishlist(onAddWishlist) : null,
-                                onRemoveWishlist: onRemoveWishlist != null ? () => onWishlist(onRemoveWishlist) : null,
-                                isAddToWishlist: isAddToWishlist,
-                              ),
-                              SizedBox(width: 1.5.w),
-                              Expanded(
-                                child: AddOrRemoveCartButton(
-                                  onAddCart: onAddCart != null ? () => onAddCart!(productAppearanceData) : null,
-                                  isAddToCart: isAddToCart
-                                )
-                              )
-                            ],
+                          Consumer<ProductNotifier>(
+                            builder: (_, productNotifier, __) {
+                              LoadDataResult<bool> isAddToWishlist = productNotifier.isAddToWishlist(productAppearanceData as SupportWishlist);
+                              LoadDataResult<bool> isAddToCart = productNotifier.isAddToCart(productAppearanceData as SupportCart);
+                              return Row(
+                                children: [
+                                  Builder(
+                                    builder: (context) {
+                                      Widget result = AddOrRemoveWishlistButton(
+                                        onAddWishlist: onAddWishlist != null ? () => onWishlist(onAddWishlist) : null,
+                                        onRemoveWishlist: onRemoveWishlist != null ? () => onWishlist(onRemoveWishlist) : null,
+                                        isAddToWishlist: isAddToWishlist.isSuccess ? isAddToWishlist.resultIfSuccess! : false,
+                                      );
+                                      return isAddToWishlist.isSuccess ? result : ModifiedShimmer.fromColors(child: result);
+                                    }
+                                  ),
+                                  SizedBox(width: 1.5.w),
+                                  Expanded(
+                                    child: Builder(
+                                      builder: (context) {
+                                        Widget result = AddOrRemoveCartButton(
+                                          onAddCart: onAddCart != null ? () => onAddCart!(productAppearanceData) : null,
+                                          isAddToCart: isAddToCart.isSuccess ? isAddToCart.resultIfSuccess! : false,
+                                          isLoading: !isAddToCart.isSuccess
+                                        );
+                                        return isAddToCart.isSuccess ? result : ModifiedShimmer.fromColors(child: result);
+                                      }
+                                    )
+                                  )
+                                ],
+                              );
+                            }
                           )
                         ],
                       ),

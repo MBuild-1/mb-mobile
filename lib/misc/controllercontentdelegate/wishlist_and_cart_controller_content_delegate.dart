@@ -28,6 +28,7 @@ import '../../domain/usecase/remove_wishlist_based_product_use_case.dart';
 import '../../domain/usecase/remove_wishlist_use_case.dart';
 import '../../presentation/notifier/component_notifier.dart';
 import '../../presentation/notifier/notification_notifier.dart';
+import '../../presentation/notifier/product_notifier.dart';
 import '../dialog_helper.dart';
 import '../errorprovider/error_provider.dart';
 import '../load_data_result.dart';
@@ -351,6 +352,7 @@ class WishlistAndCartDelegateFactory {
         }
         Provider.of<NotificationNotifier>(onGetBuildContext(), listen: false).loadCartLoadDataResult();
         Provider.of<ComponentNotifier>(onGetBuildContext(), listen: false).updateCart();
+        Provider.of<ProductNotifier>(onGetBuildContext(), listen: false).loadCartList();
       },
       onShowRemoveCartRequestProcessFailedCallback: onShowRemoveCartRequestProcessFailedCallback ?? (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
         context: onGetBuildContext(),

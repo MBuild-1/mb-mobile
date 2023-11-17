@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import '../../../../controller/mainmenucontroller/mainmenusubpagecontroller/wishlist_main_menu_sub_controller.dart';
 import '../../../../domain/entity/cart/support_cart.dart';
 import '../../../../domain/entity/wishlist/wishlist.dart';
+import '../../../../domain/entity/wishlist/wishlist_list_parameter.dart';
 import '../../../../domain/entity/wishlist/wishlist_paging_parameter.dart';
 import '../../../../misc/additionalloadingindicatorchecker/wishlist_sub_additional_paging_result_parameter_checker.dart';
 import '../../../../misc/constant.dart';
@@ -35,6 +36,7 @@ import '../../../../misc/toast_helper.dart';
 import '../../../../misc/widget_helper.dart';
 import '../../../notifier/component_notifier.dart';
 import '../../../notifier/notification_notifier.dart';
+import '../../../notifier/product_notifier.dart';
 import '../../../widget/background_app_bar_scaffold.dart';
 import '../../../widget/modified_paged_list_view.dart';
 import '../../../widget/modifiedappbar/main_menu_search_app_bar.dart';
@@ -75,10 +77,12 @@ class _StatefulWishlistMainMenuSubControllerMediatorWidgetState extends State<_S
   late final ModifiedPagingController<int, ListItemControllerState> _wishlistMainMenuSubListItemPagingController;
   late final PagingControllerState<int, ListItemControllerState> _wishlistMainMenuSubListItemPagingControllerState;
   DefaultWishlistContainerInterceptingActionListItemControllerState defaultWishlistContainerInterceptingActionListItemControllerState = DefaultWishlistContainerInterceptingActionListItemControllerState();
+  late final ProductNotifier _productNotifier;
 
   @override
   void initState() {
     super.initState();
+    _productNotifier = Provider.of<ProductNotifier>(context, listen: false);
     _wishlistAppBarBackgroundAssetImage = AssetImage(Constant.imagePatternWishlistMainMenuAppBar);
     _wishlistMainMenuSubListItemPagingController = ModifiedPagingController<int, ListItemControllerState>(
       firstPageKey: 1,
@@ -122,17 +126,21 @@ class _StatefulWishlistMainMenuSubControllerMediatorWidgetState extends State<_S
         )
       );
     }
-    LoadDataResult<PagingDataResult<Wishlist>> wishlistPagingLoadDataResult = await widget.wishlistMainMenuSubController.getWishlistPaging(
-      WishlistPagingParameter(page: pageKey)
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _productNotifier.loadWishlistListFromData(IsLoadingLoadDataResult<List<Wishlist>>());
+    });
+    await Future.delayed(const Duration(milliseconds: 50));
+    LoadDataResult<List<Wishlist>> wishlistPagingLoadDataResult = await widget.wishlistMainMenuSubController.getWishlistList(
+      WishlistListParameter()
     );
-    return wishlistPagingLoadDataResult.map<PagingResult<ListItemControllerState>>((wishlistPaging) {
-      List<ListItemControllerState> resultListItemControllerState = [];
-      int totalItem = wishlistPaging.totalItem;
-      if (pageKey == 1) {
-        totalItem = 2;
-        resultListItemControllerState = [
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _productNotifier.loadWishlistListFromData(wishlistPagingLoadDataResult);
+    });
+    return wishlistPagingLoadDataResult.map<PagingResult<ListItemControllerState>>((wishlistList) {
+      return PagingDataResult<ListItemControllerState>(
+        itemList: [
           WishlistContainerListItemControllerState(
-            wishlistList: wishlistPaging.itemList,
+            wishlistList: wishlistList,
             onUpdateState: () => setState(() {}),
             afterRemoveWishlist: (wishlistList) {
               if (wishlistList.isEmpty) {
@@ -177,25 +185,18 @@ class _StatefulWishlistMainMenuSubControllerMediatorWidgetState extends State<_S
             ),
             wishlistContainerInterceptingActionListItemControllerState: defaultWishlistContainerInterceptingActionListItemControllerState
           )
-        ];
-      } else {
-        if (ListItemControllerStateHelper.checkListItemControllerStateList(listItemControllerStateList)) {
-          WishlistContainerListItemControllerState wishlistContainerListItemControllerState = ListItemControllerStateHelper.parsePageKeyedListItemControllerState(
-            listItemControllerStateList![0]
-          ) as WishlistContainerListItemControllerState;
-          wishlistContainerListItemControllerState.wishlistList.addAll(wishlistPaging.itemList);
-        }
-      }
-      return PagingDataResult<ListItemControllerState>(
-        itemList: resultListItemControllerState,
-        page: wishlistPaging.page,
-        totalPage: wishlistPaging.totalPage,
-        totalItem: totalItem
+        ],
+        page: 1,
+        totalPage: 1,
+        totalItem: wishlistList.length
       );
     });
   }
 
   void refreshWishlistMainMenu() {
+    if (MainRouteObserver.subMainMenuVisibility[Constant.subPageKeyWishlistMainMenu] != true) {
+      _productNotifier.loadWishlistList();
+    }
     setState(() {});
     _wishlistMainMenuSubListItemPagingController.refresh();
   }
@@ -221,7 +222,8 @@ class _StatefulWishlistMainMenuSubControllerMediatorWidgetState extends State<_S
         onAddCartRequestProcessSuccessCallback: () async {
           context.read<ComponentNotifier>().updateCart();
           context.read<NotificationNotifier>().loadCartLoadDataResult();
-        }
+          context.read<ProductNotifier>().loadCartList();
+        },
       )
     );
     return WidgetHelper.checkVisibility(

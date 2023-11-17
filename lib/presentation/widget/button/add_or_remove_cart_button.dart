@@ -13,13 +13,15 @@ class AddOrRemoveCartButton extends StatelessWidget {
   final OnRemoveCart? onRemoveCart;
   final bool isAddToCart;
   final bool isIcon;
+  final bool isLoading;
 
   const AddOrRemoveCartButton({
     super.key,
     this.onAddCart,
     this.onRemoveCart,
     required this.isAddToCart,
-    this.isIcon = false
+    this.isIcon = false,
+    required this.isLoading
   });
 
   @override
@@ -27,7 +29,7 @@ class AddOrRemoveCartButton extends StatelessWidget {
     return SizedOutlineGradientButton(
       onPressed: onAddCart != null ? () => onAddCart!() : null,
       text: "+ ${"Cart".tr}",
-      outlineGradientButtonType: isAddToCart ? OutlineGradientButtonType.solid : OutlineGradientButtonType.outline,
+      outlineGradientButtonType: isLoading ? OutlineGradientButtonType.solid : (isAddToCart ? OutlineGradientButtonType.solid : OutlineGradientButtonType.outline),
       outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
       childInterceptor: isIcon ? (textStyle) {
         return Row(

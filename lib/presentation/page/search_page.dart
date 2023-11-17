@@ -62,6 +62,7 @@ import '../../misc/typingsearchlistitemclick/last_seen_history_typing_search_lis
 import '../../misc/typingsearchlistitemclick/product_typing_search_list_item_click.dart';
 import '../notifier/component_notifier.dart';
 import '../notifier/notification_notifier.dart';
+import '../notifier/product_notifier.dart';
 import '../widget/background_app_bar_scaffold.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/core_search_app_bar.dart';
@@ -580,7 +581,8 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
         onAddCartRequestProcessSuccessCallback: () async {
           context.read<ComponentNotifier>().updateCart();
           context.read<NotificationNotifier>().loadCartLoadDataResult();
-        }
+          context.read<ProductNotifier>().loadCartList();
+        },
       )
     );
     widget.searchController.setSearchDelegate(

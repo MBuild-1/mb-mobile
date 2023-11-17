@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
+import 'package:provider/provider.dart';
+import 'package:sizer/sizer.dart';
 
+import '../domain/entity/product/productbundle/product_bundle.dart';
+import '../presentation/notifier/product_notifier.dart';
+import '../presentation/widget/button/add_or_remove_cart_button.dart';
+import '../presentation/widget/button/add_or_remove_wishlist_button.dart';
 import '../presentation/widget/loaddataresultimplementer/load_data_result_implementer_directly.dart';
+import '../presentation/widget/modified_shimmer.dart';
+import '../presentation/widget/productbundle/product_bundle_item.dart';
 import '../presentation/widget/prompt_indicator.dart';
 import 'constant.dart';
 import 'constrained_app_bar_return_value.dart';
@@ -156,6 +165,56 @@ class _WidgetHelperImpl {
       return resultIfVisibilityIsTrue();
     }
     return const SizedBox();
+  }
+
+  Widget productBundleWishlistAndCartIndicator({
+    required ProductBundle productBundle,
+    required bool comingSoon,
+    required OnAddWishlistWithProductBundle? onAddWishlist,
+    required OnRemoveWishlistWithProductBundle? onRemoveWishlist,
+    required OnAddCartWithProductBundle? onAddCart,
+    required OnRemoveCartWithProductBundle? onRemoveCart,
+  }) {
+    void onWishlist(void Function(ProductBundle)? onWishlistCallback) {
+      if (onWishlistCallback != null) {
+        onWishlistCallback(productBundle);
+      }
+    }
+    return Consumer<ProductNotifier>(
+      builder: (_, productNotifier, __) {
+        LoadDataResult<bool> isAddToWishlist = productNotifier.isAddToWishlist(productBundle);
+        LoadDataResult<bool> isAddToCart = productNotifier.isAddToCart(productBundle);
+        return Row(
+          children: [
+            Builder(
+              builder: (context) {
+                Widget result = AddOrRemoveWishlistButton(
+                  onAddWishlist: onAddWishlist != null ? () => onWishlist(onAddWishlist) : null,
+                  onRemoveWishlist: onRemoveWishlist != null ? () => onWishlist(onRemoveWishlist) : null,
+                  isAddToWishlist: isAddToWishlist.isSuccess ? isAddToWishlist.resultIfSuccess! : false,
+                );
+                return isAddToWishlist.isSuccess ? result : ModifiedShimmer.fromColors(child: result);
+              }
+            ),
+            SizedBox(width: 1.5.w),
+            Builder(
+              builder: (context) {
+                void Function()? onPressed = !comingSoon ? (onAddCart != null ? () => onAddCart(productBundle) : null) : null;
+                Widget result = Expanded(
+                  child: AddOrRemoveCartButton(
+                    onAddCart: onPressed,
+                    isAddToCart: isAddToCart.isSuccess ? isAddToCart.resultIfSuccess! : false,
+                    isIcon: true,
+                    isLoading: !isAddToCart.isSuccess
+                  )
+                );
+                return isAddToCart.isSuccess ? result : ModifiedShimmer.fromColors(child: result);
+              }
+            )
+          ],
+        );
+      }
+    );
   }
 }
 

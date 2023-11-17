@@ -12,6 +12,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'domain/usecase/get_cart_list_use_case.dart';
 import 'domain/usecase/get_help_message_notification_count_use_case.dart';
 import 'domain/usecase/get_notification_by_user_list_use_case.dart';
+import 'domain/usecase/get_wishlist_list_ignoring_login_error.dart';
+import 'domain/usecase/get_wishlist_list_use_case.dart';
 import 'firebase_options.dart';
 
 import 'domain/usecase/get_user_use_case.dart';
@@ -22,6 +24,7 @@ import 'misc/main_route_observer.dart';
 import 'presentation/notifier/login_notifier.dart';
 import 'presentation/notifier/component_notifier.dart';
 import 'presentation/notifier/notification_notifier.dart';
+import 'presentation/notifier/product_notifier.dart';
 import 'presentation/page/getx_page.dart';
 import 'presentation/page/redirector_page.dart';
 
@@ -97,6 +100,12 @@ class MyApp extends StatelessWidget {
             getNotificationByUserListUseCase: Injector.locator<GetNotificationByUserListUseCase>(),
             getCartListUseCase: Injector.locator<GetCartListUseCase>(),
             getHelpMessageNotificationCountUseCase: Injector.locator<GetHelpMessageNotificationCountUseCase>()
+          ),
+        ),
+        ChangeNotifierProvider<ProductNotifier>(
+          create: (_) => ProductNotifier(
+            getCartListUseCase: Injector.locator<GetCartListUseCase>(),
+            getWishlistListIgnoringLoginErrorUseCase: Injector.locator<GetWishlistListIgnoringLoginErrorUseCase>(),
           ),
         )
       ],

@@ -108,6 +108,9 @@ class ProductEntry implements ProductEntryAppearanceData, SupportCart, SupportWi
   String get supportWishlistContentId => productEntryId;
 
   @override
+  String get supportCartContentId => productEntryId;
+
+  @override
   bool get hasAddedToWishlist => _hasAddedToWishlist;
 
   @override

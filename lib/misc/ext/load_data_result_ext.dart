@@ -42,6 +42,10 @@ extension LoadDataResultExt<T> on LoadDataResult<T> {
     } else if (this is FailedLoadDataResult<T>) {
       FailedLoadDataResult<T> failedLoadDataResult = this as FailedLoadDataResult<T>;
       return FailedLoadDataResult<O>(e: failedLoadDataResult.e, stackTrace: failedLoadDataResult.stackTrace);
+    } else if (this is IsLoadingLoadDataResult<T>) {
+      return IsLoadingLoadDataResult<O>();
+    } else if (this is NoLoadDataResult<T>) {
+      return NoLoadDataResult<O>();
     } else {
       try {
         throw LoadDataResultError(message: "Load data result is not suitable.");

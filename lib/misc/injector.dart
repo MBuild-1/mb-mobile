@@ -207,6 +207,8 @@ import '../domain/usecase/get_trip_default_video_paging_use_case.dart';
 import '../domain/usecase/get_trip_default_video_use_case.dart';
 import '../domain/usecase/get_user_use_case.dart';
 import '../domain/usecase/get_waiting_to_be_reviewed_delivery_review_paging_use_case.dart';
+import '../domain/usecase/get_wishlist_list_ignoring_login_error.dart';
+import '../domain/usecase/get_wishlist_list_use_case.dart';
 import '../domain/usecase/get_wishlist_paging_use_case.dart';
 import '../domain/usecase/give_review_delivery_review_detail_use_case.dart';
 import '../domain/usecase/login_use_case.dart';
@@ -330,6 +332,7 @@ class _Injector {
     locator.registerLazySingleton<WishlistMainMenuSubControllerInjectionFactory>(
       () => WishlistMainMenuSubControllerInjectionFactory(
         getWishlistPagingUseCase: locator(),
+        getWishlistListUseCase: locator(),
         addToCartUseCase: locator(),
         removeWishlistUseCase: locator(),
         wishlistAndCartControllerContentDelegate: locator()
@@ -596,6 +599,8 @@ class _Injector {
     locator.registerLazySingleton<CreateProductDiscussionUseCase>(() => CreateProductDiscussionUseCase(productDiscussionRepository: locator()));
     locator.registerLazySingleton<ReplyProductDiscussionUseCase>(() => ReplyProductDiscussionUseCase(productDiscussionRepository: locator()));
     locator.registerLazySingleton<GetWishlistPagingUseCase>(() => GetWishlistPagingUseCase(productRepository: locator()));
+    locator.registerLazySingleton<GetWishlistListUseCase>(() => GetWishlistListUseCase(productRepository: locator()));
+    locator.registerLazySingleton<GetWishlistListIgnoringLoginErrorUseCase>(() => GetWishlistListIgnoringLoginErrorUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetSnackForLyingAroundListUseCase>(() => GetSnackForLyingAroundListUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetBestsellerInMasterbagasiListUseCase>(() => GetBestsellerInMasterbagasiListUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetSelectedFashionBrandsListUseCase>(() => GetSelectedFashionBrandsListUseCase(productRepository: locator()));

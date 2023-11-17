@@ -37,6 +37,9 @@ class ProductBundle implements SupportCart, SupportWishlist, SupportOrderProduct
   String get supportWishlistContentId => id;
 
   @override
+  String get supportCartContentId => id;
+
+  @override
   bool get hasAddedToWishlist => _hasAddedToWishlist;
 
   @override

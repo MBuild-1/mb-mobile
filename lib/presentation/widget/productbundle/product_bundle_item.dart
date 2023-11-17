@@ -1,18 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/number_ext.dart';
-import 'package:sizer/sizer.dart';
 
 import '../../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../../misc/constant.dart';
 import '../../../misc/page_restoration_helper.dart';
-import '../button/add_or_remove_cart_button.dart';
-import '../button/add_or_remove_wishlist_button.dart';
-import '../button/custombutton/sized_outline_gradient_button.dart';
-import '../modified_svg_picture.dart';
-import '../modified_vertical_divider.dart';
+import '../../../misc/widget_helper.dart';
 import '../modifiedcachednetworkimage/product_bundle_modified_cached_network_image.dart';
-import '../rating_indicator.dart';
 
 typedef OnAddWishlistWithProductBundle = void Function(ProductBundle);
 typedef OnRemoveWishlistWithProductBundle = void Function(ProductBundle);
@@ -40,11 +34,6 @@ abstract class ProductBundleItem extends StatelessWidget {
     String soldCount = "No Sold Count".tr;
     bool comingSoon = productBundle.price.isZeroResult.isZero;
     BorderRadius borderRadius = BorderRadius.circular(16.0);
-    void onWishlist(void Function(ProductBundle)? onWishlistCallback) {
-      if (onWishlistCallback != null) {
-        onWishlistCallback(productBundle);
-      }
-    }
     return SizedBox(
       width: MediaQuery.of(context).size.width,
       child: AspectRatio(
@@ -119,28 +108,7 @@ abstract class ProductBundleItem extends StatelessWidget {
                                   ],
                                 ),
                                 const SizedBox(height: 10),
-                                Row(
-                                  children: [
-                                    AddOrRemoveWishlistButton(
-                                      onAddWishlist: onAddWishlist != null ? () => onWishlist(onAddWishlist) : null,
-                                      onRemoveWishlist: onRemoveWishlist != null ? () => onWishlist(onRemoveWishlist) : null,
-                                      isAddToWishlist: productBundle.hasAddedToWishlist,
-                                    ),
-                                    SizedBox(width: 1.5.w),
-                                    Builder(
-                                      builder: (context) {
-                                        void Function()? onPressed = !comingSoon ? (onAddCart != null ? () => onAddCart!(productBundle) : null) : null;
-                                        return Expanded(
-                                          child: AddOrRemoveCartButton(
-                                            onAddCart: onPressed,
-                                            isAddToCart: productBundle.hasAddedToCart,
-                                            isIcon: true
-                                          )
-                                        );
-                                      }
-                                    )
-                                  ],
-                                )
+                                wishlistAndCartIndicator(comingSoon)
                               ],
                             ),
                           ),
@@ -154,6 +122,18 @@ abstract class ProductBundleItem extends StatelessWidget {
           )
         ),
       ),
+    );
+  }
+
+  @protected
+  Widget wishlistAndCartIndicator(bool comingSoon) {
+    return WidgetHelper.productBundleWishlistAndCartIndicator(
+      productBundle: productBundle,
+      comingSoon: comingSoon,
+      onAddWishlist: onAddWishlist,
+      onRemoveWishlist: onRemoveWishlist,
+      onAddCart: onAddCart,
+      onRemoveCart: onRemoveCart
     );
   }
 }
