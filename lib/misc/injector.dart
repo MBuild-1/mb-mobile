@@ -424,7 +424,8 @@ class _Injector {
     // Shimmer Carousel List Item Generator
     locator.registerFactory<ProductShimmerCarouselListItemGeneratorFactory>(
       () => ProductShimmerCarouselListItemGeneratorFactory(
-        productDummy: locator()
+        productDummy: locator(),
+        productEntryDummy: locator()
       )
     );
     locator.registerFactory<ProductCategoryShimmerCarouselListItemGeneratorFactory>(

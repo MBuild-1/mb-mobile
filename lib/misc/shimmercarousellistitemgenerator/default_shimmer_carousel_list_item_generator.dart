@@ -2,6 +2,7 @@ import '../../domain/dummy/productdummy/product_brand_dummy.dart';
 import '../../domain/dummy/productdummy/product_bundle_dummy.dart';
 import '../../domain/dummy/productdummy/product_category_dummy.dart';
 import '../../domain/dummy/productdummy/product_dummy.dart';
+import '../../domain/dummy/productdummy/product_entry_dummy.dart';
 import '../controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/horizontal_product_brand_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/productbundlelistitemcontrollerstate/horizontal_product_bundle_list_item_controller_state.dart';
@@ -17,6 +18,7 @@ import 'type/product_shimmer_carousel_list_item_generator_type.dart';
 class DefaultShimmerCarouselListItemGenerator<G extends ShimmerCarouselListItemGeneratorType> extends ShimmerCarouselListItemGenerator<G> {
   final G _shimmerCarouselListItemGeneratorType;
   final ProductDummy productDummy;
+  final ProductEntryDummy productEntryDummy;
   final ProductCategoryDummy productCategoryDummy;
   final ProductBundleDummy productBundleDummy;
   final ProductBrandDummy productBrandDummy;
@@ -27,6 +29,7 @@ class DefaultShimmerCarouselListItemGenerator<G extends ShimmerCarouselListItemG
   DefaultShimmerCarouselListItemGenerator({
     required G shimmerCarouselListItemGeneratorType,
     required this.productDummy,
+    required this.productEntryDummy,
     required this.productCategoryDummy,
     required this.productBundleDummy,
     required this.productBrandDummy
@@ -36,7 +39,7 @@ class DefaultShimmerCarouselListItemGenerator<G extends ShimmerCarouselListItemG
   ListItemControllerState onGenerateListItemValue() {
     if (_shimmerCarouselListItemGeneratorType is ProductShimmerCarouselListItemGeneratorType) {
       return HorizontalProductListItemControllerState(
-        productAppearanceData: productDummy.generateShimmerDummy()
+        productAppearanceData: productEntryDummy.generateShimmerDummy()
       );
     } else if (_shimmerCarouselListItemGeneratorType is ProductCategoryShimmerCarouselListItemGeneratorType) {
       return HorizontalProductCategoryListItemControllerState(
