@@ -201,42 +201,69 @@ abstract class CartItem extends StatelessWidget {
           ],
           if (showDefaultCart) ...[
             const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TapArea(
-                  onTap: onAddToWishlist,
-                  child: Text("Add To Wishlist".tr),
-                ),
-                const SizedBox(width: 20),
-                const Text("|"),
-                const SizedBox(width: 20),
-                TapArea(
-                  onTap: onRemoveCart,
-                  child: ModifiedSvgPicture.asset(
-                    Constant.vectorTrash,
-                    fit: BoxFit.fitHeight,
-                  ),
-                ),
-                const SizedBox(width: 20),
-                TapArea(
-                  onTap: onChangeQuantity != null ? () => onChangeQuantity!(cart.quantity, cart.quantity - 1) : null,
-                  child: ModifiedSvgPicture.asset(
-                    Constant.vectorMinusCircle,
-                    fit: BoxFit.fitHeight,
-                  ),
-                ),
-                const SizedBox(width: 20),
-                Text(cart.quantity.toString()),
-                const SizedBox(width: 20),
-                TapArea(
-                  onTap: onChangeQuantity != null ? () => onChangeQuantity!(cart.quantity, cart.quantity + 1) : null,
-                  child: ModifiedSvgPicture.asset(
-                    Constant.vectorPlusCircle,
-                    fit: BoxFit.fitHeight,
-                  ),
-                ),
-              ],
+            Builder(
+              builder: (context) {
+                double size = 25;
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Flexible(
+                      child: TapArea(
+                        onTap: onAddToWishlist,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
+                          child: Text("Add To Wishlist".tr),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8.0),
+                            border: Border.all(width: 1.0)
+                          ),
+                        ),
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        const SizedBox(width: 20),
+                        TapArea(
+                          onTap: onRemoveCart,
+                          child: ModifiedSvgPicture.asset(
+                            Constant.vectorTrash,
+                            fit: BoxFit.fitHeight,
+                            width: size,
+                            height: size,
+                          ),
+                        ),
+                        const SizedBox(width: 20),
+                        TapArea(
+                          onTap: onChangeQuantity != null ? () => onChangeQuantity!(cart.quantity, cart.quantity - 1) : null,
+                          child: ModifiedSvgPicture.asset(
+                            Constant.vectorMinusCircle,
+                            width: size,
+                            height: size,
+                            fit: BoxFit.fitHeight,
+                          ),
+                        ),
+                        const SizedBox(width: 20),
+                        Text(
+                          cart.quantity.toString(),
+                          style: const TextStyle(
+                            fontSize: 17.0
+                          ),
+                        ),
+                        const SizedBox(width: 20),
+                        TapArea(
+                          onTap: onChangeQuantity != null ? () => onChangeQuantity!(cart.quantity, cart.quantity + 1) : null,
+                          child: ModifiedSvgPicture.asset(
+                            Constant.vectorPlusCircle,
+                            fit: BoxFit.fitHeight,
+                            width: size,
+                            height: size,
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                );
+              }
             )
           ]
         ],
