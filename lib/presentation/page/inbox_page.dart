@@ -250,14 +250,24 @@ class _StatefulInboxControllerMediatorWidgetState extends State<_StatefulInboxCo
               descriptionInterceptor: descriptionInterceptor
             ),
             DividerListItemControllerState(),
-            // ProfileMenuListItemControllerState(
-            //   onTap: (context) => PageRestorationHelper.toProductDiscussionPage(context),
-            //   icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorProductDiscussion2, color: iconColor, width: 20.0),
-            //   title: 'Product Discussion'.tr,
-            //   description: "Ask questions about the product".tr,
-            //   descriptionInterceptor: descriptionInterceptor
-            // ),
-            // DividerListItemControllerState(),
+            ProfileMenuListItemControllerState(
+              onTap: (context) => PageRestorationHelper.toProductDiscussionPage(
+                context, ProductDiscussionPageParameter(
+                  productId: null,
+                  bundleId: null,
+                  discussionProductId: null,
+                  isBasedUser: true
+                ),
+              ),
+              icon: (BuildContext context) => NotificationIconIndicator(
+                notificationNumber: 0,
+                icon: ModifiedSvgPicture.asset(Constant.vectorProductDiscussion2, color: iconColor, width: 20.0),
+              ),
+              title: 'Product Discussion'.tr,
+              description: "Ask questions about the product".tr,
+              descriptionInterceptor: descriptionInterceptor
+            ),
+            DividerListItemControllerState(),
             ProfileMenuListItemControllerState(
               onTap: (context) => PageRestorationHelper.toDeliveryReviewPage(context),
               icon: (BuildContext context) => NotificationIconIndicator(
@@ -266,17 +276,6 @@ class _StatefulInboxControllerMediatorWidgetState extends State<_StatefulInboxCo
               ),
               title: 'Delivery Review'.tr,
               description: "Please rate the shipping review".tr,
-              descriptionInterceptor: descriptionInterceptor
-            ),
-            DividerListItemControllerState(),
-            ProfileMenuListItemControllerState(
-              onTap: (context) => PageRestorationHelper.toNotificationPage(context),
-              icon: (BuildContext context) => NotificationIconIndicator(
-                notificationNumber: 0,
-                icon: ModifiedSvgPicture.asset(Constant.vectorSupportMessage, color: iconColor, width: 20.0),
-              ),
-              title: 'Update'.tr,
-              description: "View notification updates".tr,
               descriptionInterceptor: descriptionInterceptor
             ),
           ],
