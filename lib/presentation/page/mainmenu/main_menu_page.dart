@@ -38,6 +38,7 @@ import '../../../misc/routeargument/main_menu_route_argument.dart';
 import '../../../misc/toast_helper.dart';
 import '../../../misc/typedef.dart';
 import '../../notifier/notification_notifier.dart';
+import '../../notifier/product_notifier.dart';
 import '../../widget/custom_bottom_navigation_bar.dart';
 import '../../widget/modified_svg_picture.dart';
 import '../../widget/rx_consumer.dart';
@@ -352,13 +353,16 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
   late CustomBottomNavigationBarSelectedIndex _customBottomNavigationBarSelectedIndex;
   Timer? _timer;
   bool _canBack = false;
+  late ProductNotifier _productNotifier;
 
   @override
   void initState() {
     super.initState();
+    _productNotifier = Provider.of<ProductNotifier>(context, listen: false);
     _initOneSignalEvent();
     _initMainMenuPage();
     MainRouteObserver.onResetInitMainMenu = () {
+      _productNotifier.loadData();
       _initMainMenuPage();
       for (int i = 0; i < widget.mainMenuSubControllerList.length; i++) {
         widget.mainMenuSubControllerList[i][2]();

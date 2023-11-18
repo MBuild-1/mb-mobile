@@ -34,6 +34,7 @@ import '../../misc/routeargument/login_route_argument.dart';
 import '../../misc/validation/validator/validator.dart';
 import '../notifier/login_notifier.dart';
 import '../notifier/notification_notifier.dart';
+import '../notifier/product_notifier.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/field.dart';
 import '../widget/modified_text_field.dart';
@@ -215,6 +216,7 @@ class _StatefulLoginControllerMediatorWidget extends StatefulWidget {
 class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginControllerMediatorWidget> {
   late LoginNotifier _loginNotifier;
   late NotificationNotifier _notificationNotifier;
+  late ProductNotifier _productNotifier;
   final TextEditingController _emailTextEditingController = TextEditingController();
   final TextEditingController _passwordTextEditingController = TextEditingController();
   final TapGestureRecognizer _forgotPasswordTapGestureRecognizer = TapGestureRecognizer();
@@ -230,6 +232,7 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
     _onLoginRequestProcessSuccessCallback = () async {
       _loginNotifier.loadProfile();
       _notificationNotifier.loadAllNotification();
+      _productNotifier.loadData();
       Map<String, RouteWrapper?> routeMap = MainRouteObserver.routeMap;
       for (var element in routeMap.entries) {
         element.value?.requestLoginChangeValue = 1;
@@ -238,6 +241,7 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
     };
     _loginNotifier = Provider.of<LoginNotifier>(context, listen: false);
     _notificationNotifier = Provider.of<NotificationNotifier>(context, listen: false);
+    _productNotifier = Provider.of<ProductNotifier>(context, listen: false);
     _googleSignIn = GoogleSignIn(
       scopes: [
         'email',
