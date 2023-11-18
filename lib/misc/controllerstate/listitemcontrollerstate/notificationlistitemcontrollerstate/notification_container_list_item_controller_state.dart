@@ -10,6 +10,7 @@ class NotificationContainerListItemControllerState extends ListItemControllerSta
   void Function() onUpdateState;
   void Function(ShortNotification)? Function(ShortNotification) onNotificationTap;
   void Function()? onMarkAllNotification;
+  String Function() onGetStatus;
   LoadDataResult<int> Function() purchaseStatusLoadDataResult;
   LoadDataResult<int> Function() notificationLoadDataResult;
   LoadDataResult<int> Function() transactionNotificationLoadDataResult;
@@ -24,6 +25,7 @@ class NotificationContainerListItemControllerState extends ListItemControllerSta
     required this.onUpdateState,
     required this.onNotificationTap,
     required this.onMarkAllNotification,
+    required this.onGetStatus,
     required this.purchaseStatusLoadDataResult,
     required this.notificationLoadDataResult,
     required this.transactionNotificationLoadDataResult,

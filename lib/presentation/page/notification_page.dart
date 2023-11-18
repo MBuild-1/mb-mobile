@@ -284,6 +284,7 @@ class _StatefulNotificationControllerMediatorWidgetState extends State<_Stateful
           },
           onUpdateState: () => setState(() {}),
           onMarkAllNotification: () => widget.notificationController.readAllNotification(_status),
+          onGetStatus: () => _status,
           onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
           notificationTabColorfulChipTabBarController: _notificationTabColorfulChipTabBarController,
           notificationColorfulChipTabBarDataList: _notificationColorfulChipTabBarDataList,

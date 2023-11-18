@@ -118,33 +118,42 @@ class NotificationItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
           }
         )
       );
-      newListItemControllerState.add(
-        VirtualSpacingListItemControllerState(height: padding())
-      );
-      newListItemControllerState.add(
-        PaddingContainerListItemControllerState(
-          padding: EdgeInsets.symmetric(horizontal: padding()),
-          paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
-            widgetSubstitution: (context, index) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TapArea(
-                    onTap: oldItemType.onMarkAllNotification,
-                    child: Text(
-                      "Mark All".tr,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.primary
-                      )
-                    ),
-                  ),
-                ],
-              );
-            }
-          )
-        )
-      );
+      if (oldItemType.onGetStatus() == "transaction") {
+        listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
+          i,
+          ListItemControllerStateWrapper(
+            CompoundListItemControllerState(
+              listItemControllerState: [
+                VirtualSpacingListItemControllerState(height: padding()),
+                PaddingContainerListItemControllerState(
+                  padding: EdgeInsets.symmetric(horizontal: padding()),
+                  paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
+                    widgetSubstitution: (context, index) {
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TapArea(
+                            onTap: oldItemType.onMarkAllNotification,
+                            child: Text(
+                              "Mark All".tr,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.primary
+                              )
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+                  )
+                )
+              ]
+            )
+          ),
+          oldItemTypeList,
+          newListItemControllerState
+        );
+      }
       newListItemControllerState.add(
         VirtualSpacingListItemControllerState(height: padding())
       );
