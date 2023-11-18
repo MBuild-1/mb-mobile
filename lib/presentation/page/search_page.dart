@@ -67,6 +67,7 @@ import '../widget/background_app_bar_scaffold.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/core_search_app_bar.dart';
 import 'getx_page.dart';
+import 'login_page.dart';
 import 'modaldialogpage/search_filter_modal_dialog_page.dart';
 import 'product_detail_page.dart';
 
@@ -108,7 +109,7 @@ class SearchPage extends RestorableGetxPage<_SearchPageRestoration> {
   }
 }
 
-class _SearchPageRestoration extends MixableGetxPageRestoration with ProductDetailPageRestorationMixin {
+class _SearchPageRestoration extends MixableGetxPageRestoration with ProductDetailPageRestorationMixin, LoginPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
