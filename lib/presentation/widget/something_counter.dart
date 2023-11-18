@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 
@@ -7,6 +8,7 @@ import '../../domain/entity/user/user.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/login_helper.dart';
 import '../../misc/main_route_observer.dart';
+import '../../misc/page_restoration_helper.dart';
 import '../../misc/pusher_helper.dart';
 import '../notifier/login_notifier.dart';
 import '../notifier/notification_notifier.dart';
@@ -51,6 +53,26 @@ class _SomethingCounterState extends State<SomethingCounter> with RestorationMix
     PusherHelper.initPusherChannels(
       pusherChannelsFlutter: _pusher
     );
+    _initOneSignalEvent();
+  }
+
+  void _initOneSignalEvent() {
+    OneSignal.Notifications.addClickListener(_onClickListener);
+    OneSignal.Notifications.addForegroundWillDisplayListener(_onForegroundWillDisplayListener);
+  }
+
+  void _onClickListener(OSNotificationClickEvent osNotificationClickEvent) {
+    print("Notification clik: ${osNotificationClickEvent.notification.jsonRepresentation()}");
+  }
+
+  void _onForegroundWillDisplayListener(OSNotificationWillDisplayEvent osNotificationWillDisplayEvent) {
+    /// Display Notification, preventDefault to not display
+    osNotificationWillDisplayEvent.preventDefault();
+
+    /// notification.display() to display after preventing default
+    osNotificationWillDisplayEvent.notification.display();
+
+    print("Notification clik foreground: ${osNotificationWillDisplayEvent.notification.jsonRepresentation()}");
   }
 
   Future<void> subscribeChatCount(String userId) async {
@@ -95,6 +117,8 @@ class _SomethingCounterState extends State<SomethingCounter> with RestorationMix
   @override
   void dispose() {
     _pusher.disconnect();
+    OneSignal.Notifications.removeClickListener(_onClickListener);
+    OneSignal.Notifications.removeForegroundWillDisplayListener(_onForegroundWillDisplayListener);
     super.dispose();
   }
 }

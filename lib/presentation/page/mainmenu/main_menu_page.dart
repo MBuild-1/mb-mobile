@@ -1,15 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/presentation/page/product_detail_page.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 
 import '../../../controller/base_getx_controller.dart';
 import '../../../controller/mainmenucontroller/main_menu_controller.dart';
@@ -18,33 +15,25 @@ import '../../../controller/mainmenucontroller/mainmenusubpagecontroller/feed_ma
 import '../../../controller/mainmenucontroller/mainmenusubpagecontroller/home_main_menu_sub_controller.dart';
 import '../../../controller/mainmenucontroller/mainmenusubpagecontroller/menu_main_menu_sub_controller.dart';
 import '../../../controller/mainmenucontroller/mainmenusubpagecontroller/wishlist_main_menu_sub_controller.dart';
-import '../../../domain/entity/chat/help/get_help_message_by_user_parameter.dart';
-import '../../../domain/entity/chat/help/get_help_message_by_user_response.dart';
 import '../../../domain/usecase/get_help_message_by_user_use_case.dart';
-import '../../../domain/usecase/get_help_message_notification_count_use_case.dart';
 import '../../../misc/constant.dart';
-import '../../../misc/dialog_helper.dart';
 import '../../../misc/getextended/get_extended.dart';
 import '../../../misc/getextended/get_restorable_route_future.dart';
 import '../../../misc/injector.dart';
-import '../../../misc/load_data_result.dart';
 import '../../../misc/login_helper.dart';
 import '../../../misc/main_route_observer.dart';
 import '../../../misc/manager/controller_manager.dart';
 import '../../../misc/multi_language_string.dart';
 import '../../../misc/page_restoration_helper.dart';
-import '../../../misc/pusher_helper.dart';
 import '../../../misc/routeargument/main_menu_route_argument.dart';
 import '../../../misc/toast_helper.dart';
 import '../../../misc/typedef.dart';
-import '../../notifier/notification_notifier.dart';
 import '../../notifier/product_notifier.dart';
 import '../../widget/custom_bottom_navigation_bar.dart';
 import '../../widget/modified_svg_picture.dart';
 import '../../widget/rx_consumer.dart';
 import '../../widget/tap_area.dart';
 import '../accountsecurity/account_security_page.dart';
-import '../accountsecurity/modify_pin_page.dart';
 import '../address_page.dart';
 import '../affiliate_page.dart';
 import '../cart_page.dart';
@@ -359,7 +348,6 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
   void initState() {
     super.initState();
     _productNotifier = Provider.of<ProductNotifier>(context, listen: false);
-    _initOneSignalEvent();
     _initMainMenuPage();
     MainRouteObserver.onResetInitMainMenu = () {
       _productNotifier.loadData();
@@ -393,26 +381,6 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
       }
       widget.mainMenuSubControllerList[i][3]();
     }
-  }
-
-  void _initOneSignalEvent() {
-    OneSignal.Notifications.addClickListener(_onClickListener);
-    OneSignal.Notifications.addForegroundWillDisplayListener(_onForegroundWillDisplayListener);
-  }
-
-  void _onClickListener(OSNotificationClickEvent osNotificationClickEvent) {
-    print("Notification clik: ${osNotificationClickEvent.notification.jsonRepresentation()}");
-    PageRestorationHelper.toDeliveryReviewPage(context);
-  }
-
-  void _onForegroundWillDisplayListener(OSNotificationWillDisplayEvent osNotificationWillDisplayEvent) {
-    /// Display Notification, preventDefault to not display
-    osNotificationWillDisplayEvent.preventDefault();
-
-    /// notification.display() to display after preventing default
-    osNotificationWillDisplayEvent.notification.display();
-
-    print("Notification clik foreground: ${osNotificationWillDisplayEvent.notification.jsonRepresentation()}");
   }
 
   @override
@@ -635,8 +603,6 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
     MainRouteObserver.onChangeSelectedProvince = null;
     MainRouteObserver.onResetInitMainMenu = null;
     _timer?.cancel();
-    OneSignal.Notifications.removeClickListener(_onClickListener);
-    OneSignal.Notifications.removeForegroundWillDisplayListener(_onForegroundWillDisplayListener);
     super.dispose();
   }
 }
