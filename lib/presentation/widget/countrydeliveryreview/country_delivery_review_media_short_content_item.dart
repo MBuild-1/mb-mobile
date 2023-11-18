@@ -97,7 +97,7 @@ class CountryDeliveryReviewMediaShortContentItem extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  "Foto & Video Ulasan MBestie".tr,
+                  "Foto & Video MBestie Review".tr,
                   style: const TextStyle(
                     fontWeight: FontWeight.bold
                   )

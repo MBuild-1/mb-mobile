@@ -18,6 +18,7 @@ import '../../misc/controllerstate/listitemcontrollerstate/countrydeliveryreview
 import '../../misc/controllerstate/listitemcontrollerstate/countrydeliveryreviewlistitemcontrollerstate/country_delivery_review_select_country_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/failed_prompt_indicator_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/no_content_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
 import '../../misc/error/message_error.dart';
 import '../../misc/error_helper.dart';
@@ -283,15 +284,18 @@ class _StatefulCountryDeliveryReviewControllerMediatorWidgetState extends State<
                 backgroundImageUrl: countryDeliveryReviewResponse.image.toEmptyStringNonNull
               )
             ),
-            getCountryDeliveryReviewMediaShortContentListItemControllerState: () => CountryDeliveryReviewMediaShortContentListItemControllerState(
-              countryDeliveryReviewMediaList: () {
-                List<CountryDeliveryReviewMedia> countryDeliveryReviewMediaList = [];
-                for (var countryDeliveryReview in countryDeliveryReviewResponse.countryDeliveryReviewList) {
-                  countryDeliveryReviewMediaList.addAll(countryDeliveryReview.countryDeliveryReviewMedia);
-                }
-                return countryDeliveryReviewMediaList;
-              }()
-            ),
+            getCountryDeliveryReviewMediaShortContentListItemControllerState: () {
+              List<CountryDeliveryReviewMedia> countryDeliveryReviewMediaList = [];
+              for (var countryDeliveryReview in countryDeliveryReviewResponse.countryDeliveryReviewList) {
+                countryDeliveryReviewMediaList.addAll(countryDeliveryReview.countryDeliveryReviewMedia);
+              }
+              if (countryDeliveryReviewMediaList.isEmpty) {
+                return NoContentListItemControllerState();
+              }
+              return CountryDeliveryReviewMediaShortContentListItemControllerState(
+                countryDeliveryReviewMediaList: countryDeliveryReviewMediaList
+              );
+            },
             getCountryDeliveryReviewSelectCountryListItemControllerState: () => CountryDeliveryReviewSelectCountryListItemControllerState(
               selectedCountry: Injector.locator<CountryDummy>().generateDefaultDummy()..id = _currentSelectedCountryId,
               onSelectCountry: (country) {

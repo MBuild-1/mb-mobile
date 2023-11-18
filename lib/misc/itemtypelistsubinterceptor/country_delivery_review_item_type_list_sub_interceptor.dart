@@ -1,24 +1,16 @@
 import 'package:flutter/material.dart';
 
 import '../../domain/entity/delivery/country_delivery_review.dart';
-import '../constant.dart';
 import '../controllerstate/listitemcontrollerstate/compound_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/countrydeliveryreviewlistitemcontrollerstate/country_delivery_review_container_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/countrydeliveryreviewlistitemcontrollerstate/country_delivery_review_list_item_controller_state.dart';
-import '../controllerstate/listitemcontrollerstate/countrydeliveryreviewlistitemcontrollerstate/country_delivery_review_select_country_list_item_controller_state.dart';
-import '../controllerstate/listitemcontrollerstate/failed_prompt_indicator_list_item_controller_state.dart';
-import '../controllerstate/listitemcontrollerstate/fill_remaining_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
+import '../controllerstate/listitemcontrollerstate/no_content_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/padding_container_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/spacing_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
-import '../error/message_error.dart';
-import '../error_helper.dart';
 import '../itemtypelistinterceptor/itemtypelistinterceptorchecker/list_item_controller_state_item_type_list_interceptor_checker.dart';
-import '../load_data_result.dart';
-import '../multi_language_string.dart';
 import '../typedef.dart';
-import 'fill_remaining_item_type_list_sub_interceptor.dart';
 import 'item_type_list_sub_interceptor.dart';
 
 class CountryDeliveryReviewItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItemControllerState> {
@@ -63,15 +55,30 @@ class CountryDeliveryReviewItemTypeListSubInterceptor extends ItemTypeListSubInt
         newItemTypeList.addAll(newListItemControllerStateList);
         return true;
       }
-      listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
-        i, ListItemControllerStateWrapper(oldItemType.getCountryDeliveryReviewMediaShortContentListItemControllerState()), oldItemTypeList, newListItemControllerStateList
-      );
+      ListItemControllerState countryDeliveryReviewMediaShortContentListItemControllerState = oldItemType.getCountryDeliveryReviewMediaShortContentListItemControllerState();
+      if (countryDeliveryReviewMediaShortContentListItemControllerState is! NoContentListItemControllerState) {
+        listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
+          i,
+          ListItemControllerStateWrapper(
+            CompoundListItemControllerState(
+              listItemControllerState: [
+                countryDeliveryReviewMediaShortContentListItemControllerState,
+                SpacingListItemControllerState()
+              ]
+            )
+          ),
+          oldItemTypeList,
+          newListItemControllerStateList
+        );
+      }
       int j = 0;
       while (j < oldItemType.countryDeliveryReviewList.length) {
         CountryDeliveryReview countryDeliveryReview = oldItemType.countryDeliveryReviewList[j];
         ListItemControllerState countryDeliveryReviewListItemControllerState = CompoundListItemControllerState(
           listItemControllerState: [
-            SpacingListItemControllerState(),
+            if (j > 0) ...[
+              SpacingListItemControllerState()
+            ],
             CountryDeliveryReviewListItemControllerState(countryDeliveryReview: countryDeliveryReview)
           ]
         );
