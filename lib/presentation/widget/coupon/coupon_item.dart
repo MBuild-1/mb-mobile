@@ -68,7 +68,7 @@ abstract class CouponItem extends StatelessWidget {
                       style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
-                        fontSize: 17.0
+                        fontSize: 12.5
                       ),
                     ),
                   ),
@@ -86,7 +86,7 @@ abstract class CouponItem extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 14
+                        fontSize: 11.0
                       )
                     ),
                   )
@@ -108,7 +108,7 @@ abstract class CouponItem extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 12.0),
                       color: Constant.colorDarkBlue,
-                      child: Text("Valid Until".tr, style: const TextStyle(color: Colors.white, fontSize: 12.0)),
+                      child: Text("Valid Until".tr, style: const TextStyle(color: Colors.white, fontSize: 11.0)),
                     ),
                     Container(
                       padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 12.0),
@@ -117,7 +117,7 @@ abstract class CouponItem extends StatelessWidget {
                         DateUtil.standardDateFormat7.format(coupon.activePeriodEnd),
                         style: TextStyle(
                           color: Constant.colorDarkBlue,
-                          fontSize: 12.0,
+                          fontSize: 11.0,
                           fontWeight: FontWeight.bold
                         )
                       ),
