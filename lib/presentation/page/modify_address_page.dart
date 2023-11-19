@@ -73,7 +73,7 @@ class ModifyAddressPage extends RestorableGetxPage<_ModifyAddressPageRestoration
   }
 }
 
-class _ModifyAddressPageRestoration extends MixableGetxPageRestoration {
+class _ModifyAddressPageRestoration extends ExtendedMixableGetxPageRestoration {
   @override
   // ignore: unnecessary_overrides
   void initState() {

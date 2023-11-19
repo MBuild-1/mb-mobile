@@ -37,7 +37,7 @@ class RedirectorPage extends RestorableGetxPage<_RedirectorPageRestoration> {
   }
 }
 
-class _RedirectorPageRestoration extends MixableGetxPageRestoration with IntroductionPageRestorationMixin, MainMenuPageRestorationMixin {
+class _RedirectorPageRestoration extends ExtendedMixableGetxPageRestoration with IntroductionPageRestorationMixin, MainMenuPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
@@ -133,20 +133,16 @@ class _StatefulRedirectorControllerMediatorWidgetState extends State<_StatefulRe
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
         if (LoginHelper.getTokenWithBearer().result.isNotEmptyString) {
           return PageRestorationHelper.toMainMenuPage(
-            context, json.encode(
-              <String, dynamic>{
-                "has_transition": 0,
-                "push_mode": Constant.restorableRouteFuturePushAndRemoveUntil
-              }
+            context, PushModeAndTransitionMode(
+              pushMode: Constant.restorableRouteFuturePushAndRemoveUntil,
+              hasTransition: false
             )
           );
         } else {
           return PageRestorationHelper.toIntroductionPage(
-            context, json.encode(
-              <String, dynamic>{
-                "has_transition": 0,
-                "push_mode": Constant.restorableRouteFuturePushAndRemoveUntil
-              }
+            context, PushModeAndTransitionMode(
+              pushMode: Constant.restorableRouteFuturePushAndRemoveUntil,
+              hasTransition: false
             )
           );
         }

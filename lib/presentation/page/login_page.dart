@@ -91,7 +91,7 @@ class LoginPage extends RestorableGetxPage<_LoginPageRestoration> {
   }
 }
 
-class _LoginPageRestoration extends MixableGetxPageRestoration with RegisterPageRestorationMixin, ForgotPasswordPageRestorationMixin, ModifyPinPageRestorationMixin {
+class _LoginPageRestoration extends ExtendedMixableGetxPageRestoration with RegisterPageRestorationMixin, ForgotPasswordPageRestorationMixin, ModifyPinPageRestorationMixin {
   final RouteCompletionCallback<bool?>? _onCompleteInputPin;
 
   _LoginPageRestoration({

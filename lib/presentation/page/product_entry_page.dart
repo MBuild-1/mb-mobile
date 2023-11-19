@@ -95,7 +95,7 @@ class ProductEntryPage extends RestorableGetxPage<_ProductEntryPageRestoration> 
   }
 }
 
-class _ProductEntryPageRestoration extends MixableGetxPageRestoration with ProductDetailPageRestorationMixin, SearchPageRestorationMixin, LoginPageRestorationMixin {
+class _ProductEntryPageRestoration extends ExtendedMixableGetxPageRestoration with ProductDetailPageRestorationMixin, SearchPageRestorationMixin, LoginPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {

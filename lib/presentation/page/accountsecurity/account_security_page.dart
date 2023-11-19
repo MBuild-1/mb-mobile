@@ -80,7 +80,7 @@ class AccountSecurityPage extends RestorableGetxPage<_AccountSecurityPageRestora
   );
 }
 
-class _AccountSecurityPageRestoration extends MixableGetxPageRestoration with ChangePasswordPageRestorationMixin, ModifyPinPageRestorationMixin, PersonalVerificationPageRestorationMixin {
+class _AccountSecurityPageRestoration extends ExtendedMixableGetxPageRestoration with ChangePasswordPageRestorationMixin, ModifyPinPageRestorationMixin, PersonalVerificationPageRestorationMixin {
   final RouteCompletionCallback<bool?>? _onCompleteInputPin;
 
   _AccountSecurityPageRestoration({

@@ -56,7 +56,7 @@ class ProductCategoryDetailPage extends RestorableGetxPage<_ProductCategoryDetai
   }
 }
 
-class _ProductCategoryDetailPageRestoration extends MixableGetxPageRestoration with ProductDetailPageRestorationMixin, SearchPageRestorationMixin {
+class _ProductCategoryDetailPageRestoration extends ExtendedMixableGetxPageRestoration with ProductDetailPageRestorationMixin, SearchPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {

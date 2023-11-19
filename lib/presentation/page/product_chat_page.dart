@@ -12,13 +12,10 @@ import '../../domain/entity/chat/product/create_product_conversation_parameter.d
 import '../../domain/entity/chat/product/create_product_conversation_response.dart';
 import '../../domain/entity/chat/product/get_product_message_by_product_parameter.dart';
 import '../../domain/entity/chat/product/get_product_message_by_product_response.dart';
-import '../../domain/entity/chat/product/get_product_message_by_user_parameter.dart';
-import '../../domain/entity/chat/product/get_product_message_by_user_response.dart';
 import '../../domain/entity/chat/product/product_message.dart';
 import '../../domain/entity/chat/user_chat.dart';
 import '../../domain/entity/chat/user_message_response_wrapper.dart';
 import '../../domain/entity/user/getuser/get_user_parameter.dart';
-import '../../domain/entity/user/getuser/get_user_response.dart';
 import '../../domain/entity/user/user.dart';
 import '../../domain/usecase/answer_product_conversation_use_case.dart';
 import '../../domain/usecase/create_product_conversation_use_case.dart';
@@ -29,14 +26,12 @@ import '../../misc/constant.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/chatlistitemcontrollerstate/chat_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
-import '../../misc/dialog_helper.dart';
 import '../../misc/error/empty_chat_error.dart';
 import '../../misc/error/message_error.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
 import '../../misc/itemtypelistsubinterceptor/chat_item_type_list_sub_interceptor.dart';
-import '../../misc/itemtypelistsubinterceptor/delivery_cart_item_type_list_sub_interceptor.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/controller_manager.dart';
 import '../../misc/paging/modified_paging_controller.dart';
@@ -44,9 +39,9 @@ import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_it
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
 import '../../misc/pusher_helper.dart';
+import '../../misc/routeargument/product_chat_route_argument.dart';
 import '../widget/modified_loading_indicator.dart';
 import '../widget/modified_paged_list_view.dart';
-import '../widget/modified_shimmer.dart';
 import '../widget/modified_svg_picture.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import '../widget/tap_area.dart';
@@ -88,7 +83,7 @@ class ProductChatPage extends RestorableGetxPage<_ProductChatPageRestoration> {
   }
 }
 
-class _ProductChatPageRestoration extends MixableGetxPageRestoration with ProductChatPageRestorationMixin {
+class _ProductChatPageRestoration extends ExtendedMixableGetxPageRestoration with ProductChatPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
@@ -160,7 +155,8 @@ class ProductChatPageRestorableRouteFuture extends GetRestorableRouteFuture {
       throw MessageError(message: "Arguments must be a String");
     }
     return GetExtended.toWithGetPageRouteReturnValue<void>(
-      GetxPageBuilder.buildRestorableGetxPageBuilder(ProductChatPageGetPageBuilderAssistant(productId: arguments))
+      GetxPageBuilder.buildRestorableGetxPageBuilder(ProductChatPageGetPageBuilderAssistant(productId: arguments)),
+      arguments: ProductChatRouteArgument()
     );
   }
 

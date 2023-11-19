@@ -52,7 +52,7 @@ class CountryDeliveryReviewMediaViewPage extends RestorableGetxPage<_CountryDeli
   }
 }
 
-class _CountryDeliveryReviewMediaViewPageRestoration extends MixableGetxPageRestoration with CountryDeliveryReviewMediaViewPageRestorationMixin {
+class _CountryDeliveryReviewMediaViewPageRestoration extends ExtendedMixableGetxPageRestoration with CountryDeliveryReviewMediaViewPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {

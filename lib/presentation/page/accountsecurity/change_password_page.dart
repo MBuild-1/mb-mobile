@@ -54,7 +54,7 @@ class ChangePasswordPage extends RestorableGetxPage<_ChangePasswordPageRestorati
   }
 }
 
-class _ChangePasswordPageRestoration extends MixableGetxPageRestoration {
+class _ChangePasswordPageRestoration extends ExtendedMixableGetxPageRestoration {
   @override
   // ignore: unnecessary_overrides
   void initState() {

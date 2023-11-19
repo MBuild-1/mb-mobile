@@ -54,7 +54,7 @@ class AffiliatePage extends RestorableGetxPage<_AffiliatePageRestoration> {
   }
 }
 
-class _AffiliatePageRestoration extends MixableGetxPageRestoration {
+class _AffiliatePageRestoration extends ExtendedMixableGetxPageRestoration {
   @override
   // ignore: unnecessary_overrides
   void initState() {

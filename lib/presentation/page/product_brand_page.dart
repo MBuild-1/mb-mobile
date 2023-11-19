@@ -75,7 +75,7 @@ class ProductBrandPage extends RestorableGetxPage<_ProductBrandPageRestoration> 
   }
 }
 
-class _ProductBrandPageRestoration extends MixableGetxPageRestoration with ProductEntryPageRestorationMixin, SearchPageRestorationMixin {
+class _ProductBrandPageRestoration extends ExtendedMixableGetxPageRestoration with ProductEntryPageRestorationMixin, SearchPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {

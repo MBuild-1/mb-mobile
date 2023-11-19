@@ -76,7 +76,7 @@ class CouponPage extends RestorableGetxPage<_CouponPageRestoration> {
   }
 }
 
-class _CouponPageRestoration extends MixableGetxPageRestoration with CouponPageRestorationMixin {
+class _CouponPageRestoration extends ExtendedMixableGetxPageRestoration with CouponPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {

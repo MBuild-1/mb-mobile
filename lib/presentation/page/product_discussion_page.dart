@@ -98,7 +98,7 @@ class ProductDiscussionPage extends RestorableGetxPage<_ProductDiscussionPageRes
   }
 }
 
-class _ProductDiscussionPageRestoration extends MixableGetxPageRestoration with ProductDiscussionPageRestorationMixin {
+class _ProductDiscussionPageRestoration extends ExtendedMixableGetxPageRestoration with ProductDiscussionPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {

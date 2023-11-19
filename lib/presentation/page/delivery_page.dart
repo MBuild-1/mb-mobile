@@ -146,7 +146,7 @@ class DeliveryPage extends RestorableGetxPage<_DeliveryPageRestoration> {
   }
 }
 
-class _DeliveryPageRestoration extends MixableGetxPageRestoration with DeliveryPageRestorationMixin, WebViewerPageRestorationMixin, AddressPageRestorationMixin, CouponPageRestorationMixin {
+class _DeliveryPageRestoration extends ExtendedMixableGetxPageRestoration with DeliveryPageRestorationMixin, WebViewerPageRestorationMixin, AddressPageRestorationMixin, CouponPageRestorationMixin {
   final RouteCompletionCallback<bool?>? _onCompleteAddressPage;
   final RouteCompletionCallback<String?>? _onCompleteSelectCoupon;
 

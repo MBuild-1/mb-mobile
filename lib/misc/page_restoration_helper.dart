@@ -34,6 +34,7 @@ import '../presentation/page/msme_partner_page.dart';
 import '../presentation/page/newspage/news_detail_page.dart';
 import '../presentation/page/newspage/news_page.dart';
 import '../presentation/page/notification_page.dart';
+import '../presentation/page/notification_redirector_page.dart';
 import '../presentation/page/order_chat_page.dart';
 import '../presentation/page/order_detail_page.dart';
 import '../presentation/page/order_page.dart';
@@ -54,6 +55,7 @@ import '../presentation/page/take_friend_cart_page.dart';
 import '../presentation/page/videopage/video_page.dart';
 import '../presentation/page/web_viewer_page.dart';
 import 'constant.dart';
+import 'getextended/get_extended.dart';
 import 'login_helper.dart';
 
 class _PageRestorationHelperImpl {
@@ -103,10 +105,10 @@ class _PageRestorationHelperImpl {
     );
   }
 
-  void toMainMenuPage(BuildContext context, String restorableRouteFuturePushParameter) {
+  void toMainMenuPage(BuildContext context, PushModeAndTransitionMode pushModeAndTransitionMode) {
     PageRestorationHelper.findPageRestorationMixin<MainMenuPageRestorationMixin>(
       onGetxPageRestorationFound: (restoration) {
-        restoration.mainMenuPageRestorableRouteFuture.present(restorableRouteFuturePushParameter);
+        restoration.mainMenuPageRestorableRouteFuture.present(pushModeAndTransitionMode.toJsonString());
       },
       context: context
     );
@@ -356,11 +358,11 @@ class _PageRestorationHelperImpl {
     });
   }
 
-  void toFavoriteProductBrandPage(BuildContext context) {
+  void toFavoriteProductBrandPage(BuildContext context, {PushModeAndTransitionMode? pushModeAndTransitionMode}) {
     LoginHelper.checkingLogin(context, () {
       PageRestorationHelper.findPageRestorationMixin<FavoriteProductBrandPageRestorationMixin>(
         onGetxPageRestorationFound: (restoration) {
-          restoration.favoriteProductBrandPageRestorableRouteFuture.present();
+          restoration.favoriteProductBrandPageRestorableRouteFuture.present(pushModeAndTransitionMode?.toJsonString());
         },
         context: context
       );
@@ -609,15 +611,115 @@ class _PageRestorationHelperImpl {
     });
   }
 
-  void toIntroductionPage(BuildContext context, String restorableRouteFuturePushParameter) {
+  void toIntroductionPage(BuildContext context, PushModeAndTransitionMode pushModeAndTransitionMode) {
     PageRestorationHelper.findPageRestorationMixin<IntroductionPageRestorationMixin>(
       onGetxPageRestorationFound: (restoration) {
-        restoration.introductionPageRestorableRouteFuture.present(restorableRouteFuturePushParameter);
+        restoration.introductionPageRestorableRouteFuture.present(pushModeAndTransitionMode.toJsonString());
       },
       context: context
+    );
+  }
+
+  void toNotificationRedirectorPage(BuildContext context, NotificationRedirectorPageParameter notificationRedirectorPageParameter) {
+    PageRestorationHelper.findPageRestorationMixin<NotificationRedirectorPageRestorationMixin>(
+      onGetxPageRestorationFound: (restoration) {
+        restoration.notificationRedirectorPageRestorableRouteFuture.present(
+          notificationRedirectorPageParameter.toJsonString()
+        );
+      },
+      context: context
+    );
+  }
+
+  PushModeAndTransitionMode parsePushModeAndTransitionMode(String jsonArguments) {
+    String pushMode = "";
+    bool hasTransition = true;
+    try {
+      var decodedJson = json.decode(jsonArguments) as Map<String, dynamic>;
+      if (decodedJson.containsKey("push_mode")) {
+        pushMode = decodedJson["push_mode"];
+      }
+      if (decodedJson.containsKey("has_transition")) {
+        hasTransition = decodedJson["has_transition"] == 1;
+      }
+    } catch (e) {
+      // Not action occurred
+    }
+    return PushModeAndTransitionMode(
+      pushMode: pushMode,
+      hasTransition: hasTransition
+    );
+  }
+
+  RoutePresentationCallback onPresentWithPushModeAndTransitionModeParameter({
+    required String Function(NavigatorState, dynamic) onNavigatorRestorablePushAndRemoveUntil,
+    required String Function(NavigatorState, dynamic) onNavigatorRestorablePush,
+  }) {
+    return (NavigatorState navigator, Object? arguments) {
+      if (arguments is String) {
+        String pushMode = arguments;
+        var parsePushModeAndTransitionMode = PageRestorationHelper.parsePushModeAndTransitionMode(arguments);
+        pushMode = parsePushModeAndTransitionMode.pushMode;
+        if (pushMode == Constant.restorableRouteFuturePushAndRemoveUntil) {
+          return onNavigatorRestorablePushAndRemoveUntil(navigator, arguments);
+        } else {
+          return onNavigatorRestorablePush(navigator, arguments);
+        }
+      } else {
+        return onNavigatorRestorablePush(navigator, arguments);
+      }
+    };
+  }
+
+  Route<T>? getRouteWithPushModeAndTransitionModeParameter<T>({
+    required Object? arguments,
+    dynamic Function()? onPassingAdditionalArguments,
+    Route<T>? Function(GetPageBuilderWithPageName, Object?, dynamic, Duration?)? onInterceptToWithGetPageRouteReturnValue,
+    required GetPageBuilderWithPageName Function() onBuildRestorableGetxPageBuilder
+  }) {
+    bool hasTransition = true;
+    if (arguments is String) {
+      var parsePushModeAndTransitionMode = PageRestorationHelper.parsePushModeAndTransitionMode(arguments);
+      hasTransition = parsePushModeAndTransitionMode.hasTransition;
+    }
+    var buildRestorableGetxPageBuilderResult = onBuildRestorableGetxPageBuilder();
+    var additionalArgumentsResult = onPassingAdditionalArguments != null ? onPassingAdditionalArguments() : null;
+    var durationResult = hasTransition ? null : Duration.zero;
+    if (onInterceptToWithGetPageRouteReturnValue != null) {
+      return onInterceptToWithGetPageRouteReturnValue(
+        buildRestorableGetxPageBuilderResult, arguments, additionalArgumentsResult, durationResult
+      );
+    }
+    return GetExtended.toWithGetPageRouteReturnValue<T>(
+      buildRestorableGetxPageBuilderResult,
+      arguments: additionalArgumentsResult,
+      duration: durationResult
     );
   }
 }
 
 // ignore: non_constant_identifier_names
 final PageRestorationHelper = _PageRestorationHelperImpl();
+
+class PushModeAndTransitionMode {
+  String pushMode;
+  bool hasTransition;
+
+  PushModeAndTransitionMode({
+    required this.pushMode,
+    required this.hasTransition
+  });
+}
+
+extension PushModeAndTransitionModeExt on PushModeAndTransitionMode {
+  String toJsonString() {
+    return json.encode(toJsonMap());
+  }
+
+  Map<String, dynamic> toJsonMap() {
+    return <String, dynamic>{
+      "push_mode": pushMode,
+      "has_transition": hasTransition ? 1 : 0
+    };
+  }
+}

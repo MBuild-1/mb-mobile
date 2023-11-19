@@ -59,7 +59,7 @@ class VideoPage extends RestorableGetxPage<_VideoPageRestoration> {
   }
 }
 
-class _VideoPageRestoration extends MixableGetxPageRestoration {
+class _VideoPageRestoration extends ExtendedMixableGetxPageRestoration {
   @override
   // ignore: unnecessary_overrides
   void initState() {

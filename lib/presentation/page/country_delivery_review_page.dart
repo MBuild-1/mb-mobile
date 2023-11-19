@@ -79,7 +79,7 @@ class CountryDeliveryReviewPage extends RestorableGetxPage<_CountryDeliveryRevie
   }
 }
 
-class _CountryDeliveryReviewPageRestoration extends MixableGetxPageRestoration with CountryDeliveryReviewPageRestorationMixin, CountryDeliveryReviewMediaViewPageRestorationMixin, NotificationPageRestorationMixin, CartPageRestorationMixin, InboxPageRestorationMixin, SearchPageRestorationMixin {
+class _CountryDeliveryReviewPageRestoration extends ExtendedMixableGetxPageRestoration with CountryDeliveryReviewPageRestorationMixin, CountryDeliveryReviewMediaViewPageRestorationMixin, NotificationPageRestorationMixin, CartPageRestorationMixin, InboxPageRestorationMixin, SearchPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {

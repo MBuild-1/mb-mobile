@@ -45,7 +45,13 @@ class IntroductionPage extends RestorableGetxPage<_IntroductionPageRestoration> 
           rxValue: _introductionController.controller.introductionPageController,
           onConsumeValue: (context, value) => _IntroductionPageView(
             pageViewControllerState: value,
-            onSkip: () => PageRestorationHelper.toMainMenuPage(context, Constant.restorableRouteFuturePushAndRemoveUntil),
+            onSkip: () => PageRestorationHelper.toMainMenuPage(
+              context,
+              PushModeAndTransitionMode(
+                pushMode: Constant.restorableRouteFuturePushAndRemoveUntil,
+                hasTransition: true
+              )
+            ),
           )
         ),
       )
@@ -75,7 +81,7 @@ mixin IntroductionPageRestorationMixin on MixableGetxPageRestoration {
   }
 }
 
-class _IntroductionPageRestoration extends MixableGetxPageRestoration with MainMenuPageRestorationMixin {
+class _IntroductionPageRestoration extends ExtendedMixableGetxPageRestoration with MainMenuPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
@@ -108,46 +114,17 @@ class IntroductionPageRestorableRouteFuture extends GetRestorableRouteFuture {
 
   IntroductionPageRestorableRouteFuture({required String restorationId}) : super(restorationId: restorationId) {
     _pageRoute = RestorableRouteFuture<void>(
-      onPresent: (NavigatorState navigator, Object? arguments) {
-        if (arguments is String) {
-          String pushMode = arguments;
-          try {
-            var decodedJson = json.decode(arguments) as Map<String, dynamic>;
-            if (decodedJson.containsKey("push_mode")) {
-              pushMode = decodedJson["push_mode"];
-            } else {
-              pushMode = "";
-            }
-          } on FormatException {
-            // Not action occurred
-          }
-          if (pushMode == Constant.restorableRouteFuturePushAndRemoveUntil) {
-            return navigator.restorablePushAndRemoveUntil(_pageRouteBuilder, (route) => false, arguments: arguments);
-          } else {
-            return navigator.restorablePush(_pageRouteBuilder, arguments: arguments);
-          }
-        } else {
-          return navigator.restorablePush(_pageRouteBuilder, arguments: arguments);
-        }
-      },
+      onPresent: PageRestorationHelper.onPresentWithPushModeAndTransitionModeParameter(
+        onNavigatorRestorablePushAndRemoveUntil: (navigator, arguments) => navigator.restorablePushAndRemoveUntil(_pageRouteBuilder, (route) => false, arguments: arguments),
+        onNavigatorRestorablePush: (navigator, arguments) => navigator.restorablePush(_pageRouteBuilder, arguments: arguments),
+      )
     );
   }
 
   static Route<void>? getRoute([Object? arguments]) {
-    bool hasTransition = true;
-    if (arguments is String) {
-      try {
-        var decodedJson = json.decode(arguments) as Map<String, dynamic>;
-        if (decodedJson.containsKey("has_transition")) {
-          hasTransition = decodedJson["has_transition"] == 1;
-        }
-      } on FormatException {
-        // Not action occurred
-      }
-    }
-    return GetExtended.toWithGetPageRouteReturnValue<void>(
-      GetxPageBuilder.buildRestorableGetxPageBuilder(IntroductionPageGetPageBuilderAssistant()),
-      duration: hasTransition ? null : Duration.zero
+    return PageRestorationHelper.getRouteWithPushModeAndTransitionModeParameter(
+      arguments: arguments,
+      onBuildRestorableGetxPageBuilder: () => GetxPageBuilder.buildRestorableGetxPageBuilder(IntroductionPageGetPageBuilderAssistant())
     );
   }
 

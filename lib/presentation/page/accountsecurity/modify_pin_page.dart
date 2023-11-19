@@ -71,7 +71,7 @@ class ModifyPinPage extends RestorableGetxPage<_ModifyPinPageRestoration> {
   }
 }
 
-class _ModifyPinPageRestoration extends MixableGetxPageRestoration {
+class _ModifyPinPageRestoration extends ExtendedMixableGetxPageRestoration {
   @override
   // ignore: unnecessary_overrides
   void initState() {

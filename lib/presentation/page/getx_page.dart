@@ -1,14 +1,20 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:masterbagasi/misc/ext/navigator_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/misc/getextended/get_extended.dart';
 import 'package:masterbagasi/presentation/widget/something_counter.dart';
 import 'package:provider/provider.dart';
 
+import '../../misc/constant.dart';
 import '../../misc/main_route_observer.dart';
 import '../../misc/manager/controller_manager.dart';
+import '../../misc/page_restoration_helper.dart';
+import '../../misc/routeargument/notification_redirector_route_argument.dart';
 import '../notifier/component_notifier.dart';
+import 'notification_redirector_page.dart';
 
 typedef OnCreateRestorationCallback<T extends GetxPageRestoration> = T Function();
 typedef PageRestorationStringId = String Function();
@@ -237,6 +243,24 @@ class _StatefulRestorableGetxPageState extends State<_StatefulRestorableGetxPage
   @override
   void initState() {
     MainRouteObserver.buildContextEventRouteMap[_routeMapKey] = () => context;
+    MainRouteObserver.onRedirectFromNotificationClick[_routeMapKey] = (additionalData) {
+      try {
+        PageRestorationHelper.toNotificationRedirectorPage(
+          context, NotificationRedirectorPageParameter(
+            pushModeAndTransitionMode: PushModeAndTransitionMode(
+              pushMode: Constant.restorableRouteFuturePush,
+              hasTransition: false
+            ),
+            additionalData: additionalData
+          ),
+        );
+      } catch (e, stackTrace) {
+        if (kDebugMode) {
+          print("Error Redirect: $e");
+          print(stackTrace);
+        }
+      }
+    };
     super.initState();
   }
 
@@ -249,6 +273,8 @@ class _StatefulRestorableGetxPageState extends State<_StatefulRestorableGetxPage
   void dispose() {
     MainRouteObserver.buildContextEventRouteMap[_routeMapKey] = null;
     MainRouteObserver.buildContextEventRouteMap.remove(_routeMapKey);
+    MainRouteObserver.onRedirectFromNotificationClick[_routeMapKey] = null;
+    MainRouteObserver.onRedirectFromNotificationClick.remove(_routeMapKey);
     super.dispose();
   }
 }
@@ -385,6 +411,8 @@ abstract class MixableGetxPageRestoration extends GetxPageRestoration {
   @override
   void dispose() {}
 }
+
+abstract class ExtendedMixableGetxPageRestoration extends MixableGetxPageRestoration with NotificationRedirectorPageRestorationMixin {}
 
 class Restorator {
   late final RestorationMixin _restorationMixin;

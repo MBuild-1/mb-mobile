@@ -89,7 +89,7 @@ class EditProfilePage extends RestorableGetxPage<_EditProfilePageRestoration> {
   );
 }
 
-class _EditProfilePageRestoration extends MixableGetxPageRestoration with CropPicturePageRestorationMixin {
+class _EditProfilePageRestoration extends ExtendedMixableGetxPageRestoration with CropPicturePageRestorationMixin {
   final RouteCompletionCallback<String?>? _onCompleteSetProfilePicture;
 
   _EditProfilePageRestoration({

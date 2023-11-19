@@ -16,6 +16,8 @@ class _MainRouteObserver extends RouteObserver {
   Map<String, void Function()?> get controllerMediatorMap => _controllerMediatorMap;
   Map<String, void Function()?> _onRefreshProductDiscussion = {};
   Map<String, void Function()?> get onRefreshProductDiscussion => _onRefreshProductDiscussion;
+  Map<String, void Function(Map<String, dynamic>)?> _onRedirectFromNotificationClick = {};
+  Map<String, void Function(Map<String, dynamic>)?> get onRedirectFromNotificationClick => _onRedirectFromNotificationClick;
   Map<String, bool?> _subMainMenuVisibility = {};
   Map<String, bool?> get subMainMenuVisibility => _subMainMenuVisibility;
 
@@ -48,6 +50,9 @@ class _MainRouteObserver extends RouteObserver {
     _onRefreshProductDiscussion = {
       for (var key in newRouteMap.keys) key: null
     };
+    _onRedirectFromNotificationClick = {
+      for (var key in newRouteMap.keys) key: null
+    };
     _subMainMenuVisibility = {
       for (var key in newRouteMap.keys) key: null
     };
@@ -69,7 +74,7 @@ class _MainRouteObserver extends RouteObserver {
   @override
   void didPop(Route route, Route? previousRoute) {
     super.didPop(route, previousRoute);
-    String? previousKeyMap = previousRoute?.settings.name;
+    String? previousKeyMap = previousRoute?.settings.name ?? "";
     if (routeMap.containsKey(previousKeyMap)) {
       RouteWrapper routeWrapper = routeMap[previousKeyMap]!;
       if (routeWrapper.requestLoginChangeValue == 1) {
@@ -79,7 +84,7 @@ class _MainRouteObserver extends RouteObserver {
         }
       }
     }
-    String? keyMap = route.settings.name;
+    String? keyMap = route.settings.name ?? "";
     _routeMap[keyMap]?.onLoginChange = null;
     _routeMap.remove(keyMap);
     _updateModifyRouteKeyMapValue(route);
@@ -104,7 +109,7 @@ class _MainRouteObserver extends RouteObserver {
   @override
   void didRemove(Route route, Route? previousRoute) {
     super.didRemove(route, previousRoute);
-    _routeMap.remove(route.settings.name);
+    _routeMap.remove(route.settings.name ?? "");
     _updateModifyRouteKeyMapValue(route);
     //print("Remove Route: $route");
     _showRouteMap();
@@ -114,7 +119,7 @@ class _MainRouteObserver extends RouteObserver {
   void didReplace({Route? newRoute, Route? oldRoute}) {
     super.didReplace(newRoute: newRoute, oldRoute: oldRoute);
     if (oldRoute != null) {
-      _routeMap.remove(oldRoute.settings.name);
+      _routeMap.remove(oldRoute.settings.name ?? "");
       _updateModifyRouteKeyMapValue(oldRoute);
     }
     if (newRoute != null) {

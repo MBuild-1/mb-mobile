@@ -9,12 +9,8 @@ import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 import '../../controller/order_chat_controller.dart';
 import '../../domain/entity/chat/order/answer_order_conversation_parameter.dart';
 import '../../domain/entity/chat/order/combined_order_from_message.dart';
-import '../../domain/entity/chat/order/create_order_conversation_parameter.dart';
-import '../../domain/entity/chat/order/create_order_conversation_response.dart';
 import '../../domain/entity/chat/order/get_order_message_by_combined_order_parameter.dart';
 import '../../domain/entity/chat/order/get_order_message_by_combined_order_response.dart';
-import '../../domain/entity/chat/order/get_order_message_by_user_parameter.dart';
-import '../../domain/entity/chat/order/get_order_message_by_user_response.dart';
 import '../../domain/entity/chat/order/order_message.dart';
 import '../../domain/entity/chat/user_chat.dart';
 import '../../domain/entity/chat/user_message_response_wrapper.dart';
@@ -42,6 +38,7 @@ import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_it
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
 import '../../misc/pusher_helper.dart';
+import '../../misc/routeargument/order_chat_route_argument.dart';
 import '../widget/modified_loading_indicator.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modified_svg_picture.dart';
@@ -85,7 +82,7 @@ class OrderChatPage extends RestorableGetxPage<_OrderChatPageRestoration> {
   }
 }
 
-class _OrderChatPageRestoration extends MixableGetxPageRestoration with OrderChatPageRestorationMixin {
+class _OrderChatPageRestoration extends ExtendedMixableGetxPageRestoration with OrderChatPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
@@ -157,7 +154,8 @@ class OrderChatPageRestorableRouteFuture extends GetRestorableRouteFuture {
       throw MessageError(message: "Arguments must be a String");
     }
     return GetExtended.toWithGetPageRouteReturnValue<void>(
-      GetxPageBuilder.buildRestorableGetxPageBuilder(OrderChatPageGetPageBuilderAssistant(combinedOrderId: arguments))
+      GetxPageBuilder.buildRestorableGetxPageBuilder(OrderChatPageGetPageBuilderAssistant(combinedOrderId: arguments)),
+      arguments: OrderChatRouteArgument()
     );
   }
 

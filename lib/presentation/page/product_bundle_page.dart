@@ -74,7 +74,7 @@ class ProductBundlePage extends RestorableGetxPage<_ProductBundlePageRestoration
   }
 }
 
-class _ProductBundlePageRestoration extends MixableGetxPageRestoration with ProductBundleDetailPageRestorationMixin, SearchPageRestorationMixin {
+class _ProductBundlePageRestoration extends ExtendedMixableGetxPageRestoration with ProductBundleDetailPageRestorationMixin, SearchPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {

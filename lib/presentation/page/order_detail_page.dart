@@ -81,7 +81,7 @@ class OrderDetailPage extends RestorableGetxPage<_OrderDetailPageRestoration> {
   }
 }
 
-class _OrderDetailPageRestoration extends MixableGetxPageRestoration with WebViewerPageRestorationMixin, OrderChatPageRestorationMixin, PdfViewerPageRestorationMixin {
+class _OrderDetailPageRestoration extends ExtendedMixableGetxPageRestoration with WebViewerPageRestorationMixin, OrderChatPageRestorationMixin, PdfViewerPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {

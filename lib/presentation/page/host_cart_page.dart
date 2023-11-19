@@ -106,7 +106,7 @@ class HostCartPage extends RestorableGetxPage<_HostCartPageRestoration> {
   }
 }
 
-class _HostCartPageRestoration extends MixableGetxPageRestoration with HostCartPageRestorationMixin {
+class _HostCartPageRestoration extends ExtendedMixableGetxPageRestoration with HostCartPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {

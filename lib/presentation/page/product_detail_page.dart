@@ -62,6 +62,7 @@ import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/login_helper.dart';
+import '../../misc/main_route_observer.dart';
 import '../../misc/manager/controller_manager.dart';
 import '../../misc/navigation_helper.dart';
 import '../../misc/on_observe_load_product_delegate.dart';
@@ -147,7 +148,7 @@ class ProductDetailPage extends RestorableGetxPage<_ProductDetailPageRestoration
   }
 }
 
-class _ProductDetailPageRestoration extends MixableGetxPageRestoration with ProductDetailPageRestorationMixin, ProductEntryPageRestorationMixin, SearchPageRestorationMixin, ProductChatPageRestorationMixin, LoginPageRestorationMixin, ProductBrandPageRestorationMixin, ProductDiscussionPageRestorationMixin {
+class _ProductDetailPageRestoration extends ExtendedMixableGetxPageRestoration with ProductDetailPageRestorationMixin, ProductEntryPageRestorationMixin, SearchPageRestorationMixin, ProductChatPageRestorationMixin, LoginPageRestorationMixin, ProductBrandPageRestorationMixin, ProductDiscussionPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {

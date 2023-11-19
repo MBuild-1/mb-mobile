@@ -57,7 +57,7 @@ class NewsDetailPage extends RestorableGetxPage<_NewsDetailPageRestoration> {
   }
 }
 
-class _NewsDetailPageRestoration extends MixableGetxPageRestoration {
+class _NewsDetailPageRestoration extends ExtendedMixableGetxPageRestoration {
   @override
   // ignore: unnecessary_overrides
   void initState() {

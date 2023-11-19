@@ -78,7 +78,7 @@ class AddressPage extends RestorableGetxPage<_AddressPageRestoration> {
   }
 }
 
-class _AddressPageRestoration extends MixableGetxPageRestoration with ModifyAddressPageRestorationMixin {
+class _AddressPageRestoration extends ExtendedMixableGetxPageRestoration with ModifyAddressPageRestorationMixin {
   final RouteCompletionCallback<bool?>? _onCompleteModifyAddress;
 
   _AddressPageRestoration({

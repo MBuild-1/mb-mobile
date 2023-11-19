@@ -21,6 +21,7 @@ import '../../../widget/modifiedappbar/modified_app_bar.dart';
 import '../../../widget/profile_menu_item.dart';
 import '../../../widget/tap_area.dart';
 import '../../getx_page.dart';
+import '../../notification_redirector_page.dart';
 
 class PersonalVerificationPage extends RestorableGetxPage<_PersonalVerificationPageRestoration> {
   late final ControllerMember<PersonalVerificationController> _personalVerificationController = ControllerMember<PersonalVerificationController>().addToControllerManager(controllerManager);
@@ -49,7 +50,7 @@ class PersonalVerificationPage extends RestorableGetxPage<_PersonalVerificationP
   _PersonalVerificationPageRestoration createPageRestoration() => _PersonalVerificationPageRestoration();
 }
 
-class _PersonalVerificationPageRestoration extends MixableGetxPageRestoration {
+class _PersonalVerificationPageRestoration extends ExtendedMixableGetxPageRestoration {
   @override
   // ignore: unnecessary_overrides
   void initState() {
@@ -77,7 +78,7 @@ class PersonalVerificationPageGetPageBuilderAssistant extends GetPageBuilderAssi
   GetPageBuilder get pageWithOuterGetxBuilder => (() => GetxPageBuilder.buildRestorableGetxPage(PersonalVerificationPage()));
 }
 
-mixin PersonalVerificationPageRestorationMixin on MixableGetxPageRestoration {
+mixin PersonalVerificationPageRestorationMixin on ExtendedMixableGetxPageRestoration {
   late PersonalVerificationPageRestorableRouteFuture personalVerificationPageRestorableRouteFuture;
 
   @override

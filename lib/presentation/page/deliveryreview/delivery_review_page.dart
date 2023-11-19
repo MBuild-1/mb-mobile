@@ -75,7 +75,7 @@ class DeliveryReviewPage extends RestorableGetxPage<_DeliveryReviewPageRestorati
   }
 }
 
-class _DeliveryReviewPageRestoration extends MixableGetxPageRestoration with CountryDeliveryReviewPageRestorationMixin, OrderDetailPageRestorationMixin {
+class _DeliveryReviewPageRestoration extends ExtendedMixableGetxPageRestoration with CountryDeliveryReviewPageRestorationMixin, OrderDetailPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {

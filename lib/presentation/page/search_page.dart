@@ -109,7 +109,7 @@ class SearchPage extends RestorableGetxPage<_SearchPageRestoration> {
   }
 }
 
-class _SearchPageRestoration extends MixableGetxPageRestoration with ProductDetailPageRestorationMixin, LoginPageRestorationMixin {
+class _SearchPageRestoration extends ExtendedMixableGetxPageRestoration with ProductDetailPageRestorationMixin, LoginPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {

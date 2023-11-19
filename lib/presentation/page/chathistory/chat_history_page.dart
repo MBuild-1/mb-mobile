@@ -84,7 +84,7 @@ class ChatHistoryPage extends RestorableGetxPage<_ChatHistoryPageRestoration> {
   }
 }
 
-class _ChatHistoryPageRestoration extends MixableGetxPageRestoration with HelpChatPageRestorationMixin, ProductChatPageRestorationMixin, OrderChatPageRestorationMixin {
+class _ChatHistoryPageRestoration extends ExtendedMixableGetxPageRestoration with HelpChatPageRestorationMixin, ProductChatPageRestorationMixin, OrderChatPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {

@@ -46,7 +46,7 @@ class HelpPage extends RestorableGetxPage<_HelpPageRestoration> {
   }
 }
 
-class _HelpPageRestoration extends MixableGetxPageRestoration with HelpChatPageRestorationMixin {
+class _HelpPageRestoration extends ExtendedMixableGetxPageRestoration with HelpChatPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {

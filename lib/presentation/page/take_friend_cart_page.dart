@@ -100,7 +100,7 @@ class TakeFriendCartPage extends RestorableGetxPage<_TakeFriendCartPageRestorati
   }
 }
 
-class _TakeFriendCartPageRestoration extends MixableGetxPageRestoration with TakeFriendCartPageRestorationMixin {
+class _TakeFriendCartPageRestoration extends ExtendedMixableGetxPageRestoration with TakeFriendCartPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {

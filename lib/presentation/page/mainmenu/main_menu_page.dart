@@ -191,7 +191,7 @@ class MainMenuPage extends RestorableGetxPage<_MainMenuPageRestoration> {
   }
 }
 
-class _MainMenuPageRestoration extends MixableGetxPageRestoration with MainMenuPageRestorationMixin, LoginPageRestorationMixin, ProductEntryPageRestorationMixin, ProductDetailPageRestorationMixin, ProductCategoryDetailPageRestorationMixin, ProductBundlePageRestorationMixin, ProductBundleDetailPageRestorationMixin, CartPageRestorationMixin, ProductBrandPageRestorationMixin, WebViewerPageRestorationMixin, OrderPageRestorationMixin, DeliveryReviewPageRestorationMixin, FavoriteProductBrandPageRestorationMixin, ProductDiscussionPageRestorationMixin, MainMenuPageRestorationMixin, AddressPageRestorationMixin, InboxPageRestorationMixin, AffiliatePageRestorationMixin, MsmePartnerPageRestorationMixin, CountryDeliveryReviewPageRestorationMixin, HelpPageRestorationMixin, HelpChatPageRestorationMixin, SearchPageRestorationMixin, NotificationPageRestorationMixin, VideoPageRestorationMixin, NewsPageRestorationMixin, NewsDetailPageRestorationMixin, AccountSecurityPageRestorationMixin, SharedCartPageRestorationMixin, EditProfilePageRestorationMixin, ProductCategoryPageRestorationMixin {
+class _MainMenuPageRestoration extends ExtendedMixableGetxPageRestoration with MainMenuPageRestorationMixin, LoginPageRestorationMixin, ProductEntryPageRestorationMixin, ProductDetailPageRestorationMixin, ProductCategoryDetailPageRestorationMixin, ProductBundlePageRestorationMixin, ProductBundleDetailPageRestorationMixin, CartPageRestorationMixin, ProductBrandPageRestorationMixin, WebViewerPageRestorationMixin, OrderPageRestorationMixin, DeliveryReviewPageRestorationMixin, FavoriteProductBrandPageRestorationMixin, ProductDiscussionPageRestorationMixin, MainMenuPageRestorationMixin, AddressPageRestorationMixin, InboxPageRestorationMixin, AffiliatePageRestorationMixin, MsmePartnerPageRestorationMixin, CountryDeliveryReviewPageRestorationMixin, HelpPageRestorationMixin, HelpChatPageRestorationMixin, SearchPageRestorationMixin, NotificationPageRestorationMixin, VideoPageRestorationMixin, NewsPageRestorationMixin, NewsDetailPageRestorationMixin, AccountSecurityPageRestorationMixin, SharedCartPageRestorationMixin, EditProfilePageRestorationMixin, ProductCategoryPageRestorationMixin {
   final RouteCompletionCallback<bool?>? _onCompleteAddressPage;
   final RouteCompletionCallback<bool?>? _onCompleteEditProfilePage;
 
@@ -257,47 +257,18 @@ class MainMenuPageRestorableRouteFuture extends GetRestorableRouteFuture {
 
   MainMenuPageRestorableRouteFuture({required String restorationId}) : super(restorationId: restorationId) {
     _pageRoute = RestorableRouteFuture<void>(
-      onPresent: (NavigatorState navigator, Object? arguments) {
-        if (arguments is String) {
-          String pushMode = arguments;
-          try {
-            var decodedJson = json.decode(arguments) as Map<String, dynamic>;
-            if (decodedJson.containsKey("push_mode")) {
-              pushMode = decodedJson["push_mode"];
-            } else {
-              pushMode = "";
-            }
-          } on FormatException {
-            // Not action occurred
-          }
-          if (pushMode == Constant.restorableRouteFuturePushAndRemoveUntil) {
-            return navigator.restorablePushAndRemoveUntil(_pageRouteBuilder, (route) => false, arguments: arguments);
-          } else {
-            return navigator.restorablePush(_pageRouteBuilder, arguments: arguments);
-          }
-        } else {
-          return navigator.restorablePush(_pageRouteBuilder, arguments: arguments);
-        }
-      },
+      onPresent: PageRestorationHelper.onPresentWithPushModeAndTransitionModeParameter(
+        onNavigatorRestorablePushAndRemoveUntil: (navigator, arguments) => navigator.restorablePushAndRemoveUntil(_pageRouteBuilder, (route) => false, arguments: arguments),
+        onNavigatorRestorablePush: (navigator, arguments) => navigator.restorablePush(_pageRouteBuilder, arguments: arguments),
+      )
     );
   }
 
   static Route<void>? getRoute([Object? arguments]) {
-    bool hasTransition = true;
-    if (arguments is String) {
-      try {
-        var decodedJson = json.decode(arguments) as Map<String, dynamic>;
-        if (decodedJson.containsKey("has_transition")) {
-          hasTransition = decodedJson["has_transition"] == 1;
-        }
-      } on FormatException {
-        // Not action occurred
-      }
-    }
-    return GetExtended.toWithGetPageRouteReturnValue<void>(
-      GetxPageBuilder.buildRestorableGetxPageBuilder(MainMenuPageGetPageBuilderAssistant()),
-      arguments: MainMenuRouteArgument(),
-      duration: hasTransition ? null : Duration.zero
+    return PageRestorationHelper.getRouteWithPushModeAndTransitionModeParameter(
+      arguments: arguments,
+      onPassingAdditionalArguments: () => MainMenuRouteArgument(),
+      onBuildRestorableGetxPageBuilder: () => GetxPageBuilder.buildRestorableGetxPageBuilder(MainMenuPageGetPageBuilderAssistant())
     );
   }
 

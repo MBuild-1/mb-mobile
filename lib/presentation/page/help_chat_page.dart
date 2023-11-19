@@ -44,6 +44,7 @@ import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_it
 import '../../misc/paging/pagingresult/paging_result.dart';
 import '../../misc/pusher_helper.dart';
 import '../../misc/response_wrapper.dart';
+import '../../misc/routeargument/help_chat_route_argument.dart';
 import '../widget/modified_loading_indicator.dart';
 import '../widget/modified_shimmer.dart';
 import '../widget/modified_svg_picture.dart';
@@ -83,7 +84,7 @@ class HelpChatPage extends RestorableGetxPage<_HelpChatPageRestoration> {
   }
 }
 
-class _HelpChatPageRestoration extends MixableGetxPageRestoration with HelpChatPageRestorationMixin {
+class _HelpChatPageRestoration extends ExtendedMixableGetxPageRestoration with HelpChatPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
@@ -146,7 +147,8 @@ class HelpChatPageRestorableRouteFuture extends GetRestorableRouteFuture {
 
   static Route<void>? _getRoute([Object? arguments]) {
     return GetExtended.toWithGetPageRouteReturnValue<void>(
-      GetxPageBuilder.buildRestorableGetxPageBuilder(HelpChatPageGetPageBuilderAssistant())
+      GetxPageBuilder.buildRestorableGetxPageBuilder(HelpChatPageGetPageBuilderAssistant()),
+      arguments: HelpChatRouteArgument()
     );
   }
 

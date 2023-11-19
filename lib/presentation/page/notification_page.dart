@@ -77,7 +77,7 @@ class NotificationPage extends RestorableGetxPage<_NotificationPageRestoration> 
   }
 }
 
-class _NotificationPageRestoration extends MixableGetxPageRestoration with OrderPageRestorationMixin, OrderDetailPageRestorationMixin {
+class _NotificationPageRestoration extends ExtendedMixableGetxPageRestoration with OrderPageRestorationMixin, OrderDetailPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {

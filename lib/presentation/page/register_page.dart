@@ -107,7 +107,7 @@ class RegisterPage extends RestorableGetxPage<_RegisterPageRestoration> {
   }
 }
 
-class _RegisterPageRestoration extends MixableGetxPageRestoration with WebViewerPageRestorationMixin {
+class _RegisterPageRestoration extends ExtendedMixableGetxPageRestoration with WebViewerPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {

@@ -8,10 +8,15 @@ import '../../domain/entity/user/user.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/login_helper.dart';
 import '../../misc/main_route_observer.dart';
+import '../../misc/notification_redirector_helper.dart';
 import '../../misc/page_restoration_helper.dart';
 import '../../misc/pusher_helper.dart';
+import '../../misc/routeargument/help_chat_route_argument.dart';
+import '../../misc/routeargument/order_chat_route_argument.dart';
+import '../../misc/routeargument/product_chat_route_argument.dart';
 import '../notifier/login_notifier.dart';
 import '../notifier/notification_notifier.dart';
+import '../page/help_chat_page.dart';
 
 class SomethingCounter extends StatefulWidget {
   // ignore: library_private_types_in_public_api
@@ -62,17 +67,57 @@ class _SomethingCounterState extends State<SomethingCounter> with RestorationMix
   }
 
   void _onClickListener(OSNotificationClickEvent osNotificationClickEvent) {
-    print("Notification clik: ${osNotificationClickEvent.notification.jsonRepresentation()}");
+    Map<String, dynamic>? additionalData = osNotificationClickEvent.notification.additionalData;
+    var notificationRedirectorMap = NotificationRedirectorHelper.notificationRedirectorMap;
+    if (additionalData != null) {
+      if (additionalData.containsKey("type")) {
+        String type = additionalData["type"];
+        if (notificationRedirectorMap.containsKey(type)) {
+          if (MainRouteObserver.routeMap.isNotEmpty) {
+            String currentRoute = MainRouteObserver.getCurrentRoute();
+            if (MainRouteObserver.onRedirectFromNotificationClick[currentRoute] != null) {
+              MainRouteObserver.onRedirectFromNotificationClick[currentRoute]!(additionalData);
+            }
+          }
+        }
+      }
+    }
   }
 
   void _onForegroundWillDisplayListener(OSNotificationWillDisplayEvent osNotificationWillDisplayEvent) {
-    /// Display Notification, preventDefault to not display
     osNotificationWillDisplayEvent.preventDefault();
-
-    /// notification.display() to display after preventing default
+    Map<String, dynamic>? additionalData = osNotificationWillDisplayEvent.notification.additionalData;
+    if (additionalData != null) {
+      if (additionalData.containsKey("type")) {
+        bool checkingForChat(bool Function(dynamic) onCheckingChatArgument) {
+          if (MainRouteObserver.routeMap.isNotEmpty) {
+            String currentRoute = MainRouteObserver.getCurrentRoute();
+            if (MainRouteObserver.routeMap.containsKey(currentRoute)) {
+              var argument = MainRouteObserver.routeMap[currentRoute]?.route?.settings.arguments;
+              if (onCheckingChatArgument(argument)) {
+                return true;
+              }
+            }
+          }
+          return false;
+        }
+        String type = additionalData["type"];
+        if (type == "chat-help") {
+          if (checkingForChat((argument) => argument is HelpChatRouteArgument)) {
+            return;
+          }
+        } else if (type == "chat-order") {
+          if (checkingForChat((argument) => argument is OrderChatRouteArgument)) {
+            return;
+          }
+        } else if (type == "chat-product") {
+          if (checkingForChat((argument) => argument is ProductChatRouteArgument)) {
+            return;
+          }
+        }
+      }
+    }
     osNotificationWillDisplayEvent.notification.display();
-
-    print("Notification clik foreground: ${osNotificationWillDisplayEvent.notification.jsonRepresentation()}");
   }
 
   Future<void> subscribeChatCount(String userId) async {

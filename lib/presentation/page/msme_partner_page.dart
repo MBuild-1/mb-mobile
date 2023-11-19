@@ -44,7 +44,7 @@ class MsmePartnerPage extends RestorableGetxPage<_MsmePartnerPageRestoration> {
   }
 }
 
-class _MsmePartnerPageRestoration extends MixableGetxPageRestoration {
+class _MsmePartnerPageRestoration extends ExtendedMixableGetxPageRestoration {
   @override
   // ignore: unnecessary_overrides
   void initState() {

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
+import 'package:masterbagasi/misc/ext/navigator_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_ext.dart';
 
@@ -76,7 +77,7 @@ class FavoriteProductBrandPage extends RestorableGetxPage<_FavoriteProductBrandP
   }
 }
 
-class _FavoriteProductBrandPageRestoration extends MixableGetxPageRestoration with ProductEntryPageRestorationMixin, SearchPageRestorationMixin {
+class _FavoriteProductBrandPageRestoration extends ExtendedMixableGetxPageRestoration with ProductEntryPageRestorationMixin, SearchPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
@@ -133,17 +134,19 @@ class FavoriteProductBrandPageRestorableRouteFuture extends GetRestorableRouteFu
 
   FavoriteProductBrandPageRestorableRouteFuture({required String restorationId}) : super(restorationId: restorationId) {
     _pageRoute = RestorableRouteFuture<void>(
-      onPresent: (NavigatorState navigator, Object? arguments) {
-        return navigator.restorablePush(_pageRouteBuilder, arguments: arguments);
-      },
+      onPresent: PageRestorationHelper.onPresentWithPushModeAndTransitionModeParameter(
+        onNavigatorRestorablePushAndRemoveUntil: (navigator, arguments) => navigator.restorablePushAndRemoveUntil(
+          _pageRouteBuilder, navigator.popUntilOneStepBelowNotificationRedirectorPredicate(), arguments: arguments
+        ),
+        onNavigatorRestorablePush: (navigator, arguments) => navigator.restorablePush(_pageRouteBuilder, arguments: arguments),
+      )
     );
   }
 
   static Route<void>? _getRoute([Object? arguments]) {
-    return GetExtended.toWithGetPageRouteReturnValue<void>(
-      GetxPageBuilder.buildRestorableGetxPageBuilder(
-        FavoriteProductBrandPageGetPageBuilderAssistant()
-      ),
+    return PageRestorationHelper.getRouteWithPushModeAndTransitionModeParameter(
+      arguments: arguments,
+      onBuildRestorableGetxPageBuilder: () => GetxPageBuilder.buildRestorableGetxPageBuilder(FavoriteProductBrandPageGetPageBuilderAssistant())
     );
   }
 

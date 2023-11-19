@@ -143,7 +143,7 @@ class SharedCartPage extends RestorableGetxPage<_SharedCartPageRestoration> {
   }
 }
 
-class _SharedCartPageRestoration extends MixableGetxPageRestoration {
+class _SharedCartPageRestoration extends ExtendedMixableGetxPageRestoration {
   @override
   // ignore: unnecessary_overrides
   void initState() {
