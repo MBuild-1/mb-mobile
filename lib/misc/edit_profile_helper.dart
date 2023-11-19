@@ -5,8 +5,10 @@ class _EditProfileHelperImpl {
     return (text, textStyle) {
       Color? backgroundColor = isLoading ? Colors.grey : null;
       return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Expanded(
+          SizedBox(
+            width: 150,
             child: Row(
               children: [
                 Flexible(
@@ -21,9 +23,12 @@ class _EditProfileHelperImpl {
             ),
           ),
           const SizedBox(width: 10),
-          Text(
-            value,
-            style: textStyle?.copyWith(fontWeight: FontWeight.normal, backgroundColor: backgroundColor),
+          Flexible(
+            child: Text(
+              value,
+              style: textStyle?.copyWith(fontWeight: FontWeight.normal, backgroundColor: backgroundColor),
+              textAlign: TextAlign.end,
+            ),
           ),
         ]
       );
