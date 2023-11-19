@@ -7,6 +7,7 @@ import '../../domain/entity/product/productbrand/product_brand.dart';
 import '../../misc/aspect_ratio_value.dart';
 import '../../misc/constant.dart';
 import '../../misc/dialog_helper.dart';
+import '../../misc/multi_language_string.dart';
 import 'button/custombutton/sized_outline_gradient_button.dart';
 import 'modifiedcachednetworkimage/brand_modified_cached_network_image.dart';
 import 'modifiedcachednetworkimage/modified_cached_network_image.dart';
@@ -34,6 +35,14 @@ class ProductDetailBrandListItem extends StatelessWidget {
     double measuredHeight = measuredWidth * aspectRatioValue.height / aspectRatioValue.width;
     double profilePictureDimension = 20.w;
     double containerHeight = measuredHeight + (profilePictureDimension / 2) + 15;
+    MultiLanguageString favoriteItMultiLanguageString = MultiLanguageString({
+      Constant.textEnUsLanguageKey: "Favorite It",
+      Constant.textInIdLanguageKey: "Favoritkan"
+    });
+    MultiLanguageString removeFromFavoriteMultiLanguageString = MultiLanguageString({
+      Constant.textEnUsLanguageKey: "Remove From Favorite",
+      Constant.textInIdLanguageKey: "Hapus Dari Favorit"
+    });
     return SizedBox(
       width: double.infinity,
       height: containerHeight,
@@ -69,7 +78,8 @@ class ProductDetailBrandListItem extends StatelessWidget {
                           child: Text(
                             productBrand.name,
                             style: const TextStyle(
-                              fontWeight: FontWeight.bold
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13
                             ),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
@@ -80,7 +90,7 @@ class ProductDetailBrandListItem extends StatelessWidget {
                     const SizedBox(width: 10),
                     Builder(
                       builder: (context) {
-                        String text = !productBrand.isAddedToFavorite ? "Favoritkan" : "Hapus Dari Favorit";
+                        String text = !productBrand.isAddedToFavorite ? favoriteItMultiLanguageString.toStringNonNull : removeFromFavoriteMultiLanguageString.toStringNonNull;
                         return Row(
                           mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.end,
@@ -98,7 +108,7 @@ class ProductDetailBrandListItem extends StatelessWidget {
                                   }
                                 }
                               },
-                              text: !productBrand.isAddedToFavorite ? "Favoritkan" : "Hapus Dari Favorit",
+                              text: !productBrand.isAddedToFavorite ? favoriteItMultiLanguageString.toStringNonNull : removeFromFavoriteMultiLanguageString.toStringNonNull,
                               childInterceptor: (textStyle) => Center(
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(horizontal: 4.0),
