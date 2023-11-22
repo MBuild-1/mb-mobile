@@ -99,7 +99,7 @@ class SharedCartMemberItem extends StatelessWidget {
                           text: "$totalWeightLabel: ",
                         ),
                         TextSpan(
-                          text: "$shoppingItemWeightTotal Kg",
+                          text: "${shoppingItemWeightTotal.toLocalizedStringAsFixed(3)} Kg",
                           style: const TextStyle(fontWeight: FontWeight.bold)
                         )
                       ]

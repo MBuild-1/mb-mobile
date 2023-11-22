@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
+import 'package:masterbagasi/misc/ext/number_ext.dart';
 
 import '../../domain/entity/additionalitem/additional_item.dart';
 import '../../domain/entity/additionalitem/additional_item_list_parameter.dart';
@@ -557,23 +558,25 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
                           )
                         ),
                       ),
-                      Expanded(
-                        child: Text.rich(
-                          TextSpan(
-                            children: [
-                              const TextSpan(
-                                text: "Total Berat: "
-                              ),
-                              TextSpan(
-                                text: "${bucketLoadDataResult.resultIfSuccess!.totalWeight.toString()} Kg",
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold
-                                )
-                              ),
-                            ]
-                          )
+                      if (bucketLoadDataResult.resultIfSuccess!.totalWeight != null) ...[
+                        Expanded(
+                          child: Text.rich(
+                            TextSpan(
+                              children: [
+                                const TextSpan(
+                                  text: "Total Berat: "
+                                ),
+                                TextSpan(
+                                  text: "${bucketLoadDataResult.resultIfSuccess!.totalWeight!.toLocalizedStringAsFixed(3)} Kg",
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold
+                                  )
+                                ),
+                              ]
+                            )
+                          ),
                         ),
-                      ),
+                      ]
                     ]
                   ),
                 )

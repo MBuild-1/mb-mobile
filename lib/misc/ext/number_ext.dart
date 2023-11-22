@@ -6,6 +6,13 @@ extension NumExt on num? {
     return NumberFormat.decimalPattern("id").format(this ?? 0);
   }
 
+  String toLocalizedStringAsFixed(int fractionDigits) {
+    NumberFormat numberFormat = NumberFormat.decimalPattern("id");
+    numberFormat.minimumFractionDigits = fractionDigits;
+    numberFormat.maximumFractionDigits = fractionDigits;
+    return numberFormat.format(this ?? 0);
+  }
+
   IsZeroResult get isZeroResult {
     if (this is int) {
       num effectiveNum = this ?? 0;

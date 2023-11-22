@@ -95,33 +95,42 @@ abstract class CartItem extends StatelessWidget {
                       ],
                     const SizedBox(height: 10),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Expanded(
+                        Flexible(
                           child: Text(
                             productEntry.sellingPrice.toRupiah(),
                             style: const TextStyle(
-                              fontSize: 20,
+                              fontSize: 19,
                               fontWeight: FontWeight.bold
                             )
                           ),
                         ),
-                        Text(
-                          "${productEntry.weight} Kg",
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold
-                          )
-                        ),
-                        if (!showDefaultCart)
-                          ...[
-                            Text(
-                              " | ${"Quantity".tr} ${cart.quantity}",
-                              style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold
-                              )
+                        Flexible(
+                          child: Text.rich(
+                            TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: "${productEntry.weight.toLocalizedStringAsFixed(3)} Kg",
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.bold
+                                  )
+                                ),
+                                if (!showDefaultCart) ...[
+                                  TextSpan(
+                                    text: " | ${"Quantity".tr} ${cart.quantity}",
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold
+                                    )
+                                  ),
+                                ]
+                              ]
                             ),
-                          ]
+                            textAlign: TextAlign.end,
+                          ),
+                        )
                       ]
                     )
                   ]);
