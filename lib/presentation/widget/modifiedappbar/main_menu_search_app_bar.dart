@@ -27,7 +27,8 @@ class MainMenuSearchAppBar extends SearchAppBar {
     automaticallyImplyLeading: automaticallyImplyLeading,
     bottom: bottom,
     value: value,
-    onSearchTextFieldTapped: onSearchTextFieldTapped
+    onSearchTextFieldTapped: onSearchTextFieldTapped,
+    isSearchText: true
   );
 
   @override
@@ -36,70 +37,139 @@ class MainMenuSearchAppBar extends SearchAppBar {
       final ModalRoute<dynamic>? parentRoute = ModalRoute.of(context);
       final bool canPop = parentRoute?.canPop ?? false;
       return Container(
-        padding: const EdgeInsets.symmetric(
-          vertical: 8.0,
-          horizontal: 12.0
-        ),
+        padding: const EdgeInsets.all(0.0),
         child: Consumer<NotificationNotifier>(
           builder: (_, notificationNotifier, __) => Row(
             children: [
-              if (canPop) ...[
-                TapArea(
-                  onTap: () => Navigator.maybePop(context),
-                  child: IconTheme(
-                    data: IconThemeData(
-                      color: Colors.grey.shade600
+              Expanded(
+                child: InkWell(
+                  borderRadius: Constant.inputBorderRadius.copyWith(
+                    topRight: Radius.zero,
+                    bottomRight: Radius.zero
+                  ),
+                  onTap: () => PageRestorationHelper.toSearchPage(context),
+                  child: Center(
+                    child: Row(
+                      children: [
+                        if (canPop) ...[
+                          TapArea(
+                            onTap: () => Navigator.maybePop(context),
+                            child: Stack(
+                              children: [
+                                Container(),
+                                Center(
+                                  child: Row(
+                                    children: [
+                                      const SizedBox(width: 12.0),
+                                      IconTheme(
+                                        data: IconThemeData(
+                                          color: Colors.grey.shade600
+                                        ),
+                                        child: const BackButtonIcon(),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      ModifiedVerticalDivider(
+                                        lineWidth: 1,
+                                        lineHeight: 25,
+                                        lineColor: Constant.colorGrey9,
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        ],
+                        const SizedBox(width: 8),
+                        Icon(Icons.search, color: Constant.colorGrey8),
+                        const SizedBox(width: 5),
+                        Expanded(
+                          child: Text(
+                            "Search in Master Bagasi".tr,
+                            style: TextStyle(
+                              color: Constant.colorGrey8,
+                              fontSize: 13
+                            )
+                          )
+                        ),
+                      ],
                     ),
-                    child: const BackButtonIcon(),
                   ),
                 ),
-                const SizedBox(width: 8),
-                ModifiedVerticalDivider(
-                  lineWidth: 1,
-                  lineHeight: 25,
-                  lineColor: Constant.colorGrey9,
-                ),
-                const SizedBox(width: 8),
-              ],
-              Icon(Icons.search, color: Constant.colorGrey8),
-              const SizedBox(width: 5),
-              Text("Search in Master Bagasi".tr, style: TextStyle(color: Constant.colorGrey8, fontSize: 13)),
-              const Spacer(),
-              NotificationIconIndicator(
-                notificationNumber: notificationNotifier.notificationLoadDataResult.resultIfSuccess ?? 0,
-                onTap: () => PageRestorationHelper.toNotificationPage(context),
-                icon: SvgPicture.asset(
-                  Constant.vectorNotificationIconNotif,
-                  color: Constant.colorGrey6,
-                  height: 25,
-                  width: 25,
-                  fit: BoxFit.fitHeight,
-                ),
               ),
-              const SizedBox(width: 5),
-              NotificationIconIndicator(
-                notificationNumber: notificationNotifier.inboxLoadDataResult.resultIfSuccess ?? 0,
-                onTap: () => PageRestorationHelper.toInboxPage(context),
-                icon: SvgPicture.asset(
-                  Constant.vectorNotificationIconInbox,
-                  color: Constant.colorGrey6,
-                  height: 25,
-                  width: 25,
-                  fit: BoxFit.fitHeight,
-                ),
-              ),
-              const SizedBox(width: 5),
-              NotificationIconIndicator(
-                notificationNumber: notificationNotifier.cartLoadDataResult.resultIfSuccess ?? 0,
-                onTap: () => PageRestorationHelper.toCartPage(context),
-                icon: SvgPicture.asset(
-                  Constant.vectorNotificationIconCart,
-                  color: Constant.colorGrey6,
-                  height: 25,
-                  width: 25,
-                  fit: BoxFit.fitHeight,
-                ),
-              ),
+              Row(
+                children: [
+                  TapArea(
+                    onTap: () => PageRestorationHelper.toNotificationPage(context),
+                    child: Stack(
+                      children: [
+                        Container(
+                          width: 30,
+                        ),
+                        Center(
+                          child: NotificationIconIndicator(
+                            notificationNumber: notificationNotifier.notificationLoadDataResult.resultIfSuccess ?? 0,
+                            icon: SvgPicture.asset(
+                              Constant.vectorNotificationIconNotif,
+                              color: Constant.colorGrey6,
+                              height: 25,
+                              width: 25,
+                              fit: BoxFit.fitHeight,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 5),
+                  TapArea(
+                    onTap: () => PageRestorationHelper.toInboxPage(context),
+                    child: Stack(
+                      children: [
+                        Container(
+                          width: 30,
+                        ),
+                        Center(
+                          child: NotificationIconIndicator(
+                            notificationNumber: notificationNotifier.inboxLoadDataResult.resultIfSuccess ?? 0,
+                            icon: SvgPicture.asset(
+                              Constant.vectorNotificationIconInbox,
+                              color: Constant.colorGrey6,
+                              height: 25,
+                              width: 25,
+                              fit: BoxFit.fitHeight,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 5),
+                  TapArea(
+                    onTap: () => PageRestorationHelper.toCartPage(context),
+                    child: Stack(
+                      children: [
+                        Container(
+                          width: 30,
+                        ),
+                        Center(
+                          child: NotificationIconIndicator(
+                            notificationNumber: notificationNotifier.cartLoadDataResult.resultIfSuccess ?? 0,
+                            icon: SvgPicture.asset(
+                              Constant.vectorNotificationIconCart,
+                              color: Constant.colorGrey6,
+                              height: 25,
+                              width: 25,
+                              fit: BoxFit.fitHeight,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 12.0)
+                ],
+              )
             ]
           )
         )
