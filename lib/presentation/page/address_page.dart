@@ -210,7 +210,8 @@ class _StatefulAddressControllerMediatorWidgetState extends State<_StatefulAddre
   late final ModifiedPagingController<int, ListItemControllerState> _addressListItemPagingController;
   late final PagingControllerState<int, ListItemControllerState> _addressListItemPagingControllerState;
   Address? _selectAddress;
-  AddressContainerInterceptingActionListItemControllerState _addressContainerInterceptingActionListItemControllerState = DefaultAddressContainerInterceptingActionListItemControllerState();
+  final AddressContainerInterceptingActionListItemControllerState _addressContainerInterceptingActionListItemControllerState = DefaultAddressContainerInterceptingActionListItemControllerState();
+  LoadDataResult<List<Address>> _addressListLoadDataResult = NoLoadDataResult<List<Address>>();
 
   @override
   void initState() {
@@ -233,8 +234,8 @@ class _StatefulAddressControllerMediatorWidgetState extends State<_StatefulAddre
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _addressListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? listItemControllerStateList) async {
-    LoadDataResult<List<Address>> addressListLoadDataResult = await widget.addressController.getAddressList(AddressListParameter());
-    return addressListLoadDataResult.map<PagingResult<ListItemControllerState>>((addressList) {
+    _addressListLoadDataResult = await widget.addressController.getAddressList(AddressListParameter());
+    return _addressListLoadDataResult.map<PagingResult<ListItemControllerState>>((addressList) {
       return PagingDataResult<ListItemControllerState>(
         itemList: [
           AddressContainerListItemControllerState(
@@ -275,6 +276,12 @@ class _StatefulAddressControllerMediatorWidgetState extends State<_StatefulAddre
           ToastHelper.showToast("${"Success remove address".tr}.");
           if (_addressContainerInterceptingActionListItemControllerState.removeAddress != null) {
             _addressContainerInterceptingActionListItemControllerState.removeAddress!(address);
+            if (_addressListLoadDataResult.isSuccess) {
+              List<Address> addressList = _addressListLoadDataResult.resultIfSuccess!;
+              if (addressList.isEmpty) {
+                _addressListItemPagingController.refresh();
+              }
+            }
           }
         }
       )
@@ -321,21 +328,40 @@ class _StatefulAddressControllerMediatorWidgetState extends State<_StatefulAddre
                   pullToRefresh: true
                 ),
               ),
-              if (_selectAddress != null)
-                Container(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedOutlineGradientButton(
-                        onPressed: widget.addressController.updateCurrentSelectedAddress,
-                        text: "Choose Address".tr,
-                        outlineGradientButtonType: OutlineGradientButtonType.solid,
-                        outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
-                      )
-                    ]
-                  ),
-                )
+              Builder(
+                builder: (context) {
+                  bool isShowChooseAddressButton = false;
+                  if (!_addressListLoadDataResult.isSuccess) {
+                    isShowChooseAddressButton = true;
+                  } else {
+                    List<Address> addressList = _addressListLoadDataResult.resultIfSuccess!;
+                    if (addressList.isEmpty) {
+                      isShowChooseAddressButton = true;
+                    } else {
+                      if (_selectAddress == null) {
+                        isShowChooseAddressButton = true;
+                      }
+                    }
+                  }
+                  if (isShowChooseAddressButton) {
+                    return const SizedBox();
+                  }
+                  return Container(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedOutlineGradientButton(
+                          onPressed: widget.addressController.updateCurrentSelectedAddress,
+                          text: "Choose Address".tr,
+                          outlineGradientButtonType: OutlineGradientButtonType.solid,
+                          outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
+                        )
+                      ]
+                    ),
+                  );
+                }
+              )
             ]
           )
         )
