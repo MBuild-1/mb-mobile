@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 
 import '../../domain/entity/address/address.dart';
@@ -66,6 +68,27 @@ class SelectAddressModalDialogController extends ModalDialogController {
         }
         throw MessageError(title: "Address delegate must be initialized");
       },
+      onObserveFailedDynamicItemActionState: (title, description, loadDataResult) {
+        if (_selectAddressDelegate != null) {
+          bool isEmptyError = false;
+          FailedLoadDataResult failedLoadDataResult = loadDataResult as FailedLoadDataResult;
+          dynamic e = failedLoadDataResult.e;
+          dynamic message = e.response?.data["meta"]["message"];
+          if (message is Map<String, dynamic>) {
+            if (message[Constant.textEnUsLanguageKey].toLowerCase().contains("address is empty")) {
+              isEmptyError = true;
+            }
+          }
+          return _selectAddressDelegate!.onObserveLoadProductDelegate.onObserveFailedLoadAddressCarousel(
+            OnObserveFailedLoadAddressCarouselParameter(
+              e: e,
+              buttonText: isEmptyError ? "Add Address".tr : null,
+              onPressed: isEmptyError ? _selectAddressDelegate!.onGotoAddAddress : null
+            )
+          );
+        }
+        throw MessageError(title: "My cart delegate must be initialized");
+      }
     );
   }
 
@@ -100,12 +123,14 @@ class SelectAddressDelegate {
   _OnShowSelectAddressRequestProcessLoadingCallback onShowSelectAddressRequestProcessLoadingCallback;
   _OnSelectAddressRequestProcessSuccessCallback onSelectAddressRequestProcessSuccessCallback;
   _OnShowSelectAddressRequestProcessFailedCallback onShowSelectAddressRequestProcessFailedCallback;
+  void Function()? onGotoAddAddress;
 
   SelectAddressDelegate({
     required this.onObserveLoadProductDelegate,
     required this.onSelectAddressBack,
     required this.onShowSelectAddressRequestProcessLoadingCallback,
     required this.onSelectAddressRequestProcessSuccessCallback,
-    required this.onShowSelectAddressRequestProcessFailedCallback
+    required this.onShowSelectAddressRequestProcessFailedCallback,
+    required this.onGotoAddAddress
   });
 }

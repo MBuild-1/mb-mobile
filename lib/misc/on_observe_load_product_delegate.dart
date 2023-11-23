@@ -332,6 +332,14 @@ class OnObserveLoadProductDelegateFactory {
           )
         );
       },
+      onObserveFailedLoadAddressCarousel: (onObserveFailedLoadAddressCarouselParameter) {
+        return FailedPromptIndicatorListItemControllerState(
+          e: onObserveFailedLoadAddressCarouselParameter.e,
+          errorProvider: Injector.locator<ErrorProvider>(),
+          buttonText: onObserveFailedLoadAddressCarouselParameter.buttonText,
+          onPressed: onObserveFailedLoadAddressCarouselParameter.onPressed,
+        );
+      },
       onObserveLoadingLoadAddressCarousel: (onObserveLoadingLoadAddressCarouselParameter) {
         return ShimmerCarouselListItemControllerState<CartShimmerCarouselListItemGeneratorType>(
           padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
@@ -388,6 +396,7 @@ class OnObserveLoadProductDelegate {
   ListItemControllerState Function(OnObserveLoadingLoadCartCarouselParameter) onObserveLoadingLoadCartCarousel;
   ListItemControllerState Function(OnObserveSuccessLoadAddressCarouselParameter) onObserveSuccessLoadAddressCarousel;
   ListItemControllerState Function(OnObserveLoadingLoadAddressCarouselParameter) onObserveLoadingLoadAddressCarousel;
+  ListItemControllerState Function(OnObserveFailedLoadAddressCarouselParameter) onObserveFailedLoadAddressCarousel;
 
   OnObserveLoadProductDelegate({
     required this.onObserveSuccessLoadProductBrandCarousel,
@@ -408,7 +417,8 @@ class OnObserveLoadProductDelegate {
     required this.onObserveFailedLoadCartCarousel,
     required this.onObserveLoadingLoadCartCarousel,
     required this.onObserveSuccessLoadAddressCarousel,
-    required this.onObserveLoadingLoadAddressCarousel
+    required this.onObserveLoadingLoadAddressCarousel,
+    required this.onObserveFailedLoadAddressCarousel
   });
 }
 
@@ -569,6 +579,18 @@ class OnObserveSuccessLoadAddressCarouselParameter {
     required this.description,
     required this.addressList,
     this.data
+  });
+}
+
+class OnObserveFailedLoadAddressCarouselParameter {
+  dynamic e;
+  String? buttonText;
+  void Function()? onPressed;
+
+  OnObserveFailedLoadAddressCarouselParameter({
+    required this.e,
+    this.buttonText,
+    this.onPressed
   });
 }
 

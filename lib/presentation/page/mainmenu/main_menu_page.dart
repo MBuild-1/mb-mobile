@@ -46,6 +46,7 @@ import '../help_page.dart';
 import '../inbox_page.dart';
 import '../login_page.dart';
 import '../getx_page.dart';
+import '../modify_address_page.dart';
 import '../msme_partner_page.dart';
 import '../newspage/news_detail_page.dart';
 import '../newspage/news_page.dart';
@@ -159,6 +160,9 @@ class MainMenuPage extends RestorableGetxPage<_MainMenuPageRestoration> {
           if (MainRouteObserver.onRefreshAddress != null) {
             MainRouteObserver.onRefreshAddress!();
           }
+          if (MainRouteObserver.onRefreshSelectAddress != null) {
+            MainRouteObserver.onRefreshSelectAddress!();
+          }
         }
       }
     },
@@ -170,7 +174,7 @@ class MainMenuPage extends RestorableGetxPage<_MainMenuPageRestoration> {
           }
         }
       }
-    }
+    },
   );
 
   @override
@@ -573,6 +577,7 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
     MainRouteObserver.onRefreshWishlistInMainMenu = null;
     MainRouteObserver.onChangeSelectedProvince = null;
     MainRouteObserver.onResetInitMainMenu = null;
+    MainRouteObserver.onRefreshSelectAddress = null;
     _timer?.cancel();
     super.dispose();
   }

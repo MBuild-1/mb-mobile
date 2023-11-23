@@ -36,10 +36,14 @@ class SelectAddressModalDialogPage extends ModalDialogPage<SelectAddressModalDia
   SelectAddressModalDialogController get selectAddressModalDialogController => modalDialogController.controller;
 
   final void Function(Address)? onAddressSelectedChanged;
+  final void Function()? onGotoAddAddress;
+  final SelectAddressModalDialogPageActionDelegate selectAddressModalDialogPageActionDelegate;
 
   SelectAddressModalDialogPage({
     Key? key,
-    this.onAddressSelectedChanged
+    this.onAddressSelectedChanged,
+    this.onGotoAddAddress,
+    required this.selectAddressModalDialogPageActionDelegate
   }) : super(key: key);
 
   @override
@@ -55,7 +59,9 @@ class SelectAddressModalDialogPage extends ModalDialogPage<SelectAddressModalDia
   Widget buildPage(BuildContext context) {
     return _StatefulSelectAddressControllerMediatorWidget(
       selectAddressModalDialogController: selectAddressModalDialogController,
-      onAddressSelectedChanged: onAddressSelectedChanged
+      onAddressSelectedChanged: onAddressSelectedChanged,
+      onGotoAddAddress: onGotoAddAddress,
+      selectAddressModalDialogPageActionDelegate: selectAddressModalDialogPageActionDelegate
     );
   }
 }
@@ -63,10 +69,14 @@ class SelectAddressModalDialogPage extends ModalDialogPage<SelectAddressModalDia
 class _StatefulSelectAddressControllerMediatorWidget extends StatefulWidget {
   final SelectAddressModalDialogController selectAddressModalDialogController;
   final void Function(Address)? onAddressSelectedChanged;
+  final void Function()? onGotoAddAddress;
+  final SelectAddressModalDialogPageActionDelegate selectAddressModalDialogPageActionDelegate;
 
   const _StatefulSelectAddressControllerMediatorWidget({
     required this.selectAddressModalDialogController,
-    required this.onAddressSelectedChanged
+    required this.onAddressSelectedChanged,
+    required this.onGotoAddAddress,
+    required this.selectAddressModalDialogPageActionDelegate
   });
 
   @override
@@ -100,6 +110,7 @@ class _StatefulSelectAddressControllerMediatorWidgetState extends State<_Statefu
       onPageKeyNext: (pageKey) => pageKey + 1
     );
     _selectAddressListItemPagingControllerState.isPagingControllerExist = true;
+    widget.selectAddressModalDialogPageActionDelegate._onRefresh = _selectAddressListItemPagingController.refresh;
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _selectAddressListItemPagingControllerStateListener(int pageKey) async {
@@ -169,6 +180,7 @@ class _StatefulSelectAddressControllerMediatorWidgetState extends State<_Statefu
           errorProvider: Injector.locator<ErrorProvider>(),
           e: e
         ),
+        onGotoAddAddress: widget.onGotoAddAddress
       )
     );
     return Column(
@@ -195,4 +207,22 @@ class _StatefulSelectAddressControllerMediatorWidgetState extends State<_Statefu
       ]
     );
   }
+
+  @override
+  void dispose() {
+    widget.selectAddressModalDialogPageActionDelegate._onRefresh = null;
+    _selectAddressListItemPagingController.dispose();
+    _selectAddressScrollController.dispose();
+    super.dispose();
+  }
+}
+
+class SelectAddressModalDialogPageActionDelegate {
+  void Function()? _onRefresh;
+
+  void Function() get refresh => () {
+    if (_onRefresh != null) {
+      _onRefresh!();
+    }
+  };
 }

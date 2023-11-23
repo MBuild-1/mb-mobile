@@ -86,6 +86,8 @@ import '../../../widget/tap_area.dart';
 import '../../../widget/titleanddescriptionitem/title_and_description_item.dart';
 import '../../getx_page.dart';
 import '../../modaldialogpage/check_rates_for_various_countries_modal_dialog_page.dart';
+import '../../modaldialogpage/select_address_modal_dialog_page.dart';
+import '../../modify_address_page.dart';
 import '../../product_brand_page.dart';
 
 class HomeMainMenuSubPage extends DefaultGetxPage {
@@ -125,6 +127,7 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
 
   late AssetImage _homeAppBarBackgroundAssetImage;
   Banner? _banner;
+  final SelectAddressModalDialogPageActionDelegate selectAddressModalDialogPageActionDelegate = SelectAddressModalDialogPageActionDelegate();
 
   @override
   void initState() {
@@ -146,6 +149,7 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
     );
     _homeMainMenuSubListItemPagingControllerState.isPagingControllerExist = true;
     MainRouteObserver.controllerMediatorMap[Constant.subPageKeyHomeMainMenu] = refreshHomeMainMenu;
+    MainRouteObserver.onRefreshSelectAddress = () => selectAddressModalDialogPageActionDelegate.refresh();
   }
 
   @override
@@ -956,7 +960,9 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
             errorProvider: Injector.locator<ErrorProvider>(),
             onAddressSelectedChanged: (address) {
               onObserveLoadCurrentAddressParameter.repeatableDynamicItemCarouselAdditionalParameter.onRepeatLoading();
-            }
+            },
+            onGotoAddAddress: () => PageRestorationHelper.toAddressPage(context),
+            selectAddressModalDialogPageActionDelegate: selectAddressModalDialogPageActionDelegate
           );
         },
         onObserveSuccessLoadProductSponsor: (onObserveSuccessLoadProductSponsorParameter) {

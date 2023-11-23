@@ -294,7 +294,13 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
 
   Widget _itemBuilder(BuildContext context, ListItemControllerState item, int index) {
     if (item is FailedPromptIndicatorListItemControllerState) {
-      return WidgetHelper.buildFailedPromptIndicatorFromErrorProvider(context: context, errorProvider: item.errorProvider, e: item.e);
+      return WidgetHelper.buildFailedPromptIndicatorFromErrorProvider(
+        context: context,
+        errorProvider: item.errorProvider,
+        e: item.e,
+        buttonText: item.buttonText,
+        onPressed: item.onPressed
+      );
     } else if (item is CarouselListItemControllerState || item is ShimmerCarouselListItemControllerState) {
       if (item is CarouselListItemControllerState) {
         Widget? backgroundImage;
@@ -830,6 +836,8 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
                 context: context,
                 modalDialogPageBuilder: (context, parameter) => SelectAddressModalDialogPage(
                   onAddressSelectedChanged: item.onAddressSelectedChanged,
+                  onGotoAddAddress: item.onGotoAddAddress,
+                  selectAddressModalDialogPageActionDelegate: item.selectAddressModalDialogPageActionDelegate
                 )
               );
             });
