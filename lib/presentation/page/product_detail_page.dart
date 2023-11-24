@@ -471,15 +471,13 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
                           )
                         );
                       } else {
-                        if (productEntryList.length > 1) {
-                          colorfulChipTabBarDataList.add(
-                            ColorfulChipTabBarData(
-                              title: productEntry.sustension,
-                              color: Theme.of(context).colorScheme.primary,
-                              data: productEntry.productEntryId
-                            )
-                          );
-                        }
+                        colorfulChipTabBarDataList.add(
+                          ColorfulChipTabBarData(
+                            title: productEntry.sustension,
+                            color: Theme.of(context).colorScheme.primary,
+                            data: productEntry.productEntryId
+                          )
+                        );
                       }
                       i++;
                     }

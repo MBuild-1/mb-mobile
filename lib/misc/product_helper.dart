@@ -21,6 +21,8 @@ class _ProductHelperImpl {
         productVariantDescription += "${(j > 0 ? ", " : "")}${productVariant.type} (${productVariant.name})";
         j++;
       }
+    } else {
+      productVariantDescription = productEntry.sustension;
     }
     return productVariantDescription;
   }
