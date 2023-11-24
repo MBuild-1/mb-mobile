@@ -79,6 +79,7 @@ import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediato
 import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/wishlist_delegate_parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../../misc/product_brand_item_type.dart';
 import '../../misc/product_helper.dart';
+import '../../misc/routeargument/product_detail_route_argument.dart';
 import '../../misc/string_util.dart';
 import '../../misc/toast_helper.dart';
 import '../notifier/component_notifier.dart';
@@ -143,6 +144,7 @@ class ProductDetailPage extends RestorableGetxPage<_ProductDetailPageRestoration
         productId: productId,
         productEntryId: productEntryId,
         productDetailController: _productDetailController.controller,
+        pageName: pageName
       ),
     );
   }
@@ -237,6 +239,7 @@ class ProductDetailPageRestorableRouteFuture extends GetRestorableRouteFuture {
           productEntryId: productDetailPageParameter.productEntryId
         )
       ),
+      arguments: ProductDetailRouteArgument()
     );
   }
 
@@ -266,11 +269,13 @@ class _StatefulProductDetailControllerMediatorWidget extends StatefulWidget {
   final ProductDetailController productDetailController;
   final String productId;
   final String productEntryId;
+  final String pageName;
 
   const _StatefulProductDetailControllerMediatorWidget({
     required this.productDetailController,
     required this.productId,
-    required this.productEntryId
+    required this.productEntryId,
+    required this.pageName
   });
 
   @override
@@ -278,6 +283,7 @@ class _StatefulProductDetailControllerMediatorWidget extends StatefulWidget {
 }
 
 class _StatefulProductDetailControllerMediatorWidgetState extends State<_StatefulProductDetailControllerMediatorWidget> {
+  late final ScrollController _productDetailScrollController;
   late final ModifiedPagingController<int, ListItemControllerState> _productDetailListItemPagingController;
   late final PagingControllerState<int, ListItemControllerState> _productDetailListItemPagingControllerState;
   final List<LoadDataResultDynamicListItemControllerState> _dynamicItemLoadDataResultDynamicListItemControllerStateList = [];
@@ -290,6 +296,7 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
   @override
   void initState() {
     super.initState();
+    _productDetailScrollController = ScrollController();
     _productDetailListItemPagingController = ModifiedPagingController<int, ListItemControllerState>(
       firstPageKey: 1,
       // ignore: invalid_use_of_protected_member
@@ -298,6 +305,7 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
     );
     _productDetailListItemPagingControllerState = PagingControllerState(
       pagingController: _productDetailListItemPagingController,
+      scrollController: _productDetailScrollController,
       isPagingControllerExist: false
     );
     _productDetailListItemPagingControllerState.pagingController.addPageRequestListenerForLoadDataResult(
@@ -306,8 +314,11 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
     );
     _productDetailListItemPagingControllerState.isPagingControllerExist = true;
     _selectedProductEntryId = widget.productEntryId;
-    _productVariantColorfulChipTabBarController = ColorfulChipTabBarController(-1);
+    _productVariantColorfulChipTabBarController = ColorfulChipTabBarController(0);
     _productVariantColorfulChipTabBarController.addListener(() => setState(() {}));
+    MainRouteObserver.onScrollUpIfInProductDetail[getRouteMapKey(widget.pageName)] = () {
+      _productDetailScrollController.jumpTo(0.0);
+    };
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _productDetailListItemPagingControllerStateListener(int pageKey) async {
@@ -340,13 +351,16 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
           if (firstProductVariant.productEntryId == widget.productEntryId) {
             if (selectedProductVariantIndex == -1) {
               selectedProductVariantIndex = a;
-              _productVariantColorfulChipTabBarController.value = selectedProductVariantIndex;
               break;
             }
           }
         }
         a++;
       }
+      if (selectedProductVariantIndex == -1) {
+        selectedProductVariantIndex = 0;
+      }
+      _productVariantColorfulChipTabBarController.value = selectedProductVariantIndex;
       if (!_startTimer) {
         _startTimer = true;
         _timer = Timer(
@@ -456,6 +470,16 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
                             data: firstProductVariant.productEntryId
                           )
                         );
+                      } else {
+                        if (productEntryList.length > 1) {
+                          colorfulChipTabBarDataList.add(
+                            ColorfulChipTabBarData(
+                              title: productEntry.sustension,
+                              color: Theme.of(context).colorScheme.primary,
+                              data: productEntry.productEntryId
+                            )
+                          );
+                        }
                       }
                       i++;
                     }
@@ -1026,6 +1050,9 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
   @override
   void dispose() {
     _timer?.cancel();
+    MainRouteObserver.onScrollUpIfInProductDetail[getRouteMapKey(widget.pageName)] = null;
+    _productDetailScrollController.dispose();
+    _productDetailListItemPagingController.dispose();
     super.dispose();
   }
 }

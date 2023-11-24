@@ -321,7 +321,8 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Cancel Register": "Batalkan Pendaftaran",
       "Product Category": "Kategori Produk",
       "Description": "Deskripsi",
-      "Success mark this cart to be checkout by host": "Sukses menandai keranjang ini siap dicheckout oleh host"
+      "Success mark this cart to be checkout by host": "Sukses menandai keranjang ini siap dicheckout oleh host",
+      "Variant": "Varian"
     }
   };
 

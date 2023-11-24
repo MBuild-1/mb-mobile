@@ -10,6 +10,7 @@ import '../../controller/product_discussion_controller.dart';
 import '../../domain/entity/chat/user_message_response_wrapper.dart';
 import '../../domain/entity/discussion/support_discussion.dart';
 import '../../domain/entity/discussion/support_discussion_parameter.dart';
+import '../../domain/entity/product/product_detail.dart';
 import '../../domain/entity/product/product_in_discussion.dart';
 import '../../domain/entity/product/productdiscussion/create_product_discussion_parameter.dart';
 import '../../domain/entity/product/productdiscussion/product_discussion.dart';
@@ -18,6 +19,7 @@ import '../../domain/entity/product/productdiscussion/product_discussion_dialog.
 import '../../domain/entity/product/productdiscussion/product_discussion_list_parameter.dart';
 import '../../domain/entity/product/productdiscussion/product_discussion_user.dart';
 import '../../domain/entity/product/productdiscussion/reply_product_discussion_parameter.dart';
+import '../../domain/entity/product/productentry/product_entry.dart';
 import '../../domain/entity/user/getuser/get_user_parameter.dart';
 import '../../domain/entity/user/user.dart';
 import '../../domain/usecase/create_product_discussion_use_case.dart';
@@ -42,6 +44,7 @@ import '../../misc/load_data_result.dart';
 import '../../misc/main_route_observer.dart';
 import '../../misc/manager/controller_manager.dart';
 import '../../misc/multi_language_string.dart';
+import '../../misc/navigation_helper.dart';
 import '../../misc/page_restoration_helper.dart';
 import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
@@ -55,6 +58,7 @@ import '../widget/modified_svg_picture.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import '../widget/tap_area.dart';
 import 'getx_page.dart';
+import 'product_detail_page.dart';
 
 class ProductDiscussionPage extends RestorableGetxPage<_ProductDiscussionPageRestoration> {
   late final ControllerMember<ProductDiscussionController> _productDiscussionController = ControllerMember<ProductDiscussionController>().addToControllerManager(controllerManager);
@@ -98,7 +102,7 @@ class ProductDiscussionPage extends RestorableGetxPage<_ProductDiscussionPageRes
   }
 }
 
-class _ProductDiscussionPageRestoration extends ExtendedMixableGetxPageRestoration with ProductDiscussionPageRestorationMixin {
+class _ProductDiscussionPageRestoration extends ExtendedMixableGetxPageRestoration with ProductDiscussionPageRestorationMixin, ProductDetailPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
@@ -424,7 +428,20 @@ class _StatefulProductDiscussionControllerMediatorWidgetState extends State<_Sta
               }
             },
             onGetDiscussionProductId: () => widget.productDiscussionPageParameter.discussionProductId,
-            productDiscussionContainerInterceptingActionListItemControllerState: _defaultProductDiscussionContainerInterceptingActionListItemControllerState
+            productDiscussionContainerInterceptingActionListItemControllerState: _defaultProductDiscussionContainerInterceptingActionListItemControllerState,
+            onTapProductDiscussionHeader: (supportDiscussionLoadDataResult) {
+              if (supportDiscussionLoadDataResult.isSuccess) {
+                SupportDiscussion supportDiscussion = supportDiscussionLoadDataResult.resultIfSuccess!;
+                if (supportDiscussion is ProductDetail) {
+                  NavigationHelper.navigationToProductDetailFromProductDiscussion(
+                    context, ProductDetailPageParameter(
+                      productId: supportDiscussion.productId,
+                      productEntryId: ""
+                    )
+                  );
+                }
+              }
+            }
           )
         ],
         page: 1,

@@ -5,13 +5,49 @@ import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/misc/web_helper.dart';
 
 import '../domain/entity/order/order.dart';
+import '../presentation/page/product_detail_page.dart';
 import '../presentation/widget/material_ignore_pointer.dart';
 import 'dialog_helper.dart';
 import 'main_route_observer.dart';
+import 'page_restoration_helper.dart';
 import 'routeargument/login_route_argument.dart';
 import 'routeargument/main_menu_route_argument.dart';
+import 'routeargument/product_detail_route_argument.dart';
+import 'routeargument/product_discussion_route_argument.dart';
 
 class _NavigationHelperImpl {
+  void navigationToProductDetailFromProductDiscussion(BuildContext context, ProductDetailPageParameter productDetailPageParameter) {
+    Map<String, RouteWrapper?> routeMap = MainRouteObserver.routeMap;
+    List<String> routeKeyList = List.of(routeMap.keys);
+    int i = 0;
+    int? beforeI;
+    for (var element in routeMap.entries) {
+      var arguments = element.value?.route?.settings.arguments;
+      if (arguments is ProductDiscussionRouteArgument) {
+        beforeI = i - 1;
+        break;
+      }
+      i++;
+    }
+    if (beforeI != null) {
+      if (beforeI > -1) {
+        RouteSettings? routeSettings = routeMap[routeKeyList[beforeI]]?.route?.settings;
+        String routeName = routeSettings!.name ?? "";
+        var arguments = routeSettings.arguments;
+        if (arguments is ProductDetailRouteArgument) {
+          Navigator.of(context).popUntil((route) => route.settings.name == routeName);
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            if (MainRouteObserver.onScrollUpIfInProductDetail.containsKey(routeName)) {
+              MainRouteObserver.onScrollUpIfInProductDetail[routeName]!();
+            }
+          });
+          return;
+        }
+      }
+    }
+    PageRestorationHelper.toProductDetailPage(context, productDetailPageParameter);
+  }
+
   void navigationAfterPurchaseProcess(BuildContext context, Order order) {
     Map<String, RouteWrapper?> routeMap = MainRouteObserver.routeMap;
     List<String> routeKeyList = List.of(routeMap.keys);

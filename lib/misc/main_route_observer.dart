@@ -18,6 +18,8 @@ class _MainRouteObserver extends RouteObserver {
   Map<String, void Function()?> get onRefreshProductDiscussion => _onRefreshProductDiscussion;
   Map<String, void Function(Map<String, dynamic>)?> _onRedirectFromNotificationClick = {};
   Map<String, void Function(Map<String, dynamic>)?> get onRedirectFromNotificationClick => _onRedirectFromNotificationClick;
+  Map<String, void Function()?> _onScrollUpIfInProductDetail = {};
+  Map<String, void Function()?> get onScrollUpIfInProductDetail => _onScrollUpIfInProductDetail;
   Map<String, bool?> _subMainMenuVisibility = {};
   Map<String, bool?> get subMainMenuVisibility => _subMainMenuVisibility;
 
@@ -55,6 +57,9 @@ class _MainRouteObserver extends RouteObserver {
       for (var key in newRouteMap.keys) key: null
     };
     _subMainMenuVisibility = {
+      for (var key in newRouteMap.keys) key: null
+    };
+    _onScrollUpIfInProductDetail = {
       for (var key in newRouteMap.keys) key: null
     };
   }

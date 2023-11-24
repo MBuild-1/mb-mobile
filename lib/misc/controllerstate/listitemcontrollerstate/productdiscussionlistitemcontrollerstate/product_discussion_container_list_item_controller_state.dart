@@ -12,6 +12,7 @@ class ProductDiscussionContainerListItemControllerState extends BaseProductDiscu
   void Function(ProductDiscussionDialog) onReplyProductDiscussionDialog;
   String? Function() onGetDiscussionProductId;
   Map<String, LoadDataResult<SupportDiscussion>> Function() onGetSupportDiscussionBasedDiscussionId;
+  void Function(LoadDataResult<SupportDiscussion>) onTapProductDiscussionHeader;
 
   ProductDiscussionContainerListItemControllerState({
     required super.productDiscussionListItemValue,
@@ -24,6 +25,7 @@ class ProductDiscussionContainerListItemControllerState extends BaseProductDiscu
     required this.onGetDiscussionProductId,
     required this.onGetSupportDiscussionBasedDiscussionId,
     required super.onGotoReplyProductDiscussionPage,
+    required this.onTapProductDiscussionHeader
   });
 }
 

@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:masterbagasi/misc/load_data_result.dart';
 
 import '../../domain/entity/discussion/support_discussion.dart';
+import '../../domain/entity/product/productdiscussion/product_discussion.dart';
 import '../../domain/entity/product/productdiscussion/product_discussion_dialog.dart';
 import '../../presentation/page/product_detail_page.dart';
 import '../../presentation/widget/modified_svg_picture.dart';
@@ -66,12 +67,21 @@ class ProductDiscussionContainerItemTypeListSubInterceptor extends ItemTypeListS
           };
         }
       }
+      LoadDataResult<SupportDiscussion> getSupportDiscussionLoadDataResult() {
+        return oldItemType is ProductDiscussionContainerListItemControllerState ? oldItemType.onGetSupportDiscussion() : NoLoadDataResult();
+      }
+      void Function(ProductDiscussion)? getOnProductDiscussionTap(LoadDataResult<SupportDiscussion> supportDiscussionLoadDataResult) {
+        if (oldItemType is ProductDiscussionContainerListItemControllerState) {
+          return (_) => oldItemType.onTapProductDiscussionHeader(supportDiscussionLoadDataResult);
+        }
+        return null;
+      }
       VerticalProductDiscussionListItemControllerState verticalProductDiscussionListItemControllerState = VerticalProductDiscussionListItemControllerState(
         productDiscussionDetailListItemValue: productDiscussionListItemValue.productDiscussionDetailListItemValue,
         isExpanded: productDiscussionListItemValue.isExpanded,
         errorProvider: oldItemType.onGetErrorProvider(),
-        supportDiscussionLoadDataResult: oldItemType is ProductDiscussionContainerListItemControllerState ? oldItemType.onGetSupportDiscussion() : NoLoadDataResult(),
-        onProductDiscussionTap: null
+        supportDiscussionLoadDataResult: getSupportDiscussionLoadDataResult(),
+        onProductDiscussionTap: getOnProductDiscussionTap(getSupportDiscussionLoadDataResult())
       );
       List<ListItemControllerState> newListItemControllerState = [];
       ProductDiscussionDetailListItemValue productDiscussionDetailListItemValue = verticalProductDiscussionListItemControllerState.productDiscussionDetailListItemValue;
@@ -203,7 +213,7 @@ class ProductDiscussionContainerItemTypeListSubInterceptor extends ItemTypeListS
                                       isExpanded: productDiscussionListItemValue.isExpanded,
                                       errorProvider: oldItemType.onGetErrorProvider(),
                                       supportDiscussionLoadDataResult: supportDiscussionLoadDataResult,
-                                      onProductDiscussionTap: null
+                                      onProductDiscussionTap: getOnProductDiscussionTap(supportDiscussionLoadDataResult)
                                     ),
                                   ]
                                 );
