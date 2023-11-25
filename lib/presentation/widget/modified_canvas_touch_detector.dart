@@ -95,69 +95,69 @@ class _ModifiedCanvasTouchDetectorState extends State<ModifiedCanvasTouchDetecto
           //         touchController.add(
           //             Gesture(GestureType.onVerticalDragUpdate, tapDetail));
           //       },
-          onLongPressStart: !widget.gesturesToOverride
-                  .contains(GestureType.onLongPressStart)
-              ? null
-              : (tapDetail) {
-                  touchController
-                      .add(Gesture(GestureType.onLongPressStart, tapDetail));
-                },
-          onLongPressEnd:
-              !widget.gesturesToOverride.contains(GestureType.onLongPressEnd)
-                  ? null
-                  : (tapDetail) {
-                      touchController
-                          .add(Gesture(GestureType.onLongPressEnd, tapDetail));
-                    },
-          onLongPressMoveUpdate: !widget.gesturesToOverride
-                  .contains(GestureType.onLongPressMoveUpdate)
-              ? null
-              : (tapDetail) {
-                  touchController.add(
-                      Gesture(GestureType.onLongPressMoveUpdate, tapDetail));
-                },
-          onScaleStart:
-              !widget.gesturesToOverride.contains(GestureType.onScaleStart)
-                  ? null
-                  : (tapDetail) {
-                      touchController
-                          .add(Gesture(GestureType.onScaleStart, tapDetail));
-                    },
-          onScaleUpdate:
-              !widget.gesturesToOverride.contains(GestureType.onScaleUpdate)
-                  ? null
-                  : (tapDetail) {
-                      touchController
-                          .add(Gesture(GestureType.onScaleUpdate, tapDetail));
-                    },
-          onForcePressStart: !widget.gesturesToOverride
-                  .contains(GestureType.onForcePressStart)
-              ? null
-              : (tapDetail) {
-                  touchController
-                      .add(Gesture(GestureType.onForcePressStart, tapDetail));
-                },
-          onForcePressEnd:
-              !widget.gesturesToOverride.contains(GestureType.onForcePressEnd)
-                  ? null
-                  : (tapDetail) {
-                      touchController
-                          .add(Gesture(GestureType.onForcePressEnd, tapDetail));
-                    },
-          onForcePressPeak: !widget.gesturesToOverride
-                  .contains(GestureType.onForcePressPeak)
-              ? null
-              : (tapDetail) {
-                  touchController
-                      .add(Gesture(GestureType.onForcePressPeak, tapDetail));
-                },
-          onForcePressUpdate: !widget.gesturesToOverride
-                  .contains(GestureType.onForcePressUpdate)
-              ? null
-              : (tapDetail) {
-                  touchController
-                      .add(Gesture(GestureType.onForcePressUpdate, tapDetail));
-                },
+          // onLongPressStart: !widget.gesturesToOverride
+          //         .contains(GestureType.onLongPressStart)
+          //     ? null
+          //     : (tapDetail) {
+          //         touchController
+          //             .add(Gesture(GestureType.onLongPressStart, tapDetail));
+          //       },
+          // onLongPressEnd:
+          //     !widget.gesturesToOverride.contains(GestureType.onLongPressEnd)
+          //         ? null
+          //         : (tapDetail) {
+          //             touchController
+          //                 .add(Gesture(GestureType.onLongPressEnd, tapDetail));
+          //           },
+          // onLongPressMoveUpdate: !widget.gesturesToOverride
+          //         .contains(GestureType.onLongPressMoveUpdate)
+          //     ? null
+          //     : (tapDetail) {
+          //         touchController.add(
+          //             Gesture(GestureType.onLongPressMoveUpdate, tapDetail));
+          //       },
+          // onScaleStart:
+          //     !widget.gesturesToOverride.contains(GestureType.onScaleStart)
+          //         ? null
+          //         : (tapDetail) {
+          //             touchController
+          //                 .add(Gesture(GestureType.onScaleStart, tapDetail));
+          //           },
+          // onScaleUpdate:
+          //     !widget.gesturesToOverride.contains(GestureType.onScaleUpdate)
+          //         ? null
+          //         : (tapDetail) {
+          //             touchController
+          //                 .add(Gesture(GestureType.onScaleUpdate, tapDetail));
+          //           },
+          // onForcePressStart: !widget.gesturesToOverride
+          //         .contains(GestureType.onForcePressStart)
+          //     ? null
+          //     : (tapDetail) {
+          //         touchController
+          //             .add(Gesture(GestureType.onForcePressStart, tapDetail));
+          //       },
+          // onForcePressEnd:
+          //     !widget.gesturesToOverride.contains(GestureType.onForcePressEnd)
+          //         ? null
+          //         : (tapDetail) {
+          //             touchController
+          //                 .add(Gesture(GestureType.onForcePressEnd, tapDetail));
+          //           },
+          // onForcePressPeak: !widget.gesturesToOverride
+          //         .contains(GestureType.onForcePressPeak)
+          //     ? null
+          //     : (tapDetail) {
+          //         touchController
+          //             .add(Gesture(GestureType.onForcePressPeak, tapDetail));
+          //       },
+          // onForcePressUpdate: !widget.gesturesToOverride
+          //         .contains(GestureType.onForcePressUpdate)
+          //     ? null
+          //     : (tapDetail) {
+          //         touchController
+          //             .add(Gesture(GestureType.onForcePressUpdate, tapDetail));
+          //       },
           // onPanStart:
           //     !widget.gesturesToOverride.contains(GestureType.onPanStart)
           //         ? null
@@ -178,20 +178,20 @@ class _ModifiedCanvasTouchDetectorState extends State<ModifiedCanvasTouchDetecto
           //         touchController
           //             .add(Gesture(GestureType.onPanDown, tapDetail));
           //       },
-          onSecondaryTapDown: !widget.gesturesToOverride
-                  .contains(GestureType.onSecondaryTapDown)
-              ? null
-              : (tapDetail) {
-                  touchController
-                      .add(Gesture(GestureType.onSecondaryTapDown, tapDetail));
-                },
-          onSecondaryTapUp: !widget.gesturesToOverride
-                  .contains(GestureType.onSecondaryTapUp)
-              ? null
-              : (tapDetail) {
-                  touchController
-                      .add(Gesture(GestureType.onSecondaryTapUp, tapDetail));
-                },
+          // onSecondaryTapDown: !widget.gesturesToOverride
+          //         .contains(GestureType.onSecondaryTapDown)
+          //     ? null
+          //     : (tapDetail) {
+          //         touchController
+          //             .add(Gesture(GestureType.onSecondaryTapDown, tapDetail));
+          //       },
+          // onSecondaryTapUp: !widget.gesturesToOverride
+          //         .contains(GestureType.onSecondaryTapUp)
+          //     ? null
+          //     : (tapDetail) {
+          //         touchController
+          //             .add(Gesture(GestureType.onSecondaryTapUp, tapDetail));
+          //       },
         ));
   }
 
