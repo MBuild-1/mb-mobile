@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
@@ -37,12 +38,16 @@ class SelectAddressModalDialogPage extends ModalDialogPage<SelectAddressModalDia
 
   final void Function(Address)? onAddressSelectedChanged;
   final void Function()? onGotoAddAddress;
+  final Future<void> Function()? onLoadingAddress;
+  final Future<void> Function(LoadDataResult<List<Address>>)? onFinishLoadingAddress;
   final SelectAddressModalDialogPageActionDelegate selectAddressModalDialogPageActionDelegate;
 
   SelectAddressModalDialogPage({
     Key? key,
     this.onAddressSelectedChanged,
     this.onGotoAddAddress,
+    this.onLoadingAddress,
+    this.onFinishLoadingAddress,
     required this.selectAddressModalDialogPageActionDelegate
   }) : super(key: key);
 
@@ -61,6 +66,8 @@ class SelectAddressModalDialogPage extends ModalDialogPage<SelectAddressModalDia
       selectAddressModalDialogController: selectAddressModalDialogController,
       onAddressSelectedChanged: onAddressSelectedChanged,
       onGotoAddAddress: onGotoAddAddress,
+      onLoadingAddress: onLoadingAddress,
+      onFinishLoadingAddress: onFinishLoadingAddress,
       selectAddressModalDialogPageActionDelegate: selectAddressModalDialogPageActionDelegate
     );
   }
@@ -70,12 +77,16 @@ class _StatefulSelectAddressControllerMediatorWidget extends StatefulWidget {
   final SelectAddressModalDialogController selectAddressModalDialogController;
   final void Function(Address)? onAddressSelectedChanged;
   final void Function()? onGotoAddAddress;
+  final Future<void> Function()? onLoadingAddress;
+  final Future<void> Function(LoadDataResult<List<Address>>)? onFinishLoadingAddress;
   final SelectAddressModalDialogPageActionDelegate selectAddressModalDialogPageActionDelegate;
 
   const _StatefulSelectAddressControllerMediatorWidget({
     required this.selectAddressModalDialogController,
     required this.onAddressSelectedChanged,
     required this.onGotoAddAddress,
+    required this.onLoadingAddress,
+    required this.onFinishLoadingAddress,
     required this.selectAddressModalDialogPageActionDelegate
   });
 
@@ -175,12 +186,24 @@ class _StatefulSelectAddressControllerMediatorWidgetState extends State<_Statefu
             widget.onAddressSelectedChanged!(address);
           }
         },
-        onShowSelectAddressRequestProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
-          context: context,
-          errorProvider: Injector.locator<ErrorProvider>(),
-          e: e
-        ),
-        onGotoAddAddress: widget.onGotoAddAddress
+        onShowSelectAddressRequestProcessFailedCallback: (e) async {
+          if (e is DioError) {
+            dynamic message = e.response?.data["meta"]["message"];
+            if (message is String) {
+              if (message.toLowerCase().contains(Constant.textLowerCaseAddressAlreadySetPrimary)) {
+                return;
+              }
+            }
+          }
+          DialogHelper.showFailedModalBottomDialogFromErrorProvider(
+            context: context,
+            errorProvider: Injector.locator<ErrorProvider>(),
+            e: e
+          );
+        },
+        onGotoAddAddress: widget.onGotoAddAddress,
+        onAddressListRequestProcessLoadingCallback: widget.onLoadingAddress,
+        onAddressListRequestProcessFinishLoadingCallback: widget.onFinishLoadingAddress
       )
     );
     return Column(

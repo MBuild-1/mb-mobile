@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:collection/collection.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
@@ -10,6 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../controller/product_detail_controller.dart';
+import '../../domain/entity/address/address.dart';
 import '../../domain/entity/cart/support_cart.dart';
 import '../../domain/entity/product/product.dart';
 import '../../domain/entity/product/product_detail.dart';
@@ -64,6 +66,7 @@ import '../../misc/load_data_result.dart';
 import '../../misc/login_helper.dart';
 import '../../misc/main_route_observer.dart';
 import '../../misc/manager/controller_manager.dart';
+import '../../misc/multi_language_string.dart';
 import '../../misc/navigation_helper.dart';
 import '../../misc/on_observe_load_product_delegate.dart';
 import '../../misc/page_restoration_helper.dart';
@@ -92,8 +95,10 @@ import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/default_search_app_bar.dart';
 import '../widget/tap_area.dart';
 import '../widget/titleanddescriptionitem/title_and_description_item.dart';
+import 'address_page.dart';
 import 'getx_page.dart';
 import 'login_page.dart';
+import 'modaldialogpage/select_address_modal_dialog_page.dart';
 import 'product_brand_page.dart';
 import 'product_chat_page.dart';
 import 'product_discussion_page.dart';
@@ -103,6 +108,8 @@ import 'search_page.dart';
 class ProductDetailPage extends RestorableGetxPage<_ProductDetailPageRestoration> {
   late final ControllerMember<ProductDetailController> _productDetailController = ControllerMember<ProductDetailController>().addToControllerManager(controllerManager);
 
+  final SelectAddressModalDialogPageActionDelegate _selectAddressModalDialogPageActionDelegate = SelectAddressModalDialogPageActionDelegate();
+  final _StatefulProductDetailControllerMediatorWidgetDelegate _statefulProductDetailControllerMediatorWidgetDelegate = _StatefulProductDetailControllerMediatorWidgetDelegate();
   final String productId;
   final String productEntryId;
 
@@ -135,7 +142,19 @@ class ProductDetailPage extends RestorableGetxPage<_ProductDetailPageRestoration
   }
 
   @override
-  _ProductDetailPageRestoration createPageRestoration() => _ProductDetailPageRestoration();
+  _ProductDetailPageRestoration createPageRestoration() => _ProductDetailPageRestoration(
+    onCompleteAddressPage: (result) {
+      if (result != null) {
+        if (result) {
+          int step = _statefulProductDetailControllerMediatorWidgetDelegate._selectAddressBecauseAddressIsEmptyWhileInBuyDirectlyProcessStep;
+          if (step == 1) {
+            _statefulProductDetailControllerMediatorWidgetDelegate._selectAddressBecauseAddressIsEmptyWhileInBuyDirectlyProcessStep = 2;
+          }
+          _selectAddressModalDialogPageActionDelegate.refresh();
+        }
+      }
+    },
+  );
 
   @override
   Widget buildPage(BuildContext context) {
@@ -144,16 +163,25 @@ class ProductDetailPage extends RestorableGetxPage<_ProductDetailPageRestoration
         productId: productId,
         productEntryId: productEntryId,
         productDetailController: _productDetailController.controller,
-        pageName: pageName
+        pageName: pageName,
+        selectAddressModalDialogPageActionDelegate: _selectAddressModalDialogPageActionDelegate,
+        statefulProductDetailControllerMediatorWidgetDelegate: _statefulProductDetailControllerMediatorWidgetDelegate,
       ),
     );
   }
 }
 
-class _ProductDetailPageRestoration extends ExtendedMixableGetxPageRestoration with ProductDetailPageRestorationMixin, ProductEntryPageRestorationMixin, SearchPageRestorationMixin, ProductChatPageRestorationMixin, LoginPageRestorationMixin, ProductBrandPageRestorationMixin, ProductDiscussionPageRestorationMixin {
+class _ProductDetailPageRestoration extends ExtendedMixableGetxPageRestoration with ProductDetailPageRestorationMixin, ProductEntryPageRestorationMixin, SearchPageRestorationMixin, ProductChatPageRestorationMixin, LoginPageRestorationMixin, ProductBrandPageRestorationMixin, ProductDiscussionPageRestorationMixin, AddressPageRestorationMixin {
+  final RouteCompletionCallback<bool?>? _onCompleteAddressPage;
+
+  _ProductDetailPageRestoration({
+    RouteCompletionCallback<bool?>? onCompleteAddressPage
+  }) : _onCompleteAddressPage = onCompleteAddressPage;
+
   @override
   // ignore: unnecessary_overrides
   void initState() {
+    onCompleteSelectAddress = _onCompleteAddressPage;
     super.initState();
   }
 
@@ -267,12 +295,16 @@ class ProductDetailPageRestorableRouteFuture extends GetRestorableRouteFuture {
 
 class _StatefulProductDetailControllerMediatorWidget extends StatefulWidget {
   final ProductDetailController productDetailController;
+  final SelectAddressModalDialogPageActionDelegate selectAddressModalDialogPageActionDelegate;
+  final _StatefulProductDetailControllerMediatorWidgetDelegate statefulProductDetailControllerMediatorWidgetDelegate;
   final String productId;
   final String productEntryId;
   final String pageName;
 
   const _StatefulProductDetailControllerMediatorWidget({
     required this.productDetailController,
+    required this.selectAddressModalDialogPageActionDelegate,
+    required this.statefulProductDetailControllerMediatorWidgetDelegate,
     required this.productId,
     required this.productEntryId,
     required this.pageName
@@ -280,6 +312,10 @@ class _StatefulProductDetailControllerMediatorWidget extends StatefulWidget {
 
   @override
   State<_StatefulProductDetailControllerMediatorWidget> createState() => _StatefulProductDetailControllerMediatorWidgetState();
+}
+
+class _StatefulProductDetailControllerMediatorWidgetDelegate {
+  int _selectAddressBecauseAddressIsEmptyWhileInBuyDirectlyProcessStep = 0;
 }
 
 class _StatefulProductDetailControllerMediatorWidgetState extends State<_StatefulProductDetailControllerMediatorWidget> {
@@ -972,11 +1008,53 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
           ToastHelper.showToast("${"Success add to cart".tr}.");
         },
         onShowBuyDirectlyRequestProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
-        onShowBuyDirectlyRequestProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
-          context: context,
-          errorProvider: Injector.locator<ErrorProvider>(),
-          e: e
-        ),
+        onShowBuyDirectlyRequestProcessFailedCallback: (e) async {
+          if (e is DioError) {
+            dynamic message = e.response?.data["meta"]["message"];
+            if (message is String) {
+              if (message.toLowerCase().contains("you need to add your address")) {
+                ToastHelper.showToast(
+                  MultiLanguageString({
+                    Constant.textEnUsLanguageKey: "Address is empty. Please add new address first.",
+                    Constant.textInIdLanguageKey: "Alamatnya kosong. Silahkan mengisi alamat baru terlebih dahulu."
+                  }).toEmptyStringNonNull
+                );
+                DialogHelper.showModalBottomDialogPage<bool, String>(
+                  context: context,
+                  modalDialogPageBuilder: (context, parameter) => SelectAddressModalDialogPage(
+                    onGotoAddAddress: () {
+                      widget.statefulProductDetailControllerMediatorWidgetDelegate._selectAddressBecauseAddressIsEmptyWhileInBuyDirectlyProcessStep = 1;
+                      PageRestorationHelper.toAddressPage(context);
+                    },
+                    selectAddressModalDialogPageActionDelegate: widget.selectAddressModalDialogPageActionDelegate,
+                    onFinishLoadingAddress: (addressListLoadDataResult) async {
+                      if (widget.statefulProductDetailControllerMediatorWidgetDelegate._selectAddressBecauseAddressIsEmptyWhileInBuyDirectlyProcessStep == 2) {
+                        if (addressListLoadDataResult.isSuccess) {
+                          List<Address> addressList = addressListLoadDataResult.resultIfSuccess!;
+                          if (addressList.isNotEmpty) {
+                            ToastHelper.showToast(
+                              MultiLanguageString({
+                                Constant.textEnUsLanguageKey: "Success add address. Please wait for buy directly process.",
+                                Constant.textInIdLanguageKey: "Sukses menambahkan alamat. Silahkan menunggu untuk proses beli langsung."
+                              }).toEmptyStringNonNull
+                            );
+                            widget.productDetailController.buyDirectly();
+                          }
+                        }
+                      }
+                    },
+                  )
+                );
+                return;
+              }
+            }
+          }
+          DialogHelper.showFailedModalBottomDialogFromErrorProvider(
+            context: context,
+            errorProvider: Injector.locator<ErrorProvider>(),
+            e: e
+          );
+        },
         onBuyDirectlyRequestProcessSuccessCallback: (order) async {
           NavigationHelper.navigationAfterPurchaseProcess(context, order);
         },

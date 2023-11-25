@@ -18,6 +18,8 @@ import '../../misc/on_observe_load_product_delegate.dart';
 import 'modal_dialog_controller.dart';
 
 typedef _OnSelectAddressBack = void Function();
+typedef _OnAddressListRequestProcessLoadingCallback = Future<void> Function();
+typedef _OnAddressListRequestProcessFinishLoadingCallback = Future<void> Function(LoadDataResult<List<Address>>);
 typedef _OnShowSelectAddressRequestProcessLoadingCallback = Future<void> Function();
 typedef _OnSelectAddressRequestProcessSuccessCallback = Future<void> Function(Address);
 typedef _OnShowSelectAddressRequestProcessFailedCallback = Future<void> Function(dynamic e);
@@ -37,6 +39,11 @@ class SelectAddressModalDialogController extends ModalDialogController {
     return DynamicItemCarouselComponentEntity(
       onDynamicItemAction: (title, description, observer) async {
         observer(title, description, IsLoadingLoadDataResult<List<Address>>());
+        if (_selectAddressDelegate != null) {
+          if (_selectAddressDelegate!.onAddressListRequestProcessLoadingCallback != null) {
+            await _selectAddressDelegate!.onAddressListRequestProcessLoadingCallback!();
+          }
+        }
         LoadDataResult<List<Address>> addressListDataResult = await getAddressListUseCase.execute(
           AddressListParameter()
         ).future(
@@ -46,6 +53,11 @@ class SelectAddressModalDialogController extends ModalDialogController {
           return;
         }
         observer(title, description, addressListDataResult);
+        if (_selectAddressDelegate != null) {
+          if (_selectAddressDelegate!.onAddressListRequestProcessFinishLoadingCallback != null) {
+            await _selectAddressDelegate!.onAddressListRequestProcessFinishLoadingCallback!(addressListDataResult);
+          }
+        }
       },
       onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
         if (_selectAddressDelegate != null) {
@@ -123,6 +135,8 @@ class SelectAddressDelegate {
   _OnShowSelectAddressRequestProcessLoadingCallback onShowSelectAddressRequestProcessLoadingCallback;
   _OnSelectAddressRequestProcessSuccessCallback onSelectAddressRequestProcessSuccessCallback;
   _OnShowSelectAddressRequestProcessFailedCallback onShowSelectAddressRequestProcessFailedCallback;
+  _OnAddressListRequestProcessLoadingCallback? onAddressListRequestProcessLoadingCallback;
+  _OnAddressListRequestProcessFinishLoadingCallback? onAddressListRequestProcessFinishLoadingCallback;
   void Function()? onGotoAddAddress;
 
   SelectAddressDelegate({
@@ -131,6 +145,8 @@ class SelectAddressDelegate {
     required this.onShowSelectAddressRequestProcessLoadingCallback,
     required this.onSelectAddressRequestProcessSuccessCallback,
     required this.onShowSelectAddressRequestProcessFailedCallback,
+    required this.onAddressListRequestProcessLoadingCallback,
+    required this.onAddressListRequestProcessFinishLoadingCallback,
     required this.onGotoAddAddress
   });
 }

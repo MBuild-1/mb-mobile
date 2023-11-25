@@ -1,7 +1,9 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../../controller/address_controller.dart';
 import '../../domain/entity/address/address.dart';
@@ -10,6 +12,7 @@ import '../../domain/usecase/get_address_list_use_case.dart';
 import '../../domain/usecase/get_address_paging_use_case.dart';
 import '../../domain/usecase/remove_address_use_case.dart';
 import '../../domain/usecase/update_current_selected_address_use_case.dart';
+import '../../misc/constant.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/addresslistitemcontrollerstate/address_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
@@ -21,6 +24,7 @@ import '../../misc/injector.dart';
 import '../../misc/itemtypelistsubinterceptor/address_item_type_list_sub_interceptor.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/controller_manager.dart';
+import '../../misc/multi_language_string.dart';
 import '../../misc/page_restoration_helper.dart';
 import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
@@ -266,11 +270,22 @@ class _StatefulAddressControllerMediatorWidgetState extends State<_StatefulAddre
         onGetAddressInput: () => _selectAddress!,
         onAddressBack: () => Get.back(),
         onShowAddressRequestProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
-        onShowAddressRequestProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
-          context: context,
-          errorProvider: Injector.locator<ErrorProvider>(),
-          e: e
-        ),
+        onShowAddressRequestProcessFailedCallback: (e) async {
+          if (e is DioError) {
+            dynamic message = e.response?.data["meta"]["message"];
+            if (message is String) {
+              if (message.toLowerCase().contains(Constant.textLowerCaseAddressAlreadySetPrimary)) {
+                Get.back(result: true);
+                return;
+              }
+            }
+          }
+          DialogHelper.showFailedModalBottomDialogFromErrorProvider(
+            context: context,
+            errorProvider: Injector.locator<ErrorProvider>(),
+            e: e
+          );
+        },
         onAddressRequestProcessSuccessCallback: () async => Get.back(result: true),
         onRemoveAddressRequestProcessSuccessCallback: (address) async {
           ToastHelper.showToast("${"Success remove address".tr}.");
