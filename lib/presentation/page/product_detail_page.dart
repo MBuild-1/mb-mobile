@@ -516,46 +516,85 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
             paddingChildListItemControllerState: TitleAndDescriptionListItemControllerState(
               title: "Product Detail".tr,
               description: productDetail.description,
-              verticalSpace: 12.0,
+              verticalSpace: 7.0,
               titleAndDescriptionItemInterceptor: (padding, title, titleWidget, description, descriptionWidget, titleAndDescriptionWidget, titleAndDescriptionWidgetList) {
                 ProductEntry? _selectedProductEntry = ProductHelper.getSelectedProductEntry(
                   productDetail.productEntry, _productVariantColorfulChipTabBarController.value
                 );
                 bool hasSelectedProductEntry = _selectedProductEntry != null;
-                List<List<String>> productDetailContentList = [
-                  if (productDetail.productCertificationList.isNotEmpty) <String>["Certification".tr, productDetail.productCertificationList.first.name],
-                  //<String>["Contain".tr, product.],
-                  <String>["Category".tr, productDetail.productCategory.name],
-                  <String>["Province".tr, (productDetail.province?.name).toStringNonNull],
-                  <String>["Brand".tr, productDetail.productBrand.name],
+                List<Map<String, dynamic>> productDetailContentMap = [
+                  if (productDetail.productCertificationList.isNotEmpty) {
+                    "title": "Certification".tr,
+                    "description": productDetail.productCertificationList.first.name,
+                  },
+                  {
+                    "title": "Category".tr,
+                    "description": productDetail.productCategory.name,
+                    "on_tap": () => PageRestorationHelper.toProductEntryPage(
+                      context,
+                      ProductEntryPageParameter(
+                        productEntryParameterMap: {
+                          "category": productDetail.productCategory.slug
+                        }
+                      )
+                    )
+                  },
+                  {
+                    "title": "Province".tr,
+                    "description": (productDetail.province?.name).toStringNonNull,
+                    "on_tap": () => PageRestorationHelper.toProductEntryPage(
+                      context,
+                      ProductEntryPageParameter(
+                        productEntryParameterMap: {
+                          "province": (productDetail.province?.name).toEmptyStringNonNull,
+                          "province_id": (productDetail.province?.id).toEmptyStringNonNull
+                        }
+                      )
+                    )
+                  },
+                  {
+                    "title": "Brand".tr,
+                    "description": productDetail.productBrand.name,
+                    "on_tap": () => PageRestorationHelper.toProductEntryPage(
+                      context,
+                      ProductEntryPageParameter(
+                        productEntryParameterMap: {
+                          "brand_id": productDetail.productBrand.id,
+                          "brand": productDetail.productBrand.slug
+                        }
+                      )
+                    )
+                  },
                   if (hasSelectedProductEntry) ...[
-                    <String>["SKU".tr, _selectedProductEntry.sku],
-                    <String>["Sustension".tr, _selectedProductEntry.sustension]
+                    {"title": "SKU".tr, "description": _selectedProductEntry.sku},
+                    {"title": "Sustension".tr, "description": _selectedProductEntry.sustension}
                   ]
                 ];
                 titleAndDescriptionWidgetList.first = Text(title.toStringNonNull, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold));
                 titleAndDescriptionWidgetList.last = Column(
-                  children: productDetailContentList.mapIndexed(
+                  children: productDetailContentMap.mapIndexed(
                     (index, productDetailContentListValue) {
                       List<Widget> columnResult = [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(productDetailContentListValue[0]),
-                            ),
-                            Expanded(
-                              child: Text(productDetailContentListValue[1]),
-                            )
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            const SizedBox(height: 5),
-                            const ModifiedDivider(),
-                            if (index < productDetailContentList.length - 1)
+                        TapArea(
+                          onTap: productDetailContentListValue["on_tap"],
+                          child: Column(
+                            children: [
                               const SizedBox(height: 5),
-                          ]
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(productDetailContentListValue["title"]),
+                                  ),
+                                  Expanded(
+                                    child: Text(productDetailContentListValue["description"]),
+                                  )
+                                ],
+                              ),
+                              const SizedBox(height: 5),
+                            ]
+                          ),
                         ),
+                        const ModifiedDivider(),
                       ];
                       return Column(
                         children: columnResult,
