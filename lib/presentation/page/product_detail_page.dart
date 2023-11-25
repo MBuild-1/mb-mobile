@@ -485,7 +485,7 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
                       listItemControllerState: [
                         if (colorfulChipTabBarDataList.isNotEmpty)
                           ...[
-                            VirtualSpacingListItemControllerState(height: 2.h),
+                            VirtualSpacingListItemControllerState(height: 2.5.h),
                             PaddingContainerListItemControllerState(
                               padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
                               paddingChildListItemControllerState: TitleAndDescriptionListItemControllerState(
@@ -498,7 +498,7 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
                                 }
                               )
                             ),
-                            VirtualSpacingListItemControllerState(height: 2.h),
+                            VirtualSpacingListItemControllerState(height: 10.0),
                             ColorfulChipTabBarListItemControllerState(
                               colorfulChipTabBarController: _productVariantColorfulChipTabBarController,
                               colorfulChipTabBarDataList: colorfulChipTabBarDataList,
@@ -510,13 +510,13 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
                 ),
               ]
             ),
-          VirtualSpacingListItemControllerState(height: 2.h),
+          VirtualSpacingListItemControllerState(height: 3.h),
           PaddingContainerListItemControllerState(
             padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
             paddingChildListItemControllerState: TitleAndDescriptionListItemControllerState(
               title: "Product Detail".tr,
               description: productDetail.description,
-              verticalSpace: 25,
+              verticalSpace: 12.0,
               titleAndDescriptionItemInterceptor: (padding, title, titleWidget, description, descriptionWidget, titleAndDescriptionWidget, titleAndDescriptionWidgetList) {
                 ProductEntry? _selectedProductEntry = ProductHelper.getSelectedProductEntry(
                   productDetail.productEntry, _productVariantColorfulChipTabBarController.value
@@ -567,20 +567,20 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
               }
             ),
           ),
-          VirtualSpacingListItemControllerState(height: 4.h),
+          VirtualSpacingListItemControllerState(height: 3.h),
           PaddingContainerListItemControllerState(
             padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
             paddingChildListItemControllerState: TitleAndDescriptionListItemControllerState(
               title: "Product Description".tr,
               description: productDetail.description,
-              verticalSpace: 25,
+              verticalSpace: 12,
               titleAndDescriptionItemInterceptor: (padding, title, titleWidget, description, descriptionWidget, titleAndDescriptionWidget, titleAndDescriptionWidgetList) {
                 titleAndDescriptionWidgetList.first = Text(title.toStringNonNull, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold));
                 return titleAndDescriptionWidget;
               }
             ),
           ),
-          VirtualSpacingListItemControllerState(height: 4.h),
+          VirtualSpacingListItemControllerState(height: 3.h),
           componentEntityMediator.mapWithParameter(
             widget.productDetailController.getOtherInThisCategory(
               ProductDetailGetOtherInThisCategoryParameter(
