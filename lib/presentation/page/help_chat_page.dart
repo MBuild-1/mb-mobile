@@ -324,6 +324,13 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<StatefulHelpC
       appBar: widget.withAppBar ? ModifiedAppBar(
         titleInterceptor: (context, title) => Row(
           children: [
+            ModifiedSvgPicture.asset(
+              width: 28,
+              height: 36,
+              Constant.vectorBag,
+              overrideDefaultColorWithSingleColor: false
+            ),
+            const SizedBox(width: 10),
             Text("Mista".tr),
           ],
         ),
