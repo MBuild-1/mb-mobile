@@ -38,6 +38,7 @@ class ModifyAddressController extends BaseGetxController {
   late Rx<Validator> emailValidatorRx;
   late Rx<Validator> labelValidatorRx;
   late Rx<Validator> addressValidatorRx;
+  late Rx<Validator> address2ValidatorRx;
   late Rx<Validator> phoneNumberValidatorRx;
   late Rx<Validator> zipCodeValidatorRx;
   late Rx<Validator> countryValidatorRx;
@@ -67,6 +68,9 @@ class ModifyAddressController extends BaseGetxController {
       addressValidator: Validator(
         onValidate: () => !_modifyAddressDelegate!.onGetAddressModifyAddressInput().isEmptyString ? SuccessValidationResult() : FailedValidationResult(e: ValidationError(message: "${"Address is required".tr}."))
       ),
+      address2Validator: Validator(
+        onValidate: () => !_modifyAddressDelegate!.onGetAddressModifyAddressInput().isEmptyString ? SuccessValidationResult() : FailedValidationResult(e: ValidationError(message: "${"Address is required".tr}."))
+      ),
       phoneNumberValidator: Validator(
         onValidate: () => !_modifyAddressDelegate!.onGetPhoneNumberModifyAddressInput().isEmptyString ? SuccessValidationResult() : FailedValidationResult(e: ValidationError(message: "${"Phone number is required".tr}."))
       ),
@@ -87,6 +91,7 @@ class ModifyAddressController extends BaseGetxController {
     emailValidatorRx = modifyAddressValidatorGroup.emailValidator.obs;
     labelValidatorRx = modifyAddressValidatorGroup.labelValidator.obs;
     addressValidatorRx = modifyAddressValidatorGroup.addressValidator.obs;
+    address2ValidatorRx = modifyAddressValidatorGroup.address2Validator.obs;
     phoneNumberValidatorRx = modifyAddressValidatorGroup.phoneNumberValidator.obs;
     zipCodeValidatorRx = modifyAddressValidatorGroup.zipCodeValidator.obs;
     countryValidatorRx = modifyAddressValidatorGroup.countryValidator.obs;
@@ -139,6 +144,7 @@ class ModifyAddressController extends BaseGetxController {
               email: _modifyAddressDelegate!.onGetEmailModifyAddressInput(),
               label: _modifyAddressDelegate!.onGetLabelModifyAddressInput(),
               address: _modifyAddressDelegate!.onGetAddressModifyAddressInput(),
+              address2: _modifyAddressDelegate!.onGetAddress2ModifyAddressInput(),
               phoneNumber: _modifyAddressDelegate!.onGetPhoneNumberModifyAddressInput(),
               zipCode: _modifyAddressDelegate!.onGetZipCodeModifyAddressInput(),
               countryId: _modifyAddressDelegate!.onGetCountryModifyAddressInput()!.id,
@@ -154,6 +160,7 @@ class ModifyAddressController extends BaseGetxController {
               email: _modifyAddressDelegate!.onGetEmailModifyAddressInput(),
               label: _modifyAddressDelegate!.onGetLabelModifyAddressInput(),
               address: _modifyAddressDelegate!.onGetAddressModifyAddressInput(),
+              address2: _modifyAddressDelegate!.onGetAddress2ModifyAddressInput(),
               phoneNumber: _modifyAddressDelegate!.onGetPhoneNumberModifyAddressInput(),
               zipCode: _modifyAddressDelegate!.onGetZipCodeModifyAddressInput(),
               countryId: _modifyAddressDelegate!.onGetCountryModifyAddressInput()!.id,
@@ -183,6 +190,7 @@ class ModifyAddressDelegate {
   _OnGetModifyAddressInput<String> onGetEmailModifyAddressInput;
   _OnGetModifyAddressInput<String> onGetLabelModifyAddressInput;
   _OnGetModifyAddressInput<String> onGetAddressModifyAddressInput;
+  _OnGetModifyAddressInput<String> onGetAddress2ModifyAddressInput;
   _OnGetModifyAddressInput<String> onGetPhoneNumberModifyAddressInput;
   _OnGetModifyAddressInput<String> onGetZipCodeModifyAddressInput;
   _OnGetModifyAddressInput<Country?> onGetCountryModifyAddressInput;
@@ -201,6 +209,7 @@ class ModifyAddressDelegate {
     required this.onGetEmailModifyAddressInput,
     required this.onGetLabelModifyAddressInput,
     required this.onGetAddressModifyAddressInput,
+    required this.onGetAddress2ModifyAddressInput,
     required this.onGetPhoneNumberModifyAddressInput,
     required this.onGetZipCodeModifyAddressInput,
     required this.onGetCountryModifyAddressInput,

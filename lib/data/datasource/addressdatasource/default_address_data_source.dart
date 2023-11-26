@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:masterbagasi/data/entitymappingext/address_entity_mapping_ext.dart';
 import 'package:masterbagasi/misc/ext/future_ext.dart';
 import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../../../domain/dummy/addressdummy/address_dummy.dart';
 import '../../../domain/entity/address/add_address_parameter.dart';
@@ -119,6 +120,7 @@ class DefaultAddressDataSource implements AddressDataSource {
         "email": addAddressParameter.email,
         "label": addAddressParameter.label,
         "address": addAddressParameter.address,
+        if (addAddressParameter.address2.isNotEmptyString) "address2": addAddressParameter.address2,
         "phone_number": addAddressParameter.phoneNumber,
         "zip_code": addAddressParameter.zipCode,
         "country_id": addAddressParameter.countryId,
@@ -139,6 +141,11 @@ class DefaultAddressDataSource implements AddressDataSource {
       "email": changeAddressParameter.email,
       "label": changeAddressParameter.label,
       "address": changeAddressParameter.address,
+      if (changeAddressParameter.address2.isEmptyString) ...{
+        "address2": null,
+      } else ...{
+        "address2": changeAddressParameter.address2.toEmptyStringNonNull,
+      },
       "phone_number": changeAddressParameter.phoneNumber,
       "zip_code": changeAddressParameter.zipCode,
       "country_id": changeAddressParameter.countryId,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/error_provider_ext.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/misc/ext/validation_result_ext.dart';
 import 'package:sizer/sizer.dart';
 
@@ -206,6 +207,7 @@ class _StatefulModifyAddressControllerMediatorWidgetState extends State<_Statefu
   final TextEditingController _emailTextEditingController = TextEditingController();
   final TextEditingController _labelTextEditingController = TextEditingController();
   final TextEditingController _addressTextEditingController = TextEditingController();
+  final TextEditingController _address2TextEditingController = TextEditingController();
   final TextEditingController _phoneTextEditingController = TextEditingController();
   final TextEditingController _zipCodeTextEditingController = TextEditingController();
   Country? _selectedCountry;
@@ -213,6 +215,21 @@ class _StatefulModifyAddressControllerMediatorWidgetState extends State<_Statefu
   final TextEditingController _stateTextEditingController = TextEditingController();
   dynamic _failedModifyAddressError;
   LoadDataResult<Address> _addressLoadDataResult = NoLoadDataResult<Address>();
+
+  Widget _fieldLabel(Widget fieldWidget, {bool required = true}) {
+    return Row(
+      children: [
+        Flexible(child: fieldWidget),
+        if (required) ...[
+          const Text(" "),
+          Text(
+            "*",
+            style: TextStyle(color: Theme.of(context).colorScheme.primary),
+          )
+        ]
+      ]
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -227,6 +244,7 @@ class _StatefulModifyAddressControllerMediatorWidgetState extends State<_Statefu
             _emailTextEditingController.text = address.email;
             _labelTextEditingController.text = address.label;
             _addressTextEditingController.text = address.address;
+            _address2TextEditingController.text = address.address2.toEmptyStringNonNull;
             _phoneTextEditingController.text = address.phoneNumber;
             _zipCodeTextEditingController.text = address.zipCode;
             _selectedCountry = address.country;
@@ -239,6 +257,7 @@ class _StatefulModifyAddressControllerMediatorWidgetState extends State<_Statefu
         onGetEmailModifyAddressInput: () => _emailTextEditingController.text,
         onGetLabelModifyAddressInput: () => _labelTextEditingController.text,
         onGetAddressModifyAddressInput: () => _addressTextEditingController.text,
+        onGetAddress2ModifyAddressInput: () => _address2TextEditingController.text,
         onGetPhoneNumberModifyAddressInput: () => _phoneTextEditingController.text,
         onGetZipCodeModifyAddressInput: () => _zipCodeTextEditingController.text,
         onGetCountryModifyAddressInput: () => _selectedCountry,
@@ -301,39 +320,9 @@ class _StatefulModifyAddressControllerMediatorWidgetState extends State<_Statefu
                 ),
                 const SizedBox(height: 20),
               ],
-            Text("Email".tr),
-            const SizedBox(height: 10),
-            RxConsumer<Validator>(
-              rxValue: widget.modifyAddressController.emailValidatorRx,
-              onConsumeValue: (context, value) => Field(
-                child: (context, validationResult, validator) => ModifiedTextField(
-                  isError: validationResult.isFailed,
-                  controller: _emailTextEditingController,
-                  decoration: const DefaultInputDecoration(),
-                  onChanged: (value) => validator?.validate(),
-                  textInputAction: TextInputAction.next,
-                ),
-                validator: value,
-              ),
+            _fieldLabel(
+              Text("Label".tr),
             ),
-            const SizedBox(height: 20),
-            Text("Name".tr),
-            const SizedBox(height: 10),
-            RxConsumer<Validator>(
-              rxValue: widget.modifyAddressController.nameValidatorRx,
-              onConsumeValue: (context, value) => Field(
-                child: (context, validationResult, validator) => ModifiedTextField(
-                  isError: validationResult.isFailed,
-                  controller: _nameTextEditingController,
-                  decoration: const DefaultInputDecoration(),
-                  onChanged: (value) => validator?.validate(),
-                  textInputAction: TextInputAction.next,
-                ),
-                validator: value,
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text("Label".tr),
             const SizedBox(height: 10),
             RxConsumer<Validator>(
               rxValue: widget.modifyAddressController.labelValidatorRx,
@@ -349,55 +338,9 @@ class _StatefulModifyAddressControllerMediatorWidgetState extends State<_Statefu
               ),
             ),
             const SizedBox(height: 20),
-            Text("Address".tr),
-            const SizedBox(height: 10),
-            RxConsumer<Validator>(
-              rxValue: widget.modifyAddressController.addressValidatorRx,
-              onConsumeValue: (context, value) => Field(
-                child: (context, validationResult, validator) => ModifiedTextField(
-                  isError: validationResult.isFailed,
-                  controller: _addressTextEditingController,
-                  decoration: const DefaultInputDecoration(),
-                  onChanged: (value) => validator?.validate(),
-                  textInputAction: TextInputAction.next,
-                ),
-                validator: value,
-              ),
+            _fieldLabel(
+              Text("Country".tr),
             ),
-            const SizedBox(height: 20),
-            Text("Phone Number".tr),
-            const SizedBox(height: 10),
-            RxConsumer<Validator>(
-              rxValue: widget.modifyAddressController.phoneNumberValidatorRx,
-              onConsumeValue: (context, value) => Field(
-                child: (context, validationResult, validator) => ModifiedTextField(
-                  isError: validationResult.isFailed,
-                  controller: _phoneTextEditingController,
-                  decoration: const DefaultInputDecoration(),
-                  onChanged: (value) => validator?.validate(),
-                  textInputAction: TextInputAction.next,
-                ),
-                validator: value,
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text("Zip Code".tr),
-            const SizedBox(height: 10),
-            RxConsumer<Validator>(
-              rxValue: widget.modifyAddressController.zipCodeValidatorRx,
-              onConsumeValue: (context, value) => Field(
-                child: (context, validationResult, validator) => ModifiedTextField(
-                  isError: validationResult.isFailed,
-                  controller: _zipCodeTextEditingController,
-                  decoration: const DefaultInputDecoration(),
-                  onChanged: (value) => validator?.validate(),
-                  textInputAction: TextInputAction.next,
-                ),
-                validator: value,
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text("Country".tr),
             const SizedBox(height: 10),
             RxConsumer<Validator>(
               rxValue: widget.modifyAddressController.countryValidatorRx,
@@ -412,7 +355,9 @@ class _StatefulModifyAddressControllerMediatorWidgetState extends State<_Statefu
               ),
             ),
             const SizedBox(height: 20),
-            Text("City".tr),
+            _fieldLabel(
+              Text("City".tr),
+            ),
             const SizedBox(height: 10),
             RxConsumer<Validator>(
               rxValue: widget.modifyAddressController.cityValidatorRx,
@@ -428,7 +373,9 @@ class _StatefulModifyAddressControllerMediatorWidgetState extends State<_Statefu
               ),
             ),
             const SizedBox(height: 20),
-            Text("State".tr),
+            _fieldLabel(
+              Text("State".tr),
+            ),
             const SizedBox(height: 10),
             RxConsumer<Validator>(
               rxValue: widget.modifyAddressController.stateValidatorRx,
@@ -439,6 +386,115 @@ class _StatefulModifyAddressControllerMediatorWidgetState extends State<_Statefu
                   decoration: const DefaultInputDecoration(),
                   onChanged: (value) => validator?.validate(),
                   textInputAction: TextInputAction.done,
+                ),
+                validator: value,
+              ),
+            ),
+            const SizedBox(height: 20),
+            _fieldLabel(
+              Text("Zip Code".tr),
+            ),
+            const SizedBox(height: 10),
+            RxConsumer<Validator>(
+              rxValue: widget.modifyAddressController.zipCodeValidatorRx,
+              onConsumeValue: (context, value) => Field(
+                child: (context, validationResult, validator) => ModifiedTextField(
+                  isError: validationResult.isFailed,
+                  controller: _zipCodeTextEditingController,
+                  decoration: const DefaultInputDecoration(),
+                  onChanged: (value) => validator?.validate(),
+                  textInputAction: TextInputAction.next,
+                ),
+                validator: value,
+              ),
+            ),
+            const SizedBox(height: 20),
+            _fieldLabel(
+              Text("Phone Number".tr),
+            ),
+            const SizedBox(height: 10),
+            RxConsumer<Validator>(
+              rxValue: widget.modifyAddressController.phoneNumberValidatorRx,
+              onConsumeValue: (context, value) => Field(
+                child: (context, validationResult, validator) => ModifiedTextField(
+                  isError: validationResult.isFailed,
+                  controller: _phoneTextEditingController,
+                  decoration: const DefaultInputDecoration(),
+                  onChanged: (value) => validator?.validate(),
+                  textInputAction: TextInputAction.next,
+                ),
+                validator: value,
+              ),
+            ),
+            const SizedBox(height: 20),
+            _fieldLabel(
+              Text("Receiver Name".tr),
+            ),
+            const SizedBox(height: 10),
+            RxConsumer<Validator>(
+              rxValue: widget.modifyAddressController.nameValidatorRx,
+              onConsumeValue: (context, value) => Field(
+                child: (context, validationResult, validator) => ModifiedTextField(
+                  isError: validationResult.isFailed,
+                  controller: _nameTextEditingController,
+                  decoration: const DefaultInputDecoration(),
+                  onChanged: (value) => validator?.validate(),
+                  textInputAction: TextInputAction.next,
+                ),
+                validator: value,
+              ),
+            ),
+            const SizedBox(height: 20),
+            _fieldLabel(
+              Text("Receiver Email".tr),
+            ),
+            const SizedBox(height: 10),
+            RxConsumer<Validator>(
+              rxValue: widget.modifyAddressController.emailValidatorRx,
+              onConsumeValue: (context, value) => Field(
+                child: (context, validationResult, validator) => ModifiedTextField(
+                  isError: validationResult.isFailed,
+                  controller: _emailTextEditingController,
+                  decoration: const DefaultInputDecoration(),
+                  onChanged: (value) => validator?.validate(),
+                  textInputAction: TextInputAction.next,
+                ),
+                validator: value,
+              ),
+            ),
+            const SizedBox(height: 20),
+            _fieldLabel(
+              Text("${"Receiver Address".tr} 1"),
+            ),
+            const SizedBox(height: 10),
+            RxConsumer<Validator>(
+              rxValue: widget.modifyAddressController.addressValidatorRx,
+              onConsumeValue: (context, value) => Field(
+                child: (context, validationResult, validator) => ModifiedTextField(
+                  isError: validationResult.isFailed,
+                  controller: _addressTextEditingController,
+                  decoration: const DefaultInputDecoration(),
+                  onChanged: (value) => validator?.validate(),
+                  textInputAction: TextInputAction.next,
+                ),
+                validator: value,
+              ),
+            ),
+            const SizedBox(height: 20),
+            _fieldLabel(
+              Text("${"Receiver Address".tr} 2 (Optional)"),
+              required: false
+            ),
+            const SizedBox(height: 10),
+            RxConsumer<Validator>(
+              rxValue: widget.modifyAddressController.address2ValidatorRx,
+              onConsumeValue: (context, value) => Field(
+                child: (context, validationResult, validator) => ModifiedTextField(
+                  isError: validationResult.isFailed,
+                  controller: _address2TextEditingController,
+                  decoration: const DefaultInputDecoration(),
+                  onChanged: (value) => validator?.validate(),
+                  textInputAction: TextInputAction.next,
                 ),
                 validator: value,
               ),

@@ -322,7 +322,10 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Product Category": "Kategori Produk",
       "Description": "Deskripsi",
       "Success mark this cart to be checkout by host": "Sukses menandai keranjang ini siap dicheckout oleh host",
-      "Variant": "Varian"
+      "Variant": "Varian",
+      "Receiver Name": "Nama Penerima",
+      "Receiver Email": "Email Penerima",
+      "Receiver Address": "Alamat Penerima"
     }
   };
 

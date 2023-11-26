@@ -3,6 +3,7 @@ class AddAddressParameter {
   String email;
   String label;
   String address;
+  String? address2;
   String phoneNumber;
   String zipCode;
   String countryId;
@@ -14,6 +15,7 @@ class AddAddressParameter {
     required this.email,
     required this.label,
     required this.address,
+    this.address2,
     required this.phoneNumber,
     required this.zipCode,
     required this.countryId,

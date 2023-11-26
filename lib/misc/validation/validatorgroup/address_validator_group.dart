@@ -6,6 +6,7 @@ class AddressValidatorGroup extends ValidatorGroup {
   Validator emailValidator;
   Validator labelValidator;
   Validator addressValidator;
+  Validator address2Validator;
   Validator phoneNumberValidator;
   Validator zipCodeValidator;
   Validator countryValidator;
@@ -17,6 +18,7 @@ class AddressValidatorGroup extends ValidatorGroup {
     required this.emailValidator,
     required this.labelValidator,
     required this.addressValidator,
+    required this.address2Validator,
     required this.phoneNumberValidator,
     required this.zipCodeValidator,
     required this.countryValidator,
@@ -27,6 +29,7 @@ class AddressValidatorGroup extends ValidatorGroup {
     validatorList.add(emailValidator);
     validatorList.add(labelValidator);
     validatorList.add(addressValidator);
+    validatorList.add(address2Validator);
     validatorList.add(phoneNumberValidator);
     validatorList.add(zipCodeValidator);
     validatorList.add(countryValidator);
