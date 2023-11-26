@@ -42,7 +42,7 @@ class ExploreNusantaraMapCustomPainter extends CustomPainter {
       touchyCanvas.drawPath(
         path.transform(matrix4.storage),
         paint,
-        onTapDown: (details) {
+        onTapUp: (details) {
           if (onSelectProvinceMap != null) {
             onSelectProvinceMap!(provinceMap);
           }
