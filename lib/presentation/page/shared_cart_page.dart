@@ -6,8 +6,10 @@ import 'package:masterbagasi/misc/ext/future_ext.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/number_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:provider/provider.dart';
 import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../controller/host_cart_controller.dart';
@@ -75,6 +77,7 @@ import '../../misc/injector.dart';
 import '../../misc/itemtypelistsubinterceptor/cart_item_type_list_sub_interceptor.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/controller_manager.dart';
+import '../../misc/multi_language_string.dart';
 import '../../misc/navigation_helper.dart';
 import '../../misc/page_restoration_helper.dart';
 import '../../misc/paging/modified_paging_controller.dart';
@@ -85,6 +88,7 @@ import '../../misc/pusher_helper.dart';
 import '../../misc/toast_helper.dart';
 import '../notifier/component_notifier.dart';
 import '../notifier/notification_notifier.dart';
+import '../widget/app_bar_icon_area.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/loaddataresultimplementer/load_data_result_implementer_directly.dart';
 import '../widget/modified_paged_list_view.dart';
@@ -558,15 +562,41 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
             _sharedCartSummaryLoadDataResult = cartSummaryLoadDataResult;
           });
         },
+        onSharedCartInfoSuccessCallback: (showBucketByIdResponse) async => Share.share(
+          MultiLanguageString({
+            Constant.textEnUsLanguageKey: "Bucket username: ${showBucketByIdResponse.bucket.bucketUsername}\r\nBucket password: ${showBucketByIdResponse.bucket.bucketPassword}",
+            Constant.textInIdLanguageKey: "Username keranjang: ${showBucketByIdResponse.bucket.bucketUsername}\r\nKata sandi keranjang: ${showBucketByIdResponse.bucket.bucketPassword}"
+          }).toEmptyStringNonNull
+        ),
+        onSharedCartInfoFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
+          context: context,
+          errorProvider: Injector.locator<ErrorProvider>(),
+          e: e
+        ),
+        onSharedCartInfoLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
       )
     );
     return Scaffold(
       appBar: ModifiedAppBar(
-        titleInterceptor: (context, title) => Row(
-          children: [
-            Text("Shared Cart".tr),
-          ],
-        ),
+        titleInterceptorWithAdditionalParameter: (context, title, titleInterceptorAdditionalParameter) {
+          Size preferredSize = titleInterceptorAdditionalParameter.appBarPreferredSize;
+          return Row(
+            children: [
+              Expanded(
+                child: Text("Shared Cart".tr)
+              ),
+              AppBarIconArea(
+                onTap: widget.sharedCartController.shareCartInfo,
+                height: preferredSize.height,
+                child: Icon(
+                  Icons.share,
+                  color: Theme.of(context).colorScheme.primary,
+                  size: 30
+                )
+              )
+            ],
+          );
+        },
       ),
       body: SafeArea(
         child: Column(

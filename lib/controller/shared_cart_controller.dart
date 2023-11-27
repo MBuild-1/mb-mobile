@@ -79,6 +79,9 @@ typedef _OnShowTriggerBucketReadyProcessLoadingCallback = Future<void> Function(
 typedef _OnTriggerBucketReadyProcessSuccessCallback = Future<void> Function(TriggerBucketReadyResponse triggerBucketReadyResponse);
 typedef _OnShowTriggerBucketReadyProcessFailedCallback = Future<void> Function(dynamic e);
 typedef _OnShowSharedCartSummaryProcessCallback = Future<void> Function(LoadDataResult<CartSummary>);
+typedef _OnShareCartInfoProcessLoadingCallback = Future<void> Function();
+typedef _OnShareCartInfoProcessSuccessCallback = Future<void> Function(ShowBucketByIdResponse showBucketByIdResponse);
+typedef _OnShareCartInfoProcessFailedCallback = Future<void> Function(dynamic e);
 
 class SharedCartController extends BaseGetxController {
   final GetCartListUseCase getCartListUseCase;
@@ -215,6 +218,20 @@ class SharedCartController extends BaseGetxController {
     ).map<User>(
       (value) => value.user
     );
+  }
+
+  void shareCartInfo() async {
+    if (_mainSharedCartDelegate != null) {
+      _mainSharedCartDelegate!.onUnfocusAllWidget();
+      _mainSharedCartDelegate!.onSharedCartInfoLoadingCallback();
+      LoadDataResult<ShowBucketByIdResponse> showBucketByIdResponseLoadDataResult = await showBucketByLoggedUserId();
+      _mainSharedCartDelegate!.onCartBack();
+      if (showBucketByIdResponseLoadDataResult.isSuccess) {
+        _mainSharedCartDelegate!.onSharedCartInfoSuccessCallback(showBucketByIdResponseLoadDataResult.resultIfSuccess!);
+      } else {
+        _mainSharedCartDelegate!.onSharedCartInfoFailedCallback(showBucketByIdResponseLoadDataResult.resultIfFailed);
+      }
+    }
   }
 
   void approveOrRejectRequestBucket(ApproveOrRejectRequestBucketParameter approveOrRejectRequestBucketParameter) async {
@@ -372,6 +389,9 @@ class MainSharedCartDelegate {
   _OnTriggerBucketReadyProcessSuccessCallback onTriggerBucketReadyProcessSuccessCallback;
   _OnShowTriggerBucketReadyProcessFailedCallback onShowTriggerBucketReadyProcessFailedCallback;
   _OnShowSharedCartSummaryProcessCallback onShowSharedCartSummaryProcessCallback;
+  _OnShareCartInfoProcessLoadingCallback onSharedCartInfoLoadingCallback;
+  _OnShareCartInfoProcessSuccessCallback onSharedCartInfoSuccessCallback;
+  _OnShareCartInfoProcessFailedCallback onSharedCartInfoFailedCallback;
 
   MainSharedCartDelegate({
     required this.onUnfocusAllWidget,
@@ -394,6 +414,9 @@ class MainSharedCartDelegate {
     required this.onShowTriggerBucketReadyProcessLoadingCallback,
     required this.onTriggerBucketReadyProcessSuccessCallback,
     required this.onShowTriggerBucketReadyProcessFailedCallback,
-    required this.onShowSharedCartSummaryProcessCallback
+    required this.onShowSharedCartSummaryProcessCallback,
+    required this.onSharedCartInfoSuccessCallback,
+    required this.onSharedCartInfoFailedCallback,
+    required this.onSharedCartInfoLoadingCallback
   });
 }
