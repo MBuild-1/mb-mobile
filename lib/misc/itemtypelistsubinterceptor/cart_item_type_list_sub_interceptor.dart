@@ -750,7 +750,8 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
                               )
                             );
                           }
-                        } : null
+                        } : null,
+                        isLoggedUser: bucketMember.userId == userLoadDataResult.resultIfSuccess!.id,
                       )
                     ]
                   )

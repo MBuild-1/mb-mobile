@@ -1289,6 +1289,7 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
         isExpanded: item.isExpanded,
         onAcceptOrDeclineMember: item.onAcceptOrDeclineMember,
         readyStatus: item.readyStatus,
+        isLoggedUser: item.isLoggedUser
       );
     } else {
       return Container();

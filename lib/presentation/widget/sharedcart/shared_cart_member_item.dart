@@ -23,6 +23,7 @@ class SharedCartMemberItem extends StatelessWidget {
   final bool showReadyButton;
   final bool showDeleteButton;
   final int readyStatus;
+  final bool isLoggedUser;
 
   const SharedCartMemberItem({
     super.key,
@@ -36,7 +37,8 @@ class SharedCartMemberItem extends StatelessWidget {
     required this.onAcceptOrDeclineMember,
     required this.showReadyButton,
     required this.showDeleteButton,
-    required this.readyStatus
+    required this.readyStatus,
+    required this.isLoggedUser
   });
 
   @override
@@ -144,37 +146,50 @@ class SharedCartMemberItem extends StatelessWidget {
                         return Row(
                           children: [
                             if (!isNotTapDeleteAndNotReady) ...[
-                              Expanded(
-                                child: SizedOutlineGradientButton(
-                                  onPressed: () {
-                                    if (isTapDelete) {
-                                      return onTapDelete;
-                                    } else if (isTapReady) {
-                                      return onTapReady;
-                                    }
-                                    return null;
-                                  }(),
-                                  text: () {
-                                    if (isTapDelete) {
-                                      return MultiLanguageString({
-                                        Constant.textInIdLanguageKey: "Hapus",
-                                        Constant.textEnUsLanguageKey: "Delete"
-                                      });
-                                    } else if (isTapReady) {
-                                      // If "Ready" then show "Not Ready" text, because this purpose of this button is to make "Not Ready" if tapped.
-                                      // Else if "Not Ready" then show "Ready" text, because this purpose of this button is to make "Ready" if tapped.
-                                      return MultiLanguageString({
-                                        Constant.textInIdLanguageKey: isReady ? "Tidak Siap" : "Siap",
-                                        Constant.textEnUsLanguageKey: isReady ? "Not Ready" : "Ready"
-                                      });
-                                    }
-                                    return null;
-                                  }().toStringNonNull,
-                                  outlineGradientButtonType: OutlineGradientButtonType.outline,
-                                  outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
-                                )
-                              ),
-                              const SizedBox(width: 10.0),
+                              Builder(
+                                builder: (BuildContext context) {
+                                  if (isTapReady && !isLoggedUser) {
+                                    return const SizedBox();
+                                  }
+                                  return Expanded(
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: SizedOutlineGradientButton(
+                                            onPressed: () {
+                                              if (isTapDelete) {
+                                                return onTapDelete;
+                                              } else if (isTapReady) {
+                                                return onTapReady;
+                                              }
+                                              return null;
+                                            }(),
+                                            text: () {
+                                              if (isTapDelete) {
+                                                return MultiLanguageString({
+                                                  Constant.textInIdLanguageKey: "Hapus",
+                                                  Constant.textEnUsLanguageKey: "Delete"
+                                                });
+                                              } else if (isTapReady) {
+                                                // If "Ready" then show "Not Ready" text, because this purpose of this button is to make "Not Ready" if tapped.
+                                                // Else if "Not Ready" then show "Ready" text, because this purpose of this button is to make "Ready" if tapped.
+                                                return MultiLanguageString({
+                                                  Constant.textInIdLanguageKey: isReady ? "Tidak Siap" : "Siap",
+                                                  Constant.textEnUsLanguageKey: isReady ? "Not Ready" : "Ready"
+                                                });
+                                              }
+                                              return null;
+                                            }().toStringNonNull,
+                                            outlineGradientButtonType: OutlineGradientButtonType.outline,
+                                            outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 10.0)
+                                      ]
+                                    ),
+                                  );
+                                }
+                              )
                             ],
                             Expanded(
                               child: SizedOutlineGradientButton(

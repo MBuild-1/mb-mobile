@@ -12,6 +12,7 @@ class SharedCartMemberListItemControllerState extends ListItemControllerState {
   bool showReadyButton;
   bool showDeleteButton;
   int readyStatus;
+  bool isLoggedUser;
 
   SharedCartMemberListItemControllerState({
     required this.bucketMember,
@@ -22,6 +23,7 @@ class SharedCartMemberListItemControllerState extends ListItemControllerState {
     required this.isExpanded,
     required this.showReadyButton,
     required this.showDeleteButton,
-    required this.readyStatus
+    required this.readyStatus,
+    required this.isLoggedUser
   });
 }
