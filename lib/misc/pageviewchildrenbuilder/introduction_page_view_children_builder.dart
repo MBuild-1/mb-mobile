@@ -40,9 +40,9 @@ class IntroductionPageViewChildrenBuilder extends PreloadPageViewChildrenBuilder
           key: _pageViewContentGlobalKeyList[1],
           context: context,
           image: introductionImageList[1],
-          titleTop: "Pengiriman barang dari Indonesia",
+          titleTop: "Dari Indonesia",
           titleBottom: "Ke seluruh dunia",
-          description: "Siapkan barang yang Anda butuhkan lalu kirim ke Warehouse Master Bagasi, kami bantu packing dan kirim ke alamat Anda di seluruh dunia.",
+          description: "Kini, apapun dapat kamu peroleh dari Indonesia dengan cepat, mudah, dan murah, loh! Dengan hanya satu klik saja, makanan favoritmu dari Indonesia bisa sampe di luar negeri.",
           top: topMarginForPageViewContent
         ),
         _buildIntroductionPage(
@@ -50,8 +50,8 @@ class IntroductionPageViewChildrenBuilder extends PreloadPageViewChildrenBuilder
           context: context,
           image: introductionImageList[2],
           titleTop: "Belanja di mana pun,",
-          titleBottom: "Kami yang kirim",
-          description: "Berbelanja di E-commerce Indonesia (Tokopedia, Shopee, Bukalapak, Dll) dengan menggunakan alamat Warehouse Master Bagasi. Kami kumpulkan belanjaannya, kami re-packing dan kami kirim ke alamat Anda di seluruh dunia.",
+          titleBottom: "Master Bagasi yang kirim",
+          description: "Dengan fitur belanja dari mana saja lewat paltform apapun dari Indonesia, Master Bagasi menjamin kemudahan dan kenyamanan kamu untuk memilih sendiri platform berbelanja. Kamu tinggal klik fitur kirim ke warehouse Master Bagasi dan shipment akan segera di proses deh pengirimannya ke luar negeri!",
           top: topMarginForPageViewContent
         ),
         _buildLastIntroductionPage(
