@@ -144,6 +144,7 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Shipping Address": "Alamat Pengiriman",
       "Change Other Address": "Pilih Alamat Lain",
       "Choose Address": "Pilih Alamat",
+      "Choose Coupon": "Pilih Kupon",
       "Product Brand": "Brand Product",
       "Delivery to": "Dikirim ke",
       "Welcome To Nusantara": "Selamat Datang di Nusantara",

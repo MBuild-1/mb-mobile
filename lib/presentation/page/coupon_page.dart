@@ -287,7 +287,7 @@ class _StatefulCouponControllerMediatorWidgetState extends State<_StatefulCoupon
                   children: [
                     SizedOutlineGradientButton(
                       onPressed: () => Get.back(result: _selectCoupon!.id),
-                      text: "Choose Address".tr,
+                      text: "Choose Coupon".tr,
                       outlineGradientButtonType: OutlineGradientButtonType.solid,
                       outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
                     )
