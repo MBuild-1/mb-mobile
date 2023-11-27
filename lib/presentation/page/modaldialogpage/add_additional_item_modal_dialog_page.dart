@@ -8,14 +8,19 @@ import '../../../controller/modaldialogcontroller/add_additional_item_modal_dial
 import '../../../domain/entity/additionalitem/additional_item.dart';
 import '../../../domain/usecase/add_additional_item_use_case.dart';
 import '../../../domain/usecase/change_additional_item_use_case.dart';
+import '../../../misc/constant.dart';
 import '../../../misc/dialog_helper.dart';
 import '../../../misc/errorprovider/error_provider.dart';
 import '../../../misc/injector.dart';
 import '../../../misc/inputdecoration/default_input_decoration.dart';
+import '../../../misc/string_util.dart';
+import '../../../misc/textinputformatter/currency_text_input_formatter.dart';
 import '../../../misc/validation/validator/validator.dart';
+import '../../../misc/widget_helper.dart';
 import '../../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../../widget/field.dart';
 import '../../widget/modified_text_field.dart';
+import '../../widget/password_obscurer.dart';
 import '../../widget/rx_consumer.dart';
 import 'modal_dialog_page.dart';
 
@@ -67,6 +72,12 @@ class _StatefulAddAdditionalItemControllerMediatorWidgetState extends State<_Sta
   final TextEditingController _additionalQuantityTextEditingController = TextEditingController();
   String _id = "";
 
+  final CurrencyTextInputFormatter currencyTextInputFormatter = CurrencyTextInputFormatter(
+    locale: "in_ID",
+    symbol: "",
+    decimalDigits: 0
+  );
+
   @override
   void initState() {
     super.initState();
@@ -74,7 +85,7 @@ class _StatefulAddAdditionalItemControllerMediatorWidgetState extends State<_Sta
       AdditionalItem additionalItem = widget.serializedJsonAdditionalItemModalDialogParameter!.toAddAdditionalItemModalDialogParameter().additionalItem;
       _id = additionalItem.id;
       _additionalNameTextEditingController.text = additionalItem.name;
-      _additionalEstimationPriceTextEditingController.text = additionalItem.estimationPrice.toString();
+      _additionalEstimationPriceTextEditingController.text = currencyTextInputFormatter.formatDouble(additionalItem.estimationPrice);
       _additionalEstimationWeightTextEditingController.text = additionalItem.estimationWeight.toString();
       _additionalQuantityTextEditingController.text = additionalItem.quantity.toString();
     }
@@ -88,8 +99,8 @@ class _StatefulAddAdditionalItemControllerMediatorWidgetState extends State<_Sta
         onGetHasParameter: () => widget.serializedJsonAdditionalItemModalDialogParameter.isNotEmptyString,
         onGetAdditionalItemIdInput: () => _id,
         onGetAdditionalItemNameInput: () => _additionalNameTextEditingController.text,
-        onGetAdditionalItemEstimationPriceInput: () => _additionalEstimationPriceTextEditingController.text,
-        onGetAdditionalItemEstimationWeightInput: () => _additionalEstimationWeightTextEditingController.text,
+        onGetAdditionalItemEstimationPriceInput: () => StringUtil.filterNumber(_additionalEstimationPriceTextEditingController.text),
+        onGetAdditionalItemEstimationWeightInput: () => StringUtil.filterNumberAndDecimal(_additionalEstimationWeightTextEditingController.text),
         onGetAdditionalItemQuantityInput: () => _additionalQuantityTextEditingController.text,
         onAddAdditionalItemBack: () => Get.back(),
         onShowAdditionalItemRequestProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
@@ -153,8 +164,18 @@ class _StatefulAddAdditionalItemControllerMediatorWidgetState extends State<_Sta
               onConsumeValue: (context, value) => Field(
                 child: (context, validationResult, validator) => ModifiedTextField(
                   isError: validationResult.isFailed,
+                  inputFormatters: [currencyTextInputFormatter],
                   controller: _additionalEstimationPriceTextEditingController,
-                  decoration: DefaultInputDecoration(hintText: "Enter estimation price".tr),
+                  decoration: DefaultInputDecoration(
+                    hintText: "Enter estimation price".tr,
+                    prefixIcon: WidgetHelper.buildPrefixForTextField(
+                      prefix: Text(
+                        "Rp. ",
+                        style: TextStyle(color: Constant.colorDarkBlack, fontSize: 16)
+                      ),
+                    ),
+                    prefixIconConstraints: const BoxConstraints(minWidth: 0.0, minHeight: 0.0)
+                  ),
                   onChanged: (value) => validator?.validate(),
                   textInputAction: TextInputAction.next,
                 ),
@@ -170,7 +191,16 @@ class _StatefulAddAdditionalItemControllerMediatorWidgetState extends State<_Sta
                 child: (context, validationResult, validator) => ModifiedTextField(
                   isError: validationResult.isFailed,
                   controller: _additionalEstimationWeightTextEditingController,
-                  decoration: DefaultInputDecoration(hintText: "Enter estimation weight".tr),
+                  decoration: DefaultInputDecoration(
+                    hintText: "Enter estimation weight".tr,
+                    suffixIcon: WidgetHelper.buildSuffixForTextField(
+                      suffix: Text(
+                        "Kg",
+                        style: TextStyle(color: Constant.colorDarkBlack, fontSize: 16)
+                      ),
+                    ),
+                    suffixIconConstraints: const BoxConstraints(minWidth: 0.0, minHeight: 0.0)
+                  ),
                   onChanged: (value) => validator?.validate(),
                   textInputAction: TextInputAction.next,
                 ),

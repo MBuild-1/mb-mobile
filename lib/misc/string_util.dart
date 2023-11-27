@@ -15,6 +15,20 @@ import 'validation/validator/validator.dart';
 class _StringUtilImpl {
   static const _sizeSuffixes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
 
+  String filterNumber(String input) {
+    RegExp regex = RegExp(r'[0-9]');
+    Iterable<Match> matches = regex.allMatches(input);
+    String result = matches.map((match) => match.group(0)!).join();
+    return result;
+  }
+
+  String filterNumberAndDecimal(String input) {
+    RegExp regex = RegExp(r'[0-9.]');
+    Iterable<Match> matches = regex.allMatches(input);
+    String result = matches.map((match) => match.group(0)!).join();
+    return result;
+  }
+
   String addUppercaseInFirstCharacter(String text) {
     String result = "";
     for (int i = 0; i < text.length; i++) {

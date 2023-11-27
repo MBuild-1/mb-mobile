@@ -35,7 +35,10 @@ import '../../../misc/paging/modified_paging_controller.dart';
 import '../../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../../misc/paging/pagingresult/paging_result.dart';
+import '../../../misc/string_util.dart';
+import '../../../misc/textinputformatter/currency_text_input_formatter.dart';
 import '../../../misc/validation/validator/validator.dart';
+import '../../../misc/widget_helper.dart';
 import '../../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../../widget/field.dart';
 import '../../widget/modified_paged_list_view.dart';
@@ -93,6 +96,12 @@ class _StatefulModifyWarehouseInOrderControllerMediatorWidgetState extends State
   late final ModifiedPagingController<int, ListItemControllerState> _modifyWarehouseInOrderListItemPagingController;
   late final PagingControllerState<int, ListItemControllerState> _modifyWarehouseInOrderListItemPagingControllerState;
 
+  final CurrencyTextInputFormatter currencyTextInputFormatter = CurrencyTextInputFormatter(
+    locale: "in_ID",
+    symbol: "",
+    decimalDigits: 0
+  );
+
   final List<AdditionalItem> _additionalItemList = [];
   ModifyWarehouseInOrderParameter? _localModifyWarehouseInOrderParameter;
   int _index = 0;
@@ -104,7 +113,7 @@ class _StatefulModifyWarehouseInOrderControllerMediatorWidgetState extends State
     if (modifyWarehouseInOrderParameter is ChangeWarehouseInOrderParameter) {
       OptionalFieldsWarehouseInOrderItem optionalFieldsWarehouseInOrderItem = modifyWarehouseInOrderParameter.optionalFieldsWarehouseInOrderItem;
       _nameTextEditingController.text = optionalFieldsWarehouseInOrderItem.name.toEmptyStringNonNull;
-      _priceTextEditingController.text = optionalFieldsWarehouseInOrderItem.price != null ? optionalFieldsWarehouseInOrderItem.price!.toString() : "";
+      _priceTextEditingController.text = optionalFieldsWarehouseInOrderItem.price != null ? currencyTextInputFormatter.formatDouble(optionalFieldsWarehouseInOrderItem.price!.toDouble()) : "";
       _weightTextEditingController.text = optionalFieldsWarehouseInOrderItem.weight != null ? optionalFieldsWarehouseInOrderItem.weight!.toString() : "";
       _quantityTextEditingController.text = optionalFieldsWarehouseInOrderItem.quantity != null ? optionalFieldsWarehouseInOrderItem.quantity!.toString() : "";
       _notesTextEditingController.text = optionalFieldsWarehouseInOrderItem.notes.toEmptyStringNonNull;
@@ -157,7 +166,7 @@ class _StatefulModifyWarehouseInOrderControllerMediatorWidgetState extends State
               var modifyWarehouseInOrderParameter = widget.modifyWarehouseInOrderModalDialogPageParameter.modifyWarehouseInOrderParameter;
               if (modifyWarehouseInOrderParameter is AddWarehouseInOrderParameter) {
                 _nameTextEditingController.text = additionalItem.name;
-                _priceTextEditingController.text = additionalItem.estimationPrice.toString();
+                _priceTextEditingController.text = currencyTextInputFormatter.formatDouble(additionalItem.estimationPrice);
                 _weightTextEditingController.text = additionalItem.estimationWeight.toString();
                 _quantityTextEditingController.text = additionalItem.quantity.toString();
                 _notesTextEditingController.text = additionalItem.notes;
@@ -196,8 +205,8 @@ class _StatefulModifyWarehouseInOrderControllerMediatorWidgetState extends State
         onGetModifyWarehouseInOrderParameter: () => widget.modifyWarehouseInOrderModalDialogPageParameter.modifyWarehouseInOrderParameter,
         onGetAdditionalItemList: () => _additionalItemList,
         onGetNameInput: () => _nameTextEditingController.text,
-        onGetPriceInput: () => _priceTextEditingController.text,
-        onGetWeightInput: () => _weightTextEditingController.text,
+        onGetPriceInput: () => StringUtil.filterNumber(_priceTextEditingController.text),
+        onGetWeightInput: () => StringUtil.filterNumberAndDecimal(_weightTextEditingController.text),
         onGetQuantityInput: () => _quantityTextEditingController.text,
         onGetNotesInput: () => _notesTextEditingController.text,
         onAddAdditionalItemBack: () async => Get.back(),
@@ -302,8 +311,18 @@ class _StatefulModifyWarehouseInOrderControllerMediatorWidgetState extends State
                       onConsumeValue: (context, value) => Field(
                         child: (context, validationResult, validator) => ModifiedTextField(
                           isError: validationResult.isFailed,
+                          inputFormatters: [currencyTextInputFormatter],
                           controller: _priceTextEditingController,
-                          decoration: const DefaultInputDecoration(hintText: ""),
+                          decoration: DefaultInputDecoration(
+                            hintText: "",
+                            prefixIcon: WidgetHelper.buildPrefixForTextField(
+                              prefix: Text(
+                                "Rp. ",
+                                style: TextStyle(color: Constant.colorDarkBlack, fontSize: 16)
+                              ),
+                            ),
+                            prefixIconConstraints: const BoxConstraints(minWidth: 0.0, minHeight: 0.0)
+                          ),
                           onChanged: (value) => validator?.validate(),
                           textInputAction: TextInputAction.next,
                         ),
@@ -319,7 +338,16 @@ class _StatefulModifyWarehouseInOrderControllerMediatorWidgetState extends State
                         child: (context, validationResult, validator) => ModifiedTextField(
                           isError: validationResult.isFailed,
                           controller: _weightTextEditingController,
-                          decoration: const DefaultInputDecoration(hintText: ""),
+                          decoration: DefaultInputDecoration(
+                            hintText: "",
+                            suffixIcon: WidgetHelper.buildSuffixForTextField(
+                              suffix: Text(
+                                "Kg",
+                                style: TextStyle(color: Constant.colorDarkBlack, fontSize: 16)
+                              ),
+                            ),
+                            suffixIconConstraints: const BoxConstraints(minWidth: 0.0, minHeight: 0.0)
+                          ),
                           onChanged: (value) => validator?.validate(),
                           textInputAction: TextInputAction.next,
                         ),
@@ -371,8 +399,8 @@ class _StatefulModifyWarehouseInOrderControllerMediatorWidgetState extends State
                                 AdditionalItem(
                                   id: "",
                                   name: _nameTextEditingController.text,
-                                  estimationPrice: double.parse(_priceTextEditingController.text),
-                                  estimationWeight: double.parse(_weightTextEditingController.text),
+                                  estimationPrice: double.parse(StringUtil.filterNumber(_priceTextEditingController.text)),
+                                  estimationWeight: double.parse(StringUtil.filterNumberAndDecimal(_weightTextEditingController.text)),
                                   quantity: int.parse(_quantityTextEditingController.text),
                                   notes: _notesTextEditingController.text
                                 )
@@ -388,8 +416,8 @@ class _StatefulModifyWarehouseInOrderControllerMediatorWidgetState extends State
                               if (additionalItemIterable.isNotEmpty) {
                                 AdditionalItem willBeEditAdditionalItem = additionalItemIterable.first;
                                 willBeEditAdditionalItem.name = _nameTextEditingController.text;
-                                willBeEditAdditionalItem.estimationPrice = double.parse(_priceTextEditingController.text);
-                                willBeEditAdditionalItem.estimationWeight = double.parse(_weightTextEditingController.text);
+                                willBeEditAdditionalItem.estimationPrice = double.parse(StringUtil.filterNumber(_priceTextEditingController.text));
+                                willBeEditAdditionalItem.estimationWeight = double.parse(StringUtil.filterNumberAndDecimal(_weightTextEditingController.text));
                                 willBeEditAdditionalItem.quantity = int.parse(_quantityTextEditingController.text);
                                 willBeEditAdditionalItem.notes = _notesTextEditingController.text;
                               }

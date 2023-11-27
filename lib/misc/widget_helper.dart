@@ -23,6 +23,34 @@ import 'login_helper.dart';
 import 'page_restoration_helper.dart';
 
 class _WidgetHelperImpl {
+  Widget buildPrefixForTextField({
+    required Widget prefix
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 20.0),
+      child: Column(
+        children: [
+          prefix,
+          const SizedBox(height: 2)
+        ],
+      ),
+    );
+  }
+
+  Widget buildSuffixForTextField({
+    required Widget suffix
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 20.0),
+      child: Column(
+        children: [
+          suffix,
+          const SizedBox(height: 2)
+        ],
+      ),
+    );
+  }
+
   Widget buildPromptIndicator({
     required BuildContext context,
     Image? image,
