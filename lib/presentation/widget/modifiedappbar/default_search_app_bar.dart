@@ -41,31 +41,39 @@ class DefaultSearchAppBar extends SearchAppBar {
               )
             ),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(
-              vertical: 8.0,
-              horizontal: 12.0
-            ),
+          SizedBox(
             child: Row(
               children: [
                 if (canPop) ...[
                   TapArea(
                     onTap: () => Navigator.maybePop(context),
-                    child: IconTheme(
-                      data: IconThemeData(
-                        color: Colors.grey.shade600
-                      ),
-                      child: const BackButtonIcon(),
+                    child: Stack(
+                      children: [
+                        Container(),
+                        Center(
+                          child: Row(
+                            children: [
+                              const SizedBox(width: 12.0),
+                              IconTheme(
+                                data: IconThemeData(
+                                  color: Colors.grey.shade600
+                                ),
+                                child: const BackButtonIcon(),
+                              ),
+                              const SizedBox(width: 8),
+                              ModifiedVerticalDivider(
+                                lineWidth: 1,
+                                lineHeight: 25,
+                                lineColor: Constant.colorGrey9,
+                              )
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  ModifiedVerticalDivider(
-                    lineWidth: 1,
-                    lineHeight: 25,
-                    lineColor: Constant.colorGrey9,
-                  ),
-                  const SizedBox(width: 8),
+                  )
                 ],
+                const SizedBox(width: 8),
                 Icon(Icons.search, color: Constant.colorGrey8),
                 const SizedBox(width: 5),
                 Text("Search in Master Bagasi".tr, style: TextStyle(color: Constant.colorGrey8)),
