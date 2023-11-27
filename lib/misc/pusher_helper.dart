@@ -76,6 +76,41 @@ class _PusherHelperImpl {
     return pusherChannelsFlutter;
   }
 
+  String _getNotificationCountChannelName() {
+    return "notif-count-event";
+  }
+
+  Future<PusherChannelsFlutter> subscribeNotificationCountPusherChannel({
+    required PusherChannelsFlutter pusherChannelsFlutter,
+    required dynamic Function(dynamic) onEvent,
+    required String userId
+  }) async {
+    try {
+      await pusherChannelsFlutter.subscribeAfterPusherIsConnected(
+        pusherConnectedCompleter: _pusherConnectedCompleter,
+        channelName: "${_getNotificationCountChannelName()}.$userId",
+        onEvent: onEvent
+      );
+    } catch (e) {
+      print("ERROR: $e");
+    }
+    return pusherChannelsFlutter;
+  }
+
+  Future<PusherChannelsFlutter> unsubscribeNotificationCountPusherChannel({
+    required PusherChannelsFlutter pusherChannelsFlutter,
+    required String userId
+  }) async {
+    try {
+      await pusherChannelsFlutter.unsubscribe(
+        channelName: "${_getNotificationCountChannelName()}.$userId",
+      );
+    } catch (e) {
+      print("ERROR: $e");
+    }
+    return pusherChannelsFlutter;
+  }
+
   Future<PusherChannelsFlutter> subscribeChatPusherChannel({
     required PusherChannelsFlutter pusherChannelsFlutter,
     required dynamic Function(dynamic) onEvent,

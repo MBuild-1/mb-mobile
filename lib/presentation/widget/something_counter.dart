@@ -51,7 +51,8 @@ class _SomethingCounterState extends State<SomethingCounter> with RestorationMix
       LoginHelper.checkingLogin(context, () async {
         LoadDataResult<User> userLoadDataResult = await _loginNotifier.loadUser();
         if (userLoadDataResult.isSuccess) {
-          subscribeChatCount(userLoadDataResult.resultIfSuccess!.id);
+          await subscribeChatCount(userLoadDataResult.resultIfSuccess!.id);
+          await subscribeNotificationCount(userLoadDataResult.resultIfSuccess!.id);
         }
       });
     });
@@ -137,6 +138,31 @@ class _SomethingCounterState extends State<SomethingCounter> with RestorationMix
   Future<void> unsubscribeChatCount(String userId) async {
     try {
       await PusherHelper.unsubscribeChatCountPusherChannel(
+        pusherChannelsFlutter: _pusher,
+        userId: userId
+      );
+    } catch (e) {
+      // Nothing
+    }
+  }
+
+  Future<void> subscribeNotificationCount(String userId) async {
+    try {
+      await PusherHelper.subscribeNotificationCountPusherChannel(
+        pusherChannelsFlutter: _pusher,
+        onEvent: (event) {
+          _notificationNotifier.loadNotificationLoadDataResult();
+        },
+        userId: userId
+      );
+    } catch (e) {
+      // Nothing
+    }
+  }
+
+  Future<void> unsubscribeNotificationCount(String userId) async {
+    try {
+      await PusherHelper.unsubscribeNotificationCountPusherChannel(
         pusherChannelsFlutter: _pusher,
         userId: userId
       );

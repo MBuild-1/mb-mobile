@@ -110,6 +110,7 @@ class LoginController extends BaseGetxController {
           if (userLoadDataResult.isSuccess) {
             User user = userLoadDataResult.resultIfSuccess!;
             await _loginDelegate!.onSubscribeChatCountRealtimeChannel(user.id);
+            await _loginDelegate!.onSubscribeNotificationCountRealtimeChannel(user.id);
           }
           Get.back();
           _loginDelegate!.onLoginRequestProcessSuccessCallback();
@@ -154,6 +155,7 @@ class LoginController extends BaseGetxController {
           if (userLoadDataResult.isSuccess) {
             User user = userLoadDataResult.resultIfSuccess!;
             await _loginDelegate!.onSubscribeChatCountRealtimeChannel(user.id);
+            await _loginDelegate!.onSubscribeNotificationCountRealtimeChannel(user.id);
           }
           Get.back();
           _loginDelegate!.onLoginRequestProcessSuccessCallback();
@@ -214,6 +216,7 @@ class LoginDelegate {
   _OnLoginIntoOneSignal onLoginIntoOneSignal;
   OnGetPushNotificationSubscriptionId onGetPushNotificationSubscriptionId;
   Future<void> Function(String) onSubscribeChatCountRealtimeChannel;
+  Future<void> Function(String) onSubscribeNotificationCountRealtimeChannel;
 
   LoginDelegate({
     required this.onUnfocusAllWidget,
@@ -228,7 +231,8 @@ class LoginDelegate {
     required this.onSaveTempData,
     required this.onLoginIntoOneSignal,
     required this.onGetPushNotificationSubscriptionId,
-    required this.onSubscribeChatCountRealtimeChannel
+    required this.onSubscribeChatCountRealtimeChannel,
+    required this.onSubscribeNotificationCountRealtimeChannel
   });
 }
 

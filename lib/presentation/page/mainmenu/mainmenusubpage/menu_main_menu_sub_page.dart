@@ -436,7 +436,8 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
             return FailedLoadDataResult<String>(e: e, stackTrace: stackTrace);
           }
         },
-        onUnsubscribeChatCountRealtimeChannel: (userId) async => await SomethingCounter.of(context)?.unsubscribeChatCount(userId)
+        onUnsubscribeChatCountRealtimeChannel: (userId) async => await SomethingCounter.of(context)?.unsubscribeChatCount(userId),
+        onUnsubscribeNotificationCountRealtimeChannel: (userId) async => await SomethingCounter.of(context)?.unsubscribeNotificationCount(userId),
       )
     );
     widget.menuMainMenuSubController.sharedCartControllerContentDelegate.setSharedCartDelegate(

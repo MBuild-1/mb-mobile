@@ -160,6 +160,7 @@ class MenuMainMenuSubController extends BaseGetxController {
         if (userLoadDataResult.isSuccess) {
           User user = userLoadDataResult.resultIfSuccess!;
           await _menuMainMenuSubDelegate!.onUnsubscribeChatCountRealtimeChannel(user.id);
+          await _menuMainMenuSubDelegate!.onUnsubscribeNotificationCountRealtimeChannel(user.id);
         }
       }
       await _menuMainMenuSubDelegate!.onDeleteToken().getLoadDataResult();
@@ -218,6 +219,7 @@ class MenuMainMenuSubDelegate {
   _OnShowLogoutRequestProcessFailedCallback onShowLogoutRequestProcessFailedCallback;
   _OnLogoutIntoOneSignal onLogoutIntoOneSignal;
   Future<void> Function(String) onUnsubscribeChatCountRealtimeChannel;
+  Future<void> Function(String) onUnsubscribeNotificationCountRealtimeChannel;
 
   MenuMainMenuSubDelegate({
     required this.onObserveLoadProductDelegate,
@@ -228,7 +230,8 @@ class MenuMainMenuSubDelegate {
     required this.onLogoutRequestProcessSuccessCallback,
     required this.onShowLogoutRequestProcessFailedCallback,
     required this.onLogoutIntoOneSignal,
-    required this.onUnsubscribeChatCountRealtimeChannel
+    required this.onUnsubscribeChatCountRealtimeChannel,
+    required this.onUnsubscribeNotificationCountRealtimeChannel
   });
 }
 
