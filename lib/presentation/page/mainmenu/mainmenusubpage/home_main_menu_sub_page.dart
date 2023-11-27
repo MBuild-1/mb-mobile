@@ -709,14 +709,34 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
         onObserveSuccessLoadMultipleTransparentBanner: (onObserveSuccessLoadMultipleTransparentBannerParameter) {
           dynamic data = onObserveSuccessLoadMultipleTransparentBannerParameter.data;
           if (data == Constant.transparentBannerKeyMultipleHomepage) {
-            return MultiBannerListItemControllerState(
-              bannerList: onObserveSuccessLoadMultipleTransparentBannerParameter.transparentBannerList.map(
-                (transparentBanner) => Banner(
-                  id: transparentBanner.id,
-                  imageUrl: transparentBanner.imageUrl
-                )
-              ).toList(),
-              aspectRatioValue: Constant.aspectRatioValueHomepageBanner,
+            return WidgetSubstitutionWithInjectionListItemControllerState(
+              widgetSubstitutionWithInjection: (context, index, widgetList) {
+                return Padding(
+                  padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 8.0),
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(10.0),
+                      bottomRight: Radius.circular(10.0)
+                    ),
+                    child: Column(
+                      children: widgetList
+                    ),
+                  ),
+                );
+              },
+              onInjectListItemControllerState: () {
+                return <ListItemControllerState>[
+                  MultiBannerListItemControllerState(
+                    bannerList: onObserveSuccessLoadMultipleTransparentBannerParameter.transparentBannerList.map(
+                      (transparentBanner) => Banner(
+                        id: transparentBanner.id,
+                        imageUrl: transparentBanner.imageUrl
+                      )
+                    ).toList(),
+                    aspectRatioValue: Constant.aspectRatioValueHomepageBanner,
+                  )
+                ];
+              }
             );
           } else if (data == Constant.transparentBannerKeyMultipleShippingPrice) {
             return CompoundListItemControllerState(
