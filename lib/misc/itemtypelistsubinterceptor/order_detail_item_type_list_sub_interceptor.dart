@@ -129,6 +129,35 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
     listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
       i, ListItemControllerStateWrapper(transactionNumberStatusListItemControllerState), oldItemTypeList, newListItemControllerState
     );
+    if (order.combinedOrder.isRemoteArea == 1) {
+      newListItemControllerState.add(VirtualSpacingListItemControllerState(height: 20));
+      ListItemControllerState isRemoveAreaWarningListItemControllerState = PaddingContainerListItemControllerState(
+        padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+        paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
+          widgetSubstitution: (context, index) {
+            return Container(
+              width: double.infinity,
+              child: Center(
+                child: Text(
+                  MultiLanguageString({
+                    Constant.textEnUsLanguageKey: "Your delivery location transaction is included in the remote delivery area, there will be an additional delivery price.",
+                    Constant.textInIdLanguageKey: "Transaksi lokasi pengiriman kamu masuk kedalam pengiriman remote area, akan ada tambahan harga pengiriman.",
+                  }).toEmptyStringNonNull
+                ),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16.0),
+                color: Colors.amberAccent.withOpacity(0.5)
+              ),
+            );
+          }
+        )
+      );
+      listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
+        i, ListItemControllerStateWrapper(isRemoveAreaWarningListItemControllerState), oldItemTypeList, newListItemControllerState
+      );
+    }
     int getStatusStep(String status) {
       List<String> statusList = [
         "Menunggu Konfirmasi",

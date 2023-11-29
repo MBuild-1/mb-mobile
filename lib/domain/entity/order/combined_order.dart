@@ -18,6 +18,7 @@ class CombinedOrder {
   String? inStatus;
   DateTime? takeoverAt;
   int review;
+  int isRemoteArea;
   Coupon? coupon;
   User user;
   OrderProduct orderProduct;
@@ -39,6 +40,7 @@ class CombinedOrder {
     required this.inStatus,
     this.takeoverAt,
     required this.review,
+    required this.isRemoteArea,
     this.coupon,
     required this.user,
     required this.orderProduct,
