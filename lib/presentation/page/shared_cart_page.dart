@@ -42,11 +42,13 @@ import '../../domain/usecase/change_additional_item_use_case.dart';
 import '../../domain/usecase/check_bucket_use_case.dart';
 import '../../domain/usecase/checkout_bucket_use_case.dart';
 import '../../domain/usecase/create_bucket_use_case.dart';
+import '../../domain/usecase/destroy_bucket_use_case.dart';
 import '../../domain/usecase/get_additional_item_use_case.dart';
 import '../../domain/usecase/get_cart_list_use_case.dart';
 import '../../domain/usecase/get_cart_summary_use_case.dart';
 import '../../domain/usecase/get_shared_cart_summary_use_case.dart';
 import '../../domain/usecase/get_user_use_case.dart';
+import '../../domain/usecase/leave_bucket_use_case.dart';
 import '../../domain/usecase/remove_additional_item_use_case.dart';
 import '../../domain/usecase/remove_from_cart_use_case.dart';
 import '../../domain/usecase/remove_member_bucket_use_case.dart';
@@ -130,6 +132,8 @@ class SharedCartPage extends RestorableGetxPage<_SharedCartPageRestoration> {
         Injector.locator<RemoveMemberBucketUseCase>(),
         Injector.locator<TriggerBucketReadyUseCase>(),
         Injector.locator<CheckoutBucketUseCase>(),
+        Injector.locator<LeaveBucketUseCase>(),
+        Injector.locator<DestroyBucketUseCase>(),
       ), tag: pageName
     );
   }
@@ -269,7 +273,7 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
   CartContainerInterceptingActionListItemControllerState _cartContainerInterceptingActionListItemControllerState = DefaultCartContainerInterceptingActionListItemControllerState();
   String? _bucketId;
   BucketMember? _expandedBucketMember;
-  bool _hasKickedFromBucket = false;
+  bool _hasExitFromBucket = false;
   final ValueNotifier<dynamic> _fillerErrorValueNotifier = ValueNotifier(null);
 
   @override
@@ -574,26 +578,109 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
           e: e
         ),
         onSharedCartInfoLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
+        onLeaveBucketProcessSuccessCallback: (leaveBucketProcess) async {
+          ToastHelper.showToast(
+            MultiLanguageString({
+              Constant.textEnUsLanguageKey: "You have left this bucket.",
+              Constant.textInIdLanguageKey: "Anda telah meninggalkan bucket ini."
+            }).toEmptyStringNonNull
+          );
+          _hasExitFromBucket = true;
+          Get.back();
+        },
+        onLeaveBucketProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
+          context: context,
+          errorProvider: Injector.locator<ErrorProvider>(),
+          e: e
+        ),
+        onLeaveBucketProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
+        onDestroyBucketProcessSuccessCallback: (destroyBucketSuccess) async {
+          ToastHelper.showToast(
+            MultiLanguageString({
+              Constant.textEnUsLanguageKey: "You have destroy this bucket.",
+              Constant.textInIdLanguageKey: "Anda telah menghapus bucket ini."
+            }).toEmptyStringNonNull
+          );
+          _hasExitFromBucket = true;
+          Get.back();
+        },
+        onDestroyBucketProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
+          context: context,
+          errorProvider: Injector.locator<ErrorProvider>(),
+          e: e
+        ),
+        onDestroyBucketProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
       )
     );
     return Scaffold(
       appBar: ModifiedAppBar(
         titleInterceptorWithAdditionalParameter: (context, title, titleInterceptorAdditionalParameter) {
           Size preferredSize = titleInterceptorAdditionalParameter.appBarPreferredSize;
+          bool showLeaveCartIcon = false;
+          bool showDestroyCartIcon = false;
+          if (_userLoadDataResult.isSuccess && _bucketLoadDataResult.isSuccess) {
+            Bucket bucket = _bucketLoadDataResult.resultIfSuccess!;
+            User user = _userLoadDataResult.resultIfSuccess!;
+            Iterable<BucketMember> bucketMemberIterable = bucket.bucketMemberList.where(
+              (bucketMember) => bucketMember.userId == user.id && bucketMember.hostBucket == 1
+            );
+            if (bucketMemberIterable.isNotEmpty) {
+              showDestroyCartIcon = true;
+            } else {
+              showLeaveCartIcon = true;
+            }
+          }
           return Row(
             children: [
               Expanded(
                 child: Text("Shared Cart".tr)
               ),
-              AppBarIconArea(
-                onTap: widget.sharedCartController.shareCartInfo,
-                height: preferredSize.height,
-                child: Icon(
-                  Icons.share,
-                  color: Theme.of(context).colorScheme.primary,
-                  size: 30
+              Tooltip(
+                message: "Share",
+                child: AppBarIconArea(
+                  onTap: widget.sharedCartController.shareCartInfo,
+                  height: preferredSize.height,
+                  child: Icon(
+                    Icons.share,
+                    color: Theme.of(context).colorScheme.primary,
+                    size: 30
+                  )
+                ),
+              ),
+              if (showLeaveCartIcon) ...[
+                Tooltip(
+                  message: MultiLanguageString({
+                    Constant.textEnUsLanguageKey: "Leave Bucket",
+                    Constant.textInIdLanguageKey: "Tinggalkan Bucket"
+                  }).toEmptyStringNonNull,
+                  child: AppBarIconArea(
+                    onTap: () => DialogHelper.showLeaveBucketPrompt(context, widget.sharedCartController.leaveBucket),
+                    height: preferredSize.height,
+                    child: Icon(
+                      Icons.remove_shopping_cart,
+                      color: Theme.of(context).colorScheme.primary,
+                      size: 30
+                    )
+                  ),
                 )
-              )
+              ],
+              if (showDestroyCartIcon) ...[
+                Tooltip(
+                  message: MultiLanguageString({
+                    Constant.textEnUsLanguageKey: "Destroy Bucket",
+                    Constant.textInIdLanguageKey: "Hapus Bucket"
+                  }).toEmptyStringNonNull,
+                  child: AppBarIconArea(
+                    onTap: () => DialogHelper.showDestroyBucketPrompt(context, widget.sharedCartController.destroyBucket),
+                    height: preferredSize.height,
+                    child: Icon(
+                      Icons.delete,
+                      color: Theme.of(context).colorScheme.primary,
+                      size: 30
+                    )
+                  ),
+                )
+              ]
             ],
           );
         },
@@ -607,7 +694,7 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
                 onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
                   pagingControllerState: pagingControllerState!
                 ),
-                pullToRefresh: true,
+                pullToRefresh: false,
                 onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
               ),
             ),
@@ -775,7 +862,7 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
     await _updateSharedCartData();
     setState(() {});
     widget.sharedCartController.getSharedCartSummary(_bucketId!);
-    if (!_hasKickedFromBucket) {
+    if (!_hasExitFromBucket) {
       if (_fetchedBucketLoadDataResult.isFailed) {
         dynamic e = _fetchedBucketLoadDataResult.resultIfFailed;
         if (e is DioError) {
@@ -783,7 +870,7 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
           if (data is Map<String, dynamic>) {
             String message = (data["meta"]["message"] as String).toLowerCase();
             if (message.contains("you need join or create bucket")) {
-              _hasKickedFromBucket = true;
+              _hasExitFromBucket = true;
               Get.back();
               return;
             }

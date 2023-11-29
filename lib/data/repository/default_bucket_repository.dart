@@ -6,6 +6,10 @@ import '../../domain/entity/bucket/checkoutbucket/checkout_bucket_parameter.dart
 import '../../domain/entity/bucket/checkoutbucket/checkout_bucket_response.dart';
 import '../../domain/entity/bucket/createbucket/create_bucket_parameter.dart';
 import '../../domain/entity/bucket/createbucket/create_bucket_response.dart';
+import '../../domain/entity/bucket/destroybucket/destroy_bucket_parameter.dart';
+import '../../domain/entity/bucket/destroybucket/destroy_bucket_response.dart';
+import '../../domain/entity/bucket/leavebucket/leave_bucket_parameter.dart';
+import '../../domain/entity/bucket/leavebucket/leave_bucket_response.dart';
 import '../../domain/entity/bucket/removememberbucket/remove_member_bucket_parameter.dart';
 import '../../domain/entity/bucket/removememberbucket/remove_member_bucket_response.dart';
 import '../../domain/entity/bucket/requestjoinbucket/request_join_bucket_parameter.dart';
@@ -66,6 +70,16 @@ class DefaultBucketRepository implements BucketRepository {
   @override
   FutureProcessing<LoadDataResult<TriggerBucketReadyResponse>> triggerBucketReady(TriggerBucketReadyParameter triggerBucketReadyParameter) {
     return bucketDataSource.triggerBucketReady(triggerBucketReadyParameter).mapToLoadDataResult<TriggerBucketReadyResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<DestroyBucketResponse>> destroyBucket(DestroyBucketParameter destroyBucketParameter) {
+    return bucketDataSource.destroyBucket(destroyBucketParameter).mapToLoadDataResult<DestroyBucketResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<LeaveBucketResponse>> leaveBucket(LeaveBucketParameter leaveBucketParameter) {
+    return bucketDataSource.leaveBucket(leaveBucketParameter).mapToLoadDataResult<LeaveBucketResponse>();
   }
 
   @override

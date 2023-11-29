@@ -12,6 +12,10 @@ import '../../../domain/entity/bucket/checkoutbucket/checkout_bucket_parameter.d
 import '../../../domain/entity/bucket/checkoutbucket/checkout_bucket_response.dart';
 import '../../../domain/entity/bucket/createbucket/create_bucket_parameter.dart';
 import '../../../domain/entity/bucket/createbucket/create_bucket_response.dart';
+import '../../../domain/entity/bucket/destroybucket/destroy_bucket_parameter.dart';
+import '../../../domain/entity/bucket/destroybucket/destroy_bucket_response.dart';
+import '../../../domain/entity/bucket/leavebucket/leave_bucket_parameter.dart';
+import '../../../domain/entity/bucket/leavebucket/leave_bucket_response.dart';
 import '../../../domain/entity/bucket/removememberbucket/remove_member_bucket_parameter.dart';
 import '../../../domain/entity/bucket/removememberbucket/remove_member_bucket_response.dart';
 import '../../../domain/entity/bucket/requestjoinbucket/request_join_bucket_parameter.dart';
@@ -113,6 +117,22 @@ class DefaultBucketDataSource implements BucketDataSource {
     return DioHttpClientProcessing((cancelToken) {
       return dio.post("/user/bucket/ready", cancelToken: cancelToken)
         .map(onMap: (value) => value.wrapResponse().mapFromResponseToTriggerBucketReadyResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<DestroyBucketResponse> destroyBucket(DestroyBucketParameter destroyBucketParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.delete("/user/bucket/destroy", cancelToken: cancelToken)
+        .map(onMap: (value) => value.wrapResponse().mapFromResponseToDestroyBucketResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<LeaveBucketResponse> leaveBucket(LeaveBucketParameter leaveBucketParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.delete("/user/bucket/leave", cancelToken: cancelToken)
+        .map(onMap: (value) => value.wrapResponse().mapFromResponseToLeaveBucketResponse());
     });
   }
 

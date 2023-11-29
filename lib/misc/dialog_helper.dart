@@ -729,6 +729,80 @@ class _DialogHelperImpl {
     );
   }
 
+  void showLeaveBucketPrompt(BuildContext context, void Function() leaveBucket) {
+    DialogHelper.showPromptYesNoDialog(
+      context: context,
+      prompt: (context) => Column(
+        children: [
+          Text(
+            MultiLanguageString({
+              Constant.textEnUsLanguageKey: "Leave Bucket",
+              Constant.textInIdLanguageKey: "Tinggalkan Bucket"
+            }).toEmptyStringNonNull,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18
+            ),
+            textAlign: TextAlign.center
+          ),
+          const SizedBox(height: 4),
+          Text(
+            MultiLanguageString({
+              Constant.textEnUsLanguageKey: "Are you sure to leave this bucket?",
+              Constant.textInIdLanguageKey: "Apakah anda yakin ingin meninggalkan bucket ini?"
+            }).toEmptyStringNonNull,
+            textAlign: TextAlign.center
+          ),
+          const SizedBox(height: 4),
+        ]
+      ),
+      onNoPromptButtonTap: (_) async {
+        Get.back();
+      },
+      onYesPromptButtonTap: (_) async {
+        Get.back();
+        leaveBucket();
+      },
+    );
+  }
+
+  void showDestroyBucketPrompt(BuildContext context, void Function() destroyBucket) {
+    DialogHelper.showPromptYesNoDialog(
+      context: context,
+      prompt: (context) => Column(
+        children: [
+          Text(
+            MultiLanguageString({
+              Constant.textEnUsLanguageKey: "Destroy Bucket",
+              Constant.textInIdLanguageKey: "Hapus Bucket"
+            }).toEmptyStringNonNull,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18
+            ),
+            textAlign: TextAlign.center
+          ),
+          const SizedBox(height: 4),
+          Text(
+            MultiLanguageString({
+              Constant.textEnUsLanguageKey: "Are you sure to menghapus this bucket? ",
+              Constant.textInIdLanguageKey: "Apakah anda yakin ingin menghapus bucket ini?"
+            }).toEmptyStringNonNull,
+            textAlign: TextAlign.center
+          ),
+          const SizedBox(height: 4),
+        ]
+      ),
+      onNoPromptButtonTap: (_) async {
+        Get.back();
+      },
+      onYesPromptButtonTap: (_) async {
+        Get.back();
+        destroyBucket();
+      },
+    );
+  }
+
   Future<T?> showModalBottomSheetPage<T>({
     required BuildContext context,
     Color? backgroundColor = Colors.transparent,

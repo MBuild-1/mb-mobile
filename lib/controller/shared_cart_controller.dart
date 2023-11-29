@@ -17,6 +17,10 @@ import '../domain/entity/bucket/checkbucket/check_bucket_parameter.dart';
 import '../domain/entity/bucket/checkbucket/check_bucket_response.dart';
 import '../domain/entity/bucket/checkoutbucket/checkout_bucket_parameter.dart';
 import '../domain/entity/bucket/checkoutbucket/checkout_bucket_response.dart';
+import '../domain/entity/bucket/destroybucket/destroy_bucket_parameter.dart';
+import '../domain/entity/bucket/destroybucket/destroy_bucket_response.dart';
+import '../domain/entity/bucket/leavebucket/leave_bucket_parameter.dart';
+import '../domain/entity/bucket/leavebucket/leave_bucket_response.dart';
 import '../domain/entity/bucket/removememberbucket/remove_member_bucket_parameter.dart';
 import '../domain/entity/bucket/removememberbucket/remove_member_bucket_response.dart';
 import '../domain/entity/bucket/shared_cart_summary_parameter.dart';
@@ -43,11 +47,13 @@ import '../domain/usecase/change_additional_item_use_case.dart';
 import '../domain/usecase/check_bucket_use_case.dart';
 import '../domain/usecase/checkout_bucket_use_case.dart';
 import '../domain/usecase/create_bucket_use_case.dart';
+import '../domain/usecase/destroy_bucket_use_case.dart';
 import '../domain/usecase/get_additional_item_use_case.dart';
 import '../domain/usecase/get_cart_list_use_case.dart';
 import '../domain/usecase/get_cart_summary_use_case.dart';
 import '../domain/usecase/get_shared_cart_summary_use_case.dart';
 import '../domain/usecase/get_user_use_case.dart';
+import '../domain/usecase/leave_bucket_use_case.dart';
 import '../domain/usecase/remove_additional_item_use_case.dart';
 import '../domain/usecase/remove_from_cart_use_case.dart';
 import '../domain/usecase/remove_member_bucket_use_case.dart';
@@ -82,6 +88,12 @@ typedef _OnShowSharedCartSummaryProcessCallback = Future<void> Function(LoadData
 typedef _OnShareCartInfoProcessLoadingCallback = Future<void> Function();
 typedef _OnShareCartInfoProcessSuccessCallback = Future<void> Function(ShowBucketByIdResponse showBucketByIdResponse);
 typedef _OnShareCartInfoProcessFailedCallback = Future<void> Function(dynamic e);
+typedef _OnDestroyBucketProcessLoadingCallback = Future<void> Function();
+typedef _OnDestroyBucketProcessSuccessCallback = Future<void> Function(DestroyBucketResponse destroyBucketResponse);
+typedef _OnDestroyBucketProcessFailedCallback = Future<void> Function(dynamic e);
+typedef _OnLeaveBucketProcessLoadingCallback = Future<void> Function();
+typedef _OnLeaveBucketProcessSuccessCallback = Future<void> Function(LeaveBucketResponse leaveBucketResponse);
+typedef _OnLeaveBucketProcessFailedCallback = Future<void> Function(dynamic e);
 
 class SharedCartController extends BaseGetxController {
   final GetCartListUseCase getCartListUseCase;
@@ -102,6 +114,8 @@ class SharedCartController extends BaseGetxController {
   final RemoveMemberBucketUseCase removeMemberBucketUseCase;
   final TriggerBucketReadyUseCase triggerBucketReadyUseCase;
   final CheckoutBucketUseCase checkoutBucketUseCase;
+  final LeaveBucketUseCase leaveBucketUseCase;
+  final DestroyBucketUseCase destroyBucketUseCase;
 
   MainSharedCartDelegate? _mainSharedCartDelegate;
 
@@ -124,7 +138,9 @@ class SharedCartController extends BaseGetxController {
     this.approveOrRejectRequestBucketUseCase,
     this.removeMemberBucketUseCase,
     this.triggerBucketReadyUseCase,
-    this.checkoutBucketUseCase
+    this.checkoutBucketUseCase,
+    this.leaveBucketUseCase,
+    this.destroyBucketUseCase
   );
 
   Future<LoadDataResult<List<Cart>>> getCartList(CartListParameter cartListParameter) {
@@ -230,6 +246,42 @@ class SharedCartController extends BaseGetxController {
         _mainSharedCartDelegate!.onSharedCartInfoSuccessCallback(showBucketByIdResponseLoadDataResult.resultIfSuccess!);
       } else {
         _mainSharedCartDelegate!.onSharedCartInfoFailedCallback(showBucketByIdResponseLoadDataResult.resultIfFailed);
+      }
+    }
+  }
+
+  void leaveBucket() async {
+    if (_mainSharedCartDelegate != null) {
+      _mainSharedCartDelegate!.onUnfocusAllWidget();
+      _mainSharedCartDelegate!.onLeaveBucketProcessLoadingCallback();
+      LoadDataResult<LeaveBucketResponse> leaveBucketResponseLoadDataResult = await leaveBucketUseCase.execute(
+        LeaveBucketParameter()
+      ).future(
+        parameter: apiRequestManager.addRequestToCancellationPart("leave-bucket").value
+      );
+      _mainSharedCartDelegate!.onCartBack();
+      if (leaveBucketResponseLoadDataResult.isSuccess) {
+        _mainSharedCartDelegate!.onLeaveBucketProcessSuccessCallback(leaveBucketResponseLoadDataResult.resultIfSuccess!);
+      } else {
+        _mainSharedCartDelegate!.onLeaveBucketProcessFailedCallback(leaveBucketResponseLoadDataResult.resultIfFailed);
+      }
+    }
+  }
+
+  void destroyBucket() async {
+    if (_mainSharedCartDelegate != null) {
+      _mainSharedCartDelegate!.onUnfocusAllWidget();
+      _mainSharedCartDelegate!.onDestroyBucketProcessLoadingCallback();
+      LoadDataResult<DestroyBucketResponse> destroyBucketResponseLoadDataResult = await destroyBucketUseCase.execute(
+        DestroyBucketParameter()
+      ).future(
+        parameter: apiRequestManager.addRequestToCancellationPart("destroy-bucket").value
+      );
+      _mainSharedCartDelegate!.onCartBack();
+      if (destroyBucketResponseLoadDataResult.isSuccess) {
+        _mainSharedCartDelegate!.onDestroyBucketProcessSuccessCallback(destroyBucketResponseLoadDataResult.resultIfSuccess!);
+      } else {
+        _mainSharedCartDelegate!.onDestroyBucketProcessFailedCallback(destroyBucketResponseLoadDataResult.resultIfFailed);
       }
     }
   }
@@ -392,6 +444,12 @@ class MainSharedCartDelegate {
   _OnShareCartInfoProcessLoadingCallback onSharedCartInfoLoadingCallback;
   _OnShareCartInfoProcessSuccessCallback onSharedCartInfoSuccessCallback;
   _OnShareCartInfoProcessFailedCallback onSharedCartInfoFailedCallback;
+  _OnDestroyBucketProcessLoadingCallback onDestroyBucketProcessLoadingCallback;
+  _OnDestroyBucketProcessSuccessCallback onDestroyBucketProcessSuccessCallback;
+  _OnDestroyBucketProcessFailedCallback onDestroyBucketProcessFailedCallback;
+  _OnLeaveBucketProcessLoadingCallback onLeaveBucketProcessLoadingCallback;
+  _OnLeaveBucketProcessSuccessCallback onLeaveBucketProcessSuccessCallback;
+  _OnLeaveBucketProcessFailedCallback onLeaveBucketProcessFailedCallback;
 
   MainSharedCartDelegate({
     required this.onUnfocusAllWidget,
@@ -417,6 +475,12 @@ class MainSharedCartDelegate {
     required this.onShowSharedCartSummaryProcessCallback,
     required this.onSharedCartInfoSuccessCallback,
     required this.onSharedCartInfoFailedCallback,
-    required this.onSharedCartInfoLoadingCallback
+    required this.onSharedCartInfoLoadingCallback,
+    required this.onDestroyBucketProcessLoadingCallback,
+    required this.onDestroyBucketProcessSuccessCallback,
+    required this.onDestroyBucketProcessFailedCallback,
+    required this.onLeaveBucketProcessLoadingCallback,
+    required this.onLeaveBucketProcessSuccessCallback,
+    required this.onLeaveBucketProcessFailedCallback,
   });
 }

@@ -95,6 +95,7 @@ class _StatefulExploreNusantaraMainMenuSubControllerMediatorWidgetState extends 
         appBar: MainMenuSearchAppBar(value: 0.0),
         body: Expanded(
           child: InteractiveViewer(
+            maxScale: 10.0,
             child: Stack(
               children: [
                 RxConsumer<ExploreNusantaraMainMenuControllerState>(

@@ -11,6 +11,8 @@ import '../../domain/entity/bucket/bucket_user.dart';
 import '../../domain/entity/bucket/checkbucket/check_bucket_response.dart';
 import '../../domain/entity/bucket/checkoutbucket/checkout_bucket_response.dart';
 import '../../domain/entity/bucket/createbucket/create_bucket_response.dart';
+import '../../domain/entity/bucket/destroybucket/destroy_bucket_response.dart';
+import '../../domain/entity/bucket/leavebucket/leave_bucket_response.dart';
 import '../../domain/entity/bucket/removememberbucket/remove_member_bucket_response.dart';
 import '../../domain/entity/bucket/requestjoinbucket/request_join_bucket_response.dart';
 import '../../domain/entity/bucket/showbucketbyid/show_bucket_by_id_response.dart';
@@ -55,6 +57,14 @@ extension BucketDetailEntityMappingExt on ResponseWrapper {
 
   TriggerBucketReadyResponse mapFromResponseToTriggerBucketReadyResponse() {
     return TriggerBucketReadyResponse();
+  }
+
+  DestroyBucketResponse mapFromResponseToDestroyBucketResponse() {
+    return DestroyBucketResponse();
+  }
+
+  LeaveBucketResponse mapFromResponseToLeaveBucketResponse() {
+    return LeaveBucketResponse();
   }
 
   Bucket mapFromResponseToBucket() {

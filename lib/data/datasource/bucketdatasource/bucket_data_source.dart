@@ -6,6 +6,10 @@ import '../../../domain/entity/bucket/checkoutbucket/checkout_bucket_parameter.d
 import '../../../domain/entity/bucket/checkoutbucket/checkout_bucket_response.dart';
 import '../../../domain/entity/bucket/createbucket/create_bucket_parameter.dart';
 import '../../../domain/entity/bucket/createbucket/create_bucket_response.dart';
+import '../../../domain/entity/bucket/destroybucket/destroy_bucket_parameter.dart';
+import '../../../domain/entity/bucket/destroybucket/destroy_bucket_response.dart';
+import '../../../domain/entity/bucket/leavebucket/leave_bucket_parameter.dart';
+import '../../../domain/entity/bucket/leavebucket/leave_bucket_response.dart';
 import '../../../domain/entity/bucket/removememberbucket/remove_member_bucket_parameter.dart';
 import '../../../domain/entity/bucket/removememberbucket/remove_member_bucket_response.dart';
 import '../../../domain/entity/bucket/requestjoinbucket/request_join_bucket_parameter.dart';
@@ -27,5 +31,7 @@ abstract class BucketDataSource {
   FutureProcessing<CheckBucketResponse> checkBucket(CheckBucketParameter checkBucketParameter);
   FutureProcessing<CheckoutBucketResponse> checkoutBucket(CheckoutBucketParameter checkoutBucketParameter);
   FutureProcessing<TriggerBucketReadyResponse> triggerBucketReady(TriggerBucketReadyParameter triggerBucketReadyParameter);
+  FutureProcessing<DestroyBucketResponse> destroyBucket(DestroyBucketParameter destroyBucketParameter);
+  FutureProcessing<LeaveBucketResponse> leaveBucket(LeaveBucketParameter leaveBucketParameter);
   FutureProcessing<CartSummary> sharedCartSummary(SharedCartSummaryParameter sharedCartSummaryParameter);
 }
