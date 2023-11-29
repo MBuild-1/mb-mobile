@@ -241,6 +241,7 @@ import '../domain/usecase/search_history_use_case.dart';
 import '../domain/usecase/search_last_seen_history_use_case.dart';
 import '../domain/usecase/search_use_case.dart';
 import '../domain/usecase/send_register_otp_use_case.dart';
+import '../domain/usecase/share_product_use_case.dart';
 import '../domain/usecase/show_bucket_by_id_use_case.dart';
 import '../domain/usecase/store_keyword_for_search_history_use_case.dart';
 import '../domain/usecase/store_search_last_seen_history_use_case.dart';
@@ -580,6 +581,7 @@ class _Injector {
     locator.registerLazySingleton<AddToFavoriteProductBrandUseCase>(() => AddToFavoriteProductBrandUseCase(productRepository: locator()));
     locator.registerLazySingleton<RemoveFromFavoriteProductBrandUseCase>(() => RemoveFromFavoriteProductBrandUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductListUseCase>(() => GetProductListUseCase(productRepository: locator()));
+    locator.registerLazySingleton<ShareProductUseCase>(() => ShareProductUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductViralListUseCase>(() => GetProductViralListUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductViralPagingUseCase>(() => GetProductViralPagingUseCase(productRepository: locator()));
     locator.registerLazySingleton<GetProductEntryWithConditionPagingUseCase>(() => GetProductEntryWithConditionPagingUseCase(productRepository: locator()));

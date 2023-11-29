@@ -32,6 +32,7 @@ class ProductEntry implements ProductEntryAppearanceData, SupportCart, SupportWi
   Product product;
   List<String> imageUrlList;
   List<ProductVariant> productVariantList;
+  String? shareCode;
   @override
   int soldCount;
   bool _hasAddedToWishlist;
@@ -80,6 +81,7 @@ class ProductEntry implements ProductEntryAppearanceData, SupportCart, SupportWi
     required this.isBestSelling,
     required this.product,
     required this.productVariantList,
+    required this.shareCode,
     required this.imageUrlList,
     required this.soldCount,
     required bool hasAddedToWishlist,

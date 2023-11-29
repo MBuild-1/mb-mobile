@@ -39,6 +39,8 @@ import '../entity/product/product_with_condition_list_parameter.dart';
 import '../entity/product/product_with_condition_paging_parameter.dart';
 import '../entity/product/productentry/product_entry_header_content_parameter.dart';
 import '../entity/product/productentry/product_entry_header_content_response.dart';
+import '../entity/product/shareproduct/share_product_parameter.dart';
+import '../entity/product/shareproduct/share_product_response.dart';
 import '../entity/wishlist/add_wishlist_parameter.dart';
 import '../entity/wishlist/add_wishlist_response.dart';
 import '../entity/wishlist/remove_wishlist_based_product_parameter.dart';
@@ -81,4 +83,5 @@ abstract class ProductRepository {
   FutureProcessing<LoadDataResult<List<FavoriteProductBrand>>> favoriteProductBrandList(FavoriteProductBrandListParameter favoriteProductBrandListParameter);
   FutureProcessing<LoadDataResult<AddToFavoriteProductBrandResponse>> addToFavoriteProductBrand(AddToFavoriteProductBrandParameter addToFavoriteProductBrandParameter);
   FutureProcessing<LoadDataResult<RemoveFromFavoriteProductBrandResponse>> removeFromFavoriteProductBrand(RemoveFromFavoriteProductBrandParameter removeFromFavoriteProductBrandParameter);
+  FutureProcessing<LoadDataResult<ShareProductResponse>> shareProduct(ShareProductParameter shareProductParameter);
 }

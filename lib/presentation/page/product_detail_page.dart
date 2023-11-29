@@ -8,6 +8,7 @@ import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../controller/product_detail_controller.dart';
@@ -34,6 +35,7 @@ import '../../domain/usecase/get_product_detail_other_interested_product_brand_l
 import '../../domain/usecase/get_product_detail_use_case.dart';
 import '../../domain/usecase/get_product_discussion_use_case.dart';
 import '../../domain/usecase/purchase_direct_use_case.dart';
+import '../../domain/usecase/share_product_use_case.dart';
 import '../../domain/usecase/store_search_last_seen_history_use_case.dart';
 import '../../misc/additionalloadingindicatorchecker/product_detail_additional_paging_result_parameter_checker.dart';
 import '../../misc/carouselbackground/asset_carousel_background.dart';
@@ -134,6 +136,7 @@ class ProductDetailPage extends RestorableGetxPage<_ProductDetailPageRestoration
         Injector.locator<AddToCartUseCase>(),
         Injector.locator<GetProductDiscussionUseCase>(),
         Injector.locator<StoreSearchLastSeenHistoryUseCase>(),
+        Injector.locator<ShareProductUseCase>(),
         Injector.locator<WishlistAndCartControllerContentDelegate>(),
         Injector.locator<ProductBrandFavoriteControllerContentDelegate>()
       ),
@@ -434,6 +437,7 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
             onGetProductEntryIndex: () {
               return _productVariantColorfulChipTabBarController.value;
             },
+            onShareProduct: widget.productDetailController.shareProduct,
             onAddWishlist: (productAppearanceData) => widget.productDetailController.wishlistAndCartControllerContentDelegate.addToWishlist(
               productAppearanceData as SupportWishlist, () {
                 Completer<bool> checkingLoginCompleter = Completer<bool>();
@@ -1058,6 +1062,13 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
         onBuyDirectlyRequestProcessSuccessCallback: (order) async {
           NavigationHelper.navigationAfterPurchaseProcess(context, order);
         },
+        onShowShareProductRequestProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
+        onShowShareProductRequestProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
+          context: context,
+          errorProvider: Injector.locator<ErrorProvider>(),
+          e: e
+        ),
+        onShareProductRequestProcessSuccessCallback: (shareProductResponse) async => Share.share(shareProductResponse.link),
         onBack: () => Get.back(),
         onCheckingLogin: () {
           Completer<bool> checkingLoginCompleter = Completer<bool>();

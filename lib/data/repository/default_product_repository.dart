@@ -45,6 +45,8 @@ import '../../domain/entity/product/productentry/productentryheaderresponsevalue
 import '../../domain/entity/product/productentry/productentryheaderresponsevalue/product_entry_header_content_response_value.dart';
 import '../../domain/entity/product/productentry/productentryheaderresponsevalue/province_map_product_entry_header_content_response_value.dart';
 import '../../domain/entity/product/productentry/productentryheaderresponsevalue/static_product_entry_header_content_response_value.dart';
+import '../../domain/entity/product/shareproduct/share_product_parameter.dart';
+import '../../domain/entity/product/shareproduct/share_product_response.dart';
 import '../../domain/entity/province/province_map.dart';
 import '../../domain/entity/province/province_map_detail_parameter.dart';
 import '../../domain/entity/wishlist/add_wishlist_parameter.dart';
@@ -301,5 +303,10 @@ class DefaultProductRepository implements ProductRepository {
   @override
   FutureProcessing<LoadDataResult<RemoveFromFavoriteProductBrandResponse>> removeFromFavoriteProductBrand(RemoveFromFavoriteProductBrandParameter removeFromFavoriteProductBrandParameter) {
     return productDataSource.removeFromFavoriteProductBrand(removeFromFavoriteProductBrandParameter).mapToLoadDataResult<RemoveFromFavoriteProductBrandResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<ShareProductResponse>> shareProduct(ShareProductParameter shareProductParameter) {
+    return productDataSource.shareProduct(shareProductParameter).mapToLoadDataResult<ShareProductResponse>();
   }
 }

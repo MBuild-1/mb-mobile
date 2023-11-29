@@ -27,6 +27,7 @@ class ProductEntryDummy {
       imageUrlList: [],
       product: productDummy.generateShimmerDummy(),
       soldCount: 0,
+      shareCode: "",
       hasAddedToWishlist: false,
       hasAddedToCart: false
     );
@@ -51,6 +52,7 @@ class ProductEntryDummy {
       imageUrlList: [],
       product: productDummy.generateDefaultDummy(),
       soldCount: 0,
+      shareCode: "AAA-AAA-AAA",
       hasAddedToWishlist: false,
       hasAddedToCart: false
     );

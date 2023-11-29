@@ -25,6 +25,7 @@ import '../../domain/entity/product/productdiscussion/product_discussion_user.da
 import '../../domain/entity/product/productdiscussion/reply_product_discussion_response.dart';
 import '../../domain/entity/product/productentry/product_entry.dart';
 import '../../domain/entity/product/productvariant/product_variant.dart';
+import '../../domain/entity/product/shareproduct/share_product_response.dart';
 import '../../domain/entity/product/short_product.dart';
 import '../../domain/entity/wishlist/add_wishlist_response.dart';
 import '../../domain/entity/wishlist/remove_wishlist_response.dart';
@@ -281,6 +282,12 @@ extension ProductBrandDetailEntityMappingExt on ResponseWrapper {
   RemoveFromFavoriteProductBrandResponse mapFromResponseToRemoveFromFavoriteProductBrandResponse() {
     return RemoveFromFavoriteProductBrandResponse();
   }
+
+  ShareProductResponse mapFromResponseToShareProductResponse() {
+    return ShareProductResponse(
+      link: "https://masterbagasi.com/share/p/${response["code"]}"
+    );
+  }
 }
 
 extension ProductCategoryEntityMappingExt on ResponseWrapper {
@@ -375,6 +382,7 @@ extension ProductEntryDetailEntityMappingExt on ResponseWrapper {
       productVariantList: response["product_variant"].map<ProductVariant>(
         (productVariantResponse) => ResponseWrapper(productVariantResponse).mapFromResponseToProductVariant()
       ).toList(),
+      shareCode: response["product_share"] != null ? response["product_share"]!["code"] : null,
       product: ResponseWrapper(response["product"]).mapFromResponseToProduct([]),
       soldCount: response["sold"],
       hasAddedToWishlist: response["has_added_to_wishlist"] ?? wishlistList.where((wishlist) {

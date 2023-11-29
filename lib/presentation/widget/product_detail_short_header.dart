@@ -16,6 +16,7 @@ import 'tap_area.dart';
 class ProductDetailShortHeader extends StatelessWidget {
   final ProductDetail productDetail;
   final int Function() onGetProductEntryIndex;
+  final void Function(String?) onShareProduct;
   final OnAddWishlistWithProductAppearanceData? onAddWishlist;
   final OnRemoveWishlistWithProductAppearanceData? onRemoveWishlist;
 
@@ -23,6 +24,7 @@ class ProductDetailShortHeader extends StatelessWidget {
     super.key,
     required this.productDetail,
     required this.onGetProductEntryIndex,
+    required this.onShareProduct,
     this.onAddWishlist,
     this.onRemoveWishlist
   });
@@ -92,7 +94,7 @@ class ProductDetailShortHeader extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           TapArea(
-            onTap: () => Share.share("https://m.masterbagasi.com/product/detail?slug=${selectedProductEntry.product.slug}&show=${selectedProductEntry.productEntryId}"),
+            onTap: () => onShareProduct(selectedProductEntry.shareCode),
             child: ModifiedSvgPicture.asset(
               Constant.vectorShare,
               color: Theme.of(context).colorScheme.primary,

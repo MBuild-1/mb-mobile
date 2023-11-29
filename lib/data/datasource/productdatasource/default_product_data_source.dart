@@ -48,6 +48,8 @@ import '../../../domain/entity/product/product_list_parameter.dart';
 import '../../../domain/entity/product/product_paging_parameter.dart';
 import '../../../domain/entity/product/product_with_condition_list_parameter.dart';
 import '../../../domain/entity/product/product_with_condition_paging_parameter.dart';
+import '../../../domain/entity/product/shareproduct/share_product_parameter.dart';
+import '../../../domain/entity/product/shareproduct/share_product_response.dart';
 import '../../../domain/entity/wishlist/add_wishlist_parameter.dart';
 import '../../../domain/entity/wishlist/add_wishlist_response.dart';
 import '../../../domain/entity/wishlist/remove_wishlist_based_product_parameter.dart';
@@ -459,6 +461,14 @@ class DefaultProductDataSource implements ProductDataSource {
     return DummyFutureProcessing((parameter) async {
       return dio.delete("/user/brand-fav/${removeFromFavoriteProductBrandParameter.favoriteProductBrand.id}", cancelToken: parameter)
         .map<RemoveFromFavoriteProductBrandResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToRemoveFromFavoriteProductBrandResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<ShareProductResponse> shareProduct(ShareProductParameter shareProductParameter) {
+    return DioHttpClientProcessing((cancelToken) async {
+      return await dio.get("/product/share/${shareProductParameter.shareCode}", cancelToken: cancelToken)
+        .map<ShareProductResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToShareProductResponse());
     });
   }
 }

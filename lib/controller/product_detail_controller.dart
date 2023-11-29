@@ -1,4 +1,5 @@
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../domain/entity/cart/add_to_cart_parameter.dart';
 import '../domain/entity/cart/add_to_cart_response.dart';
@@ -25,6 +26,8 @@ import '../domain/entity/product/productcategory/product_category.dart';
 import '../domain/entity/product/productdiscussion/product_discussion.dart';
 import '../domain/entity/product/productdiscussion/product_discussion_list_parameter.dart';
 import '../domain/entity/product/productentry/product_entry.dart';
+import '../domain/entity/product/shareproduct/share_product_parameter.dart';
+import '../domain/entity/product/shareproduct/share_product_response.dart';
 import '../domain/entity/search/store_search_last_seen_history_parameter.dart';
 import '../domain/entity/search/store_search_last_seen_history_response.dart';
 import '../domain/usecase/add_to_cart_use_case.dart';
@@ -38,6 +41,7 @@ import '../domain/usecase/get_product_detail_other_interested_product_brand_list
 import '../domain/usecase/get_product_detail_use_case.dart';
 import '../domain/usecase/get_product_discussion_use_case.dart';
 import '../domain/usecase/purchase_direct_use_case.dart';
+import '../domain/usecase/share_product_use_case.dart';
 import '../domain/usecase/store_search_last_seen_history_use_case.dart';
 import '../misc/constant.dart';
 import '../misc/controllercontentdelegate/product_brand_favorite_controller_content_delegate.dart';
@@ -58,6 +62,9 @@ typedef _OnShowAddToCartRequestProcessFailedCallback = Future<void> Function(dyn
 typedef _OnShowBuyDirectlyRequestProcessLoadingCallback = Future<void> Function();
 typedef _OnBuyDirectlyRequestProcessSuccessCallback = Future<void> Function(Order order);
 typedef _OnShowBuyDirectlyRequestProcessFailedCallback = Future<void> Function(dynamic e);
+typedef _OnShowShareProductRequestProcessLoadingCallback = Future<void> Function();
+typedef _OnShareProductRequestProcessSuccessCallback = Future<void> Function(ShareProductResponse);
+typedef _OnShowShareProductRequestProcessFailedCallback = Future<void> Function(dynamic e);
 
 class ProductDetailController extends BaseGetxController {
   final GetProductDetailUseCase getProductDetailUseCase;
@@ -70,6 +77,7 @@ class ProductDetailController extends BaseGetxController {
   final AddToCartUseCase addToCartUseCase;
   final GetProductDiscussionUseCase getProductDiscussionUseCase;
   final StoreSearchLastSeenHistoryUseCase storeSearchLastSeenHistoryUseCase;
+  final ShareProductUseCase shareProductUseCase;
   final WishlistAndCartControllerContentDelegate wishlistAndCartControllerContentDelegate;
   final ProductBrandFavoriteControllerContentDelegate productBrandFavoriteControllerContentDelegate;
   ProductDetailMainMenuDelegate? _productDetailMainMenuDelegate;
@@ -86,6 +94,7 @@ class ProductDetailController extends BaseGetxController {
     this.addToCartUseCase,
     this.getProductDiscussionUseCase,
     this.storeSearchLastSeenHistoryUseCase,
+    this.shareProductUseCase,
     this.wishlistAndCartControllerContentDelegate,
     this.productBrandFavoriteControllerContentDelegate
   ) {
@@ -404,6 +413,23 @@ class ProductDetailController extends BaseGetxController {
       }
     }
   }
+
+  void shareProduct(String? shareCode) async {
+    if (_productDetailMainMenuDelegate != null) {
+      _productDetailMainMenuDelegate!.onUnfocusAllWidget();
+      _productDetailMainMenuDelegate!.onShowShareProductRequestProcessLoadingCallback();
+      ShareProductParameter shareProductParameter = ShareProductParameter(shareCode: shareCode.toEmptyStringNonNull);
+      LoadDataResult<ShareProductResponse> shareProductResponseLoadDataResult = await shareProductUseCase.execute(shareProductParameter).future(
+        parameter: apiRequestManager.addRequestToCancellationPart("share-product").value
+      );
+      _productDetailMainMenuDelegate!.onBack();
+      if (shareProductResponseLoadDataResult.isSuccess) {
+        _productDetailMainMenuDelegate!.onShareProductRequestProcessSuccessCallback(shareProductResponseLoadDataResult.resultIfSuccess!);
+      } else {
+        _productDetailMainMenuDelegate!.onShowShareProductRequestProcessFailedCallback(shareProductResponseLoadDataResult.resultIfFailed);
+      }
+    }
+  }
 }
 
 class ProductDetailMainMenuDelegate {
@@ -416,6 +442,9 @@ class ProductDetailMainMenuDelegate {
   _OnShowBuyDirectlyRequestProcessLoadingCallback onShowBuyDirectlyRequestProcessLoadingCallback;
   _OnBuyDirectlyRequestProcessSuccessCallback onBuyDirectlyRequestProcessSuccessCallback;
   _OnShowBuyDirectlyRequestProcessFailedCallback onShowBuyDirectlyRequestProcessFailedCallback;
+  _OnShowShareProductRequestProcessLoadingCallback onShowShareProductRequestProcessLoadingCallback;
+  _OnShareProductRequestProcessSuccessCallback onShareProductRequestProcessSuccessCallback;
+  _OnShowShareProductRequestProcessFailedCallback onShowShareProductRequestProcessFailedCallback;
   ListItemControllerState Function(_OnObserveLoadShortProductDiscussionParameter) onObserveLoadShortProductDiscussionDirectly;
   void Function() onBack;
   Future<bool> Function() onCheckingLogin;
@@ -430,6 +459,9 @@ class ProductDetailMainMenuDelegate {
     required this.onShowBuyDirectlyRequestProcessLoadingCallback,
     required this.onBuyDirectlyRequestProcessSuccessCallback,
     required this.onShowBuyDirectlyRequestProcessFailedCallback,
+    required this.onShowShareProductRequestProcessLoadingCallback,
+    required this.onShareProductRequestProcessSuccessCallback,
+    required this.onShowShareProductRequestProcessFailedCallback,
     required this.onObserveLoadShortProductDiscussionDirectly,
     required this.onBack,
     required this.onCheckingLogin

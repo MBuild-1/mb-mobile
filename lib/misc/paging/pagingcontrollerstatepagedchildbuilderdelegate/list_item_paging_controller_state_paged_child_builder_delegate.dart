@@ -669,7 +669,8 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
         productDetail: item.productDetail,
         onGetProductEntryIndex: item.onGetProductEntryIndex,
         onAddWishlist: item.onAddWishlist,
-        onRemoveWishlist: item.onRemoveWishlist
+        onRemoveWishlist: item.onRemoveWishlist,
+        onShareProduct: item.onShareProduct
       );
     } else if (item is WidgetSubstitutionListItemControllerState) {
       return item.widgetSubstitution(context, index);
