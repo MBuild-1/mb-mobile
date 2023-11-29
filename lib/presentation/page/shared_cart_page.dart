@@ -657,7 +657,7 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
                     onTap: () => DialogHelper.showLeaveBucketPrompt(context, widget.sharedCartController.leaveBucket),
                     height: preferredSize.height,
                     child: Icon(
-                      Icons.remove_shopping_cart,
+                      Icons.logout,
                       color: Theme.of(context).colorScheme.primary,
                       size: 30
                     )
