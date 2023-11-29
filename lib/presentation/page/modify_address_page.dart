@@ -22,6 +22,7 @@ import '../../misc/injector.dart';
 import '../../misc/inputdecoration/default_input_decoration.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/controller_manager.dart';
+import '../../misc/multi_language_string.dart';
 import '../../misc/string_util.dart';
 import '../../misc/validation/validator/validator.dart';
 import '../../misc/widget_helper.dart';
@@ -330,7 +331,12 @@ class _StatefulModifyAddressControllerMediatorWidgetState extends State<_Statefu
                 child: (context, validationResult, validator) => ModifiedTextField(
                   isError: validationResult.isFailed,
                   controller: _labelTextEditingController,
-                  decoration: const DefaultInputDecoration(),
+                  decoration: DefaultInputDecoration(
+                    hintText: MultiLanguageString({
+                      Constant.textEnUsLanguageKey: "Ex: Home",
+                      Constant.textInIdLanguageKey: "Cth: Rumah"
+                    }).toStringNonNull
+                  ),
                   onChanged: (value) => validator?.validate(),
                   textInputAction: TextInputAction.next,
                 ),
@@ -365,7 +371,12 @@ class _StatefulModifyAddressControllerMediatorWidgetState extends State<_Statefu
                 child: (context, validationResult, validator) => ModifiedTextField(
                   isError: validationResult.isFailed,
                   controller: _cityTextEditingController,
-                  decoration: const DefaultInputDecoration(),
+                  decoration: DefaultInputDecoration(
+                    hintText: MultiLanguageString({
+                      Constant.textEnUsLanguageKey: "Ex: New York City",
+                      Constant.textInIdLanguageKey: "Cth: New York City"
+                    }).toStringNonNull
+                  ),
                   onChanged: (value) => validator?.validate(),
                   textInputAction: TextInputAction.next,
                 ),
@@ -383,7 +394,12 @@ class _StatefulModifyAddressControllerMediatorWidgetState extends State<_Statefu
                 child: (context, validationResult, validator) => ModifiedTextField(
                   isError: validationResult.isFailed,
                   controller: _stateTextEditingController,
-                  decoration: const DefaultInputDecoration(),
+                  decoration: DefaultInputDecoration(
+                    hintText: MultiLanguageString({
+                      Constant.textEnUsLanguageKey: "Ex: New York",
+                      Constant.textInIdLanguageKey: "Cth: New York"
+                    }).toStringNonNull
+                  ),
                   onChanged: (value) => validator?.validate(),
                   textInputAction: TextInputAction.done,
                 ),
@@ -401,7 +417,12 @@ class _StatefulModifyAddressControllerMediatorWidgetState extends State<_Statefu
                 child: (context, validationResult, validator) => ModifiedTextField(
                   isError: validationResult.isFailed,
                   controller: _zipCodeTextEditingController,
-                  decoration: const DefaultInputDecoration(),
+                  decoration: DefaultInputDecoration(
+                    hintText: MultiLanguageString({
+                      Constant.textEnUsLanguageKey: "Ex: 10001",
+                      Constant.textInIdLanguageKey: "Cth: 10001"
+                    }).toStringNonNull
+                  ),
                   onChanged: (value) => validator?.validate(),
                   textInputAction: TextInputAction.next,
                 ),
@@ -419,7 +440,12 @@ class _StatefulModifyAddressControllerMediatorWidgetState extends State<_Statefu
                 child: (context, validationResult, validator) => ModifiedTextField(
                   isError: validationResult.isFailed,
                   controller: _phoneTextEditingController,
-                  decoration: const DefaultInputDecoration(),
+                  decoration: DefaultInputDecoration(
+                    hintText: MultiLanguageString({
+                      Constant.textEnUsLanguageKey: "Ex: 1103184",
+                      Constant.textInIdLanguageKey: "Cth: 1103184"
+                    }).toStringNonNull
+                  ),
                   onChanged: (value) => validator?.validate(),
                   textInputAction: TextInputAction.next,
                 ),
@@ -437,7 +463,12 @@ class _StatefulModifyAddressControllerMediatorWidgetState extends State<_Statefu
                 child: (context, validationResult, validator) => ModifiedTextField(
                   isError: validationResult.isFailed,
                   controller: _nameTextEditingController,
-                  decoration: const DefaultInputDecoration(),
+                  decoration: DefaultInputDecoration(
+                    hintText: MultiLanguageString({
+                      Constant.textEnUsLanguageKey: "Ex: Bagas",
+                      Constant.textInIdLanguageKey: "Cth: Bagas"
+                    }).toStringNonNull
+                  ),
                   onChanged: (value) => validator?.validate(),
                   textInputAction: TextInputAction.next,
                 ),
@@ -455,7 +486,12 @@ class _StatefulModifyAddressControllerMediatorWidgetState extends State<_Statefu
                 child: (context, validationResult, validator) => ModifiedTextField(
                   isError: validationResult.isFailed,
                   controller: _emailTextEditingController,
-                  decoration: const DefaultInputDecoration(),
+                  decoration: DefaultInputDecoration(
+                    hintText: MultiLanguageString({
+                      Constant.textEnUsLanguageKey: "Ex: bagas@masterbagasi.com",
+                      Constant.textInIdLanguageKey: "Cth: bagas@masterbagasi.com"
+                    }).toStringNonNull
+                  ),
                   onChanged: (value) => validator?.validate(),
                   textInputAction: TextInputAction.next,
                 ),
@@ -473,7 +509,12 @@ class _StatefulModifyAddressControllerMediatorWidgetState extends State<_Statefu
                 child: (context, validationResult, validator) => ModifiedTextField(
                   isError: validationResult.isFailed,
                   controller: _addressTextEditingController,
-                  decoration: const DefaultInputDecoration(),
+                  decoration: DefaultInputDecoration(
+                    hintText: MultiLanguageString({
+                      Constant.textEnUsLanguageKey: "Ex: Pesona Khayangan Street",
+                      Constant.textInIdLanguageKey: "Cth: Jalan Pesona Khayangan"
+                    }).toStringNonNull
+                  ),
                   onChanged: (value) => validator?.validate(),
                   textInputAction: TextInputAction.next,
                 ),
@@ -492,7 +533,12 @@ class _StatefulModifyAddressControllerMediatorWidgetState extends State<_Statefu
                 child: (context, validationResult, validator) => ModifiedTextField(
                   isError: validationResult.isFailed,
                   controller: _address2TextEditingController,
-                  decoration: const DefaultInputDecoration(),
+                  decoration: DefaultInputDecoration(
+                    hintText: MultiLanguageString({
+                      Constant.textEnUsLanguageKey: "Ex: Pesona Khayangan Street",
+                      Constant.textInIdLanguageKey: "Cth: Jalan Pesona Khayangan"
+                    }).toStringNonNull
+                  ),
                   onChanged: (value) => validator?.validate(),
                   textInputAction: TextInputAction.next,
                 ),
