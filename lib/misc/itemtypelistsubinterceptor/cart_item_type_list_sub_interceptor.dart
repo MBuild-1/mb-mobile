@@ -686,6 +686,9 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
                             memberNo: isRequest ? 0 : i + 1,
                             isMe: bucketMember.userId == userLoadDataResult.resultIfSuccess!.id
                           ),
+                          VirtualSpacingListItemControllerState(
+                            width: 10.0
+                          ),
                           if (bucketMember.status > -1) ...[
                             NonExpandedItemInRowChildControllerState(
                               childListItemControllerState: WidgetSubstitutionListItemControllerState(

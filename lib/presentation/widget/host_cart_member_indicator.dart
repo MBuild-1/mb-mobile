@@ -22,43 +22,60 @@ class HostCartMemberIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     BucketUser bucketUser = bucketMember.bucketUser;
-    return Wrap(
+    String isMeText = isMe ? () {
+      MultiLanguageString isMeMultiLanguageString = MultiLanguageString({
+        Constant.textEnUsLanguageKey: "Me",
+        Constant.textInIdLanguageKey: "Saya"
+      });
+      return " (${isMeMultiLanguageString.toStringNonNull})";
+    }() : "";
+    String usernameString = "@${bucketUser.name}$isMeText";
+    return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8.0),
-            border: Border.all(color: Constant.colorDarkBlue),
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Builder(
-                builder: (context) {
-                  String isMeText = isMe ? () {
-                    MultiLanguageString isMeMultiLanguageString = MultiLanguageString({
-                      Constant.textEnUsLanguageKey: "Me",
-                      Constant.textInIdLanguageKey: "Saya"
-                    });
-                    return " (${isMeMultiLanguageString.toStringNonNull})";
-                  }() : "";
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0),
-                    child: Text("@${bucketUser.name}$isMeText", style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.bold))
-                  );
-                }
+        Flexible(
+          child: Tooltip(
+            message: usernameString,
+            child: Container(
+              clipBehavior: Clip.antiAlias,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8.0),
+                border: Border.all(color: Constant.colorDarkBlue),
               ),
-              if (memberNo > 0) ...[
-                Container(
-                  padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0),
-                  color: Constant.colorDarkBlue,
-                  child: Text("Member #$memberNo".tr, style: const TextStyle(color: Colors.white)),
-                )
-              ]
-            ],
-          )
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Builder(
+                    builder: (context) {
+                      return Flexible(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0),
+                          child: Text(
+                            usernameString,
+                            style: const TextStyle(
+                              color: Colors.grey,
+                              fontWeight: FontWeight.bold
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          )
+                        ),
+                      );
+                    }
+                  ),
+                  if (memberNo > 0) ...[
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0),
+                      color: Constant.colorDarkBlue,
+                      child: Text("Member #$memberNo".tr, style: const TextStyle(color: Colors.white)),
+                    )
+                  ]
+                ],
+              ),
+            ),
+          ),
         ),
-      ]
+      ],
     );
   }
 }
