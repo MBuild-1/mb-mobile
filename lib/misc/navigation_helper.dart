@@ -21,16 +21,15 @@ class _NavigationHelperImpl {
     List<String> routeKeyList = List.of(routeMap.keys);
     int i = 0;
     int? beforeI;
-    for (var element in routeMap.entries) {
-      var arguments = element.value?.route?.settings.arguments;
+    if (routeKeyList.isNotEmpty) {
+      i = routeKeyList.length - 1;
+      var arguments = routeMap[routeKeyList[i]]?.route?.settings.arguments;
       if (arguments is ProductDiscussionRouteArgument) {
         beforeI = i - 1;
-        break;
       }
-      i++;
     }
     if (beforeI != null) {
-      if (beforeI > -1) {
+      while (beforeI! > -1) {
         RouteSettings? routeSettings = routeMap[routeKeyList[beforeI]]?.route?.settings;
         String routeName = routeSettings!.name ?? "";
         var arguments = routeSettings.arguments;
@@ -43,6 +42,7 @@ class _NavigationHelperImpl {
           });
           return;
         }
+        beforeI -= 1;
       }
     }
     PageRestorationHelper.toProductDetailPage(context, productDetailPageParameter);
