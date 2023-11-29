@@ -604,6 +604,46 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
           );
         }
       );
+    void toSponsorProductEntryPage(Banner? banner) {
+      String brandName = "";
+      String brandTitle = "";
+      String? brandId;
+      String? brandSlug;
+      bool hasBrandIdAndBrandSlug() => brandId.isNotEmptyString && brandSlug.isNotEmptyString;
+      dynamic bannerData = banner?.data;
+      if (bannerData is Map<String, dynamic>) {
+        brandTitle = bannerData["title"] as String;
+        brandName = brandTitle.toLowerCase();
+        if (bannerData.containsKey("data")) {
+          dynamic bannerDataDetail = bannerData["data"];
+          if (bannerDataDetail is Map<String, dynamic>) {
+            if (bannerDataDetail.containsKey("brand_id") && bannerDataDetail.containsKey("slug")) {
+              brandId = bannerDataDetail["brand_id"];
+              brandSlug = bannerDataDetail["slug"];
+            }
+          }
+        }
+      } else if (bannerData is String) {
+        brandName = bannerData;
+      }
+      PageRestorationHelper.toProductEntryPage(
+        context,
+        ProductEntryPageParameter(
+          productEntryParameterMap: {
+            if (hasBrandIdAndBrandSlug()) ...{
+              "brand_id": brandId.toEmptyStringNonNull,
+              "brand": brandSlug.toEmptyStringNonNull
+            } else ...{
+              "type": "sponsor",
+              "brand": brandName,
+              "sponsor_image_url": banner?.imageUrl ?? "",
+              "sponsor_title": brandName,
+              "sponsor_aspect_ratio": Constant.aspectRatioValueSponsorBanner.toDouble()
+            }
+          }
+        )
+      );
+    }
     widget.homeMainMenuSubController.setHomeMainMenuDelegate(
       HomeMainMenuDelegate(
         onObserveLoadProductDelegate: onObserveLoadProductDelegateFactory.generateOnObserveLoadProductDelegate(),
@@ -779,26 +819,14 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
             );
           } else if (data is ProductSponsorTransparentBannerParameterData) {
             List<Banner> bannerList = onObserveSuccessLoadMultipleTransparentBannerParameter.transparentBannerList.map(
-              (transparentBanner) => Banner(
-                id: transparentBanner.id,
-                imageUrl: transparentBanner.imageUrl,
-                data: transparentBanner.title
-              )
+              (transparentBanner) {
+                return Banner(
+                  id: transparentBanner.id,
+                  imageUrl: transparentBanner.imageUrl,
+                  data: transparentBanner.data
+                );
+              }
             ).toList();
-            void toProductEntryPage(Banner? banner) {
-              PageRestorationHelper.toProductEntryPage(
-                context,
-                ProductEntryPageParameter(
-                  productEntryParameterMap: {
-                    "type": "sponsor",
-                    "brand": (banner?.data as String).toLowerCase(),
-                    "sponsor_image_url": banner?.imageUrl ?? "",
-                    "sponsor_title": banner?.data as String,
-                    "sponsor_aspect_ratio": Constant.aspectRatioValueSponsorBanner.toDouble()
-                  }
-                )
-              );
-            }
             return BuilderListItemControllerState(
               buildListItemControllerState: () {
                 return StackContainerListItemControllerState(
@@ -806,7 +834,7 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
                     MultiBannerListItemControllerState(
                       bannerList: bannerList,
                       aspectRatioValue: Constant.aspectRatioValueSponsorBanner,
-                      onTapBanner: (banner) => toProductEntryPage(banner),
+                      onTapBanner: (banner) => toSponsorProductEntryPage(banner),
                       onPageChanged: (index, reason) {
                         _banner = bannerList[index];
                         data.repeatableDynamicItemCarouselAdditionalParameter?.onRepeatLoading();
@@ -846,7 +874,7 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
                           top: 10,
                           right: 10,
                           child: TapArea(
-                            onTap: () => toProductEntryPage(_banner),
+                            onTap: () => toSponsorProductEntryPage(_banner),
                             child: Container(
                               padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
                               decoration: BoxDecoration(
@@ -993,23 +1021,9 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
                 (transparentBanner) => Banner(
                   id: transparentBanner.id,
                   imageUrl: transparentBanner.imageUrl,
-                  data: transparentBanner.title
+                  data: transparentBanner.data
                 )
               ).toList();
-              void toProductEntryPage(Banner? banner) {
-                PageRestorationHelper.toProductEntryPage(
-                  context,
-                  ProductEntryPageParameter(
-                    productEntryParameterMap: {
-                      "type": "sponsor",
-                      "brand": (banner?.data as String).toLowerCase(),
-                      "sponsor_image_url": banner?.imageUrl ?? "",
-                      "sponsor_title": banner?.data as String,
-                      "sponsor_aspect_ratio": Constant.aspectRatioValueSponsorBanner.toDouble()
-                    }
-                  )
-                );
-              }
               return StackContainerListItemControllerState(
                 childListItemControllerStateList: [
                   ColumnContainerListItemControllerState(
@@ -1017,7 +1031,7 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
                       MultiBannerListItemControllerState(
                         bannerList: bannerList,
                         aspectRatioValue: Constant.aspectRatioValueSponsorBanner,
-                        onTapBanner: (banner) => toProductEntryPage(banner),
+                        onTapBanner: (banner) => toSponsorProductEntryPage(banner),
                         onPageChanged: (index, reason) {
                           _banner = bannerList[index];
                           //data.repeatableDynamicItemCarouselAdditionalParameter?.onRepeatLoading();
@@ -1048,7 +1062,7 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
                                 ),
                               ),
                               TapArea(
-                                onTap: () => toProductEntryPage(_banner),
+                                onTap: () => toSponsorProductEntryPage(_banner),
                                 child: Text(
                                   MultiLanguageString({
                                     Constant.textEnUsLanguageKey: "Look More",
@@ -1088,7 +1102,30 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
             }
           );
         },
-        getBannerData: () => _banner?.data ?? "",
+        getBannerData: () {
+          dynamic data = _banner?.data;
+          if (data is Map<String, dynamic>) {
+            if (data.containsKey("data")) {
+              dynamic dataDetail = data["data"];
+              if (dataDetail is Map<String, dynamic>) {
+                if (dataDetail.containsKey("slug")) {
+                  return dataDetail["slug"] as String;
+                }
+              } else if (dataDetail is String) {
+                return dataDetail;
+              } else {
+                if (data.containsKey("title")) {
+                  return data["title"] as String;
+                }
+              }
+            } else if (data.containsKey("title")) {
+              return data["title"] as String;
+            }
+          } else if (data is String) {
+            return data;
+          }
+          return "";
+        },
         setBanner: (bannerData) => _banner = bannerData
       )
     );

@@ -468,7 +468,18 @@ class HomeMainMenuSubController extends BaseGetxController {
           LoadDataResult<List<TransparentBanner>> bannerLoadDataResult = await getSponsorContentsBannerUseCase.execute().future(
             parameter: apiRequestManager.addRequestToCancellationPart("sponsor-banner-highlight").value
           ).map(
-            (transparentBannerList) => transparentBannerList.take(1).toList()
+            (transparentBannerList) => transparentBannerList.take(1).map<TransparentBanner>(
+              (transparentBanner) => TransparentBanner(
+                id: transparentBanner.id,
+                title: transparentBanner.title,
+                type: transparentBanner.type,
+                imageUrl: transparentBanner.imageUrl,
+                data: <String, dynamic>{
+                  "title": transparentBanner.title,
+                  "data": transparentBanner.data
+                }
+              )
+            ).toList()
           );
           if (bannerLoadDataResult.isFailedBecauseCancellation) {
             return;
@@ -480,7 +491,7 @@ class HomeMainMenuSubController extends BaseGetxController {
               Banner banner = Banner(
                 id: transparentBanner.id,
                 imageUrl: transparentBanner.imageUrl,
-                data: transparentBanner.title
+                data: transparentBanner.data
               );
               _homeMainMenuDelegate?.setBanner(banner);
             }

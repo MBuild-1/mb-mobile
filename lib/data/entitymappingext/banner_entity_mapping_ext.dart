@@ -25,6 +25,7 @@ extension TransparentBannerDetailEntityMappingExt on ResponseWrapper {
       title: response["title"],
       type: response["type"],
       imageUrl: response["image_mobile"],
+      data: response["data"]
     );
   }
 }
