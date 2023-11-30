@@ -5,8 +5,10 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../domain/entity/delivery/delivery_review.dart';
 import '../../../domain/entity/order/combined_order.dart';
+import '../../../misc/constant.dart';
 import '../../../misc/dialog_helper.dart';
 import '../../../misc/main_route_observer.dart';
+import '../../../misc/multi_language_string.dart';
 import '../../../misc/web_helper.dart';
 import '../../page/modaldialogpage/give_review_delivery_review_detail_modal_dialog_page.dart';
 import '../button/custombutton/sized_outline_gradient_button.dart';
@@ -78,9 +80,12 @@ class OrderConclusionItem extends StatelessWidget {
                     builder: (context) {
                       return Container(
                         width: double.infinity,
-                        child: const Center(
+                        child: Center(
                           child: Text(
-                            "Perhatian! Silahkan lakukan pembayaran biaya pengiriman agar pesanan dapat segera di proses",
+                            MultiLanguageString({
+                              Constant.textEnUsLanguageKey: "Attention! Please pay the shipping costs so that the order can be processed immediately.",
+                              Constant.textInIdLanguageKey: "Perhatian! Silahkan lakukan pembayaran biaya pengiriman agar pesanan dapat segera di proses.",
+                            }).toEmptyStringNonNull
                           ),
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
