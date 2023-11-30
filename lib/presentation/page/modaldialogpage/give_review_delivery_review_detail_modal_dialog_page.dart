@@ -136,11 +136,13 @@ class _StatefulGiveReviewDeliveryReviewDetailControllerMediatorWidgetState exten
   GiveDeliveryReviewValue? _giveDeliveryReviewValue;
   late int _selectedRating;
 
-  final OneRatingGiveDeliveryReviewContainerData _oneRatingGiveDeliveryReviewContainerData = OneRatingGiveDeliveryReviewContainerData();
-  final TwoRatingGiveDeliveryReviewContainerData _twoRatingGiveDeliveryReviewContainerData = TwoRatingGiveDeliveryReviewContainerData();
-  final ThreeRatingGiveDeliveryReviewContainerData _threeRatingGiveDeliveryReviewContainerData = ThreeRatingGiveDeliveryReviewContainerData();
-  final FourRatingGiveDeliveryReviewContainerData _fourRatingGiveDeliveryReviewContainerData = FourRatingGiveDeliveryReviewContainerData();
-  final FiveRatingGiveDeliveryReviewContainerData _fiveRatingGiveDeliveryReviewContainerData = FiveRatingGiveDeliveryReviewContainerData();
+  final TextEditingController _textEditingController = TextEditingController();
+
+  late final OneRatingGiveDeliveryReviewContainerData _oneRatingGiveDeliveryReviewContainerData;
+  late final TwoRatingGiveDeliveryReviewContainerData _twoRatingGiveDeliveryReviewContainerData;
+  late final ThreeRatingGiveDeliveryReviewContainerData _threeRatingGiveDeliveryReviewContainerData;
+  late final FourRatingGiveDeliveryReviewContainerData _fourRatingGiveDeliveryReviewContainerData;
+  late final FiveRatingGiveDeliveryReviewContainerData _fiveRatingGiveDeliveryReviewContainerData;
 
   final OneRatingGiveDeliveryReviewContainerSubmitCallback _oneRatingGiveDeliveryReviewContainerSubmitCallback = OneRatingGiveDeliveryReviewContainerSubmitCallback();
   final TwoRatingGiveDeliveryReviewContainerSubmitCallback _twoRatingGiveDeliveryReviewContainerSubmitCallback = TwoRatingGiveDeliveryReviewContainerSubmitCallback();
@@ -151,6 +153,12 @@ class _StatefulGiveReviewDeliveryReviewDetailControllerMediatorWidgetState exten
   @override
   void initState() {
     super.initState();
+    _oneRatingGiveDeliveryReviewContainerData = OneRatingGiveDeliveryReviewContainerData(feedbackTextEditingController: _textEditingController);
+    _twoRatingGiveDeliveryReviewContainerData = TwoRatingGiveDeliveryReviewContainerData(feedbackTextEditingController: _textEditingController);
+    _threeRatingGiveDeliveryReviewContainerData = ThreeRatingGiveDeliveryReviewContainerData(feedbackTextEditingController: _textEditingController);
+    _fourRatingGiveDeliveryReviewContainerData = FourRatingGiveDeliveryReviewContainerData(feedbackTextEditingController: _textEditingController);
+    _fiveRatingGiveDeliveryReviewContainerData = FiveRatingGiveDeliveryReviewContainerData(feedbackTextEditingController: _textEditingController);
+
     _selectedRating = widget.giveReviewDeliveryReviewDetailModalDialogPageParameter.selectedRating;
     _giveDeliveryReviewValueCallback = (giveDeliveryReviewValue) {
       _giveDeliveryReviewValue = giveDeliveryReviewValue;

@@ -190,8 +190,12 @@ class _StatefulThreeRatingGiveDeliveryReviewContainerControllerMediatorWidgetSta
 }
 
 class ThreeRatingGiveDeliveryReviewContainerData {
-  final TextEditingController _feedbackTextEditingController = TextEditingController();
+  final TextEditingController _feedbackTextEditingController;
   final List<PlatformFile> _platformFile = [];
+
+  ThreeRatingGiveDeliveryReviewContainerData({
+    required TextEditingController feedbackTextEditingController
+  }) : _feedbackTextEditingController = feedbackTextEditingController;
 }
 
 class ThreeRatingGiveDeliveryReviewContainerSubmitCallback extends GiveDeliveryReviewContainerSubmitCallback {

@@ -154,6 +154,9 @@ class OrderConclusionItem extends StatelessWidget {
                             );
                             if (result is bool) {
                               MainRouteObserver.onRefreshDeliveryReview?.refresh();
+                              if (MainRouteObserver.onRefreshOrderList != null) {
+                                MainRouteObserver.onRefreshOrderList!();
+                              }
                             }
                           },
                           text: "Give Shipping Review".tr,

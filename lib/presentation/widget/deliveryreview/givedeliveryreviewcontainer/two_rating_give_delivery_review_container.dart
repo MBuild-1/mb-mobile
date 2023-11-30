@@ -190,8 +190,12 @@ class _StatefulTwoRatingGiveDeliveryReviewContainerControllerMediatorWidgetState
 }
 
 class TwoRatingGiveDeliveryReviewContainerData {
-  final TextEditingController _feedbackTextEditingController = TextEditingController();
+  final TextEditingController _feedbackTextEditingController;
   final List<PlatformFile> _platformFile = [];
+
+  TwoRatingGiveDeliveryReviewContainerData({
+    required TextEditingController feedbackTextEditingController
+  }) : _feedbackTextEditingController = feedbackTextEditingController;
 }
 
 class TwoRatingGiveDeliveryReviewContainerSubmitCallback extends GiveDeliveryReviewContainerSubmitCallback {

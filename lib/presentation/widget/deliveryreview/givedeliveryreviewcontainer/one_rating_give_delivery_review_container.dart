@@ -192,8 +192,12 @@ class _StatefulOneRatingGiveDeliveryReviewContainerControllerMediatorWidgetState
 }
 
 class OneRatingGiveDeliveryReviewContainerData {
-  final TextEditingController _feedbackTextEditingController = TextEditingController();
+  final TextEditingController _feedbackTextEditingController;
   final List<PlatformFile> _platformFile = [];
+
+  OneRatingGiveDeliveryReviewContainerData({
+    required TextEditingController feedbackTextEditingController
+  }) : _feedbackTextEditingController = feedbackTextEditingController;
 }
 
 class OneRatingGiveDeliveryReviewContainerSubmitCallback extends GiveDeliveryReviewContainerSubmitCallback {

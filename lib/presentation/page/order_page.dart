@@ -26,6 +26,7 @@ import '../../misc/injector.dart';
 import '../../misc/itemtypelistsubinterceptor/order_item_type_list_sub_interceptor.dart';
 import '../../misc/list_item_controller_state_helper.dart';
 import '../../misc/load_data_result.dart';
+import '../../misc/main_route_observer.dart';
 import '../../misc/manager/controller_manager.dart';
 import '../../misc/multi_language_string.dart';
 import '../../misc/paging/modified_paging_controller.dart';
@@ -230,6 +231,7 @@ class _StatefulOrderControllerMediatorWidgetState extends State<_StatefulOrderCo
       _status = (_orderColorfulChipTabBarDataList[_orderTabColorfulChipTabBarController.value].data as String).toEmptyStringNonNull;
       _orderListItemPagingController.resetToDesiredPageKey(1);
     });
+    MainRouteObserver.onRefreshOrderList = _orderListItemPagingController.refresh;
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _orderListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? orderListItemControllerStateList) async {
@@ -370,6 +372,7 @@ class _StatefulOrderControllerMediatorWidgetState extends State<_StatefulOrderCo
 
   @override
   void dispose() {
+    MainRouteObserver.onRefreshOrderList = null;
     super.dispose();
   }
 }

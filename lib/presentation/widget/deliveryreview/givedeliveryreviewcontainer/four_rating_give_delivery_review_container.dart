@@ -239,13 +239,17 @@ class _StatefulFourRatingGiveDeliveryReviewContainerControllerMediatorWidgetStat
 }
 
 class FourRatingGiveDeliveryReviewContainerData {
-  final TextEditingController _feedbackTextEditingController = TextEditingController();
+  final TextEditingController _feedbackTextEditingController;
   bool _hasServiceQuality = false;
   bool _hasPackagingQuality = false;
   bool _hasPriceQuality = false;
   bool _hasItemQuality = false;
   bool _hasDeliveryQuality = false;
   final List<PlatformFile> _platformFile = [];
+
+  FourRatingGiveDeliveryReviewContainerData({
+    required TextEditingController feedbackTextEditingController
+  }) : _feedbackTextEditingController = feedbackTextEditingController;
 }
 
 class FourRatingGiveDeliveryReviewContainerSubmitCallback extends GiveDeliveryReviewContainerSubmitCallback {
