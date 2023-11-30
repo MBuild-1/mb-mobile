@@ -111,7 +111,7 @@ abstract class ProductItem extends StatelessWidget {
       bottomLeft: Radius.circular(16.0),
       bottomRight: Radius.circular(16.0)
     );
-    String weight = "${productAppearanceData.weight.toLocalizedStringAsFixed(3)} Kg";
+    String weight = "${productAppearanceData.weight.toWeightStringDecimalPlaced()} Kg";
     String soldCount = "No Sold Count".tr;
     bool isAddToWishlist = false;
     bool isAddToCart = false;

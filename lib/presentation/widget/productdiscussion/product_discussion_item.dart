@@ -138,7 +138,7 @@ abstract class ProductDiscussionItem extends StatelessWidget {
                                     ),
                                   ),
                                   Text(
-                                    "${productEntry.weight.toLocalizedStringAsFixed(3)} Kg",
+                                    "${productEntry.weight.toWeightStringDecimalPlaced()} Kg",
                                     style: const TextStyle(
                                       fontSize: 15,
                                       fontWeight: FontWeight.bold

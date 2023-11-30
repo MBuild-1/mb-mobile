@@ -51,7 +51,7 @@ class AdditionalItemSummaryWidget extends StatelessWidget {
                 children: [
                   Text("Estimation Weight of Additional Items".tr, style: const TextStyle(color: Colors.grey, fontSize: 11)),
                   const SizedBox(width: 10),
-                  Text("${totalEstimationWeight.toLocalizedStringAsFixed(3)} Kg", style: const TextStyle(fontSize: 11))
+                  Text("${totalEstimationWeight.toWeightStringDecimalPlaced()} Kg", style: const TextStyle(fontSize: 11))
                 ]
               )
             ]

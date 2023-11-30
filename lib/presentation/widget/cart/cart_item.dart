@@ -111,7 +111,7 @@ abstract class CartItem extends StatelessWidget {
                             TextSpan(
                               children: [
                                 TextSpan(
-                                  text: "${productEntry.weight.toLocalizedStringAsFixed(3)} Kg",
+                                  text: "${productEntry.weight.toWeightStringDecimalPlaced()} Kg",
                                   style: const TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.bold

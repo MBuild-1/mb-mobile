@@ -67,7 +67,7 @@ class ProductDetailShortHeader extends StatelessWidget {
           ),
           const SizedBox(width: 10),
           Text(
-            "${selectedProductEntry.weight.toLocalizedStringAsFixed(3)} Kg",
+            "${selectedProductEntry.weight.toWeightStringDecimalPlaced()} Kg",
             style: TextStyle(
               color: Constant.colorMain,
               fontWeight: FontWeight.bold

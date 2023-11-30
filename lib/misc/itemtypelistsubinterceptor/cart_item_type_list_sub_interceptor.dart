@@ -567,7 +567,7 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
                                   text: "Total Berat: "
                                 ),
                                 TextSpan(
-                                  text: "${bucketLoadDataResult.resultIfSuccess!.totalWeight!.toLocalizedStringAsFixed(3)} Kg",
+                                  text: "${bucketLoadDataResult.resultIfSuccess!.totalWeight!.toWeightStringDecimalPlaced()} Kg",
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold
                                   )
