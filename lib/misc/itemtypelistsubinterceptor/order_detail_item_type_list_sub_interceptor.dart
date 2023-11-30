@@ -501,7 +501,7 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
   ) {
     CombinedOrder order = orderDetailContainerListItemControllerState.order.combinedOrder;
     String inStatus = order.inStatus.toEmptyStringNonNull.toLowerCase();
-    bool canAddWarehouse = inStatus == "menunggu konfirmasi" || inStatus == "pesanan diproses" || inStatus == "orderlist sedang dibelanjakan" || inStatus == "orderlist sudah dibelanjakan";
+    bool canModifyWarehouse = inStatus == "menunggu konfirmasi" || inStatus == "pesanan diproses" || inStatus == "orderlist sedang dibelanjakan" || inStatus == "orderlist sudah dibelanjakan";
     List<AdditionalItem> additionalItemList = order.orderProduct.additionalItemList;
     newListItemControllerState.add(
       VirtualSpacingListItemControllerState(height: padding())
@@ -519,7 +519,7 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
           ),
           TapArea(
             onTap: () {
-              if (canAddWarehouse) {
+              if (canModifyWarehouse) {
                 orderDetailContainerListItemControllerState.onModifyWarehouseInOrder(
                   AddWarehouseInOrderParameter(
                     orderProductId: order.orderProductId,
@@ -533,7 +533,7 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
             child: Text(
               "Add Item".tr,
               style: TextStyle(
-                color: canAddWarehouse ? Constant.colorMain : Constant.colorGrey6,
+                color: canModifyWarehouse ? Constant.colorMain : Constant.colorGrey6,
                 fontWeight: FontWeight.bold
               )
             ),
@@ -591,7 +591,7 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
                         )
                       ),
                       onLoadAdditionalItem: () {},
-                      showEditAndRemoveIcon: true
+                      showEditAndRemoveIcon: canModifyWarehouse
                     )
                   ]
                 )
