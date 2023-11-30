@@ -139,7 +139,7 @@ class OrderConclusionItem extends StatelessWidget {
                       const SizedBox(width: 10),
                       Expanded(
                         child: SizedOutlineGradientButton(
-                          onPressed: () async {
+                          onPressed: order.review == 1 ? null : () async {
                             dynamic result = await DialogHelper.showModalBottomDialogPage<bool, GiveReviewDeliveryReviewDetailModalDialogPageParameter>(
                               context: context,
                               modalDialogPageBuilder: (context, parameter) => GiveReviewDeliveryReviewDetailModalDialogPage(
