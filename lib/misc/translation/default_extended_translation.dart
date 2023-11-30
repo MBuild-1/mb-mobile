@@ -326,7 +326,8 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Variant": "Varian",
       "Receiver Name": "Nama Penerima",
       "Receiver Email": "Email Penerima",
-      "Receiver Address": "Alamat Penerima"
+      "Receiver Address": "Alamat Penerima",
+      "Version": "Versi"
     }
   };
 

@@ -1,11 +1,14 @@
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:masterbagasi/misc/controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
+import 'package:masterbagasi/misc/ext/future_ext.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
@@ -49,8 +52,10 @@ import '../../../../misc/web_helper.dart';
 import '../../../../misc/widget_helper.dart';
 import '../../../notifier/notification_notifier.dart';
 import '../../../widget/background_app_bar_scaffold.dart';
+import '../../../widget/loaddataresultimplementer/load_data_result_implementer_directly.dart';
 import '../../../widget/menu_profile_header.dart';
 import '../../../widget/modified_paged_list_view.dart';
+import '../../../widget/modified_shimmer.dart';
 import '../../../widget/modified_svg_picture.dart';
 import '../../../widget/modifiedappbar/default_search_app_bar.dart';
 import '../../../widget/modifiedappbar/modified_app_bar.dart' hide TitleInterceptor;
@@ -98,6 +103,7 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
   late final PagingControllerState<int, ListItemControllerState> _menuMainMenuSubListItemPagingControllerState;
   final List<BaseLoadDataResultDynamicListItemControllerState> _dynamicItemLoadDataResultDynamicListItemControllerStateList = [];
   late AssetImage _menuAppBarBackgroundAssetImage;
+  LoadDataResult<PackageInfo> _packageInfoLoadDataResult = NoLoadDataResult<PackageInfo>();
 
   @override
   void initState() {
@@ -120,6 +126,14 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
     _menuMainMenuSubListItemPagingControllerState.isPagingControllerExist = true;
     MainRouteObserver.controllerMediatorMap[Constant.subPageKeyMenuMainMenu] = refreshMenuMainMenu;
     MainRouteObserver.onRefreshProfile = refreshMenuMainMenu;
+    _loadVersion();
+  }
+
+  void _loadVersion() async {
+    _packageInfoLoadDataResult = IsLoadingLoadDataResult<PackageInfo>();
+    setState(() {});
+    _packageInfoLoadDataResult = await PackageInfo.fromPlatform().getLoadDataResult();
+    setState(() {});
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _wishlistMainMenuListItemPagingControllerStateListener(int pageKey) async {
@@ -321,6 +335,51 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
           ProfileMenuListItemControllerState(
             onTap: (context) => DialogHelper.showPromptLogout(context, widget.menuMainMenuSubController.logout),
             title: 'Sign Out'.tr,
+            titleInterceptor: (text, style) => Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    text,
+                    style: style
+                  ),
+                ),
+                LoadDataResultImplementerDirectly(
+                  loadDataResult: _packageInfoLoadDataResult,
+                  errorProvider: Injector.locator<ErrorProvider>(),
+                  onImplementLoadDataResultDirectly: (result, errorProvider) {
+                    Widget? textWidget;
+                    if (result.isSuccess) {
+                      textWidget = Text(
+                        "${"Version".tr} ${result.resultIfSuccess!.version}",
+                        style: style?.copyWith(
+                          fontWeight: FontWeight.normal
+                        )
+                      );
+                    } else if (result.isLoading) {
+                      textWidget = ModifiedShimmer.fromColors(
+                        child: Text(
+                          "${"Version".tr} 0.0.0",
+                          style: style?.copyWith(
+                            fontWeight: FontWeight.normal,
+                            backgroundColor: Colors.grey
+                          )
+                        )
+                      );
+                    }
+                    if (textWidget != null) {
+                      return Row(
+                        children: [
+                          const SizedBox(width: 10),
+                          textWidget
+                        ],
+                      );
+                    } else {
+                      return const SizedBox();
+                    }
+                  }
+                )
+              ],
+            ),
             icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorLogout, width: 20.0, height: 13.0),
           ),
         ]
