@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -770,29 +771,31 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
                       }
                     }
                   ),
-                  SizedBox(height: 3.h),
-                  Row(
-                    children: [
-                      const Expanded(
-                        child: Divider()
-                      ),
-                      SizedBox(width: 6.w),
-                      Text("or register with".tr, style: TextStyle(
-                        color: Theme.of(context).dividerTheme.color
-                      )),
-                      SizedBox(width: 6.w),
-                      const Expanded(
-                        child: Divider()
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 3.h),
-                  SizedOutlineGradientButton(
-                    width: double.infinity,
-                    outlineGradientButtonType: OutlineGradientButtonType.outline,
-                    onPressed: widget.registerController.registerWithGoogle,
-                    text: "Register With Google".tr,
-                  ),
+                  if (Platform.isAndroid) ...[
+                    SizedBox(height: 3.h),
+                    Row(
+                      children: [
+                        const Expanded(
+                          child: Divider()
+                        ),
+                        SizedBox(width: 6.w),
+                        Text("or register with".tr, style: TextStyle(
+                          color: Theme.of(context).dividerTheme.color
+                        )),
+                        SizedBox(width: 6.w),
+                        const Expanded(
+                          child: Divider()
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 3.h),
+                    SizedOutlineGradientButton(
+                      width: double.infinity,
+                      outlineGradientButtonType: OutlineGradientButtonType.outline,
+                      onPressed: widget.registerController.registerWithGoogle,
+                      text: "Register With Google".tr,
+                    ),
+                  ],
                   SizedBox(height: 2.h),
                   Builder(
                     builder: (context) {
