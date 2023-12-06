@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/domain/entity/pin/modifypin/modifypinparameter/create_modify_pin_parameter.dart';
@@ -8,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../controller/accountsecuritycontroller/modify_pin_controller.dart';
+import '../../../domain/entity/login/login_response.dart';
 import '../../../domain/entity/pin/modifypin/modifypinparameter/change_modify_pin_parameter.dart';
 import '../../../domain/entity/pin/modifypin/modifypinparameter/modify_pin_parameter.dart';
 import '../../../domain/entity/pin/modifypin/modifypinparameter/remove_modify_pin_parameter.dart';
@@ -260,8 +263,12 @@ class _StatefulModifyPinControllerMediatorWidgetState extends State<_StatefulMod
             // Nothing
           } else if (modifyPinResponse is ValidateModifyPinResponse) {
             if (modifyPinResponse is ValidateWhileLoginModifyPinResponse) {
+              LoginResponse loginResponse = modifyPinResponse.loginResponse;
               await TempLoginDataWhileInputPinHelper.saveTempLoginDataWhileInputPin(
-                modifyPinResponse.loginResponse.token
+                json.encode(<String, dynamic>{
+                  "user_id": loginResponse.userId,
+                  "token": loginResponse.token,
+                })
               ).future();
             }
           }

@@ -321,9 +321,23 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
           GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
           return googleSignInAuthentication.idToken;
         },
+        onLoginIntoOneSignal: (externalId) async {
+          try {
+            await OneSignal.login(externalId);
+            return SuccessLoadDataResult<String>(
+              value: externalId
+            );
+          } catch (e, stackTrace) {
+            return FailedLoadDataResult<String>(
+              e: e,
+              stackTrace: stackTrace
+            );
+          }
+        },
         onSaveToken: (token) => LoginHelper.saveToken(token).future(),
         onGetPushNotificationSubscriptionId: () => OneSignal.User.pushSubscription.id.toEmptyStringNonNull,
-        onSubscribeChatCountRealtimeChannel: (userId) async => await SomethingCounter.of(context)?.subscribeChatCount(userId)
+        onSubscribeChatCountRealtimeChannel: (userId) async => await SomethingCounter.of(context)?.subscribeChatCount(userId),
+        onSubscribeNotificationCountRealtimeChannel: (userId) async => await SomethingCounter.of(context)?.subscribeNotificationCount(userId),
       )
     );
     return WillPopScope(

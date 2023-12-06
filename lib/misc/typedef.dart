@@ -8,6 +8,7 @@ import '../domain/entity/order/order.dart';
 import '../domain/entity/product/productbrand/favorite_product_brand.dart';
 import '../domain/entity/wishlist/support_wishlist.dart';
 import '../domain/entity/wishlist/wishlist.dart';
+import 'load_data_result.dart';
 import 'validation/validation_result.dart';
 import 'validation/validator/validator.dart';
 
@@ -57,3 +58,4 @@ typedef OnShowCheckSharedCartRequestProcessLoadingCallback = Future<void> Functi
 typedef OnCheckSharedCartRequestProcessSuccessCallback = Future<void> Function(CheckBucketResponse);
 typedef OnShowCheckSharedCartRequestProcessFailedCallback = Future<void> Function(dynamic e);
 typedef OnGetPushNotificationSubscriptionId = String Function();
+typedef OnLoginIntoOneSignal = Future<LoadDataResult<String>> Function(String);

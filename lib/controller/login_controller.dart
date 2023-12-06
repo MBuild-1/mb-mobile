@@ -30,7 +30,6 @@ import 'base_getx_controller.dart';
 
 typedef _OnGetLoginInput = String Function();
 typedef _OnLoginBack = void Function();
-typedef _OnLoginIntoOneSignal = Future<LoadDataResult<String>> Function(String);
 typedef _OnShowLoginRequestProcessLoadingCallback = Future<void> Function();
 typedef _OnLoginRequestProcessSuccessCallback = Future<void> Function();
 typedef _OnShowLoginRequestProcessFailedCallback = Future<void> Function(dynamic e);
@@ -96,7 +95,7 @@ class LoginController extends BaseGetxController {
           parameter: apiRequestManager.addRequestToCancellationPart('login').value
         );
         if (loginLoadDataResult.isSuccess) {
-          if (await loginOneSignal()) {
+          if (await loginOneSignal(loginLoadDataResult.resultIfSuccess!.userId)) {
             return;
           }
           await LoginHelper.saveToken(loginLoadDataResult.resultIfSuccess!.token).future();
@@ -141,7 +140,7 @@ class LoginController extends BaseGetxController {
           parameter: apiRequestManager.addRequestToCancellationPart('login-with-google').value
         );
         if (loginWithGoogleLoadDataResult.isSuccess) {
-          if (await loginOneSignal()) {
+          if (await loginOneSignal(loginWithGoogleLoadDataResult.resultIfSuccess!.userId)) {
             return;
           }
           await LoginHelper.saveToken(loginWithGoogleLoadDataResult.resultIfSuccess!.token).future();
@@ -191,8 +190,8 @@ class LoginController extends BaseGetxController {
     return false;
   }
 
-  Future<bool> loginOneSignal() async {
-    LoadDataResult<String> oneSignalLoginResult = await _loginDelegate!.onLoginIntoOneSignal(_effectiveEmailAndPhoneNumberLoginInput);
+  Future<bool> loginOneSignal(String userId) async {
+    LoadDataResult<String> oneSignalLoginResult = await _loginDelegate!.onLoginIntoOneSignal(userId);
     if (oneSignalLoginResult.isFailed) {
       Get.back();
       _loginDelegate!.onShowLoginRequestProcessFailedCallback(oneSignalLoginResult.resultIfFailed);
@@ -213,7 +212,7 @@ class LoginDelegate {
   _OnRequestPin onRequestPin;
   _OnLoginWithGoogle onLoginWithGoogle;
   _OnSaveTempData onSaveTempData;
-  _OnLoginIntoOneSignal onLoginIntoOneSignal;
+  OnLoginIntoOneSignal onLoginIntoOneSignal;
   OnGetPushNotificationSubscriptionId onGetPushNotificationSubscriptionId;
   Future<void> Function(String) onSubscribeChatCountRealtimeChannel;
   Future<void> Function(String) onSubscribeNotificationCountRealtimeChannel;

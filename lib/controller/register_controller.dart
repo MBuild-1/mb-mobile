@@ -357,6 +357,9 @@ class RegisterController extends BaseGetxController {
           parameter: apiRequestManager.addRequestToCancellationPart('register-second-step').value
         );
         if (registerSecondStepLoadDataResult.isSuccess) {
+          if (await loginOneSignal(registerSecondStepLoadDataResult.resultIfSuccess!.userId)) {
+            return;
+          }
           await _registerDelegate!.onSaveToken(registerSecondStepLoadDataResult.resultIfSuccess!.token);
           LoadDataResult<User> userLoadDataResult = await getUserUseCase.execute(
             GetUserParameter()
@@ -368,6 +371,7 @@ class RegisterController extends BaseGetxController {
           if (userLoadDataResult.isSuccess) {
             User user = userLoadDataResult.resultIfSuccess!;
             await _registerDelegate!.onSubscribeChatCountRealtimeChannel(user.id);
+            await _registerDelegate!.onSubscribeNotificationCountRealtimeChannel(user.id);
           }
           _registerDelegate!.onRegisterBack();
           _registerDelegate!.onRegisterRequestProcessSuccessCallback();
@@ -396,6 +400,9 @@ class RegisterController extends BaseGetxController {
           parameter: apiRequestManager.addRequestToCancellationPart('register').value
         );
         if (registerLoadDataResult.isSuccess) {
+          if (await loginOneSignal(registerLoadDataResult.resultIfSuccess!.userId)) {
+            return;
+          }
           await _registerDelegate!.onSaveToken(registerLoadDataResult.resultIfSuccess!.token);
           LoadDataResult<User> userLoadDataResult = await getUserUseCase.execute(
             GetUserParameter()
@@ -407,6 +414,7 @@ class RegisterController extends BaseGetxController {
           if (userLoadDataResult.isSuccess) {
             User user = userLoadDataResult.resultIfSuccess!;
             await _registerDelegate!.onSubscribeChatCountRealtimeChannel(user.id);
+            await _registerDelegate!.onSubscribeNotificationCountRealtimeChannel(user.id);
           }
           _registerDelegate!.onRegisterBack();
           _registerDelegate!.onRegisterRequestProcessSuccessCallback();
@@ -433,6 +441,9 @@ class RegisterController extends BaseGetxController {
           parameter: apiRequestManager.addRequestToCancellationPart('register-with-google').value
         );
         if (registerWithGoogleLoadDataResult.isSuccess) {
+          if (await loginOneSignal(registerWithGoogleLoadDataResult.resultIfSuccess!.userId)) {
+            return;
+          }
           await _registerDelegate!.onSaveToken(registerWithGoogleLoadDataResult.resultIfSuccess!.token);
           LoadDataResult<User> userLoadDataResult = await getUserUseCase.execute(
             GetUserParameter()
@@ -444,6 +455,7 @@ class RegisterController extends BaseGetxController {
           if (userLoadDataResult.isSuccess) {
             User user = userLoadDataResult.resultIfSuccess!;
             await _registerDelegate!.onSubscribeChatCountRealtimeChannel(user.id);
+            await _registerDelegate!.onSubscribeNotificationCountRealtimeChannel(user.id);
           }
           _registerDelegate!.onRegisterBack();
           _registerDelegate!.onRegisterRequestProcessSuccessCallback();
@@ -474,6 +486,16 @@ class RegisterController extends BaseGetxController {
     }
     update();
   }
+
+  Future<bool> loginOneSignal(String userId) async {
+    LoadDataResult<String> oneSignalLoginResult = await _registerDelegate!.onLoginIntoOneSignal(userId);
+    if (oneSignalLoginResult.isFailed) {
+      Get.back();
+      _registerDelegate!.onShowRegisterRequestProcessFailedCallback(oneSignalLoginResult.resultIfFailed);
+      return true;
+    }
+    return false;
+  }
 }
 
 class RegisterDelegate {
@@ -497,8 +519,10 @@ class RegisterDelegate {
   _OnShowVerifyRegisterRequestProcessFailedCallback onShowVerifyRegisterRequestProcessFailedCallback;
   _OnRegisterWithGoogle onRegisterWithGoogle;
   _OnSaveToken onSaveToken;
+  OnLoginIntoOneSignal onLoginIntoOneSignal;
   OnGetPushNotificationSubscriptionId onGetPushNotificationSubscriptionId;
   Future<void> Function(String) onSubscribeChatCountRealtimeChannel;
+  Future<void> Function(String) onSubscribeNotificationCountRealtimeChannel;
 
   RegisterDelegate({
     required this.onUnfocusAllWidget,
@@ -521,7 +545,9 @@ class RegisterDelegate {
     required this.onShowVerifyRegisterRequestProcessFailedCallback,
     required this.onRegisterWithGoogle,
     required this.onSaveToken,
+    required this.onLoginIntoOneSignal,
     required this.onGetPushNotificationSubscriptionId,
-    required this.onSubscribeChatCountRealtimeChannel
+    required this.onSubscribeChatCountRealtimeChannel,
+    required this.onSubscribeNotificationCountRealtimeChannel
   });
 }

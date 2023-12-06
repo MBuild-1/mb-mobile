@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/gestures.dart';
@@ -249,13 +250,13 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
       ],
     );
     widget.statefulLoginControllerMediatorWidgetDelegate.onLoginProcess = () async {
+      dynamic result = TempLoginDataWhileInputPinHelper.getTempLoginDataWhileInputPin().result;
+      dynamic jsonResult = json.decode(result as String);
       DialogHelper.showLoadingDialog(context);
-      if (await widget.loginController.loginOneSignal()) {
+      if (await widget.loginController.loginOneSignal(jsonResult["user_id"])) {
         return;
       }
-      await LoginHelper.saveToken(
-        TempLoginDataWhileInputPinHelper.getTempLoginDataWhileInputPin().result
-      ).future();
+      await LoginHelper.saveToken(result).future();
       Get.back();
       _onLoginRequestProcessSuccessCallback();
     };

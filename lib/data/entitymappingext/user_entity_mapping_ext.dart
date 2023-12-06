@@ -33,6 +33,7 @@ import '../../misc/response_wrapper.dart';
 extension UserEntityMappingExt on ResponseWrapper {
   LoginResponse mapFromResponseToLoginResponse() {
     return LoginResponse(
+      userId: response["user"]["id"],
       token: response["access_token"],
       tokenType: response["token_type"],
       expiresIn: response["expires_in"]
@@ -41,6 +42,7 @@ extension UserEntityMappingExt on ResponseWrapper {
 
   LoginWithGoogleResponse mapFromResponseToLoginWithGoogleResponse() {
     return LoginWithGoogleResponse(
+      userId: response["user"]["id"],
       token: response["access_token"],
       tokenType: response["token_type"],
       expiresIn: response["expires_in"]
@@ -79,6 +81,7 @@ extension UserEntityMappingExt on ResponseWrapper {
   RegisterSecondStepResponse mapFromResponseToRegisterSecondStepResponse() {
     RegisterResponse registerResponse = ResponseWrapper(response).mapFromResponseToRegisterResponse();
     return RegisterSecondStepResponse(
+      userId: registerResponse.userId,
       token: registerResponse.token,
       tokenType: registerResponse.tokenType,
       expiresIn: registerResponse.expiresIn
@@ -87,6 +90,7 @@ extension UserEntityMappingExt on ResponseWrapper {
 
   RegisterResponse mapFromResponseToRegisterResponse() {
     return RegisterResponse(
+      userId: response["user"]["id"],
       token: response["access_token"],
       tokenType: response["token_type"],
       expiresIn: response["expires_in"]
@@ -95,6 +99,7 @@ extension UserEntityMappingExt on ResponseWrapper {
 
   RegisterWithGoogleResponse mapFromResponseToRegisterWithGoogleResponse() {
     return RegisterWithGoogleResponse(
+      userId: response["user"]["id"],
       token: response["access_token"],
       tokenType: response["token_type"],
       expiresIn: response["expires_in"]
