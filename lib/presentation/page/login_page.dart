@@ -256,7 +256,7 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
       if (await widget.loginController.loginOneSignal(jsonResult["user_id"])) {
         return;
       }
-      await LoginHelper.saveToken(result).future();
+      await LoginHelper.saveToken(jsonResult["token"]).future();
       Get.back();
       _onLoginRequestProcessSuccessCallback();
     };
