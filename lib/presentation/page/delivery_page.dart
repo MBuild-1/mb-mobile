@@ -558,14 +558,20 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
                                       children: [
                                         Align(
                                           alignment: Alignment.bottomCenter,
-                                          child: Transform.rotate(
-                                            angle: math.pi / 2,
-                                            child: SizedBox(
-                                              child: ModifiedSvgPicture.asset(
-                                                Constant.vectorArrow,
-                                                height: 15,
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Transform.rotate(
+                                                angle: math.pi / 2,
+                                                child: SizedBox(
+                                                  child: ModifiedSvgPicture.asset(
+                                                    Constant.vectorArrow,
+                                                    height: 15,
+                                                  ),
+                                                )
                                               ),
-                                            )
+                                              const SizedBox(height: 4)
+                                            ],
                                           ),
                                         ),
                                       ],
