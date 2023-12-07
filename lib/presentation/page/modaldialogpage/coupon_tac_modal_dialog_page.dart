@@ -163,8 +163,8 @@ class _StatefulCouponTacModalDialogControllerMediatorWidgetState extends State<_
                       widgetSubstitution: (BuildContext context, int index) => Row(
                         children: [
                           SizedBox(
-                            width: 10.0,
-                            child: Text(i.toString())
+                            width: 26.0,
+                            child: Text("${(i + 1)}.")
                           ),
                           Expanded(
                             child: Text(couponTac.text)
