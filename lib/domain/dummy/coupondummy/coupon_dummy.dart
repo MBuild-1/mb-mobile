@@ -7,17 +7,17 @@ class CouponDummy {
     return Coupon(
       id: "",
       userProfessionId: "",
+      active: 1,
+      needVerify: 1,
       title: "",
       code: "",
-      type: "",
-      activePeriodStart: DateTime.now(),
-      activePeriodEnd: DateTime.now(),
-      minPerUser: 0,
+      startPeriod: DateTime.now(),
+      endPeriod: DateTime.now(),
+      quota: 0,
       imageMobile: "",
       imageDesktop: "",
       bannerDesktop: "",
-      bannerMobile: "",
-      notes: "",
+      bannerMobile: ""
     );
   }
 
@@ -25,17 +25,17 @@ class CouponDummy {
     return Coupon(
       id: "",
       userProfessionId: "",
+      active: 1,
+      needVerify: 1,
       title: "",
       code: "",
-      type: "",
-      activePeriodStart: DateTime.now(),
-      activePeriodEnd: DateTime.now(),
-      minPerUser: 0,
+      startPeriod: DateTime.now(),
+      endPeriod: DateTime.now(),
+      quota: 0,
       imageMobile: "",
       imageDesktop: "",
       bannerDesktop: "",
       bannerMobile: "",
-      notes: "",
     );
   }
 }

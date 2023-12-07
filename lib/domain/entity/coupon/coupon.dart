@@ -1,31 +1,31 @@
 class Coupon {
   String id;
-  String userProfessionId;
+  String? userProfessionId;
+  int active;
+  int needVerify;
   String title;
   String code;
-  String type;
-  DateTime activePeriodStart;
-  DateTime activePeriodEnd;
-  int minPerUser;
+  DateTime startPeriod;
+  DateTime endPeriod;
+  int quota;
   String? imageMobile;
   String? imageDesktop;
   String? bannerDesktop;
   String? bannerMobile;
-  String notes;
 
   Coupon({
     required this.id,
     required this.userProfessionId,
+    required this.active,
+    required this.needVerify,
     required this.title,
     required this.code,
-    required this.type,
-    required this.activePeriodStart,
-    required this.activePeriodEnd,
-    required this.minPerUser,
+    required this.startPeriod,
+    required this.endPeriod,
+    required this.quota,
     required this.imageMobile,
     required this.imageDesktop,
     required this.bannerDesktop,
     required this.bannerMobile,
-    required this.notes
   });
 }

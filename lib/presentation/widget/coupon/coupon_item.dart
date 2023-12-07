@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../domain/entity/coupon/coupon.dart';
 import '../../../misc/constant.dart';
 import '../../../misc/date_util.dart';
+import '../../../misc/dialog_helper.dart';
+import '../../../misc/page_restoration_helper.dart';
+import '../../page/modaldialogpage/coupon_tac_modal_dialog_page.dart';
+import '../button/custombutton/sized_outline_gradient_button.dart';
+import '../horizontal_justified_title_and_description.dart';
 import '../modified_svg_picture.dart';
+import '../modifiedcachednetworkimage/product_modified_cached_network_image.dart';
 import '../tap_area.dart';
 
 typedef OnSelectCoupon = void Function(Coupon);
@@ -25,110 +32,107 @@ abstract class CouponItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width - (Constant.paddingListItem * 2);
-    double height = width * 145 / 332;
-    return TapArea(
-      onTap: onSelectCoupon != null ? () => onSelectCoupon!(coupon) : null,
-      child: Container(
-        width: width,
-        height: height,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(
-              Constant.imageCoupon,
-            ),
-            fit: BoxFit.cover
-          ),
-        ),
-        child: Stack(
-          children: [
-            if (isSelected)
-              SizedBox(
-                width: width * 30 / 100,
-                height: height,
-                child: Center(
-                  child: ModifiedSvgPicture.asset(
-                    Constant.vectorArrow,
-                    height: 30,
-                    color: Colors.white,
-                  ),
-                )
+    BorderRadius borderRadius = BorderRadius.circular(8.0);
+    return SizedBox(
+      child: Padding(
+        // Use padding widget for avoiding shadow elevation overlap.
+        padding: const EdgeInsets.only(top: 1.0, bottom: 5.0),
+        child: Material(
+          borderRadius: borderRadius,
+          elevation: 3,
+          color: isSelected ? Constant.colorGrey5 : null,
+          child: InkWell(
+            onTap: onSelectCoupon != null ? () => onSelectCoupon!(coupon) : null,
+            borderRadius: borderRadius,
+            child: Container(
+              clipBehavior: Clip.antiAlias,
+              decoration: BoxDecoration(
+                borderRadius: borderRadius
               ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(30.w, 30.0, 30.0, 0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Tooltip(
-                    message: coupon.title,
-                    child: Text(
-                      coupon.title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12.5
-                      ),
+                  AspectRatio(
+                    aspectRatio: Constant.aspectRatioValueCouponBanner.toDouble(),
+                    child: ClipRRect(
+                      child: ProductModifiedCachedNetworkImage(
+                        imageUrl: coupon.bannerMobile.isNotEmptyString ? coupon.bannerMobile! : coupon.bannerDesktop.toEmptyStringNonNull,
+                      )
+                    )
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(vertical: 3.0, horizontal: 8.0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5.0),
+                            color: Constant.colorLightBlue,
+                          ),
+                          child: Text(
+                            coupon.code,
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: Constant.colorDarkBlue2
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10.0),
+                        Text(
+                          coupon.title,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 10.0),
+                        HorizontalJustifiedTitleAndDescription(
+                          title: "Expired Date".tr,
+                          description: "${DateUtil.standardDateFormat7.format(coupon.startPeriod)} - ${DateUtil.standardDateFormat7.format(coupon.endPeriod)}",
+                          titleWidgetInterceptor: (title, widget) => Text(
+                            title.toStringNonNull,
+                          ),
+                          descriptionWidgetInterceptor: (description, widget) => Text(
+                            description.toStringNonNull,
+                          ),
+                        ),
+                        const SizedBox(height: 10.0),
+                        HorizontalJustifiedTitleAndDescription(
+                          title: "Transaction Maximal".tr,
+                          description: "${coupon.quota}x",
+                          titleWidgetInterceptor: (title, widget) => Text(
+                            title.toStringNonNull,
+                          ),
+                          descriptionWidgetInterceptor: (description, widget) => Text(
+                            description.toStringNonNull,
+                          ),
+                        ),
+                        const SizedBox(height: 14.0),
+                        SizedOutlineGradientButton(
+                          onPressed: () async {
+                            await DialogHelper.showModalDialogPage<void, Coupon>(
+                              context: context,
+                              modalDialogPageBuilder: (context, parameter) => CouponTacModalDialogPage(coupon: coupon),
+                              parameter: coupon,
+                            );
+                          },
+                          text: "Terms & Conditions".tr,
+                          outlineGradientButtonType: OutlineGradientButtonType.solid,
+                          outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
+                        )
+                      ]
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  Container(
-                    padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 12.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8.0),
-                      border: Border.all(color: Colors.white),
-                    ),
-                    clipBehavior: Clip.antiAlias,
-                    child: Text(
-                      coupon.code,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 11.0
-                      )
-                    ),
-                  )
                 ],
-              ),
-            ),
-            Positioned(
-              left: 30.w,
-              bottom: height * 5 / 100,
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8.0),
-                  border: Border.all(color: Constant.colorDarkBlue),
-                ),
-                clipBehavior: Clip.antiAlias,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 12.0),
-                      color: Constant.colorDarkBlue,
-                      child: Text("Valid Until".tr, style: const TextStyle(color: Colors.white, fontSize: 11.0)),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 12.0),
-                      color: Colors.white,
-                      child: Text(
-                        DateUtil.standardDateFormat7.format(coupon.activePeriodEnd),
-                        style: TextStyle(
-                          color: Constant.colorDarkBlue,
-                          fontSize: 11.0,
-                          fontWeight: FontWeight.bold
-                        )
-                      ),
-                    )
-                  ],
-                )
-              ),
+              )
             )
-          ]
+          )
         ),
-      ),
+      )
     );
   }
 }

@@ -1,25 +1,20 @@
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
-import 'package:masterbagasi/misc/ext/paging_ext.dart';
 import '../../controller/coupon_controller.dart';
 import '../../domain/entity/coupon/coupon.dart';
 import '../../domain/entity/coupon/coupon_list_parameter.dart';
-import '../../domain/entity/coupon/coupon_paging_parameter.dart';
+import '../../domain/usecase/check_coupon_use_case.dart';
 import '../../domain/usecase/get_coupon_list_use_case.dart';
 import '../../domain/usecase/get_coupon_paging_use_case.dart';
-import '../../misc/additionalloadingindicatorchecker/coupon_additional_paging_result_parameter_checker.dart';
-import '../../misc/constant.dart';
-import '../../misc/controllerstate/listitemcontrollerstate/compound_list_item_controller_state.dart';
+import '../../domain/usecase/get_coupon_tac_list_use_case.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/couponlistitemcontrollerstate/coupon_container_list_item_controller_state.dart';
-import '../../misc/controllerstate/listitemcontrollerstate/couponlistitemcontrollerstate/vertical_coupon_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
-import '../../misc/controllerstate/listitemcontrollerstate/padding_container_list_item_controller_state.dart';
-import '../../misc/controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
+import '../../misc/dialog_helper.dart';
 import '../../misc/error/message_error.dart';
+import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
@@ -30,10 +25,8 @@ import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
-import '../../misc/string_util.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/modified_paged_list_view.dart';
-import '../widget/modifiedappbar/default_search_app_bar.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import 'getx_page.dart';
 
@@ -56,7 +49,8 @@ class CouponPage extends RestorableGetxPage<_CouponPageRestoration> {
       CouponController(
         controllerManager,
         Injector.locator<GetCouponPagingUseCase>(),
-        Injector.locator<GetCouponListUseCase>()
+        Injector.locator<GetCouponListUseCase>(),
+        Injector.locator<CheckCouponUseCase>()
       ),
       tag: pageName
     );
@@ -259,6 +253,21 @@ class _StatefulCouponControllerMediatorWidgetState extends State<_StatefulCoupon
 
   @override
   Widget build(BuildContext context) {
+    widget.couponController.setCouponDelegate(
+      CouponDelegate(
+        onUnfocusAllWidget: () => FocusScope.of(context).unfocus(),
+        onCouponBack: () => Get.back(),
+        onShowCheckCouponProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
+        onShowCheckCouponProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
+          context: context,
+          errorProvider: Injector.locator<ErrorProvider>(),
+          e: e
+        ),
+        onCheckCouponProcessSuccessCallback: (checkCouponResponse) async {
+          Get.back(result: _selectCoupon!.id);
+        }
+      )
+    );
     return Scaffold(
       appBar: ModifiedAppBar(
         titleInterceptor: (context, title) => Row(
@@ -286,7 +295,7 @@ class _StatefulCouponControllerMediatorWidgetState extends State<_StatefulCoupon
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedOutlineGradientButton(
-                      onPressed: () => Get.back(result: _selectCoupon!.id),
+                      onPressed: () => widget.couponController.checkCoupon(_selectCoupon!.id),
                       text: "Choose Coupon".tr,
                       outlineGradientButtonType: OutlineGradientButtonType.solid,
                       outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,

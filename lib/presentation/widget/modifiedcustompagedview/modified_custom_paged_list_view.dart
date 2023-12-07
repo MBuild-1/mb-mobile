@@ -25,6 +25,7 @@ class ModifiedCustomPagedListView<PageKeyType, ItemType> extends CustomScrollVie
   final bool addSemanticIndexes;
   final double? itemExtent;
   final ErrorProvider Function()? onGetErrorProvider;
+  final EdgeInsetsGeometry? padding;
 
   const ModifiedCustomPagedListView({
     required this.pagingController,
@@ -35,7 +36,7 @@ class ModifiedCustomPagedListView<PageKeyType, ItemType> extends CustomScrollVie
     bool? primary,
     ScrollPhysics? physics,
     bool shrinkWrap = false,
-    EdgeInsetsGeometry? padding,
+    this.padding,
     this.itemExtent,
     this.addAutomaticKeepAlives = true,
     this.addRepaintBoundaries = true,
@@ -106,8 +107,12 @@ class ModifiedCustomPagedListView<PageKeyType, ItemType> extends CustomScrollVie
     if (fillerErrorValueNotifier == null) {
       hasFillerErrorValueNotifier = false;
     }
+    EdgeInsetsGeometry effectivePadding = padding ?? EdgeInsets.zero;
     return <Widget>[
-      resultWidget,
+      effectivePadding != EdgeInsets.zero ? SliverPadding(
+        padding: effectivePadding,
+        sliver: resultWidget
+      ) : resultWidget,
       if (hasFillerErrorValueNotifier) ...[
         SliverFillRemaining(
           hasScrollBody: false,

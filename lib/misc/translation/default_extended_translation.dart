@@ -129,6 +129,8 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Regarding Master Bagasi": "Seputar Master Bagasi",
       "About Master Bagasi": "Tentang Master Bagasi",
       "Terms & Conditions": "Syarat & Ketentuan",
+      "Transaction Maximal": "Maksimal Transaksi",
+      "Expired Date": "Masa Berlaku",
       "Privacy Policy": "Kebijakan Privasi",
       "Intellectual Rights and Property": "Hak dan Kekayaan Intelektual",
       "Review This App": "Ulas Aplikasi Ini",

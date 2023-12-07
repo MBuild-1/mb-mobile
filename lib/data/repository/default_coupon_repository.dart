@@ -1,7 +1,11 @@
+import '../../domain/entity/coupon/check_coupon_parameter.dart';
+import '../../domain/entity/coupon/check_coupon_response.dart';
 import '../../domain/entity/coupon/coupon.dart';
 import '../../domain/entity/coupon/coupon_detail_parameter.dart';
 import '../../domain/entity/coupon/coupon_list_parameter.dart';
 import '../../domain/entity/coupon/coupon_paging_parameter.dart';
+import '../../domain/entity/coupon/coupon_tac.dart';
+import '../../domain/entity/coupon/coupon_tac_list_parameter.dart';
 import '../../domain/repository/coupon_repository.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
@@ -28,5 +32,15 @@ class DefaultCouponRepository implements CouponRepository {
   @override
   FutureProcessing<LoadDataResult<Coupon>> couponDetail(CouponDetailParameter couponDetailParameter) {
     return couponDataSource.couponDetail(couponDetailParameter).mapToLoadDataResult<Coupon>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<List<CouponTac>>> couponTacList(CouponTacListParameter couponTacListParameter) {
+    return couponDataSource.couponTacList(couponTacListParameter).mapToLoadDataResult<List<CouponTac>>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<CheckCouponResponse>> checkCoupon(CheckCouponParameter checkCouponParameter) {
+    return couponDataSource.checkCoupon(checkCouponParameter).mapToLoadDataResult<CheckCouponResponse>();
   }
 }

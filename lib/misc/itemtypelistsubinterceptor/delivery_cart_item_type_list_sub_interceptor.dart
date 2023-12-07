@@ -348,37 +348,6 @@ class DeliveryCartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
               )
             )
           );
-          newItemTypeList.add(
-            VirtualSpacingListItemControllerState(
-              height: 10.0
-            )
-          );
-          newItemTypeList.add(
-            PaddingContainerListItemControllerState(
-              padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-              paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
-                widgetSubstitution: (context, index) {
-                  return Row(
-                    children: [
-                      TapArea(
-                        onTap: () => PageRestorationHelper.toAddressPage(context),
-                        child: Container(
-                          child: Text("Change Other Address".tr, style: const TextStyle(fontWeight: FontWeight.bold)),
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                          decoration: BoxDecoration(
-                            border: Border.all()
-                          ),
-                        )
-                      ),
-                    ]
-                  );
-                }
-              )
-            )
-          );
-          newItemTypeList.add(
-            VirtualSpacingListItemControllerState(height: 10.0)
-          );
         } else if (selectedCouponLoadDataResult.isLoading) {
           newItemTypeList.add(
             VirtualSpacingListItemControllerState(
