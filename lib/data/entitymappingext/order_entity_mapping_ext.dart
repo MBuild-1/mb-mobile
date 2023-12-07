@@ -76,7 +76,7 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
       orderProductId: response["order_product_id"],
       orderShippingId: response["order_shipping_id"],
       orderCode: response["order_code"],
-      couponId: response["coupon_id"],
+      couponId: response["voucher_id"],
       picId: response["pic_id"],
       picTakeoverId: response["pic_takeover_id"],
       status: response["status"],

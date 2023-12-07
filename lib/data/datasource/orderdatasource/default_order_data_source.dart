@@ -80,7 +80,7 @@ class DefaultOrderDataSource implements OrderDataSource {
       ).toList();
       dynamic data = {
         if (createOrderParameter.address != null) "user_address_id": createOrderParameter.address!.id,
-        if (createOrderParameter.couponId.isNotEmptyString) "coupon_id": createOrderParameter.couponId!,
+        if (createOrderParameter.couponId.isNotEmptyString) "voucher_id": createOrderParameter.couponId!,
         "order_list": orderList,
         "order_send_to_warehouse_list": sendToWarehouseList
       };
