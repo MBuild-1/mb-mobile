@@ -17,6 +17,8 @@ import '../../../domain/entity/chat/help/update_read_status_help_conversation_pa
 import '../../../domain/entity/chat/help/update_read_status_help_conversation_response.dart';
 import '../../../domain/entity/chat/order/answer_order_conversation_parameter.dart';
 import '../../../domain/entity/chat/order/answer_order_conversation_response.dart';
+import '../../../domain/entity/chat/order/answer_order_conversation_version_1_point_1_parameter.dart';
+import '../../../domain/entity/chat/order/answer_order_conversation_version_1_point_1_response.dart';
 import '../../../domain/entity/chat/order/create_order_conversation_parameter.dart';
 import '../../../domain/entity/chat/order/create_order_conversation_response.dart';
 import '../../../domain/entity/chat/order/get_order_message_by_combined_order_parameter.dart';
@@ -189,6 +191,26 @@ class DefaultChatDataSource implements ChatDataSource {
     return DioHttpClientProcessing((cancelToken) {
       return dio.post("/chat-order/${answerOrderConversationParameter.orderConversationId}/message", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
         .map<AnswerOrderConversationResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToAnswerOrderConversationResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<AnswerOrderConversationVersion1Point1Response> answerOrderConversationVersion1Point1(AnswerOrderConversationVersion1Point1Parameter answerOrderConversationVersion1Point1Parameter) {
+    FormData formData = FormData.fromMap(
+      <String, dynamic> {
+        "message": answerOrderConversationVersion1Point1Parameter.message,
+        "combined_order_id": answerOrderConversationVersion1Point1Parameter.combinedOrderId
+      }
+    );
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.post(
+        "/chat-order/send/message",
+        data: formData,
+        cancelToken: cancelToken,
+        options: OptionsBuilder.multipartData().withBaseUrl(dio.options.baseUrl.replaceAll("v1", "v1.1")).buildExtended()
+      ).map<AnswerOrderConversationVersion1Point1Response>(
+        onMap: (value) => value.wrapResponse().mapFromResponseToAnswerOrderConversationVersion1Point1Response()
+      );
     });
   }
 

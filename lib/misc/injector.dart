@@ -102,6 +102,7 @@ import '../domain/usecase/add_wishlist_use_case.dart';
 import '../domain/usecase/answer_help_conversation_use_case.dart';
 import '../domain/usecase/answer_help_conversation_version_1_point_1_use_case.dart';
 import '../domain/usecase/answer_order_conversation_use_case.dart';
+import '../domain/usecase/answer_order_conversation_version_1_point_1_use_case.dart';
 import '../domain/usecase/answer_product_conversation_use_case.dart';
 import '../domain/usecase/approve_or_reject_request_bucket_use_case.dart';
 import '../domain/usecase/arrived_order_use_case.dart';
@@ -690,6 +691,7 @@ class _Injector {
     locator.registerLazySingleton<GetHelpMessageByConversationUseCase>(() => GetHelpMessageByConversationUseCase(chatRepository: locator()));
     locator.registerLazySingleton<GetHelpMessageNotificationCountUseCase>(() => GetHelpMessageNotificationCountUseCase(chatRepository: locator()));
     locator.registerLazySingleton<AnswerOrderConversationUseCase>(() => AnswerOrderConversationUseCase(chatRepository: locator()));
+    locator.registerLazySingleton<AnswerOrderConversationVersion1Point1UseCase>(() => AnswerOrderConversationVersion1Point1UseCase(chatRepository: locator()));
     locator.registerLazySingleton<CreateOrderConversationUseCase>(() => CreateOrderConversationUseCase(chatRepository: locator()));
     locator.registerLazySingleton<UpdateReadStatusOrderConversationUseCase>(() => UpdateReadStatusOrderConversationUseCase(chatRepository: locator()));
     locator.registerLazySingleton<GetOrderMessageByUserUseCase>(() => GetOrderMessageByUserUseCase(chatRepository: locator()));

@@ -14,6 +14,8 @@ import '../entity/chat/help/update_read_status_help_conversation_parameter.dart'
 import '../entity/chat/help/update_read_status_help_conversation_response.dart';
 import '../entity/chat/order/answer_order_conversation_parameter.dart';
 import '../entity/chat/order/answer_order_conversation_response.dart';
+import '../entity/chat/order/answer_order_conversation_version_1_point_1_parameter.dart';
+import '../entity/chat/order/answer_order_conversation_version_1_point_1_response.dart';
 import '../entity/chat/order/create_order_conversation_parameter.dart';
 import '../entity/chat/order/create_order_conversation_response.dart';
 import '../entity/chat/order/get_order_message_by_combined_order_parameter.dart';
@@ -48,6 +50,7 @@ abstract class ChatRepository {
   FutureProcessing<LoadDataResult<CreateOrderConversationResponse>> createOrderConversation(CreateOrderConversationParameter createOrderConversationParameter);
   FutureProcessing<LoadDataResult<UpdateReadStatusOrderConversationResponse>> updateReadStatusOrderConversation(UpdateReadStatusOrderConversationParameter updateReadStatusOrderConversationParameter);
   FutureProcessing<LoadDataResult<AnswerOrderConversationResponse>> answerOrderConversation(AnswerOrderConversationParameter answerOrderConversationParameter);
+  FutureProcessing<LoadDataResult<AnswerOrderConversationVersion1Point1Response>> answerOrderConversationVersion1Point1(AnswerOrderConversationVersion1Point1Parameter answerOrderConversationVersion1Point1Parameter);
   FutureProcessing<LoadDataResult<GetOrderMessageByConversationResponse>> getOrderMessageByConversation(GetOrderMessageByConversationParameter getOrderMessageByConversationParameter);
   FutureProcessing<LoadDataResult<GetOrderMessageByUserResponse>> getOrderMessageByUser(GetOrderMessageByUserParameter getOrderMessageByUserParameter);
   FutureProcessing<LoadDataResult<GetOrderMessageByCombinedOrderResponse>> getOrderMessageByCombinedOrder(GetOrderMessageByCombinedOrderParameter getOrderMessageByCombinedOrderParameter);

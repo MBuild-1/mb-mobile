@@ -7,7 +7,7 @@ import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 
 import '../../controller/order_chat_controller.dart';
-import '../../domain/entity/chat/order/answer_order_conversation_parameter.dart';
+import '../../domain/entity/chat/order/answer_order_conversation_version_1_point_1_parameter.dart';
 import '../../domain/entity/chat/order/combined_order_from_message.dart';
 import '../../domain/entity/chat/order/get_order_message_by_combined_order_parameter.dart';
 import '../../domain/entity/chat/order/get_order_message_by_combined_order_response.dart';
@@ -17,6 +17,7 @@ import '../../domain/entity/chat/user_message_response_wrapper.dart';
 import '../../domain/entity/user/getuser/get_user_parameter.dart';
 import '../../domain/entity/user/user.dart';
 import '../../domain/usecase/answer_order_conversation_use_case.dart';
+import '../../domain/usecase/answer_order_conversation_version_1_point_1_use_case.dart';
 import '../../domain/usecase/create_order_conversation_use_case.dart';
 import '../../domain/usecase/get_order_message_by_combined_order_use_case.dart';
 import '../../domain/usecase/get_order_message_by_user_use_case.dart';
@@ -62,6 +63,7 @@ class OrderChatPage extends RestorableGetxPage<_OrderChatPageRestoration> {
         Injector.locator<GetOrderMessageByCombinedOrderUseCase>(),
         Injector.locator<CreateOrderConversationUseCase>(),
         Injector.locator<AnswerOrderConversationUseCase>(),
+        Injector.locator<AnswerOrderConversationVersion1Point1UseCase>(),
         Injector.locator<GetUserUseCase>(),
       ),
       tag: pageName
@@ -224,6 +226,7 @@ class _StatefulOrderChatControllerMediatorWidgetState extends State<_StatefulOrd
     );
     _orderChatListItemPagingControllerState = PagingControllerState(
       pagingController: _orderChatListItemPagingController,
+      scrollController: _orderChatScrollController,
       isPagingControllerExist: false
     );
     _orderChatListItemPagingControllerState.pagingController.addPageRequestListenerWithItemListForLoadDataResult(
@@ -375,9 +378,9 @@ class _StatefulOrderChatControllerMediatorWidgetState extends State<_StatefulOrd
                           if (_isFirstEmpty) {
                             // For now there is not case if response is null, except only because has different of combined_order_id
                           } else {
-                            widget.orderChatController.answerOrderConversation(
-                              AnswerOrderConversationParameter(
-                                orderConversationId: _orderConversationId,
+                            widget.orderChatController.answerOrderConversationVersion1Point1(
+                              AnswerOrderConversationVersion1Point1Parameter(
+                                combinedOrderId: widget.combinedOrderId,
                                 message: _orderChatTextEditingController.text
                               )
                             );

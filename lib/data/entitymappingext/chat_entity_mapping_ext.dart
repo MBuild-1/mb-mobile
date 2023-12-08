@@ -10,6 +10,7 @@ import '../../domain/entity/chat/help/get_help_message_notification_count_respon
 import '../../domain/entity/chat/help/help_message.dart';
 import '../../domain/entity/chat/help/update_read_status_help_conversation_response.dart';
 import '../../domain/entity/chat/order/answer_order_conversation_response.dart';
+import '../../domain/entity/chat/order/answer_order_conversation_version_1_point_1_response.dart';
 import '../../domain/entity/chat/order/combined_order_from_message.dart';
 import '../../domain/entity/chat/order/create_order_conversation_response.dart';
 import '../../domain/entity/chat/order/get_order_message_by_combined_order_response.dart';
@@ -175,6 +176,14 @@ extension HelpChatDetailEntityMappingExt on ResponseWrapper {
 
   AnswerOrderConversationResponse mapFromResponseToAnswerOrderConversationResponse() {
     return AnswerOrderConversationResponse(
+      id: response["id"],
+      userOneId: response["user_one"],
+      userTwoId: response["user_two"],
+    );
+  }
+
+  AnswerOrderConversationVersion1Point1Response mapFromResponseToAnswerOrderConversationVersion1Point1Response() {
+    return AnswerOrderConversationVersion1Point1Response(
       id: response["id"],
       userOneId: response["user_one"],
       userTwoId: response["user_two"],

@@ -1,5 +1,7 @@
 import '../domain/entity/chat/order/answer_order_conversation_parameter.dart';
 import '../domain/entity/chat/order/answer_order_conversation_response.dart';
+import '../domain/entity/chat/order/answer_order_conversation_version_1_point_1_parameter.dart';
+import '../domain/entity/chat/order/answer_order_conversation_version_1_point_1_response.dart';
 import '../domain/entity/chat/order/create_order_conversation_parameter.dart';
 import '../domain/entity/chat/order/create_order_conversation_response.dart';
 import '../domain/entity/chat/order/get_order_message_by_combined_order_parameter.dart';
@@ -9,6 +11,7 @@ import '../domain/entity/chat/order/get_order_message_by_user_response.dart';
 import '../domain/entity/user/getuser/get_user_parameter.dart';
 import '../domain/entity/user/getuser/get_user_response.dart';
 import '../domain/usecase/answer_order_conversation_use_case.dart';
+import '../domain/usecase/answer_order_conversation_version_1_point_1_use_case.dart';
 import '../domain/usecase/create_order_conversation_use_case.dart';
 import '../domain/usecase/get_order_message_by_combined_order_use_case.dart';
 import '../domain/usecase/get_order_message_by_user_use_case.dart';
@@ -21,6 +24,7 @@ class OrderChatController extends BaseGetxController {
   final GetOrderMessageByCombinedOrderUseCase getOrderMessageByCombinedOrderUseCase;
   final CreateOrderConversationUseCase createOrderConversationUseCase;
   final AnswerOrderConversationUseCase answerOrderConversationUseCase;
+  final AnswerOrderConversationVersion1Point1UseCase answerOrderConversationVersion1Point1UseCase;
   final GetUserUseCase getUserUseCase;
 
   OrderChatController(
@@ -29,6 +33,7 @@ class OrderChatController extends BaseGetxController {
     this.getOrderMessageByCombinedOrderUseCase,
     this.createOrderConversationUseCase,
     this.answerOrderConversationUseCase,
+    this.answerOrderConversationVersion1Point1UseCase,
     this.getUserUseCase
   );
 
@@ -53,6 +58,12 @@ class OrderChatController extends BaseGetxController {
   Future<LoadDataResult<AnswerOrderConversationResponse>> answerOrderConversation(AnswerOrderConversationParameter answerOrderConversationParameter) {
     return answerOrderConversationUseCase.execute(answerOrderConversationParameter).future(
       parameter: apiRequestManager.addRequestToCancellationPart("answer-order-conversation", duplicate: true).value
+    );
+  }
+
+  Future<LoadDataResult<AnswerOrderConversationVersion1Point1Response>> answerOrderConversationVersion1Point1(AnswerOrderConversationVersion1Point1Parameter answerOrderConversationVersion1Point1Parameter) {
+    return answerOrderConversationVersion1Point1UseCase.execute(answerOrderConversationVersion1Point1Parameter).future(
+      parameter: apiRequestManager.addRequestToCancellationPart("answer-order-conversation-version-1-point-1", duplicate: true).value
     );
   }
 

@@ -12,6 +12,8 @@ import '../../../domain/entity/chat/help/update_read_status_help_conversation_pa
 import '../../../domain/entity/chat/help/update_read_status_help_conversation_response.dart';
 import '../../../domain/entity/chat/order/answer_order_conversation_parameter.dart';
 import '../../../domain/entity/chat/order/answer_order_conversation_response.dart';
+import '../../../domain/entity/chat/order/answer_order_conversation_version_1_point_1_parameter.dart';
+import '../../../domain/entity/chat/order/answer_order_conversation_version_1_point_1_response.dart';
 import '../../../domain/entity/chat/order/create_order_conversation_parameter.dart';
 import '../../../domain/entity/chat/order/create_order_conversation_response.dart';
 import '../../../domain/entity/chat/order/get_order_message_by_combined_order_parameter.dart';
@@ -47,6 +49,7 @@ abstract class ChatDataSource {
   FutureProcessing<CreateOrderConversationResponse> createOrderConversation(CreateOrderConversationParameter createOrderConversationParameter);
   FutureProcessing<UpdateReadStatusOrderConversationResponse> updateReadStatusOrderConversation(UpdateReadStatusOrderConversationParameter updateReadStatusOrderConversationParameter);
   FutureProcessing<AnswerOrderConversationResponse> answerOrderConversation(AnswerOrderConversationParameter answerOrderConversationParameter);
+  FutureProcessing<AnswerOrderConversationVersion1Point1Response> answerOrderConversationVersion1Point1(AnswerOrderConversationVersion1Point1Parameter answerOrderConversationVersion1Point1Parameter);
   FutureProcessing<GetOrderMessageByConversationResponse> getOrderMessageByConversation(GetOrderMessageByConversationParameter getOrderMessageByConversationParameter);
   FutureProcessing<GetOrderMessageByUserResponse> getOrderMessageByUser(GetOrderMessageByUserParameter getOrderMessageByUserParameter);
   FutureProcessing<GetOrderMessageByCombinedOrderResponse> getOrderMessageByCombinedOrder(GetOrderMessageByCombinedOrderParameter getOrderMessageByCombinedOrderParameter);
