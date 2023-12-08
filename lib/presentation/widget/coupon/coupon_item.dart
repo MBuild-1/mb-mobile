@@ -40,7 +40,7 @@ abstract class CouponItem extends StatelessWidget {
         child: Material(
           borderRadius: borderRadius,
           elevation: 3,
-          color: isSelected ? Constant.colorGrey5 : null,
+          color: isSelected ? Constant.colorLightOrange2 : null,
           child: InkWell(
             onTap: onSelectCoupon != null ? () => onSelectCoupon!(coupon) : null,
             borderRadius: borderRadius,
@@ -69,14 +69,15 @@ abstract class CouponItem extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(vertical: 3.0, horizontal: 8.0),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(5.0),
-                            color: Constant.colorLightBlue,
+                            border: isSelected ? Border.all(color: Constant.colorMain) : null,
+                            color: isSelected ? null : Constant.colorLightBlue,
                           ),
                           child: Text(
                             coupon.code,
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
-                              color: Constant.colorDarkBlue2
+                              color: isSelected ? Constant.colorMain : Constant.colorDarkBlue2
                             ),
                           ),
                         ),
