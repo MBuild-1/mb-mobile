@@ -31,7 +31,7 @@ class SummaryWidget extends StatelessWidget {
                     return _summaryWidget(baseSummary.summaryValue);
                   }
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 17),
                 const ModifiedDivider(),
                 const SizedBox(height: 10),
                 Builder(
@@ -67,17 +67,39 @@ class SummaryWidget extends StatelessWidget {
     List<Widget> columnWidget = [];
     for (int i = 0; i < cartSummaryValueList.length; i++) {
       SummaryValue cartSummaryValue = cartSummaryValueList[i];
-      if (i > 0) {
-        columnWidget.add(const SizedBox(height: 10));
-      }
       String cartSummaryValueDescription = "";
       String cartSummaryValueType = cartSummaryValue.type;
+      if (i > 0) {
+        double height = 10.0;
+        if (cartSummaryValueType == "header") {
+          height = 15.0;
+        }
+        columnWidget.add(SizedBox(height: height));
+      }
       if (cartSummaryValueType == "currency") {
         if (cartSummaryValue.value is num) {
           cartSummaryValueDescription = (cartSummaryValue.value as num).toRupiah(withFreeTextIfZero: false);
         } else {
           cartSummaryValueDescription = double.parse(cartSummaryValue.value as String).toRupiah(withFreeTextIfZero: false);
         }
+      } else if (cartSummaryValueType == "header") {
+        columnWidget.add(
+          HorizontalJustifiedTitleAndDescription(
+            title: cartSummaryValue.name,
+            titleWidgetInterceptor: (value, textWidget) {
+              return Text(
+                value.toEmptyStringNonNull,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              );
+            },
+            description: "",
+            descriptionWidgetInterceptor: (value, textWidget) {
+              return const SizedBox();
+            },
+            hasDescription: false,
+          )
+        );
+        continue;
       } else {
         cartSummaryValueDescription = cartSummaryValue.value;
       }

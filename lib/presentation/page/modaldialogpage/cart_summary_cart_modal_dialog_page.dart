@@ -78,7 +78,7 @@ class _StatefulCartSummaryControllerMediatorWidgetState extends State<_StatefulC
                         fontSize: 17
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 15),
                     SummaryWidget(baseSummary: cartSummary)
                   ]
                 );
