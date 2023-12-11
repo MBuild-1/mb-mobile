@@ -31,8 +31,8 @@ class IntroductionPageViewChildrenBuilder extends PreloadPageViewChildrenBuilder
           key: _pageViewContentGlobalKeyList[0],
           context: context,
           image: introductionImageList[0],
-          titleTop: "E-commerce pertama karya anak bangsa",
-          titleBottom: "untuk pasar dunia",
+          titleTop: "Mendekatkan anda",
+          titleBottom: "dengan Indonesia",
           description: "Berbelanja produk asli Indonesia di Negara mana pun Anda berada.",
           top: topMarginForPageViewContent
         ),
@@ -41,17 +41,17 @@ class IntroductionPageViewChildrenBuilder extends PreloadPageViewChildrenBuilder
           context: context,
           image: introductionImageList[1],
           titleTop: "Dari Indonesia",
-          titleBottom: "Ke seluruh dunia",
-          description: "Kini, apapun dapat kamu peroleh dari Indonesia dengan cepat, mudah, dan murah, loh! Dengan hanya satu klik saja, makanan favoritmu dari Indonesia bisa sampe di luar negeri.",
+          titleBottom: "untuk dunia",
+          description: "E-commerce pertama karya anak bangsa, untuk pasar dunia.",
           top: topMarginForPageViewContent
         ),
         _buildIntroductionPage(
           key: _pageViewContentGlobalKeyList[2],
           context: context,
           image: introductionImageList[2],
-          titleTop: "Belanja di mana pun,",
-          titleBottom: "Master Bagasi yang kirim",
-          description: "Dengan fitur belanja dari mana saja lewat paltform apapun dari Indonesia, Master Bagasi menjamin kemudahan dan kenyamanan kamu untuk memilih sendiri platform berbelanja. Kamu tinggal klik fitur kirim ke warehouse Master Bagasi dan shipment akan segera di proses deh pengirimannya ke luar negeri!",
+          titleTop: "Fitur kirim barang",
+          titleBottom: "ke warehouse",
+          description: "Belanja di platform manapun menggunakan alamat Master Bagasi, ketika barang sudah sampai dan terkumpul, segera kami proses dan kirim ke alamat tujuan di luar negeri.",
           top: topMarginForPageViewContent
         ),
         _buildLastIntroductionPage(
