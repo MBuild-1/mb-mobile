@@ -230,7 +230,7 @@ class _StatefulPdfViewerPageState extends State<_StatefulPdfViewerPage> {
               //   child: Icon(Icons.chevron_right, color: Theme.of(context).colorScheme.primary, size: 30)
               // ),
               AppBarIconArea(
-                onTap: () => _saveFile(_url, _fileName),
+                onTap: () => _generateTempPdfFileAndOpenPdfFile(_url, _fileName),
                 height: preferredSize.height,
                 child: Icon(Icons.download, color: Theme.of(context).colorScheme.primary, size: 30)
               )
@@ -252,6 +252,70 @@ class _StatefulPdfViewerPageState extends State<_StatefulPdfViewerPage> {
         }
       )
     );
+  }
+
+  Future<bool> _generateTempPdfFileAndOpenPdfFile(String url, String fileName) async {
+    DialogHelper.showLoadingDialog(context);
+    try {
+      Directory? directory;
+      directory = await getTemporaryDirectory();
+      String newPath = "";
+      List<String> paths = directory.path.split("/");
+      for (int x = 1; x < paths.length; x++) {
+        String folder = paths[x];
+        if (folder != "Android") {
+          newPath += "/" + folder;
+        } else {
+          break;
+        }
+      }
+      newPath = newPath + "/masterbagasi_pdf_download";
+      directory = Directory(newPath);
+      File saveFile = File('${directory.path}/$fileName');
+      if (kDebugMode) {
+        print(saveFile.path);
+      }
+      if (!await directory.exists()) {
+        await directory.create(recursive: true);
+      }
+      if (await directory.exists()) {
+        Dio dio = Injector.locator<Dio>();
+        await dio.download(
+          "",
+          saveFile.path,
+          options: OptionsBuilder.withBaseUrl(url).buildExtended()
+        );
+        ToastHelper.showToast(
+          MultiLanguageString({
+            Constant.textInIdLanguageKey: "Download pdf sukses.",
+            Constant.textEnUsLanguageKey: "Download pdf success."
+          }).toStringNonNull
+        );
+        OpenResult openResult = await OpenFile.open(saveFile.path);
+        if (openResult.type != ResultType.done) {
+          throw MultiLanguageMessageError(
+            title: MultiLanguageString({
+              Constant.textEnUsLanguageKey: "Open Invoice File Failed",
+              Constant.textInIdLanguageKey: "Buka File Invoice Gagal"
+            }),
+            message: MultiLanguageString({
+              Constant.textEnUsLanguageKey: openResult.message,
+              Constant.textInIdLanguageKey: openResult.message
+            })
+          );
+        }
+      }
+      Get.back();
+      return true;
+    } catch (e) {
+      Get.back();
+      DialogHelper.showFailedModalBottomDialogFromErrorProvider(
+        context: context,
+        errorProvider: Injector.locator<ErrorProvider>(),
+        e: e
+      );
+      return false;
+    }
   }
 
   Future<bool> _saveFile(String url, String fileName) async {
