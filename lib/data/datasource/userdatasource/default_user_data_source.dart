@@ -8,6 +8,10 @@ import 'package:masterbagasi/misc/ext/future_ext.dart';
 import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
+import '../../../domain/entity/deleteaccount/senddeleteaccountotp/send_delete_account_otp_parameter.dart';
+import '../../../domain/entity/deleteaccount/senddeleteaccountotp/send_delete_account_otp_response.dart';
+import '../../../domain/entity/deleteaccount/verifydeleteaccountotp/verify_delete_account_otp_parameter.dart';
+import '../../../domain/entity/deleteaccount/verifydeleteaccountotp/verify_delete_account_otp_response.dart';
 import '../../../domain/entity/forgotpassword/forgot_password_parameter.dart';
 import '../../../domain/entity/forgotpassword/forgot_password_response.dart';
 import '../../../domain/entity/login/login_parameter.dart';
@@ -383,6 +387,27 @@ class DefaultUserDataSource implements UserDataSource {
       );
       return dio.post("/create/reset-password", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
         .map<ForgotPasswordResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToForgotPasswordResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<SendDeleteAccountOtpResponse> sendDeleteAccountOtp(SendDeleteAccountOtpParameter sendDeleteAccountOtpParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.post("/send/email/account", cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+        .map<SendDeleteAccountOtpResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToSendDeleteAccountOtpResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<VerifyDeleteAccountOtpResponse> verifyDeleteAccountOtp(VerifyDeleteAccountOtpParameter verifyDeleteAccountOtpParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      FormData formData = FormData.fromMap(
+        <String, dynamic> {
+          "otp": verifyDeleteAccountOtpParameter.otp
+        }
+      );
+      return dio.post("/send/email/account/check", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+        .map<VerifyDeleteAccountOtpResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToVerifyDeleteAccountOtpResponse());
     });
   }
 }

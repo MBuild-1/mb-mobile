@@ -1,5 +1,9 @@
 import '../../domain/entity/changepassword/change_password_parameter.dart';
 import '../../domain/entity/changepassword/change_password_response.dart';
+import '../../domain/entity/deleteaccount/senddeleteaccountotp/send_delete_account_otp_parameter.dart';
+import '../../domain/entity/deleteaccount/senddeleteaccountotp/send_delete_account_otp_response.dart';
+import '../../domain/entity/deleteaccount/verifydeleteaccountotp/verify_delete_account_otp_parameter.dart';
+import '../../domain/entity/deleteaccount/verifydeleteaccountotp/verify_delete_account_otp_response.dart';
 import '../../domain/entity/forgotpassword/forgot_password_parameter.dart';
 import '../../domain/entity/forgotpassword/forgot_password_response.dart';
 import '../../domain/entity/login/login_parameter.dart';
@@ -113,5 +117,15 @@ class DefaultUserRepository implements UserRepository {
   @override
   FutureProcessing<LoadDataResult<RegisterSecondStepResponse>> registerSecondStep(RegisterSecondStepParameter registerSecondStepParameter) {
     return userDataSource.registerSecondStep(registerSecondStepParameter).mapToLoadDataResult<RegisterSecondStepResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<SendDeleteAccountOtpResponse>> sendDeleteAccountOtp(SendDeleteAccountOtpParameter sendDeleteAccountOtpParameter) {
+    return userDataSource.sendDeleteAccountOtp(sendDeleteAccountOtpParameter).mapToLoadDataResult<SendDeleteAccountOtpResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<VerifyDeleteAccountOtpResponse>> verifyDeleteAccountOtp(VerifyDeleteAccountOtpParameter verifyDeleteAccountOtpParameter) {
+    return userDataSource.verifyDeleteAccountOtp(verifyDeleteAccountOtpParameter).mapToLoadDataResult<VerifyDeleteAccountOtpResponse>();
   }
 }

@@ -2,6 +2,8 @@ import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../../domain/entity/changepassword/change_password_response.dart';
+import '../../domain/entity/deleteaccount/senddeleteaccountotp/send_delete_account_otp_response.dart';
+import '../../domain/entity/deleteaccount/verifydeleteaccountotp/verify_delete_account_otp_response.dart';
 import '../../domain/entity/forgotpassword/forgot_password_response.dart';
 import '../../domain/entity/login/login_response.dart';
 import '../../domain/entity/login/login_with_google_response.dart';
@@ -154,6 +156,14 @@ extension UserEntityMappingExt on ResponseWrapper {
 
   ForgotPasswordResponse mapFromResponseToForgotPasswordResponse() {
     return ForgotPasswordResponse();
+  }
+
+  SendDeleteAccountOtpResponse mapFromResponseToSendDeleteAccountOtpResponse() {
+    return SendDeleteAccountOtpResponse();
+  }
+
+  VerifyDeleteAccountOtpResponse mapFromResponseToVerifyDeleteAccountOtpResponse() {
+    return VerifyDeleteAccountOtpResponse();
   }
 }
 

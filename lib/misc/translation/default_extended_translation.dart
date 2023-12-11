@@ -329,7 +329,11 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Receiver Name": "Nama Penerima",
       "Receiver Email": "Email Penerima",
       "Receiver Address": "Alamat Penerima",
-      "Version": "Versi"
+      "Version": "Versi",
+      "Delete Account": "Hapus Akun",
+      "Important": "Penting",
+      "Send OTP": "Kirim OTP",
+      "Verification": "Verifikasi"
     }
   };
 

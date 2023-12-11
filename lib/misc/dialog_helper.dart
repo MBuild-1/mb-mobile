@@ -852,11 +852,13 @@ class _DialogHelperImpl {
     required BuildContext context,
     Color? backgroundColor = Colors.transparent,
     required WidgetBuilder builder,
-    bool enableDrag = false
+    bool enableDrag = false,
+    bool barrierDismissible = true
   }) async {
     return Get.dialogOriginalMethod<T>(
       context,
       builder(context),
+      barrierDismissible: barrierDismissible
     );
   }
 
@@ -864,13 +866,15 @@ class _DialogHelperImpl {
     required BuildContext context,
     required ModalDialogPageBuilder<dynamic, P> modalDialogPageBuilder,
     P? parameter,
-    bool enableDrag = false
+    bool enableDrag = false,
+    bool barrierDismissible = true
   }) async {
     dynamic result = await showDialogPage(
       context: context,
       backgroundColor: Theme.of(context).canvasColor,
       builder: (context) => GetxPageBuilder.buildDefaultGetxPage(modalDialogPageBuilder(context, parameter)),
-      enableDrag: enableDrag
+      enableDrag: enableDrag,
+      barrierDismissible: barrierDismissible
     );
     return result is T ? result : null;
   }

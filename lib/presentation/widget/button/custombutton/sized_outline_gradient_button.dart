@@ -10,7 +10,7 @@ enum OutlineGradientButtonType {
 }
 
 enum OutlineGradientButtonVariation {
-  variation1, variation2, variation3
+  variation1, variation2, variation3, variation4
 }
 
 class SizedOutlineGradientButton extends StatelessWidget {
@@ -101,6 +101,8 @@ class SizedOutlineGradientButton extends StatelessWidget {
       return _Variation2GradientButtonVariation(outlineGradientButtonType: outlineGradientButtonType);
     } else if (outlineGradientButtonVariation == OutlineGradientButtonVariation.variation3) {
       return _Variation3GradientButtonVariation(outlineGradientButtonType: outlineGradientButtonType);
+    } else if (outlineGradientButtonVariation == OutlineGradientButtonVariation.variation4) {
+      return _Variation4GradientButtonVariation(outlineGradientButtonType: outlineGradientButtonType);
     } else {
       throw MessageError(title: "Outline gradient button is not suitable");
     }
@@ -167,6 +169,25 @@ class _Variation3GradientButtonVariation extends _GradientButtonVariation {
   @override
   TextStyle? get textStyle => TextStyle(
     color: outlineGradientButtonType == OutlineGradientButtonType.solid ? Colors.white : Colors.black,
+    fontWeight: FontWeight.bold
+  );
+}
+
+class _Variation4GradientButtonVariation extends _GradientButtonVariation {
+  _Variation4GradientButtonVariation({required super.outlineGradientButtonType});
+
+  @override
+  Color get backgroundColor => outlineGradientButtonType == OutlineGradientButtonType.solid ? Constant.colorRedDanger : Colors.transparent;
+
+  @override
+  Gradient get gradient => SweepGradient(
+    stops: const [1],
+    colors: [Constant.colorRedDanger],
+  );
+
+  @override
+  TextStyle? get textStyle => TextStyle(
+    color: outlineGradientButtonType == OutlineGradientButtonType.solid ? Colors.white : Constant.colorMain,
     fontWeight: FontWeight.bold
   );
 }

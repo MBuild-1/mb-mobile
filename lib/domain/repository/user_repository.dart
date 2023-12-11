@@ -2,6 +2,10 @@ import '../../misc/load_data_result.dart';
 import '../../misc/processing/future_processing.dart';
 import '../entity/changepassword/change_password_parameter.dart';
 import '../entity/changepassword/change_password_response.dart';
+import '../entity/deleteaccount/senddeleteaccountotp/send_delete_account_otp_parameter.dart';
+import '../entity/deleteaccount/senddeleteaccountotp/send_delete_account_otp_response.dart';
+import '../entity/deleteaccount/verifydeleteaccountotp/verify_delete_account_otp_parameter.dart';
+import '../entity/deleteaccount/verifydeleteaccountotp/verify_delete_account_otp_response.dart';
 import '../entity/forgotpassword/forgot_password_parameter.dart';
 import '../entity/forgotpassword/forgot_password_response.dart';
 import '../entity/login/login_parameter.dart';
@@ -47,4 +51,6 @@ abstract class UserRepository {
   FutureProcessing<LoadDataResult<SendRegisterOtpResponse>> sendRegisterOtp(SendRegisterOtpParameter sendRegisterOtpParameter);
   FutureProcessing<LoadDataResult<VerifyRegisterResponse>> verifyRegister(VerifyRegisterParameter verifyRegisterParameter);
   FutureProcessing<LoadDataResult<RegisterSecondStepResponse>> registerSecondStep(RegisterSecondStepParameter registerSecondStepParameter);
+  FutureProcessing<LoadDataResult<SendDeleteAccountOtpResponse>> sendDeleteAccountOtp(SendDeleteAccountOtpParameter sendDeleteAccountOtpParameter);
+  FutureProcessing<LoadDataResult<VerifyDeleteAccountOtpResponse>> verifyDeleteAccountOtp(VerifyDeleteAccountOtpParameter verifyDeleteAccountOtpParameter);
 }

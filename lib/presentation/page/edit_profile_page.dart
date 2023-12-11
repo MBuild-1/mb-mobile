@@ -2,6 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
+import 'package:masterbagasi/misc/ext/navigator_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:sizer/sizer.dart';
@@ -29,18 +30,21 @@ import '../../misc/injector.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/controller_manager.dart';
 import '../../misc/multi_language_string.dart';
+import '../../misc/navigation_helper.dart';
 import '../../misc/page_restoration_helper.dart';
 import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
 import '../../misc/string_util.dart';
+import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import '../widget/profile_picture_cache_network_image.dart';
 import '../widget/tap_area.dart';
 import 'crop_picture_page.dart';
 import 'getx_page.dart';
+import 'modaldialogpage/delete_account_modal_dialog_page.dart';
 import 'modaldialogpage/input_value_modal_dialog_page.dart';
 import 'modaldialogpage/select_provinces_modal_dialog_page.dart';
 import 'modaldialogpage/select_value_modal_dialog_page.dart';
@@ -497,6 +501,29 @@ class _StatefulEditProfileControllerMediatorWidgetState extends State<_StatefulE
                   pullToRefresh: true
                 ),
               ),
+              Container(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedOutlineGradientButton(
+                      onPressed: () async {
+                        await DialogHelper.showModalDialogPage<void, int>(
+                          context: context,
+                          modalDialogPageBuilder: (context, parameter) => DeleteAccountModalDialogPage(
+                            onBackToMainMenu: Navigator.of(context).popUntilMainMenu,
+                          ),
+                          parameter: 0,
+                          barrierDismissible: false
+                        );
+                      },
+                      text: "Delete Account".tr,
+                      outlineGradientButtonType: OutlineGradientButtonType.solid,
+                      outlineGradientButtonVariation: OutlineGradientButtonVariation.variation4,
+                    )
+                  ]
+                ),
+              )
             ]
           )
         ),
