@@ -32,6 +32,18 @@ import '../../../domain/entity/user/edituser/edit_user_parameter.dart';
 import '../../../domain/entity/user/edituser/edit_user_response.dart';
 import '../../../domain/entity/user/getuser/get_user_parameter.dart';
 import '../../../domain/entity/user/getuser/get_user_response.dart';
+import '../../../domain/entity/verifyeditprofile/authidentity/auth_identity_response.dart';
+import '../../../domain/entity/verifyeditprofile/authidentity/parameter/auth_identity_parameter.dart';
+import '../../../domain/entity/verifyeditprofile/authidentitychange/auth_identity_change_parameter.dart';
+import '../../../domain/entity/verifyeditprofile/authidentitychange/auth_identity_change_response.dart';
+import '../../../domain/entity/verifyeditprofile/authidentitychangeinput/auth_identity_change_input_response.dart';
+import '../../../domain/entity/verifyeditprofile/authidentitychangeinput/parameter/auth_identity_change_input_parameter.dart';
+import '../../../domain/entity/verifyeditprofile/authidentitychangeverifyotp/auth_identity_change_verify_otp_response.dart';
+import '../../../domain/entity/verifyeditprofile/authidentitychangeverifyotp/parameter/auth_identity_change_verify_otp_parameter.dart';
+import '../../../domain/entity/verifyeditprofile/authidentitysendotp/auth_identity_send_otp_parameter.dart';
+import '../../../domain/entity/verifyeditprofile/authidentitysendotp/auth_identity_send_otp_response.dart';
+import '../../../domain/entity/verifyeditprofile/authidentityverifyotp/auth_identity_verify_otp_response.dart';
+import '../../../domain/entity/verifyeditprofile/authidentityverifyotp/parameter/auth_identity_verify_otp_parameter.dart';
 import '../../../misc/processing/future_processing.dart';
 
 abstract class UserDataSource {
@@ -52,4 +64,10 @@ abstract class UserDataSource {
   FutureProcessing<ForgotPasswordResponse> forgotPassword(ForgotPasswordParameter forgotPasswordParameter);
   FutureProcessing<SendDeleteAccountOtpResponse> sendDeleteAccountOtp(SendDeleteAccountOtpParameter sendDeleteAccountOtpParameter);
   FutureProcessing<VerifyDeleteAccountOtpResponse> verifyDeleteAccountOtp(VerifyDeleteAccountOtpParameter verifyDeleteAccountOtpParameter);
+  FutureProcessing<AuthIdentityResponse> authIdentity(AuthIdentityParameter authIdentityParameter);
+  FutureProcessing<AuthIdentitySendVerifyOtpResponse> authIdentitySendVerifyOtp(AuthIdentitySendVerifyOtpParameter authIdentitySendVerifyOtpParameter);
+  FutureProcessing<AuthIdentityVerifyOtpResponse> authIdentityVerifyOtp(AuthIdentityVerifyOtpParameter authIdentityVerifyOtpParameter);
+  FutureProcessing<AuthIdentityChangeInputResponse> authIdentityChangeInput(AuthIdentityChangeInputParameter authIdentityChangeInputParameter);
+  FutureProcessing<AuthIdentityChangeVerifyOtpResponse> authIdentityChangeVerifyOtp(AuthIdentityChangeVerifyOtpParameter authIdentityChangeVerifyOtpParameter);
+  FutureProcessing<AuthIdentityChangeResponse> authIdentityChange(AuthIdentityChangeParameter authIdentityChangeParameter);
 }

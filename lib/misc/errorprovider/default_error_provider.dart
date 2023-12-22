@@ -230,6 +230,12 @@ class DefaultErrorProvider extends ErrorProvider {
             dynamic message = errorMeta["message"];
             if (message == "Data Cart not found!") {
               return _cartIsEmptyErrorProvider();
+            } else {
+              return ErrorProviderResult(
+                title: "Not Found".tr,
+                message: MultiLanguageString(errorMeta["message"]).toEmptyStringNonNull,
+                imageAssetUrl: Constant.imageFailed
+              );
             }
           }
         }

@@ -58,6 +58,7 @@ import '../../misc/string_util.dart';
 import '../../misc/validation/validator/compoundvalidator/password_compound_validator.dart';
 import '../../misc/validation/validator/validator.dart';
 import '../../misc/web_helper.dart';
+import '../../misc/widget_helper.dart';
 import '../notifier/login_notifier.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/field.dart';
@@ -442,40 +443,6 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
                         );
                       } else if (registerStep is SendRegisterOtpRegisterStep) {
                         RegisterFirstStepResponse registerFirstStepResponse = registerStep.registerFirstStepResponse;
-                        Widget selectVerificationMethod({
-                          required Widget icon,
-                          required Widget title,
-                          required Widget description,
-                          void Function()? onTap
-                        }) {
-                          return TapArea(
-                            onTap: onTap,
-                            child: Container(
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8.0),
-                                border: Border.all(color: Colors.grey.shade400)
-                              ),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  icon,
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        title,
-                                        const SizedBox(height: 3),
-                                        description
-                                      ]
-                                    )
-                                  )
-                                ],
-                              )
-                            ),
-                          );
-                        }
                         return Column(
                           children: [
                             Text(
@@ -498,7 +465,7 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
                             ),
                             const SizedBox(height: 16.0),
                             if (registerFirstStepResponse.emailActive) ...[
-                              selectVerificationMethod(
+                              WidgetHelper.selectVerificationMethod(
                                 icon: const Icon(
                                   Icons.mail_outline,
                                   size: 24.0,
@@ -520,7 +487,7 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
                                 )
                               )
                             ] else if (registerFirstStepResponse.phoneActive) ...[
-                              selectVerificationMethod(
+                              WidgetHelper.selectVerificationMethod(
                                 icon: ModifiedSvgPicture.asset(
                                   Constant.vectorWhatsappLogo,
                                   width: 24.0

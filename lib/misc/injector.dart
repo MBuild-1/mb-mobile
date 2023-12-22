@@ -106,6 +106,12 @@ import '../domain/usecase/answer_order_conversation_version_1_point_1_use_case.d
 import '../domain/usecase/answer_product_conversation_use_case.dart';
 import '../domain/usecase/approve_or_reject_request_bucket_use_case.dart';
 import '../domain/usecase/arrived_order_use_case.dart';
+import '../domain/usecase/auth_identity_change_input_use_case.dart';
+import '../domain/usecase/auth_identity_change_use_case.dart';
+import '../domain/usecase/auth_identity_change_verify_otp_use_case.dart';
+import '../domain/usecase/auth_identity_send_verify_otp_use_case.dart';
+import '../domain/usecase/auth_identity_use_case.dart';
+import '../domain/usecase/auth_identity_verify_otp_use_case.dart';
 import '../domain/usecase/change_additional_item_use_case.dart';
 import '../domain/usecase/change_address_use_case.dart';
 import '../domain/usecase/change_password_use_case.dart';
@@ -574,6 +580,12 @@ class _Injector {
     locator.registerLazySingleton<RegisterWithGoogleUseCase>(() => RegisterWithGoogleUseCase(userRepository: locator()));
     locator.registerLazySingleton<SendDeleteAccountOtpUseCase>(() => SendDeleteAccountOtpUseCase(userRepository: locator()));
     locator.registerLazySingleton<VerifyDeleteAccountOtpUseCase>(() => VerifyDeleteAccountOtpUseCase(userRepository: locator()));
+    locator.registerLazySingleton<AuthIdentityChangeInputUseCase>(() => AuthIdentityChangeInputUseCase(userRepository: locator()));
+    locator.registerLazySingleton<AuthIdentityChangeUseCase>(() => AuthIdentityChangeUseCase(userRepository: locator()));
+    locator.registerLazySingleton<AuthIdentityChangeVerifyOtpUseCase>(() => AuthIdentityChangeVerifyOtpUseCase(userRepository: locator()));
+    locator.registerLazySingleton<AuthIdentitySendVerifyOtpUseCase>(() => AuthIdentitySendVerifyOtpUseCase(userRepository: locator()));
+    locator.registerLazySingleton<AuthIdentityUseCase>(() => AuthIdentityUseCase(userRepository: locator()));
+    locator.registerLazySingleton<AuthIdentityVerifyOtpUseCase>(() => AuthIdentityVerifyOtpUseCase(userRepository: locator()));
     locator.registerLazySingleton<LogoutUseCase>(() => LogoutUseCase(userRepository: locator()));
     locator.registerLazySingleton<ChangePasswordUseCase>(() => ChangePasswordUseCase(userRepository: locator()));
     locator.registerLazySingleton<ModifyPinUseCase>(() => ModifyPinUseCase(userRepository: locator()));

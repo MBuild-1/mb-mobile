@@ -47,6 +47,26 @@ import '../../../domain/entity/user/edituser/edit_user_parameter.dart';
 import '../../../domain/entity/user/edituser/edit_user_response.dart';
 import '../../../domain/entity/user/getuser/get_user_parameter.dart';
 import '../../../domain/entity/user/getuser/get_user_response.dart';
+import '../../../domain/entity/verifyeditprofile/authidentity/auth_identity_response.dart';
+import '../../../domain/entity/verifyeditprofile/authidentity/parameter/auth_identity_parameter.dart';
+import '../../../domain/entity/verifyeditprofile/authidentity/parameter/email_auth_identity_parameter.dart';
+import '../../../domain/entity/verifyeditprofile/authidentity/parameter/phone_auth_identity_parameter.dart';
+import '../../../domain/entity/verifyeditprofile/authidentitychange/auth_identity_change_parameter.dart';
+import '../../../domain/entity/verifyeditprofile/authidentitychange/auth_identity_change_response.dart';
+import '../../../domain/entity/verifyeditprofile/authidentitychangeinput/auth_identity_change_input_response.dart';
+import '../../../domain/entity/verifyeditprofile/authidentitychangeinput/parameter/auth_identity_change_input_parameter.dart';
+import '../../../domain/entity/verifyeditprofile/authidentitychangeinput/parameter/email_auth_identity_change_input_parameter.dart';
+import '../../../domain/entity/verifyeditprofile/authidentitychangeinput/parameter/phone_auth_identity_change_input_parameter.dart';
+import '../../../domain/entity/verifyeditprofile/authidentitychangeverifyotp/auth_identity_change_verify_otp_response.dart';
+import '../../../domain/entity/verifyeditprofile/authidentitychangeverifyotp/parameter/auth_identity_change_verify_otp_parameter.dart';
+import '../../../domain/entity/verifyeditprofile/authidentitychangeverifyotp/parameter/email_auth_identity_change_verify_otp_parameter.dart';
+import '../../../domain/entity/verifyeditprofile/authidentitychangeverifyotp/parameter/phone_auth_identity_change_verify_otp_parameter.dart';
+import '../../../domain/entity/verifyeditprofile/authidentitysendotp/auth_identity_send_otp_parameter.dart';
+import '../../../domain/entity/verifyeditprofile/authidentitysendotp/auth_identity_send_otp_response.dart';
+import '../../../domain/entity/verifyeditprofile/authidentityverifyotp/auth_identity_verify_otp_response.dart';
+import '../../../domain/entity/verifyeditprofile/authidentityverifyotp/parameter/auth_identity_verify_otp_parameter.dart';
+import '../../../domain/entity/verifyeditprofile/authidentityverifyotp/parameter/email_auth_identity_verify_otp_parameter.dart';
+import '../../../domain/entity/verifyeditprofile/authidentityverifyotp/parameter/phone_auth_identity_verify_otp_parameter.dart';
 import '../../../misc/date_util.dart';
 import '../../../misc/error/message_error.dart';
 import '../../../misc/http_client.dart';
@@ -408,6 +428,103 @@ class DefaultUserDataSource implements UserDataSource {
       );
       return dio.post("/send/email/account/check", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
         .map<VerifyDeleteAccountOtpResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToVerifyDeleteAccountOtpResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<AuthIdentityResponse> authIdentity(AuthIdentityParameter authIdentityParameter) {
+    String type = "";
+    if (authIdentityParameter is EmailAuthIdentityParameter) {
+      type = "email";
+    } else if (authIdentityParameter is PhoneAuthIdentityParameter) {
+      type = "phone";
+    }
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.get("/auth/identity", queryParameters: type.isNotEmptyString ? {"type": type} : null, cancelToken: cancelToken)
+        .map<AuthIdentityResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToAuthIdentityResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<AuthIdentitySendVerifyOtpResponse> authIdentitySendVerifyOtp(AuthIdentitySendVerifyOtpParameter authIdentitySendVerifyOtpParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      FormData formData = FormData.fromMap(
+        <String, dynamic> {
+          "credential": authIdentitySendVerifyOtpParameter.credential
+        }
+      );
+      return dio.post("/auth/identity/send/otp", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+        .map<AuthIdentitySendVerifyOtpResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToAuthIdentitySendVerifyOtpResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<AuthIdentityVerifyOtpResponse> authIdentityVerifyOtp(AuthIdentityVerifyOtpParameter authIdentityVerifyOtpParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      FormData formData = FormData.fromMap(
+        <String, dynamic> {
+          "otp": authIdentityVerifyOtpParameter.otp,
+          if (authIdentityVerifyOtpParameter is EmailAuthIdentityVerifyOtpParameter) "email": authIdentityVerifyOtpParameter.email
+          else if (authIdentityVerifyOtpParameter is PhoneAuthIdentityVerifyOtpParameter) "phone": authIdentityVerifyOtpParameter.phone,
+        }
+      );
+      return dio.post("/auth/identity/otp", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+        .map<AuthIdentityVerifyOtpResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToAuthIdentityVerifyOtpResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<AuthIdentityChangeInputResponse> authIdentityChangeInput(AuthIdentityChangeInputParameter authIdentityChangeInputParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      String lastPath = "";
+      Map<String, dynamic> formDataMap = {};
+      if (authIdentityChangeInputParameter is EmailAuthIdentityChangeInputParameter) {
+        lastPath = "/email";
+        formDataMap["email"] = authIdentityChangeInputParameter.email;
+      } else if (authIdentityChangeInputParameter is PhoneAuthIdentityChangeInputParameter) {
+        lastPath = "/phone";
+        formDataMap["phone"] = authIdentityChangeInputParameter.phone;
+      }
+      FormData formData = FormData.fromMap(formDataMap);
+      return dio.post("/auth/identity/change$lastPath", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+        .map<AuthIdentityChangeInputResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToAuthIdentityChangeInputResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<AuthIdentityChangeVerifyOtpResponse> authIdentityChangeVerifyOtp(AuthIdentityChangeVerifyOtpParameter authIdentityChangeVerifyOtpParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      late AuthIdentityVerifyOtpParameter authIdentityVerifyOtpParameter;
+      if (authIdentityChangeVerifyOtpParameter is EmailAuthIdentityChangeVerifyOtpParameter) {
+        authIdentityVerifyOtpParameter = EmailAuthIdentityVerifyOtpParameter(
+          email: authIdentityChangeVerifyOtpParameter.email,
+          otp: authIdentityChangeVerifyOtpParameter.otp
+        );
+      } else if (authIdentityChangeVerifyOtpParameter is PhoneAuthIdentityChangeVerifyOtpParameter) {
+        authIdentityVerifyOtpParameter = PhoneAuthIdentityVerifyOtpParameter(
+          phone: authIdentityChangeVerifyOtpParameter.phone,
+          otp: authIdentityChangeVerifyOtpParameter.otp
+        );
+      }
+      return authIdentityVerifyOtp(authIdentityVerifyOtpParameter).map(
+        onMap: (value) => AuthIdentityChangeVerifyOtpResponse()
+      ).future(
+        parameter: cancelToken
+      );
+    });
+  }
+
+  @override
+  FutureProcessing<AuthIdentityChangeResponse> authIdentityChange(AuthIdentityChangeParameter authIdentityChangeParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      FormData formData = FormData.fromMap(
+        <String, dynamic> {
+          "credential": authIdentityChangeParameter.credential,
+          "_method": "PUT"
+        }
+      );
+      return dio.post("/auth/identity/change", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+        .map<AuthIdentityChangeResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToAuthIdentityChangeResponse());
     });
   }
 }

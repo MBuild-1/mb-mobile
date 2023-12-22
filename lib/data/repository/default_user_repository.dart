@@ -32,6 +32,18 @@ import '../../domain/entity/user/edituser/edit_user_parameter.dart';
 import '../../domain/entity/user/edituser/edit_user_response.dart';
 import '../../domain/entity/user/getuser/get_user_parameter.dart';
 import '../../domain/entity/user/getuser/get_user_response.dart';
+import '../../domain/entity/verifyeditprofile/authidentity/auth_identity_response.dart';
+import '../../domain/entity/verifyeditprofile/authidentity/parameter/auth_identity_parameter.dart';
+import '../../domain/entity/verifyeditprofile/authidentitychange/auth_identity_change_parameter.dart';
+import '../../domain/entity/verifyeditprofile/authidentitychange/auth_identity_change_response.dart';
+import '../../domain/entity/verifyeditprofile/authidentitychangeinput/auth_identity_change_input_response.dart';
+import '../../domain/entity/verifyeditprofile/authidentitychangeinput/parameter/auth_identity_change_input_parameter.dart';
+import '../../domain/entity/verifyeditprofile/authidentitychangeverifyotp/auth_identity_change_verify_otp_response.dart';
+import '../../domain/entity/verifyeditprofile/authidentitychangeverifyotp/parameter/auth_identity_change_verify_otp_parameter.dart';
+import '../../domain/entity/verifyeditprofile/authidentitysendotp/auth_identity_send_otp_parameter.dart';
+import '../../domain/entity/verifyeditprofile/authidentitysendotp/auth_identity_send_otp_response.dart';
+import '../../domain/entity/verifyeditprofile/authidentityverifyotp/auth_identity_verify_otp_response.dart';
+import '../../domain/entity/verifyeditprofile/authidentityverifyotp/parameter/auth_identity_verify_otp_parameter.dart';
 import '../../domain/repository/user_repository.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/processing/future_processing.dart';
@@ -127,5 +139,35 @@ class DefaultUserRepository implements UserRepository {
   @override
   FutureProcessing<LoadDataResult<VerifyDeleteAccountOtpResponse>> verifyDeleteAccountOtp(VerifyDeleteAccountOtpParameter verifyDeleteAccountOtpParameter) {
     return userDataSource.verifyDeleteAccountOtp(verifyDeleteAccountOtpParameter).mapToLoadDataResult<VerifyDeleteAccountOtpResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<AuthIdentityResponse>> authIdentity(AuthIdentityParameter authIdentityParameter) {
+    return userDataSource.authIdentity(authIdentityParameter).mapToLoadDataResult<AuthIdentityResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<AuthIdentitySendVerifyOtpResponse>> authIdentitySendVerifyOtp(AuthIdentitySendVerifyOtpParameter authIdentitySendVerifyOtpParameter) {
+    return userDataSource.authIdentitySendVerifyOtp(authIdentitySendVerifyOtpParameter).mapToLoadDataResult<AuthIdentitySendVerifyOtpResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<AuthIdentityVerifyOtpResponse>> authIdentityVerifyOtp(AuthIdentityVerifyOtpParameter authIdentityVerifyOtpParameter) {
+    return userDataSource.authIdentityVerifyOtp(authIdentityVerifyOtpParameter).mapToLoadDataResult<AuthIdentityVerifyOtpResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<AuthIdentityChangeInputResponse>> authIdentityChangeInput(AuthIdentityChangeInputParameter authIdentityChangeInputParameter) {
+    return userDataSource.authIdentityChangeInput(authIdentityChangeInputParameter).mapToLoadDataResult<AuthIdentityChangeInputResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<AuthIdentityChangeVerifyOtpResponse>> authIdentityChangeVerifyOtp(AuthIdentityChangeVerifyOtpParameter authIdentityChangeVerifyOtpParameter) {
+    return userDataSource.authIdentityChangeVerifyOtp(authIdentityChangeVerifyOtpParameter).mapToLoadDataResult<AuthIdentityChangeVerifyOtpResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<AuthIdentityChangeResponse>> authIdentityChange(AuthIdentityChangeParameter authIdentityChangeParameter) {
+    return userDataSource.authIdentityChange(authIdentityChangeParameter).mapToLoadDataResult<AuthIdentityChangeResponse>();
   }
 }

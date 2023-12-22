@@ -34,6 +34,18 @@ import '../entity/user/edituser/edit_user_parameter.dart';
 import '../entity/user/edituser/edit_user_response.dart';
 import '../entity/user/getuser/get_user_parameter.dart';
 import '../entity/user/getuser/get_user_response.dart';
+import '../entity/verifyeditprofile/authidentity/auth_identity_response.dart';
+import '../entity/verifyeditprofile/authidentity/parameter/auth_identity_parameter.dart';
+import '../entity/verifyeditprofile/authidentitychange/auth_identity_change_parameter.dart';
+import '../entity/verifyeditprofile/authidentitychange/auth_identity_change_response.dart';
+import '../entity/verifyeditprofile/authidentitychangeinput/auth_identity_change_input_response.dart';
+import '../entity/verifyeditprofile/authidentitychangeinput/parameter/auth_identity_change_input_parameter.dart';
+import '../entity/verifyeditprofile/authidentitychangeverifyotp/auth_identity_change_verify_otp_response.dart';
+import '../entity/verifyeditprofile/authidentitychangeverifyotp/parameter/auth_identity_change_verify_otp_parameter.dart';
+import '../entity/verifyeditprofile/authidentitysendotp/auth_identity_send_otp_parameter.dart';
+import '../entity/verifyeditprofile/authidentitysendotp/auth_identity_send_otp_response.dart';
+import '../entity/verifyeditprofile/authidentityverifyotp/auth_identity_verify_otp_response.dart';
+import '../entity/verifyeditprofile/authidentityverifyotp/parameter/auth_identity_verify_otp_parameter.dart';
 
 abstract class UserRepository {
   FutureProcessing<LoadDataResult<LoginResponse>> login(LoginParameter loginParameter);
@@ -53,4 +65,10 @@ abstract class UserRepository {
   FutureProcessing<LoadDataResult<RegisterSecondStepResponse>> registerSecondStep(RegisterSecondStepParameter registerSecondStepParameter);
   FutureProcessing<LoadDataResult<SendDeleteAccountOtpResponse>> sendDeleteAccountOtp(SendDeleteAccountOtpParameter sendDeleteAccountOtpParameter);
   FutureProcessing<LoadDataResult<VerifyDeleteAccountOtpResponse>> verifyDeleteAccountOtp(VerifyDeleteAccountOtpParameter verifyDeleteAccountOtpParameter);
+  FutureProcessing<LoadDataResult<AuthIdentityResponse>> authIdentity(AuthIdentityParameter authIdentityParameter);
+  FutureProcessing<LoadDataResult<AuthIdentitySendVerifyOtpResponse>> authIdentitySendVerifyOtp(AuthIdentitySendVerifyOtpParameter authIdentitySendVerifyOtpParameter);
+  FutureProcessing<LoadDataResult<AuthIdentityVerifyOtpResponse>> authIdentityVerifyOtp(AuthIdentityVerifyOtpParameter authIdentityVerifyOtpParameter);
+  FutureProcessing<LoadDataResult<AuthIdentityChangeInputResponse>> authIdentityChangeInput(AuthIdentityChangeInputParameter authIdentityChangeInputParameter);
+  FutureProcessing<LoadDataResult<AuthIdentityChangeVerifyOtpResponse>> authIdentityChangeVerifyOtp(AuthIdentityChangeVerifyOtpParameter authIdentityChangeVerifyOtpParameter);
+  FutureProcessing<LoadDataResult<AuthIdentityChangeResponse>> authIdentityChange(AuthIdentityChangeParameter authIdentityChangeParameter);
 }

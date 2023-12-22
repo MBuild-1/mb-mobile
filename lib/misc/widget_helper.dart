@@ -12,6 +12,7 @@ import '../presentation/widget/loaddataresultimplementer/load_data_result_implem
 import '../presentation/widget/modified_shimmer.dart';
 import '../presentation/widget/productbundle/product_bundle_item.dart';
 import '../presentation/widget/prompt_indicator.dart';
+import '../presentation/widget/tap_area.dart';
 import 'constant.dart';
 import 'constrained_app_bar_return_value.dart';
 import 'defaultloaddataresultwidget/main_default_load_data_result_widget.dart';
@@ -242,6 +243,41 @@ class _WidgetHelperImpl {
           ],
         );
       }
+    );
+  }
+
+  Widget selectVerificationMethod({
+    required Widget icon,
+    required Widget title,
+    required Widget description,
+    void Function()? onTap
+  }) {
+    return TapArea(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8.0),
+          border: Border.all(color: Colors.grey.shade400)
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            icon,
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  title,
+                  const SizedBox(height: 3),
+                  description
+                ]
+              )
+            )
+          ],
+        )
+      ),
     );
   }
 }

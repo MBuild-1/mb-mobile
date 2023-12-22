@@ -1,4 +1,3 @@
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
@@ -11,9 +10,14 @@ import '../../controller/edit_profile_controller.dart';
 import '../../domain/entity/user/edituser/edit_user_parameter.dart';
 import '../../domain/entity/user/getuser/get_user_parameter.dart';
 import '../../domain/entity/user/user.dart';
+import '../../domain/entity/verifyeditprofile/authidentity/parameter/email_auth_identity_parameter.dart';
+import '../../domain/entity/verifyeditprofile/authidentity/parameter/phone_auth_identity_parameter.dart';
+import '../../domain/usecase/auth_identity_use_case.dart';
 import '../../domain/usecase/edit_user_use_case.dart';
 import '../../domain/usecase/get_user_use_case.dart';
 import '../../misc/additionalloadingindicatorchecker/edit_profile_additional_paging_result_parameter_checker.dart';
+import '../../misc/authidentitystep/choose_verification_method_auth_identity_step.dart';
+import '../../misc/authidentitystep/failed_auth_identity_step.dart';
 import '../../misc/constant.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/profilemenulistitemcontrollerstate/profile_menu_list_item_controller_state.dart';
@@ -30,8 +34,6 @@ import '../../misc/injector.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/controller_manager.dart';
 import '../../misc/multi_language_string.dart';
-import '../../misc/navigation_helper.dart';
-import '../../misc/page_restoration_helper.dart';
 import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
@@ -44,9 +46,9 @@ import '../widget/profile_picture_cache_network_image.dart';
 import '../widget/tap_area.dart';
 import 'crop_picture_page.dart';
 import 'getx_page.dart';
+import 'modaldialogpage/auth_identity_modal_dialog_page.dart';
 import 'modaldialogpage/delete_account_modal_dialog_page.dart';
 import 'modaldialogpage/input_value_modal_dialog_page.dart';
-import 'modaldialogpage/select_provinces_modal_dialog_page.dart';
 import 'modaldialogpage/select_value_modal_dialog_page.dart';
 
 class EditProfilePage extends RestorableGetxPage<_EditProfilePageRestoration> {
@@ -62,7 +64,8 @@ class EditProfilePage extends RestorableGetxPage<_EditProfilePageRestoration> {
       EditProfileController(
         controllerManager,
         Injector.locator<EditUserUseCase>(),
-        Injector.locator<GetUserUseCase>()
+        Injector.locator<GetUserUseCase>(),
+        Injector.locator<AuthIdentityUseCase>()
       ), tag: pageName
     );
   }
@@ -216,6 +219,8 @@ class _StatefulEditProfileControllerMediatorWidgetState extends State<_StatefulE
   late final ModifiedPagingController<int, ListItemControllerState> _editProfileListItemPagingController;
   late final PagingControllerState<int, ListItemControllerState> _editProfileListItemPagingControllerState;
 
+  AuthIdentityModalDialogPageAction _authIdentityModalDialogPageAction = AuthIdentityModalDialogPageAction();
+
   final List<Gender> _genderList = <Gender>[
     Gender(
       value: "Male",
@@ -255,11 +260,12 @@ class _StatefulEditProfileControllerMediatorWidgetState extends State<_StatefulE
     _editProfileListItemPagingControllerState.isPagingControllerExist = true;
   }
 
+  void _editProfile(EditUserParameter editUserParameter)  {
+    widget.editProfileController.editProfile(editUserParameter);
+  }
+
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _editProfileListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? cartListItemControllerStateList) async {
     LoadDataResult<User> userLoadDataResult = await widget.editProfileController.getUserProfile(GetUserParameter());
-    void editProfile(EditUserParameter editUserParameter)  {
-      widget.editProfileController.editProfile(editUserParameter);
-    }
     void editTextProfileField({
       required BuildContext context,
       required InputValueModalDialogPageParameter inputValueModalDialogPageParameter,
@@ -273,7 +279,7 @@ class _StatefulEditProfileControllerMediatorWidgetState extends State<_StatefulE
         parameter: inputValueModalDialogPageParameter,
       );
       if (result is String) {
-        editProfile(onConfigureEditUserParameter(result));
+        _editProfile(onConfigureEditUserParameter(result));
       }
     }
     return userLoadDataResult.map<PagingResult<ListItemControllerState>>((user) {
@@ -336,20 +342,9 @@ class _StatefulEditProfileControllerMediatorWidgetState extends State<_StatefulE
             icon: null
           ),
           ProfileMenuListItemControllerState(
-            onTap: (context) => editTextProfileField(
-              context: context,
-              inputValueModalDialogPageParameter: InputValueModalDialogPageParameter(
-                value: user.email,
-                title: () => 'Email'.tr,
-                inputTitle: () => 'Input Email'.tr,
-                inputHint: () => 'Type Email'.tr,
-                inputSubmitText: () => "Submit".tr,
-                requiredMessage: () => "${"Email is required".tr}.",
-              ),
-              onConfigureEditUserParameter: (result) => EditUserParameter(
-                email: result
-              )
-            ),
+            onTap: (context) {
+              widget.editProfileController.authIdentity(EmailAuthIdentityParameter());
+            },
             title: 'Email'.tr,
             titleInterceptor: EditProfileHelper.setTitleInterceptor(user.email),
             icon: null
@@ -375,7 +370,7 @@ class _StatefulEditProfileControllerMediatorWidgetState extends State<_StatefulE
                 ),
               );
               if (result is Gender) {
-                editProfile(
+                _editProfile(
                   EditUserParameter(gender: result.value)
                 );
               }
@@ -395,7 +390,7 @@ class _StatefulEditProfileControllerMediatorWidgetState extends State<_StatefulE
                 lastDate: DateTime.utc(9999, 3, 14),
               );
               if (selectedDateTime != null) {
-                editProfile(
+                _editProfile(
                   EditUserParameter(birthDateTime: selectedDateTime)
                 );
               }
@@ -431,20 +426,9 @@ class _StatefulEditProfileControllerMediatorWidgetState extends State<_StatefulE
             icon: null
           ),
           ProfileMenuListItemControllerState(
-            onTap: (context) => editTextProfileField(
-              context: context,
-              inputValueModalDialogPageParameter: InputValueModalDialogPageParameter(
-                value: user.userProfile.phoneNumber.toEmptyStringNonNull,
-                title: () => 'Phone Number'.tr,
-                inputTitle: () => 'Input Phone Number'.tr,
-                inputHint: () => 'Type Phone Number'.tr,
-                inputSubmitText: () => "Submit".tr,
-                requiredMessage: () => "${"Phone number is required".tr}.",
-              ),
-              onConfigureEditUserParameter: (result) => EditUserParameter(
-                phoneNumber: result
-              )
-            ),
+            onTap: (context) {
+              widget.editProfileController.authIdentity(PhoneAuthIdentityParameter());
+            },
             title: 'Phone Number'.tr,
             titleInterceptor: EditProfileHelper.setTitleInterceptor(
               user.userProfile.phoneNumber.toStringNonNull
@@ -474,6 +458,34 @@ class _StatefulEditProfileControllerMediatorWidgetState extends State<_StatefulE
         onEditProfileRequestProcessSuccessCallback: () async {
           _editProfileListItemPagingController.refresh();
         },
+        onShowAuthIdentityRequestProcessLoadingCallback: () async {
+          dynamic result = await DialogHelper.showModalDialogPage<bool, int>(
+            context: context,
+            modalDialogPageBuilder: (context, parameter) => AuthIdentityModalDialogPage(
+              authIdentityModalDialogPageAction: _authIdentityModalDialogPageAction,
+            ),
+            parameter: 0,
+          );
+          if (result is bool) {
+            if (result) {
+              _editProfileListItemPagingController.refresh();
+            }
+          }
+        },
+        onShowAuthIdentityRequestProcessFailedCallback: (e) async {
+          _authIdentityModalDialogPageAction.changeAuthIdentityStep(
+            FailedAuthIdentityStep(
+              e: e
+            )
+          );
+        },
+        onAuthIdentityRequestProcessSuccessCallback: (authIdentityParameterAndResponse) async {
+          _authIdentityModalDialogPageAction.changeAuthIdentityStep(
+            ChooseVerificationMethodAuthIdentityStep(
+              authIdentityParameterAndResponse: authIdentityParameterAndResponse,
+            )
+          );
+        }
       )
     );
     return WillPopScope(

@@ -29,6 +29,11 @@ import '../../domain/entity/register/verify_register_response.dart';
 import '../../domain/entity/user/edituser/edit_user_response.dart';
 import '../../domain/entity/user/getuser/get_user_response.dart';
 import '../../domain/entity/user/user.dart';
+import '../../domain/entity/verifyeditprofile/authidentity/auth_identity_response.dart';
+import '../../domain/entity/verifyeditprofile/authidentitychange/auth_identity_change_response.dart';
+import '../../domain/entity/verifyeditprofile/authidentitychangeinput/auth_identity_change_input_response.dart';
+import '../../domain/entity/verifyeditprofile/authidentitysendotp/auth_identity_send_otp_response.dart';
+import '../../domain/entity/verifyeditprofile/authidentityverifyotp/auth_identity_verify_otp_response.dart';
 import '../../misc/error/message_error.dart';
 import '../../misc/response_wrapper.dart';
 
@@ -164,6 +169,26 @@ extension UserEntityMappingExt on ResponseWrapper {
 
   VerifyDeleteAccountOtpResponse mapFromResponseToVerifyDeleteAccountOtpResponse() {
     return VerifyDeleteAccountOtpResponse();
+  }
+
+  AuthIdentityResponse mapFromResponseToAuthIdentityResponse() {
+    return AuthIdentityResponse(data: response);
+  }
+
+  AuthIdentitySendVerifyOtpResponse mapFromResponseToAuthIdentitySendVerifyOtpResponse() {
+    return AuthIdentitySendVerifyOtpResponse();
+  }
+
+  AuthIdentityVerifyOtpResponse mapFromResponseToAuthIdentityVerifyOtpResponse() {
+    return AuthIdentityVerifyOtpResponse();
+  }
+
+  AuthIdentityChangeInputResponse mapFromResponseToAuthIdentityChangeInputResponse() {
+    return AuthIdentityChangeInputResponse();
+  }
+
+  AuthIdentityChangeResponse mapFromResponseToAuthIdentityChangeResponse() {
+    return AuthIdentityChangeResponse();
   }
 }
 

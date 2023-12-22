@@ -16,6 +16,7 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "or login with": "atau login dengan",
       "or register with": "atau daftar dengan",
       "This input must be an email": "Inputannya harus berupa email",
+      "This input must be an phone number": "Inputannya harus berupa nomor telepon",
       "This input must be an email or phone number": "Inputannya harus berupa email atau nomor telepon",
       "Email is required": "Email dibutuhkan",
       "Email Or Phone Number": "Email Atau Nomor Telepon",
