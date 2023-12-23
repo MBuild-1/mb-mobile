@@ -172,7 +172,7 @@ extension UserEntityMappingExt on ResponseWrapper {
   }
 
   AuthIdentityResponse mapFromResponseToAuthIdentityResponse() {
-    return AuthIdentityResponse(data: response);
+    return AuthIdentityResponse(data: response ?? "");
   }
 
   AuthIdentitySendVerifyOtpResponse mapFromResponseToAuthIdentitySendVerifyOtpResponse() {

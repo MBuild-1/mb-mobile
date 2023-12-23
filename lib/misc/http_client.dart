@@ -10,7 +10,7 @@ class _DioHttpClientImpl {
   Dio of() {
     if (_dio == null) {
       BaseOptions baseOptions = BaseOptions(
-        baseUrl: "https://api.masterbagasi.com/v1/mobile/"
+        baseUrl: "https://staging-api.masterbagasi.com/v1/mobile/"
       );
       _dio = _ModifiedDio(Dio(baseOptions));
       _dio?.interceptors.add(modifiedDioLoggerInterceptor);

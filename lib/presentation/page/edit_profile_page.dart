@@ -10,14 +10,20 @@ import '../../controller/edit_profile_controller.dart';
 import '../../domain/entity/user/edituser/edit_user_parameter.dart';
 import '../../domain/entity/user/getuser/get_user_parameter.dart';
 import '../../domain/entity/user/user.dart';
+import '../../domain/entity/verifyeditprofile/authidentity/auth_identity_response.dart';
+import '../../domain/entity/verifyeditprofile/authidentity/parameter/auth_identity_parameter.dart';
 import '../../domain/entity/verifyeditprofile/authidentity/parameter/email_auth_identity_parameter.dart';
 import '../../domain/entity/verifyeditprofile/authidentity/parameter/phone_auth_identity_parameter.dart';
 import '../../domain/usecase/auth_identity_use_case.dart';
 import '../../domain/usecase/edit_user_use_case.dart';
 import '../../domain/usecase/get_user_use_case.dart';
 import '../../misc/additionalloadingindicatorchecker/edit_profile_additional_paging_result_parameter_checker.dart';
+import '../../misc/authidentitystep/changeauthidentitystep/change_auth_identity_step.dart';
+import '../../misc/authidentitystep/changeauthidentitystep/email_change_auth_identity_step.dart';
+import '../../misc/authidentitystep/changeauthidentitystep/phone_change_auth_identity_step.dart';
 import '../../misc/authidentitystep/choose_verification_method_auth_identity_step.dart';
 import '../../misc/authidentitystep/failed_auth_identity_step.dart';
+import '../../misc/authidentitystep/verifyauthidentitystep/change_input_verify_auth_identity_step.dart';
 import '../../misc/constant.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/profilemenulistitemcontrollerstate/profile_menu_list_item_controller_state.dart';
@@ -26,6 +32,7 @@ import '../../misc/controllerstate/paging_controller_state.dart';
 import '../../misc/date_util.dart';
 import '../../misc/dialog_helper.dart';
 import '../../misc/edit_profile_helper.dart';
+import '../../misc/error/message_error.dart';
 import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/gender.dart';
 import '../../misc/getextended/get_extended.dart';
@@ -377,7 +384,7 @@ class _StatefulEditProfileControllerMediatorWidgetState extends State<_StatefulE
             },
             title: 'Gender'.tr,
             titleInterceptor: EditProfileHelper.setTitleInterceptor(
-              (getGenderBasedUserGender()?.text).toEmptyStringNonNull
+              (getGenderBasedUserGender()?.text).toStringNonNull
             ),
             icon: null
           ),
@@ -480,11 +487,28 @@ class _StatefulEditProfileControllerMediatorWidgetState extends State<_StatefulE
           );
         },
         onAuthIdentityRequestProcessSuccessCallback: (authIdentityParameterAndResponse) async {
-          _authIdentityModalDialogPageAction.changeAuthIdentityStep(
-            ChooseVerificationMethodAuthIdentityStep(
-              authIdentityParameterAndResponse: authIdentityParameterAndResponse,
-            )
-          );
+          AuthIdentityParameter authIdentityParameter = authIdentityParameterAndResponse.authIdentityParameter;
+          AuthIdentityResponse authIdentityResponse = authIdentityParameterAndResponse.authIdentityResponse;
+          if (authIdentityResponse.data.isNotEmptyString) {
+            _authIdentityModalDialogPageAction.changeAuthIdentityStep(
+              ChooseVerificationMethodAuthIdentityStep(
+                authIdentityParameterAndResponse: authIdentityParameterAndResponse,
+              )
+            );
+          } else {
+            late ChangeAuthIdentityStep changeAuthIdentityStep;
+            if (authIdentityParameter is EmailAuthIdentityParameter) {
+              changeAuthIdentityStep = EmailChangeAuthIdentityStep();
+            } else if (authIdentityParameter is PhoneAuthIdentityParameter) {
+              changeAuthIdentityStep = PhoneChangeAuthIdentityStep(
+                countryCodeListLoadDataResult: NoLoadDataResult<List<String>>()
+              );
+            } else {
+              throw MessageError(title: "Subclass of EmailAuthIdentityParameter is not suitable");
+            }
+            _authIdentityModalDialogPageAction.injectAuthIdentityParameterAndResponse(authIdentityParameterAndResponse);
+            _authIdentityModalDialogPageAction.changeAuthIdentityStep(changeAuthIdentityStep);
+          }
         }
       )
     );

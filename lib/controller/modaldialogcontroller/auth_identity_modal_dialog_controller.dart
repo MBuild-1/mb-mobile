@@ -9,8 +9,12 @@ import '../../domain/entity/verifyeditprofile/authidentitychange/auth_identity_c
 import '../../domain/entity/verifyeditprofile/authidentitychange/auth_identity_change_response.dart';
 import '../../domain/entity/verifyeditprofile/authidentitychangeinput/auth_identity_change_input_response.dart';
 import '../../domain/entity/verifyeditprofile/authidentitychangeinput/parameter/auth_identity_change_input_parameter.dart';
+import '../../domain/entity/verifyeditprofile/authidentitychangeinput/parameter/email_auth_identity_change_input_parameter.dart';
+import '../../domain/entity/verifyeditprofile/authidentitychangeinput/parameter/phone_auth_identity_change_input_parameter.dart';
 import '../../domain/entity/verifyeditprofile/authidentitychangeverifyotp/auth_identity_change_verify_otp_response.dart';
 import '../../domain/entity/verifyeditprofile/authidentitychangeverifyotp/parameter/auth_identity_change_verify_otp_parameter.dart';
+import '../../domain/entity/verifyeditprofile/authidentitychangeverifyotp/parameter/email_auth_identity_change_verify_otp_parameter.dart';
+import '../../domain/entity/verifyeditprofile/authidentitychangeverifyotp/parameter/phone_auth_identity_change_verify_otp_parameter.dart';
 import '../../domain/entity/verifyeditprofile/authidentitysendotp/auth_identity_send_otp_parameter.dart';
 import '../../domain/entity/verifyeditprofile/authidentitysendotp/auth_identity_send_otp_response.dart';
 import '../../domain/entity/verifyeditprofile/authidentityverifyotp/auth_identity_verify_otp_response.dart';
@@ -28,9 +32,11 @@ import '../../misc/authidentitystep/changeauthidentitystep/email_change_auth_ide
 import '../../misc/authidentitystep/changeauthidentitystep/phone_change_auth_identity_step.dart';
 import '../../misc/authidentitystep/is_loading_auth_identity_step.dart';
 import '../../misc/constant.dart';
+import '../../misc/error/message_error.dart';
 import '../../misc/error/validation_error.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/multi_language_string.dart';
+import '../../misc/string_util.dart';
 import '../../misc/typedef.dart';
 import '../../misc/validation/validation_result.dart';
 import '../../misc/validation/validationresult/is_email_success_validation_result.dart';
@@ -82,6 +88,13 @@ class AuthIdentityModalDialogController extends ModalDialogController {
   late final Rx<Validator> verifyAuthIdentityValidatorRx;
   late final VerifyAuthIdentityValidatorGroup _verifyAuthIdentityValidatorGroup;
 
+  String get _effectiveAuthIdentityChangeInput {
+    return StringUtil.effectiveEmailOrPhoneNumber(
+      _authIdentityDelegate!.onGetAuthIdentityChangeInput(),
+      _emailOrPhoneNumberValidator
+    );
+  }
+
   AuthIdentityModalDialogController(
     super.controllerManager,
     this.authIdentitySendVerifyOtpUseCase,
@@ -100,19 +113,22 @@ class AuthIdentityModalDialogController extends ModalDialogController {
       changeAuthIdentityValidator: Validator(
         onValidate: () {
           AuthIdentityStepWrapper authIdentityStepWrapper = authIdentityStepWrapperRx.value;
-          AuthIdentityStep authIdentityStep = authIdentityStepWrapper.authIdentityStep;
-          if (authIdentityStep is ChangeAuthIdentityStep) {
+          AuthIdentityStep? effectiveAuthIdentityStep = authIdentityStepWrapper.authIdentityStep;
+          if (effectiveAuthIdentityStep is! ChangeAuthIdentityStep) {
+            effectiveAuthIdentityStep = _authIdentityDelegate!.onGetLastChangeAuthIdentityStep();
+          }
+          if (effectiveAuthIdentityStep is ChangeAuthIdentityStep) {
             // ignore: invalid_use_of_protected_member
             ValidationResult validationResult = _emailOrPhoneNumberValidator.validating();
-            if (authIdentityStep is EmailChangeAuthIdentityStep) {
+            if (effectiveAuthIdentityStep is EmailChangeAuthIdentityStep) {
               if (validationResult is IsEmailSuccessValidationResult) {
                 return validationResult;
               } else {
                 return FailedValidationResult(e: ValidationError(message: "${"This input must be an email".tr}."));
               }
-            } else if (authIdentityStep is PhoneChangeAuthIdentityStep) {
+            } else if (effectiveAuthIdentityStep is PhoneChangeAuthIdentityStep) {
               String emailOrPhoneNumber = _authIdentityDelegate!.onGetAuthIdentityChangeInput();
-              LoadDataResult<List<String>> countryCodeListLoadDataResult = authIdentityStep.countryCodeListLoadDataResult;
+              LoadDataResult<List<String>> countryCodeListLoadDataResult = effectiveAuthIdentityStep.countryCodeListLoadDataResult;
               if (countryCodeListLoadDataResult.isSuccess) {
                 List<String> countryCodeList = countryCodeListLoadDataResult.resultIfSuccess!;
                 if (validationResult is IsPhoneNumberSuccessValidationResult) {
@@ -173,7 +189,7 @@ class AuthIdentityModalDialogController extends ModalDialogController {
     _verifyAuthIdentityValidatorGroup = VerifyAuthIdentityValidatorGroup(
       verifyAuthIdentityValidator: Validator(
         onValidate: () {
-          return !_authIdentityDelegate!.onGetAuthIdentityChangeInput().isEmptyString ? SuccessValidationResult() : FailedValidationResult(e: ValidationError(message: "${"Name is required".tr}."));
+          return !_effectiveAuthIdentityChangeInput.isEmptyString ? SuccessValidationResult() : FailedValidationResult(e: ValidationError(message: "${"Name is required".tr}."));
         }
       ),
     );
@@ -221,8 +237,20 @@ class AuthIdentityModalDialogController extends ModalDialogController {
       _authIdentityDelegate!.onUnfocusAllWidget();
       if (_changeAuthIdentityValidatorGroup.validate()) {
         _authIdentityDelegate!.onShowAuthIdentityChangeInputProcessLoadingCallback();
+        late AuthIdentityChangeInputParameter newAuthIdentityChangeInputParameter;
+        if (authIdentityChangeInputParameter is EmailAuthIdentityChangeInputParameter) {
+          newAuthIdentityChangeInputParameter = EmailAuthIdentityChangeInputParameter(
+            email: _effectiveAuthIdentityChangeInput
+          );
+        } else if (authIdentityChangeInputParameter is PhoneAuthIdentityChangeInputParameter) {
+          newAuthIdentityChangeInputParameter = PhoneAuthIdentityChangeInputParameter(
+            phone: _effectiveAuthIdentityChangeInput
+          );
+        } else {
+          throw MessageError(title: "Subclass of AuthIdentityChangeInputParameter is not suitable");
+        }
         LoadDataResult<AuthIdentityChangeInputResponse> authIdentityChangeInputResponseLoadDataResult = await authIdentityChangeInputUseCase.execute(
-          authIdentityChangeInputParameter
+          newAuthIdentityChangeInputParameter
         ).future(
           parameter: apiRequestManager.addRequestToCancellationPart('auth-identity-change-input').value
         );
@@ -241,8 +269,22 @@ class AuthIdentityModalDialogController extends ModalDialogController {
       _authIdentityDelegate!.onUnfocusAllWidget();
       if (_verifyAuthIdentityValidatorGroup.validate()) {
         _authIdentityDelegate!.onShowAuthIdentityChangeVerifyOtpProcessLoadingCallback();
+        late AuthIdentityChangeVerifyOtpParameter newAuthIdentityChangeVerifyOtpParameter;
+        if (authIdentityChangeVerifyOtpParameter is EmailAuthIdentityChangeVerifyOtpParameter) {
+          newAuthIdentityChangeVerifyOtpParameter = EmailAuthIdentityChangeVerifyOtpParameter(
+            email: _effectiveAuthIdentityChangeInput,
+            otp: authIdentityChangeVerifyOtpParameter.otp
+          );
+        } else if (authIdentityChangeVerifyOtpParameter is PhoneAuthIdentityChangeVerifyOtpParameter) {
+          newAuthIdentityChangeVerifyOtpParameter = PhoneAuthIdentityChangeVerifyOtpParameter(
+            phone: _effectiveAuthIdentityChangeInput,
+            otp: authIdentityChangeVerifyOtpParameter.otp
+          );
+        } else {
+          throw MessageError(title: "Subclass of AuthIdentityChangeVerifyOtpParameter is not suitable");
+        }
         LoadDataResult<AuthIdentityChangeVerifyOtpResponse> authIdentityChangeVerifyOtpResponseLoadDataResult = await authIdentityChangeVerifyOtpUseCase.execute(
-          authIdentityChangeVerifyOtpParameter
+          newAuthIdentityChangeVerifyOtpParameter
         ).future(
           parameter: apiRequestManager.addRequestToCancellationPart('auth-identity-change-verify-otp').value
         );
@@ -260,8 +302,11 @@ class AuthIdentityModalDialogController extends ModalDialogController {
     if (_authIdentityDelegate != null) {
       _authIdentityDelegate!.onUnfocusAllWidget();
       _authIdentityDelegate!.onShowAuthIdentityChangeProcessLoadingCallback();
+      AuthIdentityChangeParameter newAuthIdentityChangeParameter = AuthIdentityChangeParameter(
+        credential: _effectiveAuthIdentityChangeInput
+      );
       LoadDataResult<AuthIdentityChangeResponse> authIdentityChangeResponseLoadDataResult = await authIdentityChangeUseCase.execute(
-        authIdentityChangeParameter
+        newAuthIdentityChangeParameter
       ).future(
         parameter: apiRequestManager.addRequestToCancellationPart('auth-identity-change').value
       );
@@ -275,6 +320,12 @@ class AuthIdentityModalDialogController extends ModalDialogController {
   }
 
   void updateAuthIdentityStep(AuthIdentityStep authIdentityStep) {
+    void updatingAuthIdentityStep() {
+      authIdentityStepWrapperRx.valueFromLast(
+        (value) => AuthIdentityStepWrapper(authIdentityStep)
+      );
+      update();
+    }
     void loadCountryCodeListForPhoneChangeAuthIdentityStep(PhoneChangeAuthIdentityStep phoneChangeAuthIdentityStep) async {
       LoadDataResult<List<String>> countryCodeListStringLoadDataResult = await getCountryListUseCase.execute(
         CountryListParameter()
@@ -285,19 +336,16 @@ class AuthIdentityModalDialogController extends ModalDialogController {
           (country) => country.phoneCode
         ).toList()..add("62")
       );
-      _authIdentityDelegate!.onAuthIdentityBack();
       if (countryCodeListStringLoadDataResult.isFailedBecauseCancellation) {
         return;
       }
       phoneChangeAuthIdentityStep.countryCodeListLoadDataResult = countryCodeListStringLoadDataResult;
+      updatingAuthIdentityStep();
     }
     if (authIdentityStep is PhoneChangeAuthIdentityStep) {
       loadCountryCodeListForPhoneChangeAuthIdentityStep(authIdentityStep);
     }
-    authIdentityStepWrapperRx.valueFromLast(
-      (value) => AuthIdentityStepWrapper(authIdentityStep)
-    );
-    update();
+    updatingAuthIdentityStep();
   }
 
   void setAuthIdentityDelegate(AuthIdentityDelegate authIdentityDelegate) {
@@ -326,6 +374,7 @@ class AuthIdentityDelegate {
   _OnShowAuthIdentityChangeProcessLoadingCallback onShowAuthIdentityChangeProcessLoadingCallback;
   _OnAuthIdentityChangeProcessSuccessCallback onAuthIdentityChangeProcessSuccessCallback;
   _OnShowAuthIdentityChangeProcessFailedCallback onShowAuthIdentityChangeProcessFailedCallback;
+  ChangeAuthIdentityStep? Function() onGetLastChangeAuthIdentityStep;
 
   AuthIdentityDelegate({
     required this.onUnfocusAllWidget,
@@ -348,5 +397,6 @@ class AuthIdentityDelegate {
     required this.onShowAuthIdentityChangeProcessLoadingCallback,
     required this.onAuthIdentityChangeProcessSuccessCallback,
     required this.onShowAuthIdentityChangeProcessFailedCallback,
+    required this.onGetLastChangeAuthIdentityStep
   });
 }

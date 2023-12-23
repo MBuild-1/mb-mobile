@@ -119,6 +119,7 @@ class _StatefulAuthIdentityControllerMediatorWidgetState extends State<_Stateful
   final TextEditingController _authIdentityChangeTextEditingController = TextEditingController();
 
   AuthIdentityParameterAndResponse? _authIdentityParameterAndResponse;
+  ChangeAuthIdentityStep? _lastChangeAuthIdentityStep;
 
   @override
   void initState() {
@@ -127,6 +128,9 @@ class _StatefulAuthIdentityControllerMediatorWidgetState extends State<_Stateful
         _authIdentityParameterAndResponse = authIdentityStep.authIdentityParameterAndResponse;
       }
       widget.authIdentityModalDialogController.updateAuthIdentityStep(authIdentityStep);
+    };
+    widget.authIdentityModalDialogPageAction._injectAuthIdentityParameterAndResponse = (authIdentityParameterAndResponse) {
+      _authIdentityParameterAndResponse = authIdentityParameterAndResponse;
     };
     super.initState();
   }
@@ -254,6 +258,7 @@ class _StatefulAuthIdentityControllerMediatorWidgetState extends State<_Stateful
             onPressed: () => Get.back(result: true)
           );
         },
+        onGetLastChangeAuthIdentityStep: () => _lastChangeAuthIdentityStep
       )
     );
     return WillPopScope(
@@ -412,8 +417,8 @@ class _StatefulAuthIdentityControllerMediatorWidgetState extends State<_Stateful
                                 }
                                 return Text(
                                   MultiLanguageString({
-                                    Constant.textInIdLanguageKey: "Kode verifikasi telah dikirim melalui $type ke ${authIdentityResponse.data}",
-                                    Constant.textEnUsLanguageKey: "A verification code has been sent via $type to ${authIdentityResponse.data}"
+                                    Constant.textInIdLanguageKey: "Kode verifikasi telah dikirim melalui $type ke ${_authIdentityChangeTextEditingController.text}",
+                                    Constant.textEnUsLanguageKey: "A verification code has been sent via $type to ${_authIdentityChangeTextEditingController.text}"
                                   }).toEmptyStringNonNull,
                                   textAlign: TextAlign.center,
                                 );
@@ -473,9 +478,9 @@ class _StatefulAuthIdentityControllerMediatorWidgetState extends State<_Stateful
                                       );
                                     } else if (authIdentityStep is ChangeInputVerifyAuthIdentityStep) {
                                       late AuthIdentityChangeInputParameter authIdentityChangeInputParameter;
-                                      if (authIdentityStep is EmailChangeAuthIdentityStep) {
+                                      if (_lastChangeAuthIdentityStep is EmailChangeAuthIdentityStep) {
                                         authIdentityChangeInputParameter = EmailAuthIdentityChangeInputParameter(email: _authIdentityChangeTextEditingController.text);
-                                      } else if (authIdentityStep is PhoneChangeAuthIdentityStep) {
+                                      } else if (_lastChangeAuthIdentityStep is PhoneChangeAuthIdentityStep) {
                                         authIdentityChangeInputParameter = PhoneAuthIdentityChangeInputParameter(phone: _authIdentityChangeTextEditingController.text);
                                       } else {
                                         throw MessageError(title: "Subclass of ChangeAuthIdentityStep is not suitable");
@@ -557,6 +562,7 @@ class _StatefulAuthIdentityControllerMediatorWidgetState extends State<_Stateful
                       late String description;
                       late Widget changeAuthIdentityInputWidget;
                       late AuthIdentityChangeInputParameter authIdentityChangeInputParameter;
+                      _lastChangeAuthIdentityStep = authIdentityStep;
                       if (authIdentityStep is EmailChangeAuthIdentityStep) {
                         title = MultiLanguageString({
                           Constant.textInIdLanguageKey: "Email Baru",
@@ -699,10 +705,17 @@ class _StatefulAuthIdentityControllerMediatorWidgetState extends State<_Stateful
 
 class AuthIdentityModalDialogPageAction {
   void Function(AuthIdentityStep)? _changeAuthIdentityStep;
+  void Function(AuthIdentityParameterAndResponse)? _injectAuthIdentityParameterAndResponse;
 
   void Function(AuthIdentityStep) get changeAuthIdentityStep => (authIdentityStep) {
     if (_changeAuthIdentityStep != null) {
       _changeAuthIdentityStep!(authIdentityStep);
+    }
+  };
+
+  void Function(AuthIdentityParameterAndResponse) get injectAuthIdentityParameterAndResponse => (authIdentityParameterAndResponse) {
+    if (_injectAuthIdentityParameterAndResponse != null) {
+      _injectAuthIdentityParameterAndResponse!(authIdentityParameterAndResponse);
     }
   };
 }
