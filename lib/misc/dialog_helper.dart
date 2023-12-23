@@ -389,6 +389,33 @@ class _DialogHelperImpl {
     );
   }
 
+  void showPromptCancelChange(BuildContext context, void Function() cancelRegister) {
+    DialogHelper.showPromptYesNoDialog(
+      context: context,
+      prompt: (context) => Column(
+        children: [
+          Text("Cancel Change".tr, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18), textAlign: TextAlign.center),
+          const SizedBox(height: 4),
+          Text(
+            MultiLanguageString({
+              Constant.textEnUsLanguageKey: "Are you sure you want to cancel your change? If you want to change again, you have to start from the beginning again.",
+              Constant.textInIdLanguageKey: "Apakah anda yakin ingin membatalkan perubahan? Jika ingin melakukan perubahan lagi, harus dimulai dari awal lagi langkahnya."
+            }).toEmptyStringNonNull,
+            textAlign: TextAlign.center
+          ),
+          const SizedBox(height: 4),
+        ]
+      ),
+      onYesPromptButtonTap: (_) async {
+        Get.back();
+        cancelRegister();
+      },
+      onNoPromptButtonTap: (_) async {
+        Get.back();
+      },
+    );
+  }
+
   void showPromptUnderConstruction(BuildContext context) {
     DialogHelper.showPromptOkDialog(
       context: context,

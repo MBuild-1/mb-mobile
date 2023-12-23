@@ -152,6 +152,7 @@ class _StatefulAuthIdentityControllerMediatorWidgetState extends State<_Stateful
     if (_resendVerificationCountdownTimer != null) {
       _resendVerificationCountdownTimer!.cancel();
     }
+    _resendVerificationCountdownTimer = null;
     _countdownTimerValue = _maxCountdownTimerValue;
   }
 
@@ -255,388 +256,394 @@ class _StatefulAuthIdentityControllerMediatorWidgetState extends State<_Stateful
         },
       )
     );
-    return RxConsumer<AuthIdentityStepWrapper>(
-      rxValue: widget.authIdentityModalDialogController.authIdentityStepWrapperRx,
-      onConsumeValue: (context, value) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Builder(
-              builder: (context) {
-                return ModifiedAppBar(
-                  titleInterceptor: (context, title) => Row(
-                    children: [
-                      Builder(
-                        builder: (context) {
-                          String text = "";
-                          return Text(text);
-                        }
-                      )
-                    ],
-                  ),
-                  primary: false,
-                );
-              }
-            ),
-            Container(
-              color: Theme.of(context).scaffoldBackgroundColor,
-              child: Builder(
-                builder: (BuildContext context) {
-                  AuthIdentityStep authIdentityStep = value.authIdentityStep;
-                  if (authIdentityStep is IsLoadingAuthIdentityStep) {
-                    return Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: const [
-                          Text("Loading..."),
-                          SizedBox(height: 12.0),
-                          ModifiedLoadingIndicator()
-                        ]
-                      ),
-                    );
-                  } else if (authIdentityStep is ChooseVerificationMethodAuthIdentityStep) {
-                    AuthIdentityParameter authIdentityParameter = authIdentityStep.authIdentityParameterAndResponse.authIdentityParameter;
-                    AuthIdentityResponse authIdentityResponse = authIdentityStep.authIdentityParameterAndResponse.authIdentityResponse;
-                    void runAuthIdentitySendVerifyOtpProcess() {
-                      widget.authIdentityModalDialogController.authIdentitySendVerifyOtpProcess(
-                        AuthIdentitySendVerifyOtpParameter(
-                          credential: authIdentityResponse.data
+    return WillPopScope(
+      onWillPop: () async {
+        DialogHelper.showPromptCancelChange(context, () => Get.back());
+        return false;
+      },
+      child: RxConsumer<AuthIdentityStepWrapper>(
+        rxValue: widget.authIdentityModalDialogController.authIdentityStepWrapperRx,
+        onConsumeValue: (context, value) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Builder(
+                builder: (context) {
+                  return ModifiedAppBar(
+                    titleInterceptor: (context, title) => Row(
+                      children: [
+                        Builder(
+                          builder: (context) {
+                            String text = "";
+                            return Text(text);
+                          }
                         )
+                      ],
+                    ),
+                    primary: false,
+                  );
+                }
+              ),
+              Container(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                child: Builder(
+                  builder: (BuildContext context) {
+                    AuthIdentityStep authIdentityStep = value.authIdentityStep;
+                    if (authIdentityStep is IsLoadingAuthIdentityStep) {
+                      return Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: const [
+                            Text("Loading..."),
+                            SizedBox(height: 12.0),
+                            ModifiedLoadingIndicator()
+                          ]
+                        ),
                       );
-                    }
-                    return Padding(
-                      padding: const EdgeInsets.all(16.0).copyWith(top: 0.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            MultiLanguageString({
-                              Constant.textInIdLanguageKey: "Pilih Metode Verifikasi",
-                              Constant.textEnUsLanguageKey: "Select Verification Method"
-                            }).toEmptyStringNonNull,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold
+                    } else if (authIdentityStep is ChooseVerificationMethodAuthIdentityStep) {
+                      AuthIdentityParameter authIdentityParameter = authIdentityStep.authIdentityParameterAndResponse.authIdentityParameter;
+                      AuthIdentityResponse authIdentityResponse = authIdentityStep.authIdentityParameterAndResponse.authIdentityResponse;
+                      void runAuthIdentitySendVerifyOtpProcess() {
+                        widget.authIdentityModalDialogController.authIdentitySendVerifyOtpProcess(
+                          AuthIdentitySendVerifyOtpParameter(
+                            credential: authIdentityResponse.data
+                          )
+                        );
+                      }
+                      return Padding(
+                        padding: const EdgeInsets.all(16.0).copyWith(top: 0.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              MultiLanguageString({
+                                Constant.textInIdLanguageKey: "Pilih Metode Verifikasi",
+                                Constant.textEnUsLanguageKey: "Select Verification Method"
+                              }).toEmptyStringNonNull,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 10.0),
-                          Text(
-                            MultiLanguageString({
-                              Constant.textInIdLanguageKey: "Pilih salah satu metode dibawah ini untuk mendapatkan kode verifikasi",
-                              Constant.textEnUsLanguageKey: "Choose one of the methods below to get a verification code"
-                            }).toEmptyStringNonNull,
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 16.0),
-                          if (authIdentityParameter is EmailAuthIdentityParameter) ...[
-                            WidgetHelper.selectVerificationMethod(
-                              icon: const Icon(
-                                Icons.mail_outline,
-                                size: 24.0,
-                              ),
-                              title: Text(
-                                MultiLanguageString({
-                                  Constant.textInIdLanguageKey: "Email ke",
-                                  Constant.textEnUsLanguageKey: "Email to"
-                                }).toEmptyStringNonNull,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold
+                            const SizedBox(height: 10.0),
+                            Text(
+                              MultiLanguageString({
+                                Constant.textInIdLanguageKey: "Pilih salah satu metode dibawah ini untuk mendapatkan kode verifikasi",
+                                Constant.textEnUsLanguageKey: "Choose one of the methods below to get a verification code"
+                              }).toEmptyStringNonNull,
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 16.0),
+                            if (authIdentityParameter is EmailAuthIdentityParameter) ...[
+                              WidgetHelper.selectVerificationMethod(
+                                icon: const Icon(
+                                  Icons.mail_outline,
+                                  size: 24.0,
                                 ),
-                              ),
-                              description: Text(authIdentityResponse.data),
-                              onTap: runAuthIdentitySendVerifyOtpProcess
-                            )
-                          ] else if (authIdentityParameter is PhoneAuthIdentityParameter) ...[
-                            WidgetHelper.selectVerificationMethod(
-                              icon: ModifiedSvgPicture.asset(
-                                Constant.vectorWhatsappLogo,
-                                width: 24.0
-                              ),
-                              title: Text(
-                                MultiLanguageString({
-                                  Constant.textInIdLanguageKey: "WhatsApp ke",
-                                  Constant.textEnUsLanguageKey: "WhatsApp to"
-                                }).toEmptyStringNonNull,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold
+                                title: Text(
+                                  MultiLanguageString({
+                                    Constant.textInIdLanguageKey: "Email ke",
+                                    Constant.textEnUsLanguageKey: "Email to"
+                                  }).toEmptyStringNonNull,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold
+                                  ),
                                 ),
+                                description: Text(authIdentityResponse.data),
+                                onTap: runAuthIdentitySendVerifyOtpProcess
+                              )
+                            ] else if (authIdentityParameter is PhoneAuthIdentityParameter) ...[
+                              WidgetHelper.selectVerificationMethod(
+                                icon: ModifiedSvgPicture.asset(
+                                  Constant.vectorWhatsappLogo,
+                                  width: 24.0
+                                ),
+                                title: Text(
+                                  MultiLanguageString({
+                                    Constant.textInIdLanguageKey: "WhatsApp ke",
+                                    Constant.textEnUsLanguageKey: "WhatsApp to"
+                                  }).toEmptyStringNonNull,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold
+                                  ),
+                                ),
+                                description: Text(authIdentityResponse.data),
+                                onTap: runAuthIdentitySendVerifyOtpProcess
+                              )
+                            ],
+                          ]
+                        ),
+                      );
+                    } else if (authIdentityStep is VerifyAuthIdentityStep) {
+                      return Padding(
+                        padding: const EdgeInsets.all(16.0).copyWith(top: 0.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              MultiLanguageString({
+                                Constant.textInIdLanguageKey: "Masukan Kode Verifikasi",
+                                Constant.textEnUsLanguageKey: "Enter Verification Code"
+                              }).toEmptyStringNonNull,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold
                               ),
-                              description: Text(authIdentityResponse.data),
-                              onTap: runAuthIdentitySendVerifyOtpProcess
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 10.0),
+                            Builder(
+                              builder: (context) {
+                                AuthIdentityParameterAndResponse authIdentityParameterAndResponse = _authIdentityParameterAndResponse!;
+                                AuthIdentityParameter authIdentityParameter = authIdentityParameterAndResponse.authIdentityParameter;
+                                AuthIdentityResponse authIdentityResponse = authIdentityParameterAndResponse.authIdentityResponse;
+                                late String type;
+                                if (authIdentityParameter is EmailAuthIdentityParameter) {
+                                  type = "e-mail";
+                                } else if (authIdentityParameter is PhoneAuthIdentityParameter) {
+                                  type = "WhatsApp";
+                                } else {
+                                  type = MultiLanguageString({
+                                    Constant.textInIdLanguageKey: "(Tidak Diketahui)",
+                                    Constant.textEnUsLanguageKey: "(Unknown)"
+                                  }).toEmptyStringNonNull;
+                                }
+                                return Text(
+                                  MultiLanguageString({
+                                    Constant.textInIdLanguageKey: "Kode verifikasi telah dikirim melalui $type ke ${authIdentityResponse.data}",
+                                    Constant.textEnUsLanguageKey: "A verification code has been sent via $type to ${authIdentityResponse.data}"
+                                  }).toEmptyStringNonNull,
+                                  textAlign: TextAlign.center,
+                                );
+                              }
+                            ),
+                            const SizedBox(height: 14.0),
+                            SizedBox(
+                              width: 180,
+                              child: PinCodeTextField(
+                                onTap: () async {
+                                  WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+                                    _verificationOtpFocusNode.unfocus();
+                                    await Future.delayed(const Duration(milliseconds: 10));
+                                    _verificationOtpFocusNode.requestFocus();
+                                  });
+                                },
+                                focusNode: _verificationOtpFocusNode,
+                                appContext: context,
+                                length: 6,
+                                obscureText: false,
+                                animationType: AnimationType.none,
+                                pinTheme: PinTheme(
+                                  selectedColor: Constant.colorMain,
+                                  activeColor: Constant.colorMain,
+                                  inactiveColor: Constant.colorMain,
+                                  borderRadius: BorderRadius.circular(5),
+                                  fieldHeight: 40,
+                                  fieldWidth: 30,
+                                  activeFillColor: Colors.black,
+                                ),
+                                animationDuration: const Duration(milliseconds: 0),
+                                enableActiveFill: false,
+                                controller: _authIdentityOtpTextEditingController,
+                                cursorColor: Colors.black,
+                                keyboardType: TextInputType.number,
+                                hintCharacter: '●',
+                                autoDisposeControllers: false,
+                                autoFocus: false,
+                                autoUnfocus: false,
+                                onCompleted: _onCompleted,
+                                beforeTextPaste: (text) {
+                                  return false;
+                                },
+                              ),
+                            ),
+                            const SizedBox(height: 10.0),
+                            Builder(
+                              builder: (context) {
+                                _resendVerificationTapGestureRecognizer.onTap = () {
+                                  if (_authIdentityParameterAndResponse != null) {
+                                    AuthIdentityResponse authIdentityResponse = _authIdentityParameterAndResponse!.authIdentityResponse;
+                                    if (authIdentityStep is ChooseVerificationVerifyAuthIdentityStep) {
+                                      widget.authIdentityModalDialogController.authIdentitySendVerifyOtpProcess(
+                                        AuthIdentitySendVerifyOtpParameter(
+                                          credential: authIdentityResponse.data
+                                        )
+                                      );
+                                    } else if (authIdentityStep is ChangeInputVerifyAuthIdentityStep) {
+                                      late AuthIdentityChangeInputParameter authIdentityChangeInputParameter;
+                                      if (authIdentityStep is EmailChangeAuthIdentityStep) {
+                                        authIdentityChangeInputParameter = EmailAuthIdentityChangeInputParameter(email: _authIdentityChangeTextEditingController.text);
+                                      } else if (authIdentityStep is PhoneChangeAuthIdentityStep) {
+                                        authIdentityChangeInputParameter = PhoneAuthIdentityChangeInputParameter(phone: _authIdentityChangeTextEditingController.text);
+                                      } else {
+                                        throw MessageError(title: "Subclass of ChangeAuthIdentityStep is not suitable");
+                                      }
+                                      widget.authIdentityModalDialogController.authIdentityChangeInput(authIdentityChangeInputParameter);
+                                    }
+                                  }
+                                };
+                                return Text.rich(
+                                  TextSpan(
+                                    children: [
+                                      if (_countdownTimerValue > 0) ...[
+                                        TextSpan(
+                                          text: MultiLanguageString({
+                                            Constant.textInIdLanguageKey: "Mohon tunggu dalam ",
+                                            Constant.textEnUsLanguageKey: "Please wait in "
+                                          }).toEmptyStringNonNull
+                                        ),
+                                        TextSpan(
+                                          text: MultiLanguageString({
+                                            Constant.textInIdLanguageKey: "$_countdownTimerValue detik",
+                                            Constant.textEnUsLanguageKey: "$_countdownTimerValue seconds"
+                                          }).toEmptyStringNonNull,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold
+                                          )
+                                        ),
+                                        TextSpan(
+                                          text: MultiLanguageString({
+                                            Constant.textInIdLanguageKey: " untuk kirim ulang verifikasi",
+                                            Constant.textEnUsLanguageKey: " for resend verification"
+                                          }).toEmptyStringNonNull
+                                        )
+                                      ] else ...[
+                                        TextSpan(
+                                          text: MultiLanguageString({
+                                            Constant.textInIdLanguageKey: "Kirim Ulang Verifikasi",
+                                            Constant.textEnUsLanguageKey: "Resend Verification"
+                                          }).toEmptyStringNonNull,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Theme.of(context).colorScheme.primary
+                                          ),
+                                          recognizer: _resendVerificationTapGestureRecognizer
+                                        )
+                                      ]
+                                    ]
+                                  ),
+                                  textAlign: TextAlign.center,
+                                );
+                              }
                             )
                           ],
-                        ]
-                      ),
-                    );
-                  } else if (authIdentityStep is VerifyAuthIdentityStep) {
-                    return Padding(
-                      padding: const EdgeInsets.all(16.0).copyWith(top: 0.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            MultiLanguageString({
-                              Constant.textInIdLanguageKey: "Masukan Kode Verifikasi",
-                              Constant.textEnUsLanguageKey: "Enter Verification Code"
-                            }).toEmptyStringNonNull,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 10.0),
-                          Builder(
-                            builder: (context) {
-                              AuthIdentityParameterAndResponse authIdentityParameterAndResponse = _authIdentityParameterAndResponse!;
-                              AuthIdentityParameter authIdentityParameter = authIdentityParameterAndResponse.authIdentityParameter;
-                              AuthIdentityResponse authIdentityResponse = authIdentityParameterAndResponse.authIdentityResponse;
-                              late String type;
-                              if (authIdentityParameter is EmailAuthIdentityParameter) {
-                                type = "e-mail";
-                              } else if (authIdentityParameter is PhoneAuthIdentityParameter) {
-                                type = "WhatsApp";
-                              } else {
-                                type = MultiLanguageString({
-                                  Constant.textInIdLanguageKey: "(Tidak Diketahui)",
-                                  Constant.textEnUsLanguageKey: "(Unknown)"
-                                }).toEmptyStringNonNull;
-                              }
-                              return Text(
-                                MultiLanguageString({
-                                  Constant.textInIdLanguageKey: "Kode verifikasi telah dikirim melalui $type ke ${authIdentityResponse.data}",
-                                  Constant.textEnUsLanguageKey: "A verification code has been sent via $type to ${authIdentityResponse.data}"
-                                }).toEmptyStringNonNull,
-                                textAlign: TextAlign.center,
-                              );
-                            }
-                          ),
-                          const SizedBox(height: 14.0),
-                          SizedBox(
-                            width: 180,
-                            child: PinCodeTextField(
-                              onTap: () async {
-                                WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-                                  _verificationOtpFocusNode.unfocus();
-                                  await Future.delayed(const Duration(milliseconds: 10));
-                                  _verificationOtpFocusNode.requestFocus();
-                                });
-                              },
-                              focusNode: _verificationOtpFocusNode,
-                              appContext: context,
-                              length: 6,
-                              obscureText: false,
-                              animationType: AnimationType.none,
-                              pinTheme: PinTheme(
-                                selectedColor: Constant.colorMain,
-                                activeColor: Constant.colorMain,
-                                inactiveColor: Constant.colorMain,
-                                borderRadius: BorderRadius.circular(5),
-                                fieldHeight: 40,
-                                fieldWidth: 30,
-                                activeFillColor: Colors.black,
+                        )
+                      );
+                    } else if (authIdentityStep is ChangeAuthIdentityStep) {
+                      Widget emailOrPhoneNumberValidatorWidget(String label) {
+                        return RxConsumer<Validator>(
+                          rxValue: widget.authIdentityModalDialogController.changeAuthIdentityValidatorRx,
+                          onConsumeValue: (context, value) => Field(
+                            child: (context, validationResult, validator) => ModifiedTextField(
+                              isError: validationResult.isFailed,
+                              controller: _authIdentityChangeTextEditingController,
+                              decoration: DefaultInputDecoration(
+                                label: Text(label),
+                                labelStyle: const TextStyle(color: Colors.black),
+                                floatingLabelStyle: const TextStyle(color: Colors.black),
+                                floatingLabelBehavior: FloatingLabelBehavior.always,
                               ),
-                              animationDuration: const Duration(milliseconds: 0),
-                              enableActiveFill: false,
-                              controller: _authIdentityOtpTextEditingController,
-                              cursorColor: Colors.black,
-                              keyboardType: TextInputType.number,
-                              hintCharacter: '●',
-                              autoDisposeControllers: false,
-                              autoFocus: false,
-                              autoUnfocus: false,
-                              onCompleted: _onCompleted,
-                              beforeTextPaste: (text) {
-                                return false;
-                              },
+                              onChanged: (value) => validator?.validate(),
+                              textInputAction: TextInputAction.next,
+                              keyboardType: TextInputType.emailAddress,
+                            ),
+                            validator: value,
+                          ),
+                        );
+                      }
+                      late String title;
+                      late String description;
+                      late Widget changeAuthIdentityInputWidget;
+                      late AuthIdentityChangeInputParameter authIdentityChangeInputParameter;
+                      if (authIdentityStep is EmailChangeAuthIdentityStep) {
+                        title = MultiLanguageString({
+                          Constant.textInIdLanguageKey: "Email Baru",
+                          Constant.textEnUsLanguageKey: "New Email"
+                        }).toEmptyStringNonNull;
+                        description = MultiLanguageString({
+                          Constant.textInIdLanguageKey: "Masukan email baru.",
+                          Constant.textEnUsLanguageKey: "Input email baru."
+                        }).toEmptyStringNonNull;
+                        authIdentityChangeInputParameter = EmailAuthIdentityChangeInputParameter(email: _authIdentityChangeTextEditingController.text);
+                        changeAuthIdentityInputWidget = emailOrPhoneNumberValidatorWidget("Email".tr);
+                      } else if (authIdentityStep is PhoneChangeAuthIdentityStep) {
+                        title = MultiLanguageString({
+                          Constant.textInIdLanguageKey: "Nomor Telepon Baru",
+                          Constant.textEnUsLanguageKey: "New Phone Number"
+                        }).toEmptyStringNonNull;
+                        description = MultiLanguageString({
+                          Constant.textInIdLanguageKey: "Masukan nomor telepon baru.",
+                          Constant.textEnUsLanguageKey: "Input new phone number."
+                        }).toEmptyStringNonNull;
+                        authIdentityChangeInputParameter = PhoneAuthIdentityChangeInputParameter(phone: _authIdentityChangeTextEditingController.text);
+                        LoadDataResult<List<String>> countryCodeListLoadDataResult = authIdentityStep.countryCodeListLoadDataResult;
+                        bool isLoading = !countryCodeListLoadDataResult.isSuccess;
+                        changeAuthIdentityInputWidget = !isLoading ? emailOrPhoneNumberValidatorWidget("Phone Number".tr) : ModifiedShimmer.fromColors(
+                          child: Container(
+                            height: 52,
+                            decoration: BoxDecoration(
+                              color: Colors.grey,
+                              borderRadius: Constant.inputBorderRadius
                             ),
                           ),
-                          const SizedBox(height: 10.0),
-                          Builder(
-                            builder: (context) {
-                              _resendVerificationTapGestureRecognizer.onTap = () {
-                                if (_authIdentityParameterAndResponse != null) {
-                                  AuthIdentityResponse authIdentityResponse = _authIdentityParameterAndResponse!.authIdentityResponse;
-                                  if (authIdentityStep is ChooseVerificationVerifyAuthIdentityStep) {
-                                    widget.authIdentityModalDialogController.authIdentitySendVerifyOtpProcess(
-                                      AuthIdentitySendVerifyOtpParameter(
-                                        credential: authIdentityResponse.data
-                                      )
-                                    );
-                                  } else if (authIdentityStep is ChangeInputVerifyAuthIdentityStep) {
-                                    late AuthIdentityChangeInputParameter authIdentityChangeInputParameter;
-                                    if (authIdentityStep is EmailChangeAuthIdentityStep) {
-                                      authIdentityChangeInputParameter = EmailAuthIdentityChangeInputParameter(email: _authIdentityChangeTextEditingController.text);
-                                    } else if (authIdentityStep is PhoneChangeAuthIdentityStep) {
-                                      authIdentityChangeInputParameter = PhoneAuthIdentityChangeInputParameter(phone: _authIdentityChangeTextEditingController.text);
-                                    } else {
-                                      throw MessageError(title: "Subclass of ChangeAuthIdentityStep is not suitable");
-                                    }
-                                    widget.authIdentityModalDialogController.authIdentityChangeInput(authIdentityChangeInputParameter);
-                                  }
-                                }
-                              };
-                              return Text.rich(
-                                TextSpan(
-                                  children: [
-                                    if (_countdownTimerValue > 0) ...[
-                                      TextSpan(
-                                        text: MultiLanguageString({
-                                          Constant.textInIdLanguageKey: "Mohon tunggu dalam ",
-                                          Constant.textEnUsLanguageKey: "Please wait in "
-                                        }).toEmptyStringNonNull
-                                      ),
-                                      TextSpan(
-                                        text: MultiLanguageString({
-                                          Constant.textInIdLanguageKey: "$_countdownTimerValue detik",
-                                          Constant.textEnUsLanguageKey: "$_countdownTimerValue seconds"
-                                        }).toEmptyStringNonNull,
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold
-                                        )
-                                      ),
-                                      TextSpan(
-                                        text: MultiLanguageString({
-                                          Constant.textInIdLanguageKey: " untuk kirim ulang verifikasi",
-                                          Constant.textEnUsLanguageKey: " for resend verification"
-                                        }).toEmptyStringNonNull
-                                      )
-                                    ] else ...[
-                                      TextSpan(
-                                        text: MultiLanguageString({
-                                          Constant.textInIdLanguageKey: "Kirim Ulang Verifikasi",
-                                          Constant.textEnUsLanguageKey: "Resend Verification"
-                                        }).toEmptyStringNonNull,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Theme.of(context).colorScheme.primary
-                                        ),
-                                        recognizer: _resendVerificationTapGestureRecognizer
-                                      )
-                                    ]
-                                  ]
-                                ),
-                                textAlign: TextAlign.center,
-                              );
-                            }
-                          )
-                        ],
-                      )
-                    );
-                  } else if (authIdentityStep is ChangeAuthIdentityStep) {
-                    Widget emailOrPhoneNumberValidatorWidget(String label) {
-                      return RxConsumer<Validator>(
-                        rxValue: widget.authIdentityModalDialogController.changeAuthIdentityValidatorRx,
-                        onConsumeValue: (context, value) => Field(
-                          child: (context, validationResult, validator) => ModifiedTextField(
-                            isError: validationResult.isFailed,
-                            controller: _authIdentityChangeTextEditingController,
-                            decoration: DefaultInputDecoration(
-                              label: Text(label),
-                              labelStyle: const TextStyle(color: Colors.black),
-                              floatingLabelStyle: const TextStyle(color: Colors.black),
-                              floatingLabelBehavior: FloatingLabelBehavior.always,
+                        );
+                      } else {
+                        throw MessageError(title: "Subclass of ChangeAuthIdentityStep is not suitable");
+                      }
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 16.0).copyWith(top: 0.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              title,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                            onChanged: (value) => validator?.validate(),
-                            textInputAction: TextInputAction.next,
-                            keyboardType: TextInputType.emailAddress,
-                          ),
-                          validator: value,
+                            const SizedBox(height: 10.0),
+                            Text(
+                              description,
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 16.0),
+                            changeAuthIdentityInputWidget,
+                            const SizedBox(height: 16.0),
+                            SizedOutlineGradientButton(
+                              width: double.infinity,
+                              onPressed: () => widget.authIdentityModalDialogController.authIdentityChangeInput(authIdentityChangeInputParameter),
+                              text: MultiLanguageString({
+                                Constant.textInIdLanguageKey: "Verifikasi Lagi",
+                                Constant.textEnUsLanguageKey: "Verification Again"
+                              }).toEmptyStringNonNull,
+                            ),
+                          ],
                         ),
                       );
-                    }
-                    late String title;
-                    late String description;
-                    late Widget changeAuthIdentityInputWidget;
-                    late AuthIdentityChangeInputParameter authIdentityChangeInputParameter;
-                    if (authIdentityStep is EmailChangeAuthIdentityStep) {
-                      title = MultiLanguageString({
-                        Constant.textInIdLanguageKey: "Email Baru",
-                        Constant.textEnUsLanguageKey: "New Email"
-                      }).toEmptyStringNonNull;
-                      description = MultiLanguageString({
-                        Constant.textInIdLanguageKey: "Masukan email baru.",
-                        Constant.textEnUsLanguageKey: "Input email baru."
-                      }).toEmptyStringNonNull;
-                      authIdentityChangeInputParameter = EmailAuthIdentityChangeInputParameter(email: _authIdentityChangeTextEditingController.text);
-                      changeAuthIdentityInputWidget = emailOrPhoneNumberValidatorWidget("Email".tr);
-                    } else if (authIdentityStep is PhoneChangeAuthIdentityStep) {
-                      title = MultiLanguageString({
-                        Constant.textInIdLanguageKey: "Nomor Telepon Baru",
-                        Constant.textEnUsLanguageKey: "New Phone Number"
-                      }).toEmptyStringNonNull;
-                      description = MultiLanguageString({
-                        Constant.textInIdLanguageKey: "Masukan nomor telepon baru.",
-                        Constant.textEnUsLanguageKey: "Input new phone number."
-                      }).toEmptyStringNonNull;
-                      authIdentityChangeInputParameter = PhoneAuthIdentityChangeInputParameter(phone: _authIdentityChangeTextEditingController.text);
-                      LoadDataResult<List<String>> countryCodeListLoadDataResult = authIdentityStep.countryCodeListLoadDataResult;
-                      bool isLoading = !countryCodeListLoadDataResult.isSuccess;
-                      changeAuthIdentityInputWidget = !isLoading ? emailOrPhoneNumberValidatorWidget("Phone Number".tr) : ModifiedShimmer.fromColors(
-                        child: Container(
-                          height: 52,
-                          decoration: BoxDecoration(
-                            color: Colors.grey,
-                            borderRadius: Constant.inputBorderRadius
-                          ),
-                        ),
+                    } else if (authIdentityStep is FailedAuthIdentityStep) {
+                      return Padding(
+                        padding: const EdgeInsets.all(16.0).copyWith(top: 0.0),
+                        child: WidgetHelper.buildFailedPromptIndicatorFromErrorProvider(
+                          context: context,
+                          errorProvider: Injector.locator<ErrorProvider>(),
+                          e: authIdentityStep.e,
+                          buttonText: "Exit".tr,
+                          onPressed: () => Get.back(result: true)
+                        )
                       );
                     } else {
-                      throw MessageError(title: "Subclass of ChangeAuthIdentityStep is not suitable");
+                      return Container();
                     }
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 16.0).copyWith(top: 0.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            title,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 10.0),
-                          Text(
-                            description,
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 16.0),
-                          changeAuthIdentityInputWidget,
-                          const SizedBox(height: 16.0),
-                          SizedOutlineGradientButton(
-                            width: double.infinity,
-                            onPressed: () => widget.authIdentityModalDialogController.authIdentityChangeInput(authIdentityChangeInputParameter),
-                            text: MultiLanguageString({
-                              Constant.textInIdLanguageKey: "Verifikasi Lagi",
-                              Constant.textEnUsLanguageKey: "Verification Again"
-                            }).toEmptyStringNonNull,
-                          ),
-                        ],
-                      ),
-                    );
-                  } else if (authIdentityStep is FailedAuthIdentityStep) {
-                    return Padding(
-                      padding: const EdgeInsets.all(16.0).copyWith(top: 0.0),
-                      child: WidgetHelper.buildFailedPromptIndicatorFromErrorProvider(
-                        context: context,
-                        errorProvider: Injector.locator<ErrorProvider>(),
-                        e: authIdentityStep.e,
-                        buttonText: "Exit".tr,
-                        onPressed: () => Get.back(result: true)
-                      )
-                    );
-                  } else {
-                    return Container();
-                  }
-                },
-              ),
-            )
-          ]
-        );
-      }
+                  },
+                ),
+              )
+            ]
+          );
+        }
+      )
     );
   }
 
@@ -681,6 +688,12 @@ class _StatefulAuthIdentityControllerMediatorWidgetState extends State<_Stateful
         }
       }
     }
+  }
+
+  @override
+  void dispose() {
+    _cancelVerificationCountdownTimer();
+    super.dispose();
   }
 }
 

@@ -323,6 +323,7 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Transaction Number": "Nomor Transaksi",
       "No Email": "Tidak Ada Email",
       "Cancel Register": "Batalkan Pendaftaran",
+      "Cancel Change": "Batalkan Perubahan",
       "Product Category": "Kategori Produk",
       "Description": "Deskripsi",
       "Success mark this cart to be checkout by host": "Sukses menandai keranjang ini siap dicheckout oleh host",
