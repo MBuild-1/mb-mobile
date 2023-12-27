@@ -5,9 +5,11 @@ import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 
 import '../../domain/entity/video/shortvideo/short_video.dart';
+import '../../misc/aspect_ratio_value.dart';
 import '../../misc/constant.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/page_restoration_helper.dart';
+import '../../misc/scrollphysics/paging_scroll_physics.dart';
 import '../page/videopage/video_page.dart';
 import 'tap_area.dart';
 import 'video/short_video_item.dart';
@@ -81,34 +83,33 @@ class ShortVideoCarouselListItemState extends State<ShortVideoCarouselListItem> 
               )
             ),
             if (widget.shortVideoListLoadDataResult.isSuccess)
-              SizedBox(
-                height: 390,
-                child: PageView.builder(
-                  controller: _pageController,
-                  clipBehavior: Clip.none,
-                  itemCount: widget.shortVideoListLoadDataResult.resultIfSuccess!.length,
-                  itemBuilder: (_, index) {
-                    if (!_pageController.position.haveDimensions) {
-                      return const SizedBox();
-                    }
-                    ShortVideo shortVideo = widget.shortVideoListLoadDataResult.resultIfSuccess![index];
-                    Widget shortVideoItem = ShortVideoItem(shortVideo: shortVideo);
-                    return AnimatedBuilder(
-                      animation: _pageController,
-                      builder: (_, __) {
-                        double value = (1 - (_pageController.page! - index).abs() / 2);
-                        return Transform.scale(
-                          scale: max(0.8, value),
-                          origin: const Offset(0, -(390 / 2)),
-                          child: Opacity(
-                            opacity: max(0, value),
-                            child: shortVideoItem
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
+              Builder(
+                builder: (context) {
+                  int length = widget.shortVideoListLoadDataResult.resultIfSuccess!.length;
+                  double height = 390.0;
+                  AspectRatioValue aspectRatioValue = Constant.aspectRatioValueShortVideo;
+                  return SizedBox(
+                    height: height,
+                    child: ListView.builder(
+                      physics: PagingScrollPhysics(
+                        itemDimension: (aspectRatioValue.width * height / aspectRatioValue.height) + Constant.paddingListItem
+                      ),
+                      itemCount: length,
+                      scrollDirection: Axis.horizontal,
+                      padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem, vertical: 8.0).copyWith(top: 0.0),
+                      itemBuilder: (context, index) {
+                        ShortVideo shortVideo = widget.shortVideoListLoadDataResult.resultIfSuccess![index];
+                        Widget shortVideoItem = ShortVideoItem(shortVideo: shortVideo);
+                        return index > 0 ? Row(
+                          children: [
+                            SizedBox(width: Constant.paddingListItem),
+                            shortVideoItem
+                          ],
+                        ) : shortVideoItem;
+                      }
+                    )
+                  );
+                }
               ),
           ]
         )
