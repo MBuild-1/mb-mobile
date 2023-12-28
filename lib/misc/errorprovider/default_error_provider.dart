@@ -44,7 +44,7 @@ class DefaultErrorProvider extends ErrorProvider {
         imageAssetUrl: e.imageAssetUrl
       );
     } else if (e is CartEmptyError) {
-      return _cartIsEmptyErrorProvider();
+      return _cartIsEmptyErrorProvider(null);
     } else if (e is SearchNotFoundError) {
       return _searchNotFoundError();
     } else if (e is TokenEmptyError) {
@@ -70,17 +70,23 @@ class DefaultErrorProvider extends ErrorProvider {
     }
   }
 
-  ErrorProviderResult _cartIsEmptyErrorProvider() {
+  ErrorProviderResult _cartIsEmptyErrorProvider(MultiLanguageString? messageMultiLanguageString) {
+    late MultiLanguageString effectiveMessageMultiLanguageString;
+    if (messageMultiLanguageString != null) {
+      effectiveMessageMultiLanguageString = messageMultiLanguageString;
+    } else {
+      effectiveMessageMultiLanguageString = MultiLanguageString({
+        Constant.textEnUsLanguageKey: "Now cart is empty.",
+        Constant.textInIdLanguageKey: "Untuk sekarang keranjangnya kosong."
+      });
+    }
     return onGetErrorProviderResult(
       MultiLanguageMessageError(
         title: MultiLanguageString({
           Constant.textEnUsLanguageKey: "Cart Is Empty",
           Constant.textInIdLanguageKey: "Keranjang Kosong"
         }),
-        message: MultiLanguageString({
-          Constant.textEnUsLanguageKey: "Now cart is empty.",
-          Constant.textInIdLanguageKey: "Untuk sekarang keranjangnya kosong."
-        }),
+        message: effectiveMessageMultiLanguageString,
         imageAssetUrl: Constant.imageEmptyErrorCart
       )
     ).toErrorProviderResultNonNull();
@@ -222,46 +228,63 @@ class DefaultErrorProvider extends ErrorProvider {
           imageAssetUrl: Constant.imageFailed
         );
       } else if (statusCode == 400) {
+        ErrorProviderResult notFound() {
+          Error error = ErrorHelper.generateEmptyError(e);
+          if (error is EmptyError) {
+            late String imageAssetUrl;
+            EmptyErrorType emptyErrorType = error.emptyErrorType;
+            if (emptyErrorType == EmptyErrorType.addressEmpty) {
+              imageAssetUrl = Constant.imageEmptyErrorAddress;
+            } else if (emptyErrorType == EmptyErrorType.cartEmpty) {
+              imageAssetUrl = Constant.imageEmptyErrorCart;
+            } else if (emptyErrorType == EmptyErrorType.sendEmpty) {
+              imageAssetUrl = Constant.imageEmptyErrorSend;
+            } else if (emptyErrorType == EmptyErrorType.transactionEmpty) {
+              imageAssetUrl = Constant.imageEmptyErrorTransaction;
+            } else if (emptyErrorType == EmptyErrorType.wishlistEmpty) {
+              imageAssetUrl = Constant.imageEmptyErrorWishlist;
+            } else if (emptyErrorType == EmptyErrorType.notificationEmpty) {
+              imageAssetUrl = Constant.imageEmptyErrorTransaction;
+            } else {
+              imageAssetUrl = Constant.imageEmptyError;
+            }
+            return elseResponseDecision()
+              ..imageAssetUrl = imageAssetUrl;
+          }
+          return elseResponseDecision();
+        }
         Response<dynamic>? response = e.response;
         dynamic responseData = response?.data;
         if (responseData is Map) {
           dynamic errorMeta = responseData['meta'];
           if (errorMeta is Map) {
+            String dataCartNotFoundLowerCase = "data cart not found";
             dynamic message = errorMeta["message"];
-            if (message == "Data Cart not found!") {
-              return _cartIsEmptyErrorProvider();
+            ErrorProviderResult defaultChecking() {
+              if (message.toString().toLowerCase().contains(dataCartNotFoundLowerCase)) {
+                return _cartIsEmptyErrorProvider(null);
+              } else {
+                return notFound();
+              }
+            }
+            if (message is Map) {
+              MultiLanguageString effectiveMessageMultiLanguageString = MultiLanguageString(message);
+              dynamic effectiveValue = message["value"];
+              if (effectiveValue != null) {
+                if (effectiveValue.toLowerCase().contains(dataCartNotFoundLowerCase)) {
+                  return _cartIsEmptyErrorProvider(effectiveMessageMultiLanguageString);
+                } else {
+                  return notFound();
+                }
+              } else {
+                return defaultChecking();
+              }
             } else {
-              return ErrorProviderResult(
-                title: "Not Found".tr,
-                message: MultiLanguageString(errorMeta["message"]).toEmptyStringNonNull,
-                imageAssetUrl: Constant.imageFailed
-              );
+              return defaultChecking();
             }
           }
         }
-        Error error = ErrorHelper.generateEmptyError(e);
-        if (error is EmptyError) {
-          late String imageAssetUrl;
-          EmptyErrorType emptyErrorType = error.emptyErrorType;
-          if (emptyErrorType == EmptyErrorType.addressEmpty) {
-            imageAssetUrl = Constant.imageEmptyErrorAddress;
-          } else if (emptyErrorType == EmptyErrorType.cartEmpty) {
-            imageAssetUrl = Constant.imageEmptyErrorCart;
-          } else if (emptyErrorType == EmptyErrorType.sendEmpty) {
-            imageAssetUrl = Constant.imageEmptyErrorSend;
-          } else if (emptyErrorType == EmptyErrorType.transactionEmpty) {
-            imageAssetUrl = Constant.imageEmptyErrorTransaction;
-          } else if (emptyErrorType == EmptyErrorType.wishlistEmpty) {
-            imageAssetUrl = Constant.imageEmptyErrorWishlist;
-          } else if (emptyErrorType == EmptyErrorType.notificationEmpty) {
-            imageAssetUrl = Constant.imageEmptyErrorTransaction;
-          } else {
-            imageAssetUrl = Constant.imageEmptyError;
-          }
-          return elseResponseDecision()
-            ..imageAssetUrl = imageAssetUrl;
-        }
-        return elseResponseDecision();
+        return notFound();
       } else if (statusCode == 500) {
         return ErrorProviderResult(
           title: "Internal Server Error".tr,

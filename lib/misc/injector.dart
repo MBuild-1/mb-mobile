@@ -115,6 +115,7 @@ import '../domain/usecase/auth_identity_verify_otp_use_case.dart';
 import '../domain/usecase/change_additional_item_use_case.dart';
 import '../domain/usecase/change_address_use_case.dart';
 import '../domain/usecase/change_password_use_case.dart';
+import '../domain/usecase/help_chat_template_use_case.dart';
 import '../domain/usecase/check_active_pin_use_case.dart';
 import '../domain/usecase/check_bucket_use_case.dart';
 import '../domain/usecase/check_coupon_use_case.dart';
@@ -719,6 +720,7 @@ class _Injector {
     locator.registerLazySingleton<GetProductMessageByUserUseCase>(() => GetProductMessageByUserUseCase(chatRepository: locator()));
     locator.registerLazySingleton<GetProductMessageByConversationUseCase>(() => GetProductMessageByConversationUseCase(chatRepository: locator()));
     locator.registerLazySingleton<GetProductMessageByProductUseCase>(() => GetProductMessageByProductUseCase(chatRepository: locator()));
+    locator.registerLazySingleton<HelpChatTemplateUseCase>(() => HelpChatTemplateUseCase(chatRepository: locator()));
     locator.registerLazySingleton<GetNotificationByUserListUseCase>(() => GetNotificationByUserListUseCase(notificationRepository: locator()));
     locator.registerLazySingleton<GetNotificationByUserPagingUseCase>(() => GetNotificationByUserPagingUseCase(notificationRepository: locator()));
     locator.registerLazySingleton<GetTransactionNotificationDetailUseCase>(() => GetTransactionNotificationDetailUseCase(notificationRepository: locator()));

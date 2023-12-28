@@ -14,6 +14,8 @@ import 'package:masterbagasi/presentation/widget/modified_paged_list_view.dart';
 import 'package:masterbagasi/presentation/widget/modifiedappbar/modified_app_bar.dart';
 import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 
+import '../../domain/entity/chat/chattemplate/chat_template_parameter.dart';
+import '../../domain/entity/chat/chattemplate/chat_template_response.dart';
 import '../../domain/entity/chat/help/answer_help_conversation_parameter.dart';
 import '../../domain/entity/chat/help/create_help_conversation_parameter.dart';
 import '../../domain/entity/chat/help/create_help_conversation_response.dart';
@@ -30,6 +32,7 @@ import '../../domain/usecase/answer_help_conversation_version_1_point_1_use_case
 import '../../domain/usecase/create_help_conversation_use_case.dart';
 import '../../domain/usecase/get_help_message_by_user_use_case.dart';
 import '../../domain/usecase/get_user_use_case.dart';
+import '../../domain/usecase/help_chat_template_use_case.dart';
 import '../../misc/constant.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/chatlistitemcontrollerstate/chat_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
@@ -45,6 +48,7 @@ import '../../misc/paging/pagingresult/paging_result.dart';
 import '../../misc/pusher_helper.dart';
 import '../../misc/response_wrapper.dart';
 import '../../misc/routeargument/help_chat_route_argument.dart';
+import '../widget/colorful_chip_tab_bar.dart';
 import '../widget/modified_loading_indicator.dart';
 import '../widget/modified_shimmer.dart';
 import '../widget/modified_svg_picture.dart';
@@ -65,7 +69,8 @@ class HelpChatPage extends RestorableGetxPage<_HelpChatPageRestoration> {
         Injector.locator<CreateHelpConversationUseCase>(),
         Injector.locator<AnswerHelpConversationUseCase>(),
         Injector.locator<AnswerHelpConversationVersion1Point1UseCase>(),
-        Injector.locator<GetUserUseCase>()
+        Injector.locator<GetUserUseCase>(),
+        Injector.locator<HelpChatTemplateUseCase>()
       ),
       tag: pageName
     );
@@ -203,6 +208,9 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<StatefulHelpC
   String _helpConversationId = "";
   User? _loggedUser;
   final DefaultChatContainerInterceptingActionListItemControllerState _defaultChatContainerInterceptingActionListItemControllerState = DefaultChatContainerInterceptingActionListItemControllerState();
+  LoadDataResult<HelpChatTemplateResponse> _helpChatTemplateResponseLoadDataResult = NoLoadDataResult<HelpChatTemplateResponse>();
+  late ColorfulChipTabBarController _helpChatTabColorfulChipTabBarController;
+  late List<ColorfulChipTabBarData> _helpChatColorfulChipTabBarDataList;
 
   void _scrollToDown() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -265,6 +273,7 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<StatefulHelpC
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _helpChatListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? listItemControllerStateList) async {
+    LoadDataResult<HelpChatTemplateResponse> helpChatTemplateResponseLoadDataResult = await widget.helpChatController.getHelpChatTemplate(HelpChatTemplateParameter());
     UserMessageResponseWrapper<GetHelpMessageByUserResponse> getHelpMessageByUserResponseLoadDataResult = await getHelpMessageByUser();
     if (getHelpMessageByUserResponseLoadDataResult.valueLoadDataResult.isFailed) {
       dynamic e = getHelpMessageByUserResponseLoadDataResult.valueLoadDataResult.resultIfFailed;
@@ -297,6 +306,21 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<StatefulHelpC
         conversationId: getHelpMessageByUserResponseLoadDataResult.valueLoadDataResult.resultIfSuccess!.id,
       );
     }
+    if (helpChatTemplateResponseLoadDataResult.isSuccess) {
+      HelpChatTemplateResponse helpChatTemplateResponse = helpChatTemplateResponseLoadDataResult.resultIfSuccess!;
+      _helpChatColorfulChipTabBarDataList = helpChatTemplateResponse.chatTemplateList.map<ColorfulChipTabBarData>(
+        (value) => ColorfulChipTabBarData(
+          color: Constant.colorMain,
+          title: value.quotation,
+          data: value.quotation
+        )
+      ).toList();
+      _helpChatTabColorfulChipTabBarController = OnlyButtonColorfulChipTabBarController(-1, onTap: (index) {
+        _helpTextEditingController.text = _helpChatColorfulChipTabBarDataList[index].data;
+      });
+    }
+    _helpChatTemplateResponseLoadDataResult = helpChatTemplateResponseLoadDataResult;
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) => setState(() {}));
     return getHelpMessageByUserResponseLoadDataResult.valueLoadDataResult.map<PagingResult<ListItemControllerState>>((getHelpMessageByUserResponse) {
       _helpConversationId = getHelpMessageByUserResponse.id;
       User user = getHelpMessageByUserResponseLoadDataResult.userLoadDataResult.resultIfSuccess!;
@@ -350,87 +374,115 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<StatefulHelpC
             ),
             Container(
               padding: const EdgeInsets.all(8.0),
-              child: Container(
-                padding: const EdgeInsets.all(8.0),
-                decoration: BoxDecoration(
-                  color: Constant.colorGrey4
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        focusNode: _helpTextFocusNode,
-                        controller: _helpTextEditingController,
-                        decoration: InputDecoration.collapsed(
-                          hintText: "Type Chat".tr,
-                        ),
-                        keyboardType: TextInputType.multiline,
-                        textInputAction: TextInputAction.newline,
-                        minLines: 1,
-                        maxLines: 5
-                      ),
+              child: Column(
+                children: [
+                  if (_helpChatTemplateResponseLoadDataResult.isSuccess) ...[
+                    ColorfulChipTabBar(
+                      colorfulChipTabBarDataList: _helpChatColorfulChipTabBarDataList,
+                      colorfulChipTabBarController: _helpChatTabColorfulChipTabBarController,
+                      isWrap: false,
+                      canSelectAndUnselect: true,
+                      chipLabelInterceptor: (style, colorfulChipTabBarData) {
+                        return Tooltip(
+                          message: colorfulChipTabBarData.title.toStringNonNull,
+                          child: Center(
+                            child: Text(
+                              colorfulChipTabBarData.title.toStringNonNull,
+                              style: style,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        );
+                      },
+                      padding: EdgeInsets.zero,
+                      tabWidth: 110,
                     ),
-                    SizedBox(
-                      width: 23,
-                      height: 23,
-                      child: _showLoadingIndicatorInTextField ? const ModifiedLoadingIndicator() : TapArea(
-                        onTap: () async {
-                          if (_isFirstEmpty) {
-                            setState(() => _showLoadingIndicatorInTextField = true);
-                            LoadDataResult<CreateHelpConversationResponse> createHelpConversationResponseLoadDataResult = await widget.helpChatController.createHelpConversation(
-                              CreateHelpConversationParameter(
-                                message: _helpTextEditingController.text
-                              )
-                            );
-                            if (createHelpConversationResponseLoadDataResult.isSuccess) {
-                              _helpConversationId = createHelpConversationResponseLoadDataResult.resultIfSuccess!.helpConversationId;
-                            }
-                            await PusherHelper.subscribeChatPusherChannel(
-                              pusherChannelsFlutter: _pusher,
-                              onEvent: _onEvent,
-                              chatPusherChannelType: ChatPusherChannelType.help,
-                              conversationId: _helpConversationId,
-                            );
-                            _isFirstEmpty = false;
-                            setState(() => _showLoadingIndicatorInTextField = false);
-                          } else {
-                            widget.helpChatController.answerHelpConversationVersion1Point1(
-                              AnswerHelpConversationParameter(
-                                helpConversationId: _helpConversationId,
-                                message: _helpTextEditingController.text
-                              )
-                            );
-                          }
-                          if (_defaultChatContainerInterceptingActionListItemControllerState.onAddUserMessage != null) {
-                            _defaultChatContainerInterceptingActionListItemControllerState.onAddUserMessage!(
-                              HelpMessage(
-                                id: "-1",
-                                helpConversationId: _helpConversationId,
-                                userId: (_loggedUser?.id).toEmptyStringNonNull,
-                                message: _helpTextEditingController.text, //_helpTextEditingController.text,
-                                readStatus: 1,
-                                createdAt: DateTime.now(),
-                                updatedAt: DateTime.now(),
-                                deletedAt: DateTime.now(),
-                                userChat: UserChat(
-                                  id: "",
-                                  name: "",
-                                  role: 1,
-                                  email: ""
-                                ),
-                                isLoading: true
-                              )
-                            );
-                          }
-                          _refreshChat();
-                          _helpTextEditingController.clear();
-                          _scrollToDown();
-                        },
-                        child: ModifiedSvgPicture.asset(Constant.vectorSendMessage, overrideDefaultColorWithSingleColor: false),
-                      )
-                    )
+                    const SizedBox(height: 8.0),
                   ],
-                )
+                  Container(
+                    padding: const EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      color: Constant.colorGrey4
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            focusNode: _helpTextFocusNode,
+                            controller: _helpTextEditingController,
+                            decoration: InputDecoration.collapsed(
+                              hintText: "Type Chat".tr,
+                            ),
+                            keyboardType: TextInputType.multiline,
+                            textInputAction: TextInputAction.newline,
+                            minLines: 1,
+                            maxLines: 5
+                          ),
+                        ),
+                        SizedBox(
+                          width: 23,
+                          height: 23,
+                          child: _showLoadingIndicatorInTextField ? const ModifiedLoadingIndicator() : TapArea(
+                            onTap: () async {
+                              if (_isFirstEmpty) {
+                                setState(() => _showLoadingIndicatorInTextField = true);
+                                LoadDataResult<CreateHelpConversationResponse> createHelpConversationResponseLoadDataResult = await widget.helpChatController.createHelpConversation(
+                                  CreateHelpConversationParameter(
+                                    message: _helpTextEditingController.text
+                                  )
+                                );
+                                if (createHelpConversationResponseLoadDataResult.isSuccess) {
+                                  _helpConversationId = createHelpConversationResponseLoadDataResult.resultIfSuccess!.helpConversationId;
+                                }
+                                await PusherHelper.subscribeChatPusherChannel(
+                                  pusherChannelsFlutter: _pusher,
+                                  onEvent: _onEvent,
+                                  chatPusherChannelType: ChatPusherChannelType.help,
+                                  conversationId: _helpConversationId,
+                                );
+                                _isFirstEmpty = false;
+                                setState(() => _showLoadingIndicatorInTextField = false);
+                              } else {
+                                widget.helpChatController.answerHelpConversationVersion1Point1(
+                                  AnswerHelpConversationParameter(
+                                    helpConversationId: _helpConversationId,
+                                    message: _helpTextEditingController.text
+                                  )
+                                );
+                              }
+                              if (_defaultChatContainerInterceptingActionListItemControllerState.onAddUserMessage != null) {
+                                _defaultChatContainerInterceptingActionListItemControllerState.onAddUserMessage!(
+                                  HelpMessage(
+                                    id: "-1",
+                                    helpConversationId: _helpConversationId,
+                                    userId: (_loggedUser?.id).toEmptyStringNonNull,
+                                    message: _helpTextEditingController.text, //_helpTextEditingController.text,
+                                    readStatus: 1,
+                                    createdAt: DateTime.now(),
+                                    updatedAt: DateTime.now(),
+                                    deletedAt: DateTime.now(),
+                                    userChat: UserChat(
+                                      id: "",
+                                      name: "",
+                                      role: 1,
+                                      email: ""
+                                    ),
+                                    isLoading: true
+                                  )
+                                );
+                              }
+                              _refreshChat();
+                              _helpTextEditingController.clear();
+                              _scrollToDown();
+                            },
+                            child: ModifiedSvgPicture.asset(Constant.vectorSendMessage, overrideDefaultColorWithSingleColor: false),
+                          )
+                        )
+                      ],
+                    )
+                  ),
+                ],
               )
             )
           ]

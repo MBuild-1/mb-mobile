@@ -1,3 +1,5 @@
+import '../domain/entity/chat/chattemplate/chat_template_parameter.dart';
+import '../domain/entity/chat/chattemplate/chat_template_response.dart';
 import '../domain/entity/chat/help/answer_help_conversation_parameter.dart';
 import '../domain/entity/chat/help/answer_help_conversation_response.dart';
 import '../domain/entity/chat/help/create_help_conversation_parameter.dart';
@@ -11,6 +13,7 @@ import '../domain/usecase/answer_help_conversation_version_1_point_1_use_case.da
 import '../domain/usecase/create_help_conversation_use_case.dart';
 import '../domain/usecase/get_help_message_by_user_use_case.dart';
 import '../domain/usecase/get_user_use_case.dart';
+import '../domain/usecase/help_chat_template_use_case.dart';
 import '../misc/load_data_result.dart';
 import 'base_getx_controller.dart';
 
@@ -20,6 +23,7 @@ class HelpChatController extends BaseGetxController {
   final AnswerHelpConversationUseCase answerHelpConversationUseCase;
   final AnswerHelpConversationVersion1Point1UseCase answerHelpConversationVersion1Point1UseCase;
   final GetUserUseCase getUserUseCase;
+  final HelpChatTemplateUseCase helpChatTemplateUseCase;
 
   HelpChatController(
     super.controllerManager,
@@ -27,7 +31,8 @@ class HelpChatController extends BaseGetxController {
     this.createHelpConversationUseCase,
     this.answerHelpConversationUseCase,
     this.answerHelpConversationVersion1Point1UseCase,
-    this.getUserUseCase
+    this.getUserUseCase,
+    this.helpChatTemplateUseCase
   );
 
   Future<LoadDataResult<GetHelpMessageByUserResponse>> getHelpMessageByUser(GetHelpMessageByUserParameter getHelpMessageByUserParameter) {
@@ -57,6 +62,12 @@ class HelpChatController extends BaseGetxController {
   Future<LoadDataResult<GetUserResponse>> getUser(GetUserParameter getUserParameter) {
     return getUserUseCase.execute(getUserParameter).future(
       parameter: apiRequestManager.addRequestToCancellationPart("get-user", duplicate: true).value
+    );
+  }
+
+  Future<LoadDataResult<HelpChatTemplateResponse>> getHelpChatTemplate(HelpChatTemplateParameter helpChatTemplateParameter) {
+    return helpChatTemplateUseCase.execute(helpChatTemplateParameter).future(
+      parameter: apiRequestManager.addRequestToCancellationPart("help-chat-template").value
     );
   }
 }

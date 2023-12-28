@@ -14,6 +14,7 @@ class ColorfulChipTabBar extends StatelessWidget {
   final bool isWrap;
   final bool? canSelectAndUnselect;
   final Widget? Function(TextStyle?, ColorfulChipTabBarData)? chipLabelInterceptor;
+  final double? tabWidth;
 
   const ColorfulChipTabBar({
     Key? key,
@@ -22,7 +23,8 @@ class ColorfulChipTabBar extends StatelessWidget {
     this.padding,
     this.isWrap = true,
     this.canSelectAndUnselect,
-    this.chipLabelInterceptor
+    this.chipLabelInterceptor,
+    this.tabWidth
   }) : super(key: key);
 
   @override
@@ -41,31 +43,40 @@ class ColorfulChipTabBar extends StatelessWidget {
       if (colorfulChipTabBarController is ColorfulChipTabBarController) {
         effectiveCanSelectAndUnselect = canSelectAndUnselect ?? (colorfulChipTabBarController is CanSelectAndUnselectColorfulChipTabBarController);
         result.add(
-          ModifiedChipButton(
-            label: Text(data.title.toStringNonNull),
-            labelInterceptor: effectiveChipLabelInterceptor(),
-            backgroundColor: Constant.colorTrainingPreEmploymentChip(context),
-            isSelected: i == value,
-            canSelectAndUnselect: effectiveCanSelectAndUnselect,
-            onTap: () {
-              ColorfulChipTabBarController normalColorfulChipTabBarController = colorfulChipTabBarController as ColorfulChipTabBarController;
-              if (normalColorfulChipTabBarController is CanSelectAndUnselectColorfulChipTabBarController) {
-                int currentSelectedIndex = normalColorfulChipTabBarController.value;
-                late int newSelectedIndex;
-                if (currentSelectedIndex > -1) {
-                  if (currentSelectedIndex == i) {
-                    newSelectedIndex = -1;
+          SizedBox(
+            width: tabWidth,
+            child: ModifiedChipButton(
+              label: Text(data.title.toStringNonNull),
+              labelInterceptor: effectiveChipLabelInterceptor(),
+              backgroundColor: Constant.colorTrainingPreEmploymentChip(context),
+              isSelected: i == value,
+              canSelectAndUnselect: effectiveCanSelectAndUnselect,
+              onTap: () {
+                ColorfulChipTabBarController normalColorfulChipTabBarController = colorfulChipTabBarController as ColorfulChipTabBarController;
+                if (normalColorfulChipTabBarController is OnlyButtonColorfulChipTabBarController) {
+                  if (normalColorfulChipTabBarController.onTap != null) {
+                    normalColorfulChipTabBarController.onTap!(i);
+                  }
+                  return;
+                }
+                if (normalColorfulChipTabBarController is CanSelectAndUnselectColorfulChipTabBarController) {
+                  int currentSelectedIndex = normalColorfulChipTabBarController.value;
+                  late int newSelectedIndex;
+                  if (currentSelectedIndex > -1) {
+                    if (currentSelectedIndex == i) {
+                      newSelectedIndex = -1;
+                    } else {
+                      newSelectedIndex = i;
+                    }
                   } else {
                     newSelectedIndex = i;
                   }
+                  normalColorfulChipTabBarController.value = newSelectedIndex;
                 } else {
-                  newSelectedIndex = i;
+                  normalColorfulChipTabBarController.value = i;
                 }
-                normalColorfulChipTabBarController.value = newSelectedIndex;
-              } else {
-                normalColorfulChipTabBarController.value = i;
               }
-            }
+            ),
           )
         );
       } else if (colorfulChipTabBarController is MultipleSelectionColorfulChipTabBarController) {
@@ -79,24 +90,27 @@ class ColorfulChipTabBar extends StatelessWidget {
           }
         }
         result.add(
-          ModifiedChipButton(
-            label: Text(data.title.toStringNonNull),
-            labelInterceptor: effectiveChipLabelInterceptor(),
-            backgroundColor: Constant.colorTrainingPreEmploymentChip(context),
-            isSelected: isSelected,
-            canSelectAndUnselect: effectiveCanSelectAndUnselect,
-            onTap: () {
-              MultipleSelectionColorfulChipTabBarController multipleSelectionColorfulChipTabBarController = colorfulChipTabBarController as MultipleSelectionColorfulChipTabBarController;
-              List<int> currentLastSelectedIndexList = multipleSelectionColorfulChipTabBarController.value;
-              late List<int> newLastSelectedIndexList;
-              if (currentLastSelectedIndexList.contains(i)) {
-                newLastSelectedIndexList = List.of(currentLastSelectedIndexList.whereNot((element) => element == i));
-              } else {
-                newLastSelectedIndexList = List.of(currentLastSelectedIndexList + [i]);
+          SizedBox(
+            width: tabWidth,
+            child: ModifiedChipButton(
+              label: Text(data.title.toStringNonNull),
+              labelInterceptor: effectiveChipLabelInterceptor(),
+              backgroundColor: Constant.colorTrainingPreEmploymentChip(context),
+              isSelected: isSelected,
+              canSelectAndUnselect: effectiveCanSelectAndUnselect,
+              onTap: () {
+                MultipleSelectionColorfulChipTabBarController multipleSelectionColorfulChipTabBarController = colorfulChipTabBarController as MultipleSelectionColorfulChipTabBarController;
+                List<int> currentLastSelectedIndexList = multipleSelectionColorfulChipTabBarController.value;
+                late List<int> newLastSelectedIndexList;
+                if (currentLastSelectedIndexList.contains(i)) {
+                  newLastSelectedIndexList = List.of(currentLastSelectedIndexList.whereNot((element) => element == i));
+                } else {
+                  newLastSelectedIndexList = List.of(currentLastSelectedIndexList + [i]);
+                }
+                newLastSelectedIndexList.toSet().toList().sort((a, b) => a - b);
+                multipleSelectionColorfulChipTabBarController.value = newLastSelectedIndexList;
               }
-              newLastSelectedIndexList.toSet().toList().sort((a, b) => a - b);
-              multipleSelectionColorfulChipTabBarController.value = newLastSelectedIndexList;
-            }
+            ),
           )
         );
       }
@@ -207,6 +221,15 @@ class CanSelectAndUnselectColorfulChipTabBarController extends ColorfulChipTabBa
 
 class MultipleSelectionColorfulChipTabBarController extends BaseColorfulChipTabBarController<List<int>> {
   MultipleSelectionColorfulChipTabBarController(super.value);
+}
+
+class OnlyButtonColorfulChipTabBarController extends ColorfulChipTabBarController {
+  final void Function(int)? onTap;
+
+  OnlyButtonColorfulChipTabBarController(
+    super.value,
+    {this.onTap}
+  );
 }
 
 class ColorfulChipTabBarData {

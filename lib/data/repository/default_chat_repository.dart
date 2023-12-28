@@ -1,3 +1,5 @@
+import '../../domain/entity/chat/chattemplate/chat_template_parameter.dart';
+import '../../domain/entity/chat/chattemplate/chat_template_response.dart';
 import '../../domain/entity/chat/help/answer_help_conversation_parameter.dart';
 import '../../domain/entity/chat/help/answer_help_conversation_response.dart';
 import '../../domain/entity/chat/help/create_help_conversation_parameter.dart';
@@ -146,5 +148,10 @@ class DefaultChatRepository implements ChatRepository {
   @override
   FutureProcessing<LoadDataResult<GetProductMessageByProductResponse>> getProductMessageByProduct(GetProductMessageByProductParameter getProductMessageByUserParameter) {
     return chatDataSource.getProductMessageByProduct(getProductMessageByUserParameter).mapToLoadDataResult<GetProductMessageByProductResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<HelpChatTemplateResponse>> helpChatTemplate(HelpChatTemplateParameter helpChatTemplateParameter) {
+    return chatDataSource.helpChatTemplate(helpChatTemplateParameter).mapToLoadDataResult<HelpChatTemplateResponse>();
   }
 }

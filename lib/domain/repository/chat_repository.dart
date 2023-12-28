@@ -1,5 +1,7 @@
 import '../../misc/load_data_result.dart';
 import '../../misc/processing/future_processing.dart';
+import '../entity/chat/chattemplate/chat_template_parameter.dart';
+import '../entity/chat/chattemplate/chat_template_response.dart';
 import '../entity/chat/help/answer_help_conversation_parameter.dart';
 import '../entity/chat/help/answer_help_conversation_response.dart';
 import '../entity/chat/help/create_help_conversation_parameter.dart';
@@ -60,4 +62,5 @@ abstract class ChatRepository {
   FutureProcessing<LoadDataResult<GetProductMessageByConversationResponse>> getProductMessageByConversation(GetProductMessageByConversationParameter getProductMessageByConversationParameter);
   FutureProcessing<LoadDataResult<GetProductMessageByUserResponse>> getProductMessageByUser(GetProductMessageByUserParameter getProductMessageByUserParameter);
   FutureProcessing<LoadDataResult<GetProductMessageByProductResponse>> getProductMessageByProduct(GetProductMessageByProductParameter getProductMessageByUserParameter);
+  FutureProcessing<LoadDataResult<HelpChatTemplateResponse>> helpChatTemplate(HelpChatTemplateParameter helpChatTemplateParameter);
 }

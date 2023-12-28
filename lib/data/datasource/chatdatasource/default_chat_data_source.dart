@@ -3,6 +3,8 @@ import 'package:masterbagasi/data/entitymappingext/chat_entity_mapping_ext.dart'
 import 'package:masterbagasi/misc/ext/future_ext.dart';
 import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 
+import '../../../domain/entity/chat/chattemplate/chat_template_parameter.dart';
+import '../../../domain/entity/chat/chattemplate/chat_template_response.dart';
 import '../../../domain/entity/chat/help/answer_help_conversation_parameter.dart';
 import '../../../domain/entity/chat/help/answer_help_conversation_response.dart';
 import '../../../domain/entity/chat/help/create_help_conversation_parameter.dart';
@@ -294,6 +296,14 @@ class DefaultChatDataSource implements ChatDataSource {
     return DioHttpClientProcessing((cancelToken) {
       return dio.get("/chat-product/product/${getProductMessageByUserParameter.productId}", cancelToken: cancelToken)
         .map<GetProductMessageByProductResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToGetProductMessageByProductResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<HelpChatTemplateResponse> helpChatTemplate(HelpChatTemplateParameter helpChatTemplateParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.get("/chat-help/template", cancelToken: cancelToken)
+        .map<HelpChatTemplateResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToHelpChatTemplateResponse());
     });
   }
 }

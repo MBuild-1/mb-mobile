@@ -3,6 +3,8 @@ import 'package:masterbagasi/domain/entity/chat/help/get_help_message_by_user_re
 import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
+import '../../domain/entity/chat/chattemplate/chat_template.dart';
+import '../../domain/entity/chat/chattemplate/chat_template_response.dart';
 import '../../domain/entity/chat/help/answer_help_conversation_response.dart';
 import '../../domain/entity/chat/help/create_help_conversation_response.dart';
 import '../../domain/entity/chat/help/get_help_message_by_conversation_response.dart';
@@ -478,6 +480,22 @@ extension HelpChatDetailEntityMappingExt on ResponseWrapper {
       deletedAt: deletedAt != null ? ResponseWrapper(deletedAt).mapFromResponseToDateTime() : null,
       readStatus: response["read_status"],
       userChat: ResponseWrapper(response["user"]).mapFromResponseToUserChat()
+    );
+  }
+
+  HelpChatTemplateResponse mapFromResponseToHelpChatTemplateResponse() {
+    return HelpChatTemplateResponse(
+      chatTemplateList: response.map<ChatTemplate>(
+        (chatTemplateResponse) => ResponseWrapper(chatTemplateResponse).mapFromResponseToChatTemplate()
+      ).toList()
+    );
+  }
+
+  ChatTemplate mapFromResponseToChatTemplate() {
+    return ChatTemplate(
+      id: response["id"],
+      quotation: response["quotation"],
+      answer: response["answare"]
     );
   }
 }
