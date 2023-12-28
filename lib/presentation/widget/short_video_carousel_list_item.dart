@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
+import 'package:scroll_snap_effect/scroll_snap_effect.dart';
 
 import '../../domain/entity/video/shortvideo/short_video.dart';
 import '../../misc/aspect_ratio_value.dart';
@@ -90,13 +91,10 @@ class ShortVideoCarouselListItemState extends State<ShortVideoCarouselListItem> 
                   AspectRatioValue aspectRatioValue = Constant.aspectRatioValueShortVideo;
                   return SizedBox(
                     height: height,
-                    child: ListView.builder(
-                      physics: PagingScrollPhysics(
-                        itemDimension: (aspectRatioValue.width * height / aspectRatioValue.height) + Constant.paddingListItem
-                      ),
+                    child: ScrollSnapEffect(
+                      itemSize: (aspectRatioValue.width * height / aspectRatioValue.height) + Constant.paddingListItem,
                       itemCount: length,
-                      scrollDirection: Axis.horizontal,
-                      padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem, vertical: 8.0).copyWith(top: 0.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
                       itemBuilder: (context, index) {
                         ShortVideo shortVideo = widget.shortVideoListLoadDataResult.resultIfSuccess![index];
                         Widget shortVideoItem = ShortVideoItem(shortVideo: shortVideo);
@@ -107,7 +105,7 @@ class ShortVideoCarouselListItemState extends State<ShortVideoCarouselListItem> 
                           ],
                         ) : shortVideoItem;
                       }
-                    )
+                    ),
                   );
                 }
               ),
