@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 import '../../misc/constant.dart';
 import '../../misc/main_route_observer.dart';
 import '../../misc/manager/controller_manager.dart';
+import '../../misc/multi_language_string.dart';
 import '../../misc/page_restoration_helper.dart';
 import '../../misc/routeargument/notification_redirector_route_argument.dart';
 import '../notifier/component_notifier.dart';
@@ -201,10 +202,37 @@ abstract class RestorableGetxPage<T extends GetxPageRestoration> extends GetxPag
 
   @override
   Widget _rawBuildPage(BuildContext context) {
-    return _StatefulRestorableGetxPage(
+    Widget result = _StatefulRestorableGetxPage(
       pageName: pageName,
       child: buildPage(context)
     );
+    String environment = Constant.envValueEnvironment;
+    if (environment.contains("staging")) {
+      result = Column(
+        children: [
+          Expanded(
+            child: result
+          ),
+          Material(
+            child: Container(
+              width: double.infinity,
+              color: Colors.orange,
+              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+              child: Center(
+                child: Text(
+                  MultiLanguageString({
+                    Constant.textInIdLanguageKey: "Anda berada di mode environment STAGING.",
+                    Constant.textEnUsLanguageKey: "You are in STAGING environment mode."
+                  }).toEmptyStringNonNull,
+                  style: const TextStyle(color: Colors.white),
+                ),
+              )
+            ),
+          )
+        ],
+      );
+    }
+    return result;
   }
 
   Widget buildPage(BuildContext context);

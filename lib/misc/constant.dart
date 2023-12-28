@@ -326,6 +326,7 @@ class _ConstantImpl {
   String get addToCartTypeProductEntry => "add_to_cart_type_product_entry";
   String get addToCartTypeProductBundle => "add_to_cart_type_product_bundle";
 
+  String get envValueEnvironment => const String.fromEnvironment("ENVIRONMENT");
   String get envValueBaseUrl => const String.fromEnvironment('BASE_URL');
   String get envValueElasticEntryEndpointPath => const String.fromEnvironment('ELASTIC_ENTRY_ENDPOINT_PATH');
   String get envValueMidtransSnapUrl => const String.fromEnvironment("MIDTRANS_SNAP_URL");
