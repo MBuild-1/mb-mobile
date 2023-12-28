@@ -46,7 +46,7 @@ class OrderConclusionItem extends StatelessWidget {
                       onPressed: () async {
                         DialogHelper.showLoadingDialog(context);
                         await WebHelper.launchUrl(
-                          Uri.parse("https://app.midtrans.com/snap/v2/vtweb/${order.orderProduct.orderDetail.snapToken}")
+                          Uri.parse("${Constant.envValueMidtransSnapUrl}${order.orderProduct.orderDetail.snapToken}")
                         );
                         Get.back();
                       },
@@ -101,7 +101,7 @@ class OrderConclusionItem extends StatelessWidget {
                     onPressed: () async {
                       DialogHelper.showLoadingDialog(context);
                       await WebHelper.launchUrl(
-                        Uri.parse("https://app.midtrans.com/snap/v2/vtweb/${order.orderShipping!.orderDetail.snapToken}")
+                        Uri.parse("${Constant.envValueMidtransSnapUrl}${order.orderShipping!.orderDetail.snapToken}")
                       );
                       Get.back();
                     },

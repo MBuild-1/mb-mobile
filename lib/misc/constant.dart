@@ -325,6 +325,10 @@ class _ConstantImpl {
   String get subPageKeyMenuMainMenu => "sub_page_key_menu_main_menu";
   String get addToCartTypeProductEntry => "add_to_cart_type_product_entry";
   String get addToCartTypeProductBundle => "add_to_cart_type_product_bundle";
+
+  String get envValueBaseUrl => const String.fromEnvironment('BASE_URL');
+  String get envValueElasticEntryEndpointPath => const String.fromEnvironment('ELASTIC_ENTRY_ENDPOINT_PATH');
+  String get envValueMidtransSnapUrl => const String.fromEnvironment("MIDTRANS_SNAP_URL");
 }
 
 // ignore: non_constant_identifier_names

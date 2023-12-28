@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
+import 'constant.dart';
 import 'login_helper.dart';
 import 'modified_dio_logger.dart';
 
@@ -10,7 +11,7 @@ class _DioHttpClientImpl {
   Dio of() {
     if (_dio == null) {
       BaseOptions baseOptions = BaseOptions(
-        baseUrl: "https://staging-api.masterbagasi.com/v1/mobile/"
+        baseUrl: Constant.envValueBaseUrl
       );
       _dio = _ModifiedDio(Dio(baseOptions));
       _dio?.interceptors.add(modifiedDioLoggerInterceptor);

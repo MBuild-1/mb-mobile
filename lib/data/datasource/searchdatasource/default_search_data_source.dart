@@ -22,6 +22,7 @@ import '../../../domain/entity/search/storesearchlastseenhistoryparametervalue/p
 import '../../../domain/entity/search/storesearchlastseenhistoryparametervalue/store_search_last_seen_history_parameter_value.dart';
 import '../../../domain/entity/wishlist/wishlist.dart';
 import '../../../domain/entity/wishlist/wishlist_list_parameter.dart';
+import '../../../misc/constant.dart';
 import '../../../misc/error/search_not_found_error.dart';
 import '../../../misc/option_builder.dart';
 import '../../../misc/processing/dio_http_client_processing.dart';
@@ -58,7 +59,7 @@ class DefaultSearchDataSource implements SearchDataSource {
         if (searchParameter.page != null) "from": searchParameter.pageSize! * (searchParameter.page! - 1),
         if (searchParameter.page != null) "size": searchParameter.pageSize!
       };
-      var searchResponse = await dio.get("/elastic/entry_v4/search", queryParameters: queryParameters, cancelToken: cancelToken)
+      var searchResponse = await dio.get("/elastic/${Constant.envValueElasticEntryEndpointPath}/search", queryParameters: queryParameters, cancelToken: cancelToken)
         .map<SearchResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToSearchResponse(wishlistListResult, cartListResult));
       if (searchResponse.paginatedSearchResultList.isEmpty) {
         throw SearchNotFoundError();
