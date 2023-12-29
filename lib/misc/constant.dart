@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:sizer/sizer.dart';
 
 import 'aspect_ratio_value.dart';
@@ -326,10 +328,10 @@ class _ConstantImpl {
   String get addToCartTypeProductEntry => "add_to_cart_type_product_entry";
   String get addToCartTypeProductBundle => "add_to_cart_type_product_bundle";
 
-  String get envValueEnvironment => const String.fromEnvironment("ENVIRONMENT");
-  String get envValueBaseUrl => const String.fromEnvironment('BASE_URL');
-  String get envValueElasticEntryEndpointPath => const String.fromEnvironment('ELASTIC_ENTRY_ENDPOINT_PATH');
-  String get envValueMidtransSnapUrl => const String.fromEnvironment("MIDTRANS_SNAP_URL");
+  String get envValueEnvironment => dotenv.env['ENVIRONMENT'].toEmptyStringNonNull;
+  String get envValueBaseUrl => dotenv.env['BASE_URL'].toEmptyStringNonNull;
+  String get envValueElasticEntryEndpointPath => dotenv.env['ELASTIC_ENTRY_ENDPOINT_PATH'].toEmptyStringNonNull;
+  String get envValueMidtransSnapUrl => dotenv.env["MIDTRANS_SNAP_URL"].toEmptyStringNonNull;
 }
 
 // ignore: non_constant_identifier_names

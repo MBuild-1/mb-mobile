@@ -94,6 +94,7 @@ dependencies:
   package_info_plus: ^3.1.2
   document_file_save_plus: ^1.0.4
   scroll_snap_effect: ^0.1.0
+  flutter_dotenv: ^5.1.0
 
   url_launcher:
   flutter_localizations:
@@ -143,6 +144,8 @@ flutter:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
   assets:
+    - .env.staging
+    - .env.prod
     - assets/images/
     - assets/vectors/
     - assets/vectors/mainmenu/

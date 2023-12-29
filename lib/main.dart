@@ -28,7 +28,7 @@ import 'presentation/notifier/product_notifier.dart';
 import 'presentation/page/getx_page.dart';
 import 'presentation/page/redirector_page.dart';
 
-void main() async {
+Future<void> main() async {
   Injector.init();
   WidgetsFlutterBinding.ensureInitialized();
   if (kDebugMode) {
