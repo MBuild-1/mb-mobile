@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
-import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:sizer/sizer.dart';
 
 import 'aspect_ratio_value.dart';
 import 'color_helper.dart';
+import 'environmentconfig/environment_config.dart';
 import 'multi_language_string.dart';
 
 class _ConstantImpl {
@@ -328,10 +327,10 @@ class _ConstantImpl {
   String get addToCartTypeProductEntry => "add_to_cart_type_product_entry";
   String get addToCartTypeProductBundle => "add_to_cart_type_product_bundle";
 
-  String get envValueEnvironment => dotenv.env['ENVIRONMENT'].toEmptyStringNonNull;
-  String get envValueBaseUrl => dotenv.env['BASE_URL'].toEmptyStringNonNull;
-  String get envValueElasticEntryEndpointPath => dotenv.env['ELASTIC_ENTRY_ENDPOINT_PATH'].toEmptyStringNonNull;
-  String get envValueMidtransSnapUrl => dotenv.env["MIDTRANS_SNAP_URL"].toEmptyStringNonNull;
+  String get envValueEnvironment => EnvironmentConfig.instance.environment;
+  String get envValueBaseUrl => EnvironmentConfig.instance.baseUrl;
+  String get envValueElasticEntryEndpointPath => EnvironmentConfig.instance.elasticEntryEndpointPath;
+  String get envValueMidtransSnapUrl => EnvironmentConfig.instance.midtransSnapUrl;
 }
 
 // ignore: non_constant_identifier_names
