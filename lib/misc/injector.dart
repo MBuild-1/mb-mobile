@@ -35,6 +35,8 @@ import '../data/datasource/notificationdatasource/default_notification_data_sour
 import '../data/datasource/notificationdatasource/notification_data_source.dart';
 import '../data/datasource/orderdatasource/default_order_data_source.dart';
 import '../data/datasource/orderdatasource/order_data_source.dart';
+import '../data/datasource/paymentdatasource/default_payment_data_source.dart';
+import '../data/datasource/paymentdatasource/payment_data_source.dart';
 import '../data/datasource/productdatasource/default_product_data_source.dart';
 import '../data/datasource/productdatasource/product_data_source.dart';
 import '../data/datasource/productdiscussiondatasource/default_product_discussion_data_source.dart';
@@ -55,6 +57,7 @@ import '../data/repository/default_feed_repository.dart';
 import '../data/repository/default_map_repository.dart';
 import '../data/repository/default_notification_repository.dart';
 import '../data/repository/default_order_repository.dart';
+import '../data/repository/default_payment_repository.dart';
 import '../data/repository/default_product_discussion_repository.dart';
 import '../data/repository/default_product_repository.dart';
 import '../data/repository/default_search_repository.dart';
@@ -88,6 +91,7 @@ import '../domain/repository/feed_repository.dart';
 import '../domain/repository/map_repository.dart';
 import '../domain/repository/notification_repository.dart';
 import '../domain/repository/order_repository.dart';
+import '../domain/repository/payment_repository.dart';
 import '../domain/repository/product_discussion_repository.dart';
 import '../domain/repository/product_repository.dart';
 import '../domain/repository/search_repository.dart';
@@ -228,6 +232,7 @@ import '../domain/usecase/login_with_google_use_case.dart';
 import '../domain/usecase/logout_use_case.dart';
 import '../domain/usecase/modify_pin_use_case.dart';
 import '../domain/usecase/notification_order_status_use_case.dart';
+import '../domain/usecase/payment_method_list_use_case.dart';
 import '../domain/usecase/purchase_direct_use_case.dart';
 import '../domain/usecase/read_all_notification_use_case.dart';
 import '../domain/usecase/read_transaction_notification_use_case.dart';
@@ -744,6 +749,7 @@ class _Injector {
     locator.registerLazySingleton<RemoveAllSearchHistoryUseCase>(() => RemoveAllSearchHistoryUseCase(searchRepository: locator()));
     locator.registerLazySingleton<StoreKeywordForSearchHistoryUseCase>(() => StoreKeywordForSearchHistoryUseCase(searchRepository: locator()));
     locator.registerLazySingleton<StoreSearchLastSeenHistoryUseCase>(() => StoreSearchLastSeenHistoryUseCase(searchRepository: locator()));
+    locator.registerLazySingleton<PaymentMethodListUseCase>(() => PaymentMethodListUseCase(paymentRepository: locator()));
 
     // Repository
     locator.registerLazySingleton<UserRepository>(() => DefaultUserRepository(userDataSource: locator()));
@@ -771,6 +777,7 @@ class _Injector {
     locator.registerLazySingleton<NotificationRepository>(() => DefaultNotificationRepository(notificationDataSource: locator()));
     locator.registerLazySingleton<BucketRepository>(() => DefaultBucketRepository(bucketDataSource: locator()));
     locator.registerLazySingleton<SearchRepository>(() => DefaultSearchRepository(searchDataSource: locator()));
+    locator.registerLazySingleton<PaymentRepository>(() => DefaultPaymentRepository(paymentDataSource: locator()));
 
     // Data Sources
     locator.registerLazySingleton<UserDataSource>(() => DefaultUserDataSource(dio: locator()));
@@ -809,6 +816,7 @@ class _Injector {
         cartDataSource: locator()
       )
     );
+    locator.registerLazySingleton<PaymentDataSource>(() => DefaultPaymentDataSource(dio: locator()));
 
     // Dio
     locator.registerLazySingleton<Dio>(() => DioHttpClient.of());
