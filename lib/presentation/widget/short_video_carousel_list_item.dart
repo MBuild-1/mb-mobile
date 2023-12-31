@@ -94,7 +94,7 @@ class ShortVideoCarouselListItemState extends State<ShortVideoCarouselListItem> 
                     child: ScrollSnapEffect(
                       itemSize: (aspectRatioValue.width * height / aspectRatioValue.height) + Constant.paddingListItem,
                       itemCount: length,
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8.0).copyWith(top: 0.0),
                       itemBuilder: (context, index) {
                         ShortVideo shortVideo = widget.shortVideoListLoadDataResult.resultIfSuccess![index];
                         Widget shortVideoItem = ShortVideoItem(shortVideo: shortVideo);
