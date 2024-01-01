@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 
 import '../../domain/entity/user/user.dart';
+import '../../misc/deeplink_applink_helper.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/login_helper.dart';
 import '../../misc/main_route_observer.dart';
@@ -45,6 +46,14 @@ class _SomethingCounterState extends State<SomethingCounter> with RestorationMix
   @override
   void initState() {
     super.initState();
+    DeeplinkApplinkHelper.initURIHandler(
+      mounted: () => mounted,
+      onSetState: () => setState(() {})
+    );
+    DeeplinkApplinkHelper.incomingLinkHandler(
+      mounted: () => mounted,
+      onSetState: () => setState(() {})
+    );
     _loginNotifier = Provider.of<LoginNotifier>(context, listen: false);
     _notificationNotifier = Provider.of<NotificationNotifier>(context, listen: false);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -190,6 +199,7 @@ class _SomethingCounterState extends State<SomethingCounter> with RestorationMix
     _pusher.disconnect();
     OneSignal.Notifications.removeClickListener(_onClickListener);
     OneSignal.Notifications.removeForegroundWillDisplayListener(_onForegroundWillDisplayListener);
+    DeeplinkApplinkHelper.dispose();
     super.dispose();
   }
 }
