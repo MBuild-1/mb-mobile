@@ -66,6 +66,8 @@ import '../../../presentation/widget/notification/purchase_section_notification_
 import '../../../presentation/widget/order/is_running_order_item.dart';
 import '../../../presentation/widget/order/vertical_order_item.dart';
 import '../../../presentation/widget/order/waiting_for_payment_order_item.dart';
+import '../../../presentation/widget/payment/paymentmethod/horizontal_payment_method_item.dart';
+import '../../../presentation/widget/payment/paymentmethod/vertical_payment_method_item.dart';
 import '../../../presentation/widget/product/horizontal_product_item.dart';
 import '../../../presentation/widget/product/vertical_product_item.dart';
 import '../../../presentation/widget/product_bundle_header_list_item.dart';
@@ -177,6 +179,9 @@ import '../../controllerstate/listitemcontrollerstate/orderlistitemcontrollersta
 import '../../controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/waiting_for_payment_order_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/padding_container_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/page_keyed_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/paymentmethodlistitemcontrollerstate/horizontal_payment_method_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/paymentmethodlistitemcontrollerstate/payment_method_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/paymentmethodlistitemcontrollerstate/vertical_payment_method_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/positioned_container_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/product_bundle_header_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/product_bundle_highlight_list_item_controller_state.dart';
@@ -985,6 +990,22 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
             isSelected: item.isSelected
           );
         }
+      } else {
+        return Container();
+      }
+    } else if (item is PaymentMethodListItemControllerState) {
+      if (item is HorizontalPaymentMethodListItemControllerState) {
+        return HorizontalPaymentMethodItem(
+          paymentMethod: item.paymentMethod,
+          onSelectPaymentMethod: item.onSelectPaymentMethod,
+          isSelected: item.isSelected,
+        );
+      } else if (item is VerticalPaymentMethodListItemControllerState) {
+        return VerticalPaymentMethodItem(
+          paymentMethod: item.paymentMethod,
+          onSelectPaymentMethod: item.onSelectPaymentMethod,
+          isSelected: item.isSelected
+        );
       } else {
         return Container();
       }

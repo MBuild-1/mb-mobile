@@ -4,7 +4,7 @@ class PaymentMethodGroup {
   String id;
   String name;
   String clientName;
-  String active;
+  int active;
   List<PaymentMethod> paymentMethodList;
 
   PaymentMethodGroup({

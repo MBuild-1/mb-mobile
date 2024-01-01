@@ -25,6 +25,7 @@ import '../../domain/entity/cart/cart_summary.dart';
 import '../../domain/entity/cart/support_cart.dart';
 import '../../domain/entity/coupon/coupon.dart';
 import '../../domain/entity/coupon/coupon_detail_parameter.dart';
+import '../../domain/entity/payment/payment_method.dart';
 import '../../domain/entity/summaryvalue/summary_value.dart';
 import '../../domain/usecase/add_additional_item_use_case.dart';
 import '../../domain/usecase/change_additional_item_use_case.dart';
@@ -79,6 +80,7 @@ import 'coupon_page.dart';
 import 'getx_page.dart';
 import 'modaldialogpage/add_cart_note_modal_dialog_page.dart';
 import 'modaldialogpage/cart_summary_cart_modal_dialog_page.dart';
+import 'payment_method_page.dart';
 import 'web_viewer_page.dart';
 import 'dart:math' as math;
 
@@ -130,6 +132,13 @@ class DeliveryPage extends RestorableGetxPage<_DeliveryPageRestoration> {
           _statefulDeliveryControllerMediatorWidgetDelegate.onRefreshCoupon!(result);
         }
       }
+    },
+    onCompleteSelectPaymentMethod: (result) {
+      if (result != null) {
+        if (_statefulDeliveryControllerMediatorWidgetDelegate.onRefreshPaymentMethod != null) {
+          _statefulDeliveryControllerMediatorWidgetDelegate.onRefreshPaymentMethod!(result!.toPaymentMethodPageResponse().paymentMethod);
+        }
+      }
     }
   );
 
@@ -146,21 +155,25 @@ class DeliveryPage extends RestorableGetxPage<_DeliveryPageRestoration> {
   }
 }
 
-class _DeliveryPageRestoration extends ExtendedMixableGetxPageRestoration with DeliveryPageRestorationMixin, WebViewerPageRestorationMixin, AddressPageRestorationMixin, CouponPageRestorationMixin {
+class _DeliveryPageRestoration extends ExtendedMixableGetxPageRestoration with DeliveryPageRestorationMixin, WebViewerPageRestorationMixin, AddressPageRestorationMixin, CouponPageRestorationMixin, PaymentMethodPageRestorationMixin {
   final RouteCompletionCallback<bool?>? _onCompleteAddressPage;
   final RouteCompletionCallback<String?>? _onCompleteSelectCoupon;
+  final RouteCompletionCallback<String?>? _onCompleteSelectPaymentMethod;
 
   _DeliveryPageRestoration({
     RouteCompletionCallback<bool?>? onCompleteAddressPage,
-    RouteCompletionCallback<String?>? onCompleteSelectCoupon
+    RouteCompletionCallback<String?>? onCompleteSelectCoupon,
+    RouteCompletionCallback<String?>? onCompleteSelectPaymentMethod
   }) : _onCompleteAddressPage = onCompleteAddressPage,
-      _onCompleteSelectCoupon = onCompleteSelectCoupon;
+      _onCompleteSelectCoupon = onCompleteSelectCoupon,
+      _onCompleteSelectPaymentMethod = onCompleteSelectPaymentMethod;
 
   @override
   // ignore: unnecessary_overrides
   void initState() {
     onCompleteSelectAddress = _onCompleteAddressPage;
     onCompleteSelectCoupon = _onCompleteSelectCoupon;
+    onCompleteSelectPaymentMethod = _onCompleteSelectPaymentMethod;
     super.initState();
   }
 
@@ -273,6 +286,7 @@ class DeliveryPageRestorableRouteFuture extends GetRestorableRouteFuture {
 class _StatefulDeliveryControllerMediatorWidgetDelegate {
   void Function()? onRefreshDelivery;
   void Function(String)? onRefreshCoupon;
+  void Function(PaymentMethod)? onRefreshPaymentMethod;
 }
 
 class _StatefulDeliveryControllerMediatorWidget extends StatefulWidget {
@@ -299,6 +313,7 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
   late int _selectedCartCount = 0;
   LoadDataResult<CartSummary> _cartSummaryLoadDataResult = NoLoadDataResult<CartSummary>();
   LoadDataResult<Address> _shippingAddressLoadDataResult = NoLoadDataResult<Address>();
+  LoadDataResult<PaymentMethod> _selectedPaymentMethodLoadDataResult = NoLoadDataResult<PaymentMethod>();
   String? _couponId;
   List<Cart> _cartList = [];
   List<AdditionalItem> _additionalItemList = [];
@@ -331,6 +346,11 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
       if (_defaultDeliveryCartContainerInterceptingActionListItemControllerState.onRefreshCoupon != null) {
         _defaultDeliveryCartContainerInterceptingActionListItemControllerState.onRefreshCoupon!(coupon);
       }
+      widget.deliveryController.getCartSummary();
+    };
+    widget.statefulDeliveryControllerMediatorWidgetDelegate.onRefreshPaymentMethod = (paymentMethod) {
+      _selectedPaymentMethodLoadDataResult = SuccessLoadDataResult<PaymentMethod>(value: paymentMethod);
+      setState(() {});
       widget.deliveryController.getCartSummary();
     };
   }
@@ -418,6 +438,18 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
             onGetShippingAddressLoadDataResult: (shippingAddressLoadDataResult) {
               setState(() => _shippingAddressLoadDataResult = shippingAddressLoadDataResult);
             },
+            selectedPaymentMethodLoadDataResult: () => _selectedPaymentMethodLoadDataResult,
+            onSelectPaymentMethod: () {
+              PaymentMethod? selectedPaymentMethod;
+              if (_selectedPaymentMethodLoadDataResult.isSuccess) {
+                selectedPaymentMethod = _selectedPaymentMethodLoadDataResult.resultIfSuccess;
+              }
+              PageRestorationHelper.toPaymentMethodPage(context, selectedPaymentMethod?.id);
+            },
+            onRemovePaymentMethod: () {
+              setState(() => _selectedPaymentMethodLoadDataResult = NoLoadDataResult<PaymentMethod>());
+              widget.deliveryController.getCartSummary();
+            },
             deliveryCartContainerStateStorageListItemControllerState: DefaultDeliveryCartContainerStateStorageListItemControllerState(),
             deliveryCartContainerActionListItemControllerState: _DefaultDeliveryCartContainerActionListItemControllerState(
               getAdditionalItemList: (additionalItemListParameter) => widget.deliveryController.getAdditionalItem(additionalItemListParameter),
@@ -428,7 +460,7 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
               getCouponDetail: (couponDetailParameter) => widget.deliveryController.getCouponDetail(couponDetailParameter)
             ),
             deliveryCartContainerInterceptingActionListItemControllerState: _defaultDeliveryCartContainerInterceptingActionListItemControllerState,
-            errorProvider: Injector.locator<ErrorProvider>()
+            errorProvider: Injector.locator<ErrorProvider>(),
           )
         ],
         page: 1,

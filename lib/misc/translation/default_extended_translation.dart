@@ -335,7 +335,11 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Delete Account": "Hapus Akun",
       "Important": "Penting",
       "Send OTP": "Kirim OTP",
-      "Verification": "Verifikasi"
+      "Verification": "Verifikasi",
+      "Payment Method": "Metode Pembayaran",
+      "No selected payment method": "Tidak ada metode pembayaran yang dipilih",
+      "Select Payment Method": "Pilih Metode Pembayaran",
+      "Choose Payment Method": "Pilih Metode Pembayaran"
     }
   };
 

@@ -11,6 +11,7 @@ import '../../../../domain/entity/address/current_selected_address_parameter.dar
 import '../../../../domain/entity/cart/cart.dart';
 import '../../../../domain/entity/coupon/coupon.dart';
 import '../../../../domain/entity/coupon/coupon_detail_parameter.dart';
+import '../../../../domain/entity/payment/payment_method.dart';
 import '../../../errorprovider/error_provider.dart';
 import '../../../load_data_result.dart';
 import '../cartlistitemcontrollerstate/cart_list_item_controller_state.dart';
@@ -26,6 +27,9 @@ class DeliveryCartContainerListItemControllerState extends ListItemControllerSta
   void Function() onCartChange;
   void Function(Coupon?) onUpdateCoupon;
   void Function(LoadDataResult<Address>) onGetShippingAddressLoadDataResult;
+  void Function() onSelectPaymentMethod;
+  void Function() onRemovePaymentMethod;
+  LoadDataResult<PaymentMethod> Function() selectedPaymentMethodLoadDataResult;
   DeliveryCartContainerStateStorageListItemControllerState deliveryCartContainerStateStorageListItemControllerState;
   DeliveryCartContainerActionListItemControllerState deliveryCartContainerActionListItemControllerState;
   DeliveryCartContainerInterceptingActionListItemControllerState deliveryCartContainerInterceptingActionListItemControllerState;
@@ -42,6 +46,9 @@ class DeliveryCartContainerListItemControllerState extends ListItemControllerSta
     required this.onCartChange,
     required this.onUpdateCoupon,
     required this.onGetShippingAddressLoadDataResult,
+    required this.selectedPaymentMethodLoadDataResult,
+    required this.onSelectPaymentMethod,
+    required this.onRemovePaymentMethod,
     required this.deliveryCartContainerStateStorageListItemControllerState,
     required this.deliveryCartContainerActionListItemControllerState,
     required this.deliveryCartContainerInterceptingActionListItemControllerState,

@@ -38,6 +38,7 @@ import '../presentation/page/notification_redirector_page.dart';
 import '../presentation/page/order_chat_page.dart';
 import '../presentation/page/order_detail_page.dart';
 import '../presentation/page/order_page.dart';
+import '../presentation/page/payment_method_page.dart';
 import '../presentation/page/pdf_viewer_page.dart';
 import '../presentation/page/product_brand_page.dart';
 import '../presentation/page/product_bundle_detail_page.dart';
@@ -626,6 +627,15 @@ class _PageRestorationHelperImpl {
         restoration.notificationRedirectorPageRestorableRouteFuture.present(
           notificationRedirectorPageParameter.toJsonString()
         );
+      },
+      context: context
+    );
+  }
+
+  void toPaymentMethodPage(BuildContext context, String? paymentMethodId) {
+    PageRestorationHelper.findPageRestorationMixin<PaymentMethodPageRestorationMixin>(
+      onGetxPageRestorationFound: (restoration) {
+        restoration.paymentMethodPageRestorableRouteFuture.present(paymentMethodId);
       },
       context: context
     );
