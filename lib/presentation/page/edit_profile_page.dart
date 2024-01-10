@@ -25,6 +25,8 @@ import '../../misc/authidentitystep/choose_verification_method_auth_identity_ste
 import '../../misc/authidentitystep/failed_auth_identity_step.dart';
 import '../../misc/authidentitystep/verifyauthidentitystep/change_input_verify_auth_identity_step.dart';
 import '../../misc/constant.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/builder_list_item_controller_state.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/compound_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/profilemenulistitemcontrollerstate/profile_menu_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/widget_substitution_list_item_controller_state.dart';
@@ -299,149 +301,155 @@ class _StatefulEditProfileControllerMediatorWidgetState extends State<_StatefulE
       }
       return PagingDataResult<ListItemControllerState>(
         itemList: [
-          WidgetSubstitutionListItemControllerState(
-            widgetSubstitution: (context, index) {
-              void onTap() async {
-                DialogHelper.showSelectingImageDialog(
-                  context, cropAspectRatio: 1.0
-                );
-              }
-              return Column(
-                children: [
-                  TapArea(
-                    onTap: onTap,
-                    child: ProfilePictureCacheNetworkImage(
-                      profileImageUrl: user.userProfile.avatar.toEmptyStringNonNull,
-                      dimension: 20.w
+          BuilderListItemControllerState(
+            buildListItemControllerState: () => CompoundListItemControllerState(
+              listItemControllerState: [
+                WidgetSubstitutionListItemControllerState(
+                  widgetSubstitution: (context, index) {
+                    void onTap() async {
+                      DialogHelper.showSelectingImageDialog(
+                        context, cropAspectRatio: 1.0
+                      );
+                    }
+                    return Column(
+                      children: [
+                        TapArea(
+                          onTap: onTap,
+                          child: ProfilePictureCacheNetworkImage(
+                            profileImageUrl: user.userProfile.avatar.toEmptyStringNonNull,
+                            dimension: 20.w
+                          ),
+                        ),
+                        const SizedBox(height: 10.0),
+                        TapArea(
+                          onTap: onTap,
+                          child: Text(
+                            "Change Profile Avatar".tr,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.primary
+                            ),
+                          )
+                        )
+                      ],
+                    );
+                  }
+                ),
+                ProfileMenuListItemControllerState(
+                  onTap: (context) => editTextProfileField(
+                    context: context,
+                    inputValueModalDialogPageParameter: InputValueModalDialogPageParameter(
+                      value: user.name,
+                      title: () => 'Name'.tr,
+                      inputTitle: () => 'Input Name'.tr,
+                      inputHint: () => 'Type Name'.tr,
+                      inputSubmitText: () => "Submit".tr,
+                      requiredMessage: () => "${"Name is required".tr}.",
                     ),
-                  ),
-                  const SizedBox(height: 10.0),
-                  TapArea(
-                    onTap: onTap,
-                    child: Text(
-                      "Change Profile Avatar".tr,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary
-                      ),
+                    onConfigureEditUserParameter: (result) => EditUserParameter(
+                      name: result
                     )
-                  )
-                ],
-              );
-            }
-          ),
-          ProfileMenuListItemControllerState(
-            onTap: (context) => editTextProfileField(
-              context: context,
-              inputValueModalDialogPageParameter: InputValueModalDialogPageParameter(
-                value: user.name,
-                title: () => 'Name'.tr,
-                inputTitle: () => 'Input Name'.tr,
-                inputHint: () => 'Type Name'.tr,
-                inputSubmitText: () => "Submit".tr,
-                requiredMessage: () => "${"Name is required".tr}.",
-              ),
-              onConfigureEditUserParameter: (result) => EditUserParameter(
-                name: result
-              )
-            ),
-            title: 'Name'.tr,
-            titleInterceptor: EditProfileHelper.setTitleInterceptor(user.name),
-            icon: null
-          ),
-          ProfileMenuListItemControllerState(
-            onTap: (context) {
-              widget.editProfileController.authIdentity(EmailAuthIdentityParameter());
-            },
-            title: 'Email'.tr,
-            titleInterceptor: EditProfileHelper.setTitleInterceptor(user.email),
-            icon: null
-          ),
-          ProfileMenuListItemControllerState(
-            onTap: (context) async {
-              dynamic result = await DialogHelper.showModalDialogPage<Gender, SelectValueModalDialogPageParameter<Gender>>(
-                context: context,
-                modalDialogPageBuilder: (context, parameter) => SelectValueModalDialogPage(
-                  selectValueModalDialogPageParameter: parameter!,
+                  ),
+                  title: 'Name'.tr,
+                  titleInterceptor: EditProfileHelper.setTitleInterceptor(user.name),
+                  icon: null
                 ),
-                parameter: SelectValueModalDialogPageParameter<Gender>(
-                  valueList: _genderList,
-                  title: MultiLanguageString({
-                    Constant.textEnUsLanguageKey: "Select Gender",
-                    Constant.textInIdLanguageKey: "Pilih Jenis Kelamin"
-                  }).toEmptyStringNonNull,
-                  onConvertToStringForItemText: (gender) => gender.text.toStringNonNull,
-                  onConvertToStringForComparing: (gender) => (gender?.value).toEmptyStringNonNull,
-                  selectedValue: () {
-                    return getGenderBasedUserGender();
-                  }()
+                ProfileMenuListItemControllerState(
+                  onTap: (context) {
+                    widget.editProfileController.authIdentity(EmailAuthIdentityParameter());
+                  },
+                  title: 'Email'.tr,
+                  titleInterceptor: EditProfileHelper.setTitleInterceptor(user.email),
+                  icon: null
                 ),
-              );
-              if (result is Gender) {
-                _editProfile(
-                  EditUserParameter(gender: result.value)
-                );
-              }
-            },
-            title: 'Gender'.tr,
-            titleInterceptor: EditProfileHelper.setTitleInterceptor(
-              (getGenderBasedUserGender()?.text).toStringNonNull
-            ),
-            icon: null
-          ),
-          ProfileMenuListItemControllerState(
-            onTap: (context) async {
-              DateTime? selectedDateTime = await showDatePicker(
-                context: context,
-                initialDate: DateTime.now(),
-                firstDate: DateTime.utc(1030, 3, 14),
-                lastDate: DateTime.utc(9999, 3, 14),
-              );
-              if (selectedDateTime != null) {
-                _editProfile(
-                  EditUserParameter(birthDateTime: selectedDateTime)
-                );
-              }
-            },
-            title: 'Date Birth'.tr,
-            titleInterceptor: EditProfileHelper.setTitleInterceptor(
-              user.userProfile.dateBirth != null
-                ? DateUtil.standardDateFormat4.format(user.userProfile.dateBirth!)
-                // ignore: unnecessary_cast
-                : (null as String?).toStringNonNull
-            ),
-            icon: null
-          ),
-          ProfileMenuListItemControllerState(
-            onTap: (context) => editTextProfileField(
-              context: context,
-              inputValueModalDialogPageParameter: InputValueModalDialogPageParameter(
-                value: user.userProfile.placeBirth.toEmptyStringNonNull,
-                title: () => 'Place Birth'.tr,
-                inputTitle: () => 'Input Place Birth'.tr,
-                inputHint: () => 'Type Place Birth'.tr,
-                inputSubmitText: () => "Submit".tr,
-                requiredMessage: () => "${"Place Birth is required".tr}.",
-              ),
-              onConfigureEditUserParameter: (result) => EditUserParameter(
-                placeBirth: result
-              )
-            ),
-            title: 'Place Birth'.tr,
-            titleInterceptor: EditProfileHelper.setTitleInterceptor(
-              user.userProfile.placeBirth.toStringNonNull
-            ),
-            icon: null
-          ),
-          ProfileMenuListItemControllerState(
-            onTap: (context) {
-              widget.editProfileController.authIdentity(PhoneAuthIdentityParameter());
-            },
-            title: 'Phone Number'.tr,
-            titleInterceptor: EditProfileHelper.setTitleInterceptor(
-              user.userProfile.phoneNumber.toStringNonNull
-            ),
-            icon: null
-          ),
+                ProfileMenuListItemControllerState(
+                  onTap: (context) async {
+                    dynamic result = await DialogHelper.showModalDialogPage<Gender, SelectValueModalDialogPageParameter<Gender>>(
+                      context: context,
+                      modalDialogPageBuilder: (context, parameter) => SelectValueModalDialogPage(
+                        selectValueModalDialogPageParameter: parameter!,
+                      ),
+                      parameter: SelectValueModalDialogPageParameter<Gender>(
+                        valueList: _genderList,
+                        title: MultiLanguageString({
+                          Constant.textEnUsLanguageKey: "Select Gender",
+                          Constant.textInIdLanguageKey: "Pilih Jenis Kelamin"
+                        }).toEmptyStringNonNull,
+                        onConvertToStringForItemText: (gender) => gender.text.toStringNonNull,
+                        onConvertToStringForComparing: (gender) => (gender?.value).toEmptyStringNonNull,
+                        selectedValue: () {
+                          return getGenderBasedUserGender();
+                        }()
+                      ),
+                    );
+                    if (result is Gender) {
+                      _editProfile(
+                        EditUserParameter(gender: result.value)
+                      );
+                    }
+                  },
+                  title: 'Gender'.tr,
+                  titleInterceptor: EditProfileHelper.setTitleInterceptor(
+                    (getGenderBasedUserGender()?.text).toStringNonNull
+                  ),
+                  icon: null
+                ),
+                ProfileMenuListItemControllerState(
+                  onTap: (context) async {
+                    DateTime? selectedDateTime = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime.utc(1030, 3, 14),
+                      lastDate: DateTime.utc(9999, 3, 14),
+                    );
+                    if (selectedDateTime != null) {
+                      _editProfile(
+                        EditUserParameter(birthDateTime: selectedDateTime)
+                      );
+                    }
+                  },
+                  title: 'Date Birth'.tr,
+                  titleInterceptor: EditProfileHelper.setTitleInterceptor(
+                    user.userProfile.dateBirth != null
+                      ? DateUtil.standardDateFormat4.format(user.userProfile.dateBirth!)
+                      // ignore: unnecessary_cast
+                      : (null as String?).toStringNonNull
+                  ),
+                  icon: null
+                ),
+                ProfileMenuListItemControllerState(
+                  onTap: (context) => editTextProfileField(
+                    context: context,
+                    inputValueModalDialogPageParameter: InputValueModalDialogPageParameter(
+                      value: user.userProfile.placeBirth.toEmptyStringNonNull,
+                      title: () => 'Place Birth'.tr,
+                      inputTitle: () => 'Input Place Birth'.tr,
+                      inputHint: () => 'Type Place Birth'.tr,
+                      inputSubmitText: () => "Submit".tr,
+                      requiredMessage: () => "${"Place Birth is required".tr}.",
+                    ),
+                    onConfigureEditUserParameter: (result) => EditUserParameter(
+                      placeBirth: result
+                    )
+                  ),
+                  title: 'Place Birth'.tr,
+                  titleInterceptor: EditProfileHelper.setTitleInterceptor(
+                    user.userProfile.placeBirth.toStringNonNull
+                  ),
+                  icon: null
+                ),
+                ProfileMenuListItemControllerState(
+                  onTap: (context) {
+                    widget.editProfileController.authIdentity(PhoneAuthIdentityParameter());
+                  },
+                  title: 'Phone Number'.tr,
+                  titleInterceptor: EditProfileHelper.setTitleInterceptor(
+                    user.userProfile.phoneNumber.toStringNonNull
+                  ),
+                  icon: null
+                ),
+              ]
+            )
+          )
         ],
         page: 1,
         totalPage: 1,

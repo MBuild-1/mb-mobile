@@ -249,6 +249,9 @@ class ExtendedGetMaterialApp extends StatelessWidget {
           defaultDurationTransition:
           transitionDuration ?? Get.defaultTransitionDuration,
         );
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          WidgetsBinding.instance.removeObserver(Get.rootController);
+        });
       },
       builder: (_) => routerDelegate != null ? MaterialApp.router(
         routerDelegate: routerDelegate!,

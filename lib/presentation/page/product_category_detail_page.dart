@@ -8,6 +8,8 @@ import '../../domain/entity/product/productcategory/product_category_detail.dart
 import '../../domain/entity/product/productcategory/product_category_detail_parameter.dart';
 import '../../domain/usecase/get_product_category_detail_use_case.dart';
 import '../../misc/additionalloadingindicatorchecker/product_category_detail_additional_paging_result_parameter_checker.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/builder_list_item_controller_state.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/compound_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/product_category_header_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/productlistitemcontrollerstate/vertical_product_list_item_controller_state.dart';
@@ -204,14 +206,20 @@ class _StatefulProductCategoryDetailControllerMediatorWidgetState extends State<
         totalPage: 1,
         totalItem: 1,
         itemList: [
-          ProductCategoryHeaderListItemControllerState(productCategory: productCategoryDetail),
-          ...productCategoryDetail.shortProductList.map<ListItemControllerState>((product) {
-            return VerticalProductListItemControllerState(
-              productAppearanceData: product,
-              onRemoveWishlist: (productOrProductEntryId) {},
-              onAddWishlist: (productOrProductEntryId) {}
-            );
-          }).toList()
+          BuilderListItemControllerState(
+            buildListItemControllerState: () => CompoundListItemControllerState(
+              listItemControllerState: [
+                ProductCategoryHeaderListItemControllerState(productCategory: productCategoryDetail),
+                ...productCategoryDetail.shortProductList.map<ListItemControllerState>((product) {
+                  return VerticalProductListItemControllerState(
+                    productAppearanceData: product,
+                    onRemoveWishlist: (productOrProductEntryId) {},
+                    onAddWishlist: (productOrProductEntryId) {}
+                  );
+                }).toList()
+              ]
+            )
+          )
         ]
       );
     });

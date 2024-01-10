@@ -17,6 +17,7 @@ import '../../misc/controllerstate/listitemcontrollerstate/compound_list_item_co
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/load_data_result_dynamic_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/padding_container_list_item_controller_state.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/product_brand_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/productbrandlistitemcontrollerstate/vertical_product_brand_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/title_and_description_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
@@ -29,6 +30,7 @@ import '../../misc/itemtypelistsubinterceptor/verticalgriditemtypelistsubinterce
 import '../../misc/list_item_controller_state_helper.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/controller_manager.dart';
+import '../../misc/multi_language_string.dart';
 import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
@@ -217,7 +219,7 @@ class _StatefulProductBrandControllerMediatorWidgetState extends State<_Stateful
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _productBrandListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? listItemControllerStateList) async {
     late LoadDataResult<PagingDataResult<ProductBrand>> productBrandLoadDataResult;
     ProductBrandPageType productBrandPageType = widget.productBrandPageParameter.productBrandPageType;
-    String title = "";
+    String Function() title = () => "";
     if (productBrandPageType == ProductBrandPageType.defaultProductDetail) {
       productBrandLoadDataResult = await widget.productBrandController.getProductBrandPaging(
         ProductBrandPagingParameter(
@@ -225,7 +227,7 @@ class _StatefulProductBrandControllerMediatorWidgetState extends State<_Stateful
           itemEachPageCount: 10
         )
       );
-      title = "Product Brand".tr;
+      title = () => "Product Brand".tr;
     } else if (productBrandPageType == ProductBrandPageType.selectedFashionBrandProductDetail) {
       productBrandLoadDataResult = await widget.productBrandController.getSelectedFashionBrandsPaging(
         ProductBrandPagingParameter(
@@ -233,7 +235,7 @@ class _StatefulProductBrandControllerMediatorWidgetState extends State<_Stateful
           itemEachPageCount: 10
         )
       );
-      title = Constant.multiLanguageStringSelectedFashionBrands.toEmptyStringNonNull;
+      title = () => Constant.multiLanguageStringSelectedFashionBrands.toEmptyStringNonNull;
     } else if (productBrandPageType == ProductBrandPageType.selectedBeautyBrandProductDetail) {
       productBrandLoadDataResult = await widget.productBrandController.getSelectedBeautyBrandsPaging(
         ProductBrandPagingParameter(
@@ -241,43 +243,26 @@ class _StatefulProductBrandControllerMediatorWidgetState extends State<_Stateful
           itemEachPageCount: 10
         )
       );
-      title = Constant.multiLanguageStringChoiceBeautyBrand.toEmptyStringNonNull;
+      title = () => Constant.multiLanguageStringChoiceBeautyBrand.toEmptyStringNonNull;
     }
     return productBrandLoadDataResult.map<PagingResult<ListItemControllerState>>((productBrandPaging) {
       List<ListItemControllerState> resultListItemControllerState = [];
-      Iterable<ListItemControllerState> verticalProductBrandListItemControllerStateList = productBrandPaging.map<ListItemControllerState>(
-        (productBrand) => VerticalProductBrandListItemControllerState(
-          productBrand: productBrand
-        )
-      ).itemList;
       int totalItem = productBrandPaging.totalItem;
       if (pageKey == 1) {
         totalItem = 2;
         resultListItemControllerState = [
-          CompoundListItemControllerState(
-            listItemControllerState: [
-              VirtualSpacingListItemControllerState(height: Constant.paddingListItem),
-              PaddingContainerListItemControllerState(
-                padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-                paddingChildListItemControllerState: TitleAndDescriptionListItemControllerState(
-                  title: title
-                ),
-              ),
-            ]
-          ),
-          VerticalGridPaddingContentSubInterceptorSupportListItemControllerState(
-            childListItemControllerStateList: [
-              ...verticalProductBrandListItemControllerStateList
-            ]
+          ProductBrandContainerListItemControllerState(
+            title: title,
+            productBrandList: productBrandPaging.itemList
           )
         ];
       } else {
         if (ListItemControllerStateHelper.checkListItemControllerStateList(listItemControllerStateList)) {
-          VerticalGridPaddingContentSubInterceptorSupportListItemControllerState verticalGridListItemControllerState = ListItemControllerStateHelper.parsePageKeyedListItemControllerState(
-            listItemControllerStateList![1]
-          ) as VerticalGridPaddingContentSubInterceptorSupportListItemControllerState;
-          verticalGridListItemControllerState.childListItemControllerStateList.addAll(
-            verticalProductBrandListItemControllerStateList
+          ProductBrandContainerListItemControllerState productBrandContainerListItemControllerState = ListItemControllerStateHelper.parsePageKeyedListItemControllerState(
+            listItemControllerStateList![0]
+          ) as ProductBrandContainerListItemControllerState;
+          productBrandContainerListItemControllerState.productBrandList.addAll(
+            productBrandPaging.itemList
           );
         }
       }

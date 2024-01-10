@@ -36,6 +36,7 @@ import '../../domain/usecase/remove_from_cart_use_case.dart';
 import '../../domain/usecase/request_join_bucket_use_case.dart';
 import '../../misc/additionalloadingindicatorchecker/host_cart_additional_paging_result_parameter_checker.dart';
 import '../../misc/additionalloadingindicatorchecker/take_friend_cart_additional_paging_result_parameter_checker.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/builder_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/cart_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/cart_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/vertical_cart_list_item_controller_state.dart';
@@ -283,9 +284,11 @@ class _StatefulHostCartControllerMediatorWidgetState extends State<_StatefulHost
       ).toList();
       return PagingDataResult<ListItemControllerState>(
         itemList: [
-          PaddingContainerListItemControllerState(
-            padding: EdgeInsets.all(4.w),
-            paddingChildListItemControllerState: HostCartIndicatorListItemControllerState(hostCart: HostCart(username: "test"))
+          BuilderListItemControllerState(
+            buildListItemControllerState: () => PaddingContainerListItemControllerState(
+              padding: EdgeInsets.all(4.w),
+              paddingChildListItemControllerState: HostCartIndicatorListItemControllerState(hostCart: HostCart(username: "test"))
+            ),
           ),
           SpacingListItemControllerState(),
           CartContainerListItemControllerState(

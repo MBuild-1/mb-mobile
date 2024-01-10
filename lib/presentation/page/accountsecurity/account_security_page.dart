@@ -227,39 +227,32 @@ class _StatefulAccountSecurityControllerMediatorWidgetState extends State<_State
       onSetState: () => setState(() {}),
       dynamicItemLoadDataResultDynamicListItemControllerStateList: _dynamicItemLoadDataResultDynamicListItemControllerStateList
     );
+    ListItemControllerState pinMenuListItemControllerState = componentEntityMediator.mapWithParameter(
+      widget.accountSecurityController.getPinMenuList(),
+      parameter: carouselParameterizedEntityMediator
+    );
     return SuccessLoadDataResult<PagingDataResult<ListItemControllerState>>(
       value: PagingDataResult<ListItemControllerState>(
         itemList: [
-          ProfileMenuListItemControllerState(
-            onTap: (context) => PageRestorationHelper.toChangePasswordPage(context),
-            title: 'Change Password'.tr,
-            descriptionInterceptor: descriptionInterceptor,
-            icon: null
+          BuilderListItemControllerState(
+            buildListItemControllerState: () => CompoundListItemControllerState(
+              listItemControllerState: [
+                ProfileMenuListItemControllerState(
+                  onTap: (context) => PageRestorationHelper.toChangePasswordPage(context),
+                  title: 'Change Password'.tr,
+                  descriptionInterceptor: descriptionInterceptor,
+                  icon: null
+                ),
+                pinMenuListItemControllerState,
+                ProfileMenuListItemControllerState(
+                  onTap: (context) => PageRestorationHelper.toPersonalVerificationPage(context),
+                  title: 'Personal Data Verification'.tr,
+                  descriptionInterceptor: descriptionInterceptor,
+                  icon: null
+                ),
+              ]
+            )
           ),
-          componentEntityMediator.mapWithParameter(
-            widget.accountSecurityController.getPinMenuList(),
-            parameter: carouselParameterizedEntityMediator
-          ),
-          // DividerListItemControllerState(),
-          // ProfileMenuListItemControllerState(
-          //   onTap: (context) {},
-          //   title: 'Fingerprint'.tr,
-          //   descriptionInterceptor: descriptionInterceptor,
-          //   icon: null
-          // ),
-          ProfileMenuListItemControllerState(
-            onTap: (context) => PageRestorationHelper.toPersonalVerificationPage(context),
-            title: 'Personal Data Verification'.tr,
-            descriptionInterceptor: descriptionInterceptor,
-            icon: null
-          ),
-          // DividerListItemControllerState(),
-          // ProfileMenuListItemControllerState(
-          //   onTap: (context) {},
-          //   title: 'Login Via Notification'.tr,
-          //   descriptionInterceptor: descriptionInterceptor,
-          //   icon: null
-          // ),
         ],
         page: 1,
         totalPage: 1,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:sizer/sizer.dart';
 import 'dart:math' as math;
 
@@ -29,7 +30,7 @@ class FaqItem extends StatelessWidget {
       child: Padding(
         padding: padding ?? EdgeInsets.all(4.w),
         child: IconTitleAndDescriptionListItem(
-          title: faq.title,
+          title: faq.titleMultiLanguageString.toEmptyStringNonNull,
           description: null,
           titleInterceptor: (title, titleTextStyle) {
             return Text(

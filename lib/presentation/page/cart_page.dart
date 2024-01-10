@@ -75,7 +75,6 @@ import 'getx_page.dart';
 import 'modaldialogpage/add_cart_note_modal_dialog_page.dart';
 import 'modaldialogpage/cart_summary_cart_modal_dialog_page.dart';
 import 'shared_cart_page.dart';
-import 'take_friend_cart_page.dart';
 import 'dart:math' as math;
 
 class CartPage extends RestorableGetxPage<_CartPageRestoration> {
@@ -117,7 +116,7 @@ class CartPage extends RestorableGetxPage<_CartPageRestoration> {
   }
 }
 
-class _CartPageRestoration extends ExtendedMixableGetxPageRestoration with CartPageRestorationMixin, TakeFriendCartPageRestorationMixin, DeliveryPageRestorationMixin, SharedCartPageRestorationMixin {
+class _CartPageRestoration extends ExtendedMixableGetxPageRestoration with CartPageRestorationMixin, DeliveryPageRestorationMixin, SharedCartPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {

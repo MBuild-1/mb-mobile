@@ -98,6 +98,7 @@ import '../../../presentation/widget/productdiscussion/vertical_product_discussi
 import '../../../presentation/widget/prompt_indicator.dart';
 import '../../../presentation/widget/province/vertical_province_item.dart';
 import '../../../presentation/widget/province_map_header_list_item.dart';
+import '../../../presentation/widget/selectlanguage/vertical_select_language_item.dart';
 import '../../../presentation/widget/selectvalue/vertical_select_value_item.dart';
 import '../../../presentation/widget/sharedcart/shared_cart_member_item.dart';
 import '../../../presentation/widget/shimmer_carousel_item.dart';
@@ -226,6 +227,8 @@ import '../../controllerstate/listitemcontrollerstate/province_map_header_list_i
 import '../../controllerstate/listitemcontrollerstate/row_container_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/selectcountrieslistitemcontrollerstate/country_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/selectcountrieslistitemcontrollerstate/vertical_country_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/selectlanguagelistitemcontrollerstate/select_language_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/selectlanguagelistitemcontrollerstate/vertical_select_language_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/selectprovinceslistitemcontrollerstate/province_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/selectprovinceslistitemcontrollerstate/vertical_province_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/selectvaluelistitemcontrollerstate/select_value_list_item_controller_state.dart';

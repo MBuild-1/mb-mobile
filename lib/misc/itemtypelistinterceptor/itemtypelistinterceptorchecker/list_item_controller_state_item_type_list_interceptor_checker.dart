@@ -28,14 +28,18 @@ import '../../itemtypelistsubinterceptor/padding_container_item_type_list_sub_in
 import '../../itemtypelistsubinterceptor/page_keyed_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/payment_method_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/positioned_container_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/product_brand_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/product_bundle_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/product_category_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/product_discussion_container_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/product_entry_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/product_entry_header_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/profile_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/province_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/row_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/search_filter_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/search_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/select_language_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/select_value_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/shimmer_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/stack_container_item_type_list_sub_interceptor.dart';
@@ -202,9 +206,24 @@ class ListItemControllerStateItemTypeInterceptorChecker extends ItemTypeListInte
     ProductEntryHeaderItemTypeListSubInterceptor(
       listItemControllerStateItemTypeInterceptorChecker: this
     ),
+    ProductEntryContainerItemTypeListSubInterceptor(
+      padding: padding,
+      itemSpacing: itemSpacing,
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
     ProductBundleItemTypeListSubInterceptor(
       padding: padding,
       itemSpacing: itemSpacing
+    ),
+    ProductBrandContainerItemTypeListSubInterceptor(
+      padding: padding,
+      itemSpacing: itemSpacing,
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
+    ProductCategoryContainerItemTypeListSubInterceptor(
+      padding: padding,
+      itemSpacing: itemSpacing,
+      listItemControllerStateItemTypeInterceptorChecker: this
     ),
     ProductDiscussionContainerItemTypeListSubInterceptor(
       padding: padding,
@@ -287,6 +306,11 @@ class ListItemControllerStateItemTypeInterceptorChecker extends ItemTypeListInte
       listItemControllerStateItemTypeInterceptorChecker: this
     ),
     ModifyWarehouseItemTypeListSubInterceptor(
+      padding: padding,
+      itemSpacing: itemSpacing,
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
+    SelectLanguageItemTypeListSubInterceptor(
       padding: padding,
       itemSpacing: itemSpacing,
       listItemControllerStateItemTypeInterceptorChecker: this

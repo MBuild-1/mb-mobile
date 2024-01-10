@@ -11,6 +11,8 @@ import '../../domain/entity/faq/faq.dart';
 import '../../domain/entity/faq/faq_list_parameter.dart';
 import '../../domain/usecase/get_faq_list_use_case.dart';
 import '../../misc/constant.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/builder_list_item_controller_state.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/compound_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/divider_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/faqlistitemcontrollerstate/faq_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/faqlistitemcontrollerstate/faq_list_item_controller_state.dart';
@@ -236,61 +238,68 @@ class _StatefulInboxControllerMediatorWidgetState extends State<_StatefulInboxCo
     Color iconColor = Colors.grey.shade500;
     Widget descriptionInterceptor(description, lastDescriptionTextStyle) => Text(description);
     return faqPagingLoadDataResult.map<PagingResult<ListItemControllerState>>((faqList) {
+      List<FaqListItemValue> faqListItemValueList = faqList.map<FaqListItemValue>((faq) {
+        return FaqListItemValue(
+          faq: faq,
+          isExpanded: false
+        );
+      }).toList();
       return PagingDataResult<ListItemControllerState>(
         itemList: [
-          if (widget.inboxPageParameter.showInboxMenu) ...[
-            ProfileMenuListItemControllerState(
-              onTap: (context) => PageRestorationHelper.toChatHistoryPage(context),
-              icon: (BuildContext context) => NotificationIconIndicator(
-                notificationNumber: _notificationNotifier.inboxLoadDataResult.resultIfSuccess ?? 0,
-                icon: ModifiedSvgPicture.asset(Constant.vectorChat, color: iconColor, width: 20.0),
-              ),
-              title: 'Chat'.tr,
-              description: "Your private conversations".tr,
-              descriptionInterceptor: descriptionInterceptor
-            ),
-            DividerListItemControllerState(),
-            ProfileMenuListItemControllerState(
-              onTap: (context) => PageRestorationHelper.toProductDiscussionPage(
-                context, ProductDiscussionPageParameter(
-                  productId: null,
-                  bundleId: null,
-                  discussionProductId: null,
-                  isBasedUser: true
-                ),
-              ),
-              icon: (BuildContext context) => NotificationIconIndicator(
-                notificationNumber: 0,
-                icon: ModifiedSvgPicture.asset(Constant.vectorProductDiscussion2, color: iconColor, width: 20.0),
-              ),
-              title: 'Product Discussion'.tr,
-              description: "Ask questions about the product".tr,
-              descriptionInterceptor: descriptionInterceptor
-            ),
-            DividerListItemControllerState(),
-            ProfileMenuListItemControllerState(
-              onTap: (context) => PageRestorationHelper.toDeliveryReviewPage(context),
-              icon: (BuildContext context) => NotificationIconIndicator(
-                notificationNumber: 0,
-                icon: ModifiedSvgPicture.asset(Constant.vectorDeliveryReview2, color: iconColor, width: 20.0),
-              ),
-              title: 'Delivery Review'.tr,
-              description: "Please rate the shipping review".tr,
-              descriptionInterceptor: descriptionInterceptor
-            ),
-          ],
-          if (widget.inboxPageParameter.showFaq) ...[
-            FaqContainerListItemControllerState(
-              faqListItemValueList: faqList.map<FaqListItemValue>((faq) {
-                return FaqListItemValue(
-                  faq: faq,
-                  isExpanded: false
-                );
-              }).toList(),
-              onUpdateState: () => setState(() {}),
-              showHeader: widget.inboxPageParameter.showInboxMenu
+          BuilderListItemControllerState(
+            buildListItemControllerState: () => CompoundListItemControllerState(
+              listItemControllerState: [
+                if (widget.inboxPageParameter.showInboxMenu) ...[
+                  ProfileMenuListItemControllerState(
+                    onTap: (context) => PageRestorationHelper.toChatHistoryPage(context),
+                    icon: (BuildContext context) => NotificationIconIndicator(
+                      notificationNumber: _notificationNotifier.inboxLoadDataResult.resultIfSuccess ?? 0,
+                      icon: ModifiedSvgPicture.asset(Constant.vectorChat, color: iconColor, width: 20.0),
+                    ),
+                    title: 'Chat'.tr,
+                    description: "Your private conversations".tr,
+                    descriptionInterceptor: descriptionInterceptor
+                  ),
+                  DividerListItemControllerState(),
+                  ProfileMenuListItemControllerState(
+                    onTap: (context) => PageRestorationHelper.toProductDiscussionPage(
+                      context, ProductDiscussionPageParameter(
+                        productId: null,
+                        bundleId: null,
+                        discussionProductId: null,
+                        isBasedUser: true
+                      ),
+                    ),
+                    icon: (BuildContext context) => NotificationIconIndicator(
+                      notificationNumber: 0,
+                      icon: ModifiedSvgPicture.asset(Constant.vectorProductDiscussion2, color: iconColor, width: 20.0),
+                    ),
+                    title: 'Product Discussion'.tr,
+                    description: "Ask questions about the product".tr,
+                    descriptionInterceptor: descriptionInterceptor
+                  ),
+                  DividerListItemControllerState(),
+                  ProfileMenuListItemControllerState(
+                    onTap: (context) => PageRestorationHelper.toDeliveryReviewPage(context),
+                    icon: (BuildContext context) => NotificationIconIndicator(
+                      notificationNumber: 0,
+                      icon: ModifiedSvgPicture.asset(Constant.vectorDeliveryReview2, color: iconColor, width: 20.0),
+                    ),
+                    title: 'Delivery Review'.tr,
+                    description: "Please rate the shipping review".tr,
+                    descriptionInterceptor: descriptionInterceptor
+                  ),
+                ],
+                if (widget.inboxPageParameter.showFaq) ...[
+                  FaqContainerListItemControllerState(
+                    faqListItemValueList: faqListItemValueList,
+                    onUpdateState: () => setState(() {}),
+                    showHeader: widget.inboxPageParameter.showInboxMenu
+                  )
+                ]
+              ]
             )
-          ]
+          )
         ],
         page: 1,
         totalPage: 1,

@@ -380,6 +380,38 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
       setState(() {});
     });
     return productDetailLoadDataResult.map((productDetail) {
+      ListItemControllerState otherFromThisBrandListItemControllerState = componentEntityMediator.mapWithParameter(
+        widget.productDetailController.getOtherFromThisBrand(
+          ProductDetailGetOtherFromThisBrandParameter(
+            brandSlug: productDetail.productBrand.slug
+          )
+        ),
+        parameter: carouselParameterizedEntityMediator
+      );
+      ListItemControllerState shortProductDiscussionListItemControllerState = componentEntityMediator.mapWithParameter(
+        widget.productDetailController.getShortProductDiscussion(),
+        parameter: carouselParameterizedEntityMediator
+      );
+      ListItemControllerState otherChosenForYouListItemControllerState = componentEntityMediator.mapWithParameter(
+        widget.productDetailController.getOtherChosenForYou(),
+        parameter: carouselParameterizedEntityMediator
+      );
+      ListItemControllerState otherFromYourSearchListItemControllerState = componentEntityMediator.mapWithParameter(
+        widget.productDetailController.getOtherFromYourSearch(),
+        parameter: carouselParameterizedEntityMediator
+      );
+      ListItemControllerState otherInterestedProductBrandListItemControllerState = componentEntityMediator.mapWithParameter(
+        widget.productDetailController.getOtherInterestedProductBrand(),
+        parameter: carouselParameterizedEntityMediator
+      );
+      ListItemControllerState otherInThisCategoryListItemControllerState = componentEntityMediator.mapWithParameter(
+        widget.productDetailController.getOtherInThisCategory(
+          ProductDetailGetOtherInThisCategoryParameter(
+            categorySlug: productDetail.productCategory.slug
+          )
+        ),
+        parameter: carouselParameterizedEntityMediator
+      );
       int a = 0;
       int selectedProductVariantIndex = -1;
       List<ProductEntry> productEntryList = productDetail.productEntry;
@@ -426,319 +458,299 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
         totalPage: 1,
         totalItem: 1,
         itemList: [
-          ProductDetailImageListItemControllerState(
-            productEntryList: productDetail.productEntry,
-            onGetProductEntryIndex: () {
-              return _productVariantColorfulChipTabBarController.value;
-            }
-          ),
-          ProductDetailShortHeaderListItemControllerState(
-            productDetail: productDetail,
-            onGetProductEntryIndex: () {
-              return _productVariantColorfulChipTabBarController.value;
-            },
-            onShareProduct: widget.productDetailController.shareProduct,
-            onAddWishlist: (productAppearanceData) => widget.productDetailController.wishlistAndCartControllerContentDelegate.addToWishlist(
-              productAppearanceData as SupportWishlist, () {
-                Completer<bool> checkingLoginCompleter = Completer<bool>();
-                LoginHelper.checkingLogin(
-                  context,
-                  () => checkingLoginCompleter.complete(true),
-                  resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
-                  showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
-                );
-                return checkingLoginCompleter.future;
-              }
-            ),
-            onRemoveWishlist: (productAppearanceData) => widget.productDetailController.wishlistAndCartControllerContentDelegate.removeFromWishlist(
-              productAppearanceData as SupportWishlist, () {
-                Completer<bool> checkingLoginCompleter = Completer<bool>();
-                LoginHelper.checkingLogin(
-                  context,
-                  () => checkingLoginCompleter.complete(true),
-                  resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
-                  showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
-                );
-                return checkingLoginCompleter.future;
-              }
-            ),
-          ),
-          VirtualSpacingListItemControllerState(height: 2.h),
-          PaddingContainerListItemControllerState(
-            padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-            paddingChildListItemControllerState: TitleAndDescriptionListItemControllerState(
-              title: productDetail.name,
-              verticalSpace: 5,
-              titleAndDescriptionItemInterceptor: (padding, title, titleWidget, description, descriptionWidget, titleAndDescriptionWidget, titleAndDescriptionWidgetList) {
-                if (titleWidget != null) {
-                  if (titleWidget is Text) {
-                    titleAndDescriptionWidgetList.first = Text(title.toStringNonNull, style: titleWidget.style?.copyWith(fontWeight: FontWeight.normal));
-                  }
-                }
-                return titleAndDescriptionWidget;
-              }
-            ),
-          ),
-          if (productEntryList.isNotEmpty)
-            CompoundListItemControllerState(
+          BuilderListItemControllerState(
+            buildListItemControllerState: () => CompoundListItemControllerState(
               listItemControllerState: [
-                BuilderListItemControllerState(
-                  buildListItemControllerState: () {
-                    List<ColorfulChipTabBarData> colorfulChipTabBarDataList = [];
-                    int i = 0;
-                    int selectedProductVariantIndex = -1;
-                    List<ProductEntry> productEntryList = productDetail.productEntry;
-                    for (ProductEntry productEntry in productEntryList) {
-                      List<ProductVariant> productVariantList = productEntry.productVariantList;
-                      if (productVariantList.isNotEmpty) {
-                        ProductVariant firstProductVariant = productVariantList.first;
-                        if (firstProductVariant.productEntryId == widget.productEntryId) {
-                          if (selectedProductVariantIndex == -1) {
-                            selectedProductVariantIndex = i;
-                          }
-                        }
-                        String productVariantDescription = "";
-                        int j = 0;
-                        for (ProductVariant productVariant in productVariantList) {
-                          productVariantDescription += "${(j > 0 ? ", " : "")}${productVariant.type} (${productVariant.name})";
-                          j++;
-                        }
-                        colorfulChipTabBarDataList.add(
-                          ColorfulChipTabBarData(
-                            title: productVariantDescription,
-                            color: Theme.of(context).colorScheme.primary,
-                            data: firstProductVariant.productEntryId
-                          )
-                        );
-                      } else {
-                        colorfulChipTabBarDataList.add(
-                          ColorfulChipTabBarData(
-                            title: productEntry.sustension,
-                            color: Theme.of(context).colorScheme.primary,
-                            data: productEntry.productEntryId
-                          )
-                        );
-                      }
-                      i++;
-                    }
-                    return CompoundListItemControllerState(
-                      listItemControllerState: [
-                        if (colorfulChipTabBarDataList.isNotEmpty)
-                          ...[
-                            VirtualSpacingListItemControllerState(height: 2.5.h),
-                            PaddingContainerListItemControllerState(
-                              padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-                              paddingChildListItemControllerState: TitleAndDescriptionListItemControllerState(
-                                title: "Select Variant".tr,
-                                description: null,
-                                verticalSpace: 25,
-                                titleAndDescriptionItemInterceptor: (padding, title, titleWidget, description, descriptionWidget, titleAndDescriptionWidget, titleAndDescriptionWidgetList) {
-                                  titleAndDescriptionWidgetList.first = Text(title.toStringNonNull, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold));
-                                  return titleAndDescriptionWidget;
-                                }
-                              )
-                            ),
-                            VirtualSpacingListItemControllerState(height: 10.0),
-                            ColorfulChipTabBarListItemControllerState(
-                              colorfulChipTabBarController: _productVariantColorfulChipTabBarController,
-                              colorfulChipTabBarDataList: colorfulChipTabBarDataList,
-                            ),
-                          ]
-                      ],
-                    );
+                ProductDetailImageListItemControllerState(
+                  productEntryList: productDetail.productEntry,
+                  onGetProductEntryIndex: () {
+                    return _productVariantColorfulChipTabBarController.value;
                   }
                 ),
-              ]
-            ),
-          VirtualSpacingListItemControllerState(height: 3.h),
-          PaddingContainerListItemControllerState(
-            padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-            paddingChildListItemControllerState: TitleAndDescriptionListItemControllerState(
-              title: "Product Detail".tr,
-              description: productDetail.description,
-              verticalSpace: 7.0,
-              titleAndDescriptionItemInterceptor: (padding, title, titleWidget, description, descriptionWidget, titleAndDescriptionWidget, titleAndDescriptionWidgetList) {
-                ProductEntry? _selectedProductEntry = ProductHelper.getSelectedProductEntry(
-                  productDetail.productEntry, _productVariantColorfulChipTabBarController.value
-                );
-                bool hasSelectedProductEntry = _selectedProductEntry != null;
-                List<Map<String, dynamic>> productDetailContentMap = [
-                  if (productDetail.productCertificationList.isNotEmpty) {
-                    "title": "Certification".tr,
-                    "description": productDetail.productCertificationList.first.name,
+                ProductDetailShortHeaderListItemControllerState(
+                  productDetail: productDetail,
+                  onGetProductEntryIndex: () {
+                    return _productVariantColorfulChipTabBarController.value;
                   },
-                  {
-                    "title": "Category".tr,
-                    "description": productDetail.productCategory.name,
-                    "on_tap": () => PageRestorationHelper.toProductEntryPage(
-                      context,
-                      ProductEntryPageParameter(
-                        productEntryParameterMap: {
-                          "category": productDetail.productCategory.slug
-                        }
-                      )
-                    )
-                  },
-                  {
-                    "title": "Province".tr,
-                    "description": (productDetail.province?.name).toStringNonNull,
-                    "on_tap": () => PageRestorationHelper.toProductEntryPage(
-                      context,
-                      ProductEntryPageParameter(
-                        productEntryParameterMap: {
-                          "province": (productDetail.province?.name).toEmptyStringNonNull,
-                          "province_id": (productDetail.province?.id).toEmptyStringNonNull
-                        }
-                      )
-                    )
-                  },
-                  {
-                    "title": "Brand".tr,
-                    "description": productDetail.productBrand.name,
-                    "on_tap": () => PageRestorationHelper.toProductEntryPage(
-                      context,
-                      ProductEntryPageParameter(
-                        productEntryParameterMap: {
-                          "brand_id": productDetail.productBrand.id,
-                          "brand": productDetail.productBrand.slug
-                        }
-                      )
-                    )
-                  },
-                  if (hasSelectedProductEntry) ...[
-                    {"title": "SKU".tr, "description": _selectedProductEntry.sku},
-                    {"title": "Sustension".tr, "description": _selectedProductEntry.sustension}
-                  ]
-                ];
-                titleAndDescriptionWidgetList.first = Text(title.toStringNonNull, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold));
-                titleAndDescriptionWidgetList.last = Column(
-                  children: productDetailContentMap.mapIndexed(
-                    (index, productDetailContentListValue) {
-                      List<Widget> columnResult = [
-                        TapArea(
-                          onTap: productDetailContentListValue["on_tap"],
-                          child: Column(
-                            children: [
-                              const SizedBox(height: 5),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(productDetailContentListValue["title"]),
-                                  ),
-                                  Expanded(
-                                    child: Text(productDetailContentListValue["description"]),
-                                  )
-                                ],
-                              ),
-                              const SizedBox(height: 5),
-                            ]
-                          ),
-                        ),
-                        const ModifiedDivider(),
-                      ];
-                      return Column(
-                        children: columnResult,
+                  onShareProduct: widget.productDetailController.shareProduct,
+                  onAddWishlist: (productAppearanceData) => widget.productDetailController.wishlistAndCartControllerContentDelegate.addToWishlist(
+                    productAppearanceData as SupportWishlist, () {
+                      Completer<bool> checkingLoginCompleter = Completer<bool>();
+                      LoginHelper.checkingLogin(
+                        context,
+                        () => checkingLoginCompleter.complete(true),
+                        resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
+                        showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
                       );
+                      return checkingLoginCompleter.future;
                     }
-                  ).toList(),
-                );
-                return titleAndDescriptionWidget;
-              }
-            ),
-          ),
-          VirtualSpacingListItemControllerState(height: 3.h),
-          PaddingContainerListItemControllerState(
-            padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-            paddingChildListItemControllerState: TitleAndDescriptionListItemControllerState(
-              title: "Product Description".tr,
-              description: productDetail.description,
-              verticalSpace: 12,
-              titleAndDescriptionItemInterceptor: (padding, title, titleWidget, description, descriptionWidget, titleAndDescriptionWidget, titleAndDescriptionWidgetList) {
-                titleAndDescriptionWidgetList.first = Text(title.toStringNonNull, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold));
-                return titleAndDescriptionWidget;
-              }
-            ),
-          ),
-          VirtualSpacingListItemControllerState(height: 3.h),
-          componentEntityMediator.mapWithParameter(
-            widget.productDetailController.getOtherInThisCategory(
-              ProductDetailGetOtherInThisCategoryParameter(
-                categorySlug: productDetail.productCategory.slug
-              )
-            ),
-            parameter: carouselParameterizedEntityMediator
-          ),
-          VirtualSpacingListItemControllerState(height: 4.h),
-          ProductDetailBrandListItemControllerState(
-            productBrand: productDetail.productBrand,
-            onTapProductBrand: (productBrand) => PageRestorationHelper.toProductEntryPage(
-              context,
-              ProductEntryPageParameter(
-                productEntryParameterMap: {
-                  "brand_id": productBrand.id,
-                  "brand": productBrand.slug
-                }
-              )
-            ),
-            onAddToFavoriteProductBrand: (productBrand) {
-              widget.productDetailController.productBrandFavoriteControllerContentDelegate.addToFavoriteProductBrand(
-                productBrand, () {
-                  Completer<bool> checkingLoginCompleter = Completer<bool>();
-                  LoginHelper.checkingLogin(
+                  ),
+                  onRemoveWishlist: (productAppearanceData) => widget.productDetailController.wishlistAndCartControllerContentDelegate.removeFromWishlist(
+                    productAppearanceData as SupportWishlist, () {
+                      Completer<bool> checkingLoginCompleter = Completer<bool>();
+                      LoginHelper.checkingLogin(
+                        context,
+                        () => checkingLoginCompleter.complete(true),
+                        resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
+                        showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
+                      );
+                      return checkingLoginCompleter.future;
+                    }
+                  ),
+                ),
+                VirtualSpacingListItemControllerState(height: 2.h),
+                PaddingContainerListItemControllerState(
+                  padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+                  paddingChildListItemControllerState: TitleAndDescriptionListItemControllerState(
+                    title: productDetail.name,
+                    verticalSpace: 5,
+                    titleAndDescriptionItemInterceptor: (padding, title, titleWidget, description, descriptionWidget, titleAndDescriptionWidget, titleAndDescriptionWidgetList) {
+                      if (titleWidget != null) {
+                        if (titleWidget is Text) {
+                          titleAndDescriptionWidgetList.first = Text(title.toStringNonNull, style: titleWidget.style?.copyWith(fontWeight: FontWeight.normal));
+                        }
+                      }
+                      return titleAndDescriptionWidget;
+                    }
+                  ),
+                ),
+                if (productEntryList.isNotEmpty)
+                  CompoundListItemControllerState(
+                    listItemControllerState: [
+                      BuilderListItemControllerState(
+                        buildListItemControllerState: () {
+                          List<ColorfulChipTabBarData> colorfulChipTabBarDataList = [];
+                          int i = 0;
+                          int selectedProductVariantIndex = -1;
+                          List<ProductEntry> productEntryList = productDetail.productEntry;
+                          for (ProductEntry productEntry in productEntryList) {
+                            List<ProductVariant> productVariantList = productEntry.productVariantList;
+                            if (productVariantList.isNotEmpty) {
+                              ProductVariant firstProductVariant = productVariantList.first;
+                              if (firstProductVariant.productEntryId == widget.productEntryId) {
+                                if (selectedProductVariantIndex == -1) {
+                                  selectedProductVariantIndex = i;
+                                }
+                              }
+                              String productVariantDescription = "";
+                              int j = 0;
+                              for (ProductVariant productVariant in productVariantList) {
+                                productVariantDescription += "${(j > 0 ? ", " : "")}${productVariant.type} (${productVariant.name})";
+                                j++;
+                              }
+                              colorfulChipTabBarDataList.add(
+                                ColorfulChipTabBarData(
+                                  title: productVariantDescription,
+                                  color: Theme.of(context).colorScheme.primary,
+                                  data: firstProductVariant.productEntryId
+                                )
+                              );
+                            } else {
+                              colorfulChipTabBarDataList.add(
+                                ColorfulChipTabBarData(
+                                  title: productEntry.sustension,
+                                  color: Theme.of(context).colorScheme.primary,
+                                  data: productEntry.productEntryId
+                                )
+                              );
+                            }
+                            i++;
+                          }
+                          return CompoundListItemControllerState(
+                            listItemControllerState: [
+                              if (colorfulChipTabBarDataList.isNotEmpty)
+                                ...[
+                                  VirtualSpacingListItemControllerState(height: 2.5.h),
+                                  PaddingContainerListItemControllerState(
+                                    padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+                                    paddingChildListItemControllerState: TitleAndDescriptionListItemControllerState(
+                                      title: "Select Variant".tr,
+                                      description: null,
+                                      verticalSpace: 25,
+                                      titleAndDescriptionItemInterceptor: (padding, title, titleWidget, description, descriptionWidget, titleAndDescriptionWidget, titleAndDescriptionWidgetList) {
+                                        titleAndDescriptionWidgetList.first = Text(title.toStringNonNull, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold));
+                                        return titleAndDescriptionWidget;
+                                      }
+                                    )
+                                  ),
+                                  VirtualSpacingListItemControllerState(height: 10.0),
+                                  ColorfulChipTabBarListItemControllerState(
+                                    colorfulChipTabBarController: _productVariantColorfulChipTabBarController,
+                                    colorfulChipTabBarDataList: colorfulChipTabBarDataList,
+                                  ),
+                                ]
+                            ],
+                          );
+                        }
+                      ),
+                    ]
+                  ),
+                VirtualSpacingListItemControllerState(height: 3.h),
+                PaddingContainerListItemControllerState(
+                  padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+                  paddingChildListItemControllerState: TitleAndDescriptionListItemControllerState(
+                    title: "Product Detail".tr,
+                    description: productDetail.description,
+                    verticalSpace: 7.0,
+                    titleAndDescriptionItemInterceptor: (padding, title, titleWidget, description, descriptionWidget, titleAndDescriptionWidget, titleAndDescriptionWidgetList) {
+                      ProductEntry? _selectedProductEntry = ProductHelper.getSelectedProductEntry(
+                        productDetail.productEntry, _productVariantColorfulChipTabBarController.value
+                      );
+                      bool hasSelectedProductEntry = _selectedProductEntry != null;
+                      List<Map<String, dynamic>> productDetailContentMap = [
+                        if (productDetail.productCertificationList.isNotEmpty) {
+                          "title": "Certification".tr,
+                          "description": productDetail.productCertificationList.first.name,
+                        },
+                        {
+                          "title": "Category".tr,
+                          "description": productDetail.productCategory.name,
+                          "on_tap": () => PageRestorationHelper.toProductEntryPage(
+                            context,
+                            ProductEntryPageParameter(
+                              productEntryParameterMap: {
+                                "category": productDetail.productCategory.slug
+                              }
+                            )
+                          )
+                        },
+                        {
+                          "title": "Province".tr,
+                          "description": (productDetail.province?.name).toStringNonNull,
+                          "on_tap": () => PageRestorationHelper.toProductEntryPage(
+                            context,
+                            ProductEntryPageParameter(
+                              productEntryParameterMap: {
+                                "province": (productDetail.province?.name).toEmptyStringNonNull,
+                                "province_id": (productDetail.province?.id).toEmptyStringNonNull
+                              }
+                            )
+                          )
+                        },
+                        {
+                          "title": "Brand".tr,
+                          "description": productDetail.productBrand.name,
+                          "on_tap": () => PageRestorationHelper.toProductEntryPage(
+                            context,
+                            ProductEntryPageParameter(
+                              productEntryParameterMap: {
+                                "brand_id": productDetail.productBrand.id,
+                                "brand": productDetail.productBrand.slug
+                              }
+                            )
+                          )
+                        },
+                        if (hasSelectedProductEntry) ...[
+                          {"title": "SKU".tr, "description": _selectedProductEntry.sku},
+                          {"title": "Sustension".tr, "description": _selectedProductEntry.sustension}
+                        ]
+                      ];
+                      titleAndDescriptionWidgetList.first = Text(title.toStringNonNull, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold));
+                      titleAndDescriptionWidgetList.last = Column(
+                        children: productDetailContentMap.mapIndexed(
+                          (index, productDetailContentListValue) {
+                            List<Widget> columnResult = [
+                              TapArea(
+                                onTap: productDetailContentListValue["on_tap"],
+                                child: Column(
+                                  children: [
+                                    const SizedBox(height: 5),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(productDetailContentListValue["title"]),
+                                        ),
+                                        Expanded(
+                                          child: Text(productDetailContentListValue["description"]),
+                                        )
+                                      ],
+                                    ),
+                                    const SizedBox(height: 5),
+                                  ]
+                                ),
+                              ),
+                              const ModifiedDivider(),
+                            ];
+                            return Column(
+                              children: columnResult,
+                            );
+                          }
+                        ).toList(),
+                      );
+                      return titleAndDescriptionWidget;
+                    }
+                  ),
+                ),
+                VirtualSpacingListItemControllerState(height: 3.h),
+                PaddingContainerListItemControllerState(
+                  padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+                  paddingChildListItemControllerState: TitleAndDescriptionListItemControllerState(
+                    title: "Product Description".tr,
+                    description: productDetail.description,
+                    verticalSpace: 12,
+                    titleAndDescriptionItemInterceptor: (padding, title, titleWidget, description, descriptionWidget, titleAndDescriptionWidget, titleAndDescriptionWidgetList) {
+                      titleAndDescriptionWidgetList.first = Text(title.toStringNonNull, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold));
+                      return titleAndDescriptionWidget;
+                    }
+                  ),
+                ),
+                VirtualSpacingListItemControllerState(height: 3.h),
+                otherInThisCategoryListItemControllerState,
+                VirtualSpacingListItemControllerState(height: 4.h),
+                ProductDetailBrandListItemControllerState(
+                  productBrand: productDetail.productBrand,
+                  onTapProductBrand: (productBrand) => PageRestorationHelper.toProductEntryPage(
                     context,
-                    () => checkingLoginCompleter.complete(true),
-                    resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
-                    showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
-                  );
-                  return checkingLoginCompleter.future;
-                }
-              );
-            },
-            onRemoveFromFavoriteProductBrand: (favoriteProductBrand) {
-              widget.productDetailController.productBrandFavoriteControllerContentDelegate.removeFromFavoriteProductBrandBasedProductBrand(
-                favoriteProductBrand, () {
-                  Completer<bool> checkingLoginCompleter = Completer<bool>();
-                  LoginHelper.checkingLogin(
-                    context,
-                    () => checkingLoginCompleter.complete(true),
-                    resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
-                    showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
-                  );
-                  return checkingLoginCompleter.future;
-                }
-              );
-            },
-          ),
-          VirtualSpacingListItemControllerState(height: 4.h),
-          componentEntityMediator.mapWithParameter(
-            widget.productDetailController.getOtherFromThisBrand(
-              ProductDetailGetOtherFromThisBrandParameter(
-                brandSlug: productDetail.productBrand.slug
-              )
-            ),
-            parameter: carouselParameterizedEntityMediator
-          ),
-          VirtualSpacingListItemControllerState(height: 4.h),
-          componentEntityMediator.mapWithParameter(
-            widget.productDetailController.getShortProductDiscussion(),
-            parameter: carouselParameterizedEntityMediator
-          ),
-          VirtualSpacingListItemControllerState(height: 4.h),
-          componentEntityMediator.mapWithParameter(
-            widget.productDetailController.getOtherChosenForYou(),
-            parameter: carouselParameterizedEntityMediator
-          ),
-          VirtualSpacingListItemControllerState(height: 4.h),
-          componentEntityMediator.mapWithParameter(
-            widget.productDetailController.getOtherFromYourSearch(),
-            parameter: carouselParameterizedEntityMediator
-          ),
-          VirtualSpacingListItemControllerState(height: 4.h),
-          componentEntityMediator.mapWithParameter(
-            widget.productDetailController.getOtherInterestedProductBrand(),
-            parameter: carouselParameterizedEntityMediator
-          ),
-          VirtualSpacingListItemControllerState(height: 4.h),
+                    ProductEntryPageParameter(
+                      productEntryParameterMap: {
+                        "brand_id": productBrand.id,
+                        "brand": productBrand.slug
+                      }
+                    )
+                  ),
+                  onAddToFavoriteProductBrand: (productBrand) {
+                    widget.productDetailController.productBrandFavoriteControllerContentDelegate.addToFavoriteProductBrand(
+                      productBrand, () {
+                        Completer<bool> checkingLoginCompleter = Completer<bool>();
+                        LoginHelper.checkingLogin(
+                          context,
+                          () => checkingLoginCompleter.complete(true),
+                          resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
+                          showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
+                        );
+                        return checkingLoginCompleter.future;
+                      }
+                    );
+                  },
+                  onRemoveFromFavoriteProductBrand: (favoriteProductBrand) {
+                    widget.productDetailController.productBrandFavoriteControllerContentDelegate.removeFromFavoriteProductBrandBasedProductBrand(
+                      favoriteProductBrand, () {
+                        Completer<bool> checkingLoginCompleter = Completer<bool>();
+                        LoginHelper.checkingLogin(
+                          context,
+                          () => checkingLoginCompleter.complete(true),
+                          resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
+                          showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
+                        );
+                        return checkingLoginCompleter.future;
+                      }
+                    );
+                  },
+                ),
+                VirtualSpacingListItemControllerState(height: 4.h),
+                otherFromThisBrandListItemControllerState,
+                VirtualSpacingListItemControllerState(height: 4.h),
+                shortProductDiscussionListItemControllerState,
+                VirtualSpacingListItemControllerState(height: 4.h),
+                otherChosenForYouListItemControllerState,
+                VirtualSpacingListItemControllerState(height: 4.h),
+                otherFromYourSearchListItemControllerState,
+                VirtualSpacingListItemControllerState(height: 4.h),
+                otherInterestedProductBrandListItemControllerState,
+                VirtualSpacingListItemControllerState(height: 4.h),
+              ]
+            )
+          )
         ]
       );
     });

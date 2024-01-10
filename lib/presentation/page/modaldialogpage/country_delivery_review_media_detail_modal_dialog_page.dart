@@ -3,6 +3,8 @@ import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 
 import '../../../controller/modaldialogcontroller/country_delivery_review_media_detail_modal_dialog_controller.dart';
 import '../../../domain/entity/delivery/countrydeliveryreviewmedia/country_delivery_review_media.dart';
+import '../../../misc/controllerstate/listitemcontrollerstate/builder_list_item_controller_state.dart';
+import '../../../misc/controllerstate/listitemcontrollerstate/compound_list_item_controller_state.dart';
 import '../../../misc/controllerstate/listitemcontrollerstate/countrydeliveryreviewlistitemcontrollerstate/country_delivery_review_media_detail_list_item_controller_state.dart';
 import '../../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../../misc/controllerstate/paging_controller_state.dart';
@@ -88,12 +90,18 @@ class _StatefulCountryDeliveryReviewMediaDetailModalDialogControllerMediatorWidg
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _countryDeliveryReviewMediaDetailListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? listItemControllerStateList) async {
     return SuccessLoadDataResult<PagingResult<ListItemControllerState>>(
       value: PagingDataResult<ListItemControllerState>(
-        itemList: widget.countryDeliveryReviewMediaList.map<ListItemControllerState>(
-          (countryDeliveryReviewMedia) => CountryDeliveryReviewMediaDetailListItemControllerState(
-            countryDeliveryReviewMedia: countryDeliveryReviewMedia,
-            contextForOpeningMediaView: widget.contextForOpeningMediaView
-          )
-        ).toList(),
+        itemList: [
+          BuilderListItemControllerState(
+            buildListItemControllerState: () => CompoundListItemControllerState(
+              listItemControllerState: widget.countryDeliveryReviewMediaList.map<ListItemControllerState>(
+                (countryDeliveryReviewMedia) => CountryDeliveryReviewMediaDetailListItemControllerState(
+                  countryDeliveryReviewMedia: countryDeliveryReviewMedia,
+                  contextForOpeningMediaView: widget.contextForOpeningMediaView
+                )
+              ).toList()
+            )
+          ),
+        ],
         page: 1,
         totalPage: 1,
         totalItem: widget.countryDeliveryReviewMediaList.length

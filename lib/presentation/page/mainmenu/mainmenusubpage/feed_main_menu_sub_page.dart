@@ -12,6 +12,8 @@ import '../../../../domain/entity/video/shortvideo/short_video.dart';
 import '../../../../misc/additionalloadingindicatorchecker/feed_sub_additional_paging_result_parameter_checker.dart';
 import '../../../../misc/carouselbackground/carousel_background.dart';
 import '../../../../misc/constant.dart';
+import '../../../../misc/controllerstate/listitemcontrollerstate/builder_list_item_controller_state.dart';
+import '../../../../misc/controllerstate/listitemcontrollerstate/compound_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/load_data_result_dynamic_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/no_content_list_item_controller_state.dart';
@@ -111,31 +113,41 @@ class _StatefulFeedMainMenuSubControllerMediatorWidgetState extends State<_State
       onSetState: () => setState(() {}),
       dynamicItemLoadDataResultDynamicListItemControllerStateList: _dynamicItemLoadDataResultDynamicListItemControllerStateList
     );
+    ListItemControllerState shortVideoFeedListItemControllerState = componentEntityMediator.mapWithParameter(
+      widget.feedMainMenuSubController.getShortVideoFeed(),
+      parameter: carouselParameterizedEntityMediator
+    );
+    ListItemControllerState deliveryReviewListItemControllerState = componentEntityMediator.mapWithParameter(
+      widget.feedMainMenuSubController.getDeliveryReviewList(),
+      parameter: carouselParameterizedEntityMediator
+    );
+    ListItemControllerState newsListItemControllerState = componentEntityMediator.mapWithParameter(
+      widget.feedMainMenuSubController.getNewsList(),
+      parameter: carouselParameterizedEntityMediator
+    );
+    ListItemControllerState tripListItemControllerState = componentEntityMediator.mapWithParameter(
+      widget.feedMainMenuSubController.getTripDefaultVideoFeed(),
+      parameter: carouselParameterizedEntityMediator
+    );
     return SuccessLoadDataResult<PagingResult<ListItemControllerState>>(
       value: PagingDataResult<ListItemControllerState>(
         page: 1,
         totalPage: 1,
         totalItem: 1,
         itemList: [
-          componentEntityMediator.mapWithParameter(
-            widget.feedMainMenuSubController.getShortVideoFeed(),
-            parameter: carouselParameterizedEntityMediator
-          ),
-          VirtualSpacingListItemControllerState(height: 20),
-          componentEntityMediator.mapWithParameter(
-            widget.feedMainMenuSubController.getDeliveryReviewList(),
-            parameter: carouselParameterizedEntityMediator
-          ),
-          VirtualSpacingListItemControllerState(height: 20),
-          componentEntityMediator.mapWithParameter(
-            widget.feedMainMenuSubController.getNewsList(),
-            parameter: carouselParameterizedEntityMediator
-          ),
-          VirtualSpacingListItemControllerState(height: 20),
-          componentEntityMediator.mapWithParameter(
-            widget.feedMainMenuSubController.getTripDefaultVideoFeed(),
-            parameter: carouselParameterizedEntityMediator
-          ),
+          BuilderListItemControllerState(
+            buildListItemControllerState: () => CompoundListItemControllerState(
+              listItemControllerState: [
+                shortVideoFeedListItemControllerState,
+                VirtualSpacingListItemControllerState(height: 20),
+                deliveryReviewListItemControllerState,
+                VirtualSpacingListItemControllerState(height: 20),
+                newsListItemControllerState,
+                VirtualSpacingListItemControllerState(height: 20),
+                tripListItemControllerState,
+              ]
+            )
+          )
         ]
       )
     );

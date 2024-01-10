@@ -19,6 +19,7 @@ import 'firebase_options.dart';
 import 'domain/usecase/get_user_use_case.dart';
 import 'misc/constant.dart';
 import 'misc/getextended/extended_get_material_app.dart';
+import 'misc/getextended/get_extended.dart';
 import 'misc/injector.dart';
 import 'misc/main_route_observer.dart';
 import 'presentation/notifier/login_notifier.dart';
@@ -118,7 +119,7 @@ class MyApp extends StatelessWidget {
           home: GetxPageBuilder.buildRestorableGetxPage(RedirectorPage()),
           defaultTransition: Transition.topLevel,
           translations: DefaultExtendedTranslation(),
-          locale: Locale(Constant.textInIdLanguageKey),
+          locale: GetExtended.deviceLocale,
           theme: ThemeData(
             indicatorColor: Constant.colorMain,
             colorScheme: ColorScheme.fromSeed(

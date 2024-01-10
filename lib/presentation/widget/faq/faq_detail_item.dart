@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../../../domain/entity/faq/faq.dart';
 import '../../../misc/constant.dart';
@@ -24,7 +25,7 @@ class FaqDetailItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(16.0)
       ),
       child: HtmlWidget(
-        faq.content,
+        faq.contentMultiLanguageString.toEmptyStringNonNull,
         textStyle: const TextStyle(fontSize: 13),
         onTapUrl: (url) async {
           WebHelper.launchUrl(Uri.parse(url));

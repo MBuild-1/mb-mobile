@@ -13,6 +13,7 @@ import '../../misc/constant.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/compound_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/padding_container_list_item_controller_state.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/productcategorylistitemcontrollerstate/product_category_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/productcategorylistitemcontrollerstate/vertical_product_category_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/title_and_description_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
@@ -199,39 +200,21 @@ class _StatefulProductCategoryControllerMediatorWidgetState extends State<_State
     );
     return productCategoryLoadDataResult.map<PagingResult<ListItemControllerState>>((productCategoryPaging) {
       List<ListItemControllerState> resultListItemControllerState = [];
-      Iterable<ListItemControllerState> verticalProductCategoryListItemControllerStateList = productCategoryPaging.map<ListItemControllerState>(
-        (productBrand) => VerticalProductCategoryListItemControllerState(
-          productCategory: productBrand
-        )
-      ).itemList;
       int totalItem = productCategoryPaging.totalItem;
       if (pageKey == 1) {
         totalItem = 2;
         resultListItemControllerState = [
-          CompoundListItemControllerState(
-            listItemControllerState: [
-              VirtualSpacingListItemControllerState(height: Constant.paddingListItem),
-              PaddingContainerListItemControllerState(
-                padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-                paddingChildListItemControllerState: TitleAndDescriptionListItemControllerState(
-                  title: "Product Category".tr
-                ),
-              ),
-            ]
-          ),
-          VerticalGridPaddingContentSubInterceptorSupportListItemControllerState(
-            childListItemControllerStateList: [
-              ...verticalProductCategoryListItemControllerStateList
-            ]
+          ProductCategoryContainerListItemControllerState(
+            productCategoryList: productCategoryPaging.itemList
           )
         ];
       } else {
         if (ListItemControllerStateHelper.checkListItemControllerStateList(listItemControllerStateList)) {
-          VerticalGridPaddingContentSubInterceptorSupportListItemControllerState verticalGridListItemControllerState = ListItemControllerStateHelper.parsePageKeyedListItemControllerState(
-            listItemControllerStateList![1]
-          ) as VerticalGridPaddingContentSubInterceptorSupportListItemControllerState;
-          verticalGridListItemControllerState.childListItemControllerStateList.addAll(
-            verticalProductCategoryListItemControllerStateList
+          ProductCategoryContainerListItemControllerState productCategoryContainerListItemControllerState = ListItemControllerStateHelper.parsePageKeyedListItemControllerState(
+            listItemControllerStateList![0]
+          ) as ProductCategoryContainerListItemControllerState;
+          productCategoryContainerListItemControllerState.productCategoryList.addAll(
+            productCategoryPaging.itemList
           );
         }
       }

@@ -18,6 +18,7 @@ import '../../../../misc/additionalloadingindicatorchecker/menu_main_menu_sub_ad
 import '../../../../misc/carouselbackground/carousel_background.dart';
 import '../../../../misc/constant.dart';
 import '../../../../misc/controllercontentdelegate/shared_cart_controller_content_delegate.dart';
+import '../../../../misc/controllerstate/listitemcontrollerstate/builder_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/compound_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/load_data_result_dynamic_list_item_controller_state.dart';
@@ -66,6 +67,7 @@ import '../../../widget/tap_area.dart';
 import '../../../widget/titleanddescriptionitem/title_and_description_item.dart';
 import '../../getx_page.dart';
 import '../../inbox_page.dart';
+import '../../modaldialogpage/select_language_modal_dialog_page.dart';
 import '../../product_discussion_page.dart';
 
 class MenuMainMenuSubPage extends DefaultGetxPage {
@@ -161,227 +163,253 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       widget.menuMainMenuSubController.loadLoggedUser();
     });
+    ListItemControllerState shortCartListItemControllerState = componentEntityMediator.mapWithParameter(
+      widget.menuMainMenuSubController.getMyCart(),
+      parameter: carouselParameterizedEntityMediator
+    );
     return SuccessLoadDataResult<PagingResult<ListItemControllerState>>(
       value: PagingDataResult<ListItemControllerState>(
         page: 1,
         totalPage: 1,
         totalItem: 1,
         itemList: [
-          VirtualSpacingListItemControllerState(height: Constant.paddingListItem),
-          componentEntityMediator.mapWithParameter(
-            widget.menuMainMenuSubController.getMyCart(),
-            parameter: carouselParameterizedEntityMediator
-          ),
-          VirtualSpacingListItemControllerState(height: Constant.paddingListItem),
-          SpacingListItemControllerState(),
-          ProfileMenuListItemControllerState(
-            onTap: (context) => PageRestorationHelper.toOrderPage(context),
-            icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorTransactionList, width: 20.0),
-            title: 'Transaction List'.tr,
-          ),
-          ProfileMenuListItemControllerState(
-            onTap: (context) {
-              void Function(int)? onChangeMainMenuTap = MainRouteObserver.onChangeMainMenuTap;
-              if (onChangeMainMenuTap != null) {
-                onChangeMainMenuTap(3);
-              }
-            },
-            icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorWishlist, width: 20.0),
-            title: 'Wishlist'.tr,
-          ),
-          ProfileMenuListItemControllerState(
-            onTap: (context) => PageRestorationHelper.toFavoriteProductBrandPage(context),
-            icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorFavoriteBrand, width: 20.0),
-            title: 'Favorite Brand'.tr,
-          ),
-          ProfileMenuListItemControllerState(
-            onTap: (context) => PageRestorationHelper.toHelpChatPage(context),
-            icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorInbox2, width: 20.0),
-            title: 'Chat'.tr,
-          ),
-          ProfileMenuListItemControllerState(
-            onTap: (context) => PageRestorationHelper.toProductDiscussionPage(
-              context, ProductDiscussionPageParameter(
-                productId: null,
-                bundleId: null,
-                discussionProductId: null,
-                isBasedUser: true
-              ),
-            ),
-            icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorProductDiscussion, width: 20.0),
-            title: 'Product Discussion'.tr,
-          ),
-          ProfileMenuListItemControllerState(
-            onTap: (context) => PageRestorationHelper.toDeliveryReviewPage(context),
-            icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorDeliveryShipping, width: 20.0),
-            title: 'Delivery Review'.tr,
-          ),
-          ProfileMenuListItemControllerState(
-            onTap: (context) => PageRestorationHelper.toNotificationPage(context),
-            icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorSupportMessage, width: 20.0),
-            title: 'Update'.tr,
-          ),
-          ProfileMenuListItemControllerState(
-            onTap: (context) => PageRestorationHelper.toInboxPage(
-              context, inboxPageParameter: InboxPageParameter(
-                showInboxMenu: false,
-                showFaq: true,
-                title: 'FAQ'.tr
-              )
-            ),
-            icon: (BuildContext context) => const Icon(Icons.question_mark, size: 20.0),
-            title: 'FAQ'.tr,
-          ),
-          ProfileMenuListItemControllerState(
-            onTap: (context) => widget.menuMainMenuSubController.sharedCartControllerContentDelegate.checkSharedCart(),
-            icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorCart, width: 20.0),
-            title: 'Shared Cart'.tr,
-          ),
-          SpacingListItemControllerState(),
-          VirtualSpacingListItemControllerState(
-            height: Constant.paddingListItem
-          ),
-          PaddingContainerListItemControllerState(
-            padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-            paddingChildListItemControllerState: TitleAndDescriptionListItemControllerState(
-              title: "Application Configuration".tr,
-              titleInterceptor: (title, titleTextStyle) => Text(
-                title.toStringNonNull,
-                style: const TextStyle(fontWeight: FontWeight.bold)
-              )
-            ),
-          ),
-          VirtualSpacingListItemControllerState(
-            height: 5
-          ),
-          ProfileMenuListItemControllerState(
-            onTap: (context) => PageRestorationHelper.toAddressPage(context),
-            icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorAddressList, width: 20.0),
-            title: 'Address List'.tr,
-            description: "${'Set the address for sending groceries'.tr}."
-          ),
-          ProfileMenuListItemControllerState(
-            onTap: (context) => PageRestorationHelper.toAccountSecurityPage(context),
-            icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorAccountSecurity, width: 20.0),
-            title: 'Account Security'.tr,
-            description: "${'Password, PIN, and personal data verification'.tr}."
-          ),
-          ProfileMenuListItemControllerState(
-            onTap: (context) => DialogHelper.showPromptUnderConstruction(context),
-            icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorNotificationConfiguration, width: 20.0),
-            title: 'Notification Configuration'.tr,
-            description: "${'Manage all kinds of notification messages'.tr}."
-          ),
-          ProfileMenuListItemControllerState(
-            onTap: (context) => DialogHelper.showPromptUnderConstruction(context),
-            icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorAccountPrivacy, width: 20.0),
-            title: 'Account Privation'.tr,
-            description: "${'Manage data usage and connected accounts'.tr}."
-          ),
-          SpacingListItemControllerState(),
-          ProfileDropdownMenuListItemControllerState(
-            onUpdateState: () => setState(() {}),
-            isExpand: false,
-            title: 'Regarding Master Bagasi'.tr,
-            profileMenuListItemControllerStateList: [
-              ProfileMenuListItemControllerState(
-                onTap: (context) {
-                  WebHelper.launchUrl(Uri.parse("https://m.masterbagasi.com/about-us"));
-                },
-                icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorAboutMasterbagasi, width: 20.0),
-                title: 'About Master Bagasi'.tr
-              ),
-              ProfileMenuListItemControllerState(
-                onTap: (context) {
-                  WebHelper.launchUrl(Uri.parse("https://m.masterbagasi.com/mb-care"));
-                },
-                icon: (BuildContext context) => const Icon(Icons.help_center, size: 20.0),
-                title: 'Master Bagasi Care'.tr
-              ),
-              ProfileMenuListItemControllerState(
-                onTap: (context) {
-                  WebHelper.launchUrl(Uri.parse(Constant.textTermAndConditionsUrl));
-                },
-                icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorTermsAndConditions, width: 20.0),
-                title: 'Terms & Conditions'.tr
-              ),
-              ProfileMenuListItemControllerState(
-                onTap: (context) {
-                  WebHelper.launchUrl(Uri.parse(Constant.textPrivacyPolicyUrl));
-                },
-                icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorPrivacyPolicy, width: 20.0),
-                title: 'Privacy Policy'.tr
-              ),
-              ProfileMenuListItemControllerState(
-                onTap: (context) {
-                  WebHelper.launchUrl(Uri.parse("https://masterbagasi.com/contact-us"));
-                },
-                icon: (BuildContext context) => const Icon(Icons.contact_support, size: 20.0),
-                title: 'Contact Us'.tr
-              ),
-              ProfileMenuListItemControllerState(
-                onTap: (context) async {
-                  final InAppReview inAppReview = InAppReview.instance;
-                  if (await inAppReview.isAvailable()) {
-                    inAppReview.requestReview();
-                  }
-                },
-                icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorReviewThisApplication, width: 20.0),
-                title: 'Review This App'.tr
-              ),
-            ]
-          ),
-          SpacingListItemControllerState(),
-          ProfileMenuListItemControllerState(
-            onTap: (context) => DialogHelper.showPromptLogout(context, widget.menuMainMenuSubController.logout),
-            title: 'Sign Out'.tr,
-            titleInterceptor: (text, style) => Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    text,
-                    style: style
+          BuilderListItemControllerState(
+            buildListItemControllerState: () => CompoundListItemControllerState(
+              listItemControllerState: <ListItemControllerState>[
+                VirtualSpacingListItemControllerState(height: Constant.paddingListItem),
+                shortCartListItemControllerState,
+                VirtualSpacingListItemControllerState(height: Constant.paddingListItem),
+                SpacingListItemControllerState(),
+                ProfileMenuListItemControllerState(
+                  onTap: (context) => PageRestorationHelper.toOrderPage(context),
+                  icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorTransactionList, width: 20.0),
+                  title: 'Transaction List'.tr,
+                ),
+                ProfileMenuListItemControllerState(
+                  onTap: (context) {
+                    void Function(int)? onChangeMainMenuTap = MainRouteObserver.onChangeMainMenuTap;
+                    if (onChangeMainMenuTap != null) {
+                      onChangeMainMenuTap(3);
+                    }
+                  },
+                  icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorWishlist, width: 20.0),
+                  title: 'Wishlist'.tr,
+                ),
+                ProfileMenuListItemControllerState(
+                  onTap: (context) => PageRestorationHelper.toFavoriteProductBrandPage(context),
+                  icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorFavoriteBrand, width: 20.0),
+                  title: 'Favorite Brand'.tr,
+                ),
+                ProfileMenuListItemControllerState(
+                  onTap: (context) => PageRestorationHelper.toHelpChatPage(context),
+                  icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorInbox2, width: 20.0),
+                  title: 'Chat'.tr,
+                ),
+                ProfileMenuListItemControllerState(
+                  onTap: (context) => PageRestorationHelper.toProductDiscussionPage(
+                    context, ProductDiscussionPageParameter(
+                      productId: null,
+                      bundleId: null,
+                      discussionProductId: null,
+                      isBasedUser: true
+                    ),
+                  ),
+                  icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorProductDiscussion, width: 20.0),
+                  title: 'Product Discussion'.tr,
+                ),
+                ProfileMenuListItemControllerState(
+                  onTap: (context) => PageRestorationHelper.toDeliveryReviewPage(context),
+                  icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorDeliveryShipping, width: 20.0),
+                  title: 'Delivery Review'.tr,
+                ),
+                ProfileMenuListItemControllerState(
+                  onTap: (context) => PageRestorationHelper.toNotificationPage(context),
+                  icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorSupportMessage, width: 20.0),
+                  title: 'Update'.tr,
+                ),
+                ProfileMenuListItemControllerState(
+                  onTap: (context) => PageRestorationHelper.toInboxPage(
+                    context, inboxPageParameter: InboxPageParameter(
+                      showInboxMenu: false,
+                      showFaq: true,
+                      title: 'FAQ'.tr
+                    )
+                  ),
+                  icon: (BuildContext context) => const Icon(Icons.question_mark, size: 20.0),
+                  title: 'FAQ'.tr,
+                ),
+                ProfileMenuListItemControllerState(
+                  onTap: (context) => widget.menuMainMenuSubController.sharedCartControllerContentDelegate.checkSharedCart(),
+                  icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorCart, width: 20.0),
+                  title: 'Shared Cart'.tr,
+                ),
+                ProfileMenuListItemControllerState(
+                  onTap: (context) async {
+                    dynamic result = await DialogHelper.showModalBottomDialogPage<int, int>(
+                      context: context,
+                      modalDialogPageBuilder: (context, parameter) => SelectLanguageModalDialogPage(),
+                      parameter: 1
+                    );
+                    if (result is int) {
+                      if (result == 1) {
+                        DialogHelper.showLoadingDialog(context);
+                        await Future.delayed(const Duration(milliseconds: 300));
+                        SomethingCounter.of(context)?.updateLanguage();
+                        Get.back();
+                      }
+                    }
+                  },
+                  icon: (BuildContext context) => const Icon(Icons.language, size: 20.0),
+                  title: 'Select Language'.tr,
+                ),
+                SpacingListItemControllerState(),
+                VirtualSpacingListItemControllerState(
+                  height: Constant.paddingListItem
+                ),
+                PaddingContainerListItemControllerState(
+                  padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+                  paddingChildListItemControllerState: TitleAndDescriptionListItemControllerState(
+                    title: "Application Configuration".tr,
+                    titleInterceptor: (title, titleTextStyle) => Text(
+                      title.toStringNonNull,
+                      style: const TextStyle(fontWeight: FontWeight.bold)
+                    )
                   ),
                 ),
-                LoadDataResultImplementerDirectly(
-                  loadDataResult: _packageInfoLoadDataResult,
-                  errorProvider: Injector.locator<ErrorProvider>(),
-                  onImplementLoadDataResultDirectly: (result, errorProvider) {
-                    Widget? textWidget;
-                    if (result.isSuccess) {
-                      textWidget = Text(
-                        "${"Version".tr} ${result.resultIfSuccess!.version}",
-                        style: style?.copyWith(
-                          fontWeight: FontWeight.normal
-                        )
-                      );
-                    } else if (result.isLoading) {
-                      textWidget = ModifiedShimmer.fromColors(
+                VirtualSpacingListItemControllerState(
+                  height: 5
+                ),
+                ProfileMenuListItemControllerState(
+                  onTap: (context) => PageRestorationHelper.toAddressPage(context),
+                  icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorAddressList, width: 20.0),
+                  title: 'Address List'.tr,
+                  description: "${'Set the address for sending groceries'.tr}."
+                ),
+                ProfileMenuListItemControllerState(
+                  onTap: (context) => PageRestorationHelper.toAccountSecurityPage(context),
+                  icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorAccountSecurity, width: 20.0),
+                  title: 'Account Security'.tr,
+                  description: "${'Password, PIN, and personal data verification'.tr}."
+                ),
+                ProfileMenuListItemControllerState(
+                  onTap: (context) => DialogHelper.showPromptUnderConstruction(context),
+                  icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorNotificationConfiguration, width: 20.0),
+                  title: 'Notification Configuration'.tr,
+                  description: "${'Manage all kinds of notification messages'.tr}."
+                ),
+                ProfileMenuListItemControllerState(
+                  onTap: (context) => DialogHelper.showPromptUnderConstruction(context),
+                  icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorAccountPrivacy, width: 20.0),
+                  title: 'Account Privation'.tr,
+                  description: "${'Manage data usage and connected accounts'.tr}."
+                ),
+                SpacingListItemControllerState(),
+                ProfileDropdownMenuListItemControllerState(
+                  onUpdateState: () => setState(() {}),
+                  isExpand: false,
+                  title: 'Regarding Master Bagasi'.tr,
+                  profileMenuListItemControllerStateList: [
+                    ProfileMenuListItemControllerState(
+                      onTap: (context) {
+                        WebHelper.launchUrl(Uri.parse("https://m.masterbagasi.com/about-us"));
+                      },
+                      icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorAboutMasterbagasi, width: 20.0),
+                      title: 'About Master Bagasi'.tr
+                    ),
+                    ProfileMenuListItemControllerState(
+                      onTap: (context) {
+                        WebHelper.launchUrl(Uri.parse("https://m.masterbagasi.com/mb-care"));
+                      },
+                      icon: (BuildContext context) => const Icon(Icons.help_center, size: 20.0),
+                      title: 'Master Bagasi Care'.tr
+                    ),
+                    ProfileMenuListItemControllerState(
+                      onTap: (context) {
+                        WebHelper.launchUrl(Uri.parse(Constant.textTermAndConditionsUrl));
+                      },
+                      icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorTermsAndConditions, width: 20.0),
+                      title: 'Terms & Conditions'.tr
+                    ),
+                    ProfileMenuListItemControllerState(
+                      onTap: (context) {
+                        WebHelper.launchUrl(Uri.parse(Constant.textPrivacyPolicyUrl));
+                      },
+                      icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorPrivacyPolicy, width: 20.0),
+                      title: 'Privacy Policy'.tr
+                    ),
+                    ProfileMenuListItemControllerState(
+                      onTap: (context) {
+                        WebHelper.launchUrl(Uri.parse("https://masterbagasi.com/contact-us"));
+                      },
+                      icon: (BuildContext context) => const Icon(Icons.contact_support, size: 20.0),
+                      title: 'Contact Us'.tr
+                    ),
+                    ProfileMenuListItemControllerState(
+                      onTap: (context) async {
+                        final InAppReview inAppReview = InAppReview.instance;
+                        if (await inAppReview.isAvailable()) {
+                          inAppReview.requestReview();
+                        }
+                      },
+                      icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorReviewThisApplication, width: 20.0),
+                      title: 'Review This App'.tr
+                    ),
+                  ]
+                ),
+                SpacingListItemControllerState(),
+                ProfileMenuListItemControllerState(
+                  onTap: (context) => DialogHelper.showPromptLogout(context, widget.menuMainMenuSubController.logout),
+                  title: 'Sign Out'.tr,
+                  titleInterceptor: (text, style) => Row(
+                    children: [
+                      Expanded(
                         child: Text(
-                          "${"Version".tr} 0.0.0",
-                          style: style?.copyWith(
-                            fontWeight: FontWeight.normal,
-                            backgroundColor: Colors.grey
-                          )
-                        )
-                      );
-                    }
-                    if (textWidget != null) {
-                      return Row(
-                        children: [
-                          const SizedBox(width: 10),
-                          textWidget
-                        ],
-                      );
-                    } else {
-                      return const SizedBox();
-                    }
-                  }
-                )
-              ],
-            ),
-            icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorLogout, width: 20.0, height: 13.0),
-          ),
+                          text,
+                          style: style
+                        ),
+                      ),
+                      LoadDataResultImplementerDirectly(
+                        loadDataResult: _packageInfoLoadDataResult,
+                        errorProvider: Injector.locator<ErrorProvider>(),
+                        onImplementLoadDataResultDirectly: (result, errorProvider) {
+                          Widget? textWidget;
+                          if (result.isSuccess) {
+                            textWidget = Text(
+                              "${"Version".tr} ${result.resultIfSuccess!.version}",
+                              style: style?.copyWith(
+                                fontWeight: FontWeight.normal
+                              )
+                            );
+                          } else if (result.isLoading) {
+                            textWidget = ModifiedShimmer.fromColors(
+                              child: Text(
+                                "${"Version".tr} 0.0.0",
+                                style: style?.copyWith(
+                                  fontWeight: FontWeight.normal,
+                                  backgroundColor: Colors.grey
+                                )
+                              )
+                            );
+                          }
+                          if (textWidget != null) {
+                            return Row(
+                              children: [
+                                const SizedBox(width: 10),
+                                textWidget
+                              ],
+                            );
+                          } else {
+                            return const SizedBox();
+                          }
+                        }
+                      )
+                    ],
+                  ),
+                  icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorLogout, width: 20.0, height: 13.0),
+                ),
+              ]
+            )
+          )
         ]
       )
     );

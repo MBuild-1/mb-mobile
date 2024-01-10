@@ -405,7 +405,7 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
         ]
       ),
     },
-    'in_ID': {
+    Constant.textInIdLanguageKey: {
       'New to MasterBagasi': (signUpTapGestureRecognizer) => TextSpan(
         children: <InlineSpan>[
           const TextSpan(

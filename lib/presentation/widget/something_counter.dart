@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
@@ -6,18 +7,19 @@ import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 
 import '../../domain/entity/user/user.dart';
 import '../../misc/deeplink_applink_helper.dart';
+import '../../misc/getextended/get_extended.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/login_helper.dart';
 import '../../misc/main_route_observer.dart';
 import '../../misc/notification_redirector_helper.dart';
-import '../../misc/page_restoration_helper.dart';
 import '../../misc/pusher_helper.dart';
 import '../../misc/routeargument/help_chat_route_argument.dart';
 import '../../misc/routeargument/order_chat_route_argument.dart';
 import '../../misc/routeargument/product_chat_route_argument.dart';
+import '../../misc/selected_language_helper.dart';
+import '../../misc/widgetbindingobserver/locale_widget_binding_observer.dart';
 import '../notifier/login_notifier.dart';
 import '../notifier/notification_notifier.dart';
-import '../page/help_chat_page.dart';
 
 class SomethingCounter extends StatefulWidget {
   // ignore: library_private_types_in_public_api
@@ -42,10 +44,20 @@ class _SomethingCounterState extends State<SomethingCounter> with RestorationMix
   late NotificationNotifier _notificationNotifier;
 
   final PusherChannelsFlutter _pusher = PusherChannelsFlutter.getInstance();
+  LocaleWidgetBindingObserver? _localeWidgetBindingObserver;
 
   @override
   void initState() {
     super.initState();
+    _localeWidgetBindingObserver = LocaleWidgetBindingObserver(
+      onUpdateWhileDeviceLocaleIsChange: () {
+        String selectedLanguageLocaleString = SelectedLanguageHelper.getSelectedLanguage().result;
+        if (selectedLanguageLocaleString.isEmpty) {
+          updateLanguage();
+        }
+      }
+    );
+    WidgetsBinding.instance.addObserver(_localeWidgetBindingObserver!);
     DeeplinkApplinkHelper.initURIHandler(
       mounted: () => mounted,
       onSetState: () => setState(() {})
@@ -180,6 +192,13 @@ class _SomethingCounterState extends State<SomethingCounter> with RestorationMix
     }
   }
 
+  void updateLanguage() {
+    Locale? deviceLocale = GetExtended.deviceLocale;
+    if (deviceLocale != null) {
+      Get.updateLocale(deviceLocale);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return widget.child;
@@ -200,6 +219,10 @@ class _SomethingCounterState extends State<SomethingCounter> with RestorationMix
     OneSignal.Notifications.removeClickListener(_onClickListener);
     OneSignal.Notifications.removeForegroundWillDisplayListener(_onForegroundWillDisplayListener);
     DeeplinkApplinkHelper.dispose();
+    if (_localeWidgetBindingObserver != null) {
+      WidgetsBinding.instance.removeObserver(_localeWidgetBindingObserver!);
+      _localeWidgetBindingObserver = null;
+    }
     super.dispose();
   }
 }

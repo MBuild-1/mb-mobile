@@ -26,6 +26,7 @@ import '../../misc/controllercontentdelegate/wishlist_and_cart_controller_conten
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/load_data_result_dynamic_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/product_entry_header_background_list_item_controller_state.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/productentrylistitemcontrollerstate/product_entry_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/productlistitemcontrollerstate/vertical_product_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
 import '../../misc/dialog_helper.dart';
@@ -261,48 +262,16 @@ class _StatefulProductEntryControllerMediatorWidgetState extends State<_Stateful
         withCondition: widget.productEntryPageParameter.productEntryParameterMap
       )
     );
+    ListItemControllerState productEntryHeaderListItemControllerState = componentEntityMediator.mapWithParameter(
+      widget.productEntryController.getProductEntryHeader(
+        ProductEntryHeaderContentParameter(
+          parameterMap: widget.productEntryPageParameter.productEntryParameterMap
+        )
+      ),
+      parameter: carouselParameterizedEntityMediator
+    );
     return productEntryLoadDataResult.map<PagingResult<ListItemControllerState>>((productEntryPaging) {
       List<ListItemControllerState> resultListItemControllerState = [];
-      Iterable<ListItemControllerState> verticalProductListItemControllerStateList = productEntryPaging.map<ListItemControllerState>(
-        (productEntry) => VerticalProductListItemControllerState(
-          productAppearanceData: productEntry,
-          onAddWishlist: (productAppearanceData) => widget.productEntryController.wishlistAndCartControllerContentDelegate.addToWishlist(
-            productAppearanceData as SupportWishlist, () {
-              Completer<bool> checkingLoginCompleter = Completer<bool>();
-              LoginHelper.checkingLogin(
-                context,
-                () => checkingLoginCompleter.complete(true),
-                resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
-                showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
-              );
-              return checkingLoginCompleter.future;
-            }
-          ),
-          onRemoveWishlist: (productAppearanceData) => widget.productEntryController.wishlistAndCartControllerContentDelegate.removeFromWishlist(
-            productAppearanceData as SupportWishlist, () {
-              Completer<bool> checkingLoginCompleter = Completer<bool>();
-              LoginHelper.checkingLogin(
-                context,
-                () => checkingLoginCompleter.complete(true),
-                resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
-                showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
-              );
-              return checkingLoginCompleter.future;
-            }
-          ),
-          onAddCart: (productAppearanceData) => widget.productEntryController.wishlistAndCartControllerContentDelegate.addToCart(
-            productAppearanceData as SupportCart, () {
-              Completer<bool> checkingLoginCompleter = Completer<bool>();
-              LoginHelper.checkingLogin(
-                context, () => checkingLoginCompleter.complete(true),
-                resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
-                showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
-              );
-              return checkingLoginCompleter.future;
-            }
-          ),
-        )
-      ).itemList;
       int totalItem = productEntryPaging.totalItem;
       if (pageKey == 1) {
         if (productEntryLoadDataResult.isSuccess) {
@@ -328,25 +297,51 @@ class _StatefulProductEntryControllerMediatorWidgetState extends State<_Stateful
         }
         totalItem = 2;
         resultListItemControllerState = [
-          componentEntityMediator.mapWithParameter(
-            widget.productEntryController.getProductEntryHeader(
-              ProductEntryHeaderContentParameter(
-                parameterMap: widget.productEntryPageParameter.productEntryParameterMap
-              )
+          ProductEntryContainerListItemControllerState(
+            productEntryList: productEntryPaging.itemList,
+            productEntryHeaderListItemControllerState: () => productEntryHeaderListItemControllerState,
+            onAddWishlist: (productAppearanceData) => widget.productEntryController.wishlistAndCartControllerContentDelegate.addToWishlist(
+              productAppearanceData as SupportWishlist, () {
+                Completer<bool> checkingLoginCompleter = Completer<bool>();
+                LoginHelper.checkingLogin(
+                  context,
+                  () => checkingLoginCompleter.complete(true),
+                  resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
+                  showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
+                );
+                return checkingLoginCompleter.future;
+              }
             ),
-            parameter: carouselParameterizedEntityMediator
-          ),
-          VerticalGridPaddingContentSubInterceptorSupportListItemControllerState(
-            childListItemControllerStateList: [
-              ...verticalProductListItemControllerStateList
-            ]
+            onRemoveWishlist: (productAppearanceData) => widget.productEntryController.wishlistAndCartControllerContentDelegate.removeFromWishlist(
+              productAppearanceData as SupportWishlist, () {
+                Completer<bool> checkingLoginCompleter = Completer<bool>();
+                LoginHelper.checkingLogin(
+                  context,
+                  () => checkingLoginCompleter.complete(true),
+                  resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
+                  showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
+                );
+                return checkingLoginCompleter.future;
+              }
+            ),
+            onAddCart: (productAppearanceData) => widget.productEntryController.wishlistAndCartControllerContentDelegate.addToCart(
+              productAppearanceData as SupportCart, () {
+                Completer<bool> checkingLoginCompleter = Completer<bool>();
+                LoginHelper.checkingLogin(
+                  context, () => checkingLoginCompleter.complete(true),
+                  resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
+                  showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
+                );
+                return checkingLoginCompleter.future;
+              }
+            ),
           )
         ];
       } else {
         if (ListItemControllerStateHelper.checkListItemControllerStateList(listItemControllerStateList)) {
-          VerticalGridPaddingContentSubInterceptorSupportListItemControllerState verticalGridListItemControllerState = ListItemControllerStateHelper.parsePageKeyedListItemControllerState(listItemControllerStateList![1]) as VerticalGridPaddingContentSubInterceptorSupportListItemControllerState;
-          verticalGridListItemControllerState.childListItemControllerStateList.addAll(
-            verticalProductListItemControllerStateList
+          ProductEntryContainerListItemControllerState productEntryContainerListItemControllerState = ListItemControllerStateHelper.parsePageKeyedListItemControllerState(listItemControllerStateList![0]) as ProductEntryContainerListItemControllerState;
+          productEntryContainerListItemControllerState.productEntryList.addAll(
+            productEntryPaging.itemList
           );
         }
       }

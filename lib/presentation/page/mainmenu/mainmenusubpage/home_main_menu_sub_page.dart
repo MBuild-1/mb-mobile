@@ -231,18 +231,24 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
         totalPage: 1,
         totalItem: 1,
         itemList: [
-          ...firstListItemControllerStateList,
-          ColorfulDividerListItemControllerState(
-            lineColorList: [Constant.colorButtonGradient2, Constant.colorButtonGradient3],
-            lineHeight: 3
-          ),
-          ...middleListItemControllerStateList,
-          ...listItemControllerStateList,
-          if (!isLogin) ...[
-            VirtualSpacingListItemControllerState(
-              height: Constant.mainMenuFooterHeight - Constant.paddingListItem
+          BuilderListItemControllerState(
+            buildListItemControllerState: () => CompoundListItemControllerState(
+              listItemControllerState: [
+                ...firstListItemControllerStateList,
+                ColorfulDividerListItemControllerState(
+                  lineColorList: [Constant.colorButtonGradient2, Constant.colorButtonGradient3],
+                  lineHeight: 3
+                ),
+                ...middleListItemControllerStateList,
+                ...listItemControllerStateList,
+                if (!isLogin) ...[
+                  VirtualSpacingListItemControllerState(
+                    height: Constant.mainMenuFooterHeight - Constant.paddingListItem
+                  )
+                ]
+              ]
             )
-          ]
+          )
         ]
       )
     );

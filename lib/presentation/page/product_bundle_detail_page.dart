@@ -13,6 +13,8 @@ import '../../domain/usecase/get_product_bundle_detail_use_case.dart';
 import '../../misc/additionalloadingindicatorchecker/product_bundle_detail_additional_paging_result_parameter_checker.dart';
 import '../../misc/constant.dart';
 import '../../misc/controllercontentdelegate/wishlist_and_cart_controller_content_delegate.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/builder_list_item_controller_state.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/compound_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/padding_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/product_bundle_header_list_item_controller_state.dart';
@@ -245,55 +247,61 @@ class _StatefulProductBundleDetailControllerMediatorWidgetState extends State<_S
         totalPage: 1,
         totalItem: 1,
         itemList: [
-          PaddingContainerListItemControllerState(
-            padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-            paddingChildListItemControllerState: ProductBundleHeaderListItemControllerState(
-              productBundle: productBundleDetail,
-              onAddWishlist: (productBundleOutput) => widget.productBundleDetailController.wishlistAndCartControllerContentDelegate.addToWishlist(
-                productBundleOutput, () {
-                  Completer<bool> checkingLoginCompleter = Completer<bool>();
-                  LoginHelper.checkingLogin(
-                    context,
-                    () => checkingLoginCompleter.complete(true),
-                    resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
-                    showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
+          BuilderListItemControllerState(
+            buildListItemControllerState: () => CompoundListItemControllerState(
+              listItemControllerState: [
+                PaddingContainerListItemControllerState(
+                  padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+                  paddingChildListItemControllerState: ProductBundleHeaderListItemControllerState(
+                    productBundle: productBundleDetail,
+                    onAddWishlist: (productBundleOutput) => widget.productBundleDetailController.wishlistAndCartControllerContentDelegate.addToWishlist(
+                      productBundleOutput, () {
+                        Completer<bool> checkingLoginCompleter = Completer<bool>();
+                        LoginHelper.checkingLogin(
+                          context,
+                          () => checkingLoginCompleter.complete(true),
+                          resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
+                          showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
+                        );
+                        return checkingLoginCompleter.future;
+                      }
+                    ),
+                    onRemoveWishlist: (productBundleOutput) => widget.productBundleDetailController.wishlistAndCartControllerContentDelegate.removeFromWishlist(
+                      productBundleOutput, () {
+                        Completer<bool> checkingLoginCompleter = Completer<bool>();
+                        LoginHelper.checkingLogin(
+                          context,
+                          () => checkingLoginCompleter.complete(true),
+                          resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
+                          showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
+                        );
+                        return checkingLoginCompleter.future;
+                      }
+                    ),
+                    onAddCart: (productBundleOutput) => widget.productBundleDetailController.wishlistAndCartControllerContentDelegate.addToCart(
+                      productBundleOutput, () {
+                        Completer<bool> checkingLoginCompleter = Completer<bool>();
+                        LoginHelper.checkingLogin(
+                          context,
+                          () => checkingLoginCompleter.complete(true),
+                          resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
+                          showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
+                        );
+                        return checkingLoginCompleter.future;
+                      }
+                    ),
+                  ),
+                ),
+                ...productBundleDetail.productEntryList.map<ListItemControllerState>((product) {
+                  return VerticalProductListItemControllerState(
+                    productAppearanceData: product,
+                    onRemoveWishlist: (productBundleId) {},
+                    onAddWishlist: (productBundleId) {}
                   );
-                  return checkingLoginCompleter.future;
-                }
-              ),
-              onRemoveWishlist: (productBundleOutput) => widget.productBundleDetailController.wishlistAndCartControllerContentDelegate.removeFromWishlist(
-                productBundleOutput, () {
-                  Completer<bool> checkingLoginCompleter = Completer<bool>();
-                  LoginHelper.checkingLogin(
-                    context,
-                    () => checkingLoginCompleter.complete(true),
-                    resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
-                    showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
-                  );
-                  return checkingLoginCompleter.future;
-                }
-              ),
-              onAddCart: (productBundleOutput) => widget.productBundleDetailController.wishlistAndCartControllerContentDelegate.addToCart(
-                productBundleOutput, () {
-                  Completer<bool> checkingLoginCompleter = Completer<bool>();
-                  LoginHelper.checkingLogin(
-                    context,
-                    () => checkingLoginCompleter.complete(true),
-                    resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
-                    showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
-                  );
-                  return checkingLoginCompleter.future;
-                }
-              ),
-            ),
-          ),
-          ...productBundleDetail.productEntryList.map<ListItemControllerState>((product) {
-            return VerticalProductListItemControllerState(
-              productAppearanceData: product,
-              onRemoveWishlist: (productBundleId) {},
-              onAddWishlist: (productBundleId) {}
-            );
-          }).toList()
+                }).toList()
+              ]
+            )
+          )
         ]
       );
     });

@@ -10,6 +10,8 @@ import '../../../domain/entity/address/country.dart';
 import '../../../domain/usecase/get_address_list_use_case.dart';
 import '../../../domain/usecase/update_current_selected_address_use_case.dart';
 import '../../../misc/constant.dart';
+import '../../../misc/controllerstate/listitemcontrollerstate/builder_list_item_controller_state.dart';
+import '../../../misc/controllerstate/listitemcontrollerstate/compound_list_item_controller_state.dart';
 import '../../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../../misc/controllerstate/listitemcontrollerstate/load_data_result_dynamic_list_item_controller_state.dart';
 import '../../../misc/controllerstate/listitemcontrollerstate/padding_container_list_item_controller_state.dart';
@@ -130,23 +132,30 @@ class _StatefulSelectAddressControllerMediatorWidgetState extends State<_Statefu
       onSetState: () => setState(() {}),
       dynamicItemLoadDataResultDynamicListItemControllerStateList: _dynamicItemLoadDataResultDynamicListItemControllerStateList
     );
+    ListItemControllerState addressListItemControllerState = componentEntityMediator.mapWithParameter(
+      widget.selectAddressModalDialogController.getAddressListCarousel(),
+      parameter: carouselParameterizedEntityMediator
+    );
     return SuccessLoadDataResult<PagingResult<ListItemControllerState>>(
       value: PagingDataResult<ListItemControllerState>(
         itemList: [
-          PaddingContainerListItemControllerState(
-            padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-            paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
-              widgetSubstitution: (BuildContext context, int index) => Text(
-                "${"To make your shopping experience better, choose an address first".tr}."
-              )
-            ),
-          ),
-          VirtualSpacingListItemControllerState(height: 12),
-          componentEntityMediator.mapWithParameter(
-            widget.selectAddressModalDialogController.getAddressListCarousel(),
-            parameter: carouselParameterizedEntityMediator
-          ),
-          VirtualSpacingListItemControllerState(height: 12),
+          BuilderListItemControllerState(
+            buildListItemControllerState: () => CompoundListItemControllerState(
+              listItemControllerState: [
+                PaddingContainerListItemControllerState(
+                  padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+                  paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
+                    widgetSubstitution: (BuildContext context, int index) => Text(
+                      "${"To make your shopping experience better, choose an address first".tr}."
+                    )
+                  ),
+                ),
+                VirtualSpacingListItemControllerState(height: 12),
+                addressListItemControllerState,
+                VirtualSpacingListItemControllerState(height: 12),
+              ]
+            )
+          )
         ],
         page: 1,
         totalPage: 1,

@@ -1,11 +1,13 @@
+import '../../../misc/multi_language_string.dart';
+
 class Faq {
   String id;
-  String title;
-  String content;
+  MultiLanguageString titleMultiLanguageString;
+  MultiLanguageString contentMultiLanguageString;
 
   Faq({
     required this.id,
-    required this.title,
-    required this.content
+    required this.titleMultiLanguageString,
+    required this.contentMultiLanguageString
   });
 }
