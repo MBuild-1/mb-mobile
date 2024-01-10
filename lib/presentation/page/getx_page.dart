@@ -207,7 +207,27 @@ abstract class RestorableGetxPage<T extends GetxPageRestoration> extends GetxPag
       child: buildPage(context)
     );
     String environment = Constant.envValueEnvironment;
-    if (environment.contains("staging")) {
+    if (environment.contains("staging") || environment.contains("local_dev")) {
+      Color containerColor = () {
+        if (environment.contains("staging")) {
+          return Colors.orange;
+        }
+        return Constant.colorGrey8;
+      }();
+      String? text = () {
+        if (environment.contains("staging")) {
+          return MultiLanguageString({
+            Constant.textInIdLanguageKey: "Anda berada di mode environment STAGING.",
+            Constant.textEnUsLanguageKey: "You are in STAGING environment mode."
+          }).toEmptyStringNonNull;
+        } else if (environment.contains("local_dev")) {
+          return MultiLanguageString({
+            Constant.textInIdLanguageKey: "Anda berada di mode environment LOCAL DEV.",
+            Constant.textEnUsLanguageKey: "You are in LOCAL DEV environment mode."
+          }).toEmptyStringNonNull;
+        }
+        return null;
+      }();
       result = Column(
         children: [
           Expanded(
@@ -216,14 +236,11 @@ abstract class RestorableGetxPage<T extends GetxPageRestoration> extends GetxPag
           Material(
             child: Container(
               width: double.infinity,
-              color: Colors.orange,
+              color: containerColor,
               padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
               child: Center(
                 child: Text(
-                  MultiLanguageString({
-                    Constant.textInIdLanguageKey: "Anda berada di mode environment STAGING.",
-                    Constant.textEnUsLanguageKey: "You are in STAGING environment mode."
-                  }).toEmptyStringNonNull,
+                  text.toStringNonNull,
                   style: const TextStyle(color: Colors.white),
                 ),
               )
