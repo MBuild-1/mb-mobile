@@ -49,6 +49,10 @@ class OrderItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListIte
         defaultOrderContainerStateStorageListItemControllerState._combinedOrderPagingDataResult = combinedOrderResult;
         oldItemType.onUpdateState();
       };
+      defaultOrderContainerInterceptingActionListItemControllerState._onRemoveOrder = (combinedOrderId) {
+        oldItemType.orderList.removeWhere((combinedOrder) => combinedOrder.id == combinedOrderId);
+        oldItemType.onUpdateState();
+      };
       List<VerticalOrderListItemControllerState> verticalOrderListItemControllerStateList = oldItemType.orderList.map<VerticalOrderListItemControllerState>(
         (order) => VerticalOrderListItemControllerState(
           order: order,
@@ -131,7 +135,11 @@ class DefaultOrderContainerStateStorageListItemControllerState extends OrderCont
 
 class DefaultOrderContainerInterceptingActionListItemControllerState extends OrderContainerInterceptingActionListItemControllerState {
   void Function(LoadDataResult<PagingDataResult<CombinedOrder>>)? _onRefreshCombinedOrderPagingDataResult;
+  void Function(String)? _onRemoveOrder;
 
   @override
   void Function(LoadDataResult<PagingDataResult<CombinedOrder>>)? get onRefreshCombinedOrderPagingDataResult => _onRefreshCombinedOrderPagingDataResult;
+
+  @override
+  void Function(String)? get onRemoveOrder => _onRemoveOrder;
 }

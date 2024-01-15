@@ -7,6 +7,7 @@ import 'package:masterbagasi/misc/ext/validation_result_ext.dart';
 import 'package:validators/validators.dart';
 
 import 'constant.dart';
+import 'duration_string.dart';
 import 'multi_language_string.dart';
 import 'validation/validation_result.dart';
 import 'validation/validationresult/is_phone_number_success_validation_result.dart';
@@ -125,39 +126,16 @@ class _StringUtilImpl {
     return decodeJson(decodeBase64String(encodedBase64JsonString));
   }
 
-  String toDurationString(Duration duration) {
-    MultiLanguageString hourMultiLanguageString = MultiLanguageString({
-      Constant.textEnUsLanguageKey: "h",
-      Constant.textInIdLanguageKey: "j",
-    });
-    MultiLanguageString minuteMultiLanguageString = MultiLanguageString({
-      Constant.textEnUsLanguageKey: "m",
-      Constant.textInIdLanguageKey: "m",
-    });
-    MultiLanguageString secondMultiLanguageString = MultiLanguageString({
-      Constant.textEnUsLanguageKey: "s",
-      Constant.textInIdLanguageKey: "d",
-    });
-    int hour = duration.inHours;
-    String hourString = hour == 0 ? "" : "$hour${hourMultiLanguageString.toStringNonNull}";
-    int minute = duration.inMinutes.remainder(60);
-    String minuteString = "$minute${minuteMultiLanguageString.toStringNonNull}";
-    int second = duration.inSeconds.remainder(60);
-    String secondString = "$second${secondMultiLanguageString.toStringNonNull}";
-    String durationString = "";
-    void addDurationString(String text) {
-      durationString += "${(durationString.isEmptyString ? "" : " ")}$text";
-    }
-    if (!hourString.isEmptyString) {
-      addDurationString(hourString);
-    }
-    if (!minuteString.isEmptyString) {
-      addDurationString(minuteString);
-    }
-    if (!secondString.isEmptyString) {
-      addDurationString(secondString);
-    }
-    return durationString;
+  DurationString toDurationStringFromMilliSeconds(int milliseconds) {
+    Duration duration = Duration(milliseconds: milliseconds);
+    int hours = duration.inHours;
+    int minutes = (duration.inMinutes % 60);
+    int seconds = (duration.inSeconds % 60);
+    return DurationString(
+      hoursString: (hours < 10) ? '0$hours' : '$hours',
+      minutesString: (minutes < 10) ? '0$minutes' : '$minutes',
+      secondsString: (seconds < 10) ? '0$seconds' : '$seconds'
+    );
   }
 
   String? convertYoutubeLinkUrlToId(String url, {bool trimWhitespaces = true}) {

@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:masterbagasi/misc/ext/error_provider_ext.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/number_ext.dart';
 
@@ -12,13 +13,16 @@ import '../../domain/entity/bucket/bucket.dart';
 import '../../domain/entity/bucket/bucket_member.dart';
 import '../../domain/entity/cart/cart.dart';
 import '../../domain/entity/cart/host_cart.dart';
+import '../../domain/entity/payment/payment_method.dart';
 import '../../domain/entity/user/user.dart';
 import '../../domain/entity/wishlist/support_wishlist.dart';
 import '../../presentation/page/modaldialogpage/add_additional_item_modal_dialog_page.dart';
 import '../../presentation/widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../../presentation/widget/colorful_chip.dart';
 import '../../presentation/widget/modified_loading_indicator.dart';
+import '../../presentation/widget/payment/paymentmethod/selected_payment_method_indicator.dart';
 import '../../presentation/widget/sharedcart/shared_cart_member_item.dart';
+import '../../presentation/widget/tap_area.dart';
 import '../acceptordeclinesharedcartmemberparameter/accept_shared_cart_member_parameter.dart';
 import '../acceptordeclinesharedcartmemberparameter/decline_shared_cart_member_parameter.dart';
 import '../constant.dart';
@@ -48,6 +52,7 @@ import '../dialog_helper.dart';
 import '../error/cart_empty_error.dart';
 import '../error/message_error.dart';
 import '../error_helper.dart';
+import '../errorprovider/error_provider.dart';
 import '../itemtypelistinterceptor/itemtypelistinterceptorchecker/list_item_controller_state_item_type_list_interceptor_checker.dart';
 import '../load_data_result.dart';
 import '../multi_language_string.dart';
@@ -585,6 +590,131 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
           )
         );
         newItemTypeList.add(VirtualSpacingListItemControllerState(height: 24.0));
+
+        // Selected Payment Method
+        newItemTypeList.add(
+          PaddingContainerListItemControllerState(
+            padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+            paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
+              widgetSubstitution: (context, index) {
+                return Text(
+                  "Payment Method".tr,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                );
+              }
+            )
+          )
+        );
+        newItemTypeList.add(
+          VirtualSpacingListItemControllerState(
+            height: 10.0
+          )
+        );
+        newItemTypeList.add(
+          DividerListItemControllerState(
+            lineColor: Colors.black
+          )
+        );
+        newItemTypeList.add(
+          VirtualSpacingListItemControllerState(
+            height: 10.0
+          )
+        );
+        double paymentMethodEndSpacing = 25.0;
+        LoadDataResult<PaymentMethod> selectedPaymentMethodLoadDataResult = oldItemType.selectedPaymentMethodLoadDataResult();
+        if (selectedPaymentMethodLoadDataResult.isSuccess) {
+          paymentMethodEndSpacing = 20.0;
+          newItemTypeList.add(
+            PaddingContainerListItemControllerState(
+              padding: const EdgeInsets.symmetric(horizontal: 0.0),
+              paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
+                widgetSubstitution: (context, index) => SelectedPaymentMethodIndicator(
+                  onTap: oldItemType.onSelectPaymentMethod,
+                  onRemove: oldItemType.onRemovePaymentMethod,
+                  selectedPaymentMethod: selectedPaymentMethodLoadDataResult.resultIfSuccess!,
+                ),
+              )
+            )
+          );
+        } else if (selectedPaymentMethodLoadDataResult.isFailed) {
+          ErrorProvider errorProvider = oldItemType.errorProvider();
+          ErrorProviderResult errorProviderResult = errorProvider.onGetErrorProviderResult(selectedPaymentMethodLoadDataResult.resultIfFailed!).toErrorProviderResultNonNull();
+          newItemTypeList.add(
+            VirtualSpacingListItemControllerState(
+              height: 10.0
+            )
+          );
+          newItemTypeList.add(
+            PaddingContainerListItemControllerState(
+              padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+              paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
+                widgetSubstitution: (context, index) => Text(
+                  errorProviderResult.message,
+                  style: const TextStyle(fontWeight: FontWeight.bold)
+                ),
+              )
+            )
+          );
+        } else if (selectedPaymentMethodLoadDataResult.isLoading) {
+          newItemTypeList.add(
+            VirtualSpacingListItemControllerState(
+              height: 10.0
+            )
+          );
+          newItemTypeList.add(LoadingListItemControllerState());
+          newItemTypeList.add(
+            VirtualSpacingListItemControllerState(
+              height: 10.0
+            )
+          );
+        } else {
+          newItemTypeList.add(
+            PaddingContainerListItemControllerState(
+              padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+              paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
+                widgetSubstitution: (context, index) {
+                  return Text(
+                    "No selected payment method".tr,
+                  );
+                }
+              )
+            )
+          );
+          newItemTypeList.add(
+            VirtualSpacingListItemControllerState(
+              height: 15.0
+            )
+          );
+          newItemTypeList.add(
+            PaddingContainerListItemControllerState(
+              padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+              paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
+                widgetSubstitution: (context, index) {
+                  return Row(
+                    children: [
+                      TapArea(
+                        onTap: oldItemType.onSelectPaymentMethod,
+                        child: Container(
+                          child: Text("Select Payment Method".tr, style: const TextStyle(fontWeight: FontWeight.bold)),
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                          decoration: BoxDecoration(
+                            border: Border.all()
+                          ),
+                        )
+                      ),
+                    ]
+                  );
+                }
+              )
+            )
+          );
+        }
+        newItemTypeList.add(
+          VirtualSpacingListItemControllerState(
+            height: paymentMethodEndSpacing
+          )
+        );
+
         newItemTypeList.add(SpacingListItemControllerState());
         List<ListItemControllerState> newBucketMemberListItemControllerStateList = [];
         BucketMember? checkBucketMember({

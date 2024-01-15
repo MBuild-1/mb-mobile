@@ -85,7 +85,7 @@ class SummaryWidget extends StatelessWidget {
       } else if (cartSummaryValueType == "header") {
         columnWidget.add(
           HorizontalJustifiedTitleAndDescription(
-            title: cartSummaryValue.name,
+            title: cartSummaryValue.name.toEmptyStringNonNull,
             titleWidgetInterceptor: (value, textWidget) {
               return Text(
                 value.toEmptyStringNonNull,
@@ -105,10 +105,10 @@ class SummaryWidget extends StatelessWidget {
       }
       columnWidget.add(
         onInterceptCartSummaryWidget != null ? onInterceptCartSummaryWidget(
-          cartSummaryValue.name,
+          cartSummaryValue.name.toEmptyStringNonNull,
           cartSummaryValueDescription
         ) : HorizontalJustifiedTitleAndDescription(
-          title: cartSummaryValue.name,
+          title: cartSummaryValue.name.toEmptyStringNonNull,
           description: cartSummaryValueDescription
         )
       );

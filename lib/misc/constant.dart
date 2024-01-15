@@ -5,6 +5,7 @@ import 'package:sizer/sizer.dart';
 import 'aspect_ratio_value.dart';
 import 'color_helper.dart';
 import 'environmentconfig/environment_config.dart';
+import 'error/message_error.dart';
 import 'multi_language_string.dart';
 
 class _ConstantImpl {
@@ -127,6 +128,7 @@ class _ConstantImpl {
   String get vectorIntellectualPropertyRights => _getVectorsAssets("intellectual_property_rights.svg");
   String get vectorReviewThisApplication => _getVectorsAssets("review_this_application.svg");
   String get vectorWhatsappLogo => _getVectorsAssets("whatsapp_logo.svg");
+  String get vectorChecklist => _getVectorsAssets("checklist.svg");
 
   Color get colorYellow => const Color.fromRGBO(244, 184, 43, 1);
   Color get colorLightRed => const Color.fromRGBO(255, 236, 230, 1);
@@ -271,11 +273,24 @@ class _ConstantImpl {
     Constant.textInIdLanguageKey: "Brand Kecantikan Pilihan"
   });
 
+  MultiLanguageMessageError get multiLanguageMessageErrorPaymentDetail => MultiLanguageMessageError(
+    title: MultiLanguageString({
+      Constant.textEnUsLanguageKey: "Payment Details Is Empty",
+      Constant.textInIdLanguageKey: "Rincian Pembayaran Kosong",
+    }),
+    message: MultiLanguageString({
+      Constant.textEnUsLanguageKey: "For now, payment details is empty.",
+      Constant.textInIdLanguageKey: "Untuk sekarang, rincian pembayaran kosong.",
+    }),
+  );
+
   String get settingHiveTable => 'setting_hive_table';
   String get settingHiveTableKey => 'setting_hive_table_key';
   String get languageSettingHiveTableKey => 'setting_language_hive_table_key';
   String get hasVisitedIntroductionPageHiveTableKey => 'has_visited_introduction_hive_table_key';
   String get tempLoginDataWhileInputPinHiveTableKey => 'temp_login_data_while_input_pin_hive_table_key';
+  String get tempPaymentInstructionHiveTableKey => 'temp_payment_instruction_hive_table_key';
+  String get saveSelectedLanguageHiveTableKey => 'save_selected_language_hive_table_key';
   String get textIdKey => 'id';
   String get textTypeKey => 'type';
   String get textUrlKey => 'url';

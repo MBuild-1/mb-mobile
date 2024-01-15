@@ -30,39 +30,39 @@ class OrderConclusionItem extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (inOrderDetail) ...[
-          Builder(
-            builder: (context) {
-              bool showPayButton = false;
-              if (order.orderProduct.orderDetail.status == "pending") {
-                showPayButton = true;
-              }
-              if (showPayButton) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 15),
-                    SizedOutlineGradientButton(
-                      onPressed: () async {
-                        DialogHelper.showLoadingDialog(context);
-                        await WebHelper.launchUrl(
-                          Uri.parse("${Constant.envValueMidtransSnapUrl}${order.orderProduct.orderDetail.snapToken}")
-                        );
-                        Get.back();
-                      },
-                      text: "Pay".tr,
-                      customPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                      outlineGradientButtonType: OutlineGradientButtonType.solid,
-                      outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
-                    )
-                  ]
-                );
-              } else {
-                return Container();
-              }
-            }
-          ),
-        ],
+        // if (inOrderDetail) ...[
+        //   Builder(
+        //     builder: (context) {
+        //       bool showPayButton = false;
+        //       if (order.orderProduct.orderDetail.status == "pending") {
+        //         showPayButton = true;
+        //       }
+        //       if (showPayButton) {
+        //         return Column(
+        //           crossAxisAlignment: CrossAxisAlignment.start,
+        //           children: [
+        //             const SizedBox(height: 15),
+        //             SizedOutlineGradientButton(
+        //               onPressed: () async {
+        //                 DialogHelper.showLoadingDialog(context);
+        //                 await WebHelper.launchUrl(
+        //                   Uri.parse("${Constant.envValueMidtransSnapUrl}${order.orderProduct.orderDetail.snapToken}")
+        //                 );
+        //                 Get.back();
+        //               },
+        //               text: "Pay".tr,
+        //               customPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+        //               outlineGradientButtonType: OutlineGradientButtonType.solid,
+        //               outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
+        //             )
+        //           ]
+        //         );
+        //       } else {
+        //         return Container();
+        //       }
+        //     }
+        //   ),
+        // ],
         Builder(
           builder: (context) {
             bool showOrderShippingPayment = false;

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import '../../../misc/constant.dart';
 
 class PaymentMethodModifiedCachedNetworkImage extends CachedNetworkImage {
+  final BoxFit boxFit;
+
   @override
   PlaceholderWidgetBuilder? get placeholder {
     return (context, url) => Container(
@@ -34,7 +36,7 @@ class PaymentMethodModifiedCachedNetworkImage extends CachedNetworkImage {
       decoration: BoxDecoration(
         image: DecorationImage(
           image: imageProvider,
-          fit: BoxFit.fitWidth,
+          fit: boxFit,
         ),
       ),
     );
@@ -42,6 +44,7 @@ class PaymentMethodModifiedCachedNetworkImage extends CachedNetworkImage {
 
   PaymentMethodModifiedCachedNetworkImage({
     Key? key,
-    required String imageUrl
+    required String imageUrl,
+    this.boxFit = BoxFit.fitWidth
   }) : super(key: key, imageUrl: imageUrl);
 }

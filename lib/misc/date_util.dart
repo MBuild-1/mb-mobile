@@ -29,6 +29,12 @@ class _DateUtilImpl {
       willBeFormatting == DateTime.now() ? standardHourMinuteTimeFormat.format(willBeFormatting) : standardDateFormat4.format(willBeFormatting)
     );
   }
+
+  DateTime convertUtcOffset(DateTime dateTime, int newUtcOffset) {
+    Duration offsetDifference = Duration(hours: newUtcOffset - dateTime.timeZoneOffset.inHours);
+    DateTime convertedDateTime = dateTime.add(offsetDifference);
+    return convertedDateTime;
+  }
 }
 
 // ignore: non_constant_identifier_names

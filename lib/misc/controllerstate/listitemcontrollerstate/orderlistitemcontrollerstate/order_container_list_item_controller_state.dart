@@ -36,4 +36,5 @@ abstract class OrderContainerStateStorageListItemControllerState extends ListIte
 
 abstract class OrderContainerInterceptingActionListItemControllerState extends ListItemControllerState {
   void Function(LoadDataResult<PagingDataResult<CombinedOrder>>)? get onRefreshCombinedOrderPagingDataResult;
+  void Function(String combinedOrderId)? get onRemoveOrder;
 }

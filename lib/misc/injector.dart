@@ -119,6 +119,7 @@ import '../domain/usecase/auth_identity_verify_otp_use_case.dart';
 import '../domain/usecase/change_additional_item_use_case.dart';
 import '../domain/usecase/change_address_use_case.dart';
 import '../domain/usecase/change_password_use_case.dart';
+import '../domain/usecase/create_order_version_1_point_1_use_case.dart';
 import '../domain/usecase/help_chat_template_use_case.dart';
 import '../domain/usecase/check_active_pin_use_case.dart';
 import '../domain/usecase/check_bucket_use_case.dart';
@@ -232,6 +233,8 @@ import '../domain/usecase/login_with_google_use_case.dart';
 import '../domain/usecase/logout_use_case.dart';
 import '../domain/usecase/modify_pin_use_case.dart';
 import '../domain/usecase/notification_order_status_use_case.dart';
+import '../domain/usecase/order_transaction_use_case.dart';
+import '../domain/usecase/payment_instruction_use_case.dart';
 import '../domain/usecase/payment_method_list_use_case.dart';
 import '../domain/usecase/purchase_direct_use_case.dart';
 import '../domain/usecase/read_all_notification_use_case.dart';
@@ -694,6 +697,8 @@ class _Injector {
     locator.registerLazySingleton<RemoveAdditionalItemUseCase>(() => RemoveAdditionalItemUseCase(cartRepository: locator()));
     locator.registerLazySingleton<GetProvinceMapUseCase>(() => GetProvinceMapUseCase(mapRepository: locator()));
     locator.registerLazySingleton<CreateOrderUseCase>(() => CreateOrderUseCase(orderRepository: locator()));
+    locator.registerLazySingleton<CreateOrderVersion1Point1UseCase>(() => CreateOrderVersion1Point1UseCase(orderRepository: locator()));
+    locator.registerLazySingleton<OrderTransactionUseCase>(() => OrderTransactionUseCase(orderRepository: locator()));
     locator.registerLazySingleton<PurchaseDirectUseCase>(() => PurchaseDirectUseCase(orderRepository: locator()));
     locator.registerLazySingleton<RepurchaseUseCase>(() => RepurchaseUseCase(orderRepository: locator()));
     locator.registerLazySingleton<GetOrderPagingUseCase>(() => GetOrderPagingUseCase(orderRepository: locator()));
@@ -750,6 +755,7 @@ class _Injector {
     locator.registerLazySingleton<StoreKeywordForSearchHistoryUseCase>(() => StoreKeywordForSearchHistoryUseCase(searchRepository: locator()));
     locator.registerLazySingleton<StoreSearchLastSeenHistoryUseCase>(() => StoreSearchLastSeenHistoryUseCase(searchRepository: locator()));
     locator.registerLazySingleton<PaymentMethodListUseCase>(() => PaymentMethodListUseCase(paymentRepository: locator()));
+    locator.registerLazySingleton<PaymentInstructionUseCase>(() => PaymentInstructionUseCase(paymentRepository: locator()));
 
     // Repository
     locator.registerLazySingleton<UserRepository>(() => DefaultUserRepository(userDataSource: locator()));

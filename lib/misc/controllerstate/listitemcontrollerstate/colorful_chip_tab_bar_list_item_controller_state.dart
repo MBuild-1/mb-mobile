@@ -8,13 +8,15 @@ class ColorfulChipTabBarListItemControllerState extends ListItemControllerState 
   final bool isWrap;
   final bool? canSelectAndUnselect;
   final Widget? Function(TextStyle?, ColorfulChipTabBarData)? chipLabelInterceptor;
+  final Widget Function(ColorfulChipTabBarInterceptorParameter)? colorfulChipTabBarInterceptor;
 
   ColorfulChipTabBarListItemControllerState({
     required this.colorfulChipTabBarDataList,
     required this.colorfulChipTabBarController,
     this.isWrap = true,
     this.canSelectAndUnselect,
-    this.chipLabelInterceptor
+    this.chipLabelInterceptor,
+    this.colorfulChipTabBarInterceptor
   });
 }
 

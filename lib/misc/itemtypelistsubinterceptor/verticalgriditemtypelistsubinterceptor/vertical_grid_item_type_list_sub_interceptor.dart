@@ -60,6 +60,11 @@ class VerticalGridItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
     _createdRowCount = 0;
   }
 
+  double _effectiveItemSpacing(VerticalGridPaddingContentSubInterceptorSupportParameter? verticalGridPaddingContentSubInterceptorSupportParameter) {
+    double? itemSpacingValue = verticalGridPaddingContentSubInterceptorSupportParameter?.itemSpacing;
+    return itemSpacingValue ?? itemSpacing();
+  }
+
   @override
   void onInit(List<ListItemControllerState> oldItemTypeList, List<ListItemControllerState> newItemTypeList) {
     // ignore: prefer_function_declarations_over_variables
@@ -85,7 +90,7 @@ class VerticalGridItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
             while (j < remaining) {
               lastNewItemType.rowChildListItemControllerState.addAll(
                 <ListItemControllerState>[
-                  VirtualSpacingListItemControllerState(width: itemSpacing()),
+                  VirtualSpacingListItemControllerState(width: _effectiveItemSpacing(verticalGridPaddingContentSubInterceptorSupportParameter)),
                   EmptyContainerListItemControllerState(),
                 ]
               );
@@ -131,7 +136,7 @@ class VerticalGridItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
           }
         }
       } else {
-        addTopVirtualSpacing(top: itemSpacing());
+        addTopVirtualSpacing(top: _effectiveItemSpacing(verticalGridPaddingContentSubInterceptorSupportParameter));
       }
       newListItemControllerStateList.add(
         RowContainerListItemControllerState(
@@ -146,7 +151,8 @@ class VerticalGridItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
       _onAddFirstRowChildIndex(oldItemType, newListItemControllerStateList, verticalGridPaddingContentSubInterceptorSupportParameter);
       _onCheckLastRowContainerListing(
         listItemControllerStateList: listItemControllerStateList,
-        newListItemControllerStateList: newListItemControllerStateList
+        newListItemControllerStateList: newListItemControllerStateList,
+        verticalGridPaddingContentSubInterceptorSupportParameter: verticalGridPaddingContentSubInterceptorSupportParameter
       );
     };
   }
@@ -222,12 +228,13 @@ class VerticalGridItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
             beforeCheckLastRowContainerListing: (listItemControllerState) {
               listItemControllerState.rowChildListItemControllerState.addAll(
                 <ListItemControllerState>[
-                  VirtualSpacingListItemControllerState(width: itemSpacing()),
+                  VirtualSpacingListItemControllerState(width: _effectiveItemSpacing(verticalListItemControllerStateWrapperParameter?.verticalGridPaddingContentSubInterceptorSupportParameter)),
                   effectiveOldItemType,
                 ]
               );
             },
-            afterCheckLastRowContainerListing: (listItemControllerState) => _rowChildIndex += 1
+            afterCheckLastRowContainerListing: (listItemControllerState) => _rowChildIndex += 1,
+            verticalGridPaddingContentSubInterceptorSupportParameter: verticalListItemControllerStateWrapperParameter?.verticalGridPaddingContentSubInterceptorSupportParameter
           );
         }
         return true;
@@ -257,9 +264,11 @@ class VerticalGridPaddingContentSubInterceptorSupportListItemControllerState ext
 class VerticalGridPaddingContentSubInterceptorSupportParameter {
   double? paddingTop;
   double? paddingBottom;
+  double? itemSpacing;
 
   VerticalGridPaddingContentSubInterceptorSupportParameter({
     this.paddingTop,
-    this.paddingBottom
+    this.paddingBottom,
+    this.itemSpacing
   });
 }

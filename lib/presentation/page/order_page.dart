@@ -42,6 +42,8 @@ import 'order_detail_page.dart';
 class OrderPage extends RestorableGetxPage<_OrderPageRestoration> {
   late final ControllerMember<OrderController> _orderPageController = ControllerMember<OrderController>().addToControllerManager(controllerManager);
 
+  final _StatefulOrderControllerMediatorWidgetDelegate _statefulOrderControllerMediatorWidgetDelegate = _StatefulOrderControllerMediatorWidgetDelegate();
+
   OrderPage({Key? key}) : super(key: key, pageRestorationId: () => "order-page");
 
   @override
@@ -58,20 +60,36 @@ class OrderPage extends RestorableGetxPage<_OrderPageRestoration> {
   }
 
   @override
-  _OrderPageRestoration createPageRestoration() => _OrderPageRestoration();
+  _OrderPageRestoration createPageRestoration() => _OrderPageRestoration(
+    onCompleteOrderDetailPage: (result) {
+      if (result != null) {
+        if (_statefulOrderControllerMediatorWidgetDelegate.onRemoveOrder != null) {
+          _statefulOrderControllerMediatorWidgetDelegate.onRemoveOrder!(result.toEmptyStringNonNull);
+        }
+      }
+    },
+  );
 
   @override
   Widget buildPage(BuildContext context) {
     return _StatefulOrderControllerMediatorWidget(
       orderController: _orderPageController.controller,
+      statefulOrderControllerMediatorWidgetDelegate: _statefulOrderControllerMediatorWidgetDelegate
     );
   }
 }
 
 class _OrderPageRestoration extends ExtendedMixableGetxPageRestoration with WebViewerPageRestorationMixin, OrderDetailPageRestorationMixin {
+  final RouteCompletionCallback<String?>? _onCompleteOrderDetailPage;
+
+  _OrderPageRestoration({
+    RouteCompletionCallback<String?>? onCompleteOrderDetailPage
+  }) : _onCompleteOrderDetailPage = onCompleteOrderDetailPage;
+
   @override
   // ignore: unnecessary_overrides
   void initState() {
+    onCompleteOrderDetailPage = _onCompleteOrderDetailPage;
     super.initState();
   }
 
@@ -157,11 +175,17 @@ class OrderPageRestorableRouteFuture extends GetRestorableRouteFuture {
   }
 }
 
+class _StatefulOrderControllerMediatorWidgetDelegate {
+  void Function(String)? onRemoveOrder;
+}
+
 class _StatefulOrderControllerMediatorWidget extends StatefulWidget {
   final OrderController orderController;
+  final _StatefulOrderControllerMediatorWidgetDelegate statefulOrderControllerMediatorWidgetDelegate;
 
   const _StatefulOrderControllerMediatorWidget({
-    required this.orderController
+    required this.orderController,
+    required this.statefulOrderControllerMediatorWidgetDelegate
   });
 
   @override
@@ -232,6 +256,12 @@ class _StatefulOrderControllerMediatorWidgetState extends State<_StatefulOrderCo
       _orderListItemPagingController.resetToDesiredPageKey(1);
     });
     MainRouteObserver.onRefreshOrderList = _orderListItemPagingController.refresh;
+    widget.statefulOrderControllerMediatorWidgetDelegate.onRemoveOrder = (combinedOrderId) {
+      var onRemoveOrder = _defaultOrderContainerInterceptingActionListItemControllerState.onRemoveOrder;
+      if (onRemoveOrder != null) {
+        onRemoveOrder(combinedOrderId);
+      }
+    };
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _orderListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? orderListItemControllerStateList) async {

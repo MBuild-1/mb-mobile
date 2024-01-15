@@ -66,7 +66,10 @@ import '../../../presentation/widget/notification/purchase_section_notification_
 import '../../../presentation/widget/order/is_running_order_item.dart';
 import '../../../presentation/widget/order/vertical_order_item.dart';
 import '../../../presentation/widget/order/waiting_for_payment_order_item.dart';
+import '../../../presentation/widget/payment/paymentinstruction/payment_instruction_content_item.dart';
+import '../../../presentation/widget/payment/paymentinstruction/payment_instruction_header_item.dart';
 import '../../../presentation/widget/payment/paymentmethod/horizontal_payment_method_item.dart';
+import '../../../presentation/widget/payment/paymentmethod/vertical_grid_payment_method_item.dart';
 import '../../../presentation/widget/payment/paymentmethod/vertical_payment_method_item.dart';
 import '../../../presentation/widget/product/horizontal_product_item.dart';
 import '../../../presentation/widget/product/vertical_product_item.dart';
@@ -180,8 +183,11 @@ import '../../controllerstate/listitemcontrollerstate/orderlistitemcontrollersta
 import '../../controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/waiting_for_payment_order_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/padding_container_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/page_keyed_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/paymentinstructionlistitemcontrollerstate/payment_instruction_content_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/paymentinstructionlistitemcontrollerstate/payment_instruction_header_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/paymentmethodlistitemcontrollerstate/horizontal_payment_method_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/paymentmethodlistitemcontrollerstate/payment_method_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/paymentmethodlistitemcontrollerstate/vertical_grid_payment_method_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/paymentmethodlistitemcontrollerstate/vertical_payment_method_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/positioned_container_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/product_bundle_header_list_item_controller_state.dart';
@@ -647,7 +653,8 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
         colorfulChipTabBarController: item.colorfulChipTabBarController,
         isWrap: item.isWrap,
         canSelectAndUnselect: item.canSelectAndUnselect,
-        chipLabelInterceptor: item.chipLabelInterceptor
+        chipLabelInterceptor: item.chipLabelInterceptor,
+        colorfulChipTabBarInterceptor: item.colorfulChipTabBarInterceptor
       );
     } else if (item is ShimmerColorfulChipTabBarListItemControllerState) {
       return const ShimmerColorfulChipTabBar();
@@ -1009,6 +1016,12 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
           onSelectPaymentMethod: item.onSelectPaymentMethod,
           isSelected: item.isSelected
         );
+      } else if (item is VerticalGridPaymentMethodListItemControllerState) {
+        return VerticalGridPaymentMethodItem(
+          paymentMethod: item.paymentMethod,
+          onSelectPaymentMethod: item.onSelectPaymentMethod,
+          isSelected: item.isSelected
+        );
       } else {
         return Container();
       }
@@ -1316,6 +1329,27 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
         readyStatus: item.readyStatus,
         isLoggedUser: item.isLoggedUser
       );
+    } else if (item is PaymentInstructionHeaderListItemControllerState) {
+      return PaymentInstructionHeaderItem(
+        title: item.title,
+        onTap: item.onTap,
+        isExpand: item.isExpanded
+      );
+    } else if (item is PaymentInstructionContentListItemControllerState) {
+      return PaymentInstructionContentItem(
+        number: item.number,
+        paymentInstruction: item.paymentInstruction
+      );
+    } else if (item is SelectLanguageListItemControllerState) {
+      if (item is VerticalSelectLanguageListItemControllerState) {
+        return VerticalSelectLanguageItem(
+          selectLanguage: item.selectLanguage,
+          isSelected: item.isSelected,
+          onSelectLanguage: item.onSelectLanguage
+        );
+      } else {
+        return Container();
+      }
     } else {
       return Container();
     }

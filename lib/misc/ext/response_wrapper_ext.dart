@@ -12,8 +12,11 @@ extension MainStructureResponseWrapperExt on Response<dynamic> {
 }
 
 extension DateTimeResponseWrapperExt on ResponseWrapper {
-  DateTime? mapFromResponseToDateTime({DateFormat? dateFormat}) {
+  DateTime? mapFromResponseToDateTime({DateFormat? dateFormat, bool convertIntoLocalTime = true}) {
     DateTime? fetchedDateTime = response != null ? (dateFormat ?? DateUtil.anthonyInputDateFormat).parse(response) : null;
+    if (!convertIntoLocalTime) {
+      return fetchedDateTime;
+    }
     Duration? timezoneOffset = fetchedDateTime?.timeZoneOffset;
     return fetchedDateTime?.add(timezoneOffset!);
   }

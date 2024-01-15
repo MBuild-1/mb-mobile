@@ -1,13 +1,14 @@
 import 'package:masterbagasi/data/entitymappingext/additional_item_entity_mapping_ext.dart';
 import 'package:masterbagasi/data/entitymappingext/address_entity_mapping_ext.dart';
 import 'package:masterbagasi/data/entitymappingext/coupon_entity_mapping_ext.dart';
+import 'package:masterbagasi/data/entitymappingext/payment_entity_mapping_ext.dart';
 import 'package:masterbagasi/data/entitymappingext/product_entity_mapping_ext.dart';
 import 'package:masterbagasi/data/entitymappingext/summary_value_entity_mapping_ext.dart';
 import 'package:masterbagasi/data/entitymappingext/user_entity_mapping_ext.dart';
 import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
-import '../../domain/entity/additionalitem/additional_item.dart';
+import '../../domain/entity/order/create_order_version_1_point_1_response.dart';
 import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderresponse/add_warehouse_in_order_response.dart';
 import '../../domain/entity/order/arrived_order_response.dart';
 import '../../domain/entity/order/combined_order.dart';
@@ -22,8 +23,16 @@ import '../../domain/entity/order/order_product_inventory.dart';
 import '../../domain/entity/order/order_purchasing.dart';
 import '../../domain/entity/order/order_shipping.dart';
 import '../../domain/entity/order/order_summary.dart';
+import '../../domain/entity/order/ordertransaction/ordertransactionsummary/order_transaction_summary.dart';
+import '../../domain/entity/order/ordertransaction/ordertransactionresponse/order_transaction_response.dart';
 import '../../domain/entity/order/support_order_product.dart';
+import '../../domain/entity/payment/paymentinstruction/payment_instruction_group.dart';
+import '../../domain/entity/summaryvalue/summary_value.dart';
+import '../../misc/constant.dart';
+import '../../misc/date_util.dart';
 import '../../misc/error/message_error.dart';
+import '../../misc/error_helper.dart';
+import '../../misc/multi_language_string.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/response_wrapper.dart';
 
@@ -203,6 +212,15 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
     }
   }
 
+  CreateOrderVersion1Point1Response mapFromResponseToCreateOrderVersion1Point1Response() {
+    dynamic paymentResponse = response["payment"];
+    return CreateOrderVersion1Point1Response(
+      transactionId: paymentResponse["transaction_id"],
+      orderId: paymentResponse["order_id"],
+      combinedOrderId: paymentResponse["combined_order_id"]
+    );
+  }
+
   ArrivedOrderResponse mapFromResponseToArrivedOrderResponse() {
     return ArrivedOrderResponse();
   }
@@ -217,5 +235,59 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
 
   RemoveWarehouseInOrderResponse mapFromResponseToRemoveWarehouseInOrderResponse() {
     return RemoveWarehouseInOrderResponse();
+  }
+
+  OrderTransactionSummary mapFromResponseToOrderTransactionSummary() {
+    List<SummaryValue> orderTransactionSummaryValue = response != null ? ResponseWrapper(response).mapFromResponseToSummaryValueList() : [];
+    if (orderTransactionSummaryValue.isEmpty) {
+      throw ErrorHelper.generateMultiLanguageDioError(
+        Constant.multiLanguageMessageErrorPaymentDetail
+      );
+    }
+    return OrderTransactionSummary(
+      orderTransactionSummaryValueList: response != null ? ResponseWrapper(response).mapFromResponseToSummaryValueList() : []
+    );
+  }
+
+  OrderTransactionResponse mapFromResponseToOrderTransactionResponse() {
+    dynamic paymentResponse = response["payment"];
+    String statusCode = "200"; //paymentResponse["status_code"];
+    if (statusCode.isNotEmptyString) {
+      if (statusCode[0] != "2") {
+        if (statusCode != "407") {
+          throw MultiLanguageMessageError(
+            title: MultiLanguageString({
+              Constant.textEnUsLanguageKey: "Failed to Load Payment Details",
+              Constant.textInIdLanguageKey: "Gagal Memuat Rincian Pembayaran"
+            }),
+            message: MultiLanguageString({
+              Constant.textEnUsLanguageKey: "Please try refresh again.",
+              Constant.textInIdLanguageKey: "Silahkan coba refresh kembali."
+            }),
+          );
+        }
+      }
+    }
+    return OrderTransactionResponse(
+      orderId: paymentResponse["order_id"],
+      transactionId: paymentResponse["transaction_id"],
+      grossAmount: ResponseWrapper(paymentResponse["gross_amount"]).mapFromResponseToDouble()!,
+      transactionDateTime: DateUtil.convertUtcOffset(
+        ResponseWrapper(paymentResponse["transaction_time"]).mapFromResponseToDateTime(
+          dateFormat: DateUtil.standardDateFormat,
+          convertIntoLocalTime: false
+        )!,
+        DateTime.now().timeZoneOffset.inHours
+      ),
+      expiryDateTime: DateUtil.convertUtcOffset(
+        ResponseWrapper(paymentResponse["expiry_time"]).mapFromResponseToDateTime(
+          dateFormat: DateUtil.standardDateFormat,
+          convertIntoLocalTime: false
+        )!,
+        DateTime.now().timeZoneOffset.inHours
+      ),
+      orderTransactionSummary: ResponseWrapper(response["payment_detail"]).mapFromResponseToOrderTransactionSummary(),
+      paymentInstructionTransactionSummary: ResponseWrapper(response["payment_instruction"]).mapFromResponseToPaymentInstructionTransactionSummary(),
+    );
   }
 }

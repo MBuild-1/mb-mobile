@@ -31,6 +31,7 @@ import '../../domain/entity/cart/cart_list_parameter.dart';
 import '../../domain/entity/cart/cart_summary.dart';
 import '../../domain/entity/cart/host_cart.dart';
 import '../../domain/entity/cart/support_cart.dart';
+import '../../domain/entity/payment/payment_method.dart';
 import '../../domain/entity/summaryvalue/summary_value.dart';
 import '../../domain/entity/user/user.dart';
 import '../../domain/entity/wishlist/support_wishlist.dart';
@@ -103,9 +104,11 @@ import 'getx_page.dart';
 import 'dart:math' as math;
 
 import 'modaldialogpage/cart_summary_cart_modal_dialog_page.dart';
+import 'payment_method_page.dart';
 
 class SharedCartPage extends RestorableGetxPage<_SharedCartPageRestoration> {
   late final ControllerMember<SharedCartController> _sharedCartController = ControllerMember<SharedCartController>().addToControllerManager(controllerManager);
+  final _StatefulSharedCartControllerMediatorWidgetDelegate _statefulSharedCartControllerMediatorWidgetDelegate = _StatefulSharedCartControllerMediatorWidgetDelegate();
 
   SharedCartPage({Key? key}) : super(key: key, pageRestorationId: () => "shared-cart-page");
 
@@ -139,22 +142,38 @@ class SharedCartPage extends RestorableGetxPage<_SharedCartPageRestoration> {
   }
 
   @override
-  _SharedCartPageRestoration createPageRestoration() => _SharedCartPageRestoration();
+  _SharedCartPageRestoration createPageRestoration() => _SharedCartPageRestoration(
+    onCompleteSelectPaymentMethod: (result) {
+      if (result != null) {
+        if (_statefulSharedCartControllerMediatorWidgetDelegate.onRefreshPaymentMethod != null) {
+          _statefulSharedCartControllerMediatorWidgetDelegate.onRefreshPaymentMethod!(result.toPaymentMethodPageResponse().paymentMethod);
+        }
+      }
+    }
+  );
 
   @override
   Widget buildPage(BuildContext context) {
     return Scaffold(
       body: _StatefulSharedCartControllerMediatorWidget(
         sharedCartController: _sharedCartController.controller,
+        statefulSharedCartControllerMediatorWidgetDelegate: _statefulSharedCartControllerMediatorWidgetDelegate
       ),
     );
   }
 }
 
-class _SharedCartPageRestoration extends ExtendedMixableGetxPageRestoration {
+class _SharedCartPageRestoration extends ExtendedMixableGetxPageRestoration with PaymentMethodPageRestorationMixin {
+  final RouteCompletionCallback<String?>? _onCompleteSelectPaymentMethod;
+
+  _SharedCartPageRestoration({
+    RouteCompletionCallback<String?>? onCompleteSelectPaymentMethod
+  }) : _onCompleteSelectPaymentMethod = onCompleteSelectPaymentMethod;
+
   @override
   // ignore: unnecessary_overrides
   void initState() {
+    onCompleteSelectPaymentMethod = _onCompleteSelectPaymentMethod;
     super.initState();
   }
 
@@ -240,11 +259,17 @@ class SharedCartPageRestorableRouteFuture extends GetRestorableRouteFuture {
   }
 }
 
+class _StatefulSharedCartControllerMediatorWidgetDelegate {
+  void Function(PaymentMethod)? onRefreshPaymentMethod;
+}
+
 class _StatefulSharedCartControllerMediatorWidget extends StatefulWidget {
   final SharedCartController sharedCartController;
+  final _StatefulSharedCartControllerMediatorWidgetDelegate statefulSharedCartControllerMediatorWidgetDelegate;
 
   const _StatefulSharedCartControllerMediatorWidget({
-    required this.sharedCartController
+    required this.sharedCartController,
+    required this.statefulSharedCartControllerMediatorWidgetDelegate
   });
 
   @override
@@ -270,6 +295,7 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
   LoadDataResult<List<Cart>> _fetchedCartListLoadDataResult = NoLoadDataResult<List<Cart>>();
   LoadDataResult<List<Cart>> _cartListLoadDataResult = NoLoadDataResult<List<Cart>>();
   LoadDataResult<CartSummary> _sharedCartSummaryLoadDataResult = NoLoadDataResult<CartSummary>();
+  LoadDataResult<PaymentMethod> _selectedPaymentMethodLoadDataResult = NoLoadDataResult<PaymentMethod>();
   CartContainerInterceptingActionListItemControllerState _cartContainerInterceptingActionListItemControllerState = DefaultCartContainerInterceptingActionListItemControllerState();
   String? _bucketId;
   BucketMember? _expandedBucketMember;
@@ -297,6 +323,11 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
       onPageKeyNext: (pageKey) => pageKey + 1
     );
     _sharedCartListItemPagingControllerState.isPagingControllerExist = true;
+    widget.statefulSharedCartControllerMediatorWidgetDelegate.onRefreshPaymentMethod = (paymentMethod) {
+      _selectedPaymentMethodLoadDataResult = SuccessLoadDataResult<PaymentMethod>(value: paymentMethod);
+      setState(() {});
+      widget.sharedCartController.getSharedCartSummary(_bucketId!);
+    };
   }
 
   void _updateCartInformation() {
@@ -422,6 +453,7 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
             bucketMemberLoadDataResult: () => _bucketMemberLoadDataResult,
             cartListLoadDataResult: () => _cartListLoadDataResult,
             userLoadDataResult: () => _userLoadDataResult,
+            selectedPaymentMethodLoadDataResult: () => _selectedPaymentMethodLoadDataResult,
             onAcceptOrDeclineSharedCart: (parameter) {
               int type = 0;
               String userId = "";
@@ -486,7 +518,19 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
               changeAdditionalItem: (changeAdditionalItemParameter) => widget.sharedCartController.changeAdditionalItem(changeAdditionalItemParameter),
               removeAdditionalItem: (removeAdditionalItemParameter) => widget.sharedCartController.removeAdditionalItem(removeAdditionalItemParameter),
             ),
-            cartContainerInterceptingActionListItemControllerState: _cartContainerInterceptingActionListItemControllerState
+            cartContainerInterceptingActionListItemControllerState: _cartContainerInterceptingActionListItemControllerState,
+            onSelectPaymentMethod: () {
+              PaymentMethod? selectedPaymentMethod;
+              if (_selectedPaymentMethodLoadDataResult.isSuccess) {
+                selectedPaymentMethod = _selectedPaymentMethodLoadDataResult.resultIfSuccess;
+              }
+              PageRestorationHelper.toPaymentMethodPage(context, selectedPaymentMethod?.id);
+            },
+            onRemovePaymentMethod: () {
+              setState(() => _selectedPaymentMethodLoadDataResult = NoLoadDataResult<PaymentMethod>());
+              widget.sharedCartController.getSharedCartSummary(_bucketId!);
+            },
+            errorProvider: () => Injector.locator<ErrorProvider>(),
           )
         ],
         page: 1,
@@ -501,6 +545,7 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
     widget.sharedCartController.setMainSharedCartDelegate(
       MainSharedCartDelegate(
         onUnfocusAllWidget: () => FocusScope.of(context).unfocus(),
+        onGetSettlingId: () => _selectedPaymentMethodLoadDataResult.resultIfSuccess?.id,
         onCartBack: () => Get.back(),
         onShowAddToWishlistRequestProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
         onShowAddToWishlistRequestProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
@@ -827,12 +872,16 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
                             if (_bucketMemberLoadDataResult.isSuccess) {
                               BucketMember loggedUserBucketMember = _bucketMemberLoadDataResult.resultIfSuccess!;
                               if (loggedUserBucketMember.hostBucket == 1) {
-                                return SizedOutlineGradientButton(
-                                  onPressed: _selectedCartCount == 0 ? null : () {
+                                void Function()? onPressed;
+                                if (_selectedCartCount > 0 && _selectedPaymentMethodLoadDataResult.isSuccess && _bucketId != null) {
+                                  onPressed = () {
                                     if (_bucketId != null) {
                                       widget.sharedCartController.createOrder(_bucketId!);
                                     }
-                                  },
+                                  };
+                                }
+                                return SizedOutlineGradientButton(
+                                  onPressed: onPressed,
                                   width: 120,
                                   text: "${"Checkout".tr} ($_selectedCartCount)",
                                   outlineGradientButtonType: OutlineGradientButtonType.solid,

@@ -113,13 +113,7 @@ abstract class OrderItem extends StatelessWidget {
                         if (showPayButton) {
                           addRowWidget(
                             SizedOutlineGradientButton(
-                              onPressed: () async {
-                                DialogHelper.showLoadingDialog(context);
-                                WebHelper.launchUrl(
-                                  Uri.parse("${Constant.envValueMidtransSnapUrl}${order.orderProduct.orderDetail.snapToken}")
-                                );
-                                Get.back();
-                              },
+                              onPressed: () => PageRestorationHelper.toOrderDetailPage(context, order.id),
                               text: "Pay".tr,
                               customPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
                               outlineGradientButtonType: OutlineGradientButtonType.solid,

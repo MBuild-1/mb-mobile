@@ -207,6 +207,7 @@ class DefaultCartDataSource implements CartDataSource {
     dynamic data = {
       if (cartSummaryParameter.address != null) "user_address_id": cartSummaryParameter.address!.id,
       if (cartSummaryParameter.couponId.isNotEmptyString) "voucher_id": cartSummaryParameter.couponId!,
+      if (cartSummaryParameter.settlingId.isNotEmptyString) "settling_id": cartSummaryParameter.settlingId!,
       "order_list": orderList,
       "order_send_to_warehouse_list": sendToWarehouseList
     };

@@ -38,6 +38,7 @@ import '../presentation/page/notification_redirector_page.dart';
 import '../presentation/page/order_chat_page.dart';
 import '../presentation/page/order_detail_page.dart';
 import '../presentation/page/order_page.dart';
+import '../presentation/page/payment_instruction_page.dart';
 import '../presentation/page/payment_method_page.dart';
 import '../presentation/page/pdf_viewer_page.dart';
 import '../presentation/page/product_brand_page.dart';
@@ -325,11 +326,11 @@ class _PageRestorationHelperImpl {
     });
   }
 
-  void toOrderDetailPage(BuildContext context, String orderId) {
+  void toOrderDetailPage(BuildContext context, String combinedOrderId) {
     LoginHelper.checkingLogin(context, () {
       PageRestorationHelper.findPageRestorationMixin<OrderDetailPageRestorationMixin>(
         onGetxPageRestorationFound: (restoration) {
-          restoration.orderDetailPageRestorableRouteFuture.present(orderId);
+          restoration.orderDetailPageRestorableRouteFuture.present(combinedOrderId);
         },
         context: context
       );
@@ -624,6 +625,15 @@ class _PageRestorationHelperImpl {
     PageRestorationHelper.findPageRestorationMixin<PaymentMethodPageRestorationMixin>(
       onGetxPageRestorationFound: (restoration) {
         restoration.paymentMethodPageRestorableRouteFuture.present(paymentMethodId);
+      },
+      context: context
+    );
+  }
+
+  void toPaymentInstructionPage(BuildContext context) {
+    PageRestorationHelper.findPageRestorationMixin<PaymentInstructionPageRestorationMixin>(
+      onGetxPageRestorationFound: (restoration) {
+        restoration.paymentInstructionPageRestorableRouteFuture.present();
       },
       context: context
     );

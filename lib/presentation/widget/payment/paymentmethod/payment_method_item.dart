@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../../../../domain/entity/payment/payment_method.dart';
 import '../../../../misc/constant.dart';
@@ -39,7 +40,7 @@ abstract class PaymentMethodItem extends StatelessWidget {
               ),
               const SizedBox(width: 20.0),
               Expanded(
-                child: Text(paymentMethod.paymentType)
+                child: Text(paymentMethod.paymentName.toStringNonNull)
               ),
             ]
           )

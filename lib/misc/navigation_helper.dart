@@ -50,6 +50,10 @@ class _NavigationHelperImpl {
   }
 
   void navigationAfterPurchaseProcess(BuildContext context, Order order) {
+    navigationAfterPurchaseProcessWithCombinedOrderIdParameter(context, order.combinedOrder.id);
+  }
+
+  void navigationAfterPurchaseProcessWithCombinedOrderIdParameter(BuildContext context, String combinedOrderId) {
     Map<String, RouteWrapper?> routeMap = MainRouteObserver.routeMap;
     List<String> routeKeyList = List.of(routeMap.keys);
     int i = 0;
@@ -79,9 +83,7 @@ class _NavigationHelperImpl {
                     if (buildContextEventFunction != null) {
                       BuildContext mainMenuBuildContext = buildContextEventFunction();
                       //MaterialIgnorePointer.of(mainMenuBuildContext)?.ignoring = false;
-                      DialogHelper.showLoadingDialog(mainMenuBuildContext);
-                      WebHelper.launchUrl(Uri.parse("${Constant.envValueMidtransSnapUrl}${order.combinedOrder.orderProduct.orderDetail.snapToken}"));
-                      Get.back();
+                      PageRestorationHelper.toOrderDetailPage(mainMenuBuildContext, combinedOrderId);
                     }
                     MainRouteObserver.disposingEventRouteMap[targetRouteName] = null;
                   });

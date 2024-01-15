@@ -160,7 +160,7 @@ class DeliveryCartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
             )
           );
         } else if (shippingLoadDataResult.isFailed) {
-          ErrorProvider errorProvider = oldItemType.errorProvider;
+          ErrorProvider errorProvider = oldItemType.errorProvider();
           ErrorProviderResult errorProviderResult = errorProvider.onGetErrorProviderResult(shippingLoadDataResult.resultIfFailed!).toErrorProviderResultNonNull();
           newItemTypeList.add(
             VirtualSpacingListItemControllerState(
@@ -317,7 +317,7 @@ class DeliveryCartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
             )
           );
         } else if (selectedPaymentMethodLoadDataResult.isFailed) {
-          ErrorProvider errorProvider = oldItemType.errorProvider;
+          ErrorProvider errorProvider = oldItemType.errorProvider();
           ErrorProviderResult errorProviderResult = errorProvider.onGetErrorProviderResult(selectedPaymentMethodLoadDataResult.resultIfFailed!).toErrorProviderResultNonNull();
           newItemTypeList.add(
             VirtualSpacingListItemControllerState(
@@ -458,7 +458,7 @@ class DeliveryCartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
             )
           );
         } else if (selectedCouponLoadDataResult.isFailed) {
-          ErrorProvider errorProvider = oldItemType.errorProvider;
+          ErrorProvider errorProvider = oldItemType.errorProvider();
           ErrorProviderResult errorProviderResult = errorProvider.onGetErrorProviderResult(selectedCouponLoadDataResult.resultIfFailed!).toErrorProviderResultNonNull();
           newItemTypeList.add(
             VirtualSpacingListItemControllerState(

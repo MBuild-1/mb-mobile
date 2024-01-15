@@ -34,6 +34,7 @@ import '../domain/entity/cart/cart_summary.dart';
 import '../domain/entity/cart/cart_summary_parameter.dart';
 import '../domain/entity/cart/remove_from_cart_parameter.dart';
 import '../domain/entity/cart/remove_from_cart_response.dart';
+import '../domain/entity/payment/payment_method.dart';
 import '../domain/entity/user/getuser/get_user_parameter.dart';
 import '../domain/entity/user/user.dart';
 import '../domain/entity/wishlist/add_wishlist_parameter.dart';
@@ -66,6 +67,7 @@ import '../misc/typedef.dart';
 import 'base_getx_controller.dart';
 
 typedef _OnCartBack = void Function();
+typedef _OnGetSettlingId = String? Function();
 typedef _OnShowAddToWishlistRequestProcessLoadingCallback = Future<void> Function();
 typedef _OnAddToWishlistRequestProcessSuccessCallback = Future<void> Function();
 typedef _OnShowAddToWishlistRequestProcessFailedCallback = Future<void> Function(dynamic e);
@@ -421,6 +423,7 @@ class SharedCartController extends BaseGetxController {
 
 class MainSharedCartDelegate {
   OnUnfocusAllWidget onUnfocusAllWidget;
+  _OnGetSettlingId onGetSettlingId;
   _OnCartBack onCartBack;
   _OnShowAddToWishlistRequestProcessLoadingCallback onShowAddToWishlistRequestProcessLoadingCallback;
   _OnAddToWishlistRequestProcessSuccessCallback onAddToWishlistRequestProcessSuccessCallback;
@@ -453,6 +456,7 @@ class MainSharedCartDelegate {
 
   MainSharedCartDelegate({
     required this.onUnfocusAllWidget,
+    required this.onGetSettlingId,
     required this.onCartBack,
     required this.onShowAddToWishlistRequestProcessLoadingCallback,
     required this.onAddToWishlistRequestProcessSuccessCallback,

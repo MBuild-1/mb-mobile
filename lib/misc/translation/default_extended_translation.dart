@@ -339,7 +339,17 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Payment Method": "Metode Pembayaran",
       "No selected payment method": "Tidak ada metode pembayaran yang dipilih",
       "Select Payment Method": "Pilih Metode Pembayaran",
-      "Choose Payment Method": "Pilih Metode Pembayaran"
+      "Choose Payment Method": "Pilih Metode Pembayaran",
+      "Open": "Buka",
+      "Payment": "Pembayaran",
+      "Payment Details": "Rincian Pembayaran",
+      "Payment Instruction": "Instruksi Pembayaran",
+      "Success copied": "Sukses menyalin",
+      "Cannot copy this content": "Tidak bisa menyalin konten ini",
+      "Select Language": "Pilih Bahasa",
+      "Hours": "Jam",
+      "Minutes": "Menit",
+      "Seconds": "Detik"
     }
   };
 

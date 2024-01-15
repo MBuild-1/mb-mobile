@@ -286,6 +286,29 @@ class DefaultErrorProvider extends ErrorProvider {
         }
         return notFound();
       } else if (statusCode == 500) {
+        Response<dynamic>? response = e.response;
+        dynamic responseData = response?.data;
+        if (responseData is Map) {
+          if (responseData.containsKey("message")) {
+            dynamic message = responseData["message"];
+            if (message is String) {
+              if (message.toLowerCase().contains("midtrans api is returning api error")) {
+                return onGetErrorProviderResult(
+                  MultiLanguageMessageError(
+                    title: MultiLanguageString({
+                      Constant.textEnUsLanguageKey: "Failed to Make Payment",
+                      Constant.textInIdLanguageKey: "Gagal Membuat Pembayaran"
+                    }),
+                    message: MultiLanguageString({
+                      Constant.textEnUsLanguageKey: "Please try again.",
+                      Constant.textInIdLanguageKey: "Silahkan coba lagi."
+                    }),
+                  )
+                ).toErrorProviderResultNonNull();
+              }
+            }
+          }
+        }
         return ErrorProviderResult(
           title: "Internal Server Error".tr,
           message: "${"Something has internal server error".tr}.",

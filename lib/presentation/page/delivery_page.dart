@@ -30,6 +30,7 @@ import '../../domain/entity/summaryvalue/summary_value.dart';
 import '../../domain/usecase/add_additional_item_use_case.dart';
 import '../../domain/usecase/change_additional_item_use_case.dart';
 import '../../domain/usecase/create_order_use_case.dart';
+import '../../domain/usecase/create_order_version_1_point_1_use_case.dart';
 import '../../domain/usecase/get_additional_item_use_case.dart';
 import '../../domain/usecase/get_cart_list_use_case.dart';
 import '../../domain/usecase/get_cart_summary_use_case.dart';
@@ -111,6 +112,7 @@ class DeliveryPage extends RestorableGetxPage<_DeliveryPageRestoration> {
         Injector.locator<RemoveAdditionalItemUseCase>(),
         Injector.locator<GetCouponDetailUseCase>(),
         Injector.locator<CreateOrderUseCase>(),
+        Injector.locator<CreateOrderVersion1Point1UseCase>()
       ), tag: pageName
     );
   }
@@ -460,7 +462,7 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
               getCouponDetail: (couponDetailParameter) => widget.deliveryController.getCouponDetail(couponDetailParameter)
             ),
             deliveryCartContainerInterceptingActionListItemControllerState: _defaultDeliveryCartContainerInterceptingActionListItemControllerState,
-            errorProvider: Injector.locator<ErrorProvider>(),
+            errorProvider: () => Injector.locator<ErrorProvider>(),
           )
         ],
         page: 1,
@@ -488,13 +490,19 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
           Provider.of<ComponentNotifier>(context, listen: false).updateCart();
           NavigationHelper.navigationAfterPurchaseProcess(context, order);
         },
+        onDeliveryRequestVersion1Point1ProcessSuccessCallback: (createOrderVersion1Point1Response) async {
+          Provider.of<NotificationNotifier>(context, listen: false).loadCartLoadDataResult();
+          Provider.of<ComponentNotifier>(context, listen: false).updateCart();
+          NavigationHelper.navigationAfterPurchaseProcessWithCombinedOrderIdParameter(context, createOrderVersion1Point1Response.combinedOrderId);
+        },
         onShowCartSummaryProcessCallback: (cartSummaryLoadDataResult) async {
           setState(() {
             _cartSummaryLoadDataResult = cartSummaryLoadDataResult;
           });
         },
         onGetAdditionalList: () => _additionalItemList,
-        onGetCartList: () => _cartList
+        onGetCartList: () => _cartList,
+        onGetSettlingId: () => _selectedPaymentMethodLoadDataResult.resultIfSuccess?.id
       )
     );
     return Scaffold(
@@ -621,8 +629,8 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
                     ),
                     Builder(
                       builder: (context) {
-                        void Function()? onPressed = _selectedCartCount == 0 ? null : () => widget.deliveryController.createOrder();
-                        if (!_shippingAddressLoadDataResult.isSuccess) {
+                        void Function()? onPressed = _selectedCartCount == 0 ? null : () => widget.deliveryController.createOrderVersion1Point1();
+                        if (!(_shippingAddressLoadDataResult.isSuccess && _selectedPaymentMethodLoadDataResult.isSuccess)) {
                           onPressed = null;
                         }
                         return SizedOutlineGradientButton(

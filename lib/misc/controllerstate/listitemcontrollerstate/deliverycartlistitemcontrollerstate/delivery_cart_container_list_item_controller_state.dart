@@ -34,7 +34,7 @@ class DeliveryCartContainerListItemControllerState extends ListItemControllerSta
   DeliveryCartContainerActionListItemControllerState deliveryCartContainerActionListItemControllerState;
   DeliveryCartContainerInterceptingActionListItemControllerState deliveryCartContainerInterceptingActionListItemControllerState;
   List<AdditionalItem> additionalItemList;
-  ErrorProvider errorProvider;
+  ErrorProvider Function() errorProvider;
 
   DeliveryCartContainerListItemControllerState({
     required this.selectedCartIdList,

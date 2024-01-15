@@ -245,6 +245,41 @@ class _PusherHelperImpl {
     }
     return pusherChannelsFlutter;
   }
+
+  String _getTransactionSuccessChannelName() {
+    return "transaction-success";
+  }
+
+  Future<PusherChannelsFlutter> subscribeTransactionSuccessPusherChannel({
+    required PusherChannelsFlutter pusherChannelsFlutter,
+    required dynamic Function(dynamic) onEvent,
+    required String orderId
+  }) async {
+    try {
+      await pusherChannelsFlutter.subscribeAfterPusherIsConnected(
+        pusherConnectedCompleter: _pusherConnectedCompleter,
+        channelName: "${_getTransactionSuccessChannelName()}.$orderId",
+        onEvent: onEvent
+      );
+    } catch (e) {
+      print("ERROR: $e");
+    }
+    return pusherChannelsFlutter;
+  }
+
+  Future<PusherChannelsFlutter> unsubscribeTransactionSuccessPusherChannel({
+    required PusherChannelsFlutter pusherChannelsFlutter,
+    required String orderId
+  }) async {
+    try {
+      await pusherChannelsFlutter.unsubscribe(
+        channelName: "${_getTransactionSuccessChannelName()}.$orderId",
+      );
+    } catch (e) {
+      print("ERROR: $e");
+    }
+    return pusherChannelsFlutter;
+  }
 }
 
 extension on PusherChannelsFlutter {

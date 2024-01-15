@@ -15,6 +15,7 @@ class ColorfulChipTabBar extends StatelessWidget {
   final bool? canSelectAndUnselect;
   final Widget? Function(TextStyle?, ColorfulChipTabBarData)? chipLabelInterceptor;
   final double? tabWidth;
+  final Widget Function(ColorfulChipTabBarInterceptorParameter)? colorfulChipTabBarInterceptor;
 
   const ColorfulChipTabBar({
     Key? key,
@@ -24,7 +25,8 @@ class ColorfulChipTabBar extends StatelessWidget {
     this.isWrap = true,
     this.canSelectAndUnselect,
     this.chipLabelInterceptor,
-    this.tabWidth
+    this.tabWidth,
+    this.colorfulChipTabBarInterceptor
   }) : super(key: key);
 
   @override
@@ -39,18 +41,35 @@ class ColorfulChipTabBar extends StatelessWidget {
       Widget? Function(TextStyle?)? effectiveChipLabelInterceptor() {
         return chipLabelInterceptor != null ? (textStyle) => chipLabelInterceptor!(textStyle, data) : null;
       }
+      Widget modifiedChipButton({
+        required bool canSelectAndUnselect,
+        required bool isSelected,
+        required void Function() onTap
+      }) {
+        ModifiedChipButton modifiedChipButton = ModifiedChipButton(
+          label: Text(data.title.toStringNonNull),
+          labelInterceptor: effectiveChipLabelInterceptor(),
+          backgroundColor: Constant.colorTrainingPreEmploymentChip(context),
+          isSelected: isSelected,
+          canSelectAndUnselect: canSelectAndUnselect,
+          onTap: onTap
+        );
+        return colorfulChipTabBarInterceptor != null ? () {
+          ColorfulChipTabBarInterceptorParameter colorfulChipTabBarInterceptorParameter = ColorfulChipTabBarInterceptorParameter(
+            modifiedChipButton: modifiedChipButton,
+          );
+          return colorfulChipTabBarInterceptor!(colorfulChipTabBarInterceptorParameter);
+        }() : modifiedChipButton;
+      }
       bool effectiveCanSelectAndUnselect = false;
       if (colorfulChipTabBarController is ColorfulChipTabBarController) {
         effectiveCanSelectAndUnselect = canSelectAndUnselect ?? (colorfulChipTabBarController is CanSelectAndUnselectColorfulChipTabBarController);
         result.add(
           SizedBox(
             width: tabWidth,
-            child: ModifiedChipButton(
-              label: Text(data.title.toStringNonNull),
-              labelInterceptor: effectiveChipLabelInterceptor(),
-              backgroundColor: Constant.colorTrainingPreEmploymentChip(context),
-              isSelected: i == value,
+            child: modifiedChipButton(
               canSelectAndUnselect: effectiveCanSelectAndUnselect,
+              isSelected: i == value,
               onTap: () {
                 ColorfulChipTabBarController normalColorfulChipTabBarController = colorfulChipTabBarController as ColorfulChipTabBarController;
                 if (normalColorfulChipTabBarController is OnlyButtonColorfulChipTabBarController) {
@@ -92,12 +111,9 @@ class ColorfulChipTabBar extends StatelessWidget {
         result.add(
           SizedBox(
             width: tabWidth,
-            child: ModifiedChipButton(
-              label: Text(data.title.toStringNonNull),
-              labelInterceptor: effectiveChipLabelInterceptor(),
-              backgroundColor: Constant.colorTrainingPreEmploymentChip(context),
-              isSelected: isSelected,
+            child: modifiedChipButton(
               canSelectAndUnselect: effectiveCanSelectAndUnselect,
+              isSelected: isSelected,
               onTap: () {
                 MultipleSelectionColorfulChipTabBarController multipleSelectionColorfulChipTabBarController = colorfulChipTabBarController as MultipleSelectionColorfulChipTabBarController;
                 List<int> currentLastSelectedIndexList = multipleSelectionColorfulChipTabBarController.value;
@@ -241,5 +257,13 @@ class ColorfulChipTabBarData {
     this.title,
     required this.color,
     this.data
+  });
+}
+
+class ColorfulChipTabBarInterceptorParameter {
+  ModifiedChipButton modifiedChipButton;
+
+  ColorfulChipTabBarInterceptorParameter({
+    required this.modifiedChipButton
   });
 }
