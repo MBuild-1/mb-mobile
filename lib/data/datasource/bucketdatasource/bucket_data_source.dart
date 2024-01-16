@@ -4,6 +4,8 @@ import '../../../domain/entity/bucket/checkbucket/check_bucket_parameter.dart';
 import '../../../domain/entity/bucket/checkbucket/check_bucket_response.dart';
 import '../../../domain/entity/bucket/checkoutbucket/checkout_bucket_parameter.dart';
 import '../../../domain/entity/bucket/checkoutbucket/checkout_bucket_response.dart';
+import '../../../domain/entity/bucket/checkoutbucket/checkout_bucket_version_1_point_1_parameter.dart';
+import '../../../domain/entity/bucket/checkoutbucket/checkout_bucket_version_1_point_1_response.dart';
 import '../../../domain/entity/bucket/createbucket/create_bucket_parameter.dart';
 import '../../../domain/entity/bucket/createbucket/create_bucket_response.dart';
 import '../../../domain/entity/bucket/destroybucket/destroy_bucket_parameter.dart';
@@ -30,6 +32,7 @@ abstract class BucketDataSource {
   FutureProcessing<ApproveOrRejectRequestBucketResponse> approveOrRejectRequestBucket(ApproveOrRejectRequestBucketParameter approveOrRejectRequestBucketParameter);
   FutureProcessing<CheckBucketResponse> checkBucket(CheckBucketParameter checkBucketParameter);
   FutureProcessing<CheckoutBucketResponse> checkoutBucket(CheckoutBucketParameter checkoutBucketParameter);
+  FutureProcessing<CheckoutBucketVersion1Point1Response> checkoutBucketVersion1Point1(CheckoutBucketVersion1Point1Parameter checkoutBucketVersion1Point1Parameter);
   FutureProcessing<TriggerBucketReadyResponse> triggerBucketReady(TriggerBucketReadyParameter triggerBucketReadyParameter);
   FutureProcessing<DestroyBucketResponse> destroyBucket(DestroyBucketParameter destroyBucketParameter);
   FutureProcessing<LeaveBucketResponse> leaveBucket(LeaveBucketParameter leaveBucketParameter);

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
@@ -33,6 +35,8 @@ import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
+import '../../misc/routeargument/order_route_argument.dart';
+import '../../misc/temp_order_detail_back_result_data_helper.dart';
 import '../widget/colorful_chip_tab_bar.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
@@ -62,9 +66,25 @@ class OrderPage extends RestorableGetxPage<_OrderPageRestoration> {
   @override
   _OrderPageRestoration createPageRestoration() => _OrderPageRestoration(
     onCompleteOrderDetailPage: (result) {
+      bool removeOrder(String resultString) {
+        if (resultString.isNotEmpty) {
+          Map<String, dynamic> resultFromStorageMap = json.decode(resultString) as Map<String, dynamic>;
+          if (resultFromStorageMap.containsKey("combined_order_id")) {
+            String combinedOrderId = resultFromStorageMap["combined_order_id"];
+            if (_statefulOrderControllerMediatorWidgetDelegate.onRemoveOrder != null) {
+              _statefulOrderControllerMediatorWidgetDelegate.onRemoveOrder!(combinedOrderId);
+              return true;
+            }
+          }
+        }
+        return false;
+      }
       if (result != null) {
-        if (_statefulOrderControllerMediatorWidgetDelegate.onRemoveOrder != null) {
-          _statefulOrderControllerMediatorWidgetDelegate.onRemoveOrder!(result.toEmptyStringNonNull);
+        removeOrder(result.toEmptyStringNonNull);
+      } else {
+        String resultFromStorage = TempOrderDetailBackResultDataHelper.getTempOrderDetailBackResult().result;
+        if (removeOrder(resultFromStorage)) {
+          TempOrderDetailBackResultDataHelper.deleteTempOrderDetailBackResult();
         }
       }
     },
@@ -150,6 +170,7 @@ class OrderPageRestorableRouteFuture extends GetRestorableRouteFuture {
   static Route<void>? _getRoute([Object? arguments]) {
     return GetExtended.toWithGetPageRouteReturnValue<void>(
       GetxPageBuilder.buildRestorableGetxPageBuilder(OrderPageGetPageBuilderAssistant()),
+      arguments: OrderRouteArgument()
     );
   }
 

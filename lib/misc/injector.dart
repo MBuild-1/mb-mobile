@@ -119,6 +119,7 @@ import '../domain/usecase/auth_identity_verify_otp_use_case.dart';
 import '../domain/usecase/change_additional_item_use_case.dart';
 import '../domain/usecase/change_address_use_case.dart';
 import '../domain/usecase/change_password_use_case.dart';
+import '../domain/usecase/checkout_bucket_version_1_point_1_use_case.dart';
 import '../domain/usecase/create_order_version_1_point_1_use_case.dart';
 import '../domain/usecase/help_chat_template_use_case.dart';
 import '../domain/usecase/check_active_pin_use_case.dart';
@@ -746,6 +747,7 @@ class _Injector {
     locator.registerLazySingleton<TriggerBucketReadyUseCase>(() => TriggerBucketReadyUseCase(bucketRepository: locator()));
     locator.registerLazySingleton<GetSharedCartSummaryUseCase>(() => GetSharedCartSummaryUseCase(bucketRepository: locator()));
     locator.registerLazySingleton<CheckoutBucketUseCase>(() => CheckoutBucketUseCase(bucketRepository: locator()));
+    locator.registerLazySingleton<CheckoutBucketVersion1Point1UseCase>(() => CheckoutBucketVersion1Point1UseCase(bucketRepository: locator()));
     locator.registerLazySingleton<LeaveBucketUseCase>(() => LeaveBucketUseCase(bucketRepository: locator()));
     locator.registerLazySingleton<DestroyBucketUseCase>(() => DestroyBucketUseCase(bucketRepository: locator()));
     locator.registerLazySingleton<SearchUseCase>(() => SearchUseCase(searchRepository: locator()));

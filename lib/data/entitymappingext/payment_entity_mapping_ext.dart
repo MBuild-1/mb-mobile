@@ -86,12 +86,12 @@ extension PaymentDetailEntityMappingExt on ResponseWrapper {
   }
 
   PaymentInstructionTransactionSummary mapFromResponseToPaymentInstructionTransactionSummary() {
-    List<SummaryValue> paymentInstructionTransactionSummaryValue = response != null ? ResponseWrapper(response).mapFromResponseToSummaryValueList() : [];
-    if (paymentInstructionTransactionSummaryValue.isEmpty) {
-      throw ErrorHelper.generateMultiLanguageDioError(
-        Constant.multiLanguageMessageErrorPaymentDetail
-      );
-    }
+    // List<SummaryValue> paymentInstructionTransactionSummaryValue = response != null ? ResponseWrapper(response).mapFromResponseToSummaryValueList() : [];
+    // if (paymentInstructionTransactionSummaryValue.isEmpty) {
+    //   throw ErrorHelper.generateMultiLanguageDioError(
+    //     Constant.multiLanguageMessageErrorPaymentDetail
+    //   );
+    // }
     return PaymentInstructionTransactionSummary(
       paymentInstructionTransactionSummaryValueList: response != null ? ResponseWrapper(response).mapFromResponseToSummaryValueList() : []
     );

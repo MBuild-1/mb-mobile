@@ -238,12 +238,12 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
   }
 
   OrderTransactionSummary mapFromResponseToOrderTransactionSummary() {
-    List<SummaryValue> orderTransactionSummaryValue = response != null ? ResponseWrapper(response).mapFromResponseToSummaryValueList() : [];
-    if (orderTransactionSummaryValue.isEmpty) {
-      throw ErrorHelper.generateMultiLanguageDioError(
-        Constant.multiLanguageMessageErrorPaymentDetail
-      );
-    }
+    // List<SummaryValue> orderTransactionSummaryValue = response != null ? ResponseWrapper(response).mapFromResponseToSummaryValueList() : [];
+    // if (orderTransactionSummaryValue.isEmpty) {
+    //   throw ErrorHelper.generateMultiLanguageDioError(
+    //     Constant.multiLanguageMessageErrorPaymentDetail
+    //   );
+    // }
     return OrderTransactionSummary(
       orderTransactionSummaryValueList: response != null ? ResponseWrapper(response).mapFromResponseToSummaryValueList() : []
     );
@@ -251,7 +251,7 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
 
   OrderTransactionResponse mapFromResponseToOrderTransactionResponse() {
     dynamic paymentResponse = response["payment"];
-    String statusCode = "200"; //paymentResponse["status_code"];
+    String statusCode = paymentResponse["status_code"];
     if (statusCode.isNotEmptyString) {
       if (statusCode[0] != "2") {
         if (statusCode != "407") {
@@ -271,20 +271,23 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
     return OrderTransactionResponse(
       orderId: paymentResponse["order_id"],
       transactionId: paymentResponse["transaction_id"],
+      transactionStatus: paymentResponse["transaction_status"],
       grossAmount: ResponseWrapper(paymentResponse["gross_amount"]).mapFromResponseToDouble()!,
       transactionDateTime: DateUtil.convertUtcOffset(
         ResponseWrapper(paymentResponse["transaction_time"]).mapFromResponseToDateTime(
           dateFormat: DateUtil.standardDateFormat,
           convertIntoLocalTime: false
         )!,
-        DateTime.now().timeZoneOffset.inHours
+        0,
+        oldUtcOffset: 7
       ),
       expiryDateTime: DateUtil.convertUtcOffset(
         ResponseWrapper(paymentResponse["expiry_time"]).mapFromResponseToDateTime(
           dateFormat: DateUtil.standardDateFormat,
           convertIntoLocalTime: false
         )!,
-        DateTime.now().timeZoneOffset.inHours
+        0,
+        oldUtcOffset: 7
       ),
       orderTransactionSummary: ResponseWrapper(response["payment_detail"]).mapFromResponseToOrderTransactionSummary(),
       paymentInstructionTransactionSummary: ResponseWrapper(response["payment_instruction"]).mapFromResponseToPaymentInstructionTransactionSummary(),

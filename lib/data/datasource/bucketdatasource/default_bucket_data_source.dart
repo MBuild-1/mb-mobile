@@ -3,6 +3,7 @@ import 'package:masterbagasi/data/entitymappingext/bucket_entity_mapping_ext.dar
 import 'package:masterbagasi/data/entitymappingext/cart_entity_mapping_ext.dart';
 import 'package:masterbagasi/misc/ext/future_ext.dart';
 import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../../../domain/entity/bucket/approveorrejectrequestbucket/approve_or_reject_request_bucket_parameter.dart';
 import '../../../domain/entity/bucket/approveorrejectrequestbucket/approve_or_reject_request_bucket_response.dart';
@@ -10,6 +11,8 @@ import '../../../domain/entity/bucket/checkbucket/check_bucket_parameter.dart';
 import '../../../domain/entity/bucket/checkbucket/check_bucket_response.dart';
 import '../../../domain/entity/bucket/checkoutbucket/checkout_bucket_parameter.dart';
 import '../../../domain/entity/bucket/checkoutbucket/checkout_bucket_response.dart';
+import '../../../domain/entity/bucket/checkoutbucket/checkout_bucket_version_1_point_1_parameter.dart';
+import '../../../domain/entity/bucket/checkoutbucket/checkout_bucket_version_1_point_1_response.dart';
 import '../../../domain/entity/bucket/createbucket/create_bucket_parameter.dart';
 import '../../../domain/entity/bucket/createbucket/create_bucket_response.dart';
 import '../../../domain/entity/bucket/destroybucket/destroy_bucket_parameter.dart';
@@ -26,6 +29,7 @@ import '../../../domain/entity/bucket/showbucketbyid/show_bucket_by_id_response.
 import '../../../domain/entity/bucket/triggerbucketready/trigger_bucket_ready_parameter.dart';
 import '../../../domain/entity/bucket/triggerbucketready/trigger_bucket_ready_response.dart';
 import '../../../domain/entity/cart/cart_summary.dart';
+import '../../../misc/option_builder.dart';
 import '../../../misc/processing/dio_http_client_processing.dart';
 import '../../../misc/processing/future_processing.dart';
 import 'bucket_data_source.dart';
@@ -113,6 +117,24 @@ class DefaultBucketDataSource implements BucketDataSource {
   }
 
   @override
+  FutureProcessing<CheckoutBucketVersion1Point1Response> checkoutBucketVersion1Point1(CheckoutBucketVersion1Point1Parameter checkoutBucketVersion1Point1Parameter) {
+    dynamic data = {
+      if (checkoutBucketVersion1Point1Parameter.bucketId.isNotEmptyString) "bucket_id": checkoutBucketVersion1Point1Parameter.bucketId,
+      if (checkoutBucketVersion1Point1Parameter.settlingId.isNotEmptyString) "settling_id": checkoutBucketVersion1Point1Parameter.settlingId!,
+    };
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.post(
+        "/bucket/checkout",
+        data: data,
+        cancelToken: cancelToken,
+        options: OptionsBuilder.multipartData().withBaseUrl(dio.options.baseUrl.replaceAll("v1", "v1.1")).buildExtended()
+      ).map(
+        onMap: (value) => value.wrapResponse().mapFromResponseToCheckoutBucketVersion1Point1Response()
+      );
+    });
+  }
+
+  @override
   FutureProcessing<TriggerBucketReadyResponse> triggerBucketReady(TriggerBucketReadyParameter triggerBucketReadyParameter) {
     return DioHttpClientProcessing((cancelToken) {
       return dio.post("/user/bucket/ready", cancelToken: cancelToken)
@@ -138,8 +160,12 @@ class DefaultBucketDataSource implements BucketDataSource {
 
   @override
   FutureProcessing<CartSummary> sharedCartSummary(SharedCartSummaryParameter sharedCartSummaryParameter) {
+    dynamic data = {
+      if (sharedCartSummaryParameter.bucketId.isNotEmptyString) "bucket_id": sharedCartSummaryParameter.bucketId!,
+      if (sharedCartSummaryParameter.settlingId.isNotEmptyString) "settling_id": sharedCartSummaryParameter.settlingId!,
+    };
     return DioHttpClientProcessing((cancelToken) {
-      return dio.get("/user/bucket/order/summary/${sharedCartSummaryParameter.bucketId}", cancelToken: cancelToken)
+      return dio.post("/user/bucket/order/summary", data: data, cancelToken: cancelToken)
         .map(onMap: (value) => value.wrapResponse().mapFromResponseToCartSummary());
     });
   }

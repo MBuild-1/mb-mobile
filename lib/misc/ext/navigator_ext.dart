@@ -5,6 +5,7 @@ import '../main_route_observer.dart';
 import '../routeargument/login_route_argument.dart';
 import '../routeargument/main_menu_route_argument.dart';
 import '../routeargument/notification_redirector_route_argument.dart';
+import '../routeargument/order_route_argument.dart';
 
 extension NavigatorStateExt on NavigatorState {
   void popUntilLogin() {
@@ -13,6 +14,10 @@ extension NavigatorStateExt on NavigatorState {
 
   void popUntilMainMenu() {
     popUntil(popUntilMainMenuPredicate());
+  }
+
+  void popUntilOrder() {
+    popUntil(popUntilOrderPredicate());
   }
 
   void popUntilOneStepBelowNotificationRedirector() {
@@ -34,6 +39,17 @@ extension NavigatorStateExt on NavigatorState {
     return (route) {
       if (route is GetPageRoute) {
         if (route.settings.arguments is MainMenuRouteArgument) {
+          return true;
+        }
+      }
+      return false;
+    };
+  }
+
+  RoutePredicate popUntilOrderPredicate() {
+    return (route) {
+      if (route is GetPageRoute) {
+        if (route.settings.arguments is OrderRouteArgument) {
           return true;
         }
       }

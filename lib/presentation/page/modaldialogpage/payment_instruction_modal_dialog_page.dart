@@ -86,6 +86,7 @@ class _StatefulPaymentInstructionModalDialogControllerMediatorWidgetState extend
     );
     _paymentInstructionListItemPagingControllerState.isPagingControllerExist = true;
     widget.paymentInstructionModalDialogPageParameter.paymentInstructionModalDialogPageDelegate._onRefresh = () => setState(() {});
+    widget.paymentInstructionModalDialogPageParameter.paymentInstructionModalDialogPageDelegate._onSuccess = () => Get.back();
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _paymentInstructionListItemPagingControllerStateListener(int pageKey) async {
@@ -138,6 +139,7 @@ class _StatefulPaymentInstructionModalDialogControllerMediatorWidgetState extend
   @override
   void dispose() {
     widget.paymentInstructionModalDialogPageParameter.paymentInstructionModalDialogPageDelegate._onRefresh = null;
+    widget.paymentInstructionModalDialogPageParameter.paymentInstructionModalDialogPageDelegate._onSuccess = null;
     super.dispose();
   }
 }
@@ -156,10 +158,17 @@ class PaymentInstructionModalDialogPageParameter {
 
 class PaymentInstructionModalDialogPageDelegate {
   void Function()? _onRefresh;
+  void Function()? _onSuccess;
 
   void Function() get onRefresh => () {
     if (_onRefresh != null) {
       _onRefresh!();
+    }
+  };
+
+  void Function() get onSuccess => () {
+    if (_onSuccess != null) {
+      _onSuccess!();
     }
   };
 }

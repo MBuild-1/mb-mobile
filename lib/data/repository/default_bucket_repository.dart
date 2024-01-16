@@ -4,6 +4,8 @@ import '../../domain/entity/bucket/checkbucket/check_bucket_parameter.dart';
 import '../../domain/entity/bucket/checkbucket/check_bucket_response.dart';
 import '../../domain/entity/bucket/checkoutbucket/checkout_bucket_parameter.dart';
 import '../../domain/entity/bucket/checkoutbucket/checkout_bucket_response.dart';
+import '../../domain/entity/bucket/checkoutbucket/checkout_bucket_version_1_point_1_parameter.dart';
+import '../../domain/entity/bucket/checkoutbucket/checkout_bucket_version_1_point_1_response.dart';
 import '../../domain/entity/bucket/createbucket/create_bucket_parameter.dart';
 import '../../domain/entity/bucket/createbucket/create_bucket_response.dart';
 import '../../domain/entity/bucket/destroybucket/destroy_bucket_parameter.dart';
@@ -65,6 +67,11 @@ class DefaultBucketRepository implements BucketRepository {
   @override
   FutureProcessing<LoadDataResult<CheckoutBucketResponse>> checkoutBucket(CheckoutBucketParameter checkoutBucketParameter) {
     return bucketDataSource.checkoutBucket(checkoutBucketParameter).mapToLoadDataResult<CheckoutBucketResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<CheckoutBucketVersion1Point1Response>> checkoutBucketVersion1Point1(CheckoutBucketVersion1Point1Parameter checkoutBucketVersion1Point1Parameter) {
+    return bucketDataSource.checkoutBucketVersion1Point1(checkoutBucketVersion1Point1Parameter).mapToLoadDataResult<CheckoutBucketVersion1Point1Response>();
   }
 
   @override

@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
+import 'package:masterbagasi/misc/ext/navigator_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/presentation/page/web_viewer_page.dart';
@@ -36,6 +37,7 @@ import '../../misc/countdown/countdown_component_data.dart';
 import '../../misc/countdown/countdown_component_delegate.dart';
 import '../../misc/countdown/countdown_manager.dart';
 import '../../misc/countdown/get_countdown_component_data_action.dart';
+import '../../misc/date_util.dart';
 import '../../misc/dialog_helper.dart';
 import '../../misc/entityandlistitemcontrollerstatemediator/horizontal_component_entity_parameterized_entity_and_list_item_controller_state_mediator.dart';
 import '../../misc/errorprovider/error_provider.dart';
@@ -46,6 +48,7 @@ import '../../misc/injector.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/controller_manager.dart';
 import '../../misc/multi_language_string.dart';
+import '../../misc/navigation_helper.dart';
 import '../../misc/page_restoration_helper.dart';
 import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
@@ -53,6 +56,8 @@ import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
 import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/horizontal_dynamic_item_carousel_parametered_component_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../../misc/pusher_helper.dart';
+import '../../misc/routeargument/order_detail_route_argument.dart';
+import '../../misc/temp_order_detail_back_result_data_helper.dart';
 import '../../misc/toast_helper.dart';
 import '../../misc/widgetbindingobserver/payment_widget_binding_observer.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
@@ -188,8 +193,9 @@ class OrderDetailPageRestorableRouteFuture extends GetRestorableRouteFuture {
       GetxPageBuilder.buildRestorableGetxPageBuilder(
         OrderDetailPageGetPageBuilderAssistant(
           combinedOrderId: arguments
-        )
+        ),
       ),
+      arguments: OrderDetailRouteArgument()
     );
   }
 
@@ -268,6 +274,12 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
       orderTransactionResponseLoadDataResult: NoLoadDataResult<OrderTransactionResponse>(),
       paymentInstructionModalDialogPageDelegate: PaymentInstructionModalDialogPageDelegate(),
       onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
+      onSuccess: () {
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          ToastHelper.showToast("Payment Success".tr);
+          _orderDetailScrollController.jumpTo(0);
+        });
+      }
     );
     _paymentWidgetBindingObserver = PaymentWidgetBindingObserver(
       checkOrderTransactionWhileResuming: _refreshOrderDetail
@@ -490,9 +502,14 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
                       }
                     }
                   } else {
+                    DateTime localExpiryDateTime = DateUtil.convertUtcOffset(
+                      configureCountdownComponent.orderTransactionResponse.expiryDateTime,
+                      DateTime.now().timeZoneOffset.inHours,
+                      oldUtcOffset: 0
+                    );
                     int countdownValue = () {
                       if (tagString == "expired_remaining") {
-                        return configureCountdownComponent.orderTransactionResponse.expiryDateTime.difference(DateTime.now()).inMilliseconds;
+                        return localExpiryDateTime.difference(DateTime.now()).inMilliseconds;
                       } else {
                         return lastValue["value"] as int;
                       }
@@ -500,7 +517,7 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
                     dynamic tag = DefaultCountdownComponentDelegateTagData(
                       tagString: tagString,
                       countdownValue: countdownValue,
-                      expiredDateTime: configureCountdownComponent.orderTransactionResponse.expiryDateTime,
+                      expiredDateTime: localExpiryDateTime,
                       onRefresh: _refreshOrderDetail
                     );
                     configureCountdownComponent.countdownComponentData.milliseconds = countdownValue;
@@ -558,12 +575,16 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
                                       Constant.textEnUsLanguageKey: "Your payment is expired."
                                     }).toEmptyStringNonNull
                                   );
-                                  Get.back(
-                                    result: json.encode(<String, dynamic>{
-                                      "id": widget.combinedOrderId,
-                                      "status": "expired"
-                                    }
-                                  ));
+                                  TempOrderDetailBackResultDataHelper.saveTempOrderDetailBackResult(
+                                    json.encode(
+                                      <String, dynamic>{
+                                        "combined_order_id": widget.combinedOrderId,
+                                        "status": "expired"
+                                      }
+                                    )
+                                  ).future().then((value) {
+                                    NavigationHelper.navigationBackFromOrderDetailToOrder(context);
+                                  });
                                 }
                               }
                             }

@@ -197,7 +197,8 @@ class DefaultUserDataSource implements UserDataSource {
         "credential": registerSecondStepParameter.credential,
         "name": registerSecondStepParameter.name,
         "password": registerSecondStepParameter.password,
-        "password_confirmation": registerSecondStepParameter.passwordConfirmation
+        "password_confirmation": registerSecondStepParameter.passwordConfirmation,
+        "gender": registerSecondStepParameter.gender
       }
     );
     return DioHttpClientProcessing((cancelToken) {

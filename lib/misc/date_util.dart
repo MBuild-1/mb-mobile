@@ -30,8 +30,8 @@ class _DateUtilImpl {
     );
   }
 
-  DateTime convertUtcOffset(DateTime dateTime, int newUtcOffset) {
-    Duration offsetDifference = Duration(hours: newUtcOffset - dateTime.timeZoneOffset.inHours);
+  DateTime convertUtcOffset(DateTime dateTime, int newUtcOffset, {int? oldUtcOffset}) {
+    Duration offsetDifference = Duration(hours: newUtcOffset - (oldUtcOffset ?? dateTime.timeZoneOffset.inHours));
     DateTime convertedDateTime = dateTime.add(offsetDifference);
     return convertedDateTime;
   }

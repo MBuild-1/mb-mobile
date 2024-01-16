@@ -290,6 +290,7 @@ class _ConstantImpl {
   String get hasVisitedIntroductionPageHiveTableKey => 'has_visited_introduction_hive_table_key';
   String get tempLoginDataWhileInputPinHiveTableKey => 'temp_login_data_while_input_pin_hive_table_key';
   String get tempPaymentInstructionHiveTableKey => 'temp_payment_instruction_hive_table_key';
+  String get tempOrderDetailBackResultHiveTableKey => 'temp_order_detail_back_result_hive_table_key';
   String get saveSelectedLanguageHiveTableKey => 'save_selected_language_hive_table_key';
   String get textIdKey => 'id';
   String get textTypeKey => 'type';

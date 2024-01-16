@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/order_purchasing_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
@@ -14,6 +15,8 @@ import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderp
 import '../../domain/entity/order/order.dart';
 import '../../domain/entity/order/order_product_detail.dart';
 import '../../domain/entity/order/order_product_inventory.dart';
+import '../../domain/entity/order/ordertransaction/ordertransactionresponse/order_transaction_response.dart';
+import '../../domain/entity/summaryvalue/summary_value.dart';
 import '../../presentation/widget/address/vertical_address_item.dart';
 import '../../presentation/widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../../presentation/widget/colorful_chip.dart';
@@ -40,6 +43,7 @@ import '../controllerstate/listitemcontrollerstate/title_and_description_list_it
 import '../controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/widget_substitution_list_item_controller_state.dart';
 import '../itemtypelistinterceptor/itemtypelistinterceptorchecker/list_item_controller_state_item_type_list_interceptor_checker.dart';
+import '../load_data_result.dart';
 import '../multi_language_string.dart';
 import '../typedef.dart';
 import 'item_type_list_sub_interceptor.dart';
@@ -67,7 +71,6 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
       List<ListItemControllerState> newListItemControllerState = [];
       newListItemControllerState.add(SpacingListItemControllerState());
       _interceptForBasicOrderInformation(i, oldItemType, oldItemTypeList, newListItemControllerState);
-      newListItemControllerState.add(SpacingListItemControllerState());
       _interceptForOrderPayment(i, oldItemType, oldItemTypeList, newListItemControllerState);
       newListItemControllerState.add(SpacingListItemControllerState());
       _interceptForAddressInformation(i, oldItemType, oldItemTypeList, newListItemControllerState);
@@ -88,31 +91,51 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
       newItemTypeList.addAll(newListItemControllerState);
       return true;
     } else if (oldItemType is OrderTransactionListItemControllerState) {
+      LoadDataResult<OrderTransactionResponse> orderTransactionResponseLoadDataResult = oldItemType.orderTransactionResponseLoadDataResult;
       List<ListItemControllerState> newListItemControllerState = [];
-      ListItemControllerState orderTransactionListItemControllerState(bool withPaymentInstructionButton) {
-        return LoadDataResultDynamicListItemControllerState(
-          loadDataResult: oldItemType.orderTransactionResponseLoadDataResult,
-          errorProvider: oldItemType.errorProvider(),
-          successListItemControllerState: (orderTransactionResponse) {
-            return CompoundListItemControllerState(
-              listItemControllerState: [
-                WidgetSubstitutionListItemControllerState(
-                  widgetSubstitution: (context, index) {
-                    return OrderTransactionWidget(
-                      orderTransactionResponse: orderTransactionResponse,
-                      orderTransactionAdditionalSummaryWidgetParameter: oldItemType.orderTransactionAdditionalSummaryWidgetParameter()
-                    );
-                  }
-                ),
-              ]
-            );
+      ListItemControllerState orderTransactionListItemControllerState() {
+        List<ListItemControllerState> compoundListItemControllerStateList = [
+          SpacingListItemControllerState(),
+          VirtualSpacingListItemControllerState(height: padding()),
+          TitleAndDescriptionListItemControllerState(
+            title: "Payment Details".tr,
+            padding: EdgeInsets.symmetric(horizontal: padding())
+          ),
+          VirtualSpacingListItemControllerState(height: padding()),
+          PaddingContainerListItemControllerState(
+            padding: EdgeInsets.symmetric(horizontal: padding()),
+            paddingChildListItemControllerState: LoadDataResultDynamicListItemControllerState(
+              loadDataResult: orderTransactionResponseLoadDataResult,
+              errorProvider: oldItemType.errorProvider(),
+              successListItemControllerState: (orderTransactionResponse) {
+                return CompoundListItemControllerState(
+                  listItemControllerState: [
+                    WidgetSubstitutionListItemControllerState(
+                      widgetSubstitution: (context, index) {
+                        return OrderTransactionWidget(
+                          orderTransactionResponse: orderTransactionResponse,
+                          orderTransactionAdditionalSummaryWidgetParameter: oldItemType.orderTransactionAdditionalSummaryWidgetParameter()
+                        );
+                      }
+                    ),
+                  ]
+                );
+              }
+            ),
+          ),
+          VirtualSpacingListItemControllerState(height: padding())
+        ];
+        if (orderTransactionResponseLoadDataResult.isSuccess) {
+          List<SummaryValue> orderTransactionSummaryValueList = orderTransactionResponseLoadDataResult.resultIfSuccess!.orderTransactionSummary.orderTransactionSummaryValueList;
+          if (orderTransactionSummaryValueList.isEmpty) {
+            compoundListItemControllerStateList.clear();
           }
+        }
+        return CompoundListItemControllerState(
+          listItemControllerState: compoundListItemControllerStateList
         );
       }
-      ListItemControllerState resultListItemControllerState = PaddingContainerListItemControllerState(
-        padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-        paddingChildListItemControllerState: orderTransactionListItemControllerState(false)
-      );
+      ListItemControllerState resultListItemControllerState = orderTransactionListItemControllerState();
       listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
         i, ListItemControllerStateWrapper(resultListItemControllerState), oldItemTypeList, newListItemControllerState
       );
@@ -375,25 +398,9 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
     List<ListItemControllerState> oldItemTypeList,
     List<ListItemControllerState> newListItemControllerState
   ) {
-    newListItemControllerState.add(
-      VirtualSpacingListItemControllerState(height: padding())
-    );
-    ListItemControllerState paymentTypeListItemControllerState = TitleAndDescriptionListItemControllerState(
-      title: "Payment Details".tr,
-      padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem)
-    );
-    listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
-      i, ListItemControllerStateWrapper(paymentTypeListItemControllerState), oldItemTypeList, newListItemControllerState
-    );
-    newListItemControllerState.add(
-      VirtualSpacingListItemControllerState(height: padding())
-    );
     ListItemControllerState orderTransactionListItemControllerState = orderDetailContainerListItemControllerState.orderTransactionListItemControllerState();
     listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
       i, ListItemControllerStateWrapper(orderTransactionListItemControllerState), oldItemTypeList, newListItemControllerState
-    );
-    newListItemControllerState.add(
-      VirtualSpacingListItemControllerState(height: padding())
     );
   }
 

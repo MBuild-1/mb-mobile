@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/error_provider_ext.dart';
-import 'package:masterbagasi/misc/ext/future_ext.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/number_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
@@ -10,9 +9,7 @@ import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:provider/provider.dart';
 import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:sizer/sizer.dart';
 
-import '../../controller/host_cart_controller.dart';
 import '../../controller/shared_cart_controller.dart';
 import '../../domain/entity/additionalitem/add_additional_item_parameter.dart';
 import '../../domain/entity/additionalitem/add_additional_item_response.dart';
@@ -27,14 +24,11 @@ import '../../domain/entity/bucket/bucket.dart';
 import '../../domain/entity/bucket/bucket_member.dart';
 import '../../domain/entity/bucket/removememberbucket/remove_member_bucket_parameter.dart';
 import '../../domain/entity/cart/cart.dart';
-import '../../domain/entity/cart/cart_list_parameter.dart';
 import '../../domain/entity/cart/cart_summary.dart';
-import '../../domain/entity/cart/host_cart.dart';
 import '../../domain/entity/cart/support_cart.dart';
 import '../../domain/entity/payment/payment_method.dart';
 import '../../domain/entity/summaryvalue/summary_value.dart';
 import '../../domain/entity/user/user.dart';
-import '../../domain/entity/wishlist/support_wishlist.dart';
 import '../../domain/usecase/add_additional_item_use_case.dart';
 import '../../domain/usecase/add_to_cart_use_case.dart';
 import '../../domain/usecase/add_wishlist_use_case.dart';
@@ -42,11 +36,11 @@ import '../../domain/usecase/approve_or_reject_request_bucket_use_case.dart';
 import '../../domain/usecase/change_additional_item_use_case.dart';
 import '../../domain/usecase/check_bucket_use_case.dart';
 import '../../domain/usecase/checkout_bucket_use_case.dart';
+import '../../domain/usecase/checkout_bucket_version_1_point_1_use_case.dart';
 import '../../domain/usecase/create_bucket_use_case.dart';
 import '../../domain/usecase/destroy_bucket_use_case.dart';
 import '../../domain/usecase/get_additional_item_use_case.dart';
 import '../../domain/usecase/get_cart_list_use_case.dart';
-import '../../domain/usecase/get_cart_summary_use_case.dart';
 import '../../domain/usecase/get_shared_cart_summary_use_case.dart';
 import '../../domain/usecase/get_user_use_case.dart';
 import '../../domain/usecase/leave_bucket_use_case.dart';
@@ -58,21 +52,13 @@ import '../../domain/usecase/show_bucket_by_id_use_case.dart';
 import '../../domain/usecase/trigger_bucket_ready_use_case.dart';
 import '../../misc/acceptordeclinesharedcartmemberparameter/accept_shared_cart_member_parameter.dart';
 import '../../misc/acceptordeclinesharedcartmemberparameter/decline_shared_cart_member_parameter.dart';
-import '../../misc/additionalloadingindicatorchecker/host_cart_additional_paging_result_parameter_checker.dart';
 import '../../misc/additionalloadingindicatorchecker/shared_cart_additional_paging_result_parameter_checker.dart';
 import '../../misc/constant.dart';
-import '../../misc/controllercontentdelegate/shared_cart_controller_content_delegate.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/cart_container_list_item_controller_state.dart';
-import '../../misc/controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/cart_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/shared_cart_container_list_item_controller_state.dart';
-import '../../misc/controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/vertical_cart_list_item_controller_state.dart';
-import '../../misc/controllerstate/listitemcontrollerstate/host_cart_indicator_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
-import '../../misc/controllerstate/listitemcontrollerstate/padding_container_list_item_controller_state.dart';
-import '../../misc/controllerstate/listitemcontrollerstate/spacing_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
 import '../../misc/dialog_helper.dart';
-import '../../misc/error/cart_empty_error.dart';
 import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
@@ -99,7 +85,6 @@ import '../widget/modified_shimmer.dart';
 import '../widget/modified_svg_picture.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import '../widget/tap_area.dart';
-import 'delivery_page.dart';
 import 'getx_page.dart';
 import 'dart:math' as math;
 
@@ -135,6 +120,7 @@ class SharedCartPage extends RestorableGetxPage<_SharedCartPageRestoration> {
         Injector.locator<RemoveMemberBucketUseCase>(),
         Injector.locator<TriggerBucketReadyUseCase>(),
         Injector.locator<CheckoutBucketUseCase>(),
+        Injector.locator<CheckoutBucketVersion1Point1UseCase>(),
         Injector.locator<LeaveBucketUseCase>(),
         Injector.locator<DestroyBucketUseCase>(),
       ), tag: pageName
@@ -578,6 +564,9 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
         onCheckoutBucketRequestProcessSuccessCallback: (checkoutBucketResponse) async {
           NavigationHelper.navigationAfterPurchaseProcess(context, checkoutBucketResponse.order);
         },
+        onCheckoutBucketVersion1Point1RequestProcessSuccessCallback: (checkoutBucketVersion1Point1Response) async {
+          NavigationHelper.navigationAfterPurchaseProcessWithCombinedOrderIdParameter(context, checkoutBucketVersion1Point1Response.combinedOrderId);
+        },
         onShowApproveOrRejectRequestBucketProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
         onShowApproveOrRejectRequestBucketProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
           context: context,
@@ -876,7 +865,7 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
                                 if (_selectedCartCount > 0 && _selectedPaymentMethodLoadDataResult.isSuccess && _bucketId != null) {
                                   onPressed = () {
                                     if (_bucketId != null) {
-                                      widget.sharedCartController.createOrder(_bucketId!);
+                                      widget.sharedCartController.createOrderVersion1Point1(_bucketId!);
                                     }
                                   };
                                 }

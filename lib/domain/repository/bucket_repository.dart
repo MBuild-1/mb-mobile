@@ -6,6 +6,8 @@ import '../entity/bucket/checkbucket/check_bucket_parameter.dart';
 import '../entity/bucket/checkbucket/check_bucket_response.dart';
 import '../entity/bucket/checkoutbucket/checkout_bucket_parameter.dart';
 import '../entity/bucket/checkoutbucket/checkout_bucket_response.dart';
+import '../entity/bucket/checkoutbucket/checkout_bucket_version_1_point_1_parameter.dart';
+import '../entity/bucket/checkoutbucket/checkout_bucket_version_1_point_1_response.dart';
 import '../entity/bucket/createbucket/create_bucket_parameter.dart';
 import '../entity/bucket/createbucket/create_bucket_response.dart';
 import '../entity/bucket/destroybucket/destroy_bucket_parameter.dart';
@@ -31,6 +33,7 @@ abstract class BucketRepository {
   FutureProcessing<LoadDataResult<ApproveOrRejectRequestBucketResponse>> approveOrRejectRequestBucket(ApproveOrRejectRequestBucketParameter approveOrRejectRequestBucketParameter);
   FutureProcessing<LoadDataResult<CheckBucketResponse>> checkBucket(CheckBucketParameter checkBucketParameter);
   FutureProcessing<LoadDataResult<CheckoutBucketResponse>> checkoutBucket(CheckoutBucketParameter checkoutBucketParameter);
+  FutureProcessing<LoadDataResult<CheckoutBucketVersion1Point1Response>> checkoutBucketVersion1Point1(CheckoutBucketVersion1Point1Parameter checkoutBucketVersion1Point1Parameter);
   FutureProcessing<LoadDataResult<TriggerBucketReadyResponse>> triggerBucketReady(TriggerBucketReadyParameter triggerBucketReadyParameter);
   FutureProcessing<LoadDataResult<DestroyBucketResponse>> destroyBucket(DestroyBucketParameter destroyBucketParameter);
   FutureProcessing<LoadDataResult<LeaveBucketResponse>> leaveBucket(LeaveBucketParameter leaveBucketParameter);

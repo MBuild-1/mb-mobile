@@ -10,6 +10,7 @@ import '../../domain/entity/bucket/bucket_member.dart';
 import '../../domain/entity/bucket/bucket_user.dart';
 import '../../domain/entity/bucket/checkbucket/check_bucket_response.dart';
 import '../../domain/entity/bucket/checkoutbucket/checkout_bucket_response.dart';
+import '../../domain/entity/bucket/checkoutbucket/checkout_bucket_version_1_point_1_response.dart';
 import '../../domain/entity/bucket/createbucket/create_bucket_response.dart';
 import '../../domain/entity/bucket/destroybucket/destroy_bucket_response.dart';
 import '../../domain/entity/bucket/leavebucket/leave_bucket_response.dart';
@@ -54,6 +55,16 @@ extension BucketDetailEntityMappingExt on ResponseWrapper {
       order: ResponseWrapper(response).mapFromResponseToSharedCartOrder()
     );
   }
+
+  CheckoutBucketVersion1Point1Response mapFromResponseToCheckoutBucketVersion1Point1Response() {
+    dynamic paymentResponse = response["payment"];
+    return CheckoutBucketVersion1Point1Response(
+      transactionId: paymentResponse["transaction_id"],
+      orderId: paymentResponse["order_id"],
+      combinedOrderId: paymentResponse["combined_order_id"]
+    );
+  }
+
 
   TriggerBucketReadyResponse mapFromResponseToTriggerBucketReadyResponse() {
     return TriggerBucketReadyResponse();

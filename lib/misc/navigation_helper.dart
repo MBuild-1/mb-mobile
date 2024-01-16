@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/navigator_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
-import 'package:masterbagasi/misc/web_helper.dart';
 
 import '../domain/entity/order/order.dart';
 import '../presentation/page/product_detail_page.dart';
-import '../presentation/widget/material_ignore_pointer.dart';
-import 'constant.dart';
-import 'dialog_helper.dart';
 import 'main_route_observer.dart';
 import 'page_restoration_helper.dart';
 import 'routeargument/login_route_argument.dart';
 import 'routeargument/main_menu_route_argument.dart';
+import 'routeargument/order_detail_route_argument.dart';
+import 'routeargument/order_route_argument.dart';
 import 'routeargument/product_detail_route_argument.dart';
 import 'routeargument/product_discussion_route_argument.dart';
 
@@ -135,6 +132,57 @@ class _NavigationHelperImpl {
         }
       } else {
         break;
+      }
+    }
+  }
+
+  void navigationBackFromOrderDetailToOrder(BuildContext context) {
+    Map<String, RouteWrapper?> routeMap = MainRouteObserver.routeMap;
+    List<String> routeKeyList = List.of(routeMap.keys);
+    int i = 0;
+    int tempI = -1;
+    int tempIBefore = -1;
+    bool foundOrderDetail = false;
+    for (var element in routeMap.entries) {
+      element.value?.requestLoginChangeValue = 1;
+      var arguments = element.value?.route?.settings.arguments;
+      if (arguments is OrderDetailRouteArgument) {
+        tempI = i;
+        tempIBefore = tempI - i;
+        foundOrderDetail = true;
+        break;
+      }
+      i++;
+    }
+    if (!foundOrderDetail) {
+      return;
+    }
+    bool allowToPopUntilOrder = false;
+    if (tempI > -1) {
+      while (tempI >= 0) {
+        String iteratedRouteKey = routeKeyList[tempI];
+        RouteWrapper? iteratedRouteWrapper = routeMap[iteratedRouteKey];
+        if (iteratedRouteWrapper != null) {
+          var arguments = iteratedRouteWrapper.route?.settings.arguments;
+          if (arguments is OrderRouteArgument) {
+            allowToPopUntilOrder = true;
+            break;
+          }
+        }
+        tempI -= 1;
+      }
+    }
+    if (allowToPopUntilOrder) {
+      Navigator.of(context).popUntilOrder();
+    } else {
+      if (tempIBefore > -1) {
+        String routeKey = routeKeyList[tempIBefore];
+        RouteWrapper? routeWrapper = routeMap[routeKey];
+        if (routeWrapper != null) {
+          Navigator.of(context).popUntil(
+            (route) => route.settings.name == routeWrapper.route?.settings.name
+          );
+        }
       }
     }
   }

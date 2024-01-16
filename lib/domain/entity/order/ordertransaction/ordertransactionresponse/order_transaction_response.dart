@@ -7,6 +7,7 @@ import '../ordertransactionsummary/order_transaction_summary.dart';
 class OrderTransactionResponse {
   String orderId;
   String transactionId;
+  String transactionStatus;
   double grossAmount;
   DateTime transactionDateTime;
   DateTime expiryDateTime;
@@ -16,6 +17,7 @@ class OrderTransactionResponse {
   OrderTransactionResponse({
     required this.orderId,
     required this.transactionId,
+    required this.transactionStatus,
     required this.grossAmount,
     required this.transactionDateTime,
     required this.expiryDateTime,

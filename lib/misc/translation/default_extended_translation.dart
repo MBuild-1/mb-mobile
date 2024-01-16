@@ -349,7 +349,8 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Select Language": "Pilih Bahasa",
       "Hours": "Jam",
       "Minutes": "Menit",
-      "Seconds": "Detik"
+      "Seconds": "Detik",
+      "Payment Success": "Pembayaran Berhasil"
     }
   };
 

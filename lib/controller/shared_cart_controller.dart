@@ -17,6 +17,8 @@ import '../domain/entity/bucket/checkbucket/check_bucket_parameter.dart';
 import '../domain/entity/bucket/checkbucket/check_bucket_response.dart';
 import '../domain/entity/bucket/checkoutbucket/checkout_bucket_parameter.dart';
 import '../domain/entity/bucket/checkoutbucket/checkout_bucket_response.dart';
+import '../domain/entity/bucket/checkoutbucket/checkout_bucket_version_1_point_1_parameter.dart';
+import '../domain/entity/bucket/checkoutbucket/checkout_bucket_version_1_point_1_response.dart';
 import '../domain/entity/bucket/destroybucket/destroy_bucket_parameter.dart';
 import '../domain/entity/bucket/destroybucket/destroy_bucket_response.dart';
 import '../domain/entity/bucket/leavebucket/leave_bucket_parameter.dart';
@@ -47,6 +49,7 @@ import '../domain/usecase/approve_or_reject_request_bucket_use_case.dart';
 import '../domain/usecase/change_additional_item_use_case.dart';
 import '../domain/usecase/check_bucket_use_case.dart';
 import '../domain/usecase/checkout_bucket_use_case.dart';
+import '../domain/usecase/checkout_bucket_version_1_point_1_use_case.dart';
 import '../domain/usecase/create_bucket_use_case.dart';
 import '../domain/usecase/destroy_bucket_use_case.dart';
 import '../domain/usecase/get_additional_item_use_case.dart';
@@ -76,6 +79,7 @@ typedef _OnRemoveCartRequestProcessSuccessCallback = Future<void> Function(Cart 
 typedef _OnShowRemoveCartRequestProcessFailedCallback = Future<void> Function(dynamic e);
 typedef _OnShowCheckoutBucketRequestProcessLoadingCallback = Future<void> Function();
 typedef _OnCheckoutBucketRequestProcessSuccessCallback = Future<void> Function(CheckoutBucketResponse checkoutBucketResponse);
+typedef _OnCheckoutBucketVersion1Point1RequestProcessSuccessCallback = Future<void> Function(CheckoutBucketVersion1Point1Response checkoutBucketVersion1Point1Response);
 typedef _OnShowCheckoutBucketRequestProcessFailedCallback = Future<void> Function(dynamic e);
 typedef _OnShowApproveOrRejectRequestBucketProcessLoadingCallback = Future<void> Function();
 typedef _OnApproveOrRejectRequestBucketProcessSuccessCallback = Future<void> Function(ApproveOrRejectRequestBucketResponse approveOrRejectRequestBucketResponse);
@@ -116,6 +120,7 @@ class SharedCartController extends BaseGetxController {
   final RemoveMemberBucketUseCase removeMemberBucketUseCase;
   final TriggerBucketReadyUseCase triggerBucketReadyUseCase;
   final CheckoutBucketUseCase checkoutBucketUseCase;
+  final CheckoutBucketVersion1Point1UseCase checkoutBucketVersion1Point1UseCase;
   final LeaveBucketUseCase leaveBucketUseCase;
   final DestroyBucketUseCase destroyBucketUseCase;
 
@@ -141,6 +146,7 @@ class SharedCartController extends BaseGetxController {
     this.removeMemberBucketUseCase,
     this.triggerBucketReadyUseCase,
     this.checkoutBucketUseCase,
+    this.checkoutBucketVersion1Point1UseCase,
     this.leaveBucketUseCase,
     this.destroyBucketUseCase
   );
@@ -371,7 +377,8 @@ class SharedCartController extends BaseGetxController {
       _mainSharedCartDelegate!.onShowCheckoutBucketRequestProcessLoadingCallback();
       LoadDataResult<CheckoutBucketResponse> checkoutBucketLoadDataResult = await checkoutBucketUseCase.execute(
         CheckoutBucketParameter(
-          bucketId: bucketId
+          bucketId: bucketId,
+          settlingId: _mainSharedCartDelegate!.onGetSettlingId(),
         )
       ).future(
         parameter: apiRequestManager.addRequestToCancellationPart("checkout-bucket").value
@@ -381,6 +388,27 @@ class SharedCartController extends BaseGetxController {
         _mainSharedCartDelegate!.onCheckoutBucketRequestProcessSuccessCallback(checkoutBucketLoadDataResult.resultIfSuccess!);
       } else {
         _mainSharedCartDelegate!.onShowCheckoutBucketRequestProcessFailedCallback(checkoutBucketLoadDataResult.resultIfFailed);
+      }
+    }
+  }
+
+  void createOrderVersion1Point1(String bucketId) async {
+    if (_mainSharedCartDelegate != null) {
+      _mainSharedCartDelegate!.onUnfocusAllWidget();
+      _mainSharedCartDelegate!.onShowCheckoutBucketRequestProcessLoadingCallback();
+      LoadDataResult<CheckoutBucketVersion1Point1Response> checkoutBucketVersion1Point1LoadDataResult = await checkoutBucketVersion1Point1UseCase.execute(
+        CheckoutBucketVersion1Point1Parameter(
+          bucketId: bucketId,
+          settlingId: _mainSharedCartDelegate!.onGetSettlingId(),
+        )
+      ).future(
+        parameter: apiRequestManager.addRequestToCancellationPart("checkout-bucket-version-1-point-1").value
+      );
+      _mainSharedCartDelegate!.onCartBack();
+      if (checkoutBucketVersion1Point1LoadDataResult.isSuccess) {
+        _mainSharedCartDelegate!.onCheckoutBucketVersion1Point1RequestProcessSuccessCallback(checkoutBucketVersion1Point1LoadDataResult.resultIfSuccess!);
+      } else {
+        _mainSharedCartDelegate!.onShowCheckoutBucketRequestProcessFailedCallback(checkoutBucketVersion1Point1LoadDataResult.resultIfFailed);
       }
     }
   }
@@ -408,7 +436,8 @@ class SharedCartController extends BaseGetxController {
       _mainSharedCartDelegate!.onShowSharedCartSummaryProcessCallback(IsLoadingLoadDataResult<CartSummary>());
       LoadDataResult<CartSummary> cartSummaryLoadDataResult = await getSharedCartSummaryUseCase.execute(
         SharedCartSummaryParameter(
-          bucketId: bucketId
+          bucketId: bucketId,
+          settlingId: _mainSharedCartDelegate!.onGetSettlingId(),
         )
       ).future(
         parameter: apiRequestManager.addRequestToCancellationPart("shared-cart-summary").value
@@ -434,6 +463,7 @@ class MainSharedCartDelegate {
   _OnShowCheckoutBucketRequestProcessLoadingCallback onShowCheckoutBucketRequestProcessLoadingCallback;
   _OnCheckoutBucketRequestProcessSuccessCallback onCheckoutBucketRequestProcessSuccessCallback;
   _OnShowCheckoutBucketRequestProcessFailedCallback onShowCheckoutBucketRequestProcessFailedCallback;
+  _OnCheckoutBucketVersion1Point1RequestProcessSuccessCallback onCheckoutBucketVersion1Point1RequestProcessSuccessCallback;
   _OnShowApproveOrRejectRequestBucketProcessLoadingCallback onShowApproveOrRejectRequestBucketProcessLoadingCallback;
   _OnApproveOrRejectRequestBucketProcessSuccessCallback onApproveOrRejectRequestBucketProcessSuccessCallback;
   _OnShowApproveOrRejectRequestBucketProcessFailedCallback onShowApproveOrRejectRequestBucketProcessFailedCallback;
@@ -467,6 +497,7 @@ class MainSharedCartDelegate {
     required this.onShowCheckoutBucketRequestProcessLoadingCallback,
     required this.onCheckoutBucketRequestProcessSuccessCallback,
     required this.onShowCheckoutBucketRequestProcessFailedCallback,
+    required this.onCheckoutBucketVersion1Point1RequestProcessSuccessCallback,
     required this.onShowApproveOrRejectRequestBucketProcessLoadingCallback,
     required this.onApproveOrRejectRequestBucketProcessSuccessCallback,
     required this.onShowApproveOrRejectRequestBucketProcessFailedCallback,
