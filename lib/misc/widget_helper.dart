@@ -316,12 +316,22 @@ class _WidgetHelperImpl {
       SummaryValue summaryValue = summaryValueList[i];
       String? summaryValueDescription;
       String summaryValueType = summaryValue.type;
-      if (i > 0) {
-        double height = 10.0;
-        if (summaryValueType == "header") {
-          height = 15.0;
+      void addSpacing() {
+        if (i > 0) {
+          double height = 10.0;
+          if (summaryValueType == "header") {
+            height = 15.0;
+          }
+          columnWidget.add(SizedBox(height: height));
         }
-        columnWidget.add(SizedBox(height: height));
+      }
+      void addColumnWidget(Widget widget) {
+        addSpacing();
+        columnWidget.add(widget);
+      }
+      void addColumnWidgetList(List<Widget> widgetList) {
+        addSpacing();
+        columnWidget.addAll(widgetList);
       }
       if (summaryValueType == "currency") {
         if (summaryValue.value is num) {
@@ -330,7 +340,7 @@ class _WidgetHelperImpl {
           summaryValueDescription = double.parse(summaryValue.value as String).toRupiah(withFreeTextIfZero: false);
         }
       } else if (summaryValueType == "header") {
-        columnWidget.add(
+        addColumnWidget(
           HorizontalJustifiedTitleAndDescription(
             title: summaryValue.name.toEmptyStringNonNull,
             titleWidgetInterceptor: (value, textWidget) {
@@ -427,10 +437,10 @@ class _WidgetHelperImpl {
           }
         }
         countdownIndicatorResultWidget ??= countdownIndicator;
-        columnWidget.add(countdownIndicatorResultWidget);
+        addColumnWidget(countdownIndicatorResultWidget);
         continue;
       } else if (summaryValueType == "countdown") {
-        columnWidget.add(
+        addColumnWidget(
           HorizontalJustifiedTitleAndDescription(
             title: summaryValue.name.toEmptyStringNonNull,
             titleWidgetInterceptor: (value, textWidget) {
@@ -444,7 +454,7 @@ class _WidgetHelperImpl {
         );
         continue;
       } else if (summaryValueType == "copyable_text") {
-        columnWidget.add(
+        addColumnWidget(
           HorizontalJustifiedTitleAndDescription(
             title: summaryValue.name.toEmptyStringNonNull,
             titleWidgetInterceptor: (value, textWidget) {
@@ -517,7 +527,7 @@ class _WidgetHelperImpl {
           bool withLabelName = value["image_with_label_name"] ?? false;
           if (withLabelName) {
             if (summaryValue.name.isNotEmptyString) {
-              columnWidget.add(
+              addColumnWidget(
                 HorizontalJustifiedTitleAndDescription(
                   title: summaryValue.name.toEmptyStringNonNull,
                   titleWidgetInterceptor: (value, textWidget) {
@@ -532,13 +542,13 @@ class _WidgetHelperImpl {
               continue;
             }
           }
-          columnWidget.add(imageWidget);
+          addColumnWidget(imageWidget);
         }
         continue;
       } else if (summaryValueType == "redirect_url") {
         dynamic value = summaryValue.value;
         if (value is String) {
-          columnWidget.add(
+          addColumnWidget(
             SizedOutlineGradientButton(
               onPressed: () => WebHelper.launchUrl(Uri.parse(value)),
               text: summaryValue.name.toEmptyStringNonNull,
@@ -553,7 +563,7 @@ class _WidgetHelperImpl {
         dynamic summaryValueContent = summaryValue.value;
         if (summaryValueContent is Map<String, dynamic>) {
           Color color = ColorHelper.fromHex(summaryValueContent["color"]);
-          columnWidget.add(
+          addColumnWidget(
             HorizontalJustifiedTitleAndDescription(
               title: summaryValue.name.toEmptyStringNonNull,
               titleWidgetInterceptor: (value, textWidget) {
@@ -585,7 +595,7 @@ class _WidgetHelperImpl {
         if (summaryValueContent is Map<String, dynamic>) {
           String? tagString = summaryValueContent["tag_string"];
           if (tagString == "payment_instruction") {
-            columnWidget.addAll(
+            addColumnWidgetList(
               <Widget>[
                 if (i == summaryValueList.length - 1) ...[
                   const SizedBox(height: 6),
@@ -646,7 +656,7 @@ class _WidgetHelperImpl {
         title: summaryValue.name.toEmptyStringNonNull,
         description: summaryValueDescription.toEmptyStringNonNull
       );
-      columnWidget.add(
+      addColumnWidget(
         onInterceptSummaryWidget != null ? onInterceptSummaryWidget(
           summaryValue.name.toEmptyStringNonNull,
           summaryValueDescription.toEmptyStringNonNull,
