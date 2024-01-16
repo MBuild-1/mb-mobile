@@ -37,6 +37,7 @@ import '../../misc/edit_profile_helper.dart';
 import '../../misc/error/message_error.dart';
 import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/gender.dart';
+import '../../misc/gender_helper.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
@@ -230,23 +231,6 @@ class _StatefulEditProfileControllerMediatorWidgetState extends State<_StatefulE
 
   AuthIdentityModalDialogPageAction _authIdentityModalDialogPageAction = AuthIdentityModalDialogPageAction();
 
-  final List<Gender> _genderList = <Gender>[
-    Gender(
-      value: "Male",
-      text: MultiLanguageString({
-        Constant.textEnUsLanguageKey: "Male",
-        Constant.textInIdLanguageKey: "Laki-laki"
-      })
-    ),
-    Gender(
-      value: "Female",
-      text: MultiLanguageString({
-        Constant.textEnUsLanguageKey: "Female",
-        Constant.textInIdLanguageKey: "Perempuan"
-      })
-    ),
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -293,7 +277,7 @@ class _StatefulEditProfileControllerMediatorWidgetState extends State<_StatefulE
     }
     return userLoadDataResult.map<PagingResult<ListItemControllerState>>((user) {
       Gender? getGenderBasedUserGender() {
-        Iterable<Gender> gender = _genderList.where((gender) => user.userProfile.gender == gender.value);
+        Iterable<Gender> gender = GenderHelper.genderList.where((gender) => user.userProfile.gender == gender.value);
         if (gender.isEmpty) {
           return null;
         }
@@ -369,7 +353,7 @@ class _StatefulEditProfileControllerMediatorWidgetState extends State<_StatefulE
                         selectValueModalDialogPageParameter: parameter!,
                       ),
                       parameter: SelectValueModalDialogPageParameter<Gender>(
-                        valueList: _genderList,
+                        valueList: GenderHelper.genderList,
                         title: MultiLanguageString({
                           Constant.textEnUsLanguageKey: "Select Gender",
                           Constant.textInIdLanguageKey: "Pilih Jenis Kelamin"

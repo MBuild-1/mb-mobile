@@ -11,10 +11,8 @@ import 'package:masterbagasi/misc/ext/validation_result_ext.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:provider/provider.dart';
-import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../controller/login_controller.dart';
 import '../../controller/register_controller.dart';
 import '../../domain/entity/register/register_first_step_response.dart';
 import '../../domain/entity/register/sendregisterotp/sendregisterotpparameter/email_send_register_otp_parameter.dart';
@@ -33,8 +31,9 @@ import '../../domain/usecase/send_register_otp_use_case.dart';
 import '../../domain/usecase/verify_register_use_case.dart';
 import '../../misc/constant.dart';
 import '../../misc/dialog_helper.dart';
-import '../../misc/error/message_error.dart';
 import '../../misc/errorprovider/error_provider.dart';
+import '../../misc/gender.dart';
+import '../../misc/gender_helper.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
@@ -45,8 +44,6 @@ import '../../misc/main_route_observer.dart';
 import '../../misc/manager/controller_manager.dart';
 import '../../misc/multi_language_string.dart';
 import '../../misc/navigation_helper.dart';
-import '../../misc/page_restoration_helper.dart';
-import '../../misc/pusher_helper.dart';
 import '../../misc/recognizer/sign_up_recognizer.dart';
 import '../../misc/registerstep/first_register_step.dart';
 import '../../misc/registerstep/register_step.dart';
@@ -54,7 +51,6 @@ import '../../misc/registerstep/register_step_wrapper.dart';
 import '../../misc/registerstep/second_register_step.dart';
 import '../../misc/registerstep/send_register_otp_register_step.dart';
 import '../../misc/registerstep/verify_register_step.dart';
-import '../../misc/string_util.dart';
 import '../../misc/validation/validator/compoundvalidator/password_compound_validator.dart';
 import '../../misc/validation/validator/validator.dart';
 import '../../misc/web_helper.dart';
@@ -72,7 +68,9 @@ import '../widget/rx_consumer.dart';
 import '../widget/something_counter.dart';
 import '../widget/tap_area.dart';
 import 'getx_page.dart';
+import 'modaldialogpage/select_value_modal_dialog_page.dart';
 import 'web_viewer_page.dart';
+import 'dart:math' as math;
 
 class RegisterPage extends RestorableGetxPage<_RegisterPageRestoration> {
   late final ControllerMember<RegisterController> _registerController = ControllerMember<RegisterController>().addToControllerManager(controllerManager);
@@ -234,6 +232,7 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
   final int _maxCountdownTimerValue = 120;
   int _countdownTimerValue = 0;
   Timer? _resendVerificationCountdownTimer;
+  Gender? _selectedGender;
 
   @override
   void initState() {
@@ -254,6 +253,7 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
         onUnfocusAllWidget: () => FocusScope.of(context).unfocus(),
         onGetEmailOrPhoneNumberRegisterInput: () => _emailTextEditingController.text,
         onGetNameRegisterInput: () => _nameTextEditingController.text,
+        onGetGenderRegisterInput: () => (_selectedGender?.value).toEmptyStringNonNull,
         onGetPasswordRegisterInput: () => _passwordTextEditingController.text,
         onGetPasswordConfirmationRegisterInput: () => _passwordConfirmationTextEditingController.text,
         onRegisterBack: () => Get.back(),
@@ -738,6 +738,94 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
                                 ),
                                 validator: passwordCompoundValidator.passwordConfirmationValidator,
                               )
+                            ),
+                            SizedBox(height: (2.0).h),
+                            RxConsumer<Validator>(
+                              rxValue: widget.registerController.genderValidatorRx,
+                              onConsumeValue: (context, value) => Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text("Gender".tr),
+                                  const SizedBox(height: 8.0),
+                                  Field(
+                                    child: (context, validationResult, validator) => Builder(
+                                      builder: (BuildContext context) {
+                                        TextStyle getDefaultTextStyle() {
+                                          return TextStyle(
+                                            color: Constant.colorGrey7,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w500
+                                          );
+                                        }
+                                        return SizedBox(
+                                          width: double.infinity,
+                                          child: SizedOutlineGradientButton(
+                                            onPressed: () async {
+                                              dynamic result = await DialogHelper.showModalDialogPage<Gender, SelectValueModalDialogPageParameter<Gender>>(
+                                                context: context,
+                                                modalDialogPageBuilder: (context, parameter) => SelectValueModalDialogPage(
+                                                  selectValueModalDialogPageParameter: parameter!,
+                                                ),
+                                                parameter: SelectValueModalDialogPageParameter<Gender>(
+                                                  valueList: GenderHelper.genderList,
+                                                  title: MultiLanguageString({
+                                                    Constant.textEnUsLanguageKey: "Select Gender",
+                                                    Constant.textInIdLanguageKey: "Pilih Jenis Kelamin"
+                                                  }).toEmptyStringNonNull,
+                                                  onConvertToStringForItemText: (gender) => gender.text.toStringNonNull,
+                                                  onConvertToStringForComparing: (gender) => (gender?.value).toEmptyStringNonNull,
+                                                  selectedValue: _selectedGender
+                                                ),
+                                              );
+                                              if (result is Gender) {
+                                                setState(() => _selectedGender = result);
+                                                value.validate();
+                                              }
+                                            },
+                                            child: Row(
+                                              children: [
+                                                Expanded(
+                                                  child: Text(
+                                                    _selectedGender != null ? _selectedGender!.text.toStringNonNull : "(${() {
+                                                      return MultiLanguageString({
+                                                        Constant.textEnUsLanguageKey: "Select Gender",
+                                                        Constant.textInIdLanguageKey: "Pilih Jenis Kelamin"
+                                                      }).toEmptyStringNonNull;
+                                                    }()})",
+                                                    style: getDefaultTextStyle()
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 10),
+                                                Transform.rotate(
+                                                  angle: math.pi / 2,
+                                                  child: ModifiedSvgPicture.asset(
+                                                    Constant.vectorArrow,
+                                                    height: 10,
+                                                    color: Constant.colorGrey7,
+                                                  )
+                                                ),
+                                              ]
+                                            ),
+                                            text: null,
+                                            outlineGradientButtonType: OutlineGradientButtonType.outline,
+                                            outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
+                                            customGradientButtonVariation: (outlineGradientButtonType) {
+                                              return CustomGradientButtonVariation(
+                                                outlineGradientButtonType: outlineGradientButtonType,
+                                                gradient: Constant.buttonGradient3,
+                                                backgroundColor: Colors.white,
+                                                textStyle: getDefaultTextStyle()
+                                              );
+                                            },
+                                            customPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 9),
+                                          )
+                                        );
+                                      },
+                                    ),
+                                    validator: value,
+                                  ),
+                                ],
+                              ),
                             ),
                             SizedBox(height: 3.h),
                             SizedOutlineGradientButton(

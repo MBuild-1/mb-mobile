@@ -89,6 +89,7 @@ class RegisterController extends BaseGetxController {
 
   // Register Second Step
   late Rx<Validator> nameValidatorRx;
+  late Rx<Validator> genderValidatorRx;
   late Rx<PasswordCompoundValidator> passwordCompoundValidatorRx;
   late final RegisterSecondStepValidatorGroup registerSecondStepValidatorGroup;
 
@@ -195,6 +196,9 @@ class RegisterController extends BaseGetxController {
       nameValidator: Validator(
         onValidate: () => !_registerDelegate!.onGetNameRegisterInput().isEmptyString ? SuccessValidationResult() : FailedValidationResult(e: ValidationError(message: "${"Name is required".tr}."))
       ),
+      genderValidator: Validator(
+        onValidate: () => !_registerDelegate!.onGetGenderRegisterInput().isEmptyString ? SuccessValidationResult() : FailedValidationResult(e: ValidationError(message: "${"Gender is required".tr}."))
+      ),
       passwordCompoundValidator: PasswordCompoundValidator(
         passwordValidator: Validator(
           onValidate: () => !_registerDelegate!.onGetPasswordRegisterInput().isEmptyString ? SuccessValidationResult() : FailedValidationResult(e: ValidationError(message: "${"Password is required".tr}."))
@@ -213,6 +217,7 @@ class RegisterController extends BaseGetxController {
       )
     );
     nameValidatorRx = registerSecondStepValidatorGroup.nameValidator.obs;
+    genderValidatorRx = registerSecondStepValidatorGroup.genderValidator.obs;
     passwordCompoundValidatorRx = registerSecondStepValidatorGroup.passwordCompoundValidator.obs;
   }
 
@@ -351,7 +356,8 @@ class RegisterController extends BaseGetxController {
             name: _registerDelegate!.onGetNameRegisterInput(),
             password: _registerDelegate!.onGetPasswordRegisterInput(),
             passwordConfirmation: _registerDelegate!.onGetPasswordConfirmationRegisterInput(),
-            pushNotificationSubscriptionId: _registerDelegate!.onGetPushNotificationSubscriptionId()
+            pushNotificationSubscriptionId: _registerDelegate!.onGetPushNotificationSubscriptionId(),
+            gender: _registerDelegate!.onGetGenderRegisterInput()
           )
         ).future(
           parameter: apiRequestManager.addRequestToCancellationPart('register-second-step').value
@@ -503,6 +509,7 @@ class RegisterDelegate {
   _OnRegisterBack onRegisterBack;
   _OnGetRegisterInput onGetEmailOrPhoneNumberRegisterInput;
   _OnGetRegisterInput onGetNameRegisterInput;
+  _OnGetRegisterInput onGetGenderRegisterInput;
   _OnGetRegisterInput onGetPasswordRegisterInput;
   _OnGetRegisterInput onGetPasswordConfirmationRegisterInput;
   _OnShowRegisterRequestProcessLoadingCallback onShowRegisterRequestProcessLoadingCallback;
@@ -529,6 +536,7 @@ class RegisterDelegate {
     required this.onRegisterBack,
     required this.onGetEmailOrPhoneNumberRegisterInput,
     required this.onGetNameRegisterInput,
+    required this.onGetGenderRegisterInput,
     required this.onGetPasswordRegisterInput,
     required this.onGetPasswordConfirmationRegisterInput,
     required this.onShowRegisterRequestProcessLoadingCallback,
