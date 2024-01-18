@@ -163,6 +163,7 @@ class DefaultBucketDataSource implements BucketDataSource {
     dynamic data = {
       if (sharedCartSummaryParameter.bucketId.isNotEmptyString) "bucket_id": sharedCartSummaryParameter.bucketId!,
       if (sharedCartSummaryParameter.settlingId.isNotEmptyString) "settling_id": sharedCartSummaryParameter.settlingId!,
+      "is_bucket": true
     };
     return DioHttpClientProcessing((cancelToken) {
       return dio.post("/user/bucket/order/summary", data: data, cancelToken: cancelToken)
