@@ -52,6 +52,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="https" android:host="masterbagasi.com" />
                 <data android:scheme="https" android:host="m.masterbagasi.com" />
+                <data android:scheme="https" android:host="www.masterbagasi.com" />
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
