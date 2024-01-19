@@ -29,6 +29,7 @@ import '../../misc/parameter_link_helper.dart';
 import '../../misc/parameterlink/parameter_link_input.dart';
 import '../../misc/toast_helper.dart';
 import '../widget/app_bar_icon_area.dart';
+import '../widget/modified_scaffold.dart';
 import '../widget/modified_svg_picture.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import 'getx_page.dart';
@@ -190,7 +191,7 @@ class _StatefulPdfViewerPageState extends State<_StatefulPdfViewerPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ModifiedScaffold(
       appBar: ModifiedAppBar(
         titleInterceptorWithAdditionalParameter: (context, title, titleInterceptorAdditionalParameter) {
           Size preferredSize = titleInterceptorAdditionalParameter.appBarPreferredSize;

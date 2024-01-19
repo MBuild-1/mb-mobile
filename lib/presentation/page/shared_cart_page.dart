@@ -81,6 +81,7 @@ import '../widget/app_bar_icon_area.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/loaddataresultimplementer/load_data_result_implementer_directly.dart';
 import '../widget/modified_paged_list_view.dart';
+import '../widget/modified_scaffold.dart';
 import '../widget/modified_shimmer.dart';
 import '../widget/modified_svg_picture.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
@@ -140,11 +141,9 @@ class SharedCartPage extends RestorableGetxPage<_SharedCartPageRestoration> {
 
   @override
   Widget buildPage(BuildContext context) {
-    return Scaffold(
-      body: _StatefulSharedCartControllerMediatorWidget(
-        sharedCartController: _sharedCartController.controller,
-        statefulSharedCartControllerMediatorWidgetDelegate: _statefulSharedCartControllerMediatorWidgetDelegate
-      ),
+    return _StatefulSharedCartControllerMediatorWidget(
+      sharedCartController: _sharedCartController.controller,
+      statefulSharedCartControllerMediatorWidgetDelegate: _statefulSharedCartControllerMediatorWidgetDelegate
     );
   }
 }
@@ -646,7 +645,7 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
         onDestroyBucketProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
       )
     );
-    return Scaffold(
+    return ModifiedScaffold(
       appBar: ModifiedAppBar(
         titleInterceptorWithAdditionalParameter: (context, title, titleInterceptorAdditionalParameter) {
           Size preferredSize = titleInterceptorAdditionalParameter.appBarPreferredSize;

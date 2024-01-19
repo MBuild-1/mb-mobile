@@ -231,6 +231,7 @@ class _StatefulWishlistMainMenuSubControllerMediatorWidgetState extends State<_S
       () => BackgroundAppBarScaffold(
         backgroundAppBarImage: _wishlistAppBarBackgroundAssetImage,
         appBar: MainMenuSearchAppBar(value: 0.0),
+        withModifiedScaffold: false,
         body: Expanded(
           child: WidgetHelper.checkingLogin(
             context,

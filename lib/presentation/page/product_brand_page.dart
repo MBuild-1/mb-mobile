@@ -37,6 +37,7 @@ import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
 import '../../misc/string_util.dart';
 import '../widget/modified_paged_list_view.dart';
+import '../widget/modified_scaffold.dart';
 import '../widget/modifiedappbar/default_search_app_bar.dart';
 import 'getx_page.dart';
 import 'product_entry_page.dart';
@@ -277,7 +278,7 @@ class _StatefulProductBrandControllerMediatorWidgetState extends State<_Stateful
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ModifiedScaffold(
       appBar: DefaultSearchAppBar(),
       body: SafeArea(
         child: Column(

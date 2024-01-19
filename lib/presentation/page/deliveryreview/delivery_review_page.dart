@@ -12,6 +12,7 @@ import '../../../misc/errorprovider/error_provider.dart';
 import '../../../misc/injector.dart';
 import '../../../misc/main_route_observer.dart';
 import '../../../misc/refresh_delivery_review.dart';
+import '../../widget/modified_scaffold.dart';
 import '../../widget/modified_tab_bar.dart';
 import '../../widget/modifiedappbar/modified_app_bar.dart';
 import '../country_delivery_review_page.dart';
@@ -201,7 +202,7 @@ class _StatefulDeliveryReviewControllerMediatorWidgetState extends State<_Statef
         onGetErrorProvider: () => Injector.locator<ErrorProvider>()
       )
     );
-    return Scaffold(
+    return ModifiedScaffold(
       appBar: ModifiedAppBar(
         titleInterceptor: (context, title) => Row(
           children: [

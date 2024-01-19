@@ -1140,6 +1140,7 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
       () => BackgroundAppBarScaffold(
         backgroundAppBarImage: _homeAppBarBackgroundAssetImage,
         appBar: MainMenuSearchAppBar(value: 0.0),
+        withModifiedScaffold: false,
         body: Expanded(
           child: ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
             pagingControllerState: _homeMainMenuSubListItemPagingControllerState,

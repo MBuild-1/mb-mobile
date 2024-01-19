@@ -72,6 +72,7 @@ import '../notifier/notification_notifier.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/loaddataresultimplementer/load_data_result_implementer_directly.dart';
 import '../widget/modified_paged_list_view.dart';
+import '../widget/modified_scaffold.dart';
 import '../widget/modified_shimmer.dart';
 import '../widget/modified_svg_picture.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
@@ -146,13 +147,11 @@ class DeliveryPage extends RestorableGetxPage<_DeliveryPageRestoration> {
 
   @override
   Widget buildPage(BuildContext context) {
-    return Scaffold(
-      body: _StatefulDeliveryControllerMediatorWidget(
-        deliveryController: _deliveryController.controller,
-        selectedCartIdList: selectedCartIdList,
-        selectedAdditionalItemIdList: selectedAdditionalItemIdList,
-        statefulDeliveryControllerMediatorWidgetDelegate: _statefulDeliveryControllerMediatorWidgetDelegate,
-      ),
+    return _StatefulDeliveryControllerMediatorWidget(
+      deliveryController: _deliveryController.controller,
+      selectedCartIdList: selectedCartIdList,
+      selectedAdditionalItemIdList: selectedAdditionalItemIdList,
+      statefulDeliveryControllerMediatorWidgetDelegate: _statefulDeliveryControllerMediatorWidgetDelegate,
     );
   }
 }
@@ -505,7 +504,7 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
         onGetSettlingId: () => _selectedPaymentMethodLoadDataResult.resultIfSuccess?.id
       )
     );
-    return Scaffold(
+    return ModifiedScaffold(
       appBar: ModifiedAppBar(
         titleInterceptor: (context, title) => Row(
           children: [

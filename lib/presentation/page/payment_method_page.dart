@@ -28,6 +28,7 @@ import '../../misc/string_util.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/colorful_chip_tab_bar.dart';
 import '../widget/modified_paged_list_view.dart';
+import '../widget/modified_scaffold.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import 'getx_page.dart';
 
@@ -60,11 +61,9 @@ class PaymentMethodPage extends RestorableGetxPage<_PaymentMethodPageRestoration
 
   @override
   Widget buildPage(BuildContext context) {
-    return Scaffold(
-      body: _StatefulPaymentMethodControllerMediatorWidget(
-        paymentMethodController: _paymentMethodController.controller,
-        paymentMethodId: paymentMethodId,
-      ),
+    return _StatefulPaymentMethodControllerMediatorWidget(
+      paymentMethodController: _paymentMethodController.controller,
+      paymentMethodId: paymentMethodId,
     );
   }
 }
@@ -277,7 +276,7 @@ class _StatefulPaymentMethodControllerMediatorWidgetState extends State<_Statefu
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ModifiedScaffold(
       appBar: ModifiedAppBar(
         titleInterceptor: (context, title) => Row(
           children: [

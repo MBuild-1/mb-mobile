@@ -20,6 +20,7 @@ import '../../../misc/validation/validator/compoundvalidator/change_password_com
 import '../../../misc/validation/validator/compoundvalidator/password_compound_validator.dart';
 import '../../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../../widget/field.dart';
+import '../../widget/modified_scaffold.dart';
 import '../../widget/modified_text_field.dart';
 import '../../widget/modifiedappbar/modified_app_bar.dart';
 import '../../widget/password_obscurer.dart';
@@ -46,10 +47,8 @@ class ChangePasswordPage extends RestorableGetxPage<_ChangePasswordPageRestorati
 
   @override
   Widget buildPage(BuildContext context) {
-    return Scaffold(
-      body: _StatefulChangePasswordControllerMediatorWidget(
-        changePasswordController: _changePasswordController.controller,
-      ),
+    return _StatefulChangePasswordControllerMediatorWidget(
+      changePasswordController: _changePasswordController.controller,
     );
   }
 }
@@ -188,7 +187,7 @@ class _StatefulChangePasswordControllerMediatorWidgetState extends State<_Statef
         }
       )
     );
-    return Scaffold(
+    return ModifiedScaffold(
       appBar: ModifiedAppBar(
         titleInterceptor: (context, title) => Row(
           children: [

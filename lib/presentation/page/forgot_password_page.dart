@@ -18,6 +18,7 @@ import '../../misc/toast_helper.dart';
 import '../../misc/validation/validator/validator.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/field.dart';
+import '../widget/modified_scaffold.dart';
 import '../widget/modified_text_field.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import '../widget/rx_consumer.dart';
@@ -176,7 +177,7 @@ class _StatefulForgotPasswordControllerMediatorWidgetState extends State<_Statef
         },
       )
     );
-    return Scaffold(
+    return ModifiedScaffold(
       appBar: ModifiedAppBar(
         titleInterceptor: (context, title) => Row(
           children: [

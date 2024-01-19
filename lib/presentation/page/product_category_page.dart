@@ -31,6 +31,7 @@ import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_it
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
 import '../widget/modified_paged_list_view.dart';
+import '../widget/modified_scaffold.dart';
 import '../widget/modifiedappbar/default_search_app_bar.dart';
 import 'getx_page.dart';
 import 'product_entry_page.dart';
@@ -229,7 +230,7 @@ class _StatefulProductCategoryControllerMediatorWidgetState extends State<_State
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ModifiedScaffold(
       appBar: DefaultSearchAppBar(),
       body: SafeArea(
         child: Column(

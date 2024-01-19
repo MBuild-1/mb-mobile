@@ -63,6 +63,7 @@ import '../../misc/widgetbindingobserver/payment_widget_binding_observer.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/countdown_indicator.dart';
 import '../widget/modified_paged_list_view.dart';
+import '../widget/modified_scaffold.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import 'getx_page.dart';
 import 'modaldialogpage/modify_warehouse_in_order_modal_dialog_page.dart';
@@ -601,7 +602,7 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
         orderTransactionAdditionalSummaryWidgetParameter: () => _orderTransactionAdditionalSummaryWidgetParameter
       )
     );
-    return Scaffold(
+    return ModifiedScaffold(
       appBar: ModifiedAppBar(
         titleInterceptor: (context, title) => Row(
           children: [

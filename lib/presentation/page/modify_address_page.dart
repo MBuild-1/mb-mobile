@@ -30,6 +30,7 @@ import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/field.dart';
 import '../widget/loaddataresultimplementer/load_data_result_implementer.dart';
 import '../widget/modified_loading_indicator.dart';
+import '../widget/modified_scaffold.dart';
 import '../widget/modified_text_field.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import '../widget/rx_consumer.dart';
@@ -66,11 +67,9 @@ class ModifyAddressPage extends RestorableGetxPage<_ModifyAddressPageRestoration
 
   @override
   Widget buildPage(BuildContext context) {
-    return Scaffold(
-      body: _StatefulModifyAddressControllerMediatorWidget(
-        modifyAddressController: _modifyAddressController.controller,
-        modifyAddressPageParameter: modifyAddressPageParameter,
-      ),
+    return _StatefulModifyAddressControllerMediatorWidget(
+      modifyAddressController: _modifyAddressController.controller,
+      modifyAddressPageParameter: modifyAddressPageParameter,
     );
   }
 }
@@ -555,7 +554,7 @@ class _StatefulModifyAddressControllerMediatorWidgetState extends State<_Statefu
         ),
       ),
     );
-    return Scaffold(
+    return ModifiedScaffold(
       appBar: ModifiedAppBar(
         titleInterceptor: (context, title) => Row(
           children: [

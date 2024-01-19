@@ -94,6 +94,7 @@ import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/colorful_chip_tab_bar.dart';
 import '../widget/modified_divider.dart';
 import '../widget/modified_paged_list_view.dart';
+import '../widget/modified_scaffold.dart';
 import '../widget/modifiedappbar/default_search_app_bar.dart';
 import '../widget/tap_area.dart';
 import '../widget/titleanddescriptionitem/title_and_description_item.dart';
@@ -161,15 +162,13 @@ class ProductDetailPage extends RestorableGetxPage<_ProductDetailPageRestoration
 
   @override
   Widget buildPage(BuildContext context) {
-    return Scaffold(
-      body: _StatefulProductDetailControllerMediatorWidget(
-        productId: productId,
-        productEntryId: productEntryId,
-        productDetailController: _productDetailController.controller,
-        pageName: pageName,
-        selectAddressModalDialogPageActionDelegate: _selectAddressModalDialogPageActionDelegate,
-        statefulProductDetailControllerMediatorWidgetDelegate: _statefulProductDetailControllerMediatorWidgetDelegate,
-      ),
+    return _StatefulProductDetailControllerMediatorWidget(
+      productId: productId,
+      productEntryId: productEntryId,
+      productDetailController: _productDetailController.controller,
+      pageName: pageName,
+      selectAddressModalDialogPageActionDelegate: _selectAddressModalDialogPageActionDelegate,
+      statefulProductDetailControllerMediatorWidgetDelegate: _statefulProductDetailControllerMediatorWidgetDelegate,
     );
   }
 }
@@ -1120,7 +1119,7 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
         }
       ),
     );
-    return Scaffold(
+    return ModifiedScaffold(
       appBar: DefaultSearchAppBar(),
       body: SafeArea(
         child: Column(

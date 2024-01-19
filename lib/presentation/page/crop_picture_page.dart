@@ -15,6 +15,7 @@ import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/manager/controller_manager.dart';
 import '../../misc/string_util.dart';
 import '../widget/modified_crop.dart';
+import '../widget/modified_scaffold.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import 'getx_page.dart';
 
@@ -46,7 +47,7 @@ class CropPicturePage extends RestorableGetxPage<_CropPicturePageRestoration> {
         parameter: cropPictureParameter.parameter,
       ).toEncodeBase64String()
     );
-    return Scaffold(
+    return ModifiedScaffold(
       appBar: ModifiedAppBar(
         title: Text("Crop Profile".tr),
         titleInterceptor: (context, title) => Row(

@@ -20,6 +20,7 @@ import '../../misc/string_util.dart';
 import '../../misc/web_helper.dart';
 import '../widget/affiliate_user_candidate_indicator.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
+import '../widget/modified_scaffold.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import '../widget/normal_text_style_for_appbar.dart';
 import '../widget/rx_consumer.dart';
@@ -180,7 +181,7 @@ class _StatefulAffiliateControllerMediatorWidgetState extends State<_StatefulAff
         Get.back(result: true);
         return false;
       },
-      child: Scaffold(
+      child: ModifiedScaffold(
         appBar: ModifiedAppBar(
           titleInterceptor: (context, title) => Row(
             children: [

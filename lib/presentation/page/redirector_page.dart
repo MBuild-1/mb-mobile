@@ -12,6 +12,7 @@ import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/login_helper.dart';
 import '../../misc/manager/controller_manager.dart';
 import '../../misc/page_restoration_helper.dart';
+import '../widget/modified_scaffold.dart';
 import 'getx_page.dart';
 import 'introduction_page.dart';
 import 'mainmenu/main_menu_page.dart';
@@ -148,7 +149,7 @@ class _StatefulRedirectorControllerMediatorWidgetState extends State<_StatefulRe
         }
       });
     }
-    return const Scaffold(
+    return const ModifiedScaffold(
       appBar: null,
       body: SizedBox()
     );

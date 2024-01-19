@@ -42,6 +42,7 @@ import '../../misc/pusher_helper.dart';
 import '../../misc/routeargument/product_chat_route_argument.dart';
 import '../widget/modified_loading_indicator.dart';
 import '../widget/modified_paged_list_view.dart';
+import '../widget/modified_scaffold.dart';
 import '../widget/modified_svg_picture.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import '../widget/tap_area.dart';
@@ -74,11 +75,9 @@ class ProductChatPage extends RestorableGetxPage<_ProductChatPageRestoration> {
 
   @override
   Widget buildPage(BuildContext context) {
-    return Scaffold(
-      body: _StatefulProductChatControllerMediatorWidget(
-        productId: productId,
-        productChatController: _productChatController.controller,
-      ),
+    return _StatefulProductChatControllerMediatorWidget(
+      productId: productId,
+      productChatController: _productChatController.controller,
     );
   }
 }
@@ -321,7 +320,7 @@ class _StatefulProductChatControllerMediatorWidgetState extends State<_StatefulP
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ModifiedScaffold(
       appBar: ModifiedAppBar(
         titleInterceptor: (context, title) => Row(
           children: [

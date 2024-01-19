@@ -41,6 +41,7 @@ import '../../misc/toast_helper.dart';
 import '../notifier/notification_notifier.dart';
 import '../widget/colorful_chip_tab_bar.dart';
 import '../widget/modified_paged_list_view.dart';
+import '../widget/modified_scaffold.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import 'getx_page.dart';
 import 'order_detail_page.dart';
@@ -422,7 +423,7 @@ class _StatefulNotificationControllerMediatorWidgetState extends State<_Stateful
         },
       )
     );
-    return Scaffold(
+    return ModifiedScaffold(
       appBar: ModifiedAppBar(
         titleInterceptor: (context, title) => Row(
           children: [

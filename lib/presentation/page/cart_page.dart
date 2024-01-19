@@ -66,6 +66,7 @@ import '../notifier/notification_notifier.dart';
 import '../notifier/product_notifier.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/modified_paged_list_view.dart';
+import '../widget/modified_scaffold.dart';
 import '../widget/modified_svg_picture.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import '../widget/sharedcart/shared_cart_indicator.dart';
@@ -108,10 +109,8 @@ class CartPage extends RestorableGetxPage<_CartPageRestoration> {
 
   @override
   Widget buildPage(BuildContext context) {
-    return Scaffold(
-      body: _StatefulCartControllerMediatorWidget(
-        cartController: _cartController.controller,
-      ),
+    return _StatefulCartControllerMediatorWidget(
+      cartController: _cartController.controller,
     );
   }
 }
@@ -434,7 +433,7 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
         onGetErrorProvider: () => Injector.locator<ErrorProvider>()
       )
     );
-    return Scaffold(
+    return ModifiedScaffold(
       appBar: ModifiedAppBar(
         titleInterceptor: (context, title) => Row(
           children: [

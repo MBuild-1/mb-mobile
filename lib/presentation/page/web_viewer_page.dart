@@ -24,6 +24,7 @@ import '../../misc/parameterlink/parameter_link_input.dart';
 import '../../misc/toast_helper.dart';
 import '../widget/app_bar_icon_area.dart';
 import '../widget/loaddataresultimplementer/load_data_result_implementer_directly.dart';
+import '../widget/modified_scaffold.dart';
 import '../widget/modified_svg_picture.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import '../widget/progress_indicator_bar.dart';
@@ -188,7 +189,7 @@ class _StatefulWebViewerPageState extends State<_StatefulWebViewerPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ModifiedScaffold(
       appBar: ModifiedAppBar(
         titleInterceptorWithAdditionalParameter: (context, title, titleInterceptorAdditionalParameter) {
           Size preferredSize = titleInterceptorAdditionalParameter.appBarPreferredSize;

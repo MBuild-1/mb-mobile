@@ -13,6 +13,7 @@ import '../../misc/multi_language_string.dart';
 import '../../misc/page_restoration_helper.dart';
 import '../../misc/string_util.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
+import '../widget/modified_scaffold.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import '../widget/tap_area.dart';
 import 'getx_page.dart';
@@ -159,7 +160,7 @@ class _StatefulMsmePartnerControllerMediatorWidget extends StatefulWidget {
 class _StatefulMsmePartnerControllerMediatorWidgetState extends State<_StatefulMsmePartnerControllerMediatorWidget> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ModifiedScaffold(
       appBar: ModifiedAppBar(
         titleInterceptor: (context, title) => Row(
           children: [

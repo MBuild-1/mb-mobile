@@ -38,6 +38,7 @@ import '../notifier/notification_notifier.dart';
 import '../notifier/product_notifier.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/field.dart';
+import '../widget/modified_scaffold.dart';
 import '../widget/modified_text_field.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import '../widget/normal_text_style_for_appbar.dart';
@@ -83,11 +84,9 @@ class LoginPage extends RestorableGetxPage<_LoginPageRestoration> {
 
   @override
   Widget buildPage(BuildContext context) {
-    return Scaffold(
-      body: _StatefulLoginControllerMediatorWidget(
-        loginController: _loginController.controller,
-        statefulLoginControllerMediatorWidgetDelegate: _statefulLoginControllerMediatorWidgetDelegate
-      ),
+    return _StatefulLoginControllerMediatorWidget(
+      loginController: _loginController.controller,
+      statefulLoginControllerMediatorWidgetDelegate: _statefulLoginControllerMediatorWidgetDelegate
     );
   }
 }
@@ -310,7 +309,7 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
         onSubscribeNotificationCountRealtimeChannel: (userId) async => await SomethingCounter.of(context)?.subscribeNotificationCount(userId),
       )
     );
-    return Scaffold(
+    return ModifiedScaffold(
       appBar: ModifiedAppBar(
         titleInterceptor: (context, title) => Row(
           children: [

@@ -16,6 +16,7 @@ import '../../misc/manager/controller_manager.dart';
 import '../../misc/notification_redirector_helper.dart';
 import '../../misc/page_restoration_helper.dart';
 import '../../misc/routeargument/notification_redirector_route_argument.dart';
+import '../widget/modified_scaffold.dart';
 import 'favorite_product_brand_page.dart';
 import 'getx_page.dart';
 import 'help_chat_page.dart';
@@ -253,7 +254,7 @@ class _StatefulNotificationRedirectorControllerMediatorWidgetState extends State
     }
     return WillPopScope(
       onWillPop: () async => false,
-      child: const Scaffold(
+      child: const ModifiedScaffold(
         appBar: null,
         backgroundColor: Colors.transparent,
         body: SizedBox()

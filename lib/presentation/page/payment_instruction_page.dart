@@ -21,6 +21,7 @@ import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
 import '../../misc/temp_payment_instruction_data_helper.dart';
 import '../widget/modified_paged_list_view.dart';
+import '../widget/modified_scaffold.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import 'getx_page.dart';
 
@@ -48,10 +49,8 @@ class PaymentInstructionPage extends RestorableGetxPage<_PaymentInstructionPageR
 
   @override
   Widget buildPage(BuildContext context) {
-    return Scaffold(
-      body: _StatefulPaymentInstructionControllerMediatorWidget(
-        paymentInstructionController: _paymentInstructionController.controller
-      ),
+    return _StatefulPaymentInstructionControllerMediatorWidget(
+      paymentInstructionController: _paymentInstructionController.controller
     );
   }
 }
@@ -214,7 +213,7 @@ class _StatefulPaymentInstructionControllerMediatorWidgetState extends State<_St
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ModifiedScaffold(
       appBar: ModifiedAppBar(
         titleInterceptor: (context, title) => Row(
           children: [

@@ -33,6 +33,7 @@ import '../../misc/paging/pagingresult/paging_result.dart';
 import '../../misc/toast_helper.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/modified_paged_list_view.dart';
+import '../widget/modified_scaffold.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import '../widget/normal_text_style_for_appbar.dart';
 import 'getx_page.dart';
@@ -306,7 +307,7 @@ class _StatefulAddressControllerMediatorWidgetState extends State<_StatefulAddre
         Get.back(result: true);
         return false;
       },
-      child: Scaffold(
+      child: ModifiedScaffold(
         appBar: ModifiedAppBar(
           titleInterceptor: (context, title) => Row(
             children: [

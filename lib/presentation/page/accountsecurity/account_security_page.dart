@@ -33,6 +33,7 @@ import '../../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../../misc/paging/pagingresult/paging_result.dart';
 import '../../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/horizontal_dynamic_item_carousel_parametered_component_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../../widget/modified_paged_list_view.dart';
+import '../../widget/modified_scaffold.dart';
 import '../../widget/modifiedappbar/modified_app_bar.dart';
 import '../getx_page.dart';
 import 'change_password_page.dart';
@@ -359,7 +360,7 @@ class _StatefulAccountSecurityControllerMediatorWidgetState extends State<_State
         }
       )
     );
-    return Scaffold(
+    return ModifiedScaffold(
       appBar: ModifiedAppBar(
         titleInterceptor: (context, title) => Row(
           children: [

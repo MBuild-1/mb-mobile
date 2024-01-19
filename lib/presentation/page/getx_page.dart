@@ -202,54 +202,10 @@ abstract class RestorableGetxPage<T extends GetxPageRestoration> extends GetxPag
 
   @override
   Widget _rawBuildPage(BuildContext context) {
-    Widget result = _StatefulRestorableGetxPage(
+    return _StatefulRestorableGetxPage(
       pageName: pageName,
       child: buildPage(context)
     );
-    String environment = Constant.envValueEnvironment;
-    if (environment.contains("staging") || environment.contains("local_dev")) {
-      Color containerColor = () {
-        if (environment.contains("staging")) {
-          return Colors.orange;
-        }
-        return Constant.colorGrey8;
-      }();
-      String? text = () {
-        if (environment.contains("staging")) {
-          return MultiLanguageString({
-            Constant.textInIdLanguageKey: "Anda berada di mode environment STAGING.",
-            Constant.textEnUsLanguageKey: "You are in STAGING environment mode."
-          }).toEmptyStringNonNull;
-        } else if (environment.contains("local_dev")) {
-          return MultiLanguageString({
-            Constant.textInIdLanguageKey: "Anda berada di mode environment LOCAL DEV.",
-            Constant.textEnUsLanguageKey: "You are in LOCAL DEV environment mode."
-          }).toEmptyStringNonNull;
-        }
-        return null;
-      }();
-      result = Column(
-        children: [
-          Expanded(
-            child: result
-          ),
-          Material(
-            child: Container(
-              width: double.infinity,
-              color: containerColor,
-              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-              child: Center(
-                child: Text(
-                  text.toStringNonNull,
-                  style: const TextStyle(color: Colors.white),
-                ),
-              )
-            ),
-          )
-        ],
-      );
-    }
-    return result;
   }
 
   Widget buildPage(BuildContext context);

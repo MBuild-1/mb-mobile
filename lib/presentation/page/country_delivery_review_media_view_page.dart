@@ -16,6 +16,7 @@ import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/manager/controller_manager.dart';
 import '../../misc/string_util.dart';
+import '../widget/modified_scaffold.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import 'getx_page.dart';
 
@@ -201,7 +202,7 @@ class _StatefulCountryDeliveryReviewMediaViewControllerMediatorWidgetState exten
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ModifiedScaffold(
       appBar: ModifiedAppBar(
         titleInterceptor: (context, title) => Container(),
       ),

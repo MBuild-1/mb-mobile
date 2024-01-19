@@ -35,6 +35,7 @@ import '../../../misc/string_util.dart';
 import '../../../misc/temp_login_data_while_input_pin_helper.dart';
 import '../../../misc/toast_helper.dart';
 import '../../widget/button/custombutton/sized_outline_gradient_button.dart';
+import '../../widget/modified_scaffold.dart';
 import '../../widget/modified_svg_picture.dart';
 import '../../widget/modifiedappbar/modified_app_bar.dart';
 import '../../widget/tap_area.dart';
@@ -65,11 +66,9 @@ class ModifyPinPage extends RestorableGetxPage<_ModifyPinPageRestoration> {
 
   @override
   Widget buildPage(BuildContext context) {
-    return Scaffold(
-      body: _StatefulModifyPinControllerMediatorWidget(
-        modifyPinController: _modifyPinController.controller,
-        modifyPinPageParameter: modifyPinPageParameter,
-      ),
+    return _StatefulModifyPinControllerMediatorWidget(
+      modifyPinController: _modifyPinController.controller,
+      modifyPinPageParameter: modifyPinPageParameter,
     );
   }
 }
@@ -342,7 +341,7 @@ class _StatefulModifyPinControllerMediatorWidgetState extends State<_StatefulMod
     if (_errorText != null) {
       description = _errorText!;
     }
-    return Scaffold(
+    return ModifiedScaffold(
       appBar: ModifiedAppBar(
         titleInterceptor: (context, title) => Row(
           children: [

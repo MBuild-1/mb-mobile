@@ -13,6 +13,7 @@ import '../../misc/constant.dart';
 import '../../misc/dialog_helper.dart';
 import '../../misc/multi_language_string.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
+import '../widget/modified_scaffold.dart';
 import '../widget/modified_svg_picture.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import 'getx_page.dart';
@@ -38,10 +39,8 @@ class HelpPage extends RestorableGetxPage<_HelpPageRestoration> {
 
   @override
   Widget buildPage(BuildContext context) {
-    return Scaffold(
-      body: _StatefulHelpControllerMediatorWidget(
-        helpController: _helpController.controller,
-      ),
+    return _StatefulHelpControllerMediatorWidget(
+      helpController: _helpController.controller,
     );
   }
 }
@@ -157,7 +156,7 @@ class _StatefulHelpControllerMediatorWidgetState extends State<_StatefulHelpCont
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ModifiedScaffold(
       appBar: ModifiedAppBar(
         titleInterceptor: (context, title) => Row(
           children: [

@@ -22,6 +22,7 @@ import '../../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list
 import '../../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../../misc/paging/pagingresult/paging_result.dart';
 import '../../widget/modified_paged_list_view.dart';
+import '../../widget/modified_scaffold.dart';
 import '../../widget/modifiedappbar/modified_app_bar.dart';
 import '../getx_page.dart';
 import 'news_detail_page.dart';
@@ -212,7 +213,7 @@ class _StatefulNewsControllerMediatorWidgetState extends State<_StatefulNewsCont
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ModifiedScaffold(
       appBar: ModifiedAppBar(
         titleInterceptor: (context, title) => Row(
           children: [

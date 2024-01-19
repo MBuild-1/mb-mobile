@@ -25,6 +25,7 @@ import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_it
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
 import '../widget/modified_paged_list_view.dart';
+import '../widget/modified_scaffold.dart';
 import '../widget/modifiedappbar/default_search_app_bar.dart';
 import 'getx_page.dart';
 import 'product_detail_page.dart';
@@ -49,11 +50,9 @@ class ProductCategoryDetailPage extends RestorableGetxPage<_ProductCategoryDetai
 
   @override
   Widget buildPage(BuildContext context) {
-    return Scaffold(
-      body: _StatefulProductCategoryDetailControllerMediatorWidget(
-        productCategoryId: productCategoryId,
-        productCategoryDetailController: _productCategoryDetailController.controller,
-      ),
+    return _StatefulProductCategoryDetailControllerMediatorWidget(
+      productCategoryId: productCategoryId,
+      productCategoryDetailController: _productCategoryDetailController.controller,
     );
   }
 }
@@ -227,7 +226,7 @@ class _StatefulProductCategoryDetailControllerMediatorWidgetState extends State<
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ModifiedScaffold(
       appBar: DefaultSearchAppBar(),
       body: SafeArea(
         child: Column(

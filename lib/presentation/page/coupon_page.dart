@@ -27,6 +27,7 @@ import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/modified_paged_list_view.dart';
+import '../widget/modified_scaffold.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import 'getx_page.dart';
 
@@ -61,11 +62,9 @@ class CouponPage extends RestorableGetxPage<_CouponPageRestoration> {
 
   @override
   Widget buildPage(BuildContext context) {
-    return Scaffold(
-      body: _StatefulCouponControllerMediatorWidget(
-        couponController: _couponController.controller,
-        couponId: couponId,
-      ),
+    return _StatefulCouponControllerMediatorWidget(
+      couponController: _couponController.controller,
+      couponId: couponId,
     );
   }
 }
@@ -268,7 +267,7 @@ class _StatefulCouponControllerMediatorWidgetState extends State<_StatefulCoupon
         }
       )
     );
-    return Scaffold(
+    return ModifiedScaffold(
       appBar: ModifiedAppBar(
         titleInterceptor: (context, title) => Row(
           children: [

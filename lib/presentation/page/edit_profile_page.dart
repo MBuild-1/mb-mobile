@@ -51,6 +51,7 @@ import '../../misc/paging/pagingresult/paging_result.dart';
 import '../../misc/string_util.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/modified_paged_list_view.dart';
+import '../widget/modified_scaffold.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import '../widget/profile_picture_cache_network_image.dart';
 import '../widget/tap_area.dart';
@@ -509,7 +510,7 @@ class _StatefulEditProfileControllerMediatorWidgetState extends State<_StatefulE
         Get.back(result: true);
         return false;
       },
-      child: Scaffold(
+      child: ModifiedScaffold(
         appBar: ModifiedAppBar(
           titleInterceptor: (context, title) => Row(
             children: [

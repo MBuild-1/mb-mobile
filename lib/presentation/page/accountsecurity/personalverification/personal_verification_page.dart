@@ -16,6 +16,7 @@ import '../../../../misc/multi_language_string.dart';
 import '../../../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../../../widget/check_list_item.dart';
 import '../../../widget/modified_divider.dart';
+import '../../../widget/modified_scaffold.dart';
 import '../../../widget/modified_svg_picture.dart';
 import '../../../widget/modifiedappbar/modified_app_bar.dart';
 import '../../../widget/profile_menu_item.dart';
@@ -160,7 +161,7 @@ class _StatefulPersonalVerificationControllerMediatorWidgetState extends State<_
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ModifiedScaffold(
       appBar: ModifiedAppBar(
         titleInterceptor: (context, title) => Row(
           children: [

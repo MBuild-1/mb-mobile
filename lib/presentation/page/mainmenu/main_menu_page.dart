@@ -30,6 +30,7 @@ import '../../../misc/toast_helper.dart';
 import '../../../misc/typedef.dart';
 import '../../notifier/product_notifier.dart';
 import '../../widget/custom_bottom_navigation_bar.dart';
+import '../../widget/modified_scaffold.dart';
 import '../../widget/modified_svg_picture.dart';
 import '../../widget/rx_consumer.dart';
 import '../../widget/tap_area.dart';
@@ -387,157 +388,159 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
         return false;
       },
       child: Material(
-        child: Column(
-          children: [
-            Expanded(
-              child: Stack(
-                children: [
-                  IndexedStack(
-                    index: _customBottomNavigationBarSelectedIndex.currentSelectedViewMenuIndex,
-                    children: [
-                      HomeMainMenuSubPage(ancestorPageName: widget.pageName),
-                      FeedMainMenuSubPage(ancestorPageName: widget.pageName),
-                      ExploreNusantaraMainMenuSubPage(ancestorPageName: widget.pageName),
-                      WishlistMainMenuSubPage(ancestorPageName: widget.pageName),
-                      MenuMainMenuSubPage(ancestorPageName: widget.pageName),
-                    ],
-                  ),
-                  Builder(
-                    builder: (context) {
-                      void login() => PageRestorationHelper.toLoginPage(context, Constant.restorableRouteFuturePush);
-                      return Align(
-                        alignment: Alignment.bottomCenter,
-                        child: RxConsumer<bool>(
-                          rxValue: widget.mainMenuController.isLoginRx,
-                          onConsumeValue: (context, isLogin) => !isLogin ? Container(
-                            padding: EdgeInsets.all(Constant.paddingListItem),
-                            height: Constant.mainMenuFooterHeight,
-                            color: Colors.transparent,
-                            child: Stack(
-                              children: [
-                                Builder(
-                                  builder: (context) {
-                                    return Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: SizedBox(
-                                        child: Row(
-                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                          children: [
-                                            const SizedBox(
-                                              width: 80.0
-                                            ),
-                                            Expanded(
-                                              child: TapArea(
-                                                onTap: login,
-                                                child: Container(
-                                                  padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                                                  child: Text.rich(
-                                                    "Miss Indonesian Food".trTextSpan(),
-                                                    maxLines: 2,
-                                                    overflow: TextOverflow.ellipsis,
-                                                  ),
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.white,
-                                                    borderRadius: BorderRadius.circular(10.0).copyWith(
-                                                      topLeft: Radius.zero,
-                                                      bottomLeft: Radius.zero
+        child: ModifiedScaffoldContainer(
+          body: Column(
+            children: [
+              Expanded(
+                child: Stack(
+                  children: [
+                    IndexedStack(
+                      index: _customBottomNavigationBarSelectedIndex.currentSelectedViewMenuIndex,
+                      children: [
+                        HomeMainMenuSubPage(ancestorPageName: widget.pageName),
+                        FeedMainMenuSubPage(ancestorPageName: widget.pageName),
+                        ExploreNusantaraMainMenuSubPage(ancestorPageName: widget.pageName),
+                        WishlistMainMenuSubPage(ancestorPageName: widget.pageName),
+                        MenuMainMenuSubPage(ancestorPageName: widget.pageName),
+                      ],
+                    ),
+                    Builder(
+                      builder: (context) {
+                        void login() => PageRestorationHelper.toLoginPage(context, Constant.restorableRouteFuturePush);
+                        return Align(
+                          alignment: Alignment.bottomCenter,
+                          child: RxConsumer<bool>(
+                            rxValue: widget.mainMenuController.isLoginRx,
+                            onConsumeValue: (context, isLogin) => !isLogin ? Container(
+                              padding: EdgeInsets.all(Constant.paddingListItem),
+                              height: Constant.mainMenuFooterHeight,
+                              color: Colors.transparent,
+                              child: Stack(
+                                children: [
+                                  Builder(
+                                    builder: (context) {
+                                      return Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: SizedBox(
+                                          child: Row(
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: [
+                                              const SizedBox(
+                                                width: 80.0
+                                              ),
+                                              Expanded(
+                                                child: TapArea(
+                                                  onTap: login,
+                                                  child: Container(
+                                                    padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                                                    child: Text.rich(
+                                                      "Miss Indonesian Food".trTextSpan(),
+                                                      maxLines: 2,
+                                                      overflow: TextOverflow.ellipsis,
                                                     ),
-                                                    boxShadow: [
-                                                      BoxShadow(
-                                                        blurRadius: 5.0,
-                                                        spreadRadius: 1.0,
-                                                        color: Colors.black.withOpacity(0.5)
-                                                      )
-                                                    ]
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.white,
+                                                      borderRadius: BorderRadius.circular(10.0).copyWith(
+                                                        topLeft: Radius.zero,
+                                                        bottomLeft: Radius.zero
+                                                      ),
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                          blurRadius: 5.0,
+                                                          spreadRadius: 1.0,
+                                                          color: Colors.black.withOpacity(0.5)
+                                                        )
+                                                      ]
+                                                    ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  ),
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: TapArea(
+                                      onTap: login,
+                                      child: Container(
+                                        width: 80,
+                                        height: Constant.mainMenuFooterContentHeight,
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: ModifiedSvgPicture.asset(Constant.vectorBag, overrideDefaultColorWithSingleColor: false),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(10.0),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              blurRadius: 5.0,
+                                              spreadRadius: 1.0,
+                                              color: Colors.black.withOpacity(0.5)
+                                            )
+                                          ]
                                         ),
                                       ),
-                                    );
-                                  }
-                                ),
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: TapArea(
-                                    onTap: login,
-                                    child: Container(
-                                      width: 80,
-                                      height: Constant.mainMenuFooterContentHeight,
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: ModifiedSvgPicture.asset(Constant.vectorBag, overrideDefaultColorWithSingleColor: false),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(10.0),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            blurRadius: 5.0,
-                                            spreadRadius: 1.0,
-                                            color: Colors.black.withOpacity(0.5)
-                                          )
-                                        ]
-                                      ),
                                     ),
-                                  ),
-                                )
-                              ]
-                            ),
-                          ) : Container(),
-                        ),
-                      );
-                    }
+                                  )
+                                ]
+                              ),
+                            ) : Container(),
+                          ),
+                        );
+                      }
+                    ),
+                  ],
+                )
+              ),
+              CustomBottomNavigationBar(
+                type: BottomNavigationBarType.fixed,
+                currentIndex: _customBottomNavigationBarSelectedIndex.currentSelectedMenuIndex,
+                selectedFontSize: 9.0,
+                unselectedFontSize: 9.0,
+                onTap: (selectedIndex) => _onItemTappedWithContext(selectedIndex, context),
+                items: [
+                  CustomBottomNavigationBarItem(
+                    icon: ModifiedSvgPicture.asset(Constant.vectorHomeUnselected, overrideDefaultColorWithSingleColor: false),
+                    activeIcon: ModifiedSvgPicture.asset(Constant.vectorHomeSelected, overrideDefaultColorWithSingleColor: false),
+                    label: 'Home',
+                    hideLabelWhenInactive: false,
+                  ),
+                  CustomBottomNavigationBarItem(
+                    icon: ModifiedSvgPicture.asset(Constant.vectorFeedUnselected, overrideDefaultColorWithSingleColor: false),
+                    activeIcon: ModifiedSvgPicture.asset(Constant.vectorFeedSelected, overrideDefaultColorWithSingleColor: false),
+                    label: MultiLanguageString({
+                      Constant.textInIdLanguageKey: "Suguhan",
+                      Constant.textEnUsLanguageKey: "Feed"
+                    }).toStringNonNull,
+                    hideLabelWhenInactive: false
+                  ),
+                  CustomBottomNavigationBarItem(
+                    icon: ModifiedSvgPicture.asset(Constant.vectorExploreUnselected, overrideDefaultColorWithSingleColor: false),
+                    activeIcon: ModifiedSvgPicture.asset(Constant.vectorExploreSelected, overrideDefaultColorWithSingleColor: false),
+                    label: MultiLanguageString({
+                      Constant.textInIdLanguageKey: "Jelajah Nusantara",
+                      Constant.textEnUsLanguageKey: "Explore Nusantara"
+                    }).toStringNonNull,
+                    hideLabelWhenInactive: false
+                  ),
+                  CustomBottomNavigationBarItem(
+                    icon: ModifiedSvgPicture.asset(Constant.vectorWishlistUnselected, overrideDefaultColorWithSingleColor: false),
+                    activeIcon: ModifiedSvgPicture.asset(Constant.vectorWishlistSelected, overrideDefaultColorWithSingleColor: false),
+                    label: 'Wishlist',
+                    hideLabelWhenInactive: false
+                  ),
+                  CustomBottomNavigationBarItem(
+                    icon: ModifiedSvgPicture.asset(Constant.vectorMenuUnselected, overrideDefaultColorWithSingleColor: false),
+                    activeIcon: ModifiedSvgPicture.asset(Constant.vectorMenuSelected, overrideDefaultColorWithSingleColor: false),
+                    label: 'Menu',
+                    hideLabelWhenInactive: false
                   ),
                 ],
-              )
-            ),
-            CustomBottomNavigationBar(
-              type: BottomNavigationBarType.fixed,
-              currentIndex: _customBottomNavigationBarSelectedIndex.currentSelectedMenuIndex,
-              selectedFontSize: 9.0,
-              unselectedFontSize: 9.0,
-              onTap: (selectedIndex) => _onItemTappedWithContext(selectedIndex, context),
-              items: [
-                CustomBottomNavigationBarItem(
-                  icon: ModifiedSvgPicture.asset(Constant.vectorHomeUnselected, overrideDefaultColorWithSingleColor: false),
-                  activeIcon: ModifiedSvgPicture.asset(Constant.vectorHomeSelected, overrideDefaultColorWithSingleColor: false),
-                  label: 'Home',
-                  hideLabelWhenInactive: false,
-                ),
-                CustomBottomNavigationBarItem(
-                  icon: ModifiedSvgPicture.asset(Constant.vectorFeedUnselected, overrideDefaultColorWithSingleColor: false),
-                  activeIcon: ModifiedSvgPicture.asset(Constant.vectorFeedSelected, overrideDefaultColorWithSingleColor: false),
-                  label: MultiLanguageString({
-                    Constant.textInIdLanguageKey: "Suguhan",
-                    Constant.textEnUsLanguageKey: "Feed"
-                  }).toStringNonNull,
-                  hideLabelWhenInactive: false
-                ),
-                CustomBottomNavigationBarItem(
-                  icon: ModifiedSvgPicture.asset(Constant.vectorExploreUnselected, overrideDefaultColorWithSingleColor: false),
-                  activeIcon: ModifiedSvgPicture.asset(Constant.vectorExploreSelected, overrideDefaultColorWithSingleColor: false),
-                  label: MultiLanguageString({
-                    Constant.textInIdLanguageKey: "Jelajah Nusantara",
-                    Constant.textEnUsLanguageKey: "Explore Nusantara"
-                  }).toStringNonNull,
-                  hideLabelWhenInactive: false
-                ),
-                CustomBottomNavigationBarItem(
-                  icon: ModifiedSvgPicture.asset(Constant.vectorWishlistUnselected, overrideDefaultColorWithSingleColor: false),
-                  activeIcon: ModifiedSvgPicture.asset(Constant.vectorWishlistSelected, overrideDefaultColorWithSingleColor: false),
-                  label: 'Wishlist',
-                  hideLabelWhenInactive: false
-                ),
-                CustomBottomNavigationBarItem(
-                  icon: ModifiedSvgPicture.asset(Constant.vectorMenuUnselected, overrideDefaultColorWithSingleColor: false),
-                  activeIcon: ModifiedSvgPicture.asset(Constant.vectorMenuSelected, overrideDefaultColorWithSingleColor: false),
-                  label: 'Menu',
-                  hideLabelWhenInactive: false
-                ),
-              ],
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
       ),
     );

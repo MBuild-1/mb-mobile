@@ -20,6 +20,7 @@ import '../../../misc/load_data_result.dart';
 import '../../../misc/manager/controller_manager.dart';
 import '../../../misc/web_helper.dart';
 import '../../widget/loaddataresultimplementer/load_data_result_implementer.dart';
+import '../../widget/modified_scaffold.dart';
 import '../../widget/modifiedappbar/modified_app_bar.dart';
 import '../../widget/modifiedcachednetworkimage/product_modified_cached_network_image.dart';
 import '../../widget/rx_consumer.dart';
@@ -48,11 +49,9 @@ class NewsDetailPage extends RestorableGetxPage<_NewsDetailPageRestoration> {
 
   @override
   Widget buildPage(BuildContext context) {
-    return Scaffold(
-      body: _StatefulNewsDetailControllerMediatorWidget(
-        newsController: _newsDetailController.controller,
-        newsId: newsId
-      ),
+    return _StatefulNewsDetailControllerMediatorWidget(
+      newsController: _newsDetailController.controller,
+      newsId: newsId
     );
   }
 }
@@ -184,7 +183,7 @@ class _StatefulNewsDetailControllerMediatorWidgetState extends State<_StatefulNe
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       widget.newsController.loadNewsDetail(widget.newsId);
     });
-    return Scaffold(
+    return ModifiedScaffold(
       appBar: ModifiedAppBar(
         titleInterceptor: (context, title) => Row(
           children: [

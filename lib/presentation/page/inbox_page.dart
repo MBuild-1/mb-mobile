@@ -33,6 +33,7 @@ import '../../misc/paging/pagingresult/paging_result.dart';
 import '../../misc/string_util.dart';
 import '../notifier/notification_notifier.dart';
 import '../widget/modified_paged_list_view.dart';
+import '../widget/modified_scaffold.dart';
 import '../widget/modified_svg_picture.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import '../widget/notification_icon_indicator.dart';
@@ -74,11 +75,9 @@ class InboxPage extends RestorableGetxPage<_InboxPageRestoration> {
 
   @override
   Widget buildPage(BuildContext context) {
-    return Scaffold(
-      body: _StatefulInboxControllerMediatorWidget(
-        inboxPageParameter: inboxPageParameter,
-        inboxController: _inboxController.controller,
-      ),
+    return _StatefulInboxControllerMediatorWidget(
+      inboxPageParameter: inboxPageParameter,
+      inboxController: _inboxController.controller,
     );
   }
 }
@@ -310,7 +309,7 @@ class _StatefulInboxControllerMediatorWidgetState extends State<_StatefulInboxCo
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ModifiedScaffold(
       appBar: ModifiedAppBar(
         titleInterceptor: (context, title) => Row(
           children: [

@@ -249,6 +249,7 @@ class _StatefulFeedMainMenuSubControllerMediatorWidgetState extends State<_State
       () => BackgroundAppBarScaffold(
         backgroundAppBarImage: _feedAppBarBackgroundAssetImage,
         appBar: MainMenuSearchAppBar(value: 0.0),
+        withModifiedScaffold: false,
         body: Expanded(
           child: ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
             pagingControllerState: _feedMainMenuSubListItemPagingControllerState,

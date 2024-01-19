@@ -254,6 +254,7 @@ class _StatefulExploreNusantaraMainMenuSubControllerMediatorWidgetState extends 
       () => BackgroundAppBarScaffold(
         backgroundAppBarImage: _exploreNusantaraAppBarBackgroundAssetImage,
         appBar: MainMenuSearchAppBar(value: 0.0),
+        withModifiedScaffold: false,
         body: Expanded(
           child: Stack(
             children: [

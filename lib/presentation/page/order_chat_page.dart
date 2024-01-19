@@ -42,6 +42,7 @@ import '../../misc/pusher_helper.dart';
 import '../../misc/routeargument/order_chat_route_argument.dart';
 import '../widget/modified_loading_indicator.dart';
 import '../widget/modified_paged_list_view.dart';
+import '../widget/modified_scaffold.dart';
 import '../widget/modified_svg_picture.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import '../widget/tap_area.dart';
@@ -75,11 +76,9 @@ class OrderChatPage extends RestorableGetxPage<_OrderChatPageRestoration> {
 
   @override
   Widget buildPage(BuildContext context) {
-    return Scaffold(
-      body: _StatefulOrderChatControllerMediatorWidget(
-        combinedOrderId: combinedOrderId,
-        orderChatController: _orderChatController.controller,
-      ),
+    return _StatefulOrderChatControllerMediatorWidget(
+      combinedOrderId: combinedOrderId,
+      orderChatController: _orderChatController.controller,
     );
   }
 }
@@ -328,7 +327,7 @@ class _StatefulOrderChatControllerMediatorWidgetState extends State<_StatefulOrd
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ModifiedScaffold(
       appBar: ModifiedAppBar(
         titleInterceptor: (context, title) => Row(
           children: [

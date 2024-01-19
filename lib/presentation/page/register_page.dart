@@ -58,6 +58,7 @@ import '../../misc/widget_helper.dart';
 import '../notifier/login_notifier.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/field.dart';
+import '../widget/modified_scaffold.dart';
 import '../widget/modified_shimmer.dart';
 import '../widget/modified_svg_picture.dart';
 import '../widget/modified_text_field.dart';
@@ -99,10 +100,8 @@ class RegisterPage extends RestorableGetxPage<_RegisterPageRestoration> {
 
   @override
   Widget buildPage(BuildContext context) {
-    return Scaffold(
-      body: _StatefulRegisterControllerMediatorWidget(
-        registerController: _registerController.controller,
-      ),
+    return _StatefulRegisterControllerMediatorWidget(
+      registerController: _registerController.controller,
     );
   }
 }
@@ -352,7 +351,7 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
           return true;
         }
       },
-      child: Scaffold(
+      child: ModifiedScaffold(
         appBar: ModifiedAppBar(
           titleInterceptor: (context, title) => Row(
             children: [

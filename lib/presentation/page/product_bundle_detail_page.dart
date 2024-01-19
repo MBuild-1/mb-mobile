@@ -38,6 +38,7 @@ import '../notifier/component_notifier.dart';
 import '../notifier/notification_notifier.dart';
 import '../notifier/product_notifier.dart';
 import '../widget/modified_paged_list_view.dart';
+import '../widget/modified_scaffold.dart';
 import '../widget/modifiedappbar/default_search_app_bar.dart';
 import 'getx_page.dart';
 import 'product_detail_page.dart';
@@ -66,11 +67,9 @@ class ProductBundleDetailPage extends RestorableGetxPage<_ProductBundleDetailPag
 
   @override
   Widget buildPage(BuildContext context) {
-    return Scaffold(
-      body: _StatefulProductBundleDetailControllerMediatorWidget(
-        productBundleId: productBundleId,
-        productBundleDetailController: _productBundleDetailController.controller,
-      ),
+    return _StatefulProductBundleDetailControllerMediatorWidget(
+      productBundleId: productBundleId,
+      productBundleDetailController: _productBundleDetailController.controller,
     );
   }
 }
@@ -322,7 +321,7 @@ class _StatefulProductBundleDetailControllerMediatorWidgetState extends State<_S
         },
       )
     );
-    return Scaffold(
+    return ModifiedScaffold(
       appBar: DefaultSearchAppBar(),
       body: SafeArea(
         child: Column(

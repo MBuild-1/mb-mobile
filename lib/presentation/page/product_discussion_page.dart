@@ -54,6 +54,7 @@ import '../../misc/pusher_helper.dart';
 import '../../misc/routeargument/product_discussion_route_argument.dart';
 import '../../misc/string_util.dart';
 import '../widget/modified_paged_list_view.dart';
+import '../widget/modified_scaffold.dart';
 import '../widget/modified_svg_picture.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import '../widget/tap_area.dart';
@@ -576,7 +577,7 @@ class _StatefulProductDiscussionControllerMediatorWidgetState extends State<_Sta
         Get.back();
         return false;
       },
-      child: Scaffold(
+      child: ModifiedScaffold(
         appBar: ModifiedAppBar(
           titleInterceptor: (context, title) => Row(
             children: [

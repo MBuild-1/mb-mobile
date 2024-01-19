@@ -39,6 +39,7 @@ import '../../misc/routeargument/order_route_argument.dart';
 import '../../misc/temp_order_detail_back_result_data_helper.dart';
 import '../widget/colorful_chip_tab_bar.dart';
 import '../widget/modified_paged_list_view.dart';
+import '../widget/modified_scaffold.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import 'getx_page.dart';
 import 'order_detail_page.dart';
@@ -394,7 +395,7 @@ class _StatefulOrderControllerMediatorWidgetState extends State<_StatefulOrderCo
         ),
       )
     );
-    return Scaffold(
+    return ModifiedScaffold(
       appBar: ModifiedAppBar(
         titleInterceptor: (context, title) => Row(
           children: [

@@ -9,6 +9,7 @@ import '../../../controller/help_chat_controller.dart';
 import '../../../misc/getextended/get_extended.dart';
 import '../../../misc/getextended/get_restorable_route_future.dart';
 import '../../../misc/manager/controller_manager.dart';
+import '../../widget/modified_scaffold.dart';
 import '../../widget/modified_tab_bar.dart';
 import '../../widget/modifiedappbar/modified_app_bar.dart';
 import '../getx_page.dart';
@@ -205,7 +206,7 @@ class _StatefulChatHistoryControllerMediatorWidgetState extends State<_StatefulC
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ModifiedScaffold(
       appBar: ModifiedAppBar(
         titleInterceptor: (context, title) => Row(
           children: [

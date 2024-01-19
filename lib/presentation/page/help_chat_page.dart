@@ -50,6 +50,7 @@ import '../../misc/response_wrapper.dart';
 import '../../misc/routeargument/help_chat_route_argument.dart';
 import '../widget/colorful_chip_tab_bar.dart';
 import '../widget/modified_loading_indicator.dart';
+import '../widget/modified_scaffold.dart';
 import '../widget/modified_shimmer.dart';
 import '../widget/modified_svg_picture.dart';
 import '../widget/tap_area.dart';
@@ -81,10 +82,8 @@ class HelpChatPage extends RestorableGetxPage<_HelpChatPageRestoration> {
 
   @override
   Widget buildPage(BuildContext context) {
-    return Scaffold(
-      body: StatefulHelpChatControllerMediatorWidget(
-        helpChatController: _helpChatController.controller,
-      ),
+    return StatefulHelpChatControllerMediatorWidget(
+      helpChatController: _helpChatController.controller,
     );
   }
 }
@@ -348,7 +347,7 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<StatefulHelpC
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ModifiedScaffold(
       appBar: widget.withAppBar ? ModifiedAppBar(
         titleInterceptor: (context, title) => Row(
           children: [

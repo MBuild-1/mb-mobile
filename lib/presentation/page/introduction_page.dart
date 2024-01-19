@@ -17,6 +17,7 @@ import '../../misc/page_restoration_helper.dart';
 import '../../misc/pageviewchildrenbuilder/introduction_page_view_children_builder.dart';
 import '../../misc/pageviewchildrenbuilder/page_view_children_builder.dart';
 import 'package:preload_page_view/preload_page_view.dart';
+import '../widget/modified_scaffold.dart';
 import '../widget/preload_page_controller_smooth_page_indicator.dart';
 import '../widget/rx_consumer.dart';
 import 'getx_page.dart';
@@ -38,7 +39,7 @@ class IntroductionPage extends RestorableGetxPage<_IntroductionPageRestoration> 
 
   @override
   Widget buildPage(BuildContext context) {
-    return Scaffold(
+    return ModifiedScaffold(
       appBar: null,
       body: SafeArea(
         child: RxConsumer<PageViewControllerState>(
