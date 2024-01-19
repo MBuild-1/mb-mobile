@@ -40,6 +40,8 @@ PODS:
   - DKPhotoGallery/Resource (0.0.17):
     - SDWebImage
     - SwiftyGif
+  - document_file_save_plus (0.0.1):
+    - Flutter
   - file_picker (0.0.1):
     - DKImagePickerController/PhotoGallery
     - Flutter
@@ -52,7 +54,7 @@ PODS:
     - FirebaseCoreInternal (~> 10.0)
     - GoogleUtilities/Environment (~> 7.8)
     - GoogleUtilities/Logger (~> 7.8)
-  - FirebaseCoreInternal (10.18.0):
+  - FirebaseCoreInternal (10.20.0):
     - "GoogleUtilities/NSData+zlib (~> 7.8)"
   - Flutter (1.0.0)
   - flutter_inappwebview (0.0.1):
@@ -170,9 +172,9 @@ PODS:
   - PusherSwift (10.1.4):
     - NWWebSocket (~> 0.5.3)
     - TweetNacl (~> 1.0.0)
-  - SDWebImage (5.18.5):
-    - SDWebImage/Core (= 5.18.5)
-  - SDWebImage/Core (5.18.5)
+  - SDWebImage (5.18.10):
+    - SDWebImage/Core (= 5.18.10)
+  - SDWebImage/Core (5.18.10)
   - share_plus (0.0.1):
     - Flutter
   - sqflite (0.0.2):
@@ -181,8 +183,10 @@ PODS:
   - SwiftyGif (5.4.4)
   - syncfusion_flutter_pdfviewer (0.0.1):
     - Flutter
-  - Toast (4.0.0)
+  - Toast (4.1.0)
   - TweetNacl (1.0.2)
+  - uni_links (0.0.1):
+    - Flutter
   - url_launcher_ios (0.0.1):
     - Flutter
   - video_player_avfoundation (0.0.1):
@@ -198,6 +202,7 @@ PODS:
 DEPENDENCIES:
   - audio_session (from `.symlinks/plugins/audio_session/ios`)
   - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
+  - document_file_save_plus (from `.symlinks/plugins/document_file_save_plus/ios`)
   - file_picker (from `.symlinks/plugins/file_picker/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - Flutter (from `Flutter`)
@@ -220,6 +225,7 @@ DEPENDENCIES:
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
   - sqflite (from `.symlinks/plugins/sqflite/ios`)
   - syncfusion_flutter_pdfviewer (from `.symlinks/plugins/syncfusion_flutter_pdfviewer/ios`)
+  - uni_links (from `.symlinks/plugins/uni_links/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
   - video_player_avfoundation (from `.symlinks/plugins/video_player_avfoundation/ios`)
   - video_thumbnail (from `.symlinks/plugins/video_thumbnail/ios`)
@@ -255,6 +261,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/audio_session/ios"
   device_info_plus:
     :path: ".symlinks/plugins/device_info_plus/ios"
+  document_file_save_plus:
+    :path: ".symlinks/plugins/document_file_save_plus/ios"
   file_picker:
     :path: ".symlinks/plugins/file_picker/ios"
   firebase_core:
@@ -297,6 +305,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/sqflite/ios"
   syncfusion_flutter_pdfviewer:
     :path: ".symlinks/plugins/syncfusion_flutter_pdfviewer/ios"
+  uni_links:
+    :path: ".symlinks/plugins/uni_links/ios"
   url_launcher_ios:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
   video_player_avfoundation:
@@ -314,11 +324,12 @@ SPEC CHECKSUMS:
   device_info_plus: e5c5da33f982a436e103237c0c85f9031142abed
   DKImagePickerController: b512c28220a2b8ac7419f21c491fc8534b7601ac
   DKPhotoGallery: fdfad5125a9fdda9cc57df834d49df790dbb4179
+  document_file_save_plus: 4ee6d2721c4904010bb43b5fa85b83394c1b1fc7
   file_picker: ce3938a0df3cc1ef404671531facef740d03f920
   Firebase: 0219acf760880eeec8ce479895bd7767466d9f81
   firebase_core: 18d44f087248303a4a8f05d0099a000c46e3c77a
   FirebaseCore: e317665b9d744727a97e623edbbed009320afdd7
-  FirebaseCoreInternal: 8eb002e564b533bdcf1ba011f33f2b5c10e2ed4a
+  FirebaseCoreInternal: efeeb171ac02d623bdaefe121539939821e10811
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_inappwebview: 3d32228f1304635e7c028b0d4252937730bbc6cf
   flutter_web_browser: 7bccaafbb0c5b8862afe7bcd158f15557109f61f
@@ -346,19 +357,20 @@ SPEC CHECKSUMS:
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
   pusher_channels_flutter: 2bc74ab92bacd0ac436e10fa326125408d3c7598
   PusherSwift: 671c49e9c5441e30960d2e0282a879b2f8c80bcb
-  SDWebImage: 7ac2b7ddc5e8484c79aa90fc4e30b149d6a2c88f
+  SDWebImage: fc8f2d48bbfd72ef39d70e981bd24a3f3be53fec
   share_plus: 056a1e8ac890df3e33cb503afffaf1e9b4fbae68
   sqflite: 6d358c025f5b867b29ed92fc697fd34924e11904
   SwiftyGif: 93a1cc87bf3a51916001cf8f3d63835fb64c819f
   syncfusion_flutter_pdfviewer: bb9998884b864cfedf72628df3503bdf57e397c0
-  Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
+  Toast: ec33c32b8688982cecc6348adeae667c1b9938da
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
+  uni_links: d97da20c7701486ba192624d99bffaaffcfc298a
   url_launcher_ios: 839c58cdb4279282219f5e248c3321761ff3c4de
   video_player_avfoundation: e489aac24ef5cf7af82702979ed16f2a5ef84cff
   video_thumbnail: c4e2a3c539e247d4de13cd545344fd2d26ffafd1
   wakelock: d0fc7c864128eac40eba1617cb5264d9c940b46f
   webview_flutter_wkwebview: b7e70ef1ddded7e69c796c7390ee74180182971f
 
-PODFILE CHECKSUM: b42d549a6a93110023ab07cd3a70c3a913c124f6
+PODFILE CHECKSUM: e8c44481d0ca6cd4660dbc856f433ed0d39b8e2c
 
 COCOAPODS: 1.14.3
