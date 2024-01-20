@@ -65,6 +65,7 @@ class DefaultFirebaseOptions {
     projectId: 'webmasterbagasi',
     databaseURL: 'https://webmasterbagasi-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'webmasterbagasi.appspot.com',
+    androidClientId: '151553594780-mm0qshlliqr0q4qhhhimi0rudm510aa2.apps.googleusercontent.com',
     iosClientId: '151553594780-8mgsd886fsecg8pu6qv7vrnlhh1vgvg4.apps.googleusercontent.com',
     iosBundleId: 'com.masterbagasi.masterbagasi',
   );

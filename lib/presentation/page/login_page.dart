@@ -437,7 +437,7 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
                   onPressed: widget.loginController.login,
                   text: "Login".tr,
                 ),
-                if (Platform.isAndroid) ...[
+                if (Platform.isAndroid || Platform.isIOS) ...[
                   SizedBox(height: 3.h),
                   Row(
                     children: [

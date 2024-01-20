@@ -839,7 +839,7 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
                       }
                     }
                   ),
-                  if (Platform.isAndroid) ...[
+                  if (Platform.isAndroid || Platform.isIOS) ...[
                     SizedBox(height: 3.h),
                     Row(
                       children: [
