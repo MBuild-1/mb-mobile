@@ -19,6 +19,7 @@ class CombinedOrder {
   DateTime? takeoverAt;
   int review;
   int isRemoteArea;
+  int isBucket;
   Coupon? coupon;
   User user;
   OrderProduct orderProduct;
@@ -41,6 +42,7 @@ class CombinedOrder {
     this.takeoverAt,
     required this.review,
     required this.isRemoteArea,
+    required this.isBucket,
     this.coupon,
     required this.user,
     required this.orderProduct,

@@ -69,7 +69,37 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
     ListItemControllerState oldItemType = oldItemTypeWrapper.listItemControllerState;
     if (oldItemType is OrderDetailContainerListItemControllerState) {
       List<ListItemControllerState> newListItemControllerState = [];
-      newListItemControllerState.add(SpacingListItemControllerState());
+      Order order = oldItemType.order();
+      if (order.combinedOrder.isBucket == 1) {
+        newListItemControllerState.add(
+          WidgetSubstitutionListItemControllerState(
+            widgetSubstitution: (BuildContext context, int index) {
+              return Container(
+                padding: EdgeInsets.symmetric(horizontal: padding(), vertical: 8.0),
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Shared Cart".tr,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold
+                      )
+                    ),
+                  ],
+                ),
+              );
+            }
+          )
+        );
+      } else {
+        newListItemControllerState.add(SpacingListItemControllerState());
+      }
       _interceptForBasicOrderInformation(i, oldItemType, oldItemTypeList, newListItemControllerState);
       _interceptForOrderPayment(i, oldItemType, oldItemTypeList, newListItemControllerState);
       newListItemControllerState.add(SpacingListItemControllerState());
@@ -84,7 +114,7 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
       _interceptForOtherProductInformation(i, oldItemType, oldItemTypeList, newListItemControllerState);
       newListItemControllerState.add(SpacingListItemControllerState());
       _interceptForTransactionOrderSummaryInformation(i, oldItemType, oldItemTypeList, newListItemControllerState);
-      if (oldItemType.order().combinedOrder.invoiceId.isNotEmptyString) {
+      if (order.combinedOrder.invoiceId.isNotEmptyString) {
         newListItemControllerState.add(SpacingListItemControllerState());
         _interceptForTransactionOrderInvoiceInformation(i, oldItemType, oldItemTypeList, newListItemControllerState);
       }

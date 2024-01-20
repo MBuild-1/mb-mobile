@@ -93,6 +93,7 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
       takeoverAt: response["takeover_at"] != null ? ResponseWrapper(response["takeover_at"]).mapFromResponseToDateTime() : null,
       review: response["review"],
       isRemoteArea: response["is_remote_area"] ?? 0,
+      isBucket: response["is_bucket"] ?? 0,
       coupon: response["coupon"] != null ? ResponseWrapper(response["coupon"]).mapFromResponseToCoupon() : null,
       user: ResponseWrapper(response["user"]).mapFromResponseToUser(),
       orderProduct: ResponseWrapper(response["order_product"]).mapFromResponseToOrderProduct(),

@@ -43,108 +43,156 @@ abstract class OrderItem extends StatelessWidget {
         child: InkWell(
           onTap: () => PageRestorationHelper.toOrderDetailPage(context, order.id),
           borderRadius: BorderRadius.circular(16.0),
-          child: Container(
-            padding: const EdgeInsets.all(16.0),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey),
-              borderRadius: BorderRadius.circular(16.0)
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    ModifiedSvgPicture.asset(Constant.vectorOrderBag, overrideDefaultColorWithSingleColor: false),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text("Shopping".tr, style: const TextStyle(fontWeight: FontWeight.bold)),
-                          Text(DateUtil.standardDateFormat7.format(order.createdAt))
-                        ]
-                      ),
-                    ),
-                    ColorfulChip(
-                      text: order.status,
-                      color: Colors.grey.shade300
-                    ),
-                  ]
-                ),
-                const SizedBox(height: 12),
-                const ModifiedDivider(),
-                const SizedBox(height: 12),
-                ..._allOrderProductDetailWidget(order.orderProduct.orderProductDetailList),
-                const SizedBox(height: 15),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text("Shopping Total".tr),
-                          const SizedBox(height: 3),
-                          Text(
-                            order.orderProduct.orderDetail.totalPrice.toRupiah(withFreeTextIfZero: false),
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 17
+          child: Builder(
+            builder: (context) {
+              Widget result = Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            ModifiedSvgPicture.asset(Constant.vectorOrderBag, overrideDefaultColorWithSingleColor: false),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text("Shopping".tr, style: const TextStyle(fontWeight: FontWeight.bold)),
+                                  Text(DateUtil.standardDateFormat7.format(order.createdAt))
+                                ]
+                              ),
                             ),
-                          )
-                        ]
+                            ColorfulChip(
+                              text: order.status,
+                              color: Colors.grey.shade300
+                            ),
+                          ]
+                        ),
+                        const SizedBox(height: 12),
+                        const ModifiedDivider(),
+                        const SizedBox(height: 12),
+                        ..._allOrderProductDetailWidget(order.orderProduct.orderProductDetailList),
+                        const SizedBox(height: 15),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text("Shopping Total".tr),
+                                  const SizedBox(height: 3),
+                                  Text(
+                                    order.orderProduct.orderDetail.totalPrice.toRupiah(withFreeTextIfZero: false),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 17
+                                    ),
+                                  )
+                                ]
+                              ),
+                            ),
+                            Builder(
+                              builder: (context) {
+                                List<Widget> rowWidget = [];
+                                void addRowWidget(Widget newWidget) {
+                                  rowWidget.addAll([
+                                    if (rowWidget.isNotEmpty) ...[
+                                      const SizedBox(width: 10),
+                                    ],
+                                    newWidget
+                                  ]);
+                                }
+                                bool showPayButton = false;
+                                if (order.orderProduct.orderDetail.status == "pending") {
+                                  showPayButton = true;
+                                }
+                                if (showPayButton) {
+                                  addRowWidget(
+                                    SizedOutlineGradientButton(
+                                      onPressed: () => PageRestorationHelper.toOrderDetailPage(context, order.id),
+                                      text: "Pay".tr,
+                                      customPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                                      outlineGradientButtonType: OutlineGradientButtonType.solid,
+                                      outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
+                                    )
+                                  );
+                                }
+                                if (order.status.toLowerCase() == "sedang dikirim") {
+                                  addRowWidget(
+                                    SizedOutlineGradientButton(
+                                      onPressed:() => onConfirmArrived(order),
+                                      text: "Confirm Arrived".tr,
+                                      customPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                                      outlineGradientButtonType: OutlineGradientButtonType.solid,
+                                      outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
+                                    )
+                                  );
+                                }
+                                return Row(
+                                  children: rowWidget
+                                );
+                              }
+                            ),
+                          ],
+                        ),
+                        OrderConclusionItem(
+                          order: order,
+                          onBuyAgainTap: onBuyAgainTap,
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (order.isBucket == 1) ...[
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primary,
                       ),
+                      child: Row(
+                        children: [
+                          Text(
+                            "Shared Cart".tr,
+                            style: const TextStyle(color: Colors.white)
+                          ),
+                        ],
+                      ),
+                    )
+                  ]
+                ],
+              );
+              return Stack(
+                children: [
+                  Container(
+                    clipBehavior: Clip.antiAlias,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16.0),
                     ),
-                    Builder(
-                      builder: (context) {
-                        List<Widget> rowWidget = [];
-                        void addRowWidget(Widget newWidget) {
-                          rowWidget.addAll([
-                            if (rowWidget.isNotEmpty) ...[
-                              const SizedBox(width: 10),
-                            ],
-                            newWidget
-                          ]);
-                        }
-                        bool showPayButton = false;
-                        if (order.orderProduct.orderDetail.status == "pending") {
-                          showPayButton = true;
-                        }
-                        if (showPayButton) {
-                          addRowWidget(
-                            SizedOutlineGradientButton(
-                              onPressed: () => PageRestorationHelper.toOrderDetailPage(context, order.id),
-                              text: "Pay".tr,
-                              customPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                              outlineGradientButtonType: OutlineGradientButtonType.solid,
-                              outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
-                            )
-                          );
-                        }
-                        if (order.status.toLowerCase() == "sedang dikirim") {
-                          addRowWidget(
-                            SizedOutlineGradientButton(
-                              onPressed:() => onConfirmArrived(order),
-                              text: "Confirm Arrived".tr,
-                              customPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                              outlineGradientButtonType: OutlineGradientButtonType.solid,
-                              outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
-                            )
-                          );
-                        }
-                        return Row(
-                          children: rowWidget
-                        );
-                      }
+                    child: result,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.grey,
+                        strokeAlign: BorderSide.strokeAlignOutside,
+                      ),
+                      borderRadius: BorderRadius.circular(16.0),
                     ),
-                  ],
-                ),
-                OrderConclusionItem(
-                  order: order,
-                  onBuyAgainTap: onBuyAgainTap,
-                )
-              ],
-            )
+                    child: Visibility(
+                      visible: false,
+                      maintainState: true,
+                      maintainAnimation: true,
+                      maintainSize: true,
+                      child: result,
+                    )
+                  )
+                ],
+              );
+            }
           )
         )
       )
