@@ -1,8 +1,11 @@
 import 'dart:async';
 
+import 'package:collection/collection.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:masterbagasi/misc/controllerstate/listitemcontrollerstate/divider_list_item_controller_state.dart';
+import 'package:masterbagasi/misc/ext/future_ext.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/number_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
@@ -40,17 +43,24 @@ import '../../misc/constant.dart';
 import '../../misc/controllercontentdelegate/shared_cart_controller_content_delegate.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/cart_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/cart_list_item_controller_state.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/separatedcartcontainerlistitemcontrollerstate/cart_separated_container_list_item_controller_state.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/separatedcartcontainerlistitemcontrollerstate/separated_cart_container_list_item_controller_state.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/separatedcartcontainerlistitemcontrollerstate/warehouse_separated_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/vertical_cart_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/page_keyed_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
+import '../../misc/date_util.dart';
 import '../../misc/dialog_helper.dart';
 import '../../misc/error/cart_empty_error.dart';
+import '../../misc/error/warehouse_empty_error.dart';
 import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
 import '../../misc/itemtypelistsubinterceptor/cart_item_type_list_sub_interceptor.dart';
+import '../../misc/itemtypelistsubinterceptor/separatedcartitemtypelistsubinterceptor/cart_separated_cart_item_type_list_sub_interceptor.dart';
+import '../../misc/itemtypelistsubinterceptor/separatedcartitemtypelistsubinterceptor/warehouse_separated_cart_item_type_list_sub_interceptor.dart';
 import '../../misc/list_item_controller_state_helper.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/controller_manager.dart';
@@ -65,18 +75,18 @@ import '../notifier/component_notifier.dart';
 import '../notifier/notification_notifier.dart';
 import '../notifier/product_notifier.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
+import '../widget/horizontal_justified_title_and_description.dart';
+import '../widget/modified_divider.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modified_scaffold.dart';
-import '../widget/modified_svg_picture.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import '../widget/sharedcart/shared_cart_indicator.dart';
-import '../widget/tap_area.dart';
+import '../widget/solidtab/solid_tab.dart';
+import '../widget/solidtab/solid_tab_group.dart';
 import 'delivery_page.dart';
 import 'getx_page.dart';
-import 'modaldialogpage/add_cart_note_modal_dialog_page.dart';
-import 'modaldialogpage/cart_summary_cart_modal_dialog_page.dart';
+import 'modaldialogpage/add_additional_item_modal_dialog_page.dart';
 import 'shared_cart_page.dart';
-import 'dart:math' as math;
 
 class CartPage extends RestorableGetxPage<_CartPageRestoration> {
   late final ControllerMember<CartController> _cartController = ControllerMember<CartController>().addToControllerManager(controllerManager);
@@ -219,21 +229,51 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
   late final ScrollController _cartScrollController;
   late final ModifiedPagingController<int, ListItemControllerState> _cartListItemPagingController;
   late final PagingControllerState<int, ListItemControllerState> _cartListItemPagingControllerState;
+  late final ScrollController _warehouseScrollController;
+  late final ModifiedPagingController<int, ListItemControllerState> _warehouseListItemPagingController;
+  late final PagingControllerState<int, ListItemControllerState> _warehouseListItemPagingControllerState;
   int _cartCount = 0;
   late int _selectedCartCount = 0;
   late double _selectedCartShoppingTotal = 0;
   final List<AdditionalItem> _additionalItemList = [];
   List<Cart> _selectedCartList = [];
+  int _additionalItemCount = 0;
+  late int _selectedAdditionalItemCount = 0;
+  late double _selectedAdditionalItemTotal = 0;
+  List<AdditionalItem> _selectedAdditionalItemList = [];
   bool _isLoadingUpdateCartQuantity = false;
-  final CartContainerInterceptingActionListItemControllerState _cartContainerInterceptingActionListItemControllerState = DefaultCartContainerInterceptingActionListItemControllerState();
+  List<WarehouseAdditionalItemStateValue>? _lastWarehouseAdditionalItemStateValueList;
+  final CartSeparatedCartContainerInterceptingActionListItemControllerState _cartSeparatedCartContainerInterceptingActionListItemControllerState = DefaultCartSeparatedCartContainerInterceptingActionListItemControllerState();
+  final WarehouseSeparatedCartContainerStateStorageListItemControllerState _warehouseSeparatedCartContainerStateStorageListItemControllerState = DefaultWarehouseSeparatedCartContainerStateStorageListItemControllerState();
+  final WarehouseSeparatedCartContainerInterceptingActionListItemControllerState _warehouseSeparatedCartContainerInterceptingActionListItemControllerState = DefaultWarehouseSeparatedCartContainerInterceptingActionListItemControllerState();
   final Map<String, Timer> _updateCartQuantityTimerMap = {};
   final Map<String, CancelToken> _updateCartQuantityCancelTokenMap = {};
   final Map<String, bool> _isLoadingUpdatingCartQuantityMap = {};
   late final ProductNotifier _productNotifier;
+  final List<SolidTabValue> _solidTabValueList = [
+    SolidTabValue(
+      text: MultiLanguageString(
+        TrMultiLanguageStringValue(text: "Cart")
+      ),
+      value: "cart"
+    ),
+    SolidTabValue(
+      text: MultiLanguageString(
+        TrMultiLanguageStringValue(text: "Warehouse")
+      ),
+      value: "warehouse"
+    )
+  ];
+  int _selectedSolidTabIndex = 0;
+  String _selectedSolidTabValue = "";
+  bool _isCartLoading = false;
+  bool _isWarehouseLoading = false;
 
   @override
   void initState() {
     super.initState();
+    _selectedSolidTabValue = _solidTabValueList[0].value;
+    _selectedSolidTabIndex = _getSelectedSolidTabIndexBasedSelectedSolidTabValue(_selectedSolidTabValue);
     _productNotifier = Provider.of<ProductNotifier>(context, listen: false);
     _cartScrollController = ScrollController();
     _cartListItemPagingController = ModifiedPagingController<int, ListItemControllerState>(
@@ -252,6 +292,23 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
       onPageKeyNext: (pageKey) => pageKey + 1
     );
     _cartListItemPagingControllerState.isPagingControllerExist = true;
+    _warehouseScrollController = ScrollController();
+    _warehouseListItemPagingController = ModifiedPagingController<int, ListItemControllerState>(
+      firstPageKey: 1,
+      // ignore: invalid_use_of_protected_member
+      apiRequestManager: widget.cartController.apiRequestManager,
+      additionalPagingResultParameterChecker: Injector.locator<CartAdditionalPagingResultParameterChecker>()
+    );
+    _warehouseListItemPagingControllerState = PagingControllerState(
+      pagingController: _warehouseListItemPagingController,
+      scrollController: _warehouseScrollController,
+      isPagingControllerExist: false
+    );
+    _warehouseListItemPagingControllerState.pagingController.addPageRequestListenerWithItemListForLoadDataResult(
+      listener: _warehouseListItemPagingControllerStateListener,
+      onPageKeyNext: (pageKey) => pageKey + 1
+    );
+    _warehouseListItemPagingControllerState.isPagingControllerExist = true;
   }
 
   void _updateCartInformation() {
@@ -260,8 +317,14 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
       SupportCart supportCart = cart.supportCart;
       _selectedCartShoppingTotal += supportCart.cartPrice * cart.quantity.toDouble();
     }
-    if (_cartContainerInterceptingActionListItemControllerState.getCartCount != null) {
-      _cartCount = _cartContainerInterceptingActionListItemControllerState.getCartCount!();
+    if (_cartSeparatedCartContainerInterceptingActionListItemControllerState.getCartCount != null) {
+      _cartCount = _cartSeparatedCartContainerInterceptingActionListItemControllerState.getCartCount!();
+    }
+  }
+
+  void _updateWarehouseInformation() {
+    if (_warehouseSeparatedCartContainerInterceptingActionListItemControllerState.getWarehouseAdditionalItemCount != null) {
+      _additionalItemCount = _warehouseSeparatedCartContainerInterceptingActionListItemControllerState.getWarehouseAdditionalItemCount!();
     }
   }
 
@@ -277,6 +340,7 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
       Provider.of<ComponentNotifier>(context, listen: false).updateCart();
     });
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      setState(() => _isCartLoading = true);
       _productNotifier.loadCartListFromData(IsLoadingLoadDataResult<List<Cart>>());
     });
     await Future.delayed(const Duration(milliseconds: 50));
@@ -284,6 +348,7 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
       CartListParameter()
     );
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      setState(() => _isCartLoading = false);
       _productNotifier.loadCartListFromData(cartListLoadDataResult);
     });
     return cartListLoadDataResult.map<PagingResult<ListItemControllerState>>((cartList) {
@@ -342,13 +407,9 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
       ).toList();
       return PagingDataResult<ListItemControllerState>(
         itemList: [
-          CartContainerListItemControllerState(
+          CartSeparatedCartContainerListItemControllerState(
             cartListItemControllerStateList: newCartListItemControllerStateList,
             onUpdateState: () => setState(() {}),
-            onScrollToAdditionalItemsSection: () => _cartScrollController.jumpTo(
-              _cartScrollController.position.maxScrollExtent
-            ),
-            additionalItemList: _additionalItemList,
             onChangeSelected: (cartList) {
               setState(() {
                 _selectedCartList = cartList;
@@ -362,14 +423,8 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
                 _cartListItemPagingController.errorFirstPageOuterProcess = CartEmptyError();
               }
             },
-            cartContainerStateStorageListItemControllerState: DefaultCartContainerStateStorageListItemControllerState(),
-            cartContainerActionListItemControllerState: _DefaultCartContainerActionListItemControllerState(
-              getAdditionalItemList: (additionalItemListParameter) => widget.cartController.getAdditionalItem(additionalItemListParameter),
-              addAdditionalItem: (addAdditionalItemParameter) => widget.cartController.addAdditionalItem(addAdditionalItemParameter),
-              changeAdditionalItem: (changeAdditionalItemParameter) => widget.cartController.changeAdditionalItem(changeAdditionalItemParameter),
-              removeAdditionalItem: (removeAdditionalItemParameter) => widget.cartController.removeAdditionalItem(removeAdditionalItemParameter),
-            ),
-            cartContainerInterceptingActionListItemControllerState: _cartContainerInterceptingActionListItemControllerState
+            cartSeparatedCartContainerStateStorageListItemControllerState: DefaultCartSeparatedCartContainerStateStorageListItemControllerState(),
+            cartSeparatedCartContainerInterceptingActionListItemControllerState: _cartSeparatedCartContainerInterceptingActionListItemControllerState
           )
         ],
         page: 1,
@@ -377,6 +432,85 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
         totalItem: 1
       );
     });
+  }
+
+  Future<LoadDataResult<PagingResult<ListItemControllerState>>> _warehouseListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? warehouseListItemControllerStateList) async {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      setState(() => _isWarehouseLoading = true);
+    });
+    LoadDataResult<List<AdditionalItem>> additionalListLoadDataResult = await widget.cartController.getAdditionalItem(
+      AdditionalItemListParameter()
+    );
+    if (additionalListLoadDataResult.isFailed) {
+      dynamic e = additionalListLoadDataResult.resultIfFailed;
+      if (e is WarehouseEmptyError) {
+        _selectedAdditionalItemList = [];
+        _selectedAdditionalItemCount = _selectedAdditionalItemList.length;
+        _selectedAdditionalItemTotal = 0;
+      }
+    }
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      setState(() => _isWarehouseLoading = false);
+    });
+    return additionalListLoadDataResult.map<PagingResult<ListItemControllerState>>((additionalItemList) {
+      List<WarehouseAdditionalItemStateValue> warehouseAdditionalItemStateValueList = additionalItemList.map<WarehouseAdditionalItemStateValue>(
+        (additionalItem) => WarehouseAdditionalItemStateValue(
+          additionalItem: additionalItem,
+          isSelected: () {
+            if (_lastWarehouseAdditionalItemStateValueList == null) {
+              return false;
+            }
+            Iterable<WarehouseAdditionalItemStateValue> warehouseAdditionalItemStateValueIterable = _lastWarehouseAdditionalItemStateValueList!.where(
+              (lastAdditionalItemStateValue) => additionalItem.id == lastAdditionalItemStateValue.additionalItem.id
+            );
+            if (warehouseAdditionalItemStateValueIterable.isNotEmpty) {
+              return warehouseAdditionalItemStateValueIterable.first.isSelected;
+            }
+            return false;
+          }()
+        )
+      ).toList();
+      _lastWarehouseAdditionalItemStateValueList = List.of(warehouseAdditionalItemStateValueList);
+      return PagingDataResult<ListItemControllerState>(
+        itemList: [
+          WarehouseSeparatedCartContainerListItemControllerState(
+            warehouseAdditionalItemStateValueList: warehouseAdditionalItemStateValueList,
+            onUpdateState: () => setState(() {}),
+            onChangeSelected: (additionalItemList) {
+              setState(() {
+                _selectedAdditionalItemList = additionalItemList;
+                _selectedAdditionalItemCount = additionalItemList.length;
+                _updateWarehouseInformation();
+              });
+            },
+            onWarehouseAdditionalItemChange: () {
+              setState(() => _updateWarehouseInformation());
+              if (_additionalItemCount == 0) {
+                _warehouseListItemPagingController.errorFirstPageOuterProcess = WarehouseEmptyError();
+              }
+            },
+            warehouseSeparatedCartContainerStateStorageListItemControllerState: _warehouseSeparatedCartContainerStateStorageListItemControllerState,
+            warehouseSeparatedCartContainerInterceptingActionListItemControllerState: _warehouseSeparatedCartContainerInterceptingActionListItemControllerState,
+            onRemoveWarehouseAdditionalItem: widget.cartController.removeWarehouseAdditionalItem,
+            onLoadWarehouseAdditionalItem: _warehouseListItemPagingController.refresh,
+          )
+        ],
+        page: 1,
+        totalPage: 1,
+        totalItem: 1
+      );
+    });
+  }
+
+  int _getSelectedSolidTabIndexBasedSelectedSolidTabValue(String selectedValue) {
+    int i = 0;
+    while (i < _solidTabValueList.length) {
+      if (_solidTabValueList[i].value == selectedValue) {
+        return i;
+      }
+      i++;
+    }
+    return -1;
   }
 
   @override
@@ -401,8 +535,8 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
           e: e
         ),
         onRemoveCartRequestProcessSuccessCallback: (cart) async {
-          if (_cartContainerInterceptingActionListItemControllerState.removeCart != null) {
-            _cartContainerInterceptingActionListItemControllerState.removeCart!(cart);
+          if (_cartSeparatedCartContainerInterceptingActionListItemControllerState.removeCart != null) {
+            _cartSeparatedCartContainerInterceptingActionListItemControllerState.removeCart!(cart);
             Provider.of<NotificationNotifier>(context, listen: false).loadCartLoadDataResult();
             Provider.of<ComponentNotifier>(context, listen: false).updateCart();
             Provider.of<ProductNotifier>(context, listen: false).loadCartList();
@@ -425,6 +559,13 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
           _isLoadingUpdatingCartQuantityMap.remove(cart.id);
           _updateIsLoadingUpdateCartQuantity();
         },
+        onShowRemoveWarehouseRequestProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
+        onRemoveWarehouseRequestProcessSuccessCallback: () async => _warehouseListItemPagingController.refresh(),
+        onShowRemoveWarehouseRequestProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
+          context: context,
+          errorProvider: Injector.locator<ErrorProvider>(),
+          e: e
+        )
       )
     );
     widget.cartController.sharedCartControllerContentDelegate.setSharedCartDelegate(
@@ -444,16 +585,62 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
       body: SafeArea(
         child: Column(
           children: [
-            Expanded(
-              child: ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
-                pagingControllerState: _cartListItemPagingControllerState,
-                onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
-                  pagingControllerState: pagingControllerState!
-                ),
-                pullToRefresh: true
-              ),
+            SolidTabGroup(
+              solidTabValueList: _solidTabValueList,
+              selectedValue: _selectedSolidTabValue,
+              onSelectTab: (value) {
+                setState(() {
+                  _selectedSolidTabValue = value;
+                  _selectedSolidTabIndex = _getSelectedSolidTabIndexBasedSelectedSolidTabValue(_selectedSolidTabValue);
+                });
+              }
             ),
-            if (_cartCount > 0)
+            const ModifiedDivider(),
+            Expanded(
+              child: IndexedStack(
+                index: _selectedSolidTabIndex,
+                children: [
+                  ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
+                    pagingControllerState: _cartListItemPagingControllerState,
+                    onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
+                      pagingControllerState: pagingControllerState!
+                    ),
+                    pullToRefresh: true
+                  ),
+                  Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child:  SizedOutlineGradientButton(
+                          onPressed: () async {
+                            dynamic result = await DialogHelper.showModalDialogPage<String, String>(
+                              context: context,
+                              modalDialogPageBuilder: (context, parameter) => AddAdditionalItemModalDialogPage(),
+                            );
+                            if (result != null) {
+                              _warehouseListItemPagingController.refresh();
+                            }
+                          },
+                          text: "+ ${"Add Item".tr}",
+                          outlineGradientButtonType: OutlineGradientButtonType.solid,
+                          outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
+                        ),
+                      ),
+                      Expanded(
+                        child: ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
+                          pagingControllerState: _warehouseListItemPagingControllerState,
+                          onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
+                            pagingControllerState: pagingControllerState!
+                          ),
+                          pullToRefresh: true
+                        ),
+                      ),
+                    ],
+                  ),
+                ]
+              )
+            ),
+            if (!_isCartLoading && !_isWarehouseLoading)
               Container(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -461,6 +648,34 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
                   children: [
                     SharedCartIndicator(
                       onTap: () => widget.cartController.sharedCartControllerContentDelegate.checkSharedCart(),
+                    ),
+                    const SizedBox(height: 16),
+                    HorizontalJustifiedTitleAndDescription(
+                      title: MultiLanguageString({
+                        Constant.textEnUsLanguageKey: "Selected cart",
+                        Constant.textInIdLanguageKey: "Keranjang yang dipilih"
+                      }).toEmptyStringNonNull,
+                      description: "$_selectedCartCount item",
+                      titleWidgetInterceptor: (title, widget) => Text(
+                        title.toStringNonNull,
+                      ),
+                      descriptionWidgetInterceptor: (description, widget) => Text(
+                        description.toStringNonNull,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    HorizontalJustifiedTitleAndDescription(
+                      title: MultiLanguageString({
+                        Constant.textEnUsLanguageKey: "Selected warehouse",
+                        Constant.textInIdLanguageKey: "Warehouse yang dipilih"
+                      }).toEmptyStringNonNull,
+                      description: "$_selectedAdditionalItemCount item",
+                      titleWidgetInterceptor: (title, widget) => Text(
+                        title.toStringNonNull,
+                      ),
+                      descriptionWidgetInterceptor: (description, widget) => Text(
+                        description.toStringNonNull,
+                      ),
                     ),
                     const SizedBox(height: 16),
                     Row(
@@ -484,25 +699,30 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
                         const Expanded(
                           child: SizedBox()
                         ),
-                        SizedOutlineGradientButton(
-                          onPressed: _selectedCartCount == 0 ? null : (
-                            _isLoadingUpdateCartQuantity ? null : () {
-                              PageRestorationHelper.toDeliveryPage(
-                                context, DeliveryPageParameter(
-                                  selectedCartIdList: _selectedCartList.map<List<String>>((cart) {
-                                    return <String>[cart.id, cart.quantity.toString()];
-                                  }).toList(),
-                                  selectedAdditionalItemIdList: _additionalItemList.map<String>((additionalItem) {
-                                    return additionalItem.id;
-                                  }).toList(),
-                                )
-                              );
-                            }
-                          ),
-                          width: 120,
-                          text: _isLoadingUpdateCartQuantity ? "${"Loading".tr}..." : "${"Checkout".tr} ($_selectedCartCount)",
-                          outlineGradientButtonType: OutlineGradientButtonType.solid,
-                          outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
+                        Builder(
+                          builder: (context) {
+                            int count = _selectedCartCount + _selectedAdditionalItemCount;
+                            return SizedOutlineGradientButton(
+                              onPressed: count == 0 ? null : (
+                                _isLoadingUpdateCartQuantity ? null : () {
+                                  PageRestorationHelper.toDeliveryPage(
+                                    context, DeliveryPageParameter(
+                                      selectedCartIdList: _selectedCartList.map<List<String>>((cart) {
+                                        return <String>[cart.id, cart.quantity.toString()];
+                                      }).toList(),
+                                      selectedAdditionalItemIdList: _selectedAdditionalItemList.map<String>((additionalItem) {
+                                        return additionalItem.id;
+                                      }).toList(),
+                                    )
+                                  );
+                                }
+                              ),
+                              width: 120,
+                              text: _isLoadingUpdateCartQuantity ? "${"Loading".tr}..." : "${"Checkout".tr} ($count)",
+                              outlineGradientButtonType: OutlineGradientButtonType.solid,
+                              outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
+                            );
+                          }
                         )
                       ],
                     )

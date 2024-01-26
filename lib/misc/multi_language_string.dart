@@ -1,6 +1,8 @@
 // ignore: depend_on_referenced_packages
 import 'package:collection/collection.dart';
+import 'package:get/get.dart';
 
+import 'error/message_error.dart';
 import 'response_translation_helper.dart';
 
 class MultiLanguageString {
@@ -10,7 +12,11 @@ class MultiLanguageString {
 
   @override
   String toString() {
-    return ResponseTranslationHelper.translateResponse(value).toString();
+    if (value is TrMultiLanguageStringValue) {
+      return (value as TrMultiLanguageStringValue).text.tr;
+    } else {
+      return ResponseTranslationHelper.translateResponse(value).toString();
+    }
   }
 
   @override
@@ -31,4 +37,12 @@ class MultiLanguageString {
 
   @override
   int get hashCode => value.hashCode;
+}
+
+class TrMultiLanguageStringValue {
+  final String text;
+
+  TrMultiLanguageStringValue({
+    required this.text
+  });
 }

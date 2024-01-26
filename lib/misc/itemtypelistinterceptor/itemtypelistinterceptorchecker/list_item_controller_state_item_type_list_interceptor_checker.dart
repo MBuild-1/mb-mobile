@@ -42,6 +42,8 @@ import '../../itemtypelistsubinterceptor/search_filter_item_type_list_sub_interc
 import '../../itemtypelistsubinterceptor/search_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/select_language_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/select_value_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/separatedcartitemtypelistsubinterceptor/cart_separated_cart_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/separatedcartitemtypelistsubinterceptor/warehouse_separated_cart_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/shimmer_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/stack_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/verticalgriditemtypelistsubinterceptor/vertical_grid_item_type_list_sub_interceptor.dart';
@@ -180,6 +182,16 @@ class ListItemControllerStateItemTypeInterceptorChecker extends ItemTypeListInte
       listItemControllerStateItemTypeInterceptorChecker: this
     ),
     CartItemTypeListSubInterceptor(
+      padding: padding,
+      itemSpacing: itemSpacing,
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
+    CartSeparatedCartItemTypeListSubInterceptor(
+      padding: padding,
+      itemSpacing: itemSpacing,
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
+    WarehouseSeparatedCartItemTypeListSubInterceptor(
       padding: padding,
       itemSpacing: itemSpacing,
       listItemControllerStateItemTypeInterceptorChecker: this

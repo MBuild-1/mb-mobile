@@ -13,6 +13,7 @@ import '../error/not_found_error.dart';
 import '../error/search_not_found_error.dart';
 import '../error/token_empty_error.dart';
 import '../error/validation_error.dart';
+import '../error/warehouse_empty_error.dart';
 import '../error_helper.dart';
 import '../multi_language_string.dart';
 import 'error_provider.dart';
@@ -45,6 +46,8 @@ class DefaultErrorProvider extends ErrorProvider {
       );
     } else if (e is CartEmptyError) {
       return _cartIsEmptyErrorProvider(null);
+    } else if (e is WarehouseEmptyError) {
+      return _warehouseIsEmptyErrorProvider(null);
     } else if (e is SearchNotFoundError) {
       return _searchNotFoundError();
     } else if (e is TokenEmptyError) {
@@ -76,7 +79,7 @@ class DefaultErrorProvider extends ErrorProvider {
       effectiveMessageMultiLanguageString = messageMultiLanguageString;
     } else {
       effectiveMessageMultiLanguageString = MultiLanguageString({
-        Constant.textEnUsLanguageKey: "Now cart is empty.",
+        Constant.textEnUsLanguageKey: "Now cart is empty. Please select the product first.",
         Constant.textInIdLanguageKey: "Untuk sekarang keranjangnya kosong."
       });
     }
@@ -85,6 +88,28 @@ class DefaultErrorProvider extends ErrorProvider {
         title: MultiLanguageString({
           Constant.textEnUsLanguageKey: "Cart Is Empty",
           Constant.textInIdLanguageKey: "Keranjang Kosong"
+        }),
+        message: effectiveMessageMultiLanguageString,
+        imageAssetUrl: Constant.imageEmptyErrorCart
+      )
+    ).toErrorProviderResultNonNull();
+  }
+
+  ErrorProviderResult _warehouseIsEmptyErrorProvider(MultiLanguageString? messageMultiLanguageString) {
+    late MultiLanguageString effectiveMessageMultiLanguageString;
+    if (messageMultiLanguageString != null) {
+      effectiveMessageMultiLanguageString = messageMultiLanguageString;
+    } else {
+      effectiveMessageMultiLanguageString = MultiLanguageString({
+        Constant.textEnUsLanguageKey: "For now, item in warehouse is empty.",
+        Constant.textInIdLanguageKey: "Untuk sekarang, barang di warehouse kosong.",
+      });
+    }
+    return onGetErrorProviderResult(
+      MultiLanguageMessageError(
+        title: MultiLanguageString({
+          Constant.textEnUsLanguageKey: "Item in Warehouse Is Empty",
+          Constant.textInIdLanguageKey: "Barang di Warehouse Kosong",
         }),
         message: effectiveMessageMultiLanguageString,
         imageAssetUrl: Constant.imageEmptyErrorCart

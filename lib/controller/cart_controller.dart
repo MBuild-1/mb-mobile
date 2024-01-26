@@ -1,10 +1,13 @@
 import 'package:dio/dio.dart';
+import 'package:masterbagasi/misc/ext/future_ext.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
+import 'package:masterbagasi/misc/processing/future_processing.dart';
 
 import '../domain/entity/additionalitem/add_additional_item_parameter.dart';
 import '../domain/entity/additionalitem/add_additional_item_response.dart';
 import '../domain/entity/additionalitem/additional_item.dart';
 import '../domain/entity/additionalitem/additional_item_list_parameter.dart';
+import '../domain/entity/additionalitem/change_additional_item.dart';
 import '../domain/entity/additionalitem/change_additional_item_parameter.dart';
 import '../domain/entity/additionalitem/change_additional_item_response.dart';
 import '../domain/entity/additionalitem/remove_additional_item_parameter.dart';
@@ -30,8 +33,12 @@ import '../domain/usecase/get_cart_summary_use_case.dart';
 import '../domain/usecase/remove_additional_item_use_case.dart';
 import '../domain/usecase/remove_from_cart_use_case.dart';
 import '../domain/usecase/update_cart_quantity_use_case.dart';
+import '../misc/constant.dart';
 import '../misc/controllercontentdelegate/shared_cart_controller_content_delegate.dart';
+import '../misc/error/message_error.dart';
+import '../misc/error/warehouse_empty_error.dart';
 import '../misc/load_data_result.dart';
+import '../misc/multi_language_string.dart';
 import '../misc/typedef.dart';
 import 'base_getx_controller.dart';
 
@@ -45,6 +52,9 @@ typedef _OnShowRemoveCartRequestProcessFailedCallback = Future<void> Function(dy
 typedef _OnShowUpdateCartQuantityRequestProcessLoadingCallback = Future<bool> Function();
 typedef _OnUpdateCartQuantityRequestProcessSuccessCallback = Future<void> Function(UpdateCartQuantityResponse, Cart);
 typedef _OnShowUpdateCartQuantityRequestProcessFailedCallback = Future<void> Function(dynamic e, Cart);
+typedef _OnShowRemoveWarehouseRequestProcessLoadingCallback = Future<void> Function();
+typedef _OnRemoveWarehouseRequestProcessSuccessCallback = Future<void> Function();
+typedef _OnShowRemoveWarehouseRequestProcessFailedCallback = Future<void> Function(dynamic e);
 
 class CartController extends BaseGetxController {
   final GetCartListUseCase getCartListUseCase;
@@ -95,6 +105,13 @@ class CartController extends BaseGetxController {
   Future<LoadDataResult<List<AdditionalItem>>> getAdditionalItem(AdditionalItemListParameter additionalItemListParameter) {
     return getAdditionalItemUseCase.execute(additionalItemListParameter).future(
       parameter: apiRequestManager.addRequestToCancellationPart("get-additional-item").value
+    ).map(
+      (value) {
+        if (value.isEmpty) {
+          throw WarehouseEmptyError();
+        }
+        return value;
+      }
     );
   }
 
@@ -181,6 +198,27 @@ class CartController extends BaseGetxController {
       }
     }
   }
+
+  void removeWarehouseAdditionalItem(AdditionalItem additionalItem) async {
+    if (_cartDelegate != null) {
+      _cartDelegate!.onUnfocusAllWidget();
+      _cartDelegate!.onShowRemoveCartRequestProcessLoadingCallback();
+      LoadDataResult<RemoveAdditionalItemResponse> removeAdditionalItemResponseLoadDataResult = await removeAdditionalItem(
+        RemoveAdditionalItemParameter(
+          additionalItemId: additionalItem.id
+        )
+      );
+      _cartDelegate!.onCartBack();
+      if (removeAdditionalItemResponseLoadDataResult.isFailedBecauseCancellation) {
+        return;
+      }
+      if (removeAdditionalItemResponseLoadDataResult.isSuccess) {
+        _cartDelegate!.onRemoveWarehouseRequestProcessSuccessCallback();
+      } else {
+        _cartDelegate!.onShowRemoveWarehouseRequestProcessFailedCallback(removeAdditionalItemResponseLoadDataResult.resultIfFailed);
+      }
+    }
+  }
 }
 
 class CartDelegate {
@@ -195,6 +233,9 @@ class CartDelegate {
   _OnShowUpdateCartQuantityRequestProcessLoadingCallback onShowUpdateCartQuantityRequestProcessLoadingCallback;
   _OnUpdateCartQuantityRequestProcessSuccessCallback onUpdateCartQuantityRequestProcessSuccessCallback;
   _OnShowUpdateCartQuantityRequestProcessFailedCallback onShowUpdateCartQuantityRequestProcessFailedCallback;
+  _OnShowRemoveWarehouseRequestProcessLoadingCallback onShowRemoveWarehouseRequestProcessLoadingCallback;
+  _OnRemoveWarehouseRequestProcessSuccessCallback onRemoveWarehouseRequestProcessSuccessCallback;
+  _OnShowRemoveWarehouseRequestProcessFailedCallback onShowRemoveWarehouseRequestProcessFailedCallback;
 
   CartDelegate({
     required this.onUnfocusAllWidget,
@@ -207,6 +248,9 @@ class CartDelegate {
     required this.onShowRemoveCartRequestProcessFailedCallback,
     required this.onShowUpdateCartQuantityRequestProcessLoadingCallback,
     required this.onUpdateCartQuantityRequestProcessSuccessCallback,
-    required this.onShowUpdateCartQuantityRequestProcessFailedCallback
+    required this.onShowUpdateCartQuantityRequestProcessFailedCallback,
+    required this.onShowRemoveWarehouseRequestProcessLoadingCallback,
+    required this.onRemoveWarehouseRequestProcessSuccessCallback,
+    required this.onShowRemoveWarehouseRequestProcessFailedCallback
   });
 }

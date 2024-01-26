@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 import '../../misc/constant.dart';
+import '../../misc/error/message_error.dart';
 
 class CheckListItem extends StatelessWidget {
   final Widget? title;
@@ -26,6 +27,7 @@ class CheckListItem extends StatelessWidget {
   final double spaceBetweenTitleAndContent;
   final bool showCheck;
   final EdgeInsetsGeometry? padding;
+  final CheckListItemVerticalAlignment checkListItemVerticalAlignment;
 
   const CheckListItem({
     Key? key,
@@ -50,7 +52,8 @@ class CheckListItem extends StatelessWidget {
     this.spaceBetweenCheckListAndTitle = 10,
     this.spaceBetweenTitleAndContent = 10,
     this.showCheck = true,
-    this.padding
+    this.padding,
+    this.checkListItemVerticalAlignment = CheckListItemVerticalAlignment.center
   }) : super(key: key);
 
   @override
@@ -78,7 +81,8 @@ class CheckListItem extends StatelessWidget {
         spaceBetweenCheckListAndTitle: spaceBetweenCheckListAndTitle,
         spaceBetweenTitleAndContent: spaceBetweenTitleAndContent,
         showCheck: showCheck,
-        padding: padding
+        padding: padding,
+        checkListItemVerticalAlignment: checkListItemVerticalAlignment
       )
     );
   }
@@ -107,6 +111,7 @@ class _RawCheckListItem extends StatefulWidget {
   final double spaceBetweenTitleAndContent;
   final bool showCheck;
   final EdgeInsetsGeometry? padding;
+  final CheckListItemVerticalAlignment checkListItemVerticalAlignment;
 
   const _RawCheckListItem({
     Key? key,
@@ -131,7 +136,8 @@ class _RawCheckListItem extends StatefulWidget {
     required this.spaceBetweenCheckListAndTitle,
     required this.spaceBetweenTitleAndContent,
     required this.showCheck,
-    required this.padding
+    required this.padding,
+    required this.checkListItemVerticalAlignment
   }) : super(key: key);
 
   bool get _selected => value;
@@ -324,7 +330,20 @@ class _RawRadioListItemState extends State<_RawCheckListItem> with TickerProvide
       ]
     ];
     List<Widget> columnWidget = [
-      Row(children: widget.reverse ? rowWidget.reversed.toList() : rowWidget),
+      Row(
+        crossAxisAlignment: () {
+          CheckListItemVerticalAlignment checkListItemVerticalAlignment = widget.checkListItemVerticalAlignment;
+          if (checkListItemVerticalAlignment == CheckListItemVerticalAlignment.top) {
+            return CrossAxisAlignment.start;
+          } else if (checkListItemVerticalAlignment == CheckListItemVerticalAlignment.center) {
+            return CrossAxisAlignment.center;
+          } else if (checkListItemVerticalAlignment == CheckListItemVerticalAlignment.down) {
+            return CrossAxisAlignment.end;
+          }
+          throw MessageError(title: "CheckListItemVerticalAlignment is not suitable");
+        }(),
+        children: widget.reverse ? rowWidget.reversed.toList() : rowWidget
+      ),
     ];
     if (widget.content != null) {
       columnWidget.addAll(<Widget>[
@@ -584,4 +603,8 @@ class _ModifiedCheckPainter extends _ModifiedToggleablePainter {
       }
     }
   }
+}
+
+enum CheckListItemVerticalAlignment {
+  top, center, down
 }

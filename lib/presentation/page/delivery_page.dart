@@ -426,9 +426,9 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
               widget.deliveryController.getCartSummary();
             },
             onCartChange: () {
-              if (_selectedCartCount == 0) {
-                _deliveryListItemPagingController.errorFirstPageOuterProcess = CartEmptyError();
-              }
+              // if (_selectedCartCount == 0) {
+              //   _deliveryListItemPagingController.errorFirstPageOuterProcess = CartEmptyError();
+              // }
             },
             onUpdateCoupon: (coupon) {
               if (coupon == null) {
@@ -524,126 +524,125 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
                 pullToRefresh: true
               ),
             ),
-            if (_selectedCartCount > 0)
-              Container(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: LoadDataResultImplementerDirectly<CartSummary>(
-                        loadDataResult: _cartSummaryLoadDataResult,
-                        errorProvider: Injector.locator<ErrorProvider>(),
-                        onImplementLoadDataResultDirectly: (cartSummaryLoadDataResult, errorProviderOutput) {
-                          bool hasLoadingShimmer = cartSummaryLoadDataResult.isNotLoading || cartSummaryLoadDataResult.isLoading;
-                          Widget result = Wrap(
-                            crossAxisAlignment: WrapCrossAlignment.end,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Shopping Total".tr,
-                                    style: TextStyle(
-                                      backgroundColor: hasLoadingShimmer ? Colors.grey : null
-                                    ),
+            Container(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: LoadDataResultImplementerDirectly<CartSummary>(
+                      loadDataResult: _cartSummaryLoadDataResult,
+                      errorProvider: Injector.locator<ErrorProvider>(),
+                      onImplementLoadDataResultDirectly: (cartSummaryLoadDataResult, errorProviderOutput) {
+                        bool hasLoadingShimmer = cartSummaryLoadDataResult.isNotLoading || cartSummaryLoadDataResult.isLoading;
+                        Widget result = Wrap(
+                          crossAxisAlignment: WrapCrossAlignment.end,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Shopping Total".tr,
+                                  style: TextStyle(
+                                    backgroundColor: hasLoadingShimmer ? Colors.grey : null
                                   ),
-                                  const SizedBox(height: 4),
-                                  Builder(
-                                    builder: (context) {
-                                      String text = "No Loading";
-                                      if (cartSummaryLoadDataResult.isLoading) {
-                                        text = "Is Loading";
-                                      } else if (cartSummaryLoadDataResult.isSuccess) {
-                                        SummaryValue finalCartSummaryValue = cartSummaryLoadDataResult.resultIfSuccess!.finalSummaryValue.first;
-                                        if (finalCartSummaryValue.type == "currency") {
-                                          if (finalCartSummaryValue.value is num) {
-                                            text = (finalCartSummaryValue.value as num).toRupiah(withFreeTextIfZero: false);
-                                          } else {
-                                            text = double.parse(finalCartSummaryValue.value as String).toRupiah(withFreeTextIfZero: false);
-                                          }
+                                ),
+                                const SizedBox(height: 4),
+                                Builder(
+                                  builder: (context) {
+                                    String text = "No Loading";
+                                    if (cartSummaryLoadDataResult.isLoading) {
+                                      text = "Is Loading";
+                                    } else if (cartSummaryLoadDataResult.isSuccess) {
+                                      SummaryValue finalCartSummaryValue = cartSummaryLoadDataResult.resultIfSuccess!.finalSummaryValue.first;
+                                      if (finalCartSummaryValue.type == "currency") {
+                                        if (finalCartSummaryValue.value is num) {
+                                          text = (finalCartSummaryValue.value as num).toRupiah(withFreeTextIfZero: false);
                                         } else {
-                                          text = finalCartSummaryValue.value;
+                                          text = double.parse(finalCartSummaryValue.value as String).toRupiah(withFreeTextIfZero: false);
                                         }
-                                      } else if (cartSummaryLoadDataResult.isFailed) {
-                                        text = errorProviderOutput.onGetErrorProviderResult(
-                                          cartSummaryLoadDataResult.resultIfFailed!
-                                        ).toErrorProviderResultNonNull().message;
+                                      } else {
+                                        text = finalCartSummaryValue.value;
                                       }
-                                      return Text(
-                                        text,
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                          backgroundColor: hasLoadingShimmer ? Colors.grey : null
-                                        )
-                                      );
+                                    } else if (cartSummaryLoadDataResult.isFailed) {
+                                      text = errorProviderOutput.onGetErrorProviderResult(
+                                        cartSummaryLoadDataResult.resultIfFailed!
+                                      ).toErrorProviderResultNonNull().message;
                                     }
-                                  ),
-                                ]
-                              ),
-                              if (cartSummaryLoadDataResult.isSuccess) ...[
-                                TapArea(
-                                  onTap: cartSummaryLoadDataResult.isSuccess ? () => DialogHelper.showModalBottomDialogPage<bool, CartSummary>(
-                                    context: context,
-                                    modalDialogPageBuilder: (context, parameter) => CartSummaryCartModalDialogPage(
-                                      cartSummary: parameter!
-                                    ),
-                                    parameter: cartSummaryLoadDataResult.resultIfSuccess!
-                                  ) : null,
-                                  child: SizedBox(
-                                    width: 40,
-                                    height: 30,
-                                    child: Stack(
-                                      children: [
-                                        Align(
-                                          alignment: Alignment.bottomCenter,
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Transform.rotate(
-                                                angle: math.pi / 2,
-                                                child: SizedBox(
-                                                  child: ModifiedSvgPicture.asset(
-                                                    Constant.vectorArrow,
-                                                    height: 15,
-                                                  ),
-                                                )
-                                              ),
-                                              const SizedBox(height: 4)
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                )
+                                    return Text(
+                                      text,
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        backgroundColor: hasLoadingShimmer ? Colors.grey : null
+                                      )
+                                    );
+                                  }
+                                ),
                               ]
+                            ),
+                            if (cartSummaryLoadDataResult.isSuccess) ...[
+                              TapArea(
+                                onTap: cartSummaryLoadDataResult.isSuccess ? () => DialogHelper.showModalBottomDialogPage<bool, CartSummary>(
+                                  context: context,
+                                  modalDialogPageBuilder: (context, parameter) => CartSummaryCartModalDialogPage(
+                                    cartSummary: parameter!
+                                  ),
+                                  parameter: cartSummaryLoadDataResult.resultIfSuccess!
+                                ) : null,
+                                child: SizedBox(
+                                  width: 40,
+                                  height: 30,
+                                  child: Stack(
+                                    children: [
+                                      Align(
+                                        alignment: Alignment.bottomCenter,
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Transform.rotate(
+                                              angle: math.pi / 2,
+                                              child: SizedBox(
+                                                child: ModifiedSvgPicture.asset(
+                                                  Constant.vectorArrow,
+                                                  height: 15,
+                                                ),
+                                              )
+                                            ),
+                                            const SizedBox(height: 4)
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
                             ]
-                          );
-                          return hasLoadingShimmer ? ModifiedShimmer.fromColors(
-                            child: result
-                          ) : result;
-                        }
-                      ),
-                    ),
-                    Builder(
-                      builder: (context) {
-                        void Function()? onPressed = _selectedCartCount == 0 ? null : () => widget.deliveryController.createOrderVersion1Point1();
-                        if (!(_shippingAddressLoadDataResult.isSuccess && _selectedPaymentMethodLoadDataResult.isSuccess)) {
-                          onPressed = null;
-                        }
-                        return SizedOutlineGradientButton(
-                          onPressed: onPressed,
-                          width: 120,
-                          text: "${"Pay".tr} ($_selectedCartCount)",
-                          outlineGradientButtonType: OutlineGradientButtonType.solid,
-                          outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
+                          ]
                         );
+                        return hasLoadingShimmer ? ModifiedShimmer.fromColors(
+                          child: result
+                        ) : result;
                       }
-                    )
-                  ],
-                ),
-              )
+                    ),
+                  ),
+                  Builder(
+                    builder: (context) {
+                      void Function()? onPressed = () => widget.deliveryController.createOrderVersion1Point1();
+                      if (!(_shippingAddressLoadDataResult.isSuccess && _selectedPaymentMethodLoadDataResult.isSuccess)) {
+                        onPressed = null;
+                      }
+                      return SizedOutlineGradientButton(
+                        onPressed: onPressed,
+                        width: 120,
+                        text: "${"Pay".tr} ($_selectedCartCount)",
+                        outlineGradientButtonType: OutlineGradientButtonType.solid,
+                        outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
+                      );
+                    }
+                  )
+                ],
+              ),
+            )
           ]
         )
       ),

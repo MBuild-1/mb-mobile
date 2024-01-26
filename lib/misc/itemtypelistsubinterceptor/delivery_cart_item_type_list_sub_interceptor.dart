@@ -268,7 +268,9 @@ class DeliveryCartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
           });
         }
       }
-      newItemTypeList.add(VirtualSpacingListItemControllerState(height: 10.0));
+      newItemTypeList.add(
+        VirtualSpacingListItemControllerState(height: cartListItemControllerStateList.isEmpty ? 16.0 : 10.0)
+      );
 
       // Selected Payment Method
       newItemTypeList.add(
