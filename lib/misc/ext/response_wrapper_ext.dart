@@ -1,7 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
 
+import '../constant.dart';
 import '../date_util.dart';
+import '../error/message_error.dart';
+import '../multi_language_string.dart';
 import '../paging/pagingresult/paging_data_result.dart';
 import '../response_wrapper.dart';
 
@@ -13,7 +16,27 @@ extension MainStructureResponseWrapperExt on Response<dynamic> {
 
 extension DateTimeResponseWrapperExt on ResponseWrapper {
   DateTime? mapFromResponseToDateTime({DateFormat? dateFormat, bool convertIntoLocalTime = true}) {
-    DateTime? fetchedDateTime = response != null ? (dateFormat ?? DateUtil.anthonyInputDateFormat).parse(response) : null;
+    DateTime? fetchedDateTime = () {
+      List<DateFormat> dateFormatList = [
+        DateUtil.anthonyInputDateFormat,
+        DateUtil.standardDateFormat,
+        DateUtil.standardDateFormat3
+      ];
+      int i = 0;
+      while (i < dateFormatList.length) {
+        try {
+          return response != null ? (dateFormat ?? dateFormatList[i]).parse(response) : null;
+        } catch (e) {
+          i++;
+        }
+      }
+      throw MultiLanguageMessageError(
+        title: MultiLanguageString({
+          Constant.textInIdLanguageKey: "Date Format Tidak Sesuai",
+          Constant.textEnUsLanguageKey: "Date Format Is Not Suitable"
+        })
+      );
+    }();
     if (!convertIntoLocalTime) {
       return fetchedDateTime;
     }
