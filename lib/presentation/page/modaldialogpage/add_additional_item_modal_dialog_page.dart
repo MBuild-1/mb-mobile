@@ -125,7 +125,7 @@ class _StatefulAddAdditionalItemControllerMediatorWidgetState extends State<_Sta
               child: ExcludeFocus(
                 child: SizedOutlineGradientButton(
                   onPressed: () {},
-                  text: widget.serializedJsonAdditionalItemModalDialogParameter.isNotEmptyString ? "Change New Item".tr : "Add New Item".tr,
+                  text: "Send the Goods to Master Bagasi Warehouse".tr,
                   outlineGradientButtonType: OutlineGradientButtonType.outline,
                   outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
                   customGradientButtonVariation: (outlineGradientButtonType) {

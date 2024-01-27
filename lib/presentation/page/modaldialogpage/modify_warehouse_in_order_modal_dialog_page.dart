@@ -262,11 +262,11 @@ class _StatefulModifyWarehouseInOrderControllerMediatorWidgetState extends State
                             var modifyWarehouseInOrderParameter = widget.modifyWarehouseInOrderModalDialogPageParameter.modifyWarehouseInOrderParameter;
                             if (modifyWarehouseInOrderParameter is AddWarehouseInOrderParameter) {
                               if (_localModifyWarehouseInOrderParameter is AddWarehouseInOrderParameter) {
-                                return "Add New Item".tr;
+                                return "Send the Goods to Master Bagasi Warehouse".tr;
                               } else if (_localModifyWarehouseInOrderParameter is ChangeWarehouseInOrderParameter) {
                                 return "Change New Item".tr;
                               }
-                              return "Add New Item".tr;
+                              return "Send the Goods to Master Bagasi Warehouse".tr;
                             } else if (modifyWarehouseInOrderParameter is ChangeWarehouseInOrderParameter) {
                               return "Change New Item".tr;
                             } else {
