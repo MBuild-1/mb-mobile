@@ -413,7 +413,7 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
               Dio dio = Injector.locator<Dio>();
               PageRestorationHelper.toPdfViewerPage(
                 context, <String, dynamic>{
-                  Constant.textUrlKey: "${dio.options.baseUrl}user/order/generate/invoice/${combinedOrder.id}",
+                  Constant.textUrlKey: "${dio.options.baseUrl}user/order/base64/${combinedOrder.id}?type=invoice",
                   Constant.textHeaderKey: () {
                     if (dio is GetCommonOptions) {
                       return (dio as GetCommonOptions).optionsWithTokenHeader.headers ?? <String, dynamic>{};
