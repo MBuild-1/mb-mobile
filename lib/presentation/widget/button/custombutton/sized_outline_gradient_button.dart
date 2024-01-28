@@ -187,7 +187,7 @@ class _Variation4GradientButtonVariation extends _GradientButtonVariation {
 
   @override
   TextStyle? get textStyle => TextStyle(
-    color: outlineGradientButtonType == OutlineGradientButtonType.solid ? Colors.white : Constant.colorMain,
+    color: outlineGradientButtonType == OutlineGradientButtonType.solid ? Colors.white : Constant.colorRedDanger,
     fontWeight: FontWeight.bold
   );
 }
