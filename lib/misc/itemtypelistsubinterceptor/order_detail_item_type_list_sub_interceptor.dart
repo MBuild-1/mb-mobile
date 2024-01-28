@@ -15,8 +15,10 @@ import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderp
 import '../../domain/entity/order/order.dart';
 import '../../domain/entity/order/order_product_detail.dart';
 import '../../domain/entity/order/order_product_inventory.dart';
+import '../../domain/entity/order/ordertracking/order_tracking.dart';
 import '../../domain/entity/order/ordertransaction/ordertransactionresponse/order_transaction_response.dart';
 import '../../domain/entity/summaryvalue/summary_value.dart';
+import '../../presentation/page/modaldialogpage/order_tracking_modal_dialog_page.dart';
 import '../../presentation/widget/address/vertical_address_item.dart';
 import '../../presentation/widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../../presentation/widget/colorful_chip.dart';
@@ -24,6 +26,7 @@ import '../../presentation/widget/order/order_conclusion_item.dart';
 import '../../presentation/widget/order/order_product_detail_item.dart';
 import '../../presentation/widget/order/order_product_inventory_item.dart';
 import '../../presentation/widget/order/order_status_indicator.dart';
+import '../../presentation/widget/order/order_tracking_item.dart';
 import '../../presentation/widget/order_transaction_widget.dart';
 import '../../presentation/widget/summary_widget.dart';
 import '../../presentation/widget/tap_area.dart';
@@ -36,12 +39,14 @@ import '../controllerstate/listitemcontrollerstate/divider_list_item_controller_
 import '../controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/load_data_result_dynamic_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/order_detail_container_list_item_controller_state.dart';
+import '../controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/order_tracking_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/order_transaction_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/padding_container_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/spacing_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/title_and_description_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/widget_substitution_list_item_controller_state.dart';
+import '../dialog_helper.dart';
 import '../itemtypelistinterceptor/itemtypelistinterceptorchecker/list_item_controller_state_item_type_list_interceptor_checker.dart';
 import '../load_data_result.dart';
 import '../multi_language_string.dart';
@@ -102,6 +107,10 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
       }
       _interceptForBasicOrderInformation(i, oldItemType, oldItemTypeList, newListItemControllerState);
       _interceptForOrderPayment(i, oldItemType, oldItemTypeList, newListItemControllerState);
+      if (order.orderTrackingList.isNotEmpty) {
+        newListItemControllerState.add(SpacingListItemControllerState());
+        _interceptForOrderTracking(i, oldItemType, oldItemTypeList, newListItemControllerState);
+      }
       newListItemControllerState.add(SpacingListItemControllerState());
       _interceptForAddressInformation(i, oldItemType, oldItemTypeList, newListItemControllerState);
       newListItemControllerState.add(SpacingListItemControllerState());
@@ -169,6 +178,71 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
       listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
         i, ListItemControllerStateWrapper(resultListItemControllerState), oldItemTypeList, newListItemControllerState
       );
+      newItemTypeList.addAll(newListItemControllerState);
+      return true;
+    } else if (oldItemType is OrderTrackingListItemControllerState) {
+      int effectiveOrderTrackingListCount = () {
+        int count = oldItemType.maxVisibleOrderTrackingListCount ?? 0;
+        if (count > oldItemType.orderTrackingList.length) {
+          count = oldItemType.orderTrackingList.length;
+        } else if (count < 0) {
+          count = 0;
+        }
+        if (count == 0) {
+          count = oldItemType.orderTrackingList.length;
+        }
+        return count;
+      }();
+      List<ListItemControllerState> newListItemControllerState = [];
+      int j = 0;
+      while (j < effectiveOrderTrackingListCount) {
+        OrderTracking orderTracking = oldItemType.orderTrackingList[j];
+        int iteratedJ = j;
+        ListItemControllerState orderTrackingListItemControllerState = PaddingContainerListItemControllerState(
+          padding: EdgeInsets.symmetric(horizontal: padding()),
+          paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
+            widgetSubstitution: (BuildContext context, int index) {
+              return OrderTrackingItem(
+                orderTracking: orderTracking,
+                isActive: iteratedJ == 0
+              );
+            }
+          )
+        );
+        listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
+          i, ListItemControllerStateWrapper(orderTrackingListItemControllerState), oldItemTypeList, newListItemControllerState
+        );
+        j++;
+      }
+      if (effectiveOrderTrackingListCount != oldItemType.orderTrackingList.length) {
+        newListItemControllerState.add(
+          VirtualSpacingListItemControllerState(height: padding())
+        );
+        ListItemControllerState moreOrderTrackingButtonListItemControllerState = PaddingContainerListItemControllerState(
+          padding: EdgeInsets.symmetric(horizontal: padding()),
+          paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
+            widgetSubstitution: (BuildContext context, int index) {
+              return SizedOutlineGradientButton(
+                onPressed: () => DialogHelper.showModalBottomDialogPage<int, int>(
+                  context: context,
+                  modalDialogPageBuilder: (context, parameter) => OrderTrackingModalDialogPage(
+                    orderTrackingModalDialogPageParameter: OrderTrackingModalDialogPageParameter(
+                      orderTrackingList: oldItemType.orderTrackingList
+                    ),
+                  ),
+                  parameter: 1
+                ),
+                text: "More".tr,
+                outlineGradientButtonType: OutlineGradientButtonType.solid,
+                outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
+              );
+            }
+          )
+        );
+        listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
+          i, ListItemControllerStateWrapper(moreOrderTrackingButtonListItemControllerState), oldItemTypeList, newListItemControllerState
+        );
+      }
       newItemTypeList.addAll(newListItemControllerState);
       return true;
     }
@@ -416,6 +490,39 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
     );
     listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
       i, ListItemControllerStateWrapper(orderConclusionItemListItemControllerState), oldItemTypeList, newListItemControllerState
+    );
+    newListItemControllerState.add(
+      VirtualSpacingListItemControllerState(height: padding())
+    );
+  }
+
+  void _interceptForOrderTracking(
+    int i,
+    OrderDetailContainerListItemControllerState orderDetailContainerListItemControllerState,
+    List<ListItemControllerState> oldItemTypeList,
+    List<ListItemControllerState> newListItemControllerState
+  ) {
+    Order order = orderDetailContainerListItemControllerState.order();
+    newListItemControllerState.add(
+      VirtualSpacingListItemControllerState(height: padding())
+    );
+    ListItemControllerState orderTrackingTitleListItemControllerState = TitleAndDescriptionListItemControllerState(
+      title: "Order Tracking".tr,
+      padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem)
+    );
+    listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
+      i, ListItemControllerStateWrapper(orderTrackingTitleListItemControllerState), oldItemTypeList, newListItemControllerState
+    );
+    newListItemControllerState.add(
+      VirtualSpacingListItemControllerState(height: padding())
+    );
+    ListItemControllerState orderTrackingListItemControllerState = OrderTrackingListItemControllerState(
+      orderTrackingList: order.orderTrackingList,
+      errorProvider: orderDetailContainerListItemControllerState.errorProvider,
+      maxVisibleOrderTrackingListCount: 3
+    );
+    listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
+      i, ListItemControllerStateWrapper(orderTrackingListItemControllerState), oldItemTypeList, newListItemControllerState
     );
     newListItemControllerState.add(
       VirtualSpacingListItemControllerState(height: padding())

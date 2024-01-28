@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../misc/constant.dart';
+import '../checklist_icon.dart';
 import '../modified_shimmer.dart';
 
 class PurchaseSectionNotificationStep extends StatelessWidget {
@@ -74,22 +75,10 @@ class PurchaseSectionNotificationStep extends StatelessWidget {
               ),
               Align(
                 alignment: Alignment.center,
-                child: Container(
-                  width: size,
-                  height: size,
-                  decoration: BoxDecoration(
-                    color: activeValue ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.surface,
-                    border: activeValue ? null : Border.all(color: borderColor),
-                    shape: BoxShape.circle
-                  ),
-                  child: activeValue ? Center(
-                    child: Icon(
-                      Icons.check,
-                      size: size - 4,
-                      color: Colors.white
-                    ),
-                  ) : null
-                ),
+                child: ChecklistIcon(
+                  size: size,
+                  activeValue: activeValue,
+                )
               )
             ],
           ),
