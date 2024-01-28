@@ -61,7 +61,7 @@ class TitleAndDescriptionItem extends StatelessWidget {
   Widget descriptionWidget(BuildContext context, String description) {
     TextStyle? lastDescriptionTextStyle = const TextStyle();
     if (descriptionInterceptor != null) {
-      descriptionInterceptor!(description, lastDescriptionTextStyle);
+      return descriptionInterceptor!(description, lastDescriptionTextStyle);
     }
     return _interceptWithContainer(
       context,

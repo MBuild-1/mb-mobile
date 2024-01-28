@@ -11,6 +11,7 @@ class ProfileDropdownMenuListItemControllerState extends ListItemControllerState
   Color? color;
   List<ProfileMenuListItemControllerState> profileMenuListItemControllerStateList;
   bool isExpand;
+  EdgeInsetsGeometry? headerPadding;
 
   ProfileDropdownMenuListItemControllerState({
     this.onTap,
@@ -20,5 +21,6 @@ class ProfileDropdownMenuListItemControllerState extends ListItemControllerState
     this.color,
     required this.isExpand,
     this.profileMenuListItemControllerStateList = const [],
+    this.headerPadding
   });
 }

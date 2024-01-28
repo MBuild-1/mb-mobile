@@ -49,6 +49,7 @@ import '../../../../misc/parameterizedcomponententityandlistitemcontrollerstatem
 import '../../../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/cart_refresh_delegate_parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../../../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/horizontal_dynamic_item_carousel_parametered_component_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../../../../misc/string_util.dart';
+import '../../../../misc/typedef.dart';
 import '../../../../misc/web_helper.dart';
 import '../../../../misc/widget_helper.dart';
 import '../../../notifier/notification_notifier.dart';
@@ -61,6 +62,8 @@ import '../../../widget/modified_svg_picture.dart';
 import '../../../widget/modifiedappbar/default_search_app_bar.dart';
 import '../../../widget/modifiedappbar/modified_app_bar.dart' hide TitleInterceptor;
 import '../../../widget/modifiedappbar/opacity_modified_app_bar.dart';
+import '../../../widget/notification_number_indicator.dart';
+import '../../../widget/number_indicator.dart';
 import '../../../widget/rx_consumer.dart';
 import '../../../widget/something_counter.dart';
 import '../../../widget/tap_area.dart';
@@ -171,7 +174,7 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
       onUpdateState: () => setState(() {}),
       isExpand: true,
       title: "",
-      profileMenuListItemControllerStateList: []
+      profileMenuListItemControllerStateList: [],
     );
     return SuccessLoadDataResult<PagingResult<ListItemControllerState>>(
       value: PagingDataResult<ListItemControllerState>(
@@ -181,42 +184,77 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
         itemList: [
           BuilderListItemControllerState(
             buildListItemControllerState: () {
+              double paddingVertical = 12.0;
+              EdgeInsetsGeometry? menuPadding = EdgeInsets.symmetric(horizontal: 4.w, vertical: paddingVertical);
+              Widget menuTitleInterceptor(title, style) {
+                return Text(
+                  title,
+                  style: style?.copyWith(fontWeight: FontWeight.w600)
+                );
+              }
+              Widget menuIcon(dynamic iconAsset) {
+                return SizedBox(
+                  height: 20.0,
+                  child: () {
+                    if (iconAsset is String) {
+                      return ModifiedSvgPicture.asset(
+                        iconAsset,
+                        width: 20.0
+                      );
+                    } else if (iconAsset is Widget Function(double)) {
+                      return iconAsset(20.0);
+                    }
+                    return const SizedBox();
+                  }()
+                );
+              }
               profileDropdownListItemControllerState.title = 'Regarding Master Bagasi'.tr;
+              profileDropdownListItemControllerState.headerPadding = menuPadding;
               profileDropdownListItemControllerState.profileMenuListItemControllerStateList = [
                 ProfileMenuListItemControllerState(
                   onTap: (context) {
                     WebHelper.launchUrl(Uri.parse("https://m.masterbagasi.com/about-us"));
                   },
-                  icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorAboutMasterbagasi, width: 20.0),
-                  title: 'About Master Bagasi'.tr
+                  icon: (BuildContext context) => menuIcon(Constant.vectorAboutMasterbagasi),
+                  title: 'About Master Bagasi'.tr,
+                  titleInterceptor: menuTitleInterceptor,
+                  padding: menuPadding
                 ),
                 ProfileMenuListItemControllerState(
                   onTap: (context) {
                     WebHelper.launchUrl(Uri.parse("https://m.masterbagasi.com/mb-care"));
                   },
-                  icon: (BuildContext context) => const Icon(Icons.help_center, size: 20.0),
-                  title: 'Master Bagasi Care'.tr
+                  icon: (BuildContext context) => menuIcon((double size) => Icon(Icons.help_center, size: size)),
+                  title: 'Master Bagasi Care'.tr,
+                  titleInterceptor: menuTitleInterceptor,
+                  padding: menuPadding
                 ),
                 ProfileMenuListItemControllerState(
                   onTap: (context) {
                     WebHelper.launchUrl(Uri.parse(Constant.textTermAndConditionsUrl));
                   },
-                  icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorTermsAndConditions, width: 20.0),
-                  title: 'Terms & Conditions'.tr
+                  icon: (BuildContext context) => menuIcon(Constant.vectorTermsAndConditions),
+                  title: 'Terms & Conditions'.tr,
+                  titleInterceptor: menuTitleInterceptor,
+                  padding: menuPadding
                 ),
                 ProfileMenuListItemControllerState(
                   onTap: (context) {
                     WebHelper.launchUrl(Uri.parse(Constant.textPrivacyPolicyUrl));
                   },
-                  icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorPrivacyPolicy, width: 20.0),
-                  title: 'Privacy Policy'.tr
+                  icon: (BuildContext context) => menuIcon(Constant.vectorPrivacyPolicy),
+                  title: 'Privacy Policy'.tr,
+                  titleInterceptor: menuTitleInterceptor,
+                  padding: menuPadding
                 ),
                 ProfileMenuListItemControllerState(
                   onTap: (context) {
                     WebHelper.launchUrl(Uri.parse("https://masterbagasi.com/contact-us"));
                   },
-                  icon: (BuildContext context) => const Icon(Icons.contact_support, size: 20.0),
-                  title: 'Contact Us'.tr
+                  icon: (BuildContext context) => menuIcon((double size) => Icon(Icons.contact_support, size: size)),
+                  title: 'Contact Us'.tr,
+                  titleInterceptor: menuTitleInterceptor,
+                  padding: menuPadding
                 ),
                 ProfileMenuListItemControllerState(
                   onTap: (context) async {
@@ -225,8 +263,10 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
                       inAppReview.requestReview();
                     }
                   },
-                  icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorReviewThisApplication, width: 20.0),
-                  title: 'Review This App'.tr
+                  icon: (BuildContext context) => menuIcon(Constant.vectorReviewThisApplication),
+                  title: 'Review This App'.tr,
+                  titleInterceptor: menuTitleInterceptor,
+                  padding: menuPadding
                 ),
               ];
               return CompoundListItemControllerState(
@@ -237,8 +277,10 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
                   SpacingListItemControllerState(),
                   ProfileMenuListItemControllerState(
                     onTap: (context) => PageRestorationHelper.toOrderPage(context),
-                    icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorTransactionList, width: 20.0),
+                    icon: (BuildContext context) => menuIcon(Constant.vectorTransactionList),
                     title: 'Transaction List'.tr,
+                    titleInterceptor: menuTitleInterceptor,
+                    padding: menuPadding
                   ),
                   ProfileMenuListItemControllerState(
                     onTap: (context) {
@@ -247,18 +289,24 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
                         onChangeMainMenuTap(3);
                       }
                     },
-                    icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorWishlist, width: 20.0),
+                    icon: (BuildContext context) => menuIcon(Constant.vectorWishlist),
                     title: 'Wishlist'.tr,
+                    titleInterceptor: menuTitleInterceptor,
+                    padding: menuPadding
                   ),
                   ProfileMenuListItemControllerState(
                     onTap: (context) => PageRestorationHelper.toFavoriteProductBrandPage(context),
-                    icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorFavoriteBrand, width: 20.0),
+                    icon: (BuildContext context) => menuIcon(Constant.vectorFavoriteBrand),
                     title: 'Favorite Brand'.tr,
+                    titleInterceptor: menuTitleInterceptor,
+                    padding: menuPadding
                   ),
                   ProfileMenuListItemControllerState(
                     onTap: (context) => PageRestorationHelper.toHelpChatPage(context),
-                    icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorInbox2, width: 20.0),
+                    icon: (BuildContext context) => menuIcon(Constant.vectorInbox2),
                     title: 'Chat'.tr,
+                    titleInterceptor: menuTitleInterceptor,
+                    padding: menuPadding
                   ),
                   ProfileMenuListItemControllerState(
                     onTap: (context) => PageRestorationHelper.toProductDiscussionPage(
@@ -269,18 +317,24 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
                         isBasedUser: true
                       ),
                     ),
-                    icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorProductDiscussion, width: 20.0),
+                    icon: (BuildContext context) => menuIcon(Constant.vectorProductDiscussion),
                     title: 'Product Discussion'.tr,
+                    titleInterceptor: menuTitleInterceptor,
+                    padding: menuPadding
                   ),
                   ProfileMenuListItemControllerState(
                     onTap: (context) => PageRestorationHelper.toDeliveryReviewPage(context),
-                    icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorDeliveryShipping, width: 20.0),
+                    icon: (BuildContext context) => menuIcon(Constant.vectorDeliveryShipping),
                     title: 'Delivery Review'.tr,
+                    titleInterceptor: menuTitleInterceptor,
+                    padding: menuPadding
                   ),
                   ProfileMenuListItemControllerState(
                     onTap: (context) => PageRestorationHelper.toNotificationPage(context),
-                    icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorSupportMessage, width: 20.0),
+                    icon: (BuildContext context) => menuIcon(Constant.vectorSupportMessage),
                     title: 'Update'.tr,
+                    titleInterceptor: menuTitleInterceptor,
+                    padding: menuPadding
                   ),
                   ProfileMenuListItemControllerState(
                     onTap: (context) => PageRestorationHelper.toInboxPage(
@@ -290,13 +344,17 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
                         title: 'FAQ'.tr
                       )
                     ),
-                    icon: (BuildContext context) => const Icon(Icons.question_mark, size: 20.0),
+                    icon: (BuildContext context) => menuIcon(Constant.vectorFaq),
                     title: 'FAQ'.tr,
+                    titleInterceptor: menuTitleInterceptor,
+                    padding: menuPadding
                   ),
                   ProfileMenuListItemControllerState(
                     onTap: (context) => widget.menuMainMenuSubController.sharedCartControllerContentDelegate.checkSharedCart(),
-                    icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorCart, width: 20.0),
+                    icon: (BuildContext context) => menuIcon(Constant.vectorSharedCart),
                     title: 'Shared Cart'.tr,
+                    titleInterceptor: menuTitleInterceptor,
+                    padding: menuPadding
                   ),
                   ProfileMenuListItemControllerState(
                     onTap: (context) async {
@@ -314,17 +372,19 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
                         }
                       }
                     },
-                    icon: (BuildContext context) => const Icon(Icons.language, size: 20.0),
+                    icon: (BuildContext context) => menuIcon(Constant.vectorSelectLanguage),
                     title: 'Select Language'.tr,
+                    titleInterceptor: menuTitleInterceptor,
+                    padding: menuPadding
                   ),
                   SpacingListItemControllerState(),
                   VirtualSpacingListItemControllerState(
-                    height: Constant.paddingListItem
+                    height: paddingVertical
                   ),
                   PaddingContainerListItemControllerState(
                     padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
                     paddingChildListItemControllerState: TitleAndDescriptionListItemControllerState(
-                      title: "Application Configuration".tr,
+                      title: "Account Configuration".tr,
                       titleInterceptor: (title, titleTextStyle) => Text(
                         title.toStringNonNull,
                         style: const TextStyle(fontWeight: FontWeight.bold)
@@ -336,27 +396,35 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
                   ),
                   ProfileMenuListItemControllerState(
                     onTap: (context) => PageRestorationHelper.toAddressPage(context),
-                    icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorAddressList, width: 20.0),
+                    icon: (BuildContext context) => menuIcon(Constant.vectorAddressList),
                     title: 'Address List'.tr,
-                    description: "${'Set the address for sending groceries'.tr}."
+                    description: "${'Set the address for sending groceries'.tr}.",
+                    titleInterceptor: menuTitleInterceptor,
+                    padding: menuPadding
                   ),
                   ProfileMenuListItemControllerState(
                     onTap: (context) => PageRestorationHelper.toAccountSecurityPage(context),
-                    icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorAccountSecurity, width: 20.0),
+                    icon: (BuildContext context) => menuIcon(Constant.vectorAccountSecurity),
                     title: 'Account Security'.tr,
-                    description: "${'Password, PIN, and personal data verification'.tr}."
+                    description: "${'Password, PIN, and personal data verification'.tr}.",
+                    titleInterceptor: menuTitleInterceptor,
+                    padding: menuPadding
                   ),
                   ProfileMenuListItemControllerState(
                     onTap: (context) => DialogHelper.showPromptUnderConstruction(context),
-                    icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorNotificationConfiguration, width: 20.0),
+                    icon: (BuildContext context) => menuIcon(Constant.vectorNotificationConfiguration),
                     title: 'Notification Configuration'.tr,
-                    description: "${'Manage all kinds of notification messages'.tr}."
+                    description: "${'Manage all kinds of notification messages'.tr}.",
+                    titleInterceptor: menuTitleInterceptor,
+                    padding: menuPadding
                   ),
                   ProfileMenuListItemControllerState(
                     onTap: (context) => DialogHelper.showPromptUnderConstruction(context),
-                    icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorAccountPrivacy, width: 20.0),
+                    icon: (BuildContext context) => menuIcon(Constant.vectorAccountPrivacy),
                     title: 'Account Privation'.tr,
-                    description: "${'Manage data usage and connected accounts'.tr}."
+                    description: "${'Manage data usage and connected accounts'.tr}.",
+                    titleInterceptor: menuTitleInterceptor,
+                    padding: menuPadding
                   ),
                   SpacingListItemControllerState(),
                   profileDropdownListItemControllerState,
@@ -367,10 +435,7 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
                     titleInterceptor: (text, style) => Row(
                       children: [
                         Expanded(
-                          child: Text(
-                            text,
-                            style: style
-                          ),
+                          child: menuTitleInterceptor(text, style),
                         ),
                         LoadDataResultImplementerDirectly(
                           loadDataResult: _packageInfoLoadDataResult,
@@ -409,7 +474,8 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
                         )
                       ],
                     ),
-                    icon: (BuildContext context) => ModifiedSvgPicture.asset(Constant.vectorLogout, width: 20.0, height: 13.0),
+                    icon: (BuildContext context) => menuIcon(Constant.vectorLogout),
+                    padding: menuPadding
                   ),
                 ]
               );
@@ -484,7 +550,23 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
           TitleInterceptor? titleInterceptor;
           if (data == Constant.carouselKeyShortMyCart) {
             titleInterceptor = (text, style) => titleArea(
-              title: Text(text.toStringNonNull, style: style?.copyWith()),
+              title: Row(
+                children: [
+                  Flexible(
+                    child: Text(
+                      text.toStringNonNull,
+                      style: style?.copyWith()
+                    )
+                  ),
+                  const SizedBox(width: 8),
+                  Consumer<NotificationNotifier>(
+                    builder: (_, notificationNotifier, __) => NumberIndicator(
+                      notificationNumber: notificationNotifier.cartLoadDataResult.resultIfSuccess ?? 0,
+                      fontSize: 10,
+                    )
+                  )
+                ],
+              ),
               onInterceptTextStyle: (style) => style.copyWith(),
               onTapMore: () => PageRestorationHelper.toCartPage(context)
             );
@@ -571,7 +653,7 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
                       rxValue: widget.menuMainMenuSubController.userLoadDataResultWrapperRx,
                       onConsumeValue: (context, userLoadDataResultWrapper) {
                         return Padding(
-                          padding: const EdgeInsets.all(16.0),
+                          padding: const EdgeInsets.all(16.0).copyWith(top: 0.0),
                           child: MenuProfileHeader(
                             errorProvider: Injector.locator<ErrorProvider>(),
                             userLoadDataResult: userLoadDataResultWrapper.loadDataResult,

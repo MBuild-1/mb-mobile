@@ -129,6 +129,10 @@ class _ConstantImpl {
   String get vectorReviewThisApplication => _getVectorsAssets("review_this_application.svg");
   String get vectorWhatsappLogo => _getVectorsAssets("whatsapp_logo.svg");
   String get vectorChecklist => _getVectorsAssets("checklist.svg");
+  String get vectorSettings => _getVectorsAssets("settings.svg");
+  String get vectorFaq => _getVectorsAssets("faq.svg");
+  String get vectorSelectLanguage => _getVectorsAssets("select_language.svg");
+  String get vectorSharedCart => _getVectorsAssets("shared_cart.svg");
 
   Color get colorYellow => const Color.fromRGBO(244, 184, 43, 1);
   Color get colorLightRed => const Color.fromRGBO(255, 236, 230, 1);
@@ -147,6 +151,7 @@ class _ConstantImpl {
   Color get colorGrey9 => ColorHelper.convertFromAlphaEnabledToNonAlphaEnabledColor(
     const Color.fromRGBO(0, 0, 0, 0.2)
   );
+  Color get colorGrey10 => const Color.fromRGBO(41, 41, 41, 1);
   Color get colorSurfaceGrey => const Color.fromRGBO(247, 247, 247, 1);
   Color get colorDarkGrey => const Color.fromRGBO(105, 105, 105, 1);
   Color get colorBrown => const Color.fromRGBO(191, 105, 25, 1);
