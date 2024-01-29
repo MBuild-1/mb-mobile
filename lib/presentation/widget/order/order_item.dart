@@ -45,6 +45,7 @@ abstract class OrderItem extends StatelessWidget {
           borderRadius: BorderRadius.circular(16.0),
           child: Builder(
             builder: (context) {
+              List<OrderProductDetail> orderProductDetailList = order.orderProduct.orderProductDetailList;
               Widget result = Column(
                 children: [
                   Padding(
@@ -60,7 +61,7 @@ abstract class OrderItem extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text("Shopping".tr, style: const TextStyle(fontWeight: FontWeight.bold)),
+                                  Text(orderProductDetailList.isEmpty ? "Warehouse".tr : "Shopping".tr, style: const TextStyle(fontWeight: FontWeight.bold)),
                                   Text(DateUtil.standardDateFormat7.format(order.createdAt))
                                 ]
                               ),
@@ -73,8 +74,10 @@ abstract class OrderItem extends StatelessWidget {
                         ),
                         const SizedBox(height: 12),
                         const ModifiedDivider(),
-                        const SizedBox(height: 12),
-                        ..._allOrderProductDetailWidget(order.orderProduct.orderProductDetailList),
+                        if (orderProductDetailList.isNotEmpty) ...[
+                          const SizedBox(height: 12),
+                          ..._allOrderProductDetailWidget(orderProductDetailList),
+                        ],
                         const SizedBox(height: 15),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
