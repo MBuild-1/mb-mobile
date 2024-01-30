@@ -133,6 +133,7 @@ class _ConstantImpl {
   String get vectorFaq => _getVectorsAssets("faq.svg");
   String get vectorSelectLanguage => _getVectorsAssets("select_language.svg");
   String get vectorSharedCart => _getVectorsAssets("shared_cart.svg");
+  String get vectorPinPoint => _getVectorsAssets("pin_point.svg");
 
   Color get colorYellow => const Color.fromRGBO(244, 184, 43, 1);
   Color get colorLightRed => const Color.fromRGBO(255, 236, 230, 1);
@@ -152,6 +153,9 @@ class _ConstantImpl {
     const Color.fromRGBO(0, 0, 0, 0.2)
   );
   Color get colorGrey10 => const Color.fromRGBO(41, 41, 41, 1);
+  Color get colorGrey11 => ColorHelper.convertFromAlphaEnabledToNonAlphaEnabledColor(
+    const Color.fromRGBO(0, 0, 0, 0.5)
+  );
   Color get colorSurfaceGrey => const Color.fromRGBO(247, 247, 247, 1);
   Color get colorDarkGrey => const Color.fromRGBO(105, 105, 105, 1);
   Color get colorBrown => const Color.fromRGBO(191, 105, 25, 1);
@@ -172,7 +176,7 @@ class _ConstantImpl {
   Color get colorNonActiveDotIndicator => colorSurfaceBlue;
   Color get colorDivider => colorGrey2;
   Color get colorBottomNavigationBarIconAndLabel => colorGrey2;
-  Color get colorSpacingListItem => const Color.fromRGBO(245, 245, 245, 1);
+  Color get colorSpacingListItem => const Color.fromRGBO(241, 241, 241, 1);
   Color get colorTitleUserDetail => const Color.fromRGBO(142, 142, 142, 1);
   Color get colorProductItemDiscountOrNormal => const Color.fromRGBO(142, 142, 142, 1);
   Color get colorProductItemBorder => const Color.fromRGBO(201, 201, 201, 1);
@@ -215,7 +219,7 @@ class _ConstantImpl {
     colors: [Constant.colorGrey7]
   );
 
-  double get heightSpacingListItem => 1.h;
+  double get heightSpacingListItem => 6.0;
   double get paddingListItem => 4.w;
   double get spacingListItem => 2.w;
   double get iconSpacing => 7.w;

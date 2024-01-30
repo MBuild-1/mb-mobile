@@ -508,7 +508,7 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
       appBar: ModifiedAppBar(
         titleInterceptor: (context, title) => Row(
           children: [
-            Text("Delivery".tr),
+            Text("Checkout".tr),
           ],
         ),
       ),

@@ -31,6 +31,7 @@ import '../controllerstate/listitemcontrollerstate/list_item_controller_state.da
 import '../controllerstate/listitemcontrollerstate/loading_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/padding_container_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/shipping_address_indicator_list_item_controller_state.dart';
+import '../controllerstate/listitemcontrollerstate/shipping_address_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/spacing_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/widget_substitution_list_item_controller_state.dart';
@@ -89,139 +90,13 @@ class DeliveryCartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
             loadShippingAddress();
           });
         }
-        LoadDataResult<Address> shippingLoadDataResult = deliveryCartContainerStateStorageListItemControllerState._shippingAddressLoadDataResult;
-        if (shippingLoadDataResult.isSuccess) {
-          newItemTypeList.add(
-            PaddingContainerListItemControllerState(
-              padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-              paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
-                widgetSubstitution: (context, index) {
-                  return Text(
-                    "Shipping Address".tr,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  );
-                }
-              )
-            )
-          );
-          newItemTypeList.add(
-            VirtualSpacingListItemControllerState(
-              height: 10.0
-            )
-          );
-          newItemTypeList.add(
-            DividerListItemControllerState(
-              lineColor: Colors.black,
-              lineHeight: 1.0
-            )
-          );
-          newItemTypeList.add(
-            ShippingAddressIndicatorListItemControllerState(
-              shippingAddress: shippingLoadDataResult.resultIfSuccess!
-            )
-          );
-          newItemTypeList.add(
-            DividerListItemControllerState(
-              lineColor: Colors.black,
-              lineHeight: 1.0
-            )
-          );
-          newItemTypeList.add(
-            VirtualSpacingListItemControllerState(
-              height: 10.0
-            )
-          );
-          newItemTypeList.add(
-            PaddingContainerListItemControllerState(
-              padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-              paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
-                widgetSubstitution: (context, index) {
-                  return Row(
-                    children: [
-                      TapArea(
-                        onTap: () => PageRestorationHelper.toAddressPage(context),
-                        child: Container(
-                          child: Text("Change Other Address".tr, style: const TextStyle(fontWeight: FontWeight.bold)),
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                          decoration: BoxDecoration(
-                            border: Border.all()
-                          ),
-                        )
-                      ),
-                    ]
-                  );
-                }
-              )
-            )
-          );
-          newItemTypeList.add(
-            VirtualSpacingListItemControllerState(
-              height: 10.0
-            )
-          );
-        } else if (shippingLoadDataResult.isFailed) {
-          ErrorProvider errorProvider = oldItemType.errorProvider();
-          ErrorProviderResult errorProviderResult = errorProvider.onGetErrorProviderResult(shippingLoadDataResult.resultIfFailed!).toErrorProviderResultNonNull();
-          newItemTypeList.add(
-            VirtualSpacingListItemControllerState(
-              height: 10.0
-            )
-          );
-          newItemTypeList.add(
-            PaddingContainerListItemControllerState(
-              padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-              paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
-                widgetSubstitution: (context, index) => Text(
-                  errorProviderResult.message,
-                  style: const TextStyle(fontWeight: FontWeight.bold)
-                ),
-              )
-            )
-          );
-          newItemTypeList.add(
-            VirtualSpacingListItemControllerState(
-              height: 10.0
-            )
-          );
-          newItemTypeList.add(
-            PaddingContainerListItemControllerState(
-              padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-              paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
-                widgetSubstitution: (context, index) {
-                  return Row(
-                    children: [
-                      TapArea(
-                        onTap: () => PageRestorationHelper.toAddressPage(context),
-                        child: Container(
-                          child: Text("Change Other Address".tr, style: const TextStyle(fontWeight: FontWeight.bold)),
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                          decoration: BoxDecoration(
-                            border: Border.all()
-                          ),
-                        )
-                      ),
-                    ]
-                  );
-                }
-              )
-            )
-          );
-          newItemTypeList.add(
-            VirtualSpacingListItemControllerState(height: 10.0)
-          );
-        } else if (shippingLoadDataResult.isLoading) {
-          newItemTypeList.add(
-            VirtualSpacingListItemControllerState(
-              height: 10.0
-            )
-          );
-          newItemTypeList.add(LoadingListItemControllerState());
-          newItemTypeList.add(
-            VirtualSpacingListItemControllerState(
-              height: 10.0
-            )
-          );
-        }
+        ListItemControllerState shippingAddressListItemControllerState = ShippingAddressListItemControllerState(
+          shippingLoadDataResult: deliveryCartContainerStateStorageListItemControllerState._shippingAddressLoadDataResult,
+          errorProvider: oldItemType.errorProvider
+        );
+        listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
+          i, ListItemControllerStateWrapper(shippingAddressListItemControllerState), oldItemTypeList, newItemTypeList
+        );
       } else {
         newItemTypeList.add(
           PaddingContainerListItemControllerState(
@@ -248,7 +123,7 @@ class DeliveryCartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
           selectedCart.add(cartListItemControllerState.cart);
         }
         newItemTypeList.addAll(<ListItemControllerState>[
-          SpacingListItemControllerState(),
+          if (j > 0) SpacingListItemControllerState(),
           cartListItemControllerState
         ]);
         j++;
