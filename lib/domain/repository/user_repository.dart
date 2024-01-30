@@ -30,6 +30,10 @@ import '../entity/register/sendregisterotp/sendregisterotpparameter/send_registe
 import '../entity/register/sendregisterotp/sendregisterotpresponse/send_register_otp_response.dart';
 import '../entity/register/verify_register_parameter.dart';
 import '../entity/register/verify_register_response.dart';
+import '../entity/resetpassword/check/check_reset_password_parameter.dart';
+import '../entity/resetpassword/check/check_reset_password_response.dart';
+import '../entity/resetpassword/reset_password_parameter.dart';
+import '../entity/resetpassword/reset_password_response.dart';
 import '../entity/user/edituser/edit_user_parameter.dart';
 import '../entity/user/edituser/edit_user_response.dart';
 import '../entity/user/getuser/get_user_parameter.dart';
@@ -59,6 +63,8 @@ abstract class UserRepository {
   FutureProcessing<LoadDataResult<CheckActivePinResponse>> checkActivePin(CheckActivePinParameter checkActivePinParameter);
   FutureProcessing<LoadDataResult<ModifyPinResponse>> modifyPin(ModifyPinParameter modifyPinParameter);
   FutureProcessing<LoadDataResult<ForgotPasswordResponse>> forgotPassword(ForgotPasswordParameter forgotPasswordParameter);
+  FutureProcessing<LoadDataResult<CheckResetPasswordResponse>> checkResetPassword(CheckResetPasswordParameter checkResetPasswordParameter);
+  FutureProcessing<LoadDataResult<ResetPasswordResponse>> resetPassword(ResetPasswordParameter resetPasswordParameter);
   FutureProcessing<LoadDataResult<RegisterFirstStepResponse>> registerFirstStep(RegisterFirstStepParameter registerFirstStepParameter);
   FutureProcessing<LoadDataResult<SendRegisterOtpResponse>> sendRegisterOtp(SendRegisterOtpParameter sendRegisterOtpParameter);
   FutureProcessing<LoadDataResult<VerifyRegisterResponse>> verifyRegister(VerifyRegisterParameter verifyRegisterParameter);

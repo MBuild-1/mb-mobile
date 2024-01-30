@@ -6,6 +6,7 @@ import '../../../../domain/entity/cart/support_cart.dart';
 import '../../../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../../../domain/entity/product/productentry/product_entry.dart';
 import '../../../../misc/page_restoration_helper.dart';
+import '../../../page/product_bundle_detail_page.dart';
 import '../../../page/product_detail_page.dart';
 import '../../modifiedcachednetworkimage/product_modified_cached_network_image.dart';
 
@@ -50,7 +51,7 @@ abstract class ShortCartItem extends StatelessWidget {
               if (supportCart is ProductEntry) {
                 PageRestorationHelper.toProductDetailPage(
                   context,
-                  ProductDetailPageParameter(
+                  DefaultProductDetailPageParameter(
                     productId: supportCart.productId,
                     productEntryId: supportCart.productEntryId
                   )
@@ -58,7 +59,9 @@ abstract class ShortCartItem extends StatelessWidget {
               } else if (supportCart is ProductBundle) {
                 PageRestorationHelper.toProductBundleDetailPage(
                   context,
-                  supportCart.id
+                  DefaultProductBundleDetailPageParameter(
+                    productBundleId: supportCart.id
+                  )
                 );
               }
             },

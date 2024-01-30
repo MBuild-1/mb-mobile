@@ -3,6 +3,7 @@ import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 
 import '../../domain/entity/product/product.dart';
 import '../../domain/entity/product/product_detail.dart';
+import '../../domain/entity/product/product_detail_by_slug_parameter.dart';
 import '../../domain/entity/product/product_detail_from_your_search_product_entry_list_parameter.dart';
 import '../../domain/entity/product/product_detail_other_chosen_for_you_product_entry_list_parameter.dart';
 import '../../domain/entity/product/product_detail_other_from_this_brand_product_entry_list_parameter.dart';
@@ -22,6 +23,7 @@ import '../../domain/entity/product/productbrand/remove_from_favorite_product_br
 import '../../domain/entity/product/productbrand/remove_from_favorite_product_brand_response.dart';
 import '../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../domain/entity/product/productbundle/product_bundle_detail.dart';
+import '../../domain/entity/product/productbundle/product_bundle_detail_by_slug_parameter.dart';
 import '../../domain/entity/product/productbundle/product_bundle_detail_parameter.dart';
 import '../../domain/entity/product/productbundle/product_bundle_highlight_parameter.dart';
 import '../../domain/entity/product/productbundle/product_bundle_list_parameter.dart';
@@ -221,6 +223,11 @@ class DefaultProductRepository implements ProductRepository {
   }
 
   @override
+  FutureProcessing<LoadDataResult<ProductDetail>> productDetailBySlug(ProductDetailBySlugParameter productDetailBySlugParameter) {
+    return productDataSource.productDetailBySlug(productDetailBySlugParameter).mapToLoadDataResult<ProductDetail>();
+  }
+
+  @override
   FutureProcessing<LoadDataResult<ProductCategoryDetail>> productCategoryDetail(ProductCategoryDetailParameter productCategoryDetailParameter) {
     return productDataSource.productCategoryDetail(productCategoryDetailParameter).mapToLoadDataResult<ProductCategoryDetail>();
   }
@@ -228,6 +235,11 @@ class DefaultProductRepository implements ProductRepository {
   @override
   FutureProcessing<LoadDataResult<ProductBundleDetail>> productBundleDetail(ProductBundleDetailParameter productBundleDetailParameter) {
     return productDataSource.productBundleDetail(productBundleDetailParameter).mapToLoadDataResult<ProductBundleDetail>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<ProductBundleDetail>> productBundleDetailBySlug(ProductBundleDetailBySlugParameter productBundleDetailBySlugParameter) {
+    return productDataSource.productBundleDetailBySlug(productBundleDetailBySlugParameter).mapToLoadDataResult<ProductBundleDetail>();
   }
 
   @override

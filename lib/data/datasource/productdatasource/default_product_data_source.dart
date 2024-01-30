@@ -14,6 +14,7 @@ import '../../../domain/entity/cart/cart_list_parameter.dart';
 import '../../../domain/entity/product/product.dart';
 import '../../../domain/entity/product/product_appearance_data.dart';
 import '../../../domain/entity/product/product_detail.dart';
+import '../../../domain/entity/product/product_detail_by_slug_parameter.dart';
 import '../../../domain/entity/product/product_detail_from_your_search_product_entry_list_parameter.dart';
 import '../../../domain/entity/product/product_detail_other_chosen_for_you_product_entry_list_parameter.dart';
 import '../../../domain/entity/product/product_detail_other_from_this_brand_product_entry_list_parameter.dart';
@@ -33,6 +34,7 @@ import '../../../domain/entity/product/productbrand/remove_from_favorite_product
 import '../../../domain/entity/product/productbrand/remove_from_favorite_product_brand_response.dart';
 import '../../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../../domain/entity/product/productbundle/product_bundle_detail.dart';
+import '../../../domain/entity/product/productbundle/product_bundle_detail_by_slug_parameter.dart';
 import '../../../domain/entity/product/productbundle/product_bundle_detail_parameter.dart';
 import '../../../domain/entity/product/productbundle/product_bundle_highlight_parameter.dart';
 import '../../../domain/entity/product/productbundle/product_bundle_list_parameter.dart';
@@ -247,6 +249,17 @@ class DefaultProductDataSource implements ProductDataSource {
   }
 
   @override
+  FutureProcessing<ProductDetail> productDetailBySlug(ProductDetailBySlugParameter productDetailBySlugParameter) {
+    return DioHttpClientProcessing((cancelToken) async {
+      List<FavoriteProductBrand> favoriteProductBrandListResult = await _favoriteProductBrandListIgnoringLoginError(FavoriteProductBrandListParameter()).future(parameter: cancelToken);
+      List<Wishlist> wishlistListResult = await wishlistListIgnoringLoginError(WishlistListParameter()).future(parameter: cancelToken);
+      List<Cart> cartListResult = await cartDataSource.cartListIgnoringLoginError(CartListParameter()).future(parameter: cancelToken);
+      return await dio.get("/product/slug/${productDetailBySlugParameter.slug}", cancelToken: cancelToken)
+        .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductDetail(wishlistListResult, favoriteProductBrandListResult, cartListResult));
+    });
+  }
+
+  @override
   FutureProcessing<ProductBrandDetail> productBrandDetail(ProductBrandDetailParameter productBrandDetailParameter) {
     return DioHttpClientProcessing((cancelToken) async {
       List<FavoriteProductBrand> favoriteProductBrandListResult = await _favoriteProductBrandListIgnoringLoginError(FavoriteProductBrandListParameter()).future(parameter: cancelToken);
@@ -281,6 +294,16 @@ class DefaultProductDataSource implements ProductDataSource {
       List<Wishlist> wishlistListResult = await wishlistListIgnoringLoginError(WishlistListParameter()).future(parameter: cancelToken);
       List<Cart> cartListResult = await cartDataSource.cartListIgnoringLoginError(CartListParameter()).future(parameter: cancelToken);
       return await dio.get("/bundling/${productBundleDetailParameter.productBundleId}", cancelToken: cancelToken)
+        .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductBundleDetail(wishlistListResult, cartListResult));
+    });
+  }
+
+  @override
+  FutureProcessing<ProductBundleDetail> productBundleDetailBySlug(ProductBundleDetailBySlugParameter productBundleDetailBySlugParameter) {
+    return DioHttpClientProcessing((cancelToken) async {
+      List<Wishlist> wishlistListResult = await wishlistListIgnoringLoginError(WishlistListParameter()).future(parameter: cancelToken);
+      List<Cart> cartListResult = await cartDataSource.cartListIgnoringLoginError(CartListParameter()).future(parameter: cancelToken);
+      return await dio.get("/bundling/slug/${productBundleDetailBySlugParameter.productBundleSlug}", cancelToken: cancelToken)
         .map(onMap: (value) => value.wrapResponse().mapFromResponseToProductBundleDetail(wishlistListResult, cartListResult));
     });
   }

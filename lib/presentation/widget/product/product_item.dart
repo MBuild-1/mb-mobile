@@ -141,7 +141,7 @@ abstract class ProductItem extends StatelessWidget {
           child: InkWell(
             onTap: () => PageRestorationHelper.toProductDetailPage(
               context,
-              ProductDetailPageParameter(
+              DefaultProductDetailPageParameter(
                 productId: productAppearanceData.productId,
                 productEntryId: productAppearanceData is ProductEntryAppearanceData ? (productAppearanceData as ProductEntryAppearanceData).productEntryId : ""
               )

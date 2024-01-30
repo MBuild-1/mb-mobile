@@ -3,6 +3,7 @@ import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/processing/future_processing.dart';
 import '../entity/product/product.dart';
 import '../entity/product/product_detail.dart';
+import '../entity/product/product_detail_by_slug_parameter.dart';
 import '../entity/product/product_detail_from_your_search_product_entry_list_parameter.dart';
 import '../entity/product/product_detail_other_chosen_for_you_product_entry_list_parameter.dart';
 import '../entity/product/product_detail_other_from_this_brand_product_entry_list_parameter.dart';
@@ -22,6 +23,7 @@ import '../entity/product/productbrand/remove_from_favorite_product_brand_parame
 import '../entity/product/productbrand/remove_from_favorite_product_brand_response.dart';
 import '../entity/product/productbundle/product_bundle.dart';
 import '../entity/product/productbundle/product_bundle_detail.dart';
+import '../entity/product/productbundle/product_bundle_detail_by_slug_parameter.dart';
 import '../entity/product/productbundle/product_bundle_detail_parameter.dart';
 import '../entity/product/productbundle/product_bundle_highlight_parameter.dart';
 import '../entity/product/productbundle/product_bundle_list_parameter.dart';
@@ -66,8 +68,10 @@ abstract class ProductRepository {
   FutureProcessing<LoadDataResult<ProductBundle>> productBundleHighlight(ProductBundleHighlightParameter productBundleHighlightParameter);
   FutureProcessing<LoadDataResult<PagingDataResult<ProductEntry>>> productWithConditionPaging(ProductWithConditionPagingParameter productWithConditionPagingParameter);
   FutureProcessing<LoadDataResult<ProductDetail>> productDetail(ProductDetailParameter productDetailParameter);
+  FutureProcessing<LoadDataResult<ProductDetail>> productDetailBySlug(ProductDetailBySlugParameter productDetailBySlugParameter);
   FutureProcessing<LoadDataResult<ProductCategoryDetail>> productCategoryDetail(ProductCategoryDetailParameter productCategoryDetailParameter);
   FutureProcessing<LoadDataResult<ProductBundleDetail>> productBundleDetail(ProductBundleDetailParameter productBundleDetailParameter);
+  FutureProcessing<LoadDataResult<ProductBundleDetail>> productBundleDetailBySlug(ProductBundleDetailBySlugParameter productBundleDetailBySlugParameter);
   FutureProcessing<LoadDataResult<List<ProductEntry>>> productDetailFromYourSearchProductEntryList(ProductDetailFromYourSearchProductEntryListParameter productDetailFromYourSearchProductEntryListParameter);
   FutureProcessing<LoadDataResult<List<ProductEntry>>> productDetailOtherChosenForYouProductEntryList(ProductDetailOtherChosenForYouProductEntryListParameter productDetailOtherChosenForYouProductEntryListParameter);
   FutureProcessing<LoadDataResult<List<ProductEntry>>> productDetailOtherFromThisBrandProductEntryList(ProductDetailOtherFromThisBrandProductEntryListParameter productDetailOtherFromThisBrandProductEntryListParameter);

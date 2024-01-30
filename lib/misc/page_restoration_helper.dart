@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../controller/crop_picture_controller.dart';
+import '../controller/reset_password_controller.dart';
 import '../presentation/page/accountsecurity/account_security_page.dart';
 import '../presentation/page/accountsecurity/change_password_page.dart';
 import '../presentation/page/accountsecurity/modify_pin_page.dart';
@@ -51,6 +52,7 @@ import '../presentation/page/product_detail_page.dart';
 import '../presentation/page/product_discussion_page.dart';
 import '../presentation/page/product_entry_page.dart';
 import '../presentation/page/register_page.dart';
+import '../presentation/page/reset_password_page.dart';
 import '../presentation/page/search_page.dart';
 import '../presentation/page/shared_cart_page.dart';
 import '../presentation/page/videopage/video_page.dart';
@@ -153,10 +155,12 @@ class _PageRestorationHelperImpl {
     );
   }
 
-  void toProductBundleDetailPage(BuildContext context, String productBundleId) {
+  void toProductBundleDetailPage(BuildContext context, ProductBundleDetailPageParameter productBundleDetailPageParameter) {
     PageRestorationHelper.findPageRestorationMixin<ProductBundleDetailPageRestorationMixin>(
       onGetxPageRestorationFound: (restoration) {
-        restoration.productBundleDetailPageRestorableRouteFuture.present(productBundleId);
+        restoration.productBundleDetailPageRestorableRouteFuture.present(
+          productBundleDetailPageParameter.toEncodeBase64String()
+        );
       },
       context: context
     );
@@ -634,6 +638,17 @@ class _PageRestorationHelperImpl {
     PageRestorationHelper.findPageRestorationMixin<PaymentInstructionPageRestorationMixin>(
       onGetxPageRestorationFound: (restoration) {
         restoration.paymentInstructionPageRestorableRouteFuture.present();
+      },
+      context: context
+    );
+  }
+
+  void toResetPasswordPage(BuildContext context, ResetPasswordPageParameter resetPasswordPageParameter) {
+    PageRestorationHelper.findPageRestorationMixin<ResetPasswordPageRestorationMixin>(
+      onGetxPageRestorationFound: (restoration) {
+        restoration.resetPasswordPageRestorableRouteFuture.present(
+          resetPasswordPageParameter.toEncodeBase64String()
+        );
       },
       context: context
     );

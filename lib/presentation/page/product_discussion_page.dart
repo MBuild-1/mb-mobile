@@ -435,7 +435,7 @@ class _StatefulProductDiscussionControllerMediatorWidgetState extends State<_Sta
                 SupportDiscussion supportDiscussion = supportDiscussionLoadDataResult.resultIfSuccess!;
                 if (supportDiscussion is ProductDetail) {
                   NavigationHelper.navigationToProductDetailFromProductDiscussion(
-                    context, ProductDetailPageParameter(
+                    context, DefaultProductDetailPageParameter(
                       productId: supportDiscussion.productId,
                       productEntryId: ""
                     )

@@ -23,6 +23,8 @@ import 'help_chat_page.dart';
 import 'order_chat_page.dart';
 import 'order_detail_page.dart';
 import 'product_chat_page.dart';
+import 'product_detail_page.dart';
+import 'reset_password_page.dart';
 import 'shared_cart_page.dart';
 
 class NotificationRedirectorPage extends RestorableGetxPage<_NotificationRedirectorPageRestoration> {
@@ -74,7 +76,7 @@ mixin NotificationRedirectorPageRestorationMixin on MixableGetxPageRestoration {
   }
 }
 
-class _NotificationRedirectorPageRestoration extends ExtendedMixableGetxPageRestoration with HelpChatPageRestorationMixin, OrderChatPageRestorationMixin, ProductChatPageRestorationMixin, FavoriteProductBrandPageRestorationMixin, OrderDetailPageRestorationMixin, SharedCartPageRestorationMixin {
+class _NotificationRedirectorPageRestoration extends ExtendedMixableGetxPageRestoration with HelpChatPageRestorationMixin, OrderChatPageRestorationMixin, ProductDetailPageRestorationMixin, ProductChatPageRestorationMixin, FavoriteProductBrandPageRestorationMixin, OrderDetailPageRestorationMixin, SharedCartPageRestorationMixin, ResetPasswordPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {

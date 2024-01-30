@@ -12,6 +12,7 @@ import '../domain/entity/order/order.dart';
 import '../domain/entity/order/purchase_direct_parameter.dart';
 import '../domain/entity/product/product.dart';
 import '../domain/entity/product/product_detail.dart';
+import '../domain/entity/product/product_detail_by_slug_parameter.dart';
 import '../domain/entity/product/product_detail_from_your_search_product_entry_list_parameter.dart';
 import '../domain/entity/product/product_detail_get_other_chosen_for_you_parameter.dart';
 import '../domain/entity/product/product_detail_get_other_from_this_brand_parameter.dart';
@@ -33,6 +34,7 @@ import '../domain/entity/search/store_search_last_seen_history_response.dart';
 import '../domain/usecase/add_to_cart_use_case.dart';
 import '../domain/usecase/get_my_cart_use_case.dart';
 import '../domain/usecase/get_product_category_list_use_case.dart';
+import '../domain/usecase/get_product_detail_by_slug_use_case.dart';
 import '../domain/usecase/get_product_detail_from_your_search_product_entry_list_use_case.dart';
 import '../domain/usecase/get_product_detail_other_chosen_for_you_product_entry_list_use_case.dart';
 import '../domain/usecase/get_product_detail_other_from_this_brand_product_entry_list_use_case.dart';
@@ -68,6 +70,7 @@ typedef _OnShowShareProductRequestProcessFailedCallback = Future<void> Function(
 
 class ProductDetailController extends BaseGetxController {
   final GetProductDetailUseCase getProductDetailUseCase;
+  final GetProductDetailBySlugUseCase getProductDetailBySlugUseCase;
   final GetProductDetailOtherChosenForYouProductEntryListUseCase getProductDetailOtherChosenForYouProductEntryListUseCase;
   final GetProductDetailOtherFromThisBrandProductEntryListUseCase getProductDetailOtherFromThisBrandProductEntryListUseCase;
   final GetProductDetailOtherInThisCategoryProductEntryListUseCase getProductDetailOtherInThisCategoryProductEntryListUseCase;
@@ -85,6 +88,7 @@ class ProductDetailController extends BaseGetxController {
   ProductDetailController(
     super.controllerManager,
     this.getProductDetailUseCase,
+    this.getProductDetailBySlugUseCase,
     this.getProductDetailOtherChosenForYouProductEntryListUseCase,
     this.getProductDetailOtherFromThisBrandProductEntryListUseCase,
     this.getProductDetailOtherInThisCategoryProductEntryListUseCase,
@@ -105,6 +109,12 @@ class ProductDetailController extends BaseGetxController {
   Future<LoadDataResult<ProductDetail>> getProductDetail(ProductDetailParameter productDetailParameter) {
     return getProductDetailUseCase.execute(productDetailParameter).future(
       parameter: apiRequestManager.addRequestToCancellationPart("product-detail").value
+    );
+  }
+
+  Future<LoadDataResult<ProductDetail>> getProductDetailBySlug(ProductDetailBySlugParameter productDetailBySlugParameter) {
+    return getProductDetailBySlugUseCase.execute(productDetailBySlugParameter).future(
+      parameter: apiRequestManager.addRequestToCancellationPart("product-detail-by-slug").value
     );
   }
 

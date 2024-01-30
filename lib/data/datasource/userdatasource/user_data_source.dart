@@ -28,6 +28,10 @@ import '../../../domain/entity/register/sendregisterotp/sendregisterotpresponse/
 import '../../../domain/entity/register/sendregisterotp/sendregisterotpparameter/send_register_otp_parameter.dart';
 import '../../../domain/entity/register/verify_register_parameter.dart';
 import '../../../domain/entity/register/verify_register_response.dart';
+import '../../../domain/entity/resetpassword/check/check_reset_password_parameter.dart';
+import '../../../domain/entity/resetpassword/check/check_reset_password_response.dart';
+import '../../../domain/entity/resetpassword/reset_password_parameter.dart';
+import '../../../domain/entity/resetpassword/reset_password_response.dart';
 import '../../../domain/entity/user/edituser/edit_user_parameter.dart';
 import '../../../domain/entity/user/edituser/edit_user_response.dart';
 import '../../../domain/entity/user/getuser/get_user_parameter.dart';
@@ -62,6 +66,8 @@ abstract class UserDataSource {
   FutureProcessing<CheckActivePinResponse> checkActivePin(CheckActivePinParameter checkActivePinParameter);
   FutureProcessing<ModifyPinResponse> modifyPin(ModifyPinParameter modifyPinParameter);
   FutureProcessing<ForgotPasswordResponse> forgotPassword(ForgotPasswordParameter forgotPasswordParameter);
+  FutureProcessing<CheckResetPasswordResponse> checkResetPassword(CheckResetPasswordParameter checkResetPasswordParameter);
+  FutureProcessing<ResetPasswordResponse> resetPassword(ResetPasswordParameter resetPasswordParameter);
   FutureProcessing<SendDeleteAccountOtpResponse> sendDeleteAccountOtp(SendDeleteAccountOtpParameter sendDeleteAccountOtpParameter);
   FutureProcessing<VerifyDeleteAccountOtpResponse> verifyDeleteAccountOtp(VerifyDeleteAccountOtpParameter verifyDeleteAccountOtpParameter);
   FutureProcessing<AuthIdentityResponse> authIdentity(AuthIdentityParameter authIdentityParameter);

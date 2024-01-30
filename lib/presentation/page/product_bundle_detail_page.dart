@@ -8,7 +8,9 @@ import 'package:provider/provider.dart';
 
 import '../../controller/product_bundle_detail_controller.dart';
 import '../../domain/entity/product/productbundle/product_bundle_detail.dart';
+import '../../domain/entity/product/productbundle/product_bundle_detail_by_slug_parameter.dart';
 import '../../domain/entity/product/productbundle/product_bundle_detail_parameter.dart';
+import '../../domain/usecase/get_product_bundle_detail_by_slug_use_case.dart';
 import '../../domain/usecase/get_product_bundle_detail_use_case.dart';
 import '../../misc/additionalloadingindicatorchecker/product_bundle_detail_additional_paging_result_parameter_checker.dart';
 import '../../misc/constant.dart';
@@ -34,6 +36,7 @@ import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
+import '../../misc/string_util.dart';
 import '../notifier/component_notifier.dart';
 import '../notifier/notification_notifier.dart';
 import '../notifier/product_notifier.dart';
@@ -47,9 +50,12 @@ import 'search_page.dart';
 class ProductBundleDetailPage extends RestorableGetxPage<_ProductBundleDetailPageRestoration> {
   late final ControllerMember<ProductBundleDetailController> _productBundleDetailController = ControllerMember<ProductBundleDetailController>().addToControllerManager(controllerManager);
 
-  final String productBundleId;
+  final ProductBundleDetailPageParameter productBundleDetailPageParameter;
 
-  ProductBundleDetailPage({Key? key, required this.productBundleId}) : super(key: key, pageRestorationId: () => "product-bundle-detail-page");
+  ProductBundleDetailPage({
+    Key? key,
+    required this.productBundleDetailPageParameter
+  }) : super(key: key, pageRestorationId: () => "product-bundle-detail-page");
 
   @override
   void onSetController() {
@@ -57,6 +63,7 @@ class ProductBundleDetailPage extends RestorableGetxPage<_ProductBundleDetailPag
       ProductBundleDetailController(
         controllerManager,
         Injector.locator<GetProductBundleDetailUseCase>(),
+        Injector.locator<GetProductBundleDetailBySlugUseCase>(),
         Injector.locator<WishlistAndCartControllerContentDelegate>()
       ), tag: pageName
     );
@@ -68,7 +75,7 @@ class ProductBundleDetailPage extends RestorableGetxPage<_ProductBundleDetailPag
   @override
   Widget buildPage(BuildContext context) {
     return _StatefulProductBundleDetailControllerMediatorWidget(
-      productBundleId: productBundleId,
+      productBundleDetailPageParameter: productBundleDetailPageParameter,
       productBundleDetailController: _productBundleDetailController.controller,
     );
   }
@@ -95,17 +102,17 @@ class _ProductBundleDetailPageRestoration extends ExtendedMixableGetxPageRestora
 }
 
 class ProductBundleDetailPageGetPageBuilderAssistant extends GetPageBuilderAssistant {
-  final String productBundleId;
+  final ProductBundleDetailPageParameter productBundleDetailPageParameter;
 
   ProductBundleDetailPageGetPageBuilderAssistant({
-    required this.productBundleId
+    required this.productBundleDetailPageParameter
   });
 
   @override
-  GetPageBuilder get pageBuilder => (() => ProductBundleDetailPage(productBundleId: productBundleId));
+  GetPageBuilder get pageBuilder => (() => ProductBundleDetailPage(productBundleDetailPageParameter: productBundleDetailPageParameter));
 
   @override
-  GetPageBuilder get pageWithOuterGetxBuilder => (() => GetxPageBuilder.buildRestorableGetxPage(ProductBundleDetailPage(productBundleId: productBundleId)));
+  GetPageBuilder get pageWithOuterGetxBuilder => (() => GetxPageBuilder.buildRestorableGetxPage(ProductBundleDetailPage(productBundleDetailPageParameter: productBundleDetailPageParameter)));
 }
 
 mixin ProductBundleDetailPageRestorationMixin on MixableGetxPageRestoration {
@@ -145,8 +152,13 @@ class ProductBundleDetailPageRestorableRouteFuture extends GetRestorableRouteFut
     if (arguments is! String) {
       throw MessageError(message: "Arguments must be a String");
     }
+    ProductBundleDetailPageParameter productBundleDetailPageParameter = arguments.toProductBundleDetailPageParameter();
     return GetExtended.toWithGetPageRouteReturnValue<void>(
-      GetxPageBuilder.buildRestorableGetxPageBuilder(ProductBundleDetailPageGetPageBuilderAssistant(productBundleId: arguments)),
+      GetxPageBuilder.buildRestorableGetxPageBuilder(
+        ProductBundleDetailPageGetPageBuilderAssistant(
+          productBundleDetailPageParameter: productBundleDetailPageParameter
+        )
+      ),
     );
   }
 
@@ -174,11 +186,11 @@ class ProductBundleDetailPageRestorableRouteFuture extends GetRestorableRouteFut
 
 class _StatefulProductBundleDetailControllerMediatorWidget extends StatefulWidget {
   final ProductBundleDetailController productBundleDetailController;
-  final String productBundleId;
+  final ProductBundleDetailPageParameter productBundleDetailPageParameter;
 
   const _StatefulProductBundleDetailControllerMediatorWidget({
     required this.productBundleDetailController,
-    required this.productBundleId
+    required this.productBundleDetailPageParameter
   });
 
   @override
@@ -216,9 +228,19 @@ class _StatefulProductBundleDetailControllerMediatorWidgetState extends State<_S
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _fillerErrorValueNotifier.value = null;
     });
-    LoadDataResult<ProductBundleDetail> productBundleDetailLoadDataResult = await widget.productBundleDetailController.getProductBundleDetail(
-      ProductBundleDetailParameter(productBundleId: widget.productBundleId)
-    );
+    LoadDataResult<ProductBundleDetail> productBundleDetailLoadDataResult = await () {
+      ProductBundleDetailPageParameter productBundleDetailPageParameter = widget.productBundleDetailPageParameter;
+      if (productBundleDetailPageParameter is DefaultProductBundleDetailPageParameter) {
+        return widget.productBundleDetailController.getProductBundleDetail(
+          ProductBundleDetailParameter(productBundleId: productBundleDetailPageParameter.productBundleId)
+        );
+      } else if (productBundleDetailPageParameter is SlugProductBundleDetailPageParameter) {
+        return widget.productBundleDetailController.getProductBundleDetailBySlug(
+          ProductBundleDetailBySlugParameter(productBundleSlug: productBundleDetailPageParameter.slug)
+        );
+      }
+      throw MessageError(title: "Subclass of ProductBundleDetailPageParameter is not suitable");
+    }();
     if (productBundleDetailLoadDataResult.isSuccess && pageKey == 1) {
       List itemList = productBundleDetailLoadDataResult.resultIfSuccess!.productEntryList;
       if (itemList.isEmpty) {
@@ -345,5 +367,56 @@ class _StatefulProductBundleDetailControllerMediatorWidgetState extends State<_S
   @override
   void dispose() {
     super.dispose();
+  }
+}
+
+abstract class ProductBundleDetailPageParameter {}
+
+class DefaultProductBundleDetailPageParameter extends ProductBundleDetailPageParameter {
+  final String productBundleId;
+
+  DefaultProductBundleDetailPageParameter({
+    required this.productBundleId
+  });
+}
+
+class SlugProductBundleDetailPageParameter extends ProductBundleDetailPageParameter {
+  String slug;
+
+  SlugProductBundleDetailPageParameter({
+    required this.slug
+  });
+}
+
+extension ProductBundleDetailPageParameterExt on ProductBundleDetailPageParameter {
+  String toEncodeBase64String() => StringUtil.encodeBase64StringFromJson(
+    () {
+      if (this is SlugProductBundleDetailPageParameter) {
+        SlugProductBundleDetailPageParameter slugProductBundleDetailPageParameter = this as SlugProductBundleDetailPageParameter;
+        return <String, dynamic>{
+          "product_bundle_slug": slugProductBundleDetailPageParameter.slug
+        };
+      } else {
+        DefaultProductBundleDetailPageParameter defaultProductBundleDetailPageParameter = this as DefaultProductBundleDetailPageParameter;
+        return <String, dynamic>{
+          "product_bundle_id": defaultProductBundleDetailPageParameter.productBundleId
+        };
+      }
+    }()
+  );
+}
+
+extension ProductBundleDetailPageParameterStringExt on String {
+  ProductBundleDetailPageParameter toProductBundleDetailPageParameter() {
+    Map<String, dynamic> result = StringUtil.decodeBase64StringToJson(this);
+    if (result.containsKey("product_bundle_slug")) {
+      return SlugProductBundleDetailPageParameter(
+        slug: result["product_bundle_slug"]
+      );
+    } else {
+      return DefaultProductBundleDetailPageParameter(
+        productBundleId: result["product_bundle_id"]
+      );
+    }
   }
 }

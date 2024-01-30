@@ -1,8 +1,16 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:uni_links/uni_links.dart';
+import 'package:convert/convert.dart';
+
+import 'encryption_helper.dart';
+import 'main_route_observer.dart';
+import 'notification_redirector_helper.dart';
+import 'routeargument/reset_password_route_argument.dart';
+
 
 class _DeeplinkApplinkHelperImpl {
   Uri? _initialURI;
@@ -34,6 +42,8 @@ class _DeeplinkApplinkHelperImpl {
           }
           _initialURI = initialURI;
           onSetState();
+          await Future.delayed(const Duration(milliseconds: 300));
+          handlingUri(initialURI);
         } else {
           _debugPrint("Null Initial URI received");
         }
@@ -63,6 +73,7 @@ class _DeeplinkApplinkHelperImpl {
         _currentURI = uri;
         _err = null;
         onSetState();
+        handlingUri(uri);
       },
       onError: (Object err) {
         _debugPrint('Error occurred: $err');
@@ -76,6 +87,85 @@ class _DeeplinkApplinkHelperImpl {
           _err = null;
         }
       });
+    }
+  }
+
+  void handlingUri(Uri? uri) {
+    if (uri != null) {
+      String path = uri.path;
+      late Map<String, dynamic> additionalData;
+      if (path.contains("/reset-password/check-code")) {
+        if (uri.pathSegments.isNotEmpty) {
+          // Check if reset password is exist
+          for (MapEntry<String, RouteWrapper?> routeMapEntry in MainRouteObserver.routeMap.entries) {
+            var argument = routeMapEntry.value?.route?.settings.arguments;
+            if (argument is ResetPasswordRouteArgument) {
+              return;
+            }
+          }
+          additionalData = {
+            "type": "reset-password",
+            "data": {
+              "code": uri.pathSegments.last,
+            }
+          };
+        } else {
+          return;
+        }
+      } else if (path.contains("/product/category")) {
+        String category = uri.pathSegments.last;
+        additionalData = {
+          "type": "product-category",
+          "data": {
+            "category": category
+          }
+        };
+      } else if (path.contains("/product/brand")) {
+        String brand = uri.pathSegments.last;
+        additionalData = {
+          "type": "product-brand",
+          "data": {
+            "brand": brand
+          }
+        };
+      } else if (path.contains("/product/bundling")) {
+        if (uri.queryParameters.containsKey("slug")) {
+          String slug = uri.queryParameters["slug"]!;
+          additionalData = {
+            "type": "product-bundle-detail",
+            "data": {
+              "product_bundle_slug": slug
+            }
+          };
+        }
+      } else if (path.contains("/product/details")) {
+        if (uri.queryParameters.containsKey("slug")) {
+          String slug = uri.queryParameters["slug"]!;
+          additionalData = {
+            "type": "product-detail",
+            "data": {
+              "product_slug": slug
+            }
+          };
+        }
+      } else {
+        additionalData = {
+          "type": "product-detail",
+          "data": {
+            "product_id": "",
+            "product_entry_id": ""
+          }
+        };
+      }
+      var notificationRedirectorMap = NotificationRedirectorHelper.notificationRedirectorMap;
+      if (notificationRedirectorMap.containsKey(additionalData["type"])) {
+        if (MainRouteObserver.routeMap.isNotEmpty) {
+          String currentRoute = MainRouteObserver.getCurrentRoute();
+          if (MainRouteObserver.onRedirectFromNotificationClick[currentRoute] != null) {
+            MainRouteObserver.onRedirectFromNotificationClick[currentRoute]!(additionalData);
+          }
+        }
+      }
     }
   }
 

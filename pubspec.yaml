@@ -79,8 +79,7 @@ dependencies:
   touchable: ^1.0.2
   svg_path_parser: ^1.1.1
   google_sign_in: ^6.1.4
-  encrypt: ^5.0.1
-  tuple: ^2.0.1
+  pointycastle: ^3.7.3
   flag: ^6.0.0
   video_thumbnail: ^0.5.3
   path_provider: ^2.1.0

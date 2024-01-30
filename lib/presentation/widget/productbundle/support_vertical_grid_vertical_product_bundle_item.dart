@@ -7,6 +7,7 @@ import 'package:sizer/sizer.dart';
 import '../../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../../misc/constant.dart';
 import '../../../misc/page_restoration_helper.dart';
+import '../../page/product_bundle_detail_page.dart';
 import '../button/add_or_remove_cart_button.dart';
 import '../button/add_or_remove_wishlist_button.dart';
 import '../button/custombutton/sized_outline_gradient_button.dart';
@@ -55,7 +56,11 @@ class SupportVerticalGridVerticalProductBundleItem extends ProductBundleItem {
           borderRadius: borderRadius,
           elevation: 3,
           child: InkWell(
-            onTap: () => PageRestorationHelper.toProductBundleDetailPage(context, productBundle.id),
+            onTap: () => PageRestorationHelper.toProductBundleDetailPage(
+              context, DefaultProductBundleDetailPageParameter(
+                productBundleId: productBundle.id
+              )
+            ),
             borderRadius: borderRadius,
             child: Container(
               clipBehavior: Clip.antiAlias,

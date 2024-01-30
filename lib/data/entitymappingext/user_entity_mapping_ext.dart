@@ -26,6 +26,8 @@ import '../../domain/entity/register/sendregisterotp/sendregisterotpresponse/ema
 import '../../domain/entity/register/sendregisterotp/sendregisterotpresponse/send_register_otp_response.dart';
 import '../../domain/entity/register/sendregisterotp/sendregisterotpresponse/wa_send_register_otp_response.dart';
 import '../../domain/entity/register/verify_register_response.dart';
+import '../../domain/entity/resetpassword/check/check_reset_password_response.dart';
+import '../../domain/entity/resetpassword/reset_password_response.dart';
 import '../../domain/entity/user/edituser/edit_user_response.dart';
 import '../../domain/entity/user/getuser/get_user_response.dart';
 import '../../domain/entity/user/user.dart';
@@ -161,6 +163,14 @@ extension UserEntityMappingExt on ResponseWrapper {
 
   ForgotPasswordResponse mapFromResponseToForgotPasswordResponse() {
     return ForgotPasswordResponse();
+  }
+
+  CheckResetPasswordResponse mapFromResponseToCheckResetPasswordResponse() {
+    return CheckResetPasswordResponse();
+  }
+
+  ResetPasswordResponse mapFromResponseToResetPasswordResponse() {
+    return ResetPasswordResponse();
   }
 
   SendDeleteAccountOtpResponse mapFromResponseToSendDeleteAccountOtpResponse() {

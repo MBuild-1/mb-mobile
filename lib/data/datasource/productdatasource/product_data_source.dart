@@ -1,5 +1,6 @@
 import '../../../domain/entity/product/product.dart';
 import '../../../domain/entity/product/product_detail.dart';
+import '../../../domain/entity/product/product_detail_by_slug_parameter.dart';
 import '../../../domain/entity/product/product_detail_from_your_search_product_entry_list_parameter.dart';
 import '../../../domain/entity/product/product_detail_other_chosen_for_you_product_entry_list_parameter.dart';
 import '../../../domain/entity/product/product_detail_other_from_this_brand_product_entry_list_parameter.dart';
@@ -19,6 +20,7 @@ import '../../../domain/entity/product/productbrand/remove_from_favorite_product
 import '../../../domain/entity/product/productbrand/remove_from_favorite_product_brand_response.dart';
 import '../../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../../domain/entity/product/productbundle/product_bundle_detail.dart';
+import '../../../domain/entity/product/productbundle/product_bundle_detail_by_slug_parameter.dart';
 import '../../../domain/entity/product/productbundle/product_bundle_detail_parameter.dart';
 import '../../../domain/entity/product/productbundle/product_bundle_highlight_parameter.dart';
 import '../../../domain/entity/product/productbundle/product_bundle_list_parameter.dart';
@@ -62,9 +64,11 @@ abstract class ProductDataSource {
   FutureProcessing<ProductBundle> productBundleHighlight(ProductBundleHighlightParameter productBundleHighlightParameter);
   FutureProcessing<PagingDataResult<ProductEntry>> productWithConditionPaging(ProductWithConditionPagingParameter productWithConditionPagingParameter);
   FutureProcessing<ProductDetail> productDetail(ProductDetailParameter productDetailParameter);
+  FutureProcessing<ProductDetail> productDetailBySlug(ProductDetailBySlugParameter productDetailBySlugParameter);
   FutureProcessing<ProductBrandDetail> productBrandDetail(ProductBrandDetailParameter productBrandDetailParameter);
   FutureProcessing<ProductCategoryDetail> productCategoryDetail(ProductCategoryDetailParameter productCategoryDetailParameter);
   FutureProcessing<ProductBundleDetail> productBundleDetail(ProductBundleDetailParameter productBundleDetailParameter);
+  FutureProcessing<ProductBundleDetail> productBundleDetailBySlug(ProductBundleDetailBySlugParameter productBundleDetailBySlugParameter);
   FutureProcessing<List<ProductEntry>> productDetailFromYourSearchProductEntryList(ProductDetailFromYourSearchProductEntryListParameter productDetailFromYourSearchProductEntryListParameter);
   FutureProcessing<List<ProductEntry>> productDetailOtherChosenForYouProductEntryList(ProductDetailOtherChosenForYouProductEntryListParameter productDetailOtherChosenForYouProductEntryListParameter);
   FutureProcessing<List<ProductEntry>> productDetailOtherFromThisBrandProductEntryList(ProductDetailOtherFromThisBrandProductEntryListParameter productDetailOtherFromThisBrandProductEntryListParameter);

@@ -28,6 +28,10 @@ import '../../domain/entity/register/sendregisterotp/sendregisterotpparameter/se
 import '../../domain/entity/register/sendregisterotp/sendregisterotpresponse/send_register_otp_response.dart';
 import '../../domain/entity/register/verify_register_parameter.dart';
 import '../../domain/entity/register/verify_register_response.dart';
+import '../../domain/entity/resetpassword/check/check_reset_password_parameter.dart';
+import '../../domain/entity/resetpassword/check/check_reset_password_response.dart';
+import '../../domain/entity/resetpassword/reset_password_parameter.dart';
+import '../../domain/entity/resetpassword/reset_password_response.dart';
 import '../../domain/entity/user/edituser/edit_user_parameter.dart';
 import '../../domain/entity/user/edituser/edit_user_response.dart';
 import '../../domain/entity/user/getuser/get_user_parameter.dart';
@@ -109,6 +113,16 @@ class DefaultUserRepository implements UserRepository {
   @override
   FutureProcessing<LoadDataResult<ForgotPasswordResponse>> forgotPassword(ForgotPasswordParameter forgotPasswordParameter) {
     return userDataSource.forgotPassword(forgotPasswordParameter).mapToLoadDataResult<ForgotPasswordResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<CheckResetPasswordResponse>> checkResetPassword(CheckResetPasswordParameter checkResetPasswordParameter) {
+    return userDataSource.checkResetPassword(checkResetPasswordParameter).mapToLoadDataResult<CheckResetPasswordResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<ResetPasswordResponse>> resetPassword(ResetPasswordParameter resetPasswordParameter) {
+    return userDataSource.resetPassword(resetPasswordParameter).mapToLoadDataResult<ResetPasswordResponse>();
   }
 
   @override

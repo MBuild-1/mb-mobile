@@ -43,6 +43,10 @@ import '../../../domain/entity/register/sendregisterotp/sendregisterotpresponse/
 import '../../../domain/entity/register/sendregisterotp/sendregisterotpparameter/send_register_otp_parameter.dart';
 import '../../../domain/entity/register/verify_register_parameter.dart';
 import '../../../domain/entity/register/verify_register_response.dart';
+import '../../../domain/entity/resetpassword/check/check_reset_password_parameter.dart';
+import '../../../domain/entity/resetpassword/check/check_reset_password_response.dart';
+import '../../../domain/entity/resetpassword/reset_password_parameter.dart';
+import '../../../domain/entity/resetpassword/reset_password_response.dart';
 import '../../../domain/entity/user/edituser/edit_user_parameter.dart';
 import '../../../domain/entity/user/edituser/edit_user_response.dart';
 import '../../../domain/entity/user/getuser/get_user_parameter.dart';
@@ -408,6 +412,29 @@ class DefaultUserDataSource implements UserDataSource {
       );
       return dio.post("/create/reset-password", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
         .map<ForgotPasswordResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToForgotPasswordResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<CheckResetPasswordResponse> checkResetPassword(CheckResetPasswordParameter checkResetPasswordParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.get("/check/${checkResetPasswordParameter.code}/reset-password", queryParameters: {}, cancelToken: cancelToken)
+        .map<CheckResetPasswordResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToCheckResetPasswordResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<ResetPasswordResponse> resetPassword(ResetPasswordParameter resetPasswordParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      FormData formData = FormData.fromMap(
+        <String, dynamic> {
+          "code": resetPasswordParameter.code,
+          "new_password": resetPasswordParameter.newPassword,
+          "new_password_confirmation": resetPasswordParameter.confirmNewPassword
+        }
+      );
+      return dio.post("/update/reset-password", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+        .map<ResetPasswordResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToResetPasswordResponse());
     });
   }
 

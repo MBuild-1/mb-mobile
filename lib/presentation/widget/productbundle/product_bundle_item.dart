@@ -6,6 +6,7 @@ import '../../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../../misc/constant.dart';
 import '../../../misc/page_restoration_helper.dart';
 import '../../../misc/widget_helper.dart';
+import '../../page/product_bundle_detail_page.dart';
 import '../modifiedcachednetworkimage/product_bundle_modified_cached_network_image.dart';
 
 typedef OnAddWishlistWithProductBundle = void Function(ProductBundle);
@@ -43,7 +44,11 @@ abstract class ProductBundleItem extends StatelessWidget {
           borderRadius: borderRadius,
           elevation: 3,
           child: InkWell(
-            onTap: () => PageRestorationHelper.toProductBundleDetailPage(context, productBundle.id),
+            onTap: () => PageRestorationHelper.toProductBundleDetailPage(
+              context, DefaultProductBundleDetailPageParameter(
+                productBundleId: productBundle.id
+              )
+            ),
             borderRadius: borderRadius,
             child: Row(
               children: [
