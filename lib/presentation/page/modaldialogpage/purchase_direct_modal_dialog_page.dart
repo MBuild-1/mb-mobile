@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 
 import '../../../controller/modaldialogcontroller/purchase_direct_modal_dialog_controller.dart';
+import '../../../domain/entity/coupon/coupon.dart';
+import '../../../domain/entity/payment/payment_method.dart';
 import '../../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
+import '../../../misc/controllerstate/listitemcontrollerstate/purchase_direct_list_item_controller_state.dart';
 import '../../../misc/controllerstate/paging_controller_state.dart';
 import '../../../misc/load_data_result.dart';
 import '../../../misc/paging/modified_paging_controller.dart';
+import '../../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
+import '../../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../../misc/paging/pagingresult/paging_result.dart';
+import '../../widget/modified_paged_list_view.dart';
+import '../../widget/modifiedappbar/modified_app_bar.dart';
 import 'modal_dialog_page.dart';
 
 class PurchaseDirectModalDialogPage extends ModalDialogPage<PurchaseDirectModalDialogController> {
@@ -16,7 +24,7 @@ class PurchaseDirectModalDialogPage extends ModalDialogPage<PurchaseDirectModalD
 
   PurchaseDirectModalDialogPage({
     Key? key,
-    required this.purchaseDirectModalDialogController
+    required this.purchaseDirectModalDialogPageParameter
   }) : super(key: key);
 
   @override
@@ -28,9 +36,9 @@ class PurchaseDirectModalDialogPage extends ModalDialogPage<PurchaseDirectModalD
 
   @override
   Widget buildPage(BuildContext context) {
-    return _StatefulPaymentInstructionModalDialogControllerMediatorWidget(
-      paymentInstructionModalDialogController: paymentInstructionModalDialogController,
-      paymentInstructionModalDialogPageParameter: paymentInstructionModalDialogPageParameter
+    return _StatefulPurchaseDirectModalDialogControllerMediatorWidget(
+      purchaseDirectModalDialogController: purchaseDirectModalDialogController,
+      purchaseDirectModalDialogPageParameter: purchaseDirectModalDialogPageParameter,
     );
   }
 }
@@ -53,6 +61,9 @@ class _StatefulPurchaseDirectModalDialogControllerMediatorWidgetState extends St
   late final ModifiedPagingController<int, ListItemControllerState> _purchaseDirectListItemPagingController;
   late final PagingControllerState<int, ListItemControllerState> _purchaseDirectListItemPagingControllerState;
 
+  PaymentMethod? _paymentMethod;
+  Coupon? _coupon;
+
   @override
   void initState() {
     super.initState();
@@ -72,25 +83,50 @@ class _StatefulPurchaseDirectModalDialogControllerMediatorWidgetState extends St
       onPageKeyNext: (pageKey) => pageKey + 1
     );
     _purchaseDirectListItemPagingControllerState.isPagingControllerExist = true;
-    widget.purchaseDirectModalDialogController.paymentInstructionModalDialogPageDelegate._onRefresh = () => setState(() {});
-    widget.purchaseDirectModalDialogController.paymentInstructionModalDialogPageDelegate._onSuccess = () => Get.back();
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _paymentInstructionListItemPagingControllerStateListener(int pageKey) async {
     return SuccessLoadDataResult(
       value: PagingDataResult<ListItemControllerState>(
         itemList: <ListItemControllerState>[
-          PaymentInstructionDividedContainerListItemControllerState(
-            paymentInstructionTransactionSummaryLoadDataResult: widget.paymentInstructionModalDialogPageParameter.paymentInstructionTransactionSummaryLoadDataResult,
-            paymentInstructionContainerStorageListItemControllerState: DefaultPaymentInstructionContainerStorageListItemControllerState(),
-            onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
-            onUpdateState: () => setState(() {}),
+          PurchaseDirectListItemControllerState(
+            onGetPaymentMethod: () => _paymentMethod,
+            onGetCoupon: () => _coupon
           )
         ],
         page: 1,
         totalPage: 1,
         totalItem: 1
       )
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ModifiedAppBar(
+          titleInterceptor: (context, title) => Row(
+            children: [
+              Text("Buy Directly".tr),
+            ],
+          ),
+          primary: false
+        ),
+        Flexible(
+          child: SizedBox(
+            child: ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
+              padding: EdgeInsets.zero,
+              pagingControllerState: _purchaseDirectListItemPagingControllerState,
+              onProvidePagedChildBuilderDelegate: (pagingControllerState) => ListItemPagingControllerStatePagedChildBuilderDelegate<int>(
+                pagingControllerState: pagingControllerState!
+              ),
+              shrinkWrap: true
+            ),
+          ),
+        )
+      ]
     );
   }
 }

@@ -104,6 +104,8 @@ import '../widget/titleanddescriptionitem/title_and_description_item.dart';
 import 'address_page.dart';
 import 'getx_page.dart';
 import 'login_page.dart';
+import 'modaldialogpage/payment_instruction_modal_dialog_page.dart';
+import 'modaldialogpage/purchase_direct_modal_dialog_page.dart';
 import 'modaldialogpage/select_address_modal_dialog_page.dart';
 import 'payment_method_page.dart';
 import 'product_brand_page.dart';
@@ -1183,9 +1185,26 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
                         width: double.infinity,
                         height: 36,
                         outlineGradientButtonType: OutlineGradientButtonType.outline,
-                        onPressed: () => LoginHelper.checkingLogin(context, () {
-                          PageRestorationHelper.toPaymentMethodPage(context, null);
-                        }),
+                        onPressed: () {
+                          DialogHelper.showModalBottomDialogPage<int, int>(
+                            context: context,
+                            modalDialogPageBuilder: (context, parameter) => PurchaseDirectModalDialogPage(
+                              purchaseDirectModalDialogPageParameter: PurchaseDirectModalDialogPageParameter(
+                                paymentInstructionModalDialogPageDelegate: additionalSummaryWidgetParameter.paymentInstructionModalDialogPageDelegate,
+                                paymentInstructionTransactionSummaryLoadDataResult: () {
+                                  return additionalSummaryWidgetParameter.orderTransactionResponseLoadDataResult.map<PaymentInstructionTransactionSummary>(
+                                    (orderTransactionResponse) => orderTransactionResponse.paymentInstructionTransactionSummary
+                                  );
+                                },
+                                onGetErrorProvider: additionalSummaryWidgetParameter.onGetErrorProvider
+                              ),
+                            ),
+                            parameter: 1
+                          );
+                        },
+                        // onPressed: () => LoginHelper.checkingLogin(context, () {
+                        //   PageRestorationHelper.toPaymentMethodPage(context, null);
+                        // }),
                         text: "Buy Directly".tr,
                       ),
                     ),
