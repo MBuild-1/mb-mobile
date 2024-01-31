@@ -5,8 +5,8 @@ import '../domain/entity/cart/support_cart.dart';
 import '../domain/entity/componententity/dynamic_item_carousel_component_entity.dart';
 import '../domain/entity/componententity/i_component_entity.dart';
 import '../domain/entity/componententity/i_dynamic_item_carousel_component_entity.dart';
-import '../domain/entity/order/order.dart';
 import '../domain/entity/order/purchase_direct_parameter.dart';
+import '../domain/entity/order/purchase_direct_response.dart';
 import '../domain/entity/product/product_detail.dart';
 import '../domain/entity/product/product_detail_by_slug_parameter.dart';
 import '../domain/entity/product/product_detail_from_your_search_product_entry_list_parameter.dart';
@@ -26,8 +26,6 @@ import '../domain/entity/product/shareproduct/share_product_response.dart';
 import '../domain/entity/search/store_search_last_seen_history_parameter.dart';
 import '../domain/entity/search/store_search_last_seen_history_response.dart';
 import '../domain/usecase/add_to_cart_use_case.dart';
-import '../domain/usecase/create_order_version_1_point_1_use_case.dart';
-import '../domain/usecase/get_current_selected_address_use_case.dart';
 import '../domain/usecase/get_product_detail_by_slug_use_case.dart';
 import '../domain/usecase/get_product_detail_from_your_search_product_entry_list_use_case.dart';
 import '../domain/usecase/get_product_detail_other_chosen_for_you_product_entry_list_use_case.dart';
@@ -56,7 +54,7 @@ typedef _OnShowAddToCartRequestProcessLoadingCallback = Future<void> Function();
 typedef _OnAddToCartRequestProcessSuccessCallback = Future<void> Function();
 typedef _OnShowAddToCartRequestProcessFailedCallback = Future<void> Function(dynamic e);
 typedef _OnShowBuyDirectlyRequestProcessLoadingCallback = Future<void> Function();
-typedef _OnBuyDirectlyRequestProcessSuccessCallback = Future<void> Function(Order order);
+typedef _OnBuyDirectlyRequestProcessSuccessCallback = Future<void> Function(PurchaseDirectResponse purchaseDirectResponse);
 typedef _OnShowBuyDirectlyRequestProcessFailedCallback = Future<void> Function(dynamic e);
 typedef _OnShowShareProductRequestProcessLoadingCallback = Future<void> Function();
 typedef _OnShareProductRequestProcessSuccessCallback = Future<void> Function(ShareProductResponse);
@@ -405,14 +403,14 @@ class ProductDetailController extends BaseGetxController {
             quantity: 1,
             notes: ""
           );
-          LoadDataResult<Order> orderLoadDataResult = await purchaseDirectUseCase.execute(purchaseDirectParameter).future(
+          LoadDataResult<PurchaseDirectResponse> purchaseDirectResponseLoadDataResult = await purchaseDirectUseCase.execute(purchaseDirectParameter).future(
             parameter: apiRequestManager.addRequestToCancellationPart("purchase-direct").value
           );
           _productDetailMainMenuDelegate!.onBack();
-          if (orderLoadDataResult.isSuccess) {
-            _productDetailMainMenuDelegate!.onBuyDirectlyRequestProcessSuccessCallback(orderLoadDataResult.resultIfSuccess!);
+          if (purchaseDirectResponseLoadDataResult.isSuccess) {
+            _productDetailMainMenuDelegate!.onBuyDirectlyRequestProcessSuccessCallback(purchaseDirectResponseLoadDataResult.resultIfSuccess!);
           } else {
-            _productDetailMainMenuDelegate!.onShowBuyDirectlyRequestProcessFailedCallback(orderLoadDataResult.resultIfFailed);
+            _productDetailMainMenuDelegate!.onShowBuyDirectlyRequestProcessFailedCallback(purchaseDirectResponseLoadDataResult.resultIfFailed);
           }
         }
       }

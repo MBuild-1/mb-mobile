@@ -1098,8 +1098,8 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
             e: e
           );
         },
-        onBuyDirectlyRequestProcessSuccessCallback: (order) async {
-          NavigationHelper.navigationAfterPurchaseProcess(context, order);
+        onBuyDirectlyRequestProcessSuccessCallback: (purchaseDirectResponse) async {
+          NavigationHelper.navigationAfterPurchaseProcessWithCombinedOrderIdParameter(context, purchaseDirectResponse.combinedOrderId);
         },
         onShowShareProductRequestProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
         onShowShareProductRequestProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(

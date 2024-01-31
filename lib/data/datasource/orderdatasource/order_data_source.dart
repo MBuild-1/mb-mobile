@@ -12,6 +12,7 @@ import '../../../domain/entity/order/order_paging_parameter.dart';
 import '../../../domain/entity/order/ordertransaction/order_transaction_parameter.dart';
 import '../../../domain/entity/order/ordertransaction/ordertransactionresponse/order_transaction_response.dart';
 import '../../../domain/entity/order/purchase_direct_parameter.dart';
+import '../../../domain/entity/order/purchase_direct_response.dart';
 import '../../../domain/entity/order/repurchase_parameter.dart';
 import '../../../domain/entity/order/shipping_review_order_list_parameter.dart';
 import '../../../misc/paging/pagingresult/paging_data_result.dart';
@@ -20,7 +21,7 @@ import '../../../misc/processing/future_processing.dart';
 abstract class OrderDataSource {
   FutureProcessing<Order> createOrder(CreateOrderParameter createOrderParameter);
   FutureProcessing<CreateOrderVersion1Point1Response> createOrderVersion1Point1(CreateOrderVersion1Point1Parameter createOrderVersion1Point1Parameter);
-  FutureProcessing<Order> purchaseDirect(PurchaseDirectParameter purchaseDirectParameter);
+  FutureProcessing<PurchaseDirectResponse> purchaseDirect(PurchaseDirectParameter purchaseDirectParameter);
   FutureProcessing<Order> repurchase(RepurchaseParameter repurchaseParameter);
   FutureProcessing<List<CombinedOrder>> shippingReviewOrderList(ShippingReviewOrderListParameter shippingReviewOrderListParameter);
   FutureProcessing<PagingDataResult<CombinedOrder>> orderPaging(OrderPagingParameter orderPagingParameter);

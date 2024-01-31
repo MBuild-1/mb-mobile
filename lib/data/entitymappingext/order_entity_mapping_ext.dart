@@ -30,6 +30,7 @@ import '../../domain/entity/order/ordertracking/order_tracking_location.dart';
 import '../../domain/entity/order/ordertracking/order_tracking_location_address.dart';
 import '../../domain/entity/order/ordertransaction/ordertransactionsummary/order_transaction_summary.dart';
 import '../../domain/entity/order/ordertransaction/ordertransactionresponse/order_transaction_response.dart';
+import '../../domain/entity/order/purchase_direct_response.dart';
 import '../../domain/entity/order/support_order_product.dart';
 import '../../domain/entity/payment/paymentinstruction/payment_instruction_group.dart';
 import '../../domain/entity/summaryvalue/summary_value.dart';
@@ -329,6 +330,15 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
       ),
       orderTransactionSummary: ResponseWrapper(response["payment_detail"]).mapFromResponseToOrderTransactionSummary(),
       paymentInstructionTransactionSummary: ResponseWrapper(response["payment_instruction"]).mapFromResponseToPaymentInstructionTransactionSummary(),
+    );
+  }
+
+  PurchaseDirectResponse mapFromResponseToPurchaseDirectResponse() {
+    dynamic paymentResponse = response["payment"];
+    return PurchaseDirectResponse(
+      transactionId: paymentResponse["transaction_id"],
+      orderId: paymentResponse["order_id"],
+      combinedOrderId: paymentResponse["combined_order_id"]
     );
   }
 }
