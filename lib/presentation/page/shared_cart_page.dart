@@ -509,7 +509,7 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
               if (_selectedPaymentMethodLoadDataResult.isSuccess) {
                 selectedPaymentMethod = _selectedPaymentMethodLoadDataResult.resultIfSuccess;
               }
-              PageRestorationHelper.toPaymentMethodPage(context, selectedPaymentMethod?.id);
+              PageRestorationHelper.toPaymentMethodPage(context, selectedPaymentMethod?.settlingId);
             },
             onRemovePaymentMethod: () {
               setState(() => _selectedPaymentMethodLoadDataResult = NoLoadDataResult<PaymentMethod>());
@@ -530,7 +530,7 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
     widget.sharedCartController.setMainSharedCartDelegate(
       MainSharedCartDelegate(
         onUnfocusAllWidget: () => FocusScope.of(context).unfocus(),
-        onGetSettlingId: () => _selectedPaymentMethodLoadDataResult.resultIfSuccess?.id,
+        onGetSettlingId: () => _selectedPaymentMethodLoadDataResult.resultIfSuccess?.settlingId,
         onCartBack: () => Get.back(),
         onShowAddToWishlistRequestProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
         onShowAddToWishlistRequestProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(

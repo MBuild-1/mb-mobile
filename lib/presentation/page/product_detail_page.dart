@@ -14,6 +14,7 @@ import 'package:sizer/sizer.dart';
 import '../../controller/product_detail_controller.dart';
 import '../../domain/entity/address/address.dart';
 import '../../domain/entity/cart/support_cart.dart';
+import '../../domain/entity/payment/payment_method.dart';
 import '../../domain/entity/product/product.dart';
 import '../../domain/entity/product/product_detail.dart';
 import '../../domain/entity/product/product_detail_by_slug_parameter.dart';
@@ -104,6 +105,7 @@ import 'address_page.dart';
 import 'getx_page.dart';
 import 'login_page.dart';
 import 'modaldialogpage/select_address_modal_dialog_page.dart';
+import 'payment_method_page.dart';
 import 'product_brand_page.dart';
 import 'product_chat_page.dart';
 import 'product_discussion_page.dart';
@@ -159,6 +161,14 @@ class ProductDetailPage extends RestorableGetxPage<_ProductDetailPageRestoration
         }
       }
     },
+    onCompleteSelectPaymentMethod: (result) {
+      if (result != null) {
+        print("Result select payment method: ${StringUtil.decodeBase64StringToJson(result)}");
+        if (_statefulProductDetailControllerMediatorWidgetDelegate.onRefreshPaymentMethod != null) {
+          _statefulProductDetailControllerMediatorWidgetDelegate.onRefreshPaymentMethod!(result.toPaymentMethodPageResponse().paymentMethod);
+        }
+      }
+    }
   );
 
   @override
@@ -173,17 +183,21 @@ class ProductDetailPage extends RestorableGetxPage<_ProductDetailPageRestoration
   }
 }
 
-class _ProductDetailPageRestoration extends ExtendedMixableGetxPageRestoration with ProductDetailPageRestorationMixin, ProductEntryPageRestorationMixin, SearchPageRestorationMixin, ProductChatPageRestorationMixin, LoginPageRestorationMixin, ProductBrandPageRestorationMixin, ProductDiscussionPageRestorationMixin, AddressPageRestorationMixin {
+class _ProductDetailPageRestoration extends ExtendedMixableGetxPageRestoration with ProductDetailPageRestorationMixin, ProductEntryPageRestorationMixin, SearchPageRestorationMixin, ProductChatPageRestorationMixin, LoginPageRestorationMixin, ProductBrandPageRestorationMixin, ProductDiscussionPageRestorationMixin, AddressPageRestorationMixin, PaymentMethodPageRestorationMixin {
   final RouteCompletionCallback<bool?>? _onCompleteAddressPage;
+  final RouteCompletionCallback<String?>? _onCompleteSelectPaymentMethod;
 
   _ProductDetailPageRestoration({
-    RouteCompletionCallback<bool?>? onCompleteAddressPage
-  }) : _onCompleteAddressPage = onCompleteAddressPage;
+    RouteCompletionCallback<bool?>? onCompleteAddressPage,
+    RouteCompletionCallback<String?>? onCompleteSelectPaymentMethod
+  }) : _onCompleteAddressPage = onCompleteAddressPage,
+      _onCompleteSelectPaymentMethod = onCompleteSelectPaymentMethod;
 
   @override
   // ignore: unnecessary_overrides
   void initState() {
     onCompleteSelectAddress = _onCompleteAddressPage;
+    onCompleteSelectPaymentMethod = _onCompleteSelectPaymentMethod;
     super.initState();
   }
 
@@ -311,6 +325,7 @@ class _StatefulProductDetailControllerMediatorWidget extends StatefulWidget {
 
 class _StatefulProductDetailControllerMediatorWidgetDelegate {
   int _selectAddressBecauseAddressIsEmptyWhileInBuyDirectlyProcessStep = 0;
+  void Function(PaymentMethod)? onRefreshPaymentMethod;
 }
 
 class _StatefulProductDetailControllerMediatorWidgetState extends State<_StatefulProductDetailControllerMediatorWidget> {
@@ -323,6 +338,7 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
   Timer? _timer;
   bool _startTimer = false;
   String _productId = "";
+  String _buyDirectlySettlingId = "";
 
   @override
   void initState() {
@@ -348,6 +364,11 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
     _productVariantColorfulChipTabBarController.addListener(() => setState(() {}));
     MainRouteObserver.onScrollUpIfInProductDetail[getRouteMapKey(widget.pageName)] = () {
       _productDetailScrollController.jumpTo(0.0);
+    };
+    widget.statefulProductDetailControllerMediatorWidgetDelegate.onRefreshPaymentMethod = (paymentMethod) {
+      print("Settling id: ${paymentMethod.settlingId}");
+      _buyDirectlySettlingId = paymentMethod.settlingId;
+      widget.productDetailController.buyDirectly(_buyDirectlySettlingId);
     };
   }
 
@@ -1060,7 +1081,7 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
                                 Constant.textInIdLanguageKey: "Sukses menambahkan alamat. Silahkan menunggu untuk proses beli langsung."
                               }).toEmptyStringNonNull
                             );
-                            widget.productDetailController.buyDirectly();
+                            widget.productDetailController.buyDirectly(_buyDirectlySettlingId);
                           }
                         }
                       }
@@ -1163,7 +1184,7 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
                         height: 36,
                         outlineGradientButtonType: OutlineGradientButtonType.outline,
                         onPressed: () => LoginHelper.checkingLogin(context, () {
-                          widget.productDetailController.buyDirectly();
+                          PageRestorationHelper.toPaymentMethodPage(context, null);
                         }),
                         text: "Buy Directly".tr,
                       ),

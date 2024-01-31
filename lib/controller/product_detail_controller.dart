@@ -1,20 +1,15 @@
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
-import '../domain/entity/cart/add_to_cart_parameter.dart';
-import '../domain/entity/cart/add_to_cart_response.dart';
 import '../domain/entity/cart/support_cart.dart';
 import '../domain/entity/componententity/dynamic_item_carousel_component_entity.dart';
-import '../domain/entity/componententity/dynamic_item_carousel_directly_component_entity.dart';
 import '../domain/entity/componententity/i_component_entity.dart';
 import '../domain/entity/componententity/i_dynamic_item_carousel_component_entity.dart';
 import '../domain/entity/order/order.dart';
 import '../domain/entity/order/purchase_direct_parameter.dart';
-import '../domain/entity/product/product.dart';
 import '../domain/entity/product/product_detail.dart';
 import '../domain/entity/product/product_detail_by_slug_parameter.dart';
 import '../domain/entity/product/product_detail_from_your_search_product_entry_list_parameter.dart';
-import '../domain/entity/product/product_detail_get_other_chosen_for_you_parameter.dart';
 import '../domain/entity/product/product_detail_get_other_from_this_brand_parameter.dart';
 import '../domain/entity/product/product_detail_get_other_in_this_category_parameter.dart';
 import '../domain/entity/product/product_detail_other_chosen_for_you_product_entry_list_parameter.dart';
@@ -23,7 +18,6 @@ import '../domain/entity/product/product_detail_other_in_this_category_product_e
 import '../domain/entity/product/product_detail_other_interested_product_brand_list_parameter.dart';
 import '../domain/entity/product/product_detail_parameter.dart';
 import '../domain/entity/product/productbrand/product_brand.dart';
-import '../domain/entity/product/productcategory/product_category.dart';
 import '../domain/entity/product/productdiscussion/product_discussion.dart';
 import '../domain/entity/product/productdiscussion/product_discussion_list_parameter.dart';
 import '../domain/entity/product/productentry/product_entry.dart';
@@ -32,8 +26,8 @@ import '../domain/entity/product/shareproduct/share_product_response.dart';
 import '../domain/entity/search/store_search_last_seen_history_parameter.dart';
 import '../domain/entity/search/store_search_last_seen_history_response.dart';
 import '../domain/usecase/add_to_cart_use_case.dart';
-import '../domain/usecase/get_my_cart_use_case.dart';
-import '../domain/usecase/get_product_category_list_use_case.dart';
+import '../domain/usecase/create_order_version_1_point_1_use_case.dart';
+import '../domain/usecase/get_current_selected_address_use_case.dart';
 import '../domain/usecase/get_product_detail_by_slug_use_case.dart';
 import '../domain/usecase/get_product_detail_from_your_search_product_entry_list_use_case.dart';
 import '../domain/usecase/get_product_detail_other_chosen_for_you_product_entry_list_use_case.dart';
@@ -398,7 +392,7 @@ class ProductDetailController extends BaseGetxController {
     }
   }
 
-  void buyDirectly() async {
+  void buyDirectly(String settlingId) async {
     if (_productDetailMainMenuDelegate != null) {
       SupportCart? supportCart = _productDetailMainMenuDelegate!.onGetSupportCart();
       if (supportCart != null) {
@@ -407,6 +401,7 @@ class ProductDetailController extends BaseGetxController {
           _productDetailMainMenuDelegate!.onShowBuyDirectlyRequestProcessLoadingCallback();
           PurchaseDirectParameter purchaseDirectParameter = PurchaseDirectParameter(
             productEntryId: supportCart.productEntryId,
+            settlingId: settlingId,
             quantity: 1,
             notes: ""
           );

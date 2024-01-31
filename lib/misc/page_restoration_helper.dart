@@ -625,10 +625,10 @@ class _PageRestorationHelperImpl {
     );
   }
 
-  void toPaymentMethodPage(BuildContext context, String? paymentMethodId) {
+  void toPaymentMethodPage(BuildContext context, String? paymentMethodSettlingId) {
     PageRestorationHelper.findPageRestorationMixin<PaymentMethodPageRestorationMixin>(
       onGetxPageRestorationFound: (restoration) {
-        restoration.paymentMethodPageRestorableRouteFuture.present(paymentMethodId);
+        restoration.paymentMethodPageRestorableRouteFuture.present(paymentMethodSettlingId);
       },
       context: context
     );

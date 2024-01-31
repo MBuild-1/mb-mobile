@@ -9,7 +9,7 @@ class PaymentMethodContainerListItemControllerState extends ListItemControllerSt
   List<PaymentMethodGroup> paymentMethodGroupList;
   Color Function() onGetPaymentMethodTabColor;
   ColorfulChipTabBarController Function() onGetPaymentMethodColorfulChipTabBarController;
-  String? Function() onGetSelectedPaymentMethodId;
+  String? Function() onGetSelectedPaymentMethodSettlingId;
   void Function(PaymentMethod) onSelectPaymentMethod;
   void Function() onUpdateState;
 
@@ -17,7 +17,7 @@ class PaymentMethodContainerListItemControllerState extends ListItemControllerSt
     required this.paymentMethodGroupList,
     required this.onGetPaymentMethodTabColor,
     required this.onGetPaymentMethodColorfulChipTabBarController,
-    required this.onGetSelectedPaymentMethodId,
+    required this.onGetSelectedPaymentMethodSettlingId,
     required this.onSelectPaymentMethod,
     required this.onUpdateState,
   });

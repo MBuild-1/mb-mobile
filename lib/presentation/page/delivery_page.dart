@@ -445,7 +445,7 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
               if (_selectedPaymentMethodLoadDataResult.isSuccess) {
                 selectedPaymentMethod = _selectedPaymentMethodLoadDataResult.resultIfSuccess;
               }
-              PageRestorationHelper.toPaymentMethodPage(context, selectedPaymentMethod?.id);
+              PageRestorationHelper.toPaymentMethodPage(context, selectedPaymentMethod?.settlingId);
             },
             onRemovePaymentMethod: () {
               setState(() => _selectedPaymentMethodLoadDataResult = NoLoadDataResult<PaymentMethod>());
@@ -501,7 +501,7 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
         },
         onGetAdditionalList: () => _additionalItemList,
         onGetCartList: () => _cartList,
-        onGetSettlingId: () => _selectedPaymentMethodLoadDataResult.resultIfSuccess?.id
+        onGetSettlingId: () => _selectedPaymentMethodLoadDataResult.resultIfSuccess?.settlingId
       )
     );
     return ModifiedScaffold(

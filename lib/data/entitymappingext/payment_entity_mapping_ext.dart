@@ -51,7 +51,6 @@ extension PaymentDetailEntityMappingExt on ResponseWrapper {
   }
 
   PaymentMethod mapFromResponseToPaymentMethod() {
-    String settlingId = "";
     String paymentName = "";
     Map<String, dynamic> responseMap = response as Map<String, dynamic>;
     for (String key in responseMap.keys) {
@@ -60,9 +59,7 @@ extension PaymentDetailEntityMappingExt on ResponseWrapper {
           dynamic value = responseMap[key];
           if (value != null) {
             Map<String, dynamic> valueMap = value as Map<String, dynamic>;
-            if (valueMap.containsKey("id")) {
-              settlingId = valueMap["id"];
-            } else if (valueMap.containsKey("name")) {
+            if (valueMap.containsKey("name")) {
               paymentName = valueMap["name"];
             } else if (valueMap.containsKey("store")) {
               paymentName = valueMap["store"];
@@ -72,8 +69,7 @@ extension PaymentDetailEntityMappingExt on ResponseWrapper {
       }
     }
     return PaymentMethod(
-      id: response["id"],
-      settlingId: settlingId,
+      settlingId: response["id"],
       paymentName: paymentName,
       paymentGroupId: response["payment_group_id"],
       paymentGroup: response["payment_group"],

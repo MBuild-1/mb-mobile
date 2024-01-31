@@ -128,7 +128,7 @@ class PaymentMethodItemTypeListSubInterceptor extends ItemTypeListSubInterceptor
                       oldItemType.onSelectPaymentMethod(paymentMethod);
                       oldItemType.onUpdateState();
                     },
-                    isSelected: oldItemType.onGetSelectedPaymentMethodId() == paymentMethod.id
+                    isSelected: oldItemType.onGetSelectedPaymentMethodSettlingId() == paymentMethod.settlingId
                   )
                 )
               );

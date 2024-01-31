@@ -33,13 +33,13 @@ import '../widget/modifiedappbar/modified_app_bar.dart';
 import 'getx_page.dart';
 
 class PaymentMethodPage extends RestorableGetxPage<_PaymentMethodPageRestoration> {
-  final String? paymentMethodId;
+  final String? paymentMethodSettlingId;
 
   late final ControllerMember<PaymentMethodController> _paymentMethodController = ControllerMember<PaymentMethodController>().addToControllerManager(controllerManager);
 
   PaymentMethodPage({
     Key? key,
-    required this.paymentMethodId
+    required this.paymentMethodSettlingId
   }) : super(
     key: key,
     pageRestorationId: () => "payment-method-page"
@@ -63,7 +63,7 @@ class PaymentMethodPage extends RestorableGetxPage<_PaymentMethodPageRestoration
   Widget buildPage(BuildContext context) {
     return _StatefulPaymentMethodControllerMediatorWidget(
       paymentMethodController: _paymentMethodController.controller,
-      paymentMethodId: paymentMethodId,
+      paymentMethodSettlingId: paymentMethodSettlingId,
     );
   }
 }
@@ -89,21 +89,21 @@ class _PaymentMethodPageRestoration extends ExtendedMixableGetxPageRestoration w
 }
 
 class PaymentMethodPageGetPageBuilderAssistant extends GetPageBuilderAssistant {
-  final String? paymentMethodId;
+  final String? paymentMethodSettlingId;
 
   PaymentMethodPageGetPageBuilderAssistant({
-    required this.paymentMethodId
+    required this.paymentMethodSettlingId
   });
 
   @override
   GetPageBuilder get pageBuilder => (() => PaymentMethodPage(
-    paymentMethodId: paymentMethodId
+    paymentMethodSettlingId: paymentMethodSettlingId
   ));
 
   @override
   GetPageBuilder get pageWithOuterGetxBuilder => (() => GetxPageBuilder.buildRestorableGetxPage(
     PaymentMethodPage(
-      paymentMethodId: paymentMethodId
+      paymentMethodSettlingId: paymentMethodSettlingId
     )
   ));
 }
@@ -159,7 +159,7 @@ class PaymentMethodPageRestorableRouteFuture extends GetRestorableRouteFuture {
     return GetExtended.toWithGetPageRouteReturnValue<String?>(
       GetxPageBuilder.buildRestorableGetxPageBuilder(
         PaymentMethodPageGetPageBuilderAssistant(
-          paymentMethodId: arguments
+          paymentMethodSettlingId: arguments
         )
       ),
     );
@@ -189,11 +189,11 @@ class PaymentMethodPageRestorableRouteFuture extends GetRestorableRouteFuture {
 
 class _StatefulPaymentMethodControllerMediatorWidget extends StatefulWidget {
   final PaymentMethodController paymentMethodController;
-  final String? paymentMethodId;
+  final String? paymentMethodSettlingId;
 
   const _StatefulPaymentMethodControllerMediatorWidget({
     required this.paymentMethodController,
-    required this.paymentMethodId
+    required this.paymentMethodSettlingId
   });
 
   @override
@@ -247,7 +247,7 @@ class _StatefulPaymentMethodControllerMediatorWidgetState extends State<_Statefu
             paymentMethodGroupList: paymentMethodListResponse.paymentMethodGroupList,
             onGetPaymentMethodTabColor: () => Theme.of(context).colorScheme.primary,
             onGetPaymentMethodColorfulChipTabBarController: () => _paymentMethodColorfulChipTabBarController,
-            onGetSelectedPaymentMethodId: () => _selectedPaymentMethod?.id,
+            onGetSelectedPaymentMethodSettlingId: () => _selectedPaymentMethod?.settlingId,
             onSelectPaymentMethod: (paymentMethod) => _selectedPaymentMethod = paymentMethod,
             onUpdateState: () => setState(() {}),
           )
@@ -263,7 +263,7 @@ class _StatefulPaymentMethodControllerMediatorWidgetState extends State<_Statefu
     int i = 0;
     for (PaymentMethodGroup paymentMethodGroup in paymentMethodGroupList) {
       for (PaymentMethod paymentMethod in paymentMethodGroup.paymentMethodList) {
-        if (paymentMethod.id == widget.paymentMethodId) {
+        if (paymentMethod.settlingId == widget.paymentMethodSettlingId) {
           _selectedPaymentMethod = paymentMethod;
           _paymentMethodColorfulChipTabBarController.value = i;
           return;
@@ -339,7 +339,7 @@ extension PaymentMethodPageResponseExt on PaymentMethodPageResponse {
   String toEncodeBase64String() => StringUtil.encodeBase64StringFromJson(
     <String, dynamic>{
       "payment_method": {
-        "id": paymentMethod.id,
+        "id": paymentMethod.settlingId,
         "payment_group_id": paymentMethod.paymentGroupId,
         "payment_group": paymentMethod.paymentGroup,
         "payment_type": paymentMethod.paymentType,

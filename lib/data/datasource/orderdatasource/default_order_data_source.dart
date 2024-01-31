@@ -121,6 +121,7 @@ class DefaultOrderDataSource implements OrderDataSource {
     return DioHttpClientProcessing((cancelToken) {
       dynamic data = {
         "product_entry_id": purchaseDirectParameter.productEntryId,
+        "settling_id": purchaseDirectParameter.settlingId,
         "quantity": purchaseDirectParameter.quantity,
         "notes": "",
       };

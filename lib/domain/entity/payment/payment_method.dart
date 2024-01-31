@@ -1,5 +1,4 @@
 class PaymentMethod {
-  String id;
   String settlingId;
   String paymentName;
   String paymentGroupId;
@@ -11,7 +10,6 @@ class PaymentMethod {
   int? taxRate;
 
   PaymentMethod({
-    required this.id,
     required this.settlingId,
     required this.paymentName,
     required this.paymentGroupId,
