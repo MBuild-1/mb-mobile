@@ -57,7 +57,7 @@ class ChatBubble extends StatelessWidget {
             Flexible(
               child: Container(
                 decoration: BoxDecoration(
-                  color: isLoggedUser ? Constant.colorMain : Constant.colorGrey6,
+                  color: isLoggedUser ? Constant.colorLightOrange4 : Constant.colorGrey6,
                   borderRadius: BorderRadius.circular(8)
                 ),
                 padding: const EdgeInsets.all(8),
@@ -66,16 +66,13 @@ class ChatBubble extends StatelessWidget {
                   children: [
                     Text(
                       userMessage.message,
-                      style: TextStyle(
-                        color: isLoggedUser ? Colors.white : null
-                      )
+                      style: const TextStyle()
                     ),
                     if (userMessage.createdAt != null) ...[
                       const SizedBox(height: 10),
                       Text(
                         DateUtil.standardDateFormat10.format(userMessage.createdAt!),
-                        style: TextStyle(
-                          color: isLoggedUser ? Colors.white : null,
+                        style: const TextStyle(
                           fontSize: 11
                         )
                       ),

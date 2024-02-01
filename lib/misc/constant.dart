@@ -170,6 +170,7 @@ class _ConstantImpl {
   Color get colorLightOrange => const Color.fromRGBO(255, 208, 191, 1);
   Color get colorLightOrange2 => const Color.fromRGBO(255, 215, 193, 1);
   Color get colorLightOrange3 => const Color.fromRGBO(254, 235, 200, 1);
+  Color get colorLightOrange4 => ColorHelper.fromHex("#FFE0D4");
 
   Color get colorMain => const Color.fromRGBO(255, 66, 0, 1);
   Color get colorDarkMain => colorMain;
