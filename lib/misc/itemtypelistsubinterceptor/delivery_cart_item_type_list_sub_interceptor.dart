@@ -22,6 +22,7 @@ import '../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/c
 import '../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/cart_header_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/cart_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/compound_list_item_controller_state.dart';
+import '../controllerstate/listitemcontrollerstate/couponlistitemcontrollerstate/coupon_indicator_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/couponlistitemcontrollerstate/coupon_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/couponlistitemcontrollerstate/vertical_coupon_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/deliverycartlistitemcontrollerstate/delivery_cart_container_list_item_controller_state.dart';
@@ -30,6 +31,7 @@ import '../controllerstate/listitemcontrollerstate/divider_list_item_controller_
 import '../controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/loading_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/padding_container_list_item_controller_state.dart';
+import '../controllerstate/listitemcontrollerstate/paymentmethodlistitemcontrollerstate/payment_method_indicator_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/shipping_address_indicator_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/shipping_address_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/spacing_list_item_controller_state.dart';
@@ -148,124 +150,24 @@ class DeliveryCartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
       );
 
       // Selected Payment Method
-      newItemTypeList.add(
-        PaddingContainerListItemControllerState(
-          padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-          paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
-            widgetSubstitution: (context, index) {
-              return Text(
-                "Payment Method".tr,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              );
-            }
+      listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
+        i,
+        ListItemControllerStateWrapper(
+          PaymentMethodIndicatorListItemControllerState(
+            selectedPaymentMethodLoadDataResult: oldItemType.selectedPaymentMethodLoadDataResult,
+            onSelectPaymentMethod: oldItemType.onSelectPaymentMethod,
+            onRemovePaymentMethod: oldItemType.onRemovePaymentMethod,
+            errorProvider: oldItemType.errorProvider
           )
-        )
+        ),
+        oldItemTypeList,
+        newItemTypeList
       );
-      newItemTypeList.add(
-        VirtualSpacingListItemControllerState(
-          height: 10.0
-        )
-      );
-      newItemTypeList.add(
-        DividerListItemControllerState(
-          lineColor: Colors.black
-        )
-      );
-      newItemTypeList.add(
-        VirtualSpacingListItemControllerState(
-          height: 10.0
-        )
-      );
-      double paymentMethodEndSpacing = 25.0;
-      if (deliveryCartContainerStateStorageListItemControllerState is DefaultDeliveryCartContainerStateStorageListItemControllerState) {
-        LoadDataResult<PaymentMethod> selectedPaymentMethodLoadDataResult = oldItemType.selectedPaymentMethodLoadDataResult();;
-        if (selectedPaymentMethodLoadDataResult.isSuccess) {
-          paymentMethodEndSpacing = 20.0;
-          newItemTypeList.add(
-            PaddingContainerListItemControllerState(
-              padding: const EdgeInsets.symmetric(horizontal: 0.0),
-              paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
-                widgetSubstitution: (context, index) => SelectedPaymentMethodIndicator(
-                  onTap: oldItemType.onSelectPaymentMethod,
-                  onRemove: oldItemType.onRemovePaymentMethod,
-                  selectedPaymentMethod: selectedPaymentMethodLoadDataResult.resultIfSuccess!,
-                ),
-              )
-            )
-          );
-        } else if (selectedPaymentMethodLoadDataResult.isFailed) {
-          ErrorProvider errorProvider = oldItemType.errorProvider();
-          ErrorProviderResult errorProviderResult = errorProvider.onGetErrorProviderResult(selectedPaymentMethodLoadDataResult.resultIfFailed!).toErrorProviderResultNonNull();
-          newItemTypeList.add(
-            VirtualSpacingListItemControllerState(
-              height: 10.0
-            )
-          );
-          newItemTypeList.add(
-            PaddingContainerListItemControllerState(
-              padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-              paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
-                widgetSubstitution: (context, index) => Text(
-                  errorProviderResult.message,
-                  style: const TextStyle(fontWeight: FontWeight.bold)
-                ),
-              )
-            )
-          );
-        } else if (selectedPaymentMethodLoadDataResult.isLoading) {
-          newItemTypeList.add(
-            VirtualSpacingListItemControllerState(
-              height: 10.0
-            )
-          );
-          newItemTypeList.add(LoadingListItemControllerState());
-          newItemTypeList.add(
-            VirtualSpacingListItemControllerState(
-              height: 10.0
-            )
-          );
-        } else {
-          newItemTypeList.add(
-            PaddingContainerListItemControllerState(
-              padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-              paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
-                widgetSubstitution: (context, index) {
-                  return Text(
-                    "No selected payment method".tr,
-                  );
-                }
-              )
-            )
-          );
-          newItemTypeList.add(
-            VirtualSpacingListItemControllerState(
-              height: 15.0
-            )
-          );
-          newItemTypeList.add(
-            PaddingContainerListItemControllerState(
-              padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-              paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
-                widgetSubstitution: (context, index) {
-                  return Row(
-                    children: [
-                      TapArea(
-                        onTap: oldItemType.onSelectPaymentMethod,
-                        child: Container(
-                          child: Text("Select Payment Method".tr, style: const TextStyle(fontWeight: FontWeight.bold)),
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                          decoration: BoxDecoration(
-                            border: Border.all()
-                          ),
-                        )
-                      ),
-                    ]
-                  );
-                }
-              )
-            )
-          );
-        }
+
+      double paymentMethodEndSpacing = 26.0;
+      LoadDataResult<PaymentMethod> selectedPaymentMethodLoadDataResult = oldItemType.selectedPaymentMethodLoadDataResult();
+      if (selectedPaymentMethodLoadDataResult.isSuccess) {
+        paymentMethodEndSpacing = 20.0;
       }
       newItemTypeList.add(
         VirtualSpacingListItemControllerState(
@@ -294,151 +196,30 @@ class DeliveryCartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
         }
         deliveryCartContainerInterceptingActionListItemControllerState._onRefreshCoupon = (couponId) => loadSelectedCoupon(couponId);
       }
-      newItemTypeList.add(
-        PaddingContainerListItemControllerState(
-          padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-          paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
-            widgetSubstitution: (context, index) {
-              return Text(
-                "Coupon".tr,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              );
-            }
-          )
-        )
-      );
-      newItemTypeList.add(
-        VirtualSpacingListItemControllerState(
-          height: 10.0
-        )
-      );
-      newItemTypeList.add(
-        DividerListItemControllerState(
-          lineColor: Colors.black
-        )
-      );
-      newItemTypeList.add(
-        VirtualSpacingListItemControllerState(
-          height: 10.0
-        )
-      );
       if (deliveryCartContainerStateStorageListItemControllerState is DefaultDeliveryCartContainerStateStorageListItemControllerState) {
-        LoadDataResult<Coupon> selectedCouponLoadDataResult = deliveryCartContainerStateStorageListItemControllerState._selectedCouponLoadDataResult;
-        if (selectedCouponLoadDataResult.isSuccess) {
-          newItemTypeList.add(
-            PaddingContainerListItemControllerState(
-              padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-              paddingChildListItemControllerState: VerticalCouponListItemControllerState(
-                coupon: selectedCouponLoadDataResult.resultIfSuccess!,
-                isSelected: false
-              )
+        listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
+          i,
+          ListItemControllerStateWrapper(
+            CouponIndicatorListItemControllerState(
+              getSelectedCouponLoadDataResult: () {
+                return deliveryCartContainerStateStorageListItemControllerState._selectedCouponLoadDataResult;
+              },
+              setSelectedCouponLoadDataResult: (couponLoadDataResult) {
+                deliveryCartContainerStateStorageListItemControllerState._selectedCouponLoadDataResult = couponLoadDataResult;
+              },
+              errorProvider: oldItemType.errorProvider,
+              onUpdateCoupon: oldItemType.onUpdateCoupon,
+              onUpdateState: oldItemType.onUpdateState
             )
-          );
-        } else if (selectedCouponLoadDataResult.isFailed) {
-          ErrorProvider errorProvider = oldItemType.errorProvider();
-          ErrorProviderResult errorProviderResult = errorProvider.onGetErrorProviderResult(selectedCouponLoadDataResult.resultIfFailed!).toErrorProviderResultNonNull();
-          newItemTypeList.add(
-            VirtualSpacingListItemControllerState(
-              height: 10.0
-            )
-          );
-          newItemTypeList.add(
-            PaddingContainerListItemControllerState(
-              padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-              paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
-                widgetSubstitution: (context, index) => Text(
-                  errorProviderResult.message,
-                  style: const TextStyle(fontWeight: FontWeight.bold)
-                ),
-              )
-            )
-          );
-        } else if (selectedCouponLoadDataResult.isLoading) {
-          newItemTypeList.add(
-            VirtualSpacingListItemControllerState(
-              height: 10.0
-            )
-          );
-          newItemTypeList.add(LoadingListItemControllerState());
-          newItemTypeList.add(
-            VirtualSpacingListItemControllerState(
-              height: 10.0
-            )
-          );
-        } else {
-          newItemTypeList.add(
-            PaddingContainerListItemControllerState(
-              padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-              paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
-                widgetSubstitution: (context, index) {
-                  return Text(
-                    "No selected coupon".tr,
-                  );
-                }
-              )
-            )
-          );
-        }
+          ),
+          oldItemTypeList,
+          newItemTypeList
+        );
       }
+
       newItemTypeList.add(
         VirtualSpacingListItemControllerState(
-          height: 15.0
-        )
-      );
-      newItemTypeList.add(
-        PaddingContainerListItemControllerState(
-          padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
-          paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
-            widgetSubstitution: (context, index) {
-              LoadDataResult<Coupon> couponLoadDataResult = NoLoadDataResult<Coupon>();
-              if (deliveryCartContainerStateStorageListItemControllerState is DefaultDeliveryCartContainerStateStorageListItemControllerState) {
-                couponLoadDataResult = deliveryCartContainerStateStorageListItemControllerState._selectedCouponLoadDataResult;
-              }
-              return Row(
-                children: [
-                  TapArea(
-                    onTap: () {
-                      LoadDataResult<Coupon> selectedCouponLoadDataResult = (deliveryCartContainerStateStorageListItemControllerState as DefaultDeliveryCartContainerStateStorageListItemControllerState)._selectedCouponLoadDataResult;
-                      String? couponId;
-                      if (selectedCouponLoadDataResult.isSuccess) {
-                        couponId = selectedCouponLoadDataResult.resultIfSuccess!.id;
-                      }
-                      PageRestorationHelper.toCouponPage(context, couponId);
-                    },
-                    child: Container(
-                      child: Text("Select Coupon".tr, style: const TextStyle(fontWeight: FontWeight.bold)),
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                      decoration: BoxDecoration(
-                        border: Border.all()
-                      ),
-                    )
-                  ),
-                  if (couponLoadDataResult.isSuccess) ...[
-                    const SizedBox(width: 10),
-                    TapArea(
-                      onTap: () {
-                        (deliveryCartContainerStateStorageListItemControllerState as DefaultDeliveryCartContainerStateStorageListItemControllerState)._selectedCouponLoadDataResult = NoLoadDataResult<Coupon>();
-                        oldItemType.onUpdateCoupon(null);
-                        oldItemType.onUpdateState();
-                      },
-                      child: Container(
-                        child: Text("Remove Coupon".tr, style: const TextStyle(fontWeight: FontWeight.bold)),
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                        decoration: BoxDecoration(
-                          border: Border.all()
-                        ),
-                      )
-                    ),
-                  ]
-                ]
-              );
-            }
-          )
-        )
-      );
-      newItemTypeList.add(
-        VirtualSpacingListItemControllerState(
-          height: 25.0
+          height: 26.0
         )
       );
 

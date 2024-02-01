@@ -10,6 +10,7 @@ import '../../itemtypelistsubinterceptor/column_container_item_type_list_sub_int
 import '../../itemtypelistsubinterceptor/compound_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/country_delivery_review_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/country_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/coupon_indicator_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/coupon_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/decorated_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/delivery_cart_item_type_list_sub_interceptor.dart';
@@ -27,6 +28,7 @@ import '../../itemtypelistsubinterceptor/order_item_type_list_sub_interceptor.da
 import '../../itemtypelistsubinterceptor/padding_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/page_keyed_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/payment_instruction_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/payment_method_indicator_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/payment_method_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/positioned_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/product_brand_container_item_type_list_sub_interceptor.dart';
@@ -255,7 +257,17 @@ class ListItemControllerStateItemTypeInterceptorChecker extends ItemTypeListInte
       itemSpacing: itemSpacing,
       listItemControllerStateItemTypeInterceptorChecker: this
     ),
+    CouponIndicatorItemTypeListSubInterceptor(
+      padding: padding,
+      itemSpacing: itemSpacing,
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
     PaymentMethodItemTypeListSubInterceptor(
+      padding: padding,
+      itemSpacing: itemSpacing,
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
+    PaymentMethodIndicatorItemTypeListSubInterceptor(
       padding: padding,
       itemSpacing: itemSpacing,
       listItemControllerStateItemTypeInterceptorChecker: this

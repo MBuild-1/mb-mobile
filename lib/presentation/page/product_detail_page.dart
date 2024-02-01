@@ -14,6 +14,7 @@ import 'package:sizer/sizer.dart';
 import '../../controller/product_detail_controller.dart';
 import '../../domain/entity/address/address.dart';
 import '../../domain/entity/cart/support_cart.dart';
+import '../../domain/entity/coupon/coupon.dart';
 import '../../domain/entity/payment/payment_method.dart';
 import '../../domain/entity/product/product.dart';
 import '../../domain/entity/product/product_detail.dart';
@@ -102,6 +103,7 @@ import '../widget/modifiedappbar/default_search_app_bar.dart';
 import '../widget/tap_area.dart';
 import '../widget/titleanddescriptionitem/title_and_description_item.dart';
 import 'address_page.dart';
+import 'coupon_page.dart';
 import 'getx_page.dart';
 import 'login_page.dart';
 import 'modaldialogpage/payment_instruction_modal_dialog_page.dart';
@@ -165,9 +167,15 @@ class ProductDetailPage extends RestorableGetxPage<_ProductDetailPageRestoration
     },
     onCompleteSelectPaymentMethod: (result) {
       if (result != null) {
-        print("Result select payment method: ${StringUtil.decodeBase64StringToJson(result)}");
         if (_statefulProductDetailControllerMediatorWidgetDelegate.onRefreshPaymentMethod != null) {
           _statefulProductDetailControllerMediatorWidgetDelegate.onRefreshPaymentMethod!(result.toPaymentMethodPageResponse().paymentMethod);
+        }
+      }
+    },
+    onCompleteSelectCoupon: (result) {
+      if (result != null) {
+        if (_statefulProductDetailControllerMediatorWidgetDelegate.onRefreshCouponId != null) {
+          _statefulProductDetailControllerMediatorWidgetDelegate.onRefreshCouponId!(result);
         }
       }
     }
@@ -185,21 +193,25 @@ class ProductDetailPage extends RestorableGetxPage<_ProductDetailPageRestoration
   }
 }
 
-class _ProductDetailPageRestoration extends ExtendedMixableGetxPageRestoration with ProductDetailPageRestorationMixin, ProductEntryPageRestorationMixin, SearchPageRestorationMixin, ProductChatPageRestorationMixin, LoginPageRestorationMixin, ProductBrandPageRestorationMixin, ProductDiscussionPageRestorationMixin, AddressPageRestorationMixin, PaymentMethodPageRestorationMixin {
+class _ProductDetailPageRestoration extends ExtendedMixableGetxPageRestoration with ProductDetailPageRestorationMixin, ProductEntryPageRestorationMixin, SearchPageRestorationMixin, ProductChatPageRestorationMixin, LoginPageRestorationMixin, ProductBrandPageRestorationMixin, ProductDiscussionPageRestorationMixin, AddressPageRestorationMixin, PaymentMethodPageRestorationMixin, CouponPageRestorationMixin {
   final RouteCompletionCallback<bool?>? _onCompleteAddressPage;
   final RouteCompletionCallback<String?>? _onCompleteSelectPaymentMethod;
+  final RouteCompletionCallback<String?>? _onCompleteSelectCoupon;
 
   _ProductDetailPageRestoration({
     RouteCompletionCallback<bool?>? onCompleteAddressPage,
-    RouteCompletionCallback<String?>? onCompleteSelectPaymentMethod
+    RouteCompletionCallback<String?>? onCompleteSelectPaymentMethod,
+    RouteCompletionCallback<String?>? onCompleteSelectCoupon
   }) : _onCompleteAddressPage = onCompleteAddressPage,
-      _onCompleteSelectPaymentMethod = onCompleteSelectPaymentMethod;
+      _onCompleteSelectPaymentMethod = onCompleteSelectPaymentMethod,
+      _onCompleteSelectCoupon = onCompleteSelectCoupon;
 
   @override
   // ignore: unnecessary_overrides
   void initState() {
     onCompleteSelectAddress = _onCompleteAddressPage;
     onCompleteSelectPaymentMethod = _onCompleteSelectPaymentMethod;
+    onCompleteSelectCoupon = _onCompleteSelectCoupon;
     super.initState();
   }
 
@@ -328,6 +340,7 @@ class _StatefulProductDetailControllerMediatorWidget extends StatefulWidget {
 class _StatefulProductDetailControllerMediatorWidgetDelegate {
   int _selectAddressBecauseAddressIsEmptyWhileInBuyDirectlyProcessStep = 0;
   void Function(PaymentMethod)? onRefreshPaymentMethod;
+  void Function(String)? onRefreshCouponId;
 }
 
 class _StatefulProductDetailControllerMediatorWidgetState extends State<_StatefulProductDetailControllerMediatorWidget> {
@@ -340,7 +353,9 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
   Timer? _timer;
   bool _startTimer = false;
   String _productId = "";
-  String _buyDirectlySettlingId = "";
+  final PurchaseDirectModalDialogPageDelegate _purchaseDirectModalDialogPageDelegate = PurchaseDirectModalDialogPageDelegate();
+  String? _selectedPaymentMethodSettlingId;
+  String? _selectedCouponId;
 
   @override
   void initState() {
@@ -368,9 +383,10 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
       _productDetailScrollController.jumpTo(0.0);
     };
     widget.statefulProductDetailControllerMediatorWidgetDelegate.onRefreshPaymentMethod = (paymentMethod) {
-      print("Settling id: ${paymentMethod.settlingId}");
-      _buyDirectlySettlingId = paymentMethod.settlingId;
-      widget.productDetailController.buyDirectly(_buyDirectlySettlingId);
+      _purchaseDirectModalDialogPageDelegate.onUpdatePaymentMethod(paymentMethod);
+    };
+    widget.statefulProductDetailControllerMediatorWidgetDelegate.onRefreshCouponId = (couponId) {
+      _purchaseDirectModalDialogPageDelegate.onUpdateCoupon(couponId);
     };
   }
 
@@ -1014,6 +1030,8 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
           }
           return null;
         },
+        onGetSelectedPaymentMethodSettlingId: () => _selectedPaymentMethodSettlingId,
+        onGetSelectedCouponId: () => _selectedCouponId,
         onObserveLoadShortProductDiscussionDirectly: (onObserveLoadShortProductDiscussionParameter) {
           ProductDiscussion productDiscussion = onObserveLoadShortProductDiscussionParameter.productDiscussionSuccessLoadDataResult.resultIfSuccess!;
           return ShortProductDiscussionContainerListItemControllerState(
@@ -1075,15 +1093,17 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
                     onFinishLoadingAddress: (addressListLoadDataResult) async {
                       if (widget.statefulProductDetailControllerMediatorWidgetDelegate._selectAddressBecauseAddressIsEmptyWhileInBuyDirectlyProcessStep == 2) {
                         if (addressListLoadDataResult.isSuccess) {
-                          List<Address> addressList = addressListLoadDataResult.resultIfSuccess!;
-                          if (addressList.isNotEmpty) {
-                            ToastHelper.showToast(
-                              MultiLanguageString({
-                                Constant.textEnUsLanguageKey: "Success add address. Please wait for buy directly process.",
-                                Constant.textInIdLanguageKey: "Sukses menambahkan alamat. Silahkan menunggu untuk proses beli langsung."
-                              }).toEmptyStringNonNull
-                            );
-                            widget.productDetailController.buyDirectly(_buyDirectlySettlingId);
+                          if (_selectedPaymentMethodSettlingId != null) {
+                            List<Address> addressList = addressListLoadDataResult.resultIfSuccess!;
+                            if (addressList.isNotEmpty) {
+                              ToastHelper.showToast(
+                                MultiLanguageString({
+                                  Constant.textEnUsLanguageKey: "Success add address. Please wait for buy directly process.",
+                                  Constant.textInIdLanguageKey: "Sukses menambahkan alamat. Silahkan menunggu untuk proses beli langsung."
+                                }).toEmptyStringNonNull
+                              );
+                              widget.productDetailController.buyDirectly(_selectedPaymentMethodSettlingId!, _selectedCouponId);
+                            }
                           }
                         }
                       }
@@ -1186,25 +1206,29 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
                         height: 36,
                         outlineGradientButtonType: OutlineGradientButtonType.outline,
                         onPressed: () {
-                          DialogHelper.showModalBottomDialogPage<int, int>(
-                            context: context,
-                            modalDialogPageBuilder: (context, parameter) => PurchaseDirectModalDialogPage(
-                              purchaseDirectModalDialogPageParameter: PurchaseDirectModalDialogPageParameter(
-                                paymentInstructionModalDialogPageDelegate: additionalSummaryWidgetParameter.paymentInstructionModalDialogPageDelegate,
-                                paymentInstructionTransactionSummaryLoadDataResult: () {
-                                  return additionalSummaryWidgetParameter.orderTransactionResponseLoadDataResult.map<PaymentInstructionTransactionSummary>(
-                                    (orderTransactionResponse) => orderTransactionResponse.paymentInstructionTransactionSummary
-                                  );
-                                },
-                                onGetErrorProvider: additionalSummaryWidgetParameter.onGetErrorProvider
+                          LoginHelper.checkingLogin(context, () {
+                            DialogHelper.showModalBottomDialogPage<int, int>(
+                              context: context,
+                              modalDialogPageBuilder: (context, parameter) => PurchaseDirectModalDialogPage(
+                                purchaseDirectModalDialogPageParameter: PurchaseDirectModalDialogPageParameter(
+                                  purchaseDirectModalDialogPageDelegate: _purchaseDirectModalDialogPageDelegate,
+                                  onGotoSelectPaymentMethodPage: (paymentMethodSettlingId) {
+                                    PageRestorationHelper.toPaymentMethodPage(context, paymentMethodSettlingId);
+                                  },
+                                  onGotoSelectCouponPage: (couponId) {
+                                    PageRestorationHelper.toCouponPage(context, couponId);
+                                  },
+                                  onProcessPurchaseDirect: (paymentMethodSettlingId, couponId) {
+                                    _selectedPaymentMethodSettlingId = paymentMethodSettlingId;
+                                    _selectedCouponId = couponId;
+                                    widget.productDetailController.buyDirectly(_selectedPaymentMethodSettlingId!, _selectedCouponId);
+                                  }
+                                )
                               ),
-                            ),
-                            parameter: 1
-                          );
+                              parameter: 1
+                            );
+                          });
                         },
-                        // onPressed: () => LoginHelper.checkingLogin(context, () {
-                        //   PageRestorationHelper.toPaymentMethodPage(context, null);
-                        // }),
                         text: "Buy Directly".tr,
                       ),
                     ),

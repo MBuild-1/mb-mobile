@@ -50,6 +50,8 @@ import '../misc/typedef.dart';
 import 'base_getx_controller.dart';
 
 typedef _OnGetSupportCart = SupportCart? Function();
+typedef _OnGetSelectedPaymentMethodSettlingId = String? Function();
+typedef _OnGetSelectedCouponId = String? Function();
 typedef _OnShowAddToCartRequestProcessLoadingCallback = Future<void> Function();
 typedef _OnAddToCartRequestProcessSuccessCallback = Future<void> Function();
 typedef _OnShowAddToCartRequestProcessFailedCallback = Future<void> Function(dynamic e);
@@ -390,7 +392,7 @@ class ProductDetailController extends BaseGetxController {
     }
   }
 
-  void buyDirectly(String settlingId) async {
+  void buyDirectly(String settlingId, String? couponId) async {
     if (_productDetailMainMenuDelegate != null) {
       SupportCart? supportCart = _productDetailMainMenuDelegate!.onGetSupportCart();
       if (supportCart != null) {
@@ -400,6 +402,7 @@ class ProductDetailController extends BaseGetxController {
           PurchaseDirectParameter purchaseDirectParameter = PurchaseDirectParameter(
             productEntryId: supportCart.productEntryId,
             settlingId: settlingId,
+            couponId: couponId,
             quantity: 1,
             notes: ""
           );
@@ -439,6 +442,8 @@ class ProductDetailMainMenuDelegate {
   OnObserveLoadProductDelegate onObserveLoadProductDelegate;
   OnUnfocusAllWidget onUnfocusAllWidget;
   _OnGetSupportCart onGetSupportCart;
+  _OnGetSelectedPaymentMethodSettlingId onGetSelectedPaymentMethodSettlingId;
+  _OnGetSelectedCouponId onGetSelectedCouponId;
   _OnShowAddToCartRequestProcessLoadingCallback onShowAddToCartRequestProcessLoadingCallback;
   _OnAddToCartRequestProcessSuccessCallback onAddToCartRequestProcessSuccessCallback;
   _OnShowAddToCartRequestProcessFailedCallback onShowAddToCartRequestProcessFailedCallback;
@@ -456,6 +461,8 @@ class ProductDetailMainMenuDelegate {
     required this.onObserveLoadProductDelegate,
     required this.onUnfocusAllWidget,
     required this.onGetSupportCart,
+    required this.onGetSelectedPaymentMethodSettlingId,
+    required this.onGetSelectedCouponId,
     required this.onShowAddToCartRequestProcessLoadingCallback,
     required this.onAddToCartRequestProcessSuccessCallback,
     required this.onShowAddToCartRequestProcessFailedCallback,

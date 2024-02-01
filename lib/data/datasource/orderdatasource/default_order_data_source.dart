@@ -123,6 +123,7 @@ class DefaultOrderDataSource implements OrderDataSource {
       dynamic data = {
         "product_entry_id": purchaseDirectParameter.productEntryId,
         "settling_id": purchaseDirectParameter.settlingId,
+        if (purchaseDirectParameter.couponId.isNotEmptyString) "voucher_id": purchaseDirectParameter.couponId!,
         "quantity": purchaseDirectParameter.quantity,
         "notes": "",
       };
