@@ -109,7 +109,7 @@ class OrderItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListIte
       while (j < verticalOrderListItemControllerStateList.length) {
         ListItemControllerState listItemControllerState = CompoundListItemControllerState(
           listItemControllerState: [
-            if (j > 0) VirtualSpacingListItemControllerState(height: itemSpacing()),
+            if (j > 0) VirtualSpacingListItemControllerState(height: 12.0),
             PaddingContainerListItemControllerState(
               padding: EdgeInsets.symmetric(horizontal: padding()),
               paddingChildListItemControllerState: verticalOrderListItemControllerStateList[j],
