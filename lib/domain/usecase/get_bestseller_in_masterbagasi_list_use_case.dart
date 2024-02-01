@@ -19,7 +19,7 @@ class GetBestsellerInMasterbagasiListUseCase {
         page: 1,
         itemEachPageCount: 10,
         withCondition: {
-          'fyp': true,
+          'type': 'best-seller',
         }
       )
     ).map(

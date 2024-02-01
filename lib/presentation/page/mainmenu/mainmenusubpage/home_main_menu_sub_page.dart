@@ -502,7 +502,7 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
                 context,
                 ProductEntryPageParameter(
                   productEntryParameterMap: {
-                    "fyp": true,
+                    'type': 'best-seller',
                     "name": {
                       Constant.textEnUsLanguageKey: "Bestselling in Masterbagasi",
                       Constant.textInIdLanguageKey: "Terlaris di Masterbagasi"
