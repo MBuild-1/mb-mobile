@@ -39,10 +39,10 @@ abstract class OrderItem extends StatelessWidget {
     return SizedBox(
       width: itemWidth,
       child: Material(
-        borderRadius: BorderRadius.circular(16.0),
+        borderRadius: BorderRadius.circular(8.0),
         child: InkWell(
           onTap: () => PageRestorationHelper.toOrderDetailPage(context, order.id),
-          borderRadius: BorderRadius.circular(16.0),
+          borderRadius: BorderRadius.circular(8.0),
           child: Builder(
             builder: (context) {
               List<OrderProductDetail> orderProductDetailList = order.orderProduct.orderProductDetailList;
@@ -173,7 +173,7 @@ abstract class OrderItem extends StatelessWidget {
                   Container(
                     clipBehavior: Clip.antiAlias,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16.0),
+                      borderRadius: BorderRadius.circular(8.0),
                     ),
                     child: result,
                   ),
@@ -183,7 +183,7 @@ abstract class OrderItem extends StatelessWidget {
                         color: Colors.grey,
                         strokeAlign: BorderSide.strokeAlignOutside,
                       ),
-                      borderRadius: BorderRadius.circular(16.0),
+                      borderRadius: BorderRadius.circular(8.0),
                     ),
                     child: Visibility(
                       visible: false,
