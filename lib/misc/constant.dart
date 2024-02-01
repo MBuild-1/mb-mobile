@@ -134,6 +134,7 @@ class _ConstantImpl {
   String get vectorSelectLanguage => _getVectorsAssets("select_language.svg");
   String get vectorSharedCart => _getVectorsAssets("shared_cart.svg");
   String get vectorPinPoint => _getVectorsAssets("pin_point.svg");
+  String get vectorUpdateApplication => _getVectorsAssets("update_application.svg");
 
   Color get colorYellow => const Color.fromRGBO(244, 184, 43, 1);
   Color get colorLightRed => const Color.fromRGBO(255, 236, 230, 1);

@@ -8,6 +8,7 @@ import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:open_store/open_store.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
@@ -330,9 +331,14 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
                     padding: menuPadding
                   ),
                   ProfileMenuListItemControllerState(
-                    onTap: (context) => PageRestorationHelper.toNotificationPage(context),
-                    icon: (BuildContext context) => menuIcon(Constant.vectorSupportMessage),
-                    title: 'Update'.tr,
+                    onTap: (context) {
+                      OpenStore.instance.open(
+                        appStoreId: '6473609788',
+                        androidAppBundleId: 'com.masterbagasi.masterbagasi'
+                      );
+                    },
+                    icon: (BuildContext context) => menuIcon(Constant.vectorUpdateApplication),
+                    title: 'Update Application'.tr,
                     titleInterceptor: menuTitleInterceptor,
                     padding: menuPadding
                   ),

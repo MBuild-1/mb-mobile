@@ -356,7 +356,8 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Minutes": "Menit",
       "Seconds": "Detik",
       "Payment Success": "Pembayaran Berhasil",
-      "Order Tracking": "Lacak Pengiriman"
+      "Order Tracking": "Lacak Pengiriman",
+      "Update Application": "Update Aplikasi"
     }
   };
 

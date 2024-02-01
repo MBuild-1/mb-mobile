@@ -86,6 +86,7 @@ dependencies:
   pusher_channels_flutter: ^2.2.0
   onesignal_flutter: ^5.0.3
   in_app_review: ^2.0.6
+  open_store: ^0.5.0
   flutter_web_browser: ^0.17.1
   flutter_inappwebview: ^5.8.0
   permission_handler: ^11.0.1
