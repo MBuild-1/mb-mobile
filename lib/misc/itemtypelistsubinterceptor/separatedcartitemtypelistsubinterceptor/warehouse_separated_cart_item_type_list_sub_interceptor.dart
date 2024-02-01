@@ -81,7 +81,7 @@ class WarehouseSeparatedCartItemTypeListSubInterceptor extends SeparatedCartItem
         ListItemControllerState newAdditionalItemListControllerState = CompoundListItemControllerState(
           listItemControllerState: [
             if (k > 0) ...[
-              VirtualSpacingListItemControllerState(height: 10),
+              VirtualSpacingListItemControllerState(height: 14),
             ],
             WidgetSubstitutionWithInjectionListItemControllerState(
               widgetSubstitutionWithInjection: (context, index, widgetList) {

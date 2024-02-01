@@ -538,7 +538,7 @@ class DeliveryCartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
                 AdditionalItem additionalItem = oldItemType.additionalItemList[i];
                 ListItemControllerState newAdditionalItemListControllerState = CompoundListItemControllerState(
                   listItemControllerState: [
-                    VirtualSpacingListItemControllerState(height: 10),
+                    VirtualSpacingListItemControllerState(height: 14),
                     PaddingContainerListItemControllerState(
                       padding: EdgeInsets.symmetric(horizontal: padding()),
                       paddingChildListItemControllerState: AdditionalItemListItemControllerState(

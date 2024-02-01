@@ -388,7 +388,7 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
                 AdditionalItem additionalItem = oldItemType.additionalItemList[i];
                 ListItemControllerState newAdditionalItemListControllerState = CompoundListItemControllerState(
                   listItemControllerState: [
-                    VirtualSpacingListItemControllerState(height: 10),
+                    VirtualSpacingListItemControllerState(height: 14),
                     PaddingContainerListItemControllerState(
                       padding: EdgeInsets.symmetric(horizontal: padding()),
                       paddingChildListItemControllerState: AdditionalItemListItemControllerState(
@@ -500,7 +500,7 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
                       padding: EdgeInsets.symmetric(horizontal: padding()),
                       paddingChildListItemControllerState: CompoundListItemControllerState(
                         listItemControllerState: [
-                          if (index > 0) VirtualSpacingListItemControllerState(height: 10),
+                          if (index > 0) VirtualSpacingListItemControllerState(height: 14),
                           AdditionalItemListItemControllerState(
                             additionalItem: additionalItem,
                             no: index + 1,
@@ -790,7 +790,7 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
                       padding: EdgeInsets.symmetric(horizontal: padding()),
                       paddingChildListItemControllerState: CompoundListItemControllerState(
                         listItemControllerState: [
-                          if (index > 0) VirtualSpacingListItemControllerState(height: 10),
+                          if (index > 0) VirtualSpacingListItemControllerState(height: 14),
                           AdditionalItemListItemControllerState(
                             additionalItem: additionalItem,
                             no: index + 1,

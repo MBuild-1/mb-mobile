@@ -31,7 +31,7 @@ class OrderProductInventoryItem extends StatelessWidget {
             )
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 20),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

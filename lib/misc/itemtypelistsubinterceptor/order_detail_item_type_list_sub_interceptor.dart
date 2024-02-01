@@ -776,7 +776,7 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
               ...additionalItemList.mapIndexed<ListItemControllerState>(
                 (index, additionalItem) => CompoundListItemControllerState(
                   listItemControllerState: [
-                    if (index > 0) VirtualSpacingListItemControllerState(height: 10),
+                    if (index > 0) VirtualSpacingListItemControllerState(height: 14),
                     AdditionalItemListItemControllerState(
                       additionalItem: additionalItem,
                       no: index + 1,
@@ -805,7 +805,7 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
                 )
               ).toList(),
               VirtualSpacingListItemControllerState(
-                height: padding() - 8
+                height: padding()
               ),
               DividerListItemControllerState(
                 lineColor: Colors.black
@@ -874,7 +874,7 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
               ...additionalItemList.mapIndexed<ListItemControllerState>(
                 (index, additionalItem) => CompoundListItemControllerState(
                   listItemControllerState: [
-                    if (index > 0) VirtualSpacingListItemControllerState(height: 10),
+                    if (index > 0) VirtualSpacingListItemControllerState(height: 14),
                     AdditionalItemListItemControllerState(
                       additionalItem: additionalItem,
                       no: index + 1,
