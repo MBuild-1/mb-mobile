@@ -210,7 +210,7 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
       id: response["id"],
       orderId: response["order_id"],
       orderProductId: response["order_product_id"],
-      trackingNumber: response["tracking_number"],
+      trackingNumber: response["tracking_number"] ?? "",
       status: response["status"],
       notes: response["notes"],
       orderDetail: ResponseWrapper(response["order"]).mapFromResponseToOrderDetail(),
