@@ -193,7 +193,7 @@ class _ModificationChipButtonState extends State<ModifiedChipButton> with Materi
       ?? chipDefaults.backgroundColor
       ?? Constant.colorDefaultChip;
     Color effectiveUnselectedBackgroundColor = Colors.white.withOpacity(0);
-    BorderRadius borderRadius = widget.borderRadius ?? const BorderRadius.all(Radius.circular(16.0));
+    BorderRadius borderRadius = widget.borderRadius ?? const BorderRadius.all(Radius.circular(8.0));
     TextStyle? newTextStyle = effectiveStatedLabelStyleFunction(resolvedLabelStyle, effectiveSelectedBackgroundColor, effectiveUnselectedBackgroundColor, widget.isSelected) ?? resolvedLabelStyle;
     if (labelText is Text) {
       labelText = Text(
