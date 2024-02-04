@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
+import 'package:masterbagasi/presentation/widget/loaddataresultimplementer/load_data_result_implementer_directly.dart';
 import 'dart:math' as math;
 
 import '../../../../controller/mainmenucontroller/mainmenusubpagecontroller/explore_nusantara_main_menu_sub_controller.dart';
@@ -249,6 +250,32 @@ class _StatefulExploreNusantaraMainMenuSubControllerMediatorWidgetState extends 
         child: widget
       );
     }
+    Widget contentWidget(Widget Function(double, double, List<ProvinceMap>) content) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: RxConsumer<ExploreNusantaraMainMenuControllerState>(
+          rxValue: widget.exploreNusantaraMainMenuSubController.exploreNusantaraMainMenuControllerStateRx,
+          onConsumeValue: (context, value) => LoadDataResultImplementer<List<ProvinceMap>>(
+            loadDataResult: value.provinceMapListLoadDataResult,
+            errorProvider: Injector.locator<ErrorProvider>(),
+            onSuccessLoadDataResultWidget: (provinceMapList) {
+              double width = MediaQuery.of(context).size.width;
+              double height = width * 350.0 / 1000.0;
+              return content(width, height, provinceMapList);
+            },
+            onFailedLoadDataResultWidget: (errorProvider, e, _) {
+              return WidgetHelper.buildFailedPromptIndicatorFromErrorProvider(
+                context: context,
+                errorProvider: Injector.locator<ErrorProvider>(),
+                e: e,
+                buttonText: "Reload".tr,
+                onPressed: widget.exploreNusantaraMainMenuSubController.reloadProvinceMap
+              );
+            }
+          ),
+        ),
+      );
+    }
     return WidgetHelper.checkVisibility(
       MainRouteObserver.subMainMenuVisibility[Constant.subPageKeyExploreNusantaraMainMenu],
       () => BackgroundAppBarScaffold(
@@ -344,30 +371,24 @@ class _StatefulExploreNusantaraMainMenuSubControllerMediatorWidgetState extends 
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: RxConsumer<ExploreNusantaraMainMenuControllerState>(
                         rxValue: widget.exploreNusantaraMainMenuSubController.exploreNusantaraMainMenuControllerStateRx,
-                        onConsumeValue: (context, value) => LoadDataResultImplementer<List<ProvinceMap>>(
-                          loadDataResult: value.provinceMapListLoadDataResult,
-                          errorProvider: Injector.locator<ErrorProvider>(),
-                          onSuccessLoadDataResultWidget: (provinceMapList) {
-                            double width = MediaQuery.of(context).size.width;
-                            double height = width * 350.0 / 1000.0;
-                            return SizedBox(
-                              width: width,
-                              height: height,
-                              child: ModifiedCanvasTouchDetector(
-                                builder: (context) => CustomPaint(
-                                  painter: ExploreNusantaraMapCustomPainter(
-                                    context: context,
-                                    provinceMapList: provinceMapList,
-                                    selectedProvinceMap: value.selectedProvinceMap,
-                                    onSelectProvinceMap: (provinceMap) {
-                                      widget.exploreNusantaraMainMenuSubController.selectProvinceMap(provinceMap);
-                                    },
-                                  )
+                        onConsumeValue: (context, value) => contentWidget(
+                          (width, height, provinceMapList) => SizedBox(
+                            width: width,
+                            height: height,
+                            child: ModifiedCanvasTouchDetector(
+                              builder: (context) => CustomPaint(
+                                painter: ExploreNusantaraMapCustomPainter(
+                                  context: context,
+                                  provinceMapList: provinceMapList,
+                                  selectedProvinceMap: value.selectedProvinceMap,
+                                  onSelectProvinceMap: (provinceMap) {
+                                    widget.exploreNusantaraMainMenuSubController.selectProvinceMap(provinceMap);
+                                  },
                                 )
                               )
-                            );
-                          }
-                        ),
+                            )
+                          )
+                        )
                       ),
                     ),
                     hideWidget(_footerSection()),
@@ -390,11 +411,11 @@ class _StatefulExploreNusantaraMainMenuSubControllerMediatorWidgetState extends 
                               padding: const EdgeInsets.symmetric(horizontal: 16.0),
                               child: Builder(
                                 builder: (context) {
-                                  double width = MediaQuery.of(context).size.width;
-                                  double height = width * 350.0 / 1000.0;
-                                  return SizedBox(
-                                    width: width,
-                                    height: height,
+                                  return contentWidget(
+                                    (width, height, _) => SizedBox(
+                                      width: width,
+                                      height: height,
+                                    )
                                   );
                                 }
                               )

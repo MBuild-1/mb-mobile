@@ -9,3 +9,11 @@ class ProvinceMapMetadata {
     required this.svg
   });
 }
+
+class NotIncludedProvinceMapMetadata extends ProvinceMapMetadata {
+  NotIncludedProvinceMapMetadata() : super(
+    id: "",
+    provinceId: "",
+    svg: ""
+  );
+}

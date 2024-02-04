@@ -29,6 +29,11 @@ class ExploreNusantaraMainMenuSubController extends BaseGetxController {
     exploreNusantaraMainMenuControllerStateRx = _exploreNusantaraMainMenuControllerState.obs;
   }
 
+  void reloadProvinceMap() {
+    _hasLoadingProvinceMap = false;
+    loadProvinceMap();
+  }
+
   void loadProvinceMap() async {
     if (_hasLoadingProvinceMap) {
       return;

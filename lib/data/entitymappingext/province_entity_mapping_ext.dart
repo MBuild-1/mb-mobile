@@ -5,8 +5,10 @@ import '../../misc/response_wrapper.dart';
 
 extension ProvinceDetailMappingExt on ResponseWrapper {
   List<ProvinceMap> mapFromResponseToProvinceMapList() {
-    return response.map<ProvinceMap>(
+    return (response as List<dynamic>).map<ProvinceMap>(
       (provinceMapResponse) => ResponseWrapper(provinceMapResponse).mapFromResponseToProvinceMap()
+    ).where(
+      (provinceMap) => provinceMap.provinceMapMetadata is! NotIncludedProvinceMapMetadata
     ).toList();
   }
 }
@@ -42,6 +44,9 @@ extension ProvinceDetailEntityMappingExt on ResponseWrapper {
 
   ProvinceMapMetadata mapFromResponseToProvinceMapMetadata() {
     List<dynamic> responseList = response as List<dynamic>;
+    if (responseList.isEmpty) {
+      return NotIncludedProvinceMapMetadata();
+    }
     Map<String, dynamic> responseMap = responseList.first as Map<String, dynamic>;
     return ProvinceMapMetadata(
       id: responseMap["id"],
