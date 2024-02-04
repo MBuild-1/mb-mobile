@@ -4,6 +4,7 @@ import 'package:masterbagasi/misc/ext/number_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../domain/entity/additionalitem/additional_item.dart';
 import '../../../domain/entity/order/combined_order.dart';
 import '../../../domain/entity/order/order_product_detail.dart';
 import '../../../misc/constant.dart';
@@ -12,6 +13,7 @@ import '../../../misc/dialog_helper.dart';
 import '../../../misc/multi_language_string.dart';
 import '../../../misc/page_restoration_helper.dart';
 import '../../../misc/web_helper.dart';
+import '../additional_item_widget.dart';
 import '../button/custombutton/sized_outline_gradient_button.dart';
 import '../colorful_chip.dart';
 import '../modified_divider.dart';
@@ -46,6 +48,7 @@ abstract class OrderItem extends StatelessWidget {
           child: Builder(
             builder: (context) {
               List<OrderProductDetail> orderProductDetailList = order.orderProduct.orderProductDetailList;
+              List<AdditionalItem> additionalItemList = order.orderProduct.additionalItemList;
               Widget result = Column(
                 children: [
                   Padding(
@@ -72,79 +75,98 @@ abstract class OrderItem extends StatelessWidget {
                             ),
                           ]
                         ),
-                        const SizedBox(height: 12),
-                        const ModifiedDivider(),
-                        if (orderProductDetailList.isNotEmpty) ...[
-                          const SizedBox(height: 12),
-                          ..._allOrderProductDetailWidget(orderProductDetailList),
-                        ],
-                        const SizedBox(height: 15),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text("Shopping Total".tr),
-                                  const SizedBox(height: 3),
-                                  Text(
-                                    order.orderProduct.orderDetail.totalPrice.toRupiah(withFreeTextIfZero: false),
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 17
-                                    ),
+                        ...() {
+                          double titleAndContentHeight = 8;
+                          List<Widget> result = [];
+                          bool allIsNotEmpty = orderProductDetailList.isNotEmpty && additionalItemList.isNotEmpty;
+                          bool allIsEmpty = orderProductDetailList.isEmpty && additionalItemList.isEmpty;
+                          if (allIsEmpty) {
+                            return [const SizedBox()];
+                          }
+                          if (orderProductDetailList.isNotEmpty) {
+                            result.add(const SizedBox(height: 12));
+                            if (allIsNotEmpty) {
+                              result.addAll([
+                                Text("Product".tr),
+                                SizedBox(height: titleAndContentHeight)
+                              ]);
+                            }
+                            result.addAll(_allOrderProductDetailWidget(orderProductDetailList));
+                          }
+                          if (additionalItemList.isNotEmpty) {
+                            result.add(const SizedBox(height: 12));
+                            if (allIsNotEmpty) {
+                              result.addAll([
+                                Text("Warehouse".tr),
+                                SizedBox(height: titleAndContentHeight)
+                              ]);
+                            }
+                            result.addAll(_allOrderAdditionalItemWidget(additionalItemList));
+                          }
+                          return <Widget>[
+                            const SizedBox(height: 12),
+                            const ModifiedDivider(),
+                            ...result
+                          ];
+                        }(),
+                        Builder(
+                          builder: (context) {
+                            List<Widget> rowWidget = [];
+                            void addRowWidget(Widget newWidget) {
+                              rowWidget.addAll([
+                                if (rowWidget.isNotEmpty) ...[
+                                  const SizedBox(width: 10),
+                                ],
+                                newWidget
+                              ]);
+                            }
+                            bool showPayButton = false;
+                            if (order.orderProduct.orderDetail.status == "pending") {
+                              showPayButton = true;
+                            }
+                            if (showPayButton) {
+                              addRowWidget(
+                                Expanded(
+                                  child: SizedOutlineGradientButton(
+                                    onPressed: () => PageRestorationHelper.toOrderDetailPage(context, order.id),
+                                    text: "Pay".tr,
+                                    customPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                                    outlineGradientButtonType: OutlineGradientButtonType.solid,
+                                    outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
+                                  ),
+                                )
+                              );
+                            }
+                            if (order.status.toLowerCase() == "sedang dikirim") {
+                              addRowWidget(
+                                Expanded(
+                                  child: SizedOutlineGradientButton(
+                                    onPressed:() => onConfirmArrived(order),
+                                    text: "Confirm Arrived".tr,
+                                    customPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                                    outlineGradientButtonType: OutlineGradientButtonType.solid,
+                                    outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
                                   )
-                                ]
-                              ),
-                            ),
-                            Builder(
-                              builder: (context) {
-                                List<Widget> rowWidget = [];
-                                void addRowWidget(Widget newWidget) {
-                                  rowWidget.addAll([
-                                    if (rowWidget.isNotEmpty) ...[
-                                      const SizedBox(width: 10),
-                                    ],
-                                    newWidget
-                                  ]);
-                                }
-                                bool showPayButton = false;
-                                if (order.orderProduct.orderDetail.status == "pending") {
-                                  showPayButton = true;
-                                }
-                                if (showPayButton) {
-                                  addRowWidget(
-                                    SizedOutlineGradientButton(
-                                      onPressed: () => PageRestorationHelper.toOrderDetailPage(context, order.id),
-                                      text: "Pay".tr,
-                                      customPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                                      outlineGradientButtonType: OutlineGradientButtonType.solid,
-                                      outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
-                                    )
-                                  );
-                                }
-                                if (order.status.toLowerCase() == "sedang dikirim") {
-                                  addRowWidget(
-                                    SizedOutlineGradientButton(
-                                      onPressed:() => onConfirmArrived(order),
-                                      text: "Confirm Arrived".tr,
-                                      customPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                                      outlineGradientButtonType: OutlineGradientButtonType.solid,
-                                      outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
-                                    )
-                                  );
-                                }
-                                return Row(
+                                )
+                              );
+                            }
+                            if (rowWidget.isEmpty) {
+                              return const SizedBox();
+                            }
+                            return Column(
+                              children: [
+                                const SizedBox(height: 15),
+                                Row(
                                   children: rowWidget
-                                );
-                              }
-                            ),
-                          ],
+                                ),
+                              ],
+                            );
+                          }
                         ),
                         OrderConclusionItem(
                           order: order,
                           onBuyAgainTap: onBuyAgainTap,
+                          onPayOrderShipping: () => PageRestorationHelper.toOrderDetailPage(context, order.id),
                         ),
                       ],
                     ),
@@ -227,6 +249,35 @@ abstract class OrderItem extends StatelessWidget {
             }).toEmptyStringNonNull
           )
         ]
+    ];
+  }
+
+  List<Widget> _allOrderAdditionalItemWidget(List<AdditionalItem> additionalItemList) {
+    if (additionalItemList.isEmpty) {
+      return [
+        Text(
+          MultiLanguageString({
+            Constant.textEnUsLanguageKey: "No additional item.",
+            Constant.textInIdLanguageKey: "Tidak ada tambahan item.",
+          }).toEmptyStringNonNull
+        )
+      ];
+    }
+    return [
+      AdditionalItemWidget(
+        additionalItem: additionalItemList.first,
+        onLoadAdditionalItem: () {},
+        showEditAndRemoveIcon: false,
+      ),
+      if (additionalItemList.length > 1)...[
+        const SizedBox(height: 12),
+        Text(
+          MultiLanguageString({
+            Constant.textEnUsLanguageKey: "+${additionalItemList.length - 1} other product",
+            Constant.textInIdLanguageKey: "+${additionalItemList.length - 1} produk lainnya",
+          }).toEmptyStringNonNull
+        )
+      ]
     ];
   }
 }
