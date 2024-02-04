@@ -193,13 +193,6 @@ abstract class OrderItem extends StatelessWidget {
               return Stack(
                 children: [
                   Container(
-                    clipBehavior: Clip.antiAlias,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    child: result,
-                  ),
-                  Container(
                     decoration: BoxDecoration(
                       border: Border.all(
                         color: Colors.grey,
@@ -214,6 +207,13 @@ abstract class OrderItem extends StatelessWidget {
                       maintainSize: true,
                       child: result,
                     )
+                  ),
+                  Container(
+                    clipBehavior: Clip.antiAlias,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: result,
                   )
                 ],
               );
