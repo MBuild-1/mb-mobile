@@ -33,6 +33,7 @@ class _MainRouteObserver extends RouteObserver {
   void Function()? onRefreshSelectAddress;
   void Function()? onRefreshOrderList;
   RefreshDeliveryReview? onRefreshDeliveryReview;
+  void Function()? onRefreshOrderDetailAfterDeliveryReview;
 
   void applyNewRouteMapFromRouteKeyMap(Map<String, int> newRouteMap) {
     _routeMap = {

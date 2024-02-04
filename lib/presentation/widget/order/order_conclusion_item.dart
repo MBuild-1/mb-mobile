@@ -17,12 +17,14 @@ class OrderConclusionItem extends StatelessWidget {
   final CombinedOrder order;
   final bool inOrderDetail;
   final void Function(CombinedOrder) onBuyAgainTap;
+  final void Function() onPayOrderShipping;
 
   const OrderConclusionItem({
     super.key,
     required this.order,
     this.inOrderDetail = false,
-    required this.onBuyAgainTap
+    required this.onBuyAgainTap,
+    required this.onPayOrderShipping
   });
 
   @override
@@ -98,13 +100,7 @@ class OrderConclusionItem extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   SizedOutlineGradientButton(
-                    onPressed: () async {
-                      DialogHelper.showLoadingDialog(context);
-                      await WebHelper.launchUrl(
-                        Uri.parse("${Constant.envValueMidtransSnapUrl}${order.orderShipping!.orderDetail.snapToken}")
-                      );
-                      Get.back();
-                    },
+                    onPressed: onPayOrderShipping,
                     text: "Pay".tr,
                     customPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
                     outlineGradientButtonType: OutlineGradientButtonType.solid,
@@ -156,6 +152,9 @@ class OrderConclusionItem extends StatelessWidget {
                               MainRouteObserver.onRefreshDeliveryReview?.refresh();
                               if (MainRouteObserver.onRefreshOrderList != null) {
                                 MainRouteObserver.onRefreshOrderList!();
+                              }
+                              if (MainRouteObserver.onRefreshOrderDetailAfterDeliveryReview != null) {
+                                MainRouteObserver.onRefreshOrderDetailAfterDeliveryReview!();
                               }
                             }
                           },

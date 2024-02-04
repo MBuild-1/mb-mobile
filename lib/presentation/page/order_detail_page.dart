@@ -17,10 +17,13 @@ import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderr
 import '../../domain/entity/order/order.dart';
 import '../../domain/entity/order/order_based_id_parameter.dart';
 import '../../domain/entity/order/ordertransaction/ordertransactionresponse/order_transaction_response.dart';
+import '../../domain/entity/payment/payment_method.dart';
+import '../../domain/entity/payment/shippingpayment/shipping_payment_parameter.dart';
 import '../../domain/entity/summaryvalue/summary_value.dart';
 import '../../domain/usecase/add_warehouse_in_order_use_case.dart';
 import '../../domain/usecase/get_order_based_id_use_case.dart';
 import '../../domain/usecase/order_transaction_use_case.dart';
+import '../../domain/usecase/shipping_payment_use_case.dart';
 import '../../misc/additionalsummarywidgetparameter/order_transaction_additional_summary_widget_parameter.dart';
 import '../../misc/constant.dart';
 import '../../misc/controllercontentdelegate/repurchase_controller_content_delegate.dart';
@@ -46,6 +49,7 @@ import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/http_client.dart';
 import '../../misc/injector.dart';
 import '../../misc/load_data_result.dart';
+import '../../misc/main_route_observer.dart';
 import '../../misc/manager/controller_manager.dart';
 import '../../misc/multi_language_string.dart';
 import '../../misc/navigation_helper.dart';
@@ -70,12 +74,14 @@ import 'modaldialogpage/modify_warehouse_in_order_modal_dialog_page.dart';
 import 'modaldialogpage/payment_instruction_modal_dialog_page.dart';
 import 'order_chat_page.dart';
 import 'payment_instruction_page.dart';
+import 'payment_method_page.dart';
 import 'pdf_viewer_page.dart';
 
 class OrderDetailPage extends RestorableGetxPage<_OrderDetailPageRestoration> {
   late final ControllerMember<OrderDetailController> _orderDetailController = ControllerMember<OrderDetailController>().addToControllerManager(controllerManager);
 
   final String combinedOrderId;
+  final _StatefulDeliveryControllerMediatorWidgetDelegate _statefulDeliveryControllerMediatorWidgetDelegate = _StatefulDeliveryControllerMediatorWidgetDelegate();
 
   OrderDetailPage({
     Key? key,
@@ -90,6 +96,7 @@ class OrderDetailPage extends RestorableGetxPage<_OrderDetailPageRestoration> {
         Injector.locator<GetOrderBasedIdUseCase>(),
         Injector.locator<ModifyWarehouseInOrderUseCase>(),
         Injector.locator<OrderTransactionUseCase>(),
+        Injector.locator<ShippingPaymentUseCase>(),
         Injector.locator<RepurchaseControllerContentDelegate>(),
       ),
       tag: pageName
@@ -97,21 +104,37 @@ class OrderDetailPage extends RestorableGetxPage<_OrderDetailPageRestoration> {
   }
 
   @override
-  _OrderDetailPageRestoration createPageRestoration() => _OrderDetailPageRestoration();
+  _OrderDetailPageRestoration createPageRestoration() => _OrderDetailPageRestoration(
+    onCompleteSelectPaymentMethod: (result) {
+      if (result != null) {
+        if (_statefulDeliveryControllerMediatorWidgetDelegate.onRefreshPaymentMethod != null) {
+          _statefulDeliveryControllerMediatorWidgetDelegate.onRefreshPaymentMethod!(result!.toPaymentMethodPageResponse().paymentMethod);
+        }
+      }
+    }
+  );
 
   @override
   Widget buildPage(BuildContext context) {
     return _StatefulOrderDetailControllerMediatorWidget(
       orderDetailController: _orderDetailController.controller,
       combinedOrderId: combinedOrderId,
+      statefulDeliveryControllerMediatorWidgetDelegate: _statefulDeliveryControllerMediatorWidgetDelegate
     );
   }
 }
 
-class _OrderDetailPageRestoration extends ExtendedMixableGetxPageRestoration with WebViewerPageRestorationMixin, OrderChatPageRestorationMixin, PdfViewerPageRestorationMixin, PaymentInstructionPageRestorationMixin {
+class _OrderDetailPageRestoration extends ExtendedMixableGetxPageRestoration with WebViewerPageRestorationMixin, OrderChatPageRestorationMixin, PdfViewerPageRestorationMixin, PaymentInstructionPageRestorationMixin, PaymentMethodPageRestorationMixin {
+  final RouteCompletionCallback<String?>? _onCompleteSelectPaymentMethod;
+
+  _OrderDetailPageRestoration({
+    RouteCompletionCallback<String?>? onCompleteSelectPaymentMethod
+  }) : _onCompleteSelectPaymentMethod = onCompleteSelectPaymentMethod;
+
   @override
   // ignore: unnecessary_overrides
   void initState() {
+    onCompleteSelectPaymentMethod = _onCompleteSelectPaymentMethod;
     super.initState();
   }
 
@@ -222,13 +245,19 @@ class OrderDetailPageRestorableRouteFuture extends GetRestorableRouteFuture {
   }
 }
 
+class _StatefulDeliveryControllerMediatorWidgetDelegate {
+  void Function(PaymentMethod)? onRefreshPaymentMethod;
+}
+
 class _StatefulOrderDetailControllerMediatorWidget extends StatefulWidget {
   final OrderDetailController orderDetailController;
   final String combinedOrderId;
+  final _StatefulDeliveryControllerMediatorWidgetDelegate statefulDeliveryControllerMediatorWidgetDelegate;
 
   const _StatefulOrderDetailControllerMediatorWidget({
     required this.orderDetailController,
-    required this.combinedOrderId
+    required this.combinedOrderId,
+    required this.statefulDeliveryControllerMediatorWidgetDelegate
   });
 
   @override
@@ -285,7 +314,17 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
     _paymentWidgetBindingObserver = PaymentWidgetBindingObserver(
       checkOrderTransactionWhileResuming: _refreshOrderDetail
     );
+    widget.statefulDeliveryControllerMediatorWidgetDelegate.onRefreshPaymentMethod = (paymentMethod) {
+      widget.orderDetailController.shippingPayment(
+        ShippingPaymentParameter(
+          settlingId: paymentMethod.settlingId,
+          combinedOrderId: widget.combinedOrderId,
+          expire: 7
+        )
+      );
+    };
     WidgetsBinding.instance.addObserver(_paymentWidgetBindingObserver!);
+    MainRouteObserver.onRefreshOrderDetailAfterDeliveryReview = _refreshOrderDetail;
   }
 
   Future<LoadDataResult<_LoadOrderDetailResponse>> _loadOrderDetail() async {
@@ -332,7 +371,15 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
     }
     return orderDetailLoadDataResult.map<_LoadOrderDetailResponse>((orderDetail) {
       ListItemControllerState orderTransactionListItemControllerState = componentEntityMediator.mapWithParameter(
-        widget.orderDetailController.getOrderTransactionSection(orderDetail.combinedOrder.orderProduct.orderId),
+        () {
+          late String orderId;
+          if (orderDetail.combinedOrder.orderShipping != null) {
+            orderId = orderDetail.combinedOrder.orderShipping!.orderId;
+          } else {
+            orderId = orderDetail.combinedOrder.orderProduct.orderId;
+          }
+          return widget.orderDetailController.getOrderTransactionSection(orderId);
+        }(),
         parameter: carouselParameterizedEntityMediator
       );
       return _LoadOrderDetailResponse(
@@ -424,6 +471,9 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
                 }
               );
             },
+            onPayOrderShipping: () {
+              PageRestorationHelper.toPaymentMethodPage(context, null);
+            },
             orderTransactionListItemControllerState: () => loadOrderDetailResponse.orderTransactionListItemControllerState,
             errorProvider: () => Injector.locator<ErrorProvider>()
           )
@@ -470,6 +520,17 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
           } else {
             _saveLastScrollOffsetAndRefresh();
           }
+        },
+        onShowShippingPaymentRequestProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
+        onShowShippingPaymentRequestProcessFailedCallback: (e) async {
+          DialogHelper.showFailedModalBottomDialogFromErrorProvider(
+            context: context,
+            errorProvider: Injector.locator<ErrorProvider>(),
+            e: e
+          );
+        },
+        onShippingPaymentRequestProcessSuccessCallback: (shippingPaymentResponse) async {
+          _refreshOrderDetail();
         },
         onObserveOrderTransactionDirectly: (onObserveOrderTransactionDirectlyParameter) {
           return OrderTransactionListItemControllerState(
@@ -667,6 +728,7 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
       pusherChannelsFlutter: _pusher,
       orderId: widget.combinedOrderId
     );
+    MainRouteObserver.onRefreshOrderDetailAfterDeliveryReview = null;
     super.dispose();
   }
 }

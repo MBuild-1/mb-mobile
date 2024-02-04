@@ -68,7 +68,7 @@ class OrderPage extends RestorableGetxPage<_OrderPageRestoration> {
   _OrderPageRestoration createPageRestoration() => _OrderPageRestoration(
     onCompleteOrderDetailPage: (result) {
       bool removeOrder(String resultString) {
-        if (resultString.isNotEmpty) {
+        if (resultString.isNotEmptyString) {
           Map<String, dynamic> resultFromStorageMap = json.decode(resultString) as Map<String, dynamic>;
           if (resultFromStorageMap.containsKey("combined_order_id")) {
             String combinedOrderId = resultFromStorageMap["combined_order_id"];
@@ -80,13 +80,15 @@ class OrderPage extends RestorableGetxPage<_OrderPageRestoration> {
         }
         return false;
       }
+      bool willRemoveOrder = false;
       if (result != null) {
-        removeOrder(result.toEmptyStringNonNull);
+        willRemoveOrder = removeOrder(result.toEmptyStringNonNull);
       } else {
         String resultFromStorage = TempOrderDetailBackResultDataHelper.getTempOrderDetailBackResult().result;
-        if (removeOrder(resultFromStorage)) {
-          TempOrderDetailBackResultDataHelper.deleteTempOrderDetailBackResult();
-        }
+        willRemoveOrder = removeOrder(resultFromStorage);
+      }
+      if (willRemoveOrder) {
+        TempOrderDetailBackResultDataHelper.deleteTempOrderDetailBackResult().future();
       }
     },
   );

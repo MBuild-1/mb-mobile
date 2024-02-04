@@ -8,6 +8,7 @@ import '../../domain/entity/payment/paymentinstruction/payment_instruction_group
 import '../../domain/entity/payment/paymentinstruction/payment_instruction_response.dart';
 import '../../domain/entity/payment/paymentinstruction/paymentinstructiontransactionsummary/payment_instruction_transaction_summary.dart';
 import '../../domain/entity/payment/paymentmethodlist/payment_method_list_response.dart';
+import '../../domain/entity/payment/shippingpayment/shipping_payment_response.dart';
 import '../../domain/entity/summaryvalue/summary_value.dart';
 import '../../misc/constant.dart';
 import '../../misc/error/message_error.dart';
@@ -117,5 +118,9 @@ extension PaymentDetailEntityMappingExt on ResponseWrapper {
       sequence: ResponseWrapper(response["sequence"]).mapFromResponseToInt()!,
       text: MultiLanguageString(response["text"])
     );
+  }
+
+  ShippingPaymentResponse mapFromResponseToShippingPaymentResponse() {
+    return ShippingPaymentResponse();
   }
 }

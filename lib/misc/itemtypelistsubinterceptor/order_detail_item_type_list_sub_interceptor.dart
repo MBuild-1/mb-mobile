@@ -485,6 +485,7 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
           order: order.combinedOrder,
           inOrderDetail: true,
           onBuyAgainTap: orderDetailContainerListItemControllerState.onBuyAgainTap,
+          onPayOrderShipping: orderDetailContainerListItemControllerState.onPayOrderShipping
         )
       )
     );
