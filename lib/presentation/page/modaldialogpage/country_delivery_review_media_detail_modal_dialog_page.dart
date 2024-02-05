@@ -8,6 +8,7 @@ import '../../../misc/controllerstate/listitemcontrollerstate/compound_list_item
 import '../../../misc/controllerstate/listitemcontrollerstate/countrydeliveryreviewlistitemcontrollerstate/country_delivery_review_media_detail_list_item_controller_state.dart';
 import '../../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../../misc/controllerstate/paging_controller_state.dart';
+import '../../../misc/itemtypelistsubinterceptor/verticalgriditemtypelistsubinterceptor/vertical_grid_item_type_list_sub_interceptor.dart';
 import '../../../misc/load_data_result.dart';
 import '../../../misc/paging/modified_paging_controller.dart';
 import '../../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
@@ -92,8 +93,8 @@ class _StatefulCountryDeliveryReviewMediaDetailModalDialogControllerMediatorWidg
       value: PagingDataResult<ListItemControllerState>(
         itemList: [
           BuilderListItemControllerState(
-            buildListItemControllerState: () => CompoundListItemControllerState(
-              listItemControllerState: widget.countryDeliveryReviewMediaList.map<ListItemControllerState>(
+            buildListItemControllerState: () => VerticalGridPaddingContentSubInterceptorSupportListItemControllerState(
+              childListItemControllerStateList: widget.countryDeliveryReviewMediaList.map<ListItemControllerState>(
                 (countryDeliveryReviewMedia) => CountryDeliveryReviewMediaDetailListItemControllerState(
                   countryDeliveryReviewMedia: countryDeliveryReviewMedia,
                   contextForOpeningMediaView: widget.contextForOpeningMediaView

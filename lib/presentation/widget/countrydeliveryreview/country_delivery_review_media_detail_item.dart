@@ -34,7 +34,9 @@ class _CountryDeliveryReviewMediaDetailItemState extends State<CountryDeliveryRe
   @override
   void initState() {
     super.initState();
-    _loadVideoThumbnail();
+    if (widget.countryDeliveryReviewMedia is VideoCountryDeliveryReviewMedia) {
+      _loadVideoThumbnail();
+    }
   }
 
   void _loadVideoThumbnail() async {
