@@ -24,4 +24,5 @@ abstract class ProductEntryAppearanceData extends ProductAppearanceData {
   set isFashionable(int value);
   int get isBestSelling;
   set isBestSelling(int value);
+  String get productVariantDescription;
 }

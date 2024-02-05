@@ -190,6 +190,29 @@ abstract class ProductItem extends StatelessWidget {
                               overflow: TextOverflow.ellipsis
                             ),
                           ),
+                          ...() {
+                            if (productAppearanceData is ProductEntryAppearanceData) {
+                              String productVariantDescription = (productAppearanceData as ProductEntryAppearanceData).productVariantDescription;
+                              if (productVariantDescription.isNotEmptyString) {
+                                return <Widget>[
+                                  const SizedBox(height: 8),
+                                  Tooltip(
+                                    message: productVariantDescription,
+                                    child: Text(
+                                      productVariantDescription,
+                                      style: TextStyle(
+                                        fontSize: 12.0,
+                                        color: Constant.colorGrey
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis
+                                    ),
+                                  ),
+                                ];
+                              }
+                            }
+                            return <Widget>[];
+                          }(),
                           const SizedBox(height: 10),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,

@@ -1,3 +1,4 @@
+import '../../../../misc/product_helper.dart';
 import '../../cart/support_cart.dart';
 import '../../discussion/support_discussion.dart';
 import '../../order/support_order_product.dart';
@@ -123,4 +124,7 @@ class ProductEntry implements ProductEntryAppearanceData, SupportCart, SupportWi
 
   @override
   set hasAddedToCart(bool value) => _hasAddedToCart = value;
+
+  @override
+  String get productVariantDescription => ProductHelper.getProductVariantDescription(this);
 }
