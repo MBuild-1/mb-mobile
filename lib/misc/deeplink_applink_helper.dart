@@ -149,13 +149,7 @@ class _DeeplinkApplinkHelperImpl {
           };
         }
       } else {
-        additionalData = {
-          "type": "product-detail",
-          "data": {
-            "product_id": "",
-            "product_entry_id": ""
-          }
-        };
+        return;
       }
       var notificationRedirectorMap = NotificationRedirectorHelper.notificationRedirectorMap;
       if (notificationRedirectorMap.containsKey(additionalData["type"])) {
