@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:masterbagasi/misc/ext/number_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../../../../domain/entity/payment/payment_method.dart';
@@ -24,7 +26,7 @@ abstract class PaymentMethodItem extends StatelessWidget {
       child: InkWell(
         onTap: onSelectPaymentMethod != null ? () => onSelectPaymentMethod!(paymentMethod) : null,
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem, vertical: 12.0),
+          padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem, vertical: 10.0),
           child: Row(
             children: [
               SizedBox(
@@ -40,8 +42,25 @@ abstract class PaymentMethodItem extends StatelessWidget {
               ),
               const SizedBox(width: 20.0),
               Expanded(
-                child: Text(paymentMethod.paymentName.toStringNonNull)
-              ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      paymentMethod.paymentName.toStringNonNull,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13.0
+                      )
+                    ),
+                    Text(
+                      "${"Administration Fee".tr}: ${paymentMethod.serviceFee.toRupiah()}",
+                      style: const TextStyle(
+                        fontSize: 13.0
+                      )
+                    )
+                  ],
+                ),
+              )
             ]
           )
         )

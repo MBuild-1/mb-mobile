@@ -204,7 +204,6 @@ class _StatefulPaymentMethodControllerMediatorWidgetState extends State<_Statefu
   late final ModifiedPagingController<int, ListItemControllerState> _paymentMethodListItemPagingController;
   late final PagingControllerState<int, ListItemControllerState> _paymentMethodListItemPagingControllerState;
   PaymentMethod? _selectedPaymentMethod;
-  final ColorfulChipTabBarController _paymentMethodColorfulChipTabBarController = ColorfulChipTabBarController(-1);
 
   @override
   void initState() {
@@ -223,9 +222,6 @@ class _StatefulPaymentMethodControllerMediatorWidgetState extends State<_Statefu
       onPageKeyNext: (pageKey) => pageKey + 1
     );
     _paymentMethodListItemPagingControllerState.isPagingControllerExist = true;
-    _paymentMethodColorfulChipTabBarController.addListener(() {
-      setState(() {});
-    });
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _paymentMethodListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? listItemControllerStateList) async {
@@ -245,8 +241,6 @@ class _StatefulPaymentMethodControllerMediatorWidgetState extends State<_Statefu
         itemList: [
           PaymentMethodContainerListItemControllerState(
             paymentMethodGroupList: paymentMethodListResponse.paymentMethodGroupList,
-            onGetPaymentMethodTabColor: () => Theme.of(context).colorScheme.primary,
-            onGetPaymentMethodColorfulChipTabBarController: () => _paymentMethodColorfulChipTabBarController,
             onGetSelectedPaymentMethodSettlingId: () => _selectedPaymentMethod?.settlingId,
             onSelectPaymentMethod: (paymentMethod) => _selectedPaymentMethod = paymentMethod,
             onUpdateState: () => setState(() {}),
@@ -265,13 +259,11 @@ class _StatefulPaymentMethodControllerMediatorWidgetState extends State<_Statefu
       for (PaymentMethod paymentMethod in paymentMethodGroup.paymentMethodList) {
         if (paymentMethod.settlingId == widget.paymentMethodSettlingId) {
           _selectedPaymentMethod = paymentMethod;
-          _paymentMethodColorfulChipTabBarController.value = i;
           return;
         }
       }
       i++;
     }
-    _paymentMethodColorfulChipTabBarController.value = 0;
   }
 
   @override

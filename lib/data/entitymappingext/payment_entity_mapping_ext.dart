@@ -62,8 +62,12 @@ extension PaymentDetailEntityMappingExt on ResponseWrapper {
             Map<String, dynamic> valueMap = value as Map<String, dynamic>;
             if (valueMap.containsKey("name")) {
               paymentName = valueMap["name"];
+            } else if (valueMap.containsKey("display_name")) {
+              paymentName = valueMap["display_name"];
             } else if (valueMap.containsKey("store")) {
               paymentName = valueMap["store"];
+            } else if (valueMap.containsKey("display_store")) {
+              paymentName = valueMap["display_store"];
             }
           }
         }
