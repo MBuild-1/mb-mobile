@@ -20,6 +20,7 @@ import '../../domain/usecase/get_user_use_case.dart';
 import '../../domain/usecase/login_use_case.dart';
 import '../../domain/usecase/login_with_google_use_case.dart';
 import '../../misc/constant.dart';
+import '../../misc/device_helper.dart';
 import '../../misc/dialog_helper.dart';
 import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/getextended/get_extended.dart';
@@ -268,6 +269,7 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
         onUnfocusAllWidget: () => FocusScope.of(context).unfocus(),
         onGetEmailAndPhoneNumberLoginInput: () => _emailTextEditingController.text.trim(),
         onGetPasswordLoginInput: () => _passwordTextEditingController.text,
+        onGetLoginDeviceNameInput: () => DeviceHelper.getLowercaseDeviceName(),
         onLoginBack: () => Get.back(),
         onShowLoginRequestProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
         onShowLoginRequestProcessFailedCallback: (e) async {

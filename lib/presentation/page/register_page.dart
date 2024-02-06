@@ -30,6 +30,7 @@ import '../../domain/usecase/register_with_google_use_case.dart';
 import '../../domain/usecase/send_register_otp_use_case.dart';
 import '../../domain/usecase/verify_register_use_case.dart';
 import '../../misc/constant.dart';
+import '../../misc/device_helper.dart';
 import '../../misc/dialog_helper.dart';
 import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/gender.dart';
@@ -255,6 +256,7 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
         onGetGenderRegisterInput: () => (_selectedGender?.value).toEmptyStringNonNull,
         onGetPasswordRegisterInput: () => _passwordTextEditingController.text,
         onGetPasswordConfirmationRegisterInput: () => _passwordConfirmationTextEditingController.text,
+        onGetLoginDeviceNameInput: () => DeviceHelper.getLowercaseDeviceName(),
         onRegisterBack: () => Get.back(),
         onShowRegisterRequestProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
         onShowRegisterRequestProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(

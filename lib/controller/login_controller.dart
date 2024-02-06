@@ -134,7 +134,8 @@ class LoginController extends BaseGetxController {
         LoadDataResult<LoginWithGoogleResponse> loginWithGoogleLoadDataResult = await loginWithGoogleUseCase.execute(
           LoginWithGoogleParameter(
             idToken: idToken!,
-            pushNotificationSubscriptionId: _loginDelegate!.onGetPushNotificationSubscriptionId()
+            pushNotificationSubscriptionId: _loginDelegate!.onGetPushNotificationSubscriptionId(),
+            deviceName: _loginDelegate!.onGetLoginDeviceNameInput(),
           )
         ).future(
           parameter: apiRequestManager.addRequestToCancellationPart('login-with-google').value
@@ -206,6 +207,7 @@ class LoginDelegate {
   _OnGetLoginInput onGetEmailAndPhoneNumberLoginInput;
   _OnLoginBack onLoginBack;
   _OnGetLoginInput onGetPasswordLoginInput;
+  _OnGetLoginInput onGetLoginDeviceNameInput;
   _OnShowLoginRequestProcessLoadingCallback onShowLoginRequestProcessLoadingCallback;
   _OnLoginRequestProcessSuccessCallback onLoginRequestProcessSuccessCallback;
   _OnShowLoginRequestProcessFailedCallback onShowLoginRequestProcessFailedCallback;
@@ -222,6 +224,7 @@ class LoginDelegate {
     required this.onGetEmailAndPhoneNumberLoginInput,
     required this.onLoginBack,
     required this.onGetPasswordLoginInput,
+    required this.onGetLoginDeviceNameInput,
     required this.onShowLoginRequestProcessLoadingCallback,
     required this.onLoginRequestProcessSuccessCallback,
     required this.onShowLoginRequestProcessFailedCallback,

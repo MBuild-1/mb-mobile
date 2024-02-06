@@ -113,6 +113,7 @@ class DefaultUserDataSource implements UserDataSource {
     FormData formData = FormData.fromMap(
       <String, dynamic> {
         "id_token": loginWithGoogleParameter.idToken,
+        "device_name": loginWithGoogleParameter.deviceName
       }
     );
     return DioHttpClientProcessing((cancelToken) {
@@ -239,6 +240,7 @@ class DefaultUserDataSource implements UserDataSource {
     FormData formData = FormData.fromMap(
       <String, dynamic> {
         "id_token": registerWithGoogleParameter.idToken,
+        "device_name": registerWithGoogleParameter.deviceName
       }
     );
     return DioHttpClientProcessing((cancelToken) {

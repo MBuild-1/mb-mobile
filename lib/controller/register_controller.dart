@@ -441,7 +441,8 @@ class RegisterController extends BaseGetxController {
         LoadDataResult<RegisterWithGoogleResponse> registerWithGoogleLoadDataResult = await registerWithGoogleUseCase.execute(
           RegisterWithGoogleParameter(
             idToken: idToken!,
-            pushNotificationSubscriptionId: _registerDelegate!.onGetPushNotificationSubscriptionId()
+            pushNotificationSubscriptionId: _registerDelegate!.onGetPushNotificationSubscriptionId(),
+            deviceName: _registerDelegate!.onGetLoginDeviceNameInput()
           )
         ).future(
           parameter: apiRequestManager.addRequestToCancellationPart('register-with-google').value
@@ -512,6 +513,7 @@ class RegisterDelegate {
   _OnGetRegisterInput onGetGenderRegisterInput;
   _OnGetRegisterInput onGetPasswordRegisterInput;
   _OnGetRegisterInput onGetPasswordConfirmationRegisterInput;
+  _OnGetRegisterInput onGetLoginDeviceNameInput;
   _OnShowRegisterRequestProcessLoadingCallback onShowRegisterRequestProcessLoadingCallback;
   _OnRegisterRequestProcessSuccessCallback onRegisterRequestProcessSuccessCallback;
   _OnShowRegisterRequestProcessFailedCallback onShowRegisterRequestProcessFailedCallback;
@@ -539,6 +541,7 @@ class RegisterDelegate {
     required this.onGetGenderRegisterInput,
     required this.onGetPasswordRegisterInput,
     required this.onGetPasswordConfirmationRegisterInput,
+    required this.onGetLoginDeviceNameInput,
     required this.onShowRegisterRequestProcessLoadingCallback,
     required this.onRegisterRequestProcessSuccessCallback,
     required this.onShowRegisterRequestProcessFailedCallback,
