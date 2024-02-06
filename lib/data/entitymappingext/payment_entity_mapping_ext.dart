@@ -54,20 +54,24 @@ extension PaymentDetailEntityMappingExt on ResponseWrapper {
   PaymentMethod mapFromResponseToPaymentMethod() {
     String paymentName = "";
     Map<String, dynamic> responseMap = response as Map<String, dynamic>;
-    for (String key in responseMap.keys) {
-      if (key.contains("_settling")) {
-        if (responseMap.containsKey(key)) {
-          dynamic value = responseMap[key];
-          if (value != null) {
-            Map<String, dynamic> valueMap = value as Map<String, dynamic>;
-            if (valueMap.containsKey("name")) {
-              paymentName = valueMap["name"];
-            } else if (valueMap.containsKey("display_name")) {
-              paymentName = valueMap["display_name"];
-            } else if (valueMap.containsKey("store")) {
-              paymentName = valueMap["store"];
-            } else if (valueMap.containsKey("display_store")) {
-              paymentName = valueMap["display_store"];
+    if (responseMap.containsKey("payment_display_name")) {
+      paymentName = responseMap["payment_display_name"];
+    } else {
+      for (String key in responseMap.keys) {
+        if (key.contains("_settling")) {
+          if (responseMap.containsKey(key)) {
+            dynamic value = responseMap[key];
+            if (value != null) {
+              Map<String, dynamic> valueMap = value as Map<String, dynamic>;
+              if (valueMap.containsKey("name")) {
+                paymentName = valueMap["name"];
+              } else if (valueMap.containsKey("display_name")) {
+                paymentName = valueMap["display_name"];
+              } else if (valueMap.containsKey("store")) {
+                paymentName = valueMap["store"];
+              } else if (valueMap.containsKey("display_store")) {
+                paymentName = valueMap["display_store"];
+              }
             }
           }
         }
