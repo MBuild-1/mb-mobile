@@ -4,6 +4,10 @@ import 'package:get/get.dart';
 
 import '../../../misc/constant.dart';
 import '../../../misc/inputdecoration/default_input_decoration.dart';
+import '../../../misc/page_restoration_helper.dart';
+import '../../../misc/search_text_field_helper.dart';
+import '../../page/getx_page.dart';
+//import '../../page/search/search_page.dart';
 import 'modified_app_bar.dart';
 import '../modified_text_field.dart';
 
@@ -17,6 +21,7 @@ abstract class SearchAppBar extends ModifiedAppBar {
   final TextEditingController? searchTextEditingController;
   final double value;
   final FocusNode? searchFocusNode;
+  final bool isSearchText;
 
   SearchAppBar({
     Key? key,
@@ -27,7 +32,8 @@ abstract class SearchAppBar extends ModifiedAppBar {
     this.onSearchTextFieldTapped,
     this.onSearch,
     this.searchTextEditingController,
-    this.searchFocusNode
+    this.searchFocusNode,
+    this.isSearchText = false
   }) : super(
     key: key,
     leading: leading,
@@ -45,26 +51,33 @@ abstract class SearchAppBar extends ModifiedAppBar {
   ActionTitleBuilder? get actionTitleBuilder => null;
 
   TextFieldBuilder get textFieldBuilder {
-    return (context) => ModifiedTextField(
-      isError: false,
-      onEditingComplete: onSearch != null ? () {
-        if (searchTextEditingController != null) {
-          onSearch!(searchTextEditingController!.text);
-        }
-      } : null,
-      textInputAction: TextInputAction.done,
-      controller: searchTextEditingController,
-      focusNode: searchFocusNode,
-      decoration: _searchTextFieldStyle(
-        context, DefaultInputDecoration(
-          hintText: "What skills do you want to learn today?".tr,
-          filled: true,
-          fillColor: Colors.transparent,
-          prefixIcon: const Icon(Icons.search),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0)
+    return (context) {
+      Widget textField = ModifiedTextField(
+        isError: false,
+        onEditingComplete: onSearch != null ? () {
+          if (searchTextEditingController != null) {
+            onSearch!(searchTextEditingController!.text);
+          }
+        } : null,
+        textInputAction: TextInputAction.done,
+        controller: searchTextEditingController,
+        focusNode: searchFocusNode,
+        decoration: SearchTextFieldHelper.searchTextFieldStyle(
+          context, DefaultInputDecoration(
+            hintText: "Search in Master Bagasi".tr,
+            filled: true,
+            fillColor: Colors.transparent,
+            prefixIcon: const Icon(Icons.search),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0)
+          )
         )
-      )
-    );
+      );
+      return !isSearchText ? IgnorePointer(
+        child: ExcludeFocus(
+          child: textField
+        )
+      ) : textField;
+    };
   }
 
   @override
@@ -78,25 +91,21 @@ abstract class SearchAppBar extends ModifiedAppBar {
               borderRadius: Constant.inputBorderRadius,
               child: Builder(
                 builder: (context) {
+                  if (isSearchText) {
+                    return textFieldBuilder(context);
+                  }
                   VoidCallback? effectiveOnSearchTextFieldTapped;
                   if (onSearchTextFieldTapped != null) {
                     effectiveOnSearchTextFieldTapped = onSearchTextFieldTapped!;
                   } else {
-                    // PageRestorationHelper.findPageRestorationMixin<SearchPageRestorationMixin>(
-                    //   onGetxPageRestorationFound: (restoration) {
-                    //     effectiveOnSearchTextFieldTapped = () => restoration.searchPageRestorableRouteFuture.present();
-                    //   },
-                    //   context: context
-                    // );
+                    effectiveOnSearchTextFieldTapped = () {
+                      PageRestorationHelper.toSearchPage(context);
+                    };
                   }
                   return InkWell(
                     borderRadius: Constant.inputBorderRadius,
                     onTap: effectiveOnSearchTextFieldTapped,
-                    child: IgnorePointer(
-                      child: ExcludeFocus(
-                        child: textFieldBuilder(context)
-                      )
-                    )
+                    child: textFieldBuilder(context)
                   );
                 },
               )
@@ -111,20 +120,5 @@ abstract class SearchAppBar extends ModifiedAppBar {
   @override
   SystemOverlayStyleInterceptor get systemOverlayStyleInterceptor {
     return (context, oldSystemUiOverlayStyle) => value > 0.5 ? null : SystemUiOverlayStyle.light;
-  }
-
-  InputDecoration _searchTextFieldStyle(BuildContext context, InputDecoration decoration) {
-    final ThemeData themeData = Theme.of(context);
-    final DefaultTextStyle defaultTextStyle = DefaultTextStyle.of(context);
-    TextStyle style = TextStyle(
-      color: decoration.enabled ? themeData.hintColor : themeData.disabledColor,
-    );
-    if (style.inherit) {
-      style = defaultTextStyle.style.merge(style);
-    }
-    if (MediaQuery.boldTextOverride(context)) {
-      style = style.merge(const TextStyle(fontWeight: FontWeight.bold));
-    }
-    return decoration.copyWith(hintStyle: style);
   }
 }

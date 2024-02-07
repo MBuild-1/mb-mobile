@@ -41,6 +41,18 @@ class _ColorHelperImpl {
       brightness, Colors.black, Colors.white
     );
   }
+
+  Color convertFromAlphaEnabledToNonAlphaEnabledColor(Color alphaEnabledColor) {
+    int channelInter(int v, double a) {
+      return (255 - (255 - v) * a).toInt();
+    }
+    return Color.fromRGBO(
+      channelInter(alphaEnabledColor.red, alphaEnabledColor.opacity),
+      channelInter(alphaEnabledColor.green, alphaEnabledColor.opacity),
+      channelInter(alphaEnabledColor.blue, alphaEnabledColor.opacity),
+      1.0
+    );
+  }
 }
 
 // ignore: non_constant_identifier_names

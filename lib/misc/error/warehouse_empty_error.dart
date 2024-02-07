@@ -1,0 +1,1 @@
+class WarehouseEmptyError extends Error {}

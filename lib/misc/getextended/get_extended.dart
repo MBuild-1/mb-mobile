@@ -4,8 +4,11 @@ import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/misc/translation/extended_translation.dart';
 import '../../controller/base_getx_controller.dart';
 import '../../presentation/page/getx_page.dart';
+import '../constant.dart';
+import '../locale/ignore_deprecated_locale.dart';
 import '../main_route_observer.dart';
 import '../manager/controller_manager.dart';
+import '../selected_language_helper.dart';
 import 'getx_controller_will_be_deleted.dart';
 
 class _GetExtendedImpl {
@@ -233,8 +236,18 @@ you can only use widgets and widget functions here''';
       routeName ??= "/${page.runtimeType}";
     }
     routeName = cleanRouteName(routeName);
-    if (preventDuplicates && routeName == Get.currentRoute) {
-      return null;
+    bool allLastRestorationValueEqual1 = true;
+    for (var mapEntry in MainRouteObserver.routeMap.entries) {
+      if (mapEntry.key.isNotEmptyString && mapEntry.value?.lastRestorationValue != 1) {
+        allLastRestorationValueEqual1 = false;
+      }
+    }
+    if (preventDuplicates && routeName == MainRouteObserver.getCurrentRoute()) {
+      if (allLastRestorationValueEqual1) {
+        // Because it's in restoration mode, prevent duplicate checking is ignored.
+      } else {
+        return null;
+      }
     }
     return ExtendedGetPageRoute<T>(
       opaque: opaque ?? true,
@@ -267,6 +280,62 @@ you can only use widgets and widget functions here''';
       applier.dispose();
     }
     return result;
+  }
+
+  Locale? get deviceLocale {
+    String selectedLanguageLocaleString = SelectedLanguageHelper.getSelectedLanguage().result;
+    if (selectedLanguageLocaleString.isNotEmptyString) {
+      return GetExtended.fromStringToLocale(selectedLanguageLocaleString);
+    }
+    Locale? locale = Get.deviceLocale;
+    if (locale != null) {
+      locale = IgnoreDeprecatedLocale(
+        locale.languageCode,
+        locale.countryCode
+      );
+    }
+    return locale;
+  }
+
+  Locale fromStringToLocale(String localeString) {
+    int i = 0;
+    int step = 1;
+    String temp = "";
+    String languageCode = "";
+    String? countryCode;
+    while (i < localeString.length) {
+      String char = localeString[i];
+      if (step == 1) {
+        if (char == "_") {
+          languageCode = temp;
+          temp = "";
+          step = 2;
+        } else {
+          temp += char;
+          if (i == localeString.length - 1) {
+            languageCode = temp;
+            temp = "";
+          }
+        }
+      } else if (step == 2) {
+        if (char != "_") {
+          step = 3;
+          temp += char;
+          if (i == localeString.length - 1) {
+            countryCode = temp;
+            temp = "";
+          }
+        }
+      } else if (step == 3) {
+        temp += char;
+        if (i == localeString.length - 1) {
+          countryCode = temp;
+          temp = "";
+        }
+      }
+      i++;
+    }
+    return IgnoreDeprecatedLocale(languageCode, countryCode);
   }
 }
 

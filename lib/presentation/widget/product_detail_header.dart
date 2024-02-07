@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../domain/entity/product.dart';
+import '../../domain/entity/product/product.dart';
 import '../../misc/constant.dart';
-import 'modified_cached_network_image.dart';
+import 'modifiedcachednetworkimage/modified_cached_network_image.dart';
 import 'pricewidget/product_price_widget.dart';
 
 class ProductDetailHeader extends BaseProductDetailHeader {
@@ -42,7 +42,7 @@ abstract class BaseProductDetailHeader extends StatelessWidget {
           aspectRatio: 1.0,
           child: ClipRRect(
             child: ModifiedCachedNetworkImage(
-              imageUrl: isProductNotNull ? product!.defaultImageUrl.toEmptyStringNonNull : "",
+              imageUrl: isProductNotNull ? product!.imageUrl.toEmptyStringNonNull : "",
             )
           )
         ),
@@ -62,8 +62,8 @@ abstract class BaseProductDetailHeader extends StatelessWidget {
                 ...<Widget>[
                   SizedBox(height: 1.h),
                   ProductPriceWidget(
-                    price: product!.productSellingPrice.toDouble(),
-                    discountPrice: product!.productDiscountPrice.toDouble()
+                    price: product!.price,
+                    discountPrice: product!.discountPrice
                   )
                 ]
             ],

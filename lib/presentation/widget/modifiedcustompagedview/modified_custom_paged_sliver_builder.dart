@@ -162,8 +162,6 @@ class _ModifiedCustomPagedSliverBuilderState<PageKeyType, ItemType> extends Stat
   /// Avoids duplicate requests on rebuilds.
   bool _hasRequestedNextPage = false;
 
-  bool _hasAdditionalLoadingIndicator = false;
-
   ItemTypeListInterceptorResult<ItemType>? _firstLoadingIndicatorItemTypeListInterceptorResult;
   bool _firstShowOriginalLoaderIndicator = true;
 
@@ -196,7 +194,6 @@ class _ModifiedCustomPagedSliverBuilderState<PageKeyType, ItemType> extends Stat
         if (status == PagingStatus.ongoing) {
           _hasRequestedNextPage = false;
         }
-        _hasAdditionalLoadingIndicator = false;
       },
       child: ValueListenableBuilder<PagingState<PageKeyType, ItemType>>(
         valueListenable: _pagingController,
@@ -375,7 +372,6 @@ class _ModifiedCustomPagedSliverBuilderState<PageKeyType, ItemType> extends Stat
       itemTypeListInterceptorResult = itemTypeListInterceptorList[i].intercept(
         itemTypeList,
         ItemTypeListInterceptorParameter<ItemType>(
-          hasAdditionalLoadingIndicator: _hasAdditionalLoadingIndicator,
           additionalItemTypeList: additionalItemTypeList,
         )
       );
@@ -403,7 +399,6 @@ class _ModifiedCustomPagedSliverBuilderState<PageKeyType, ItemType> extends Stat
           _pagingController.notifyPageRequestListeners(_nextKey!);
         });
         _hasRequestedNextPage = true;
-        _hasAdditionalLoadingIndicator = true;
       }
     }
 

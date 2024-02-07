@@ -1,8 +1,9 @@
 import 'package:dio/dio.dart';
-import 'package:dio_logger/dio_logger.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
+import 'constant.dart';
 import 'login_helper.dart';
+import 'modified_dio_logger.dart';
 
 class _DioHttpClientImpl {
   Dio? _dio;
@@ -10,13 +11,13 @@ class _DioHttpClientImpl {
   Dio of() {
     if (_dio == null) {
       BaseOptions baseOptions = BaseOptions(
-        baseUrl: "https://61ea514a7bc0550017bc66b4.mockapi.io/api/v1"
+        baseUrl: Constant.envValueBaseUrl
       );
       _dio = _ModifiedDio(Dio(baseOptions));
-      _dio?.interceptors.add(dioLoggerInterceptor);
+      _dio?.interceptors.add(modifiedDioLoggerInterceptor);
     }
 
-    return _dio ?? (throw NullThrownError());
+    return _dio ?? (throw Error());
   }
 }
 
@@ -24,6 +25,7 @@ class _DioHttpClientOptionsImpl {
   Map<String, dynamic> createTokenHeader(String tokenWithBearer) {
     return <String, dynamic> {
       if (!tokenWithBearer.isEmptyString) "Authorization": tokenWithBearer,
+      "Accept": "application/json"
     };
   }
 
@@ -32,13 +34,20 @@ class _DioHttpClientOptionsImpl {
   }
 }
 
-class _ModifiedDio implements Dio {
+abstract class GetCommonOptions {
+  Options get optionsWithTokenHeader;
+}
+
+class _ModifiedDio implements Dio, GetCommonOptions {
   final Dio _wrappedDio;
   bool _closed = false;
 
   _ModifiedDio(this._wrappedDio);
 
   Options get _optionsWithTokenHeader => DioHttpClientOptions.createOptionsWithTokenHeader(LoginHelper.getTokenWithBearer().result);
+
+  @override
+  Options get optionsWithTokenHeader => _optionsWithTokenHeader;
 
   @override
   HttpClientAdapter get httpClientAdapter => _wrappedDio.httpClientAdapter;
@@ -70,75 +79,83 @@ class _ModifiedDio implements Dio {
     _wrappedDio.close(force: force);
   }
 
+  OptionsMergeParameter _optionsMergeParameterFromOptions(Options? options) {
+    OptionsMergeParameter? optionsMergeParameter;
+    if (options is ExtendedOptions) {
+      optionsMergeParameter = options.optionsMergeParameter;
+    }
+    return optionsMergeParameter ?? const OptionsMergeParameter(allowHeadersMerging: false);
+  }
+
   @override
   Future<Response<T>> delete<T>(String path, {data, Map<String, dynamic>? queryParameters, Options? options, CancelToken? cancelToken})
-    => _wrappedDio.delete(path, data: data, queryParameters: queryParameters, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken);
+    => _wrappedDio.delete(path, data: data, queryParameters: queryParameters, options: _optionsWithTokenHeader.mergeWithParameter(options, optionsMergeParameter: _optionsMergeParameterFromOptions(options)), cancelToken: cancelToken);
 
   @override
   Future<Response<T>> deleteUri<T>(Uri uri, {data, Options? options, CancelToken? cancelToken})
-    => _wrappedDio.deleteUri(uri, data: data, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken);
+    => _wrappedDio.deleteUri(uri, data: data, options: _optionsWithTokenHeader.mergeWithParameter(options, optionsMergeParameter: _optionsMergeParameterFromOptions(options)), cancelToken: cancelToken);
 
   @override
   Future<Response> download(String urlPath, savePath, {ProgressCallback? onReceiveProgress, Map<String, dynamic>? queryParameters, CancelToken? cancelToken, bool deleteOnError = true, String lengthHeader = Headers.contentLengthHeader, data, Options? options})
-    => _wrappedDio.download(urlPath, savePath, onReceiveProgress: onReceiveProgress, queryParameters: queryParameters, cancelToken: cancelToken, deleteOnError: deleteOnError, lengthHeader: lengthHeader, data: data, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false));
+    => _wrappedDio.download(urlPath, savePath, onReceiveProgress: onReceiveProgress, queryParameters: queryParameters, cancelToken: cancelToken, deleteOnError: deleteOnError, lengthHeader: lengthHeader, data: data, options: _optionsWithTokenHeader.mergeWithParameter(options, optionsMergeParameter: _optionsMergeParameterFromOptions(options)));
 
   @override
   Future<Response> downloadUri(Uri uri, savePath, {ProgressCallback? onReceiveProgress, CancelToken? cancelToken, bool deleteOnError = true, String lengthHeader = Headers.contentLengthHeader, data, Options? options})
-    => _wrappedDio.downloadUri(uri, savePath, onReceiveProgress: onReceiveProgress, cancelToken: cancelToken, deleteOnError: deleteOnError, lengthHeader: lengthHeader, data: data, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false));
+    => _wrappedDio.downloadUri(uri, savePath, onReceiveProgress: onReceiveProgress, cancelToken: cancelToken, deleteOnError: deleteOnError, lengthHeader: lengthHeader, data: data, options: _optionsWithTokenHeader.mergeWithParameter(options, optionsMergeParameter: _optionsMergeParameterFromOptions(options)));
 
   @override
   Future<Response<T>> fetch<T>(RequestOptions requestOptions) => _wrappedDio.fetch(requestOptions);
 
   @override
   Future<Response<T>> get<T>(String path, {Map<String, dynamic>? queryParameters, Options? options, CancelToken? cancelToken, ProgressCallback? onReceiveProgress})
-    => _wrappedDio.get(path, queryParameters: queryParameters, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken, onReceiveProgress: onReceiveProgress);
+    => _wrappedDio.get(path, queryParameters: queryParameters, options: _optionsWithTokenHeader.mergeWithParameter(options, optionsMergeParameter: _optionsMergeParameterFromOptions(options)), cancelToken: cancelToken, onReceiveProgress: onReceiveProgress);
 
   @override
   Future<Response<T>> getUri<T>(Uri uri, {Options? options, CancelToken? cancelToken, ProgressCallback? onReceiveProgress})
-    => _wrappedDio.getUri(uri, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken, onReceiveProgress: onReceiveProgress);
+    => _wrappedDio.getUri(uri, options: _optionsWithTokenHeader.mergeWithParameter(options, optionsMergeParameter: _optionsMergeParameterFromOptions(options)), cancelToken: cancelToken, onReceiveProgress: onReceiveProgress);
 
   @override
   Future<Response<T>> head<T>(String path, {data, Map<String, dynamic>? queryParameters, Options? options, CancelToken? cancelToken})
-    => _wrappedDio.head(path, data: data, queryParameters: queryParameters, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken);
+    => _wrappedDio.head(path, data: data, queryParameters: queryParameters, options: _optionsWithTokenHeader.mergeWithParameter(options, optionsMergeParameter: _optionsMergeParameterFromOptions(options)), cancelToken: cancelToken);
 
   @override
   Future<Response<T>> headUri<T>(Uri uri, {data, Options? options, CancelToken? cancelToken})
-    => _wrappedDio.headUri(uri, data: data, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken);
+    => _wrappedDio.headUri(uri, data: data, options: _optionsWithTokenHeader.mergeWithParameter(options, optionsMergeParameter: _optionsMergeParameterFromOptions(options)), cancelToken: cancelToken);
 
   @override
   void lock() => _wrappedDio.lock();
 
   @override
   Future<Response<T>> patch<T>(String path, {data, Map<String, dynamic>? queryParameters, Options? options, CancelToken? cancelToken, ProgressCallback? onSendProgress, ProgressCallback? onReceiveProgress})
-    => _wrappedDio.patch(path, data: data, queryParameters: queryParameters, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
+    => _wrappedDio.patch(path, data: data, queryParameters: queryParameters, options: _optionsWithTokenHeader.mergeWithParameter(options, optionsMergeParameter: _optionsMergeParameterFromOptions(options)), cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
 
   @override
   Future<Response<T>> patchUri<T>(Uri uri, {data, Options? options, CancelToken? cancelToken, ProgressCallback? onSendProgress, ProgressCallback? onReceiveProgress})
-    => _wrappedDio.patchUri(uri, data: data, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
+    => _wrappedDio.patchUri(uri, data: data, options: _optionsWithTokenHeader.mergeWithParameter(options, optionsMergeParameter: _optionsMergeParameterFromOptions(options)), cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
 
   @override
   Future<Response<T>> post<T>(String path, {data, Map<String, dynamic>? queryParameters, Options? options, CancelToken? cancelToken, ProgressCallback? onSendProgress, ProgressCallback? onReceiveProgress})
-    => _wrappedDio.post(path, data: data, queryParameters: queryParameters, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
+    => _wrappedDio.post(path, data: data, queryParameters: queryParameters, options: _optionsWithTokenHeader.mergeWithParameter(options, optionsMergeParameter: _optionsMergeParameterFromOptions(options)), cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
 
   @override
   Future<Response<T>> postUri<T>(Uri uri, {data, Options? options, CancelToken? cancelToken, ProgressCallback? onSendProgress, ProgressCallback? onReceiveProgress})
-    => _wrappedDio.postUri(uri, data: data, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
+    => _wrappedDio.postUri(uri, data: data, options: _optionsWithTokenHeader.mergeWithParameter(options, optionsMergeParameter: _optionsMergeParameterFromOptions(options)), cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
 
   @override
   Future<Response<T>> put<T>(String path, {data, Map<String, dynamic>? queryParameters, Options? options, CancelToken? cancelToken, ProgressCallback? onSendProgress, ProgressCallback? onReceiveProgress})
-    => _wrappedDio.put(path, data: data, queryParameters: queryParameters, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
+    => _wrappedDio.put(path, data: data, queryParameters: queryParameters, options: _optionsWithTokenHeader.mergeWithParameter(options, optionsMergeParameter: _optionsMergeParameterFromOptions(options)), cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
 
   @override
   Future<Response<T>> putUri<T>(Uri uri, {data, Options? options, CancelToken? cancelToken, ProgressCallback? onSendProgress, ProgressCallback? onReceiveProgress})
-    => _wrappedDio.putUri(uri, data: data, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
+    => _wrappedDio.putUri(uri, data: data, options: _optionsWithTokenHeader.mergeWithParameter(options, optionsMergeParameter: _optionsMergeParameterFromOptions(options)), cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
 
   @override
   Future<Response<T>> request<T>(String path, {data, Map<String, dynamic>? queryParameters, CancelToken? cancelToken, Options? options, ProgressCallback? onSendProgress, ProgressCallback? onReceiveProgress})
-    => _wrappedDio.request(path, data: data, queryParameters: queryParameters, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
+    => _wrappedDio.request(path, data: data, queryParameters: queryParameters, options: _optionsWithTokenHeader.mergeWithParameter(options, optionsMergeParameter: _optionsMergeParameterFromOptions(options)), cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
 
   @override
   Future<Response<T>> requestUri<T>(Uri uri, {data, CancelToken? cancelToken, Options? options, ProgressCallback? onSendProgress, ProgressCallback? onReceiveProgress})
-    => _wrappedDio.requestUri(uri, data: data, options: _optionsWithTokenHeader.merge(options, allowHeadersMerging: false), cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
+    => _wrappedDio.requestUri(uri, data: data, options: _optionsWithTokenHeader.mergeWithParameter(options, optionsMergeParameter: _optionsMergeParameterFromOptions(options)), cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
 
   @override
   void unlock() => _wrappedDio.unlock();
@@ -151,6 +168,51 @@ final DioHttpClient = _DioHttpClientImpl();
 final DioHttpClientOptions = _DioHttpClientOptionsImpl();
 
 extension on Options {
+  Options mergeWithParameter(
+    Options? options, {
+    OptionsMergeParameter optionsMergeParameter = const OptionsMergeParameter()
+  }) {
+    if (options == null) {
+      return this;
+    }
+    if (this is ExtendedOptions) {
+      return (this as ExtendedOptions).copyWith(
+        baseUrl: options is ExtendedOptions ? (optionsMergeParameter.allowBaseUrlMerging ? options.baseUrl : null) : null,
+        method: optionsMergeParameter.allowMethodMerging ? options.method : null,
+        sendTimeout: optionsMergeParameter.allowSendTimeoutMerging ? options.sendTimeout : null,
+        receiveTimeout: optionsMergeParameter.allowReceiveTimeoutMerging ? options.receiveTimeout : null,
+        extra: optionsMergeParameter.allowExtraMerging ? options.extra : null,
+        headers: optionsMergeParameter.allowHeadersMerging ? options.headers : null,
+        responseType: optionsMergeParameter.allowResponseTypeMerging ? options.responseType : null,
+        contentType: optionsMergeParameter.allowContentTypeMerging ? options.contentType : null,
+        validateStatus: optionsMergeParameter.allowValidateStatusMerging ? options.validateStatus : null,
+        receiveDataWhenStatusError: optionsMergeParameter.allowReceiveDataWhenStatusErrorMerging ? options.receiveDataWhenStatusError : null,
+        followRedirects: optionsMergeParameter.allowFollowRedirectsMethodMerging ? options.followRedirects : null,
+        maxRedirects: optionsMergeParameter.allowMaxRedirectsMerging ? options.maxRedirects : null,
+        requestEncoder: optionsMergeParameter.allowRequestEncoderMerging ? options.requestEncoder : null,
+        responseDecoder: optionsMergeParameter.allowResponseDecoderMerging ? options.responseDecoder : null,
+        listFormat: optionsMergeParameter.allowListFormatMerging ? options.listFormat : null
+      );
+    } else {
+      return copyWith(
+        method: optionsMergeParameter.allowMethodMerging ? options.method : null,
+        sendTimeout: optionsMergeParameter.allowSendTimeoutMerging ? options.sendTimeout : null,
+        receiveTimeout: optionsMergeParameter.allowReceiveTimeoutMerging ? options.receiveTimeout : null,
+        extra: optionsMergeParameter.allowExtraMerging ? options.extra : null,
+        headers: optionsMergeParameter.allowHeadersMerging ? options.headers : null,
+        responseType: optionsMergeParameter.allowResponseTypeMerging ? options.responseType : null,
+        contentType: optionsMergeParameter.allowContentTypeMerging ? options.contentType : null,
+        validateStatus: optionsMergeParameter.allowValidateStatusMerging ? options.validateStatus : null,
+        receiveDataWhenStatusError: optionsMergeParameter.allowReceiveDataWhenStatusErrorMerging ? options.receiveDataWhenStatusError : null,
+        followRedirects: optionsMergeParameter.allowFollowRedirectsMethodMerging ? options.followRedirects : null,
+        maxRedirects: optionsMergeParameter.allowMaxRedirectsMerging ? options.maxRedirects : null,
+        requestEncoder: optionsMergeParameter.allowRequestEncoderMerging ? options.requestEncoder : null,
+        responseDecoder: optionsMergeParameter.allowResponseDecoderMerging ? options.responseDecoder : null,
+        listFormat: optionsMergeParameter.allowListFormatMerging ? options.listFormat : null
+      );
+    }
+  }
+
   Options merge(
     Options? options, {
     bool allowBaseUrlMerging = true,
@@ -169,51 +231,33 @@ extension on Options {
     bool allowResponseDecoderMerging = true,
     bool allowListFormatMerging = true,
   }) {
-    if (options == null) {
-      return this;
-    }
-    if (this is ExtendedOptions) {
-      return (this as ExtendedOptions).copyWith(
-        baseUrl: options is ExtendedOptions ? (allowBaseUrlMerging ? options.baseUrl : null) : null,
-        method: allowMethodMerging ? options.method : null,
-        sendTimeout: allowSendTimeoutMerging ? options.sendTimeout : null,
-        receiveTimeout: allowReceiveTimeoutMerging ? options.receiveTimeout : null,
-        extra: allowExtraMerging ? options.extra : null,
-        headers: allowHeadersMerging ? options.headers : null,
-        responseType: allowResponseTypeMerging ? options.responseType : null,
-        contentType: allowContentTypeMerging ? options.contentType : null,
-        validateStatus: allowValidateStatusMerging ? options.validateStatus : null,
-        receiveDataWhenStatusError: allowReceiveDataWhenStatusErrorMerging ? options.receiveDataWhenStatusError : null,
-        followRedirects: allowFollowRedirectsMethodMerging ? options.followRedirects : null,
-        maxRedirects: allowMaxRedirectsMerging ? options.maxRedirects : null,
-        requestEncoder: allowRequestEncoderMerging ? options.requestEncoder : null,
-        responseDecoder: allowResponseDecoderMerging ? options.responseDecoder : null,
-        listFormat: allowListFormatMerging ? options.listFormat : null
-      );
-    } else {
-      return copyWith(
-        method: allowMethodMerging ? options.method : null,
-        sendTimeout: allowSendTimeoutMerging ? options.sendTimeout : null,
-        receiveTimeout: allowReceiveTimeoutMerging ? options.receiveTimeout : null,
-        extra: allowExtraMerging ? options.extra : null,
-        headers: allowHeadersMerging ? options.headers : null,
-        responseType: allowResponseTypeMerging ? options.responseType : null,
-        contentType: allowContentTypeMerging ? options.contentType : null,
-        validateStatus: allowValidateStatusMerging ? options.validateStatus : null,
-        receiveDataWhenStatusError: allowReceiveDataWhenStatusErrorMerging ? options.receiveDataWhenStatusError : null,
-        followRedirects: allowFollowRedirectsMethodMerging ? options.followRedirects : null,
-        maxRedirects: allowMaxRedirectsMerging ? options.maxRedirects : null,
-        requestEncoder: allowRequestEncoderMerging ? options.requestEncoder : null,
-        responseDecoder: allowResponseDecoderMerging ? options.responseDecoder : null,
-        listFormat: allowListFormatMerging ? options.listFormat : null
-      );
-    }
+    return mergeWithParameter(
+      options,
+      optionsMergeParameter: OptionsMergeParameter(
+        allowBaseUrlMerging: allowBaseUrlMerging,
+        allowMethodMerging: allowMethodMerging,
+        allowSendTimeoutMerging: allowSendTimeoutMerging,
+        allowReceiveTimeoutMerging: allowReceiveTimeoutMerging,
+        allowExtraMerging: allowExtraMerging,
+        allowHeadersMerging: allowHeadersMerging,
+        allowResponseTypeMerging: allowResponseTypeMerging,
+        allowContentTypeMerging: allowContentTypeMerging,
+        allowValidateStatusMerging: allowValidateStatusMerging,
+        allowReceiveDataWhenStatusErrorMerging: allowReceiveDataWhenStatusErrorMerging,
+        allowFollowRedirectsMethodMerging: allowFollowRedirectsMethodMerging,
+        allowMaxRedirectsMerging: allowMaxRedirectsMerging,
+        allowRequestEncoderMerging: allowRequestEncoderMerging,
+        allowResponseDecoderMerging: allowResponseDecoderMerging,
+        allowListFormatMerging: allowListFormatMerging,
+      )
+    );
   }
 }
 
 class ExtendedOptions extends Options {
   late Options _wrappedOptions;
   String? baseUrl;
+  OptionsMergeParameter? optionsMergeParameter;
 
   @override
   String? get method => _wrappedOptions.method;
@@ -301,6 +345,7 @@ class ExtendedOptions extends Options {
 
   ExtendedOptions({
     this.baseUrl,
+    this.optionsMergeParameter,
     String? method,
     int? sendTimeout,
     int? receiveTimeout,
@@ -341,6 +386,7 @@ class ExtendedOptions extends Options {
   @override
   ExtendedOptions copyWith({
     String? baseUrl,
+    OptionsMergeParameter? optionsMergeParameter,
     String? method,
     int? sendTimeout,
     int? receiveTimeout,
@@ -373,7 +419,9 @@ class ExtendedOptions extends Options {
         responseDecoder: responseDecoder ?? this.responseDecoder,
         listFormat: listFormat ?? this.listFormat
       )
-    )..baseUrl = baseUrl ?? this.baseUrl;
+    )
+    ..baseUrl = baseUrl ?? this.baseUrl
+    ..optionsMergeParameter = optionsMergeParameter ?? this.optionsMergeParameter;
   }
 
   @override
@@ -403,4 +451,40 @@ class ExtendedOptions extends Options {
     }
     return requestOptions;
   }
+}
+
+class OptionsMergeParameter {
+  final bool allowBaseUrlMerging;
+  final bool allowMethodMerging;
+  final bool allowSendTimeoutMerging;
+  final bool allowReceiveTimeoutMerging;
+  final bool allowExtraMerging;
+  final bool allowHeadersMerging;
+  final bool allowResponseTypeMerging;
+  final bool allowContentTypeMerging;
+  final bool allowValidateStatusMerging;
+  final bool allowReceiveDataWhenStatusErrorMerging;
+  final bool allowFollowRedirectsMethodMerging;
+  final bool allowMaxRedirectsMerging;
+  final bool allowRequestEncoderMerging;
+  final bool allowResponseDecoderMerging;
+  final bool allowListFormatMerging;
+
+  const OptionsMergeParameter({
+    this.allowBaseUrlMerging = true,
+    this.allowMethodMerging = true,
+    this.allowSendTimeoutMerging = true,
+    this.allowReceiveTimeoutMerging = true,
+    this.allowExtraMerging = true,
+    this.allowHeadersMerging = true,
+    this.allowResponseTypeMerging = true,
+    this.allowContentTypeMerging = true,
+    this.allowValidateStatusMerging = true,
+    this.allowReceiveDataWhenStatusErrorMerging = true,
+    this.allowFollowRedirectsMethodMerging = true,
+    this.allowMaxRedirectsMerging = true,
+    this.allowRequestEncoderMerging = true,
+    this.allowResponseDecoderMerging = true,
+    this.allowListFormatMerging = true,
+  });
 }

@@ -16,6 +16,7 @@ class ModifiedPagingController<PageKeyType, ItemType> extends PagingController<P
     DefaultAppendPageNewItemsInterceptor<PageKeyType, ItemType>()
   ];
   final AdditionalPagingResultParameterChecker<PageKeyType, ItemType>? additionalPagingResultParameterChecker;
+  final ValueNotifier<dynamic>? fillerErrorValueNotifier;
 
   @override
   set value(PagingState<PageKeyType, ItemType> newValue) {
@@ -47,7 +48,8 @@ class ModifiedPagingController<PageKeyType, ItemType> extends PagingController<P
     int? invisibleItemsThreshold,
     List<AppendPageNewItemsInterceptor<PageKeyType, ItemType>> appendPageNewItemsInterceptorList = const [],
     required this.apiRequestManager,
-    this.additionalPagingResultParameterChecker
+    this.additionalPagingResultParameterChecker,
+    this.fillerErrorValueNotifier
   }) : super(
     firstPageKey: firstPageKey,
     invisibleItemsThreshold: invisibleItemsThreshold,

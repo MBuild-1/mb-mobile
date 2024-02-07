@@ -17,7 +17,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.0+1
+version: 1.0.0+47
 
 environment:
   sdk: '>=2.18.6 <3.0.0'
@@ -36,24 +36,70 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
+  file_picker: ^5.2.5
+  get:
+  geolocator: ^9.0.2
+  intl:
+  percent_indicator: ^3.4.0
+  share_plus: ^6.3.0
+  device_info_plus: 8.0.0
+  sizer: ^2.0.15
+  table_calendar: ^3.0.5
   dio: ^4.0.6
-  dio_logger: ^4.0.8+8
+  infinite_scroll_pagination: 3.1.0
   hive: ^2.1.0
   hive_flutter: ^1.1.0
-  get: ^4.6.5
-  sizer: ^2.0.15
-  infinite_scroll_pagination: 3.1.0
-  flutter_svg: ^1.0.3
-  shimmer: ^2.0.0
-  cached_network_image: 3.2.0
-  pull_to_refresh: ^2.0.0
-  flutter_widget_from_html: ^0.8.4
   carousel_slider: ^4.1.1
   get_it: ^7.2.0
   http_mock_adapter: ^0.3.3
-  intl:
+  dio_logger: ^4.0.8+8
+  cached_network_image: 3.2.0
+  smooth_page_indicator: ^1.0.0+2
+  pull_to_refresh: ^2.0.0
+  preload_page_view: ^0.1.6
+  flutter_svg: ^1.0.3
+  shimmer: ^2.0.0
+  flutter_widget_from_html: ^0.8.4
+  video_player: ^2.4.7
+  chewie: ^1.3.6
+  fluttertoast: ^8.2.4
+  image_picker: ^0.8.6
+  image_crop: ^0.4.1
+  webview_flutter: ^3.0.4
+  photo_view: ^0.14.0
+  collection: ^1.17.0
+  validators: ^3.0.0
+  scroll_to_index: ^3.0.1
+  provider: ^6.0.5
+  qr_flutter: ^4.0.0
+  syncfusion_flutter_pdfviewer: ^20.4.49
+  pin_code_fields: ^8.0.1
+  image_size_getter: ^2.1.2
+  image: ^4.0.15
+  touchable: ^1.0.2
+  svg_path_parser: ^1.1.1
+  google_sign_in: ^6.1.4
+  pointycastle: ^3.7.3
+  flag: ^6.0.0
+  video_thumbnail: ^0.5.3
+  path_provider: ^2.1.0
+  pusher_channels_flutter: ^2.2.0
+  onesignal_flutter: ^5.0.3
+  in_app_review: ^2.0.6
+  open_store: ^0.5.0
+  flutter_web_browser: ^0.17.1
+  flutter_inappwebview: ^5.8.0
+  permission_handler: ^11.0.1
+  open_file: ^3.3.2
+  package_info_plus: ^3.1.2
+  document_file_save_plus: ^1.0.4
+  scroll_snap_effect: ^0.1.0
+  uni_links: ^0.5.1
+
+  url_launcher:
   flutter_localizations:
     sdk: flutter
+  firebase_core: ^2.10.0
 
 dev_dependencies:
   flutter_test:
@@ -64,15 +110,23 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^2.0.0
+  flutter_lints: ^1.0.0
+  flutter_launcher_icons: ^0.13.1
   hive_generator: ^1.1.2
   build_runner: ^2.1.10
-  flutter_launcher_icons: ^0.11.0
+  change_app_package_name: ^1.1.0
 
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/images/logo_superindo.png"
+  image_path: "assets/images/launcher_logo.png"
+  image_path_ios: "assets/images/launcher_logo_opaque.jpeg"
+  remove_alpha_ios: true
+
+dependency_overrides:
+  fwfh_text_style: ^2.22.8+1
+  collection: ^1.17.0
+  image: ^4.0.15
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -92,10 +146,7 @@ flutter:
   assets:
     - assets/images/
     - assets/vectors/
-    - assets/vectors/home/
-    - assets/vectors/transaction/
-    - assets/vectors/wishlist/
-    - assets/vectors/feed/
+    - assets/vectors/mainmenu/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
@@ -123,50 +174,45 @@ flutter:
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
   fonts:
-    - family: Poppins
+    - family: NunitoSans
       fonts:
-        - asset: assets/fonts/poppins_thin.ttf
-          weight: 100
-        - asset: assets/fonts/poppins_thin_italic.ttf
-          weight: 100
-          style: italic
-        - asset: assets/fonts/poppins_extra_light.ttf
+        - asset: assets/fonts/nunito_sans_extra_light.ttf
           weight: 200
-        - asset: assets/fonts/poppins_extra_light_italic.ttf
+        - asset: assets/fonts/nunito_sans_extra_light_italic.ttf
           weight: 200
           style: italic
-        - asset: assets/fonts/poppins_light.ttf
+        - asset: assets/fonts/nunito_sans_light.ttf
           weight: 300
-        - asset: assets/fonts/poppins_light_italic.ttf
+        - asset: assets/fonts/nunito_sans_light_italic.ttf
           weight: 300
           style: italic
-        - asset: assets/fonts/poppins_regular.ttf
+        - asset: assets/fonts/nunito_sans_regular.ttf
           weight: 400
-        - asset: assets/fonts/poppins_regular_italic.ttf
+        - asset: assets/fonts/nunito_sans_regular_italic.ttf
           weight: 400
           style: italic
-        - asset: assets/fonts/poppins_medium.ttf
+        - asset: assets/fonts/nunito_sans_medium.ttf
           weight: 500
-        - asset: assets/fonts/poppins_medium_italic.ttf
+        - asset: assets/fonts/nunito_sans_medium_italic.ttf
           weight: 500
           style: italic
-        - asset: assets/fonts/poppins_semi_bold.ttf
+        - asset: assets/fonts/nunito_sans_semi_bold.ttf
           weight: 600
-        - asset: assets/fonts/poppins_semi_bold_italic.ttf
+        - asset: assets/fonts/nunito_sans_semi_bold_italic.ttf
           weight: 600
           style: italic
-        - asset: assets/fonts/poppins_bold.ttf
+        - asset: assets/fonts/nunito_sans_bold.ttf
           weight: 700
-        - asset: assets/fonts/poppins_bold_italic.ttf
+        - asset: assets/fonts/nunito_sans_bold_italic.ttf
           weight: 700
           style: italic
-        - asset: assets/fonts/poppins_extra_bold.ttf
+        - asset: assets/fonts/nunito_sans_extra_bold.ttf
           weight: 800
-        - asset: assets/fonts/poppins_extra_bold_italic.ttf
+        - asset: assets/fonts/nunito_sans_extra_bold_italic.ttf
           weight: 800
           style: italic
-        - asset: assets/fonts/poppins_black.ttf
+        - asset: assets/fonts/nunito_sans_black.ttf
           weight: 900
-        - asset: assets/fonts/poppins_black_italic.ttf
+        - asset: assets/fonts/nunito_sans_black_italic.ttf
           weight: 900
           style: italic

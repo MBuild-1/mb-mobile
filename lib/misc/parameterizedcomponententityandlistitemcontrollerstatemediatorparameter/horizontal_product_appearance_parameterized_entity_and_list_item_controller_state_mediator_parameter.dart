@@ -1,0 +1,13 @@
+import 'parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
+
+enum HorizontalProductAppearance {
+  onlyPicture, full
+}
+
+class HorizontalProductAppearanceParameterizedEntityAndListItemControllerStateMediatorParameter extends ParameterizedEntityAndListItemControllerStateMediatorParameter {
+  HorizontalProductAppearance horizontalProductAppearance;
+
+  HorizontalProductAppearanceParameterizedEntityAndListItemControllerStateMediatorParameter({
+    required this.horizontalProductAppearance
+  });
+}

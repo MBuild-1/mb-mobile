@@ -88,8 +88,11 @@ class _VerticalPromptIndicator extends StatelessWidget {
               ),
               textAlign: TextAlign.center
             ),
-            const SizedBox(height: 4.0),
-            Text(promptText ?? "", style: const TextStyle(color: Colors.black), textAlign: TextAlign.center)
+            if (!promptText.isEmptyString)
+              ...[
+                const SizedBox(height: 4.0),
+                Text(promptText ?? "", style: const TextStyle(color: Colors.black), textAlign: TextAlign.center)
+              ]
           ]
         ),
       ),
@@ -100,7 +103,6 @@ class _VerticalPromptIndicator extends StatelessWidget {
           SizedBox(height: 1.h),
           SizedBox(
             width: 50.w,
-            height: 5.h,
             child: TextButton(
               onPressed: onPressed,
               child: Text(buttonText.toEmptyStringNonNull),
@@ -110,6 +112,7 @@ class _VerticalPromptIndicator extends StatelessWidget {
                 ),
                 foregroundColor: Colors.white,
                 backgroundColor: Theme.of(context).colorScheme.primary,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap
               ),
             )
           ),
@@ -165,10 +168,13 @@ class _HorizontalPromptIndicator extends StatelessWidget {
                 fontSize: 16,
                 fontWeight: FontWeight.bold
               ),
-              textAlign: TextAlign.center
+              textAlign: TextAlign.start
             ),
-            const SizedBox(height: 3.0),
-            Text(promptText ?? "", style: const TextStyle(color: Colors.black), textAlign: TextAlign.center)
+            if (!promptText.isEmptyString)
+              ...[
+                const SizedBox(height: 4.0),
+                Text(promptText ?? "", style: const TextStyle(color: Colors.black), textAlign: TextAlign.start)
+              ]
           ]
         ),
       ),
@@ -178,7 +184,6 @@ class _HorizontalPromptIndicator extends StatelessWidget {
         <Widget>[
           SizedBox(width: 2.w),
           SizedBox(
-            height: 5.h,
             child: TextButton(
               onPressed: onPressed,
               child: Text(buttonText.toEmptyStringNonNull),
@@ -188,6 +193,7 @@ class _HorizontalPromptIndicator extends StatelessWidget {
                 ),
                 foregroundColor: Colors.white,
                 backgroundColor: Theme.of(context).colorScheme.primary,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap
               ),
             )
           ),

@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 
 import '../additionalloadingindicatorchecker/additional_paging_result_parameter_checker.dart';
 import '../load_data_result.dart';
@@ -88,13 +89,10 @@ extension PagingControllerExt<PageKeyType, ItemType> on PagingController<PageKey
         }
       } else if (loadDataResult is FailedLoadDataResult) {
         FailedLoadDataResult failedLoadDataResult = loadDataResult as FailedLoadDataResult;
-        dynamic e = failedLoadDataResult.e;
-        if (e is DioError) {
-          if (e.type == DioErrorType.cancel) {
-            return;
-          }
+        if (failedLoadDataResult.isFailedBecauseCancellation) {
+          return;
         }
-        error = e;
+        error = failedLoadDataResult.e;
       }
     });
   }

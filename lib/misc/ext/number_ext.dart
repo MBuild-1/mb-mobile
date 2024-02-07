@@ -1,9 +1,38 @@
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+import '../string_util.dart';
+
 extension NumExt on num? {
   String withSeparator() {
     return NumberFormat.decimalPattern("id").format(this ?? 0);
+  }
+
+  String toWeightStringDecimalPlaced() {
+    String result = toLocalizedStringAsFixed(3);
+    String newResult = "";
+    int step = 1;
+    int i = result.length - 1;
+    while (i >= 0) {
+      String c = result[i];
+      if (step == 1) {
+        if (c != "0") {
+          step = 2;
+          newResult = "${c == "," ? "" : c}$newResult";
+        }
+      } else {
+        newResult = "$c$newResult";
+      }
+      i--;
+    }
+    return newResult;
+  }
+
+  String toLocalizedStringAsFixed(int fractionDigits) {
+    NumberFormat numberFormat = NumberFormat.decimalPattern("id");
+    numberFormat.minimumFractionDigits = fractionDigits;
+    numberFormat.maximumFractionDigits = fractionDigits;
+    return numberFormat.format(this ?? 0);
   }
 
   IsZeroResult get isZeroResult {
@@ -27,12 +56,26 @@ extension NumExt on num? {
     }
   }
 
-  String toRupiah() {
+  String toRupiah({bool withFreeTextIfZero = true}) {
     IsZeroResult zeroResult = isZeroResult;
     if (zeroResult.isZero) {
-      return "Free".tr;
+      if (withFreeTextIfZero) {
+        return "Free".tr;
+      }
+    }
+    return NumberFormat.currency(locale: "id", symbol: "Rp", decimalDigits: 0).format(zeroResult.effectiveNum);
+  }
+
+  bool hasDecimal() {
+    return this != this?.floorToDouble();
+  }
+
+  String toDecimalStringIfHasDecimalValue() {
+    bool hasDecimalResult = hasDecimal();
+    if (hasDecimalResult) {
+      return toString();
     } else {
-      return NumberFormat.currency(locale: "id", symbol: "Rp").format(zeroResult.effectiveNum);
+      return this!.toInt().toString();
     }
   }
 }

@@ -125,10 +125,12 @@ class ModifiedChip extends Chip {
 
 class ModifiedChipButton extends StatefulWidget {
   final Widget label;
+  final Widget? Function(TextStyle?)? labelInterceptor;
   final StatedLabelStyleFunction? statedLabelStyleFunction;
   final Color? backgroundColor;
   final Color? unselectedBackgroundColor;
   final bool isSelected;
+  final bool canSelectAndUnselect;
   final VoidCallback? onTap;
   final ShapeBorder? border;
   final ShapeBorder? unselectedBorder;
@@ -138,10 +140,12 @@ class ModifiedChipButton extends StatefulWidget {
   const ModifiedChipButton({
     Key? key,
     required this.label,
+    this.labelInterceptor,
     this.statedLabelStyleFunction,
     this.backgroundColor,
     this.unselectedBackgroundColor,
     required this.isSelected,
+    this.canSelectAndUnselect = false,
     this.onTap,
     this.border,
     this.unselectedBorder,
@@ -189,12 +193,17 @@ class _ModificationChipButtonState extends State<ModifiedChipButton> with Materi
       ?? chipDefaults.backgroundColor
       ?? Constant.colorDefaultChip;
     Color effectiveUnselectedBackgroundColor = Colors.white.withOpacity(0);
-    BorderRadius borderRadius = widget.borderRadius ?? const BorderRadius.all(Radius.circular(16.0));
+    BorderRadius borderRadius = widget.borderRadius ?? const BorderRadius.all(Radius.circular(8.0));
+    TextStyle? newTextStyle = effectiveStatedLabelStyleFunction(resolvedLabelStyle, effectiveSelectedBackgroundColor, effectiveUnselectedBackgroundColor, widget.isSelected) ?? resolvedLabelStyle;
     if (labelText is Text) {
       labelText = Text(
         labelText.data ?? "",
-        style: effectiveStatedLabelStyleFunction(resolvedLabelStyle, effectiveSelectedBackgroundColor, effectiveUnselectedBackgroundColor, widget.isSelected) ?? resolvedLabelStyle
+        style: newTextStyle
       );
+    }
+    if (widget.labelInterceptor != null) {
+      Widget? newLabel = widget.labelInterceptor!(newTextStyle);
+      labelText = newLabel ?? labelText;
     }
     ShapeBorder effectiveSelectedBorder = widget.border ?? RoundedRectangleBorder(borderRadius: borderRadius);
     ShapeBorder effectiveUnselectedBorder = widget.unselectedBorder ?? RoundedRectangleBorder(
@@ -211,7 +220,7 @@ class _ModificationChipButtonState extends State<ModifiedChipButton> with Materi
       color: effectiveBackgroundColor,
       animationDuration: Duration.zero,
       child: InkWell(
-        onTap: widget.isSelected ? null : widget.onTap,
+        onTap: widget.canSelectAndUnselect ? widget.onTap : (widget.isSelected ? null : widget.onTap),
         customBorder: effectiveBorder,
         child: Padding(
           padding: widget.padding ?? const EdgeInsets.symmetric(vertical: 8.0, horizontal: 11.0),

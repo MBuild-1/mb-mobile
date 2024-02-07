@@ -2,20 +2,11 @@ import '../validator/validator.dart';
 import 'validator_group.dart';
 
 class RegisterValidatorGroup extends ValidatorGroup {
-  Validator emailValidator;
-  Validator usernameValidator;
-  Validator mobileNumberValidator;
-  Validator passwordValidator;
+  Validator emailOrPhoneNumberValidator;
 
   RegisterValidatorGroup({
-    required this.emailValidator,
-    required this.usernameValidator,
-    required this.mobileNumberValidator,
-    required this.passwordValidator
+    required this.emailOrPhoneNumberValidator
   }) {
-    validatorList.add(emailValidator);
-    validatorList.add(usernameValidator);
-    validatorList.add(mobileNumberValidator);
-    validatorList.add(passwordValidator);
+    validatorList.add(emailOrPhoneNumberValidator);
   }
 }

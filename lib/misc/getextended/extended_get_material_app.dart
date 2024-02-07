@@ -249,6 +249,9 @@ class ExtendedGetMaterialApp extends StatelessWidget {
           defaultDurationTransition:
           transitionDuration ?? Get.defaultTransitionDuration,
         );
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          WidgetsBinding.instance.removeObserver(Get.rootController);
+        });
       },
       builder: (_) => routerDelegate != null ? MaterialApp.router(
         routerDelegate: routerDelegate!,
@@ -326,14 +329,12 @@ class ExtendedGetMaterialApp extends StatelessWidget {
   }
 
   Widget defaultBuilder(BuildContext context, Widget? child) {
-    Widget wrappedChildResult = SomethingCounter(
-      child: MaterialIgnorePointer(
-        child: child ?? const Material()
+    Widget wrappedChildResult = child ?? const Material();
+    return SomethingCounter(
+      child: Directionality(
+        textDirection: textDirection ?? (rtlLanguages.contains(Get.locale?.languageCode) ? TextDirection.rtl : TextDirection.ltr),
+        child: builder == null ? wrappedChildResult : builder!(context, wrappedChildResult),
       )
-    );
-    return Directionality(
-      textDirection: textDirection ?? (rtlLanguages.contains(Get.locale?.languageCode) ? TextDirection.rtl : TextDirection.ltr),
-      child: builder == null ? wrappedChildResult : builder!(context, wrappedChildResult),
     );
   }
 

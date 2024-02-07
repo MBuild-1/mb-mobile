@@ -1,36 +1,40 @@
+import 'package:flutter/foundation.dart';
+
+import 'response_encyption_helper.dart';
+
 class ResponseWrapper {
   final dynamic response;
 
   ResponseWrapper(this.response);
 }
 
-abstract class _FullResponseWrapper extends ResponseWrapper {
+class MainStructureResponseWrapper extends ResponseWrapper {
   @override
-  dynamic get response => _fullResponse;
+  dynamic get response => _dataResponse;
 
-  late final dynamic _fullResponse;
+  late final dynamic _dataResponse;
 
-  _FullResponseWrapper(dynamic fullResponse) : super(fullResponse) {
-    _fullResponse = fullResponse;
-  }
-}
-
-class MainStructureResponseWrapper extends _FullResponseWrapper {
-  late final bool success;
-  late final int statusCode;
+  late final String status;
+  late final int code;
+  late final String message;
 
   factory MainStructureResponseWrapper.factory(dynamic fullResponse) {
     return MainStructureResponseWrapper(fullResponse);
   }
 
   MainStructureResponseWrapper(dynamic fullResponse) : super(fullResponse) {
-    success = fullResponse["isSuccess"];
+    try {
+      dynamic meta = fullResponse["meta"];
+      dynamic dataResponse = fullResponse["data"];
+      dynamic decryptedDataResponse = ResponseEncryptionHelper.decryptResponseData(dataResponse);
+      status = meta["status"];
+      code = meta["code"];
+      message = meta["message"];
+      _dataResponse = decryptedDataResponse;
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error while init main structure response wrapper: $e");
+      }
+    }
   }
-}
-
-abstract class IPagingResponseWrapper {
-  int get page;
-  int? get previousPage;
-  int? get nextPage;
-  int get pageCount;
 }

@@ -1,12 +1,21 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:masterbagasi/misc/ext/navigator_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/misc/getextended/get_extended.dart';
 import 'package:masterbagasi/presentation/widget/something_counter.dart';
+import 'package:provider/provider.dart';
 
+import '../../misc/constant.dart';
 import '../../misc/main_route_observer.dart';
 import '../../misc/manager/controller_manager.dart';
+import '../../misc/multi_language_string.dart';
+import '../../misc/page_restoration_helper.dart';
+import '../../misc/routeargument/notification_redirector_route_argument.dart';
+import '../notifier/component_notifier.dart';
+import 'notification_redirector_page.dart';
 
 typedef OnCreateRestorationCallback<T extends GetxPageRestoration> = T Function();
 typedef PageRestorationStringId = String Function();
@@ -31,6 +40,7 @@ class _GetxPageBuilder {
       resultPage = _RestorableGetxOuterPage<T>(
         onDispose: resultPage.dispose,
         pageRestorationId: resultPage.pageRestorationId,
+        onLoginChange: resultPage.onLoginChange,
         onCreateRestoration: resultPage.createPageRestoration,
         child: restorableGetxPage,
       );
@@ -61,7 +71,8 @@ class _GetxPageBuilder {
     if (resultPage is DefaultGetxPage) {
       resultPage = _GetxOuterPage(
         onDispose: resultPage.dispose,
-        child: defaultGetxPage,
+        onLoginChange: resultPage.onLoginChange,
+        child: defaultGetxPage
       );
     }
     return resultPage;
@@ -106,7 +117,9 @@ class _GetxPageBuilder {
     while (true) {
       if (MainRouteObserver.checkRouteNameExists(newRouteName)) {
         if (MainRouteObserver.routeMap[newRouteName] != null) {
-          if (MainRouteObserver.routeMap[newRouteName]?.restorationValue == 1) {
+          int? restorationValue = MainRouteObserver.routeMap[newRouteName]?.restorationValue;
+          if (restorationValue == 1) {
+            MainRouteObserver.routeMap[newRouteName]?.lastRestorationValue = restorationValue!;
             MainRouteObserver.routeMap[newRouteName]?.restorationValue = 0;
           } else {
             newRouteName = "$newRawRouteName-$i";
@@ -142,12 +155,18 @@ abstract class GetxPage extends StatelessWidget {
 
   void onSetController();
 
+  void onLoginChange() {}
+
   @override
   Widget build(BuildContext context) {
     _initControllerMember();
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: _systemUiOverlayStyle,
-      child: _rawBuildPage(context)
+      child: OrientationBuilder(
+        builder: (BuildContext context, Orientation orientation) => Consumer<ComponentNotifier>(
+          builder: (context, _, __) => _rawBuildPage(context)
+        ),
+      )
     );
   }
 
@@ -183,7 +202,10 @@ abstract class RestorableGetxPage<T extends GetxPageRestoration> extends GetxPag
 
   @override
   Widget _rawBuildPage(BuildContext context) {
-    return buildPage(context);
+    return _StatefulRestorableGetxPage(
+      pageName: pageName,
+      child: buildPage(context)
+    );
   }
 
   Widget buildPage(BuildContext context);
@@ -203,14 +225,71 @@ abstract class RestorableGetxPage<T extends GetxPageRestoration> extends GetxPag
   }
 }
 
+class _StatefulRestorableGetxPage extends StatefulWidget {
+  final Widget child;
+  final String pageName;
+
+  const _StatefulRestorableGetxPage({
+    required this.child,
+    required this.pageName,
+  });
+
+  @override
+  State<_StatefulRestorableGetxPage> createState() => _StatefulRestorableGetxPageState();
+}
+
+class _StatefulRestorableGetxPageState extends State<_StatefulRestorableGetxPage> {
+  String get _routeMapKey => getRouteMapKey(widget.pageName);
+
+  @override
+  void initState() {
+    MainRouteObserver.buildContextEventRouteMap[_routeMapKey] = () => context;
+    MainRouteObserver.onRedirectFromNotificationClick[_routeMapKey] = (additionalData) {
+      try {
+        PageRestorationHelper.toNotificationRedirectorPage(
+          context, NotificationRedirectorPageParameter(
+            pushModeAndTransitionMode: PushModeAndTransitionMode(
+              pushMode: Constant.restorableRouteFuturePush,
+              hasTransition: false
+            ),
+            additionalData: additionalData
+          ),
+        );
+      } catch (e, stackTrace) {
+        if (kDebugMode) {
+          print("Error Redirect: $e");
+          print(stackTrace);
+        }
+      }
+    };
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
+  }
+
+  @override
+  void dispose() {
+    MainRouteObserver.buildContextEventRouteMap[_routeMapKey] = null;
+    MainRouteObserver.buildContextEventRouteMap.remove(_routeMapKey);
+    MainRouteObserver.onRedirectFromNotificationClick[_routeMapKey] = null;
+    MainRouteObserver.onRedirectFromNotificationClick.remove(_routeMapKey);
+    super.dispose();
+  }
+}
+
 class _GetxOuterPage extends StatefulWidget {
   final Widget child;
   final VoidCallback onDispose;
+  final VoidCallback onLoginChange;
 
   const _GetxOuterPage({
     Key? key,
     required this.child,
     required this.onDispose,
+    required this.onLoginChange
   }): super(key: key);
 
   @override
@@ -241,10 +320,16 @@ class _RestorableGetxOuterPage<T extends GetxPageRestoration> extends _GetxOuter
     Key? key,
     required Widget child,
     required VoidCallback onDispose,
+    required VoidCallback onLoginChange,
     String pageName = "",
     this.pageRestorationId,
     required this.onCreateRestoration,
-  }): _pageName = pageName, super(key: key, child: child, onDispose: onDispose);
+  }): _pageName = pageName, super(
+    key: key,
+    child: child,
+    onDispose: onDispose,
+    onLoginChange: onLoginChange
+  );
 
   @override
   State<StatefulWidget> createState() => _RestorableGetxOuterPageState<T>();
@@ -261,6 +346,8 @@ class _RestorableGetxOuterPageState<T extends GetxPageRestoration> extends _Getx
   late final Restorator _restorator;
   late T _pageRestoration;
 
+  String get _routeMapKey => getRouteMapKey(widget.pageName);
+
   _RestorableGetxOuterPageState() {
     _restorator = Restorator(this);
   }
@@ -270,6 +357,7 @@ class _RestorableGetxOuterPageState<T extends GetxPageRestoration> extends _Getx
     _pageRestoration = widget.onCreateRestoration();
     _pageRestoration._pageName = widget.pageName;
     _pageRestoration.initState();
+    MainRouteObserver.routeMap[_routeMapKey]?.onLoginChange = widget.onLoginChange;
     super.initState();
   }
 
@@ -288,8 +376,18 @@ class _RestorableGetxOuterPageState<T extends GetxPageRestoration> extends _Getx
 
   @override
   void dispose() {
-    super.dispose();
     _pageRestoration.dispose();
+    int limit = 3;
+    while (limit >= 0) {
+      var disposingEvent = MainRouteObserver.disposingEventRouteMap[_routeMapKey];
+      if (disposingEvent != null) {
+        disposingEvent();
+        break;
+      } else {
+        limit -= 1;
+      }
+    }
+    super.dispose();
   }
 }
 
@@ -314,6 +412,8 @@ abstract class MixableGetxPageRestoration extends GetxPageRestoration {
   @override
   void dispose() {}
 }
+
+abstract class ExtendedMixableGetxPageRestoration extends MixableGetxPageRestoration with NotificationRedirectorPageRestorationMixin {}
 
 class Restorator {
   late final RestorationMixin _restorationMixin;
@@ -385,4 +485,8 @@ class ExtendedGetPageRoute<T> extends GetPageRoute<T> {
     }
     return content;
   }
+}
+
+String getRouteMapKey(String pageName) {
+  return "/$pageName";
 }

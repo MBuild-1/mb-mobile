@@ -1,6 +1,7 @@
+import '../controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import 'type/shimmer_carousel_list_item_generator_type.dart';
 
-abstract class ShimmerCarouselListItemGenerator<T, G extends ShimmerCarouselListItemGeneratorType> {
+abstract class ShimmerCarouselListItemGenerator<G extends ShimmerCarouselListItemGeneratorType> {
   G get shimmerCarouselListItemGeneratorType;
-  T onGenerateListItemValue();
+  ListItemControllerState onGenerateListItemValue();
 }

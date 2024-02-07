@@ -24,6 +24,7 @@ class ApiRequestManager {
           if (!_cancelTokenMap.containsKey(newStringCancelTokenMapKey)) {
             break;
           }
+          i++;
         }
       }
     }
@@ -33,7 +34,7 @@ class ApiRequestManager {
   }
 
   MapEntry<CancelTokenMapKey, CancelToken> addRequestToCancellationPart(String key, {bool duplicate = false}) {
-    return addRequestToCancellationPartWithStringKey(StringCancelTokenMapKey(key: key));
+    return addRequestToCancellationPartWithStringKey(StringCancelTokenMapKey(key: key), duplicate: duplicate);
   }
 
   void cancelAllDesiredPageKeyedRequest(dynamic desiredPageKey, {String? subKey}) {

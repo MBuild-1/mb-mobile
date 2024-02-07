@@ -6,6 +6,8 @@ import 'list_item_controller_state.dart';
 class TitleAndDescriptionListItemControllerState extends ListItemControllerState {
   String? title;
   String? description;
+  TitleInterceptor? titleInterceptor;
+  DescriptionInterceptor? descriptionInterceptor;
   EdgeInsetsGeometry? padding;
   double? verticalSpace;
   TitleAndDescriptionItemInterceptor? titleAndDescriptionItemInterceptor;
@@ -13,6 +15,8 @@ class TitleAndDescriptionListItemControllerState extends ListItemControllerState
   TitleAndDescriptionListItemControllerState({
     this.title,
     this.description,
+    this.titleInterceptor,
+    this.descriptionInterceptor,
     this.padding,
     this.verticalSpace,
     this.titleAndDescriptionItemInterceptor

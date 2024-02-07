@@ -1,0 +1,3 @@
+enum ProductBrandItemType {
+  circle, imageAndBackground
+}
