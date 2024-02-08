@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/error_provider_ext.dart';
@@ -25,6 +26,9 @@ import '../../domain/entity/cart/cart_summary.dart';
 import '../../domain/entity/cart/support_cart.dart';
 import '../../domain/entity/coupon/coupon.dart';
 import '../../domain/entity/coupon/coupon_detail_parameter.dart';
+import '../../domain/entity/order/createorderversion1point1/responsetype/create_order_response_type.dart';
+import '../../domain/entity/order/createorderversion1point1/responsetype/default_create_order_response_type.dart';
+import '../../domain/entity/order/createorderversion1point1/responsetype/with_combined_order_id_create_order_response_type.dart';
 import '../../domain/entity/payment/payment_method.dart';
 import '../../domain/entity/summaryvalue/summary_value.dart';
 import '../../domain/usecase/add_additional_item_use_case.dart';
@@ -318,6 +322,7 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
   String? _couponId;
   List<Cart> _cartList = [];
   List<AdditionalItem> _additionalItemList = [];
+  List<CartListItemControllerState> _newCartListItemControllerStateList = [];
 
   final DefaultDeliveryCartContainerInterceptingActionListItemControllerState _defaultDeliveryCartContainerInterceptingActionListItemControllerState = DefaultDeliveryCartContainerInterceptingActionListItemControllerState();
 
@@ -363,15 +368,16 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
     LoadDataResult<List<Cart>> cartListLoadDataResult = await widget.deliveryController.getDeliveryCartList(
       CartListParameter()
     );
-    return cartListLoadDataResult.map<PagingResult<ListItemControllerState>>((cartList) {
-      List<CartListItemControllerState> newCartListItemControllerStateList = [];
+    _newCartListItemControllerStateList = [];
+    if (cartListLoadDataResult.isSuccess) {
+      List<Cart> cartList = cartListLoadDataResult.resultIfSuccess!;
       for (var iteratedCart in cartList) {
         for (var iteratedCartId in widget.selectedCartIdList) {
           String iteratedCartIdValue = iteratedCartId[0];
           String iteratedCartIdQuantity = iteratedCartId[1];
           if (iteratedCart.id == iteratedCartIdValue) {
             iteratedCart.quantity = int.parse(iteratedCartIdQuantity);
-            newCartListItemControllerStateList.add(
+            _newCartListItemControllerStateList.add(
               VerticalCartListItemControllerState(
                 isSelected: true,
                 cart: iteratedCart,
@@ -407,12 +413,38 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
           }
         }
       }
-      return PagingDataResult<ListItemControllerState>(
+    } else {
+      bool dataCartNotFound = false;
+      if (cartListLoadDataResult.isFailed) {
+        dynamic e = cartListLoadDataResult.resultIfFailed;
+        if (e is DioError) {
+          dynamic message = e.response?.data["meta"]["message"];
+          if (message != null) {
+            Map<String, dynamic> messageMap = message;
+            if (messageMap.containsKey("value")) {
+              dynamic value = messageMap["value"];
+              if (value is String) {
+                if (value.toLowerCase() == "data cart not found") {
+                  dataCartNotFound = true;
+                }
+              }
+            }
+          }
+        }
+      }
+      if (!dataCartNotFound) {
+        return cartListLoadDataResult.map<PagingResult<ListItemControllerState>>(
+          (cartList) => throw UnimplementedError()
+        );
+      }
+    }
+    return SuccessLoadDataResult<PagingResult<ListItemControllerState>>(
+      value: PagingDataResult<ListItemControllerState>(
         itemList: [
           DeliveryCartContainerListItemControllerState(
             selectedCartIdList: widget.selectedCartIdList,
             selectedAdditionalItemIdList: widget.selectedAdditionalItemIdList,
-            cartListItemControllerStateList: newCartListItemControllerStateList,
+            cartListItemControllerStateList: _newCartListItemControllerStateList,
             onUpdateState: () => setState(() {}),
             onScrollToAdditionalItemsSection: () => _deliveryScrollController.jumpTo(
               _deliveryScrollController.position.maxScrollExtent
@@ -467,8 +499,8 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
         page: 1,
         totalPage: 1,
         totalItem: 1
-      );
-    });
+      )
+    );
   }
 
   @override
@@ -492,7 +524,13 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
         onDeliveryRequestVersion1Point1ProcessSuccessCallback: (createOrderVersion1Point1Response) async {
           Provider.of<NotificationNotifier>(context, listen: false).loadCartLoadDataResult();
           Provider.of<ComponentNotifier>(context, listen: false).updateCart();
-          NavigationHelper.navigationAfterPurchaseProcessWithCombinedOrderIdParameter(context, createOrderVersion1Point1Response.combinedOrderId);
+          String combinedOrderId = "";
+          CreateOrderResponseType createOrderResponseType = createOrderVersion1Point1Response.createOrderResponseType;
+          if (createOrderResponseType is WithCombinedOrderIdCreateOrderResponseType) {
+            WithCombinedOrderIdCreateOrderResponseType withCombinedOrderIdCreateOrderResponseType = createOrderResponseType as WithCombinedOrderIdCreateOrderResponseType;
+            combinedOrderId = withCombinedOrderIdCreateOrderResponseType.combinedOrderId;
+          }
+          NavigationHelper.navigationAfterPurchaseProcessWithCombinedOrderIdParameter(context, combinedOrderId);
         },
         onShowCartSummaryProcessCallback: (cartSummaryLoadDataResult) async {
           setState(() {
@@ -533,6 +571,9 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
                       loadDataResult: _cartSummaryLoadDataResult,
                       errorProvider: Injector.locator<ErrorProvider>(),
                       onImplementLoadDataResultDirectly: (cartSummaryLoadDataResult, errorProviderOutput) {
+                        if (cartSummaryLoadDataResult.isNotLoading) {
+                          return const SizedBox();
+                        }
                         bool hasLoadingShimmer = cartSummaryLoadDataResult.isNotLoading || cartSummaryLoadDataResult.isLoading;
                         Widget result = Wrap(
                           crossAxisAlignment: WrapCrossAlignment.end,
@@ -627,14 +668,25 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
                   ),
                   Builder(
                     builder: (context) {
-                      void Function()? onPressed = () => widget.deliveryController.createOrderVersion1Point1();
-                      if (!(_shippingAddressLoadDataResult.isSuccess && _selectedPaymentMethodLoadDataResult.isSuccess)) {
-                        onPressed = null;
+                      bool onlyWarehousePay = false;
+                      void Function()? getOnPressed() {
+                        return () => widget.deliveryController.createOrderVersion1Point1();
+                      }
+                      void Function()? onPressed;
+                      if (_shippingAddressLoadDataResult.isSuccess) {
+                        if (_selectedPaymentMethodLoadDataResult.isSuccess) {
+                          onPressed = getOnPressed();
+                        } else {
+                          if (_newCartListItemControllerStateList.isEmpty) {
+                            onPressed = getOnPressed();
+                            onlyWarehousePay = true;
+                          }
+                        }
                       }
                       return SizedOutlineGradientButton(
                         onPressed: onPressed,
                         width: 120,
-                        text: "${"Pay".tr} ($_selectedCartCount)",
+                        text: "${"Pay".tr}${!onlyWarehousePay ? " ($_selectedCartCount)" : ""}",
                         outlineGradientButtonType: OutlineGradientButtonType.solid,
                         outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
                       );

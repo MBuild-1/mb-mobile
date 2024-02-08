@@ -1,4 +1,4 @@
-import 'create_order_parameter.dart';
+import '../create_order_parameter.dart';
 
 class CreateOrderVersion1Point1Parameter extends CreateOrderParameter {
   String? settlingId;

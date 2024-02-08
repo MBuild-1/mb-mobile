@@ -10,7 +10,10 @@ import 'package:masterbagasi/data/entitymappingext/user_entity_mapping_ext.dart'
 import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
-import '../../domain/entity/order/create_order_version_1_point_1_response.dart';
+import '../../domain/entity/order/createorderversion1point1/create_order_version_1_point_1_response.dart';
+import '../../domain/entity/order/createorderversion1point1/responsetype/default_create_order_response_type.dart';
+import '../../domain/entity/order/createorderversion1point1/responsetype/no_create_order_response_type.dart';
+import '../../domain/entity/order/createorderversion1point1/responsetype/only_warehouse_order_response_type.dart';
 import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderresponse/add_warehouse_in_order_response.dart';
 import '../../domain/entity/order/arrived_order_response.dart';
 import '../../domain/entity/order/combined_order.dart';
@@ -252,11 +255,29 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
   }
 
   CreateOrderVersion1Point1Response mapFromResponseToCreateOrderVersion1Point1Response() {
-    dynamic paymentResponse = response["payment"];
     return CreateOrderVersion1Point1Response(
-      transactionId: paymentResponse["transaction_id"],
-      orderId: paymentResponse["order_id"],
-      combinedOrderId: paymentResponse["combined_order_id"]
+      createOrderResponseType: () {
+        String message = "";
+        if (this is MainStructureResponseWrapper) {
+          MainStructureResponseWrapper mainStructureResponseWrapper = this as MainStructureResponseWrapper;
+          message = mainStructureResponseWrapper.message.toLowerCase();
+        }
+        dynamic paymentResponse = response["payment"];
+        if (message.contains("create warehouse")) {
+          if (response is Map<String, dynamic>) {
+            return OnlyWarehouseCreateOrderResponseType(
+              combinedOrderId: paymentResponse["combined_order_id"]
+            );
+          } else {
+            return NoCreateOrderResponseType();
+          }
+        }
+        return DefaultCreateOrderResponseType(
+          transactionId: paymentResponse["transaction_id"],
+          orderId: paymentResponse["order_id"],
+          combinedOrderId: paymentResponse["combined_order_id"]
+        );
+      }()
     );
   }
 

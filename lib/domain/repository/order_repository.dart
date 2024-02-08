@@ -1,8 +1,8 @@
 import '../../misc/load_data_result.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/processing/future_processing.dart';
-import '../entity/order/create_order_version_1_point_1_parameter.dart';
-import '../entity/order/create_order_version_1_point_1_response.dart';
+import '../entity/order/createorderversion1point1/create_order_version_1_point_1_parameter.dart';
+import '../entity/order/createorderversion1point1/create_order_version_1_point_1_response.dart';
 import '../entity/order/modifywarehouseinorder/modifywarehouseinorderparameter/modify_warehouse_in_order_parameter.dart';
 import '../entity/order/arrived_order_request.dart';
 import '../entity/order/arrived_order_response.dart';

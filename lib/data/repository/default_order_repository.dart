@@ -2,8 +2,8 @@ import 'package:masterbagasi/domain/entity/order/arrived_order_request.dart';
 
 import 'package:masterbagasi/domain/entity/order/arrived_order_response.dart';
 
-import '../../domain/entity/order/create_order_version_1_point_1_parameter.dart';
-import '../../domain/entity/order/create_order_version_1_point_1_response.dart';
+import '../../domain/entity/order/createorderversion1point1/create_order_version_1_point_1_parameter.dart';
+import '../../domain/entity/order/createorderversion1point1/create_order_version_1_point_1_response.dart';
 import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderparameter/add_warehouse_in_order_parameter.dart';
 import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderparameter/modify_warehouse_in_order_parameter.dart';
 import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderresponse/add_warehouse_in_order_response.dart';

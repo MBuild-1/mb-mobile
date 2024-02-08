@@ -358,7 +358,8 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Payment Success": "Pembayaran Berhasil",
       "Order Tracking": "Lacak Pengiriman",
       "Update Application": "Update Aplikasi",
-      "Administration Fee": "Biaya Administrasi"
+      "Administration Fee": "Biaya Administrasi",
+      "No order data exists": "Tidak ada data order yang tersedia"
     }
   };
 

@@ -106,7 +106,7 @@ class DeliveryCartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
             paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
               widgetSubstitution: (context, index) {
                 return Text(
-                  "No selected coupon".tr,
+                  "No DefaultDeliveryCartContainerStateStorageListItemControllerState contains for shipping address".tr,
                 );
               }
             )
@@ -114,66 +114,76 @@ class DeliveryCartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<
         );
       }
 
-      int j = 0;
+      // Selected Cart
       List<CartListItemControllerState> cartListItemControllerStateList = oldItemType.cartListItemControllerStateList;
-      int selectedCount = 0;
-      List<Cart> selectedCart = [];
-      while (j < cartListItemControllerStateList.length) {
-        CartListItemControllerState cartListItemControllerState = cartListItemControllerStateList[j];
-        if (cartListItemControllerState.isSelected) {
-          selectedCount += 1;
-          selectedCart.add(cartListItemControllerState.cart);
+      if (oldItemType.cartListItemControllerStateList.isNotEmpty) {
+        int j = 0;
+        int selectedCount = 0;
+        List<Cart> selectedCart = [];
+        while (j < cartListItemControllerStateList.length) {
+          CartListItemControllerState cartListItemControllerState = cartListItemControllerStateList[j];
+          if (cartListItemControllerState.isSelected) {
+            selectedCount += 1;
+            selectedCart.add(cartListItemControllerState.cart);
+          }
+          newItemTypeList.addAll(<ListItemControllerState>[
+            if (j > 0) SpacingListItemControllerState(),
+            cartListItemControllerState
+          ]);
+          j++;
+          cartListItemControllerState.onChangeSelected = null;
         }
-        newItemTypeList.addAll(<ListItemControllerState>[
-          if (j > 0) SpacingListItemControllerState(),
-          cartListItemControllerState
-        ]);
-        j++;
-        cartListItemControllerState.onChangeSelected = null;
+        if (deliveryCartContainerStateStorageListItemControllerState is DefaultDeliveryCartContainerStateStorageListItemControllerState) {
+          if (selectedCount != deliveryCartContainerStateStorageListItemControllerState._lastSelectedCount) {
+            deliveryCartContainerStateStorageListItemControllerState._lastSelectedCount = selectedCount;
+            WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+              oldItemType.onChangeSelected(selectedCart);
+            });
+          }
+          if (cartListItemControllerStateList.length != deliveryCartContainerStateStorageListItemControllerState._lastCartCount) {
+            deliveryCartContainerStateStorageListItemControllerState._lastCartCount = cartListItemControllerStateList.length;
+            WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+              oldItemType.onCartChange();
+            });
+          }
+        }
+        newItemTypeList.add(
+          VirtualSpacingListItemControllerState(height: cartListItemControllerStateList.isEmpty ? 16.0 : 10.0)
+        );
       }
-      if (deliveryCartContainerStateStorageListItemControllerState is DefaultDeliveryCartContainerStateStorageListItemControllerState) {
-        if (selectedCount != deliveryCartContainerStateStorageListItemControllerState._lastSelectedCount) {
-          deliveryCartContainerStateStorageListItemControllerState._lastSelectedCount = selectedCount;
-          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-            oldItemType.onChangeSelected(selectedCart);
-          });
-        }
-        if (cartListItemControllerStateList.length != deliveryCartContainerStateStorageListItemControllerState._lastCartCount) {
-          deliveryCartContainerStateStorageListItemControllerState._lastCartCount = cartListItemControllerStateList.length;
-          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-            oldItemType.onCartChange();
-          });
-        }
-      }
-      newItemTypeList.add(
-        VirtualSpacingListItemControllerState(height: cartListItemControllerStateList.isEmpty ? 16.0 : 10.0)
-      );
 
       // Selected Payment Method
-      listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
-        i,
-        ListItemControllerStateWrapper(
-          PaymentMethodIndicatorListItemControllerState(
-            selectedPaymentMethodLoadDataResult: oldItemType.selectedPaymentMethodLoadDataResult,
-            onSelectPaymentMethod: oldItemType.onSelectPaymentMethod,
-            onRemovePaymentMethod: oldItemType.onRemovePaymentMethod,
-            errorProvider: oldItemType.errorProvider
+      if (cartListItemControllerStateList.isNotEmpty) {
+        listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
+          i,
+          ListItemControllerStateWrapper(
+            PaymentMethodIndicatorListItemControllerState(
+              selectedPaymentMethodLoadDataResult: oldItemType.selectedPaymentMethodLoadDataResult,
+              onSelectPaymentMethod: oldItemType.onSelectPaymentMethod,
+              onRemovePaymentMethod: oldItemType.onRemovePaymentMethod,
+              errorProvider: oldItemType.errorProvider
+            )
+          ),
+          oldItemTypeList,
+          newItemTypeList
+        );
+        double paymentMethodEndSpacing = 26.0;
+        LoadDataResult<PaymentMethod> selectedPaymentMethodLoadDataResult = oldItemType.selectedPaymentMethodLoadDataResult();
+        if (selectedPaymentMethodLoadDataResult.isSuccess) {
+          paymentMethodEndSpacing = 20.0;
+        }
+        newItemTypeList.add(
+          VirtualSpacingListItemControllerState(
+            height: paymentMethodEndSpacing
           )
-        ),
-        oldItemTypeList,
-        newItemTypeList
-      );
-
-      double paymentMethodEndSpacing = 26.0;
-      LoadDataResult<PaymentMethod> selectedPaymentMethodLoadDataResult = oldItemType.selectedPaymentMethodLoadDataResult();
-      if (selectedPaymentMethodLoadDataResult.isSuccess) {
-        paymentMethodEndSpacing = 20.0;
+        );
+      } else {
+        newItemTypeList.add(
+          VirtualSpacingListItemControllerState(
+            height: 20.0
+          )
+        );
       }
-      newItemTypeList.add(
-        VirtualSpacingListItemControllerState(
-          height: paymentMethodEndSpacing
-        )
-      );
 
       // Selected Coupon
       if (deliveryCartContainerInterceptingActionListItemControllerState is DefaultDeliveryCartContainerInterceptingActionListItemControllerState) {

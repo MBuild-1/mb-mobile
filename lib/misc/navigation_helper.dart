@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/navigator_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
@@ -12,6 +13,7 @@ import 'routeargument/order_detail_route_argument.dart';
 import 'routeargument/order_route_argument.dart';
 import 'routeargument/product_detail_route_argument.dart';
 import 'routeargument/product_discussion_route_argument.dart';
+import 'toast_helper.dart';
 
 class _NavigationHelperImpl {
   void navigationToProductDetailFromProductDiscussion(BuildContext context, ProductDetailPageParameter productDetailPageParameter) {
@@ -80,7 +82,11 @@ class _NavigationHelperImpl {
                     if (buildContextEventFunction != null) {
                       BuildContext mainMenuBuildContext = buildContextEventFunction();
                       //MaterialIgnorePointer.of(mainMenuBuildContext)?.ignoring = false;
-                      PageRestorationHelper.toOrderDetailPage(mainMenuBuildContext, combinedOrderId);
+                      if (combinedOrderId.isNotEmptyString) {
+                        PageRestorationHelper.toOrderDetailPage(mainMenuBuildContext, combinedOrderId);
+                      } else {
+                        ToastHelper.showToast("No order data exists".tr);
+                      }
                     }
                     MainRouteObserver.disposingEventRouteMap[targetRouteName] = null;
                   });
