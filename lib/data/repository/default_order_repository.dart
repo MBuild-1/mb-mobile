@@ -17,7 +17,7 @@ import '../../domain/entity/order/ordertransaction/order_transaction_parameter.d
 import '../../domain/entity/order/ordertransaction/ordertransactionresponse/order_transaction_response.dart';
 import '../../domain/entity/order/purchase_direct_parameter.dart';
 import '../../domain/entity/order/purchase_direct_response.dart';
-import '../../domain/entity/order/repurchase_parameter.dart';
+import '../../domain/entity/order/repurchase/repurchase_parameter.dart';
 import '../../domain/entity/order/shipping_review_order_list_parameter.dart';
 import '../../domain/repository/order_repository.dart';
 import '../../misc/load_data_result.dart';

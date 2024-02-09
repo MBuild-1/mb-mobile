@@ -4,10 +4,10 @@ import '../../domain/usecase/get_coupon_detail_use_case.dart';
 import '../../misc/load_data_result.dart';
 import 'modal_dialog_controller.dart';
 
-class PurchaseDirectModalDialogController extends ModalDialogController {
+class PaymentParameterModalDialogController extends ModalDialogController {
   final GetCouponDetailUseCase getCouponDetailUseCase;
 
-  PurchaseDirectModalDialogController(
+  PaymentParameterModalDialogController(
     super.controllerManager,
     this.getCouponDetailUseCase
   );

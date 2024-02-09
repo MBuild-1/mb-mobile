@@ -16,7 +16,7 @@ import '../entity/order/ordertransaction/order_transaction_parameter.dart';
 import '../entity/order/ordertransaction/ordertransactionresponse/order_transaction_response.dart';
 import '../entity/order/purchase_direct_parameter.dart';
 import '../entity/order/purchase_direct_response.dart';
-import '../entity/order/repurchase_parameter.dart';
+import '../entity/order/repurchase/repurchase_parameter.dart';
 import '../entity/order/shipping_review_order_list_parameter.dart';
 
 abstract class OrderRepository {

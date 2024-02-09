@@ -4,7 +4,7 @@ import '../../errorprovider/error_provider.dart';
 import '../../load_data_result.dart';
 import 'list_item_controller_state.dart';
 
-class PurchaseDirectListItemControllerState extends ListItemControllerState {
+class PaymentParameterListItemControllerState extends ListItemControllerState {
   PaymentMethod? Function() onGetPaymentMethod;
   LoadDataResult<Coupon> Function() onGetCouponLoadDataResult;
   void Function(LoadDataResult<Coupon>) onSetCouponLoadDataResult;
@@ -15,7 +15,7 @@ class PurchaseDirectListItemControllerState extends ListItemControllerState {
   ErrorProvider Function() errorProvider;
   void Function() onUpdateState;
 
-  PurchaseDirectListItemControllerState({
+  PaymentParameterListItemControllerState({
     required this.onGetPaymentMethod,
     required this.onGetCouponLoadDataResult,
     required this.onSetCouponLoadDataResult,

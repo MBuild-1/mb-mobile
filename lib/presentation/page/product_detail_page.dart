@@ -107,7 +107,7 @@ import 'coupon_page.dart';
 import 'getx_page.dart';
 import 'login_page.dart';
 import 'modaldialogpage/payment_instruction_modal_dialog_page.dart';
-import 'modaldialogpage/purchase_direct_modal_dialog_page.dart';
+import 'modaldialogpage/payment_parameter_modal_dialog_page.dart';
 import 'modaldialogpage/select_address_modal_dialog_page.dart';
 import 'payment_method_page.dart';
 import 'product_brand_page.dart';
@@ -353,7 +353,7 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
   Timer? _timer;
   bool _startTimer = false;
   String _productId = "";
-  final PurchaseDirectModalDialogPageDelegate _purchaseDirectModalDialogPageDelegate = PurchaseDirectModalDialogPageDelegate();
+  final PaymentParameterModalDialogPageDelegate _paymentParameterModalDialogPageDelegate = PaymentParameterModalDialogPageDelegate();
   String? _selectedPaymentMethodSettlingId;
   String? _selectedCouponId;
 
@@ -383,10 +383,10 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
       _productDetailScrollController.jumpTo(0.0);
     };
     widget.statefulProductDetailControllerMediatorWidgetDelegate.onRefreshPaymentMethod = (paymentMethod) {
-      _purchaseDirectModalDialogPageDelegate.onUpdatePaymentMethod(paymentMethod);
+      _paymentParameterModalDialogPageDelegate.onUpdatePaymentMethod(paymentMethod);
     };
     widget.statefulProductDetailControllerMediatorWidgetDelegate.onRefreshCouponId = (couponId) {
-      _purchaseDirectModalDialogPageDelegate.onUpdateCoupon(couponId);
+      _paymentParameterModalDialogPageDelegate.onUpdateCoupon(couponId);
     };
   }
 
@@ -1209,20 +1209,22 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
                           LoginHelper.checkingLogin(context, () {
                             DialogHelper.showModalBottomDialogPage<int, int>(
                               context: context,
-                              modalDialogPageBuilder: (context, parameter) => PurchaseDirectModalDialogPage(
-                                purchaseDirectModalDialogPageParameter: PurchaseDirectModalDialogPageParameter(
-                                  purchaseDirectModalDialogPageDelegate: _purchaseDirectModalDialogPageDelegate,
+                              modalDialogPageBuilder: (context, parameter) => PaymentParameterModalDialogPage(
+                                paymentParameterModalDialogPageParameter: PaymentParameterModalDialogPageParameter(
+                                  paymentParameterModalDialogPageDelegate: _paymentParameterModalDialogPageDelegate,
                                   onGotoSelectPaymentMethodPage: (paymentMethodSettlingId) {
                                     PageRestorationHelper.toPaymentMethodPage(context, paymentMethodSettlingId);
                                   },
                                   onGotoSelectCouponPage: (couponId) {
                                     PageRestorationHelper.toCouponPage(context, couponId);
                                   },
-                                  onProcessPurchaseDirect: (paymentMethodSettlingId, couponId) {
+                                  onProcessPaymentParameter: (paymentMethodSettlingId, couponId) {
                                     _selectedPaymentMethodSettlingId = paymentMethodSettlingId;
                                     _selectedCouponId = couponId;
                                     widget.productDetailController.buyDirectly(_selectedPaymentMethodSettlingId!, _selectedCouponId);
-                                  }
+                                  },
+                                  titleLabel: () => "Buy Directly".tr,
+                                  buttonLabel: () => "Buy Directly".tr
                                 )
                               ),
                               parameter: 1

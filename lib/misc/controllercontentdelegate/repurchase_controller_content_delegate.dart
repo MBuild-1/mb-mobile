@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../../domain/entity/order/order.dart';
-import '../../domain/entity/order/repurchase_parameter.dart';
+import '../../domain/entity/order/repurchase/repurchase_parameter.dart';
 import '../../domain/usecase/repurchase_use_case.dart';
 import '../dialog_helper.dart';
 import '../errorprovider/error_provider.dart';
@@ -24,12 +25,26 @@ class RepurchaseControllerContentDelegate extends ControllerContentDelegate {
   });
 
   void repurchase(String combinedOrderId) async {
+    RepurchaseAction repurchaseAction = RepurchaseAction();
+    repurchaseAction._onStartRepurchase = (settlingId, couponId) {
+      if (settlingId.isNotEmptyString) {
+        _startRepurchase(combinedOrderId, settlingId!, couponId);
+      }
+    };
+    if (_repurchaseDelegate != null) {
+      _repurchaseDelegate!.onBeginRepurchase(repurchaseAction);
+    }
+  }
+
+  void _startRepurchase(String combinedOrderId, String settlingId, String? couponId) async {
     if (_repurchaseDelegate != null && _onGetApiRequestManager != null) {
       ApiRequestManager apiRequestManager = _onGetApiRequestManager!();
       _repurchaseDelegate!.onUnfocusAllWidget();
       _repurchaseDelegate!.onShowRepurchaseProcessLoadingCallback();
       RepurchaseParameter repurchaseParameter = RepurchaseParameter(
-        combinedOrderId: combinedOrderId
+        combinedOrderId: combinedOrderId,
+        settlingId: settlingId,
+        couponId: couponId
       );
       LoadDataResult<Order> orderLoadDataResult = await repurchaseUseCase.execute(repurchaseParameter).future(
         parameter: apiRequestManager.addRequestToCancellationPart("repurchase").value
@@ -60,6 +75,7 @@ class RepurchaseDelegate {
   OnShowRepurchaseProcessLoadingCallback onShowRepurchaseProcessLoadingCallback;
   OnRepurchaseProcessSuccessCallback onRepurchaseProcessSuccessCallback;
   OnShowRepurchaseProcessFailedCallback onShowRepurchaseProcessFailedCallback;
+  void Function(RepurchaseAction) onBeginRepurchase;
 
   RepurchaseDelegate({
     required this.onBack,
@@ -67,6 +83,7 @@ class RepurchaseDelegate {
     required this.onShowRepurchaseProcessLoadingCallback,
     required this.onRepurchaseProcessSuccessCallback,
     required this.onShowRepurchaseProcessFailedCallback,
+    required this.onBeginRepurchase
   });
 }
 
@@ -78,7 +95,8 @@ class RepurchaseDelegateFactory {
     OnUnfocusAllWidget? onUnfocusAllWidget,
     OnShowRepurchaseProcessLoadingCallback? onShowRepurchaseProcessLoadingCallback,
     OnRepurchaseProcessSuccessCallback? onRepurchaseProcessSuccessCallback,
-    OnShowRepurchaseProcessFailedCallback? onShowRepurchaseProcessFailedCallback
+    OnShowRepurchaseProcessFailedCallback? onShowRepurchaseProcessFailedCallback,
+    required void Function(RepurchaseAction) onBeginRepurchase
   }) {
     return RepurchaseDelegate(
       onUnfocusAllWidget: () => FocusScope.of(onGetBuildContext()).unfocus(),
@@ -92,6 +110,16 @@ class RepurchaseDelegateFactory {
         errorProvider: onGetErrorProvider(),
         e: e
       ),
+      onBeginRepurchase: onBeginRepurchase
     );
   }
+}
+
+class RepurchaseAction {
+  void Function(String? settlingId, String? couponId)? _onStartRepurchase;
+  void Function(String? settlingId, String? couponId) get onStartRepurchase => (settlingId, couponId) {
+    if (_onStartRepurchase != null) {
+      _onStartRepurchase!(settlingId, couponId);
+    }
+  };
 }

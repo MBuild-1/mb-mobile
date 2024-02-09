@@ -34,6 +34,10 @@ import '../../domain/entity/order/ordertracking/order_tracking_location_address.
 import '../../domain/entity/order/ordertransaction/ordertransactionsummary/order_transaction_summary.dart';
 import '../../domain/entity/order/ordertransaction/ordertransactionresponse/order_transaction_response.dart';
 import '../../domain/entity/order/purchase_direct_response.dart';
+import '../../domain/entity/order/repurchase/repurchase_response.dart';
+import '../../domain/entity/order/repurchase/responsetype/default_repurchase_response_type.dart';
+import '../../domain/entity/order/repurchase/responsetype/no_repurchase_response_type.dart';
+import '../../domain/entity/order/repurchase/responsetype/only_warehouse_repurchase_response_type.dart';
 import '../../domain/entity/order/support_order_product.dart';
 import '../../domain/entity/payment/paymentinstruction/payment_instruction_group.dart';
 import '../../domain/entity/summaryvalue/summary_value.dart';
@@ -273,6 +277,33 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
           }
         }
         return DefaultCreateOrderResponseType(
+          transactionId: paymentResponse["transaction_id"],
+          orderId: paymentResponse["order_id"],
+          combinedOrderId: paymentResponse["combined_order_id"]
+        );
+      }()
+    );
+  }
+
+  RepurchaseResponse mapFromResponseToRepurchaseResponse() {
+    return RepurchaseResponse(
+      repurchaseResponseType: () {
+        String message = "";
+        if (this is MainStructureResponseWrapper) {
+          MainStructureResponseWrapper mainStructureResponseWrapper = this as MainStructureResponseWrapper;
+          message = mainStructureResponseWrapper.message.toLowerCase();
+        }
+        dynamic paymentResponse = response["payment"];
+        if (message.contains("create warehouse")) {
+          if (response is Map<String, dynamic>) {
+            return OnlyWarehouseRepurchaseResponseType(
+              combinedOrderId: paymentResponse["combined_order_id"]
+            );
+          } else {
+            return NoRepurchaseResponseType();
+          }
+        }
+        return DefaultRepurchaseResponseType(
           transactionId: paymentResponse["transaction_id"],
           orderId: paymentResponse["order_id"],
           combinedOrderId: paymentResponse["combined_order_id"]

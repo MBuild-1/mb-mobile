@@ -69,9 +69,11 @@ import '../widget/countdown_indicator.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modified_scaffold.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
+import 'coupon_page.dart';
 import 'getx_page.dart';
 import 'modaldialogpage/modify_warehouse_in_order_modal_dialog_page.dart';
 import 'modaldialogpage/payment_instruction_modal_dialog_page.dart';
+import 'modaldialogpage/payment_parameter_modal_dialog_page.dart';
 import 'order_chat_page.dart';
 import 'payment_instruction_page.dart';
 import 'payment_method_page.dart';
@@ -108,7 +110,14 @@ class OrderDetailPage extends RestorableGetxPage<_OrderDetailPageRestoration> {
     onCompleteSelectPaymentMethod: (result) {
       if (result != null) {
         if (_statefulDeliveryControllerMediatorWidgetDelegate.onRefreshPaymentMethod != null) {
-          _statefulDeliveryControllerMediatorWidgetDelegate.onRefreshPaymentMethod!(result!.toPaymentMethodPageResponse().paymentMethod);
+          _statefulDeliveryControllerMediatorWidgetDelegate.onRefreshPaymentMethod!(result.toPaymentMethodPageResponse().paymentMethod);
+        }
+      }
+    },
+    onCompleteSelectCoupon: (result) {
+      if (result != null) {
+        if (_statefulDeliveryControllerMediatorWidgetDelegate.onRefreshCouponId != null) {
+          _statefulDeliveryControllerMediatorWidgetDelegate.onRefreshCouponId!(result);
         }
       }
     }
@@ -124,17 +133,21 @@ class OrderDetailPage extends RestorableGetxPage<_OrderDetailPageRestoration> {
   }
 }
 
-class _OrderDetailPageRestoration extends ExtendedMixableGetxPageRestoration with WebViewerPageRestorationMixin, OrderChatPageRestorationMixin, PdfViewerPageRestorationMixin, PaymentInstructionPageRestorationMixin, PaymentMethodPageRestorationMixin {
+class _OrderDetailPageRestoration extends ExtendedMixableGetxPageRestoration with WebViewerPageRestorationMixin, OrderChatPageRestorationMixin, PdfViewerPageRestorationMixin, PaymentInstructionPageRestorationMixin, PaymentMethodPageRestorationMixin, CouponPageRestorationMixin {
   final RouteCompletionCallback<String?>? _onCompleteSelectPaymentMethod;
+  final RouteCompletionCallback<String?>? _onCompleteSelectCoupon;
 
   _OrderDetailPageRestoration({
-    RouteCompletionCallback<String?>? onCompleteSelectPaymentMethod
-  }) : _onCompleteSelectPaymentMethod = onCompleteSelectPaymentMethod;
+    RouteCompletionCallback<String?>? onCompleteSelectPaymentMethod,
+    RouteCompletionCallback<String?>? onCompleteSelectCoupon
+  }) : _onCompleteSelectPaymentMethod = onCompleteSelectPaymentMethod,
+      _onCompleteSelectCoupon = onCompleteSelectCoupon;
 
   @override
   // ignore: unnecessary_overrides
   void initState() {
     onCompleteSelectPaymentMethod = _onCompleteSelectPaymentMethod;
+    onCompleteSelectCoupon = _onCompleteSelectCoupon;
     super.initState();
   }
 
@@ -247,6 +260,7 @@ class OrderDetailPageRestorableRouteFuture extends GetRestorableRouteFuture {
 
 class _StatefulDeliveryControllerMediatorWidgetDelegate {
   void Function(PaymentMethod)? onRefreshPaymentMethod;
+  void Function(String)? onRefreshCouponId;
 }
 
 class _StatefulOrderDetailControllerMediatorWidget extends StatefulWidget {
@@ -279,6 +293,8 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
   PaymentWidgetBindingObserver? _paymentWidgetBindingObserver;
   bool _isCheckingOrderTransaction = false;
   final PusherChannelsFlutter _pusher = PusherChannelsFlutter.getInstance();
+  final PaymentParameterModalDialogPageDelegate _repurchasePaymentParameterModalDialogPageDelegate = PaymentParameterModalDialogPageDelegate();
+  OrderDetailPaymentMethodType? _orderDetailPaymentMethodType;
 
   @override
   void initState() {
@@ -315,13 +331,20 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
       checkOrderTransactionWhileResuming: _refreshOrderDetail
     );
     widget.statefulDeliveryControllerMediatorWidgetDelegate.onRefreshPaymentMethod = (paymentMethod) {
-      widget.orderDetailController.shippingPayment(
-        ShippingPaymentParameter(
-          settlingId: paymentMethod.settlingId,
-          combinedOrderId: widget.combinedOrderId,
-          expire: 7
-        )
-      );
+      if (_orderDetailPaymentMethodType == OrderDetailPaymentMethodType.shippingPayment) {
+        widget.orderDetailController.shippingPayment(
+          ShippingPaymentParameter(
+            settlingId: paymentMethod.settlingId,
+            combinedOrderId: widget.combinedOrderId,
+            expire: 7
+          )
+        );
+      } else if (_orderDetailPaymentMethodType == OrderDetailPaymentMethodType.repurchase) {
+        _repurchasePaymentParameterModalDialogPageDelegate.onUpdatePaymentMethod(paymentMethod);
+      }
+    };
+    widget.statefulDeliveryControllerMediatorWidgetDelegate.onRefreshCouponId = (couponId) {
+      _repurchasePaymentParameterModalDialogPageDelegate.onUpdateCoupon(couponId);
     };
     WidgetsBinding.instance.addObserver(_paymentWidgetBindingObserver!);
     MainRouteObserver.onRefreshOrderDetailAfterDeliveryReview = _refreshOrderDetail;
@@ -495,7 +518,29 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
     widget.orderDetailController.repurchaseControllerContentDelegate.setRepurchaseDelegate(
       Injector.locator<RepurchaseDelegateFactory>().generateRepurchaseDelegate(
         onGetBuildContext: () => context,
-        onGetErrorProvider: () => Injector.locator<ErrorProvider>()
+        onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
+        onBeginRepurchase: (repurchaseAction) {
+          DialogHelper.showModalBottomDialogPage<int, int>(
+            context: context,
+            modalDialogPageBuilder: (context, parameter) => PaymentParameterModalDialogPage(
+              paymentParameterModalDialogPageParameter: PaymentParameterModalDialogPageParameter(
+                paymentParameterModalDialogPageDelegate: _repurchasePaymentParameterModalDialogPageDelegate,
+                onGotoSelectPaymentMethodPage: (paymentMethodSettlingId) {
+                  PageRestorationHelper.toPaymentMethodPage(context, paymentMethodSettlingId);
+                },
+                onGotoSelectCouponPage: (couponId) {
+                  PageRestorationHelper.toCouponPage(context, couponId);
+                },
+                onProcessPaymentParameter: (paymentMethodSettlingId, couponId) {
+                  repurchaseAction.onStartRepurchase(paymentMethodSettlingId, couponId);
+                },
+                titleLabel: () => "Repurchase".tr,
+                buttonLabel: () => "Repurchase".tr
+              )
+            ),
+            parameter: 1
+          );
+        }
       )
     );
     widget.orderDetailController.setOrderDetailDelegate(
@@ -748,4 +793,8 @@ extension on _LoadOrderDetailResponse {
     order = newLoadOrderDetailResponse.order;
     orderTransactionListItemControllerState = newLoadOrderDetailResponse.orderTransactionListItemControllerState;
   }
+}
+
+enum OrderDetailPaymentMethodType {
+  shippingPayment, repurchase
 }

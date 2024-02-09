@@ -32,7 +32,7 @@ import '../../../domain/entity/order/ordertransaction/order_transaction_paramete
 import '../../../domain/entity/order/ordertransaction/ordertransactionresponse/order_transaction_response.dart';
 import '../../../domain/entity/order/purchase_direct_parameter.dart';
 import '../../../domain/entity/order/purchase_direct_response.dart';
-import '../../../domain/entity/order/repurchase_parameter.dart';
+import '../../../domain/entity/order/repurchase/repurchase_parameter.dart';
 import '../../../domain/entity/order/shipping_review_order_list_parameter.dart';
 import '../../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../../misc/error/message_error.dart';
