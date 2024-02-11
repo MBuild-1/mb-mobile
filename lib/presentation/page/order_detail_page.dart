@@ -615,11 +615,16 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
                       oldUtcOffset: 0
                     );
                     int countdownValue = () {
+                      late int value;
                       if (tagString == "expired_remaining") {
-                        return localExpiryDateTime.difference(DateTime.now()).inMilliseconds;
+                        value = localExpiryDateTime.difference(DateTime.now()).inMilliseconds;
                       } else {
-                        return lastValue["value"] as int;
+                        value = lastValue["value"] as int;
                       }
+                      if (value < 0) {
+                        value = 0;
+                      }
+                      return value;
                     }();
                     dynamic tag = DefaultCountdownComponentDelegateTagData(
                       tagString: tagString,
