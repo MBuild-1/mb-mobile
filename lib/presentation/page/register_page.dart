@@ -11,6 +11,7 @@ import 'package:masterbagasi/misc/ext/validation_result_ext.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:provider/provider.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../controller/register_controller.dart';
@@ -26,9 +27,11 @@ import '../../domain/usecase/get_user_use_case.dart';
 import '../../domain/usecase/register_first_step_use_case.dart';
 import '../../domain/usecase/register_second_step_use_case.dart';
 import '../../domain/usecase/register_use_case.dart';
+import '../../domain/usecase/register_with_apple_use_case.dart';
 import '../../domain/usecase/register_with_google_use_case.dart';
 import '../../domain/usecase/send_register_otp_use_case.dart';
 import '../../domain/usecase/verify_register_use_case.dart';
+import '../../misc/apple_sign_in_credential.dart';
 import '../../misc/constant.dart';
 import '../../misc/device_helper.dart';
 import '../../misc/dialog_helper.dart';
@@ -86,6 +89,7 @@ class RegisterPage extends RestorableGetxPage<_RegisterPageRestoration> {
         controllerManager,
         Injector.locator<RegisterUseCase>(),
         Injector.locator<RegisterWithGoogleUseCase>(),
+        Injector.locator<RegisterWithAppleUseCase>(),
         Injector.locator<RegisterFirstStepUseCase>(),
         Injector.locator<SendRegisterOtpUseCase>(),
         Injector.locator<VerifyRegisterUseCase>(),
@@ -322,6 +326,18 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
           }
           GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
           return googleSignInAuthentication.idToken;
+        },
+        onRegisterWithApple: () async {
+          final credential = await SignInWithApple.getAppleIDCredential(
+            scopes: [
+              AppleIDAuthorizationScopes.email,
+              AppleIDAuthorizationScopes.fullName,
+            ],
+          );
+          return AppleSignInCredential(
+            identityToken: credential.identityToken,
+            authorizationCode: credential.authorizationCode
+          );
         },
         onLoginIntoOneSignal: (externalId) async {
           try {

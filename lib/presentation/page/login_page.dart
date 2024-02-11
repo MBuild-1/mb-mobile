@@ -6,19 +6,20 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:masterbagasi/misc/ext/error_provider_ext.dart';
-import 'package:masterbagasi/misc/ext/future_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/misc/ext/validation_result_ext.dart';
 import 'package:masterbagasi/misc/temp_login_data_while_input_pin_helper.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../controller/login_controller.dart';
-import '../../domain/entity/pin/modifypin/modifypinparameter/modify_pin_parameter.dart';
 import '../../domain/usecase/get_user_use_case.dart';
 import '../../domain/usecase/login_use_case.dart';
+import '../../domain/usecase/login_with_apple_use_case.dart';
 import '../../domain/usecase/login_with_google_use_case.dart';
+import '../../misc/apple_sign_in_credential.dart';
 import '../../misc/constant.dart';
 import '../../misc/device_helper.dart';
 import '../../misc/dialog_helper.dart';
@@ -65,6 +66,7 @@ class LoginPage extends RestorableGetxPage<_LoginPageRestoration> {
         controllerManager,
         Injector.locator<LoginUseCase>(),
         Injector.locator<LoginWithGoogleUseCase>(),
+        Injector.locator<LoginWithAppleUseCase>(),
         Injector.locator<GetUserUseCase>()
       ), tag: pageName
     );
@@ -289,6 +291,18 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
           }
           GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
           return googleSignInAuthentication.idToken;
+        },
+        onLoginWithApple: () async {
+          final credential = await SignInWithApple.getAppleIDCredential(
+            scopes: [
+              AppleIDAuthorizationScopes.email,
+              AppleIDAuthorizationScopes.fullName,
+            ],
+          );
+          return AppleSignInCredential(
+            identityToken: credential.identityToken,
+            authorizationCode: credential.authorizationCode
+          );
         },
         onSaveTempData: (data) async {
           await TempLoginDataWhileInputPinHelper.saveTempLoginDataWhileInputPin(data).future();

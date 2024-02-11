@@ -16,6 +16,8 @@ import '../../../domain/entity/forgotpassword/forgot_password_parameter.dart';
 import '../../../domain/entity/forgotpassword/forgot_password_response.dart';
 import '../../../domain/entity/login/login_parameter.dart';
 import '../../../domain/entity/login/login_response.dart';
+import '../../../domain/entity/login/login_with_apple_parameter.dart';
+import '../../../domain/entity/login/login_with_apple_response.dart';
 import '../../../domain/entity/login/login_with_google_parameter.dart';
 import '../../../domain/entity/login/login_with_google_response.dart';
 import '../../../domain/entity/logout/logout_parameter.dart';
@@ -35,6 +37,8 @@ import '../../../domain/entity/register/register_parameter.dart';
 import '../../../domain/entity/register/register_response.dart';
 import '../../../domain/entity/register/register_second_step_parameter.dart';
 import '../../../domain/entity/register/register_second_step_response.dart';
+import '../../../domain/entity/register/register_with_apple_parameter.dart';
+import '../../../domain/entity/register/register_with_apple_response.dart';
 import '../../../domain/entity/register/register_with_google_parameter.dart';
 import '../../../domain/entity/register/register_with_google_response.dart';
 import '../../../domain/entity/register/sendregisterotp/sendregisterotpparameter/email_send_register_otp_parameter.dart';
@@ -119,6 +123,21 @@ class DefaultUserDataSource implements UserDataSource {
     return DioHttpClientProcessing((cancelToken) {
       return dio.post("/auth/google", data: formData, queryParameters: {"device_id": loginWithGoogleParameter.pushNotificationSubscriptionId}, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
         .map<LoginWithGoogleResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToLoginWithGoogleResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<LoginWithAppleResponse> loginWithApple(LoginWithAppleParameter loginWithAppleParameter) {
+    FormData formData = FormData.fromMap(
+      <String, dynamic> {
+        "authorization_code": loginWithAppleParameter.appleSignInCredential.authorizationCode,
+        "identity_token": loginWithAppleParameter.appleSignInCredential.identityToken,
+        "device_name": loginWithAppleParameter.deviceName
+      }
+    );
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.post("/auth/apple", data: formData, queryParameters: {"device_id": loginWithAppleParameter.pushNotificationSubscriptionId}, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+        .map<LoginWithAppleResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToLoginWithAppleResponse());
     });
   }
 
@@ -246,6 +265,21 @@ class DefaultUserDataSource implements UserDataSource {
     return DioHttpClientProcessing((cancelToken) {
       return dio.post("/auth/google", data: formData, queryParameters: {"device_id": registerWithGoogleParameter.pushNotificationSubscriptionId}, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
         .map<RegisterWithGoogleResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToRegisterWithGoogleResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<RegisterWithAppleResponse> registerWithApple(RegisterWithAppleParameter registerWithAppleParameter) {
+    FormData formData = FormData.fromMap(
+      <String, dynamic> {
+        "authorization_code": registerWithAppleParameter.appleSignInCredential.authorizationCode,
+        "identity_token": registerWithAppleParameter.appleSignInCredential.identityToken,
+        "device_name": registerWithAppleParameter.deviceName
+      }
+    );
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.post("/auth/apple", data: formData, queryParameters: {"device_id": registerWithAppleParameter.pushNotificationSubscriptionId}, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+        .map<RegisterWithAppleResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToRegisterWithAppleResponse());
     });
   }
 

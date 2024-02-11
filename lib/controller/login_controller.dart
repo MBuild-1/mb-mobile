@@ -10,13 +10,17 @@ import 'package:masterbagasi/misc/validation/validation_result.dart';
 
 import '../domain/entity/login/login_parameter.dart';
 import '../domain/entity/login/login_response.dart';
+import '../domain/entity/login/login_with_apple_parameter.dart';
+import '../domain/entity/login/login_with_apple_response.dart';
 import '../domain/entity/login/login_with_google_parameter.dart';
 import '../domain/entity/login/login_with_google_response.dart';
 import '../domain/entity/user/getuser/get_user_parameter.dart';
 import '../domain/entity/user/user.dart';
 import '../domain/usecase/get_user_use_case.dart';
 import '../domain/usecase/login_use_case.dart';
+import '../domain/usecase/login_with_apple_use_case.dart';
 import '../domain/usecase/login_with_google_use_case.dart';
+import '../misc/apple_sign_in_credential.dart';
 import '../misc/error/validation_error.dart';
 import '../misc/load_data_result.dart';
 import '../misc/login_helper.dart';
@@ -34,12 +38,14 @@ typedef _OnShowLoginRequestProcessLoadingCallback = Future<void> Function();
 typedef _OnLoginRequestProcessSuccessCallback = Future<void> Function();
 typedef _OnShowLoginRequestProcessFailedCallback = Future<void> Function(dynamic e);
 typedef _OnLoginWithGoogle = Future<String?> Function();
+typedef _OnLoginWithApple = Future<AppleSignInCredential> Function();
 typedef _OnRequestPin = void Function(RequestPinParameter);
 typedef _OnSaveTempData = Future<void> Function(String);
 
 class LoginController extends BaseGetxController {
   final LoginUseCase loginUseCase;
   final LoginWithGoogleUseCase loginWithGoogleUseCase;
+  final LoginWithAppleUseCase loginWithAppleUseCase;
   final GetUserUseCase getUserUseCase;
 
   late EmailOrPhoneNumberValidator _emailOrPhoneNumberValidator;
@@ -60,6 +66,7 @@ class LoginController extends BaseGetxController {
     ControllerManager? controllerManager,
     this.loginUseCase,
     this.loginWithGoogleUseCase,
+    this.loginWithAppleUseCase,
     this.getUserUseCase
   ) : super(controllerManager) {
     _emailOrPhoneNumberValidator = EmailOrPhoneNumberValidator(
@@ -186,6 +193,57 @@ class LoginController extends BaseGetxController {
     }
   }
 
+  void loginWithApple() async {
+    if (_loginDelegate != null) {
+      _loginDelegate!.onUnfocusAllWidget();
+      LoadDataResult<TrackingStatusResult> requestAuthForIosTrackingStatusResult = await _loginDelegate!.onRequestTrackingAuthorizationForIos();
+      if (requestAuthForIosTrackingStatusResult.isSuccess) {
+        AppleSignInCredential appleSignInCredential = await _loginDelegate!.onLoginWithApple();
+        _loginDelegate!.onShowLoginRequestProcessLoadingCallback();
+        LoadDataResult<LoginWithAppleResponse> loginWithAppleLoadDataResult = await loginWithAppleUseCase.execute(
+          LoginWithAppleParameter(
+            appleSignInCredential: appleSignInCredential,
+            pushNotificationSubscriptionId: _loginDelegate!.onGetPushNotificationSubscriptionId(),
+            deviceName: _loginDelegate!.onGetLoginDeviceNameInput(),
+          )
+        ).future(
+          parameter: apiRequestManager.addRequestToCancellationPart('login-with-apple').value
+        );
+        if (loginWithAppleLoadDataResult.isSuccess) {
+          if (await loginOneSignal(loginWithAppleLoadDataResult.resultIfSuccess!.userId)) {
+            return;
+          }
+          await LoginHelper.saveToken(loginWithAppleLoadDataResult.resultIfSuccess!.token).future();
+          LoadDataResult<User> userLoadDataResult = await getUserUseCase.execute(
+            GetUserParameter()
+          ).future(
+            parameter: apiRequestManager.addRequestToCancellationPart('get-user-after-login').value
+          ).map<User>(
+            (getUserResponse) => getUserResponse.user
+          );
+          if (userLoadDataResult.isSuccess) {
+            User user = userLoadDataResult.resultIfSuccess!;
+            await _loginDelegate!.onSubscribeChatCountRealtimeChannel(user.id);
+            await _loginDelegate!.onSubscribeNotificationCountRealtimeChannel(user.id);
+          }
+          Get.back();
+          _loginDelegate!.onLoginRequestProcessSuccessCallback();
+        } else {
+          dynamic data = loginWithAppleLoadDataResult.resultIfFailed;
+          if (await _checkIfNeedPinWhileLoginError(data)) {
+            return;
+          }
+          Get.back();
+          _loginDelegate!.onShowLoginRequestProcessFailedCallback(data);
+        }
+      } else {
+        _loginDelegate!.onShowLoginRequestProcessFailedCallback(
+          requestAuthForIosTrackingStatusResult.resultIfFailed!
+        );
+      }
+    }
+  }
+
   Future<bool> _checkIfNeedPinWhileLoginError(dynamic result) async {
     if (result is DioError) {
       dynamic data = result.response?.data;
@@ -228,6 +286,7 @@ class LoginDelegate {
   _OnShowLoginRequestProcessFailedCallback onShowLoginRequestProcessFailedCallback;
   _OnRequestPin onRequestPin;
   _OnLoginWithGoogle onLoginWithGoogle;
+  _OnLoginWithApple onLoginWithApple;
   _OnSaveTempData onSaveTempData;
   OnLoginIntoOneSignal onLoginIntoOneSignal;
   OnGetPushNotificationSubscriptionId onGetPushNotificationSubscriptionId;
@@ -246,6 +305,7 @@ class LoginDelegate {
     required this.onShowLoginRequestProcessFailedCallback,
     required this.onRequestPin,
     required this.onLoginWithGoogle,
+    required this.onLoginWithApple,
     required this.onSaveTempData,
     required this.onLoginIntoOneSignal,
     required this.onGetPushNotificationSubscriptionId,

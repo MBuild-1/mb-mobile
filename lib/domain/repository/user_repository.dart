@@ -10,6 +10,8 @@ import '../entity/forgotpassword/forgot_password_parameter.dart';
 import '../entity/forgotpassword/forgot_password_response.dart';
 import '../entity/login/login_parameter.dart';
 import '../entity/login/login_response.dart';
+import '../entity/login/login_with_apple_parameter.dart';
+import '../entity/login/login_with_apple_response.dart';
 import '../entity/login/login_with_google_parameter.dart';
 import '../entity/login/login_with_google_response.dart';
 import '../entity/logout/logout_parameter.dart';
@@ -24,6 +26,8 @@ import '../entity/register/register_parameter.dart';
 import '../entity/register/register_response.dart';
 import '../entity/register/register_second_step_parameter.dart';
 import '../entity/register/register_second_step_response.dart';
+import '../entity/register/register_with_apple_parameter.dart';
+import '../entity/register/register_with_apple_response.dart';
 import '../entity/register/register_with_google_parameter.dart';
 import '../entity/register/register_with_google_response.dart';
 import '../entity/register/sendregisterotp/sendregisterotpparameter/send_register_otp_parameter.dart';
@@ -54,8 +58,10 @@ import '../entity/verifyeditprofile/authidentityverifyotp/parameter/auth_identit
 abstract class UserRepository {
   FutureProcessing<LoadDataResult<LoginResponse>> login(LoginParameter loginParameter);
   FutureProcessing<LoadDataResult<LoginWithGoogleResponse>> loginWithGoogle(LoginWithGoogleParameter loginWithGoogleParameter);
+  FutureProcessing<LoadDataResult<LoginWithAppleResponse>> loginWithApple(LoginWithAppleParameter loginWithAppleParameter);
   FutureProcessing<LoadDataResult<RegisterResponse>> register(RegisterParameter registerParameter);
   FutureProcessing<LoadDataResult<RegisterWithGoogleResponse>> registerWithGoogle(RegisterWithGoogleParameter registerWithGoogleParameter);
+  FutureProcessing<LoadDataResult<RegisterWithAppleResponse>> registerWithApple(RegisterWithAppleParameter registerWithAppleParameter);
   FutureProcessing<LoadDataResult<LogoutResponse>> logout(LogoutParameter logoutParameter);
   FutureProcessing<LoadDataResult<GetUserResponse>> getUser(GetUserParameter getUserParameter);
   FutureProcessing<LoadDataResult<EditUserResponse>> editUser(EditUserParameter editUserParameter);

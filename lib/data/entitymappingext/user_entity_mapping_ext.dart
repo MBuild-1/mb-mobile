@@ -6,6 +6,7 @@ import '../../domain/entity/deleteaccount/senddeleteaccountotp/send_delete_accou
 import '../../domain/entity/deleteaccount/verifydeleteaccountotp/verify_delete_account_otp_response.dart';
 import '../../domain/entity/forgotpassword/forgot_password_response.dart';
 import '../../domain/entity/login/login_response.dart';
+import '../../domain/entity/login/login_with_apple_response.dart';
 import '../../domain/entity/login/login_with_google_response.dart';
 import '../../domain/entity/logout/logout_response.dart';
 import '../../domain/entity/pin/checkactivepin/check_active_pin_response.dart';
@@ -18,6 +19,7 @@ import '../../domain/entity/pin/modifypin/modifypinresponse/validate_while_login
 import '../../domain/entity/register/register_first_step_response.dart';
 import '../../domain/entity/register/register_response.dart';
 import '../../domain/entity/register/register_second_step_response.dart';
+import '../../domain/entity/register/register_with_apple_response.dart';
 import '../../domain/entity/register/register_with_google_response.dart';
 import '../../domain/entity/register/sendregisterotp/sendregisterotpparameter/email_send_register_otp_parameter.dart';
 import '../../domain/entity/register/sendregisterotp/sendregisterotpparameter/send_register_otp_parameter.dart';
@@ -51,6 +53,15 @@ extension UserEntityMappingExt on ResponseWrapper {
 
   LoginWithGoogleResponse mapFromResponseToLoginWithGoogleResponse() {
     return LoginWithGoogleResponse(
+      userId: response["user"]["id"],
+      token: response["access_token"],
+      tokenType: response["token_type"],
+      expiresIn: response["expires_in"]
+    );
+  }
+
+  LoginWithAppleResponse mapFromResponseToLoginWithAppleResponse() {
+    return LoginWithAppleResponse(
       userId: response["user"]["id"],
       token: response["access_token"],
       tokenType: response["token_type"],
@@ -108,6 +119,15 @@ extension UserEntityMappingExt on ResponseWrapper {
 
   RegisterWithGoogleResponse mapFromResponseToRegisterWithGoogleResponse() {
     return RegisterWithGoogleResponse(
+      userId: response["user"]["id"],
+      token: response["access_token"],
+      tokenType: response["token_type"],
+      expiresIn: response["expires_in"]
+    );
+  }
+
+  RegisterWithAppleResponse mapFromResponseToRegisterWithAppleResponse() {
+    return RegisterWithAppleResponse(
       userId: response["user"]["id"],
       token: response["access_token"],
       tokenType: response["token_type"],

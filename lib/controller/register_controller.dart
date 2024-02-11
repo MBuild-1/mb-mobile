@@ -12,6 +12,8 @@ import '../domain/entity/register/register_parameter.dart';
 import '../domain/entity/register/register_response.dart';
 import '../domain/entity/register/register_second_step_parameter.dart';
 import '../domain/entity/register/register_second_step_response.dart';
+import '../domain/entity/register/register_with_apple_parameter.dart';
+import '../domain/entity/register/register_with_apple_response.dart';
 import '../domain/entity/register/register_with_google_parameter.dart';
 import '../domain/entity/register/register_with_google_response.dart';
 import '../domain/entity/register/sendregisterotp/sendregisterotpparameter/send_register_otp_parameter.dart';
@@ -25,9 +27,11 @@ import '../domain/usecase/get_user_use_case.dart';
 import '../domain/usecase/register_first_step_use_case.dart';
 import '../domain/usecase/register_second_step_use_case.dart';
 import '../domain/usecase/register_use_case.dart';
+import '../domain/usecase/register_with_apple_use_case.dart';
 import '../domain/usecase/register_with_google_use_case.dart';
 import '../domain/usecase/send_register_otp_use_case.dart';
 import '../domain/usecase/verify_register_use_case.dart';
+import '../misc/apple_sign_in_credential.dart';
 import '../misc/constant.dart';
 import '../misc/error/validation_error.dart';
 import '../misc/load_data_result.dart';
@@ -66,11 +70,13 @@ typedef _OnShowVerifyRegisterRequestProcessLoadingCallback = Future<void> Functi
 typedef _OnVerifyRegisterRequestProcessSuccessCallback = Future<void> Function(VerifyRegisterResponse);
 typedef _OnShowSendRegisterOtpRequestProcessFailedCallback = Future<void> Function(dynamic e);
 typedef _OnRegisterWithGoogle = Future<String?> Function();
+typedef _OnRegisterWithApple = Future<AppleSignInCredential> Function();
 typedef _OnSaveToken = Future<void> Function(String);
 
 class RegisterController extends BaseGetxController {
   final RegisterUseCase registerUseCase;
   final RegisterWithGoogleUseCase registerWithGoogleUseCase;
+  final RegisterWithAppleUseCase registerWithAppleUseCase;
   final RegisterFirstStepUseCase registerFirstStepUseCase;
   final SendRegisterOtpUseCase sendRegisterOtpUseCase;
   final VerifyRegisterUseCase verifyRegisterUseCase;
@@ -102,6 +108,7 @@ class RegisterController extends BaseGetxController {
     ControllerManager? controllerManager,
     this.registerUseCase,
     this.registerWithGoogleUseCase,
+    this.registerWithAppleUseCase,
     this.registerFirstStepUseCase,
     this.sendRegisterOtpUseCase,
     this.verifyRegisterUseCase,
@@ -487,6 +494,53 @@ class RegisterController extends BaseGetxController {
     }
   }
 
+  void registerWithApple() async {
+    if (_registerDelegate != null) {
+      _registerDelegate!.onUnfocusAllWidget();
+      LoadDataResult<TrackingStatusResult> requestAuthForIosTrackingStatusResult = await _registerDelegate!.onRequestTrackingAuthorizationForIos();
+      if (requestAuthForIosTrackingStatusResult.isSuccess) {
+        AppleSignInCredential appleSignInCredential = await _registerDelegate!.onRegisterWithApple();
+        _registerDelegate!.onShowRegisterRequestProcessLoadingCallback();
+        LoadDataResult<RegisterWithAppleResponse> registerWithAppleLoadDataResult = await registerWithAppleUseCase.execute(
+          RegisterWithAppleParameter(
+            appleSignInCredential: appleSignInCredential,
+            pushNotificationSubscriptionId: _registerDelegate!.onGetPushNotificationSubscriptionId(),
+            deviceName: _registerDelegate!.onGetLoginDeviceNameInput()
+          )
+        ).future(
+          parameter: apiRequestManager.addRequestToCancellationPart('register-with-apple').value
+        );
+        if (registerWithAppleLoadDataResult.isSuccess) {
+          if (await loginOneSignal(registerWithAppleLoadDataResult.resultIfSuccess!.userId)) {
+            return;
+          }
+          await _registerDelegate!.onSaveToken(registerWithAppleLoadDataResult.resultIfSuccess!.token);
+          LoadDataResult<User> userLoadDataResult = await getUserUseCase.execute(
+            GetUserParameter()
+          ).future(
+            parameter: apiRequestManager.addRequestToCancellationPart('get-user-after-register').value
+          ).map<User>(
+            (getUserResponse) => getUserResponse.user
+          );
+          if (userLoadDataResult.isSuccess) {
+            User user = userLoadDataResult.resultIfSuccess!;
+            await _registerDelegate!.onSubscribeChatCountRealtimeChannel(user.id);
+            await _registerDelegate!.onSubscribeNotificationCountRealtimeChannel(user.id);
+          }
+          _registerDelegate!.onRegisterBack();
+          _registerDelegate!.onRegisterRequestProcessSuccessCallback();
+        } else {
+          _registerDelegate!.onRegisterBack();
+          _registerDelegate!.onShowRegisterRequestProcessFailedCallback(registerWithAppleLoadDataResult.resultIfFailed);
+        }
+      } else {
+        _registerDelegate!.onShowRegisterRequestProcessFailedCallback(
+          requestAuthForIosTrackingStatusResult.resultIfFailed!
+        );
+      }
+    }
+  }
+
   void _updateRegisterStep(RegisterStep registerStep) {
     registerStepWrapperRx.valueFromLast(
       (value) => RegisterStepWrapper(registerStep)
@@ -540,6 +594,7 @@ class RegisterDelegate {
   _OnVerifyRegisterRequestProcessSuccessCallback onVerifyRegisterRequestProcessSuccessCallback;
   _OnShowVerifyRegisterRequestProcessFailedCallback onShowVerifyRegisterRequestProcessFailedCallback;
   _OnRegisterWithGoogle onRegisterWithGoogle;
+  _OnRegisterWithApple onRegisterWithApple;
   _OnSaveToken onSaveToken;
   OnLoginIntoOneSignal onLoginIntoOneSignal;
   OnGetPushNotificationSubscriptionId onGetPushNotificationSubscriptionId;
@@ -569,6 +624,7 @@ class RegisterDelegate {
     required this.onVerifyRegisterRequestProcessSuccessCallback,
     required this.onShowVerifyRegisterRequestProcessFailedCallback,
     required this.onRegisterWithGoogle,
+    required this.onRegisterWithApple,
     required this.onSaveToken,
     required this.onLoginIntoOneSignal,
     required this.onGetPushNotificationSubscriptionId,
