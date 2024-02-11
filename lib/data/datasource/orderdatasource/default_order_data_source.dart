@@ -137,6 +137,8 @@ class DefaultOrderDataSource implements OrderDataSource {
     return DioHttpClientProcessing((cancelToken) {
       dynamic data = {
         "combined_order_id": repurchaseParameter.combinedOrderId,
+        if (repurchaseParameter.couponId.isNotEmptyString) "voucher_id": repurchaseParameter.couponId!,
+        if (repurchaseParameter.settlingId.isNotEmptyString) "settling_id": repurchaseParameter.settlingId,
       };
       return dio.post("/user/order/repurchase", data: data, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
         .map<Order>(onMap: (value) => value.wrapResponse().mapFromResponseToOrder());

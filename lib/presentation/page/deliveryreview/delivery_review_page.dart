@@ -263,8 +263,8 @@ class _StatefulDeliveryReviewControllerMediatorWidgetState extends State<_Statef
                 onProcessPaymentParameter: (paymentMethodSettlingId, couponId) {
                   repurchaseAction.onStartRepurchase(paymentMethodSettlingId, couponId);
                 },
-                titleLabel: () => "Repurchase".tr,
-                buttonLabel: () => "Repurchase".tr
+                titleLabel: () => "Buy Again".tr,
+                buttonLabel: () => "Buy Again".tr
               )
             ),
             parameter: 1

@@ -342,6 +342,7 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
       } else if (_orderDetailPaymentMethodType == OrderDetailPaymentMethodType.repurchase) {
         _repurchasePaymentParameterModalDialogPageDelegate.onUpdatePaymentMethod(paymentMethod);
       }
+      _orderDetailPaymentMethodType = null;
     };
     widget.statefulDeliveryControllerMediatorWidgetDelegate.onRefreshCouponId = (couponId) {
       _repurchasePaymentParameterModalDialogPageDelegate.onUpdateCoupon(couponId);
@@ -495,6 +496,7 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
               );
             },
             onPayOrderShipping: () {
+              _orderDetailPaymentMethodType = OrderDetailPaymentMethodType.shippingPayment;
               PageRestorationHelper.toPaymentMethodPage(context, null);
             },
             orderTransactionListItemControllerState: () => loadOrderDetailResponse.orderTransactionListItemControllerState,
@@ -526,6 +528,7 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
               paymentParameterModalDialogPageParameter: PaymentParameterModalDialogPageParameter(
                 paymentParameterModalDialogPageDelegate: _repurchasePaymentParameterModalDialogPageDelegate,
                 onGotoSelectPaymentMethodPage: (paymentMethodSettlingId) {
+                  _orderDetailPaymentMethodType = OrderDetailPaymentMethodType.repurchase;
                   PageRestorationHelper.toPaymentMethodPage(context, paymentMethodSettlingId);
                 },
                 onGotoSelectCouponPage: (couponId) {
@@ -534,8 +537,8 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
                 onProcessPaymentParameter: (paymentMethodSettlingId, couponId) {
                   repurchaseAction.onStartRepurchase(paymentMethodSettlingId, couponId);
                 },
-                titleLabel: () => "Repurchase".tr,
-                buttonLabel: () => "Repurchase".tr
+                titleLabel: () => "Buy Again".tr,
+                buttonLabel: () => "Buy Again".tr
               )
             ),
             parameter: 1
