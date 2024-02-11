@@ -338,6 +338,7 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
         },
         onSaveToken: (token) => LoginHelper.saveToken(token).future(),
         onGetPushNotificationSubscriptionId: () => OneSignal.User.pushSubscription.id.toEmptyStringNonNull,
+        onRequestTrackingAuthorizationForIos: () => DeviceHelper.requestTrackingAuthorization(),
         onSubscribeChatCountRealtimeChannel: (userId) async => await SomethingCounter.of(context)?.subscribeChatCount(userId),
         onSubscribeNotificationCountRealtimeChannel: (userId) async => await SomethingCounter.of(context)?.subscribeNotificationCount(userId),
       )

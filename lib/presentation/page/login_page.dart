@@ -307,6 +307,7 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
           }
         },
         onGetPushNotificationSubscriptionId: () => OneSignal.User.pushSubscription.id.toEmptyStringNonNull,
+        onRequestTrackingAuthorizationForIos: () => DeviceHelper.requestTrackingAuthorization(),
         onSubscribeChatCountRealtimeChannel: (userId) async => await SomethingCounter.of(context)?.subscribeChatCount(userId),
         onSubscribeNotificationCountRealtimeChannel: (userId) async => await SomethingCounter.of(context)?.subscribeNotificationCount(userId),
       )

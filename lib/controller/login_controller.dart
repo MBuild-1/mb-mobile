@@ -21,9 +21,9 @@ import '../misc/error/validation_error.dart';
 import '../misc/load_data_result.dart';
 import '../misc/login_helper.dart';
 import '../misc/string_util.dart';
+import '../misc/trackingstatusresult/tracking_status_result.dart';
 import '../misc/typedef.dart';
 import '../misc/validation/validator/email_or_phone_number_validator.dart';
-import '../misc/validation/validator/email_validator.dart';
 import '../misc/validation/validator/validator.dart';
 import '../misc/validation/validatorgroup/login_validator_group.dart';
 import 'base_getx_controller.dart';
@@ -85,41 +85,49 @@ class LoginController extends BaseGetxController {
       _loginDelegate!.onUnfocusAllWidget();
       if (loginValidatorGroup.validate()) {
         _loginDelegate!.onShowLoginRequestProcessLoadingCallback();
-        LoadDataResult<LoginResponse> loginLoadDataResult = await loginUseCase.execute(
-          LoginParameter(
-            credential: _effectiveEmailAndPhoneNumberLoginInput,
-            password: _loginDelegate!.onGetPasswordLoginInput(),
-            pushNotificationSubscriptionId: _loginDelegate!.onGetPushNotificationSubscriptionId()
-          )
-        ).future(
-          parameter: apiRequestManager.addRequestToCancellationPart('login').value
-        );
-        if (loginLoadDataResult.isSuccess) {
-          if (await loginOneSignal(loginLoadDataResult.resultIfSuccess!.userId)) {
-            return;
-          }
-          await LoginHelper.saveToken(loginLoadDataResult.resultIfSuccess!.token).future();
-          LoadDataResult<User> userLoadDataResult = await getUserUseCase.execute(
-            GetUserParameter()
+        LoadDataResult<TrackingStatusResult> requestAuthForIosTrackingStatusResult = await _loginDelegate!.onRequestTrackingAuthorizationForIos();
+        if (requestAuthForIosTrackingStatusResult.isSuccess) {
+          LoadDataResult<LoginResponse> loginLoadDataResult = await loginUseCase.execute(
+            LoginParameter(
+              credential: _effectiveEmailAndPhoneNumberLoginInput,
+              password: _loginDelegate!.onGetPasswordLoginInput(),
+              pushNotificationSubscriptionId: _loginDelegate!.onGetPushNotificationSubscriptionId()
+            )
           ).future(
-            parameter: apiRequestManager.addRequestToCancellationPart('get-user-after-login').value
-          ).map<User>(
-            (getUserResponse) => getUserResponse.user
+            parameter: apiRequestManager.addRequestToCancellationPart('login').value
           );
-          if (userLoadDataResult.isSuccess) {
-            User user = userLoadDataResult.resultIfSuccess!;
-            await _loginDelegate!.onSubscribeChatCountRealtimeChannel(user.id);
-            await _loginDelegate!.onSubscribeNotificationCountRealtimeChannel(user.id);
+          if (loginLoadDataResult.isSuccess) {
+            if (await loginOneSignal(loginLoadDataResult.resultIfSuccess!.userId)) {
+              return;
+            }
+            await LoginHelper.saveToken(loginLoadDataResult.resultIfSuccess!.token).future();
+            LoadDataResult<User> userLoadDataResult = await getUserUseCase.execute(
+              GetUserParameter()
+            ).future(
+              parameter: apiRequestManager.addRequestToCancellationPart('get-user-after-login').value
+            ).map<User>(
+              (getUserResponse) => getUserResponse.user
+            );
+            if (userLoadDataResult.isSuccess) {
+              User user = userLoadDataResult.resultIfSuccess!;
+              await _loginDelegate!.onSubscribeChatCountRealtimeChannel(user.id);
+              await _loginDelegate!.onSubscribeNotificationCountRealtimeChannel(user.id);
+            }
+            Get.back();
+            _loginDelegate!.onLoginRequestProcessSuccessCallback();
+          } else {
+            dynamic data = loginLoadDataResult.resultIfFailed;
+            if (await _checkIfNeedPinWhileLoginError(data)) {
+              return;
+            }
+            Get.back();
+            _loginDelegate!.onShowLoginRequestProcessFailedCallback(data);
           }
-          Get.back();
-          _loginDelegate!.onLoginRequestProcessSuccessCallback();
         } else {
-          dynamic data = loginLoadDataResult.resultIfFailed;
-          if (await _checkIfNeedPinWhileLoginError(data)) {
-            return;
-          }
           Get.back();
-          _loginDelegate!.onShowLoginRequestProcessFailedCallback(data);
+          _loginDelegate!.onShowLoginRequestProcessFailedCallback(
+            requestAuthForIosTrackingStatusResult.resultIfFailed!
+          );
         }
       }
     }
@@ -128,45 +136,52 @@ class LoginController extends BaseGetxController {
   void loginWithGoogle() async {
     if (_loginDelegate != null) {
       _loginDelegate!.onUnfocusAllWidget();
-      String? idToken = await _loginDelegate!.onLoginWithGoogle();
-      if (idToken.isNotEmptyString) {
-        _loginDelegate!.onShowLoginRequestProcessLoadingCallback();
-        LoadDataResult<LoginWithGoogleResponse> loginWithGoogleLoadDataResult = await loginWithGoogleUseCase.execute(
-          LoginWithGoogleParameter(
-            idToken: idToken!,
-            pushNotificationSubscriptionId: _loginDelegate!.onGetPushNotificationSubscriptionId(),
-            deviceName: _loginDelegate!.onGetLoginDeviceNameInput(),
-          )
-        ).future(
-          parameter: apiRequestManager.addRequestToCancellationPart('login-with-google').value
-        );
-        if (loginWithGoogleLoadDataResult.isSuccess) {
-          if (await loginOneSignal(loginWithGoogleLoadDataResult.resultIfSuccess!.userId)) {
-            return;
-          }
-          await LoginHelper.saveToken(loginWithGoogleLoadDataResult.resultIfSuccess!.token).future();
-          LoadDataResult<User> userLoadDataResult = await getUserUseCase.execute(
-            GetUserParameter()
+      LoadDataResult<TrackingStatusResult> requestAuthForIosTrackingStatusResult = await _loginDelegate!.onRequestTrackingAuthorizationForIos();
+      if (requestAuthForIosTrackingStatusResult.isSuccess) {
+        String? idToken = await _loginDelegate!.onLoginWithGoogle();
+        if (idToken.isNotEmptyString) {
+          _loginDelegate!.onShowLoginRequestProcessLoadingCallback();
+          LoadDataResult<LoginWithGoogleResponse> loginWithGoogleLoadDataResult = await loginWithGoogleUseCase.execute(
+            LoginWithGoogleParameter(
+              idToken: idToken!,
+              pushNotificationSubscriptionId: _loginDelegate!.onGetPushNotificationSubscriptionId(),
+              deviceName: _loginDelegate!.onGetLoginDeviceNameInput(),
+            )
           ).future(
-            parameter: apiRequestManager.addRequestToCancellationPart('get-user-after-login').value
-          ).map<User>(
-            (getUserResponse) => getUserResponse.user
+            parameter: apiRequestManager.addRequestToCancellationPart('login-with-google').value
           );
-          if (userLoadDataResult.isSuccess) {
-            User user = userLoadDataResult.resultIfSuccess!;
-            await _loginDelegate!.onSubscribeChatCountRealtimeChannel(user.id);
-            await _loginDelegate!.onSubscribeNotificationCountRealtimeChannel(user.id);
+          if (loginWithGoogleLoadDataResult.isSuccess) {
+            if (await loginOneSignal(loginWithGoogleLoadDataResult.resultIfSuccess!.userId)) {
+              return;
+            }
+            await LoginHelper.saveToken(loginWithGoogleLoadDataResult.resultIfSuccess!.token).future();
+            LoadDataResult<User> userLoadDataResult = await getUserUseCase.execute(
+              GetUserParameter()
+            ).future(
+              parameter: apiRequestManager.addRequestToCancellationPart('get-user-after-login').value
+            ).map<User>(
+              (getUserResponse) => getUserResponse.user
+            );
+            if (userLoadDataResult.isSuccess) {
+              User user = userLoadDataResult.resultIfSuccess!;
+              await _loginDelegate!.onSubscribeChatCountRealtimeChannel(user.id);
+              await _loginDelegate!.onSubscribeNotificationCountRealtimeChannel(user.id);
+            }
+            Get.back();
+            _loginDelegate!.onLoginRequestProcessSuccessCallback();
+          } else {
+            dynamic data = loginWithGoogleLoadDataResult.resultIfFailed;
+            if (await _checkIfNeedPinWhileLoginError(data)) {
+              return;
+            }
+            Get.back();
+            _loginDelegate!.onShowLoginRequestProcessFailedCallback(data);
           }
-          Get.back();
-          _loginDelegate!.onLoginRequestProcessSuccessCallback();
-        } else {
-          dynamic data = loginWithGoogleLoadDataResult.resultIfFailed;
-          if (await _checkIfNeedPinWhileLoginError(data)) {
-            return;
-          }
-          Get.back();
-          _loginDelegate!.onShowLoginRequestProcessFailedCallback(data);
         }
+      } else {
+        _loginDelegate!.onShowLoginRequestProcessFailedCallback(
+          requestAuthForIosTrackingStatusResult.resultIfFailed!
+        );
       }
     }
   }
@@ -216,6 +231,7 @@ class LoginDelegate {
   _OnSaveTempData onSaveTempData;
   OnLoginIntoOneSignal onLoginIntoOneSignal;
   OnGetPushNotificationSubscriptionId onGetPushNotificationSubscriptionId;
+  OnRequestTrackingAuthorizationForIos onRequestTrackingAuthorizationForIos;
   Future<void> Function(String) onSubscribeChatCountRealtimeChannel;
   Future<void> Function(String) onSubscribeNotificationCountRealtimeChannel;
 
@@ -233,6 +249,7 @@ class LoginDelegate {
     required this.onSaveTempData,
     required this.onLoginIntoOneSignal,
     required this.onGetPushNotificationSubscriptionId,
+    required this.onRequestTrackingAuthorizationForIos,
     required this.onSubscribeChatCountRealtimeChannel,
     required this.onSubscribeNotificationCountRealtimeChannel
   });
