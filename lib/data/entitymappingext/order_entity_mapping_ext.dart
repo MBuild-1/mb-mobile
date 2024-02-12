@@ -360,6 +360,7 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
       }
     }
     return OrderTransactionResponse(
+      paymentStepType: (paymentResponse["payment_step_type"] as String?).toEmptyStringNonNull,
       orderId: paymentResponse["order_id"],
       transactionId: paymentResponse["transaction_id"],
       transactionStatus: paymentResponse["transaction_status"],

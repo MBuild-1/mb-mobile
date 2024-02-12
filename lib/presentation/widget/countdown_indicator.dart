@@ -183,12 +183,14 @@ class DefaultCountdownComponentDelegate extends CountdownComponentDelegate {
 
 class DefaultCountdownComponentDelegateTagData {
   String tagString;
+  String paymentStepType;
   int countdownValue;
   DateTime expiredDateTime;
   void Function()? onRefresh;
 
   DefaultCountdownComponentDelegateTagData({
     required this.tagString,
+    required this.paymentStepType,
     required this.countdownValue,
     required this.expiredDateTime,
     this.onRefresh

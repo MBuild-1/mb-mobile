@@ -631,6 +631,7 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
                     }();
                     dynamic tag = DefaultCountdownComponentDelegateTagData(
                       tagString: tagString,
+                      paymentStepType: configureCountdownComponent.orderTransactionResponse.paymentStepType,
                       countdownValue: countdownValue,
                       expiredDateTime: localExpiryDateTime,
                       onRefresh: _refreshOrderDetail
@@ -683,23 +684,25 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
                             if (countdownComponentDelegate is DefaultCountdownComponentDelegate) {
                               dynamic tag = countdownComponentDelegate.tag;
                               if (tag is DefaultCountdownComponentDelegateTagData) {
-                                if (tag.tagString == "expired_remaining") {
-                                  ToastHelper.showToast(
-                                    MultiLanguageString({
-                                      Constant.textInIdLanguageKey: "Pembayaran Anda sudah expired.",
-                                      Constant.textEnUsLanguageKey: "Your payment is expired."
-                                    }).toEmptyStringNonNull
-                                  );
-                                  TempOrderDetailBackResultDataHelper.saveTempOrderDetailBackResult(
-                                    json.encode(
-                                      <String, dynamic>{
-                                        "combined_order_id": widget.combinedOrderId,
-                                        "status": "expired"
-                                      }
-                                    )
-                                  ).future().then((value) {
-                                    NavigationHelper.navigationBackFromOrderDetailToOrder(context);
-                                  });
+                                if (tag.paymentStepType == "first_payment") {
+                                  if (tag.tagString == "expired_remaining") {
+                                    ToastHelper.showToast(
+                                      MultiLanguageString({
+                                        Constant.textInIdLanguageKey: "Pembayaran Anda sudah expired.",
+                                        Constant.textEnUsLanguageKey: "Your payment is expired."
+                                      }).toEmptyStringNonNull
+                                    );
+                                    TempOrderDetailBackResultDataHelper.saveTempOrderDetailBackResult(
+                                      json.encode(
+                                        <String, dynamic>{
+                                          "combined_order_id": widget.combinedOrderId,
+                                          "status": "expired"
+                                        }
+                                      )
+                                    ).future().then((value) {
+                                      NavigationHelper.navigationBackFromOrderDetailToOrder(context);
+                                    });
+                                  }
                                 }
                               }
                             }
