@@ -31,6 +31,7 @@ import '../../domain/entity/order/order_summary.dart';
 import '../../domain/entity/order/ordertracking/order_tracking.dart';
 import '../../domain/entity/order/ordertracking/order_tracking_location.dart';
 import '../../domain/entity/order/ordertracking/order_tracking_location_address.dart';
+import '../../domain/entity/order/ordertransaction/order_transaction_status_code_and_status_message.dart';
 import '../../domain/entity/order/ordertransaction/ordertransactionsummary/order_transaction_summary.dart';
 import '../../domain/entity/order/ordertransaction/ordertransactionresponse/order_transaction_response.dart';
 import '../../domain/entity/order/purchase_direct_response.dart';
@@ -344,6 +345,7 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
   OrderTransactionResponse mapFromResponseToOrderTransactionResponse() {
     dynamic paymentResponse = response["payment"];
     String statusCode = paymentResponse["status_code"];
+    String statusMessage = paymentResponse["status_message"];
     if (statusCode.isNotEmptyString) {
       if (statusCode[0] != "2") {
         if (statusCode != "407") {
@@ -356,6 +358,10 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
               Constant.textEnUsLanguageKey: "Please try refresh again.",
               Constant.textInIdLanguageKey: "Silahkan coba refresh kembali."
             }),
+            value: OrderTransactionStatusCodeAndStatusMessage(
+              statusCode: statusCode,
+              statusMessage: statusMessage
+            )
           );
         }
       }
@@ -365,6 +371,8 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
       orderId: paymentResponse["order_id"],
       transactionId: paymentResponse["transaction_id"],
       transactionStatus: paymentResponse["transaction_status"],
+      statusCode: statusCode,
+      statusMessage: statusMessage,
       grossAmount: ResponseWrapper(paymentResponse["gross_amount"]).mapFromResponseToDouble()!,
       transactionDateTime: DateUtil.convertUtcOffset(
         ResponseWrapper(paymentResponse["transaction_time"]).mapFromResponseToDateTime(

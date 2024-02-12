@@ -8,6 +8,8 @@ class OrderTransactionResponse {
   String orderId;
   String transactionId;
   String transactionStatus;
+  String statusCode;
+  String statusMessage;
   double grossAmount;
   DateTime transactionDateTime;
   DateTime expiryDateTime;
@@ -19,6 +21,8 @@ class OrderTransactionResponse {
     required this.orderId,
     required this.transactionId,
     required this.transactionStatus,
+    required this.statusCode,
+    required this.statusMessage,
     required this.grossAmount,
     required this.transactionDateTime,
     required this.expiryDateTime,
