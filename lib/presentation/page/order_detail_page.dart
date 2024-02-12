@@ -43,6 +43,7 @@ import '../../misc/countdown/get_countdown_component_data_action.dart';
 import '../../misc/date_util.dart';
 import '../../misc/dialog_helper.dart';
 import '../../misc/entityandlistitemcontrollerstatemediator/horizontal_component_entity_parameterized_entity_and_list_item_controller_state_mediator.dart';
+import '../../misc/error/message_error.dart';
 import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
@@ -61,6 +62,7 @@ import '../../misc/paging/pagingresult/paging_result.dart';
 import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/horizontal_dynamic_item_carousel_parametered_component_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../../misc/pusher_helper.dart';
 import '../../misc/routeargument/order_detail_route_argument.dart';
+import '../../misc/string_util.dart';
 import '../../misc/temp_order_detail_back_result_data_helper.dart';
 import '../../misc/toast_helper.dart';
 import '../../misc/widgetbindingobserver/payment_widget_binding_observer.dart';
@@ -82,12 +84,12 @@ import 'pdf_viewer_page.dart';
 class OrderDetailPage extends RestorableGetxPage<_OrderDetailPageRestoration> {
   late final ControllerMember<OrderDetailController> _orderDetailController = ControllerMember<OrderDetailController>().addToControllerManager(controllerManager);
 
-  final String combinedOrderId;
+  final OrderDetailPageParameter orderDetailPageParameter;
   final _StatefulDeliveryControllerMediatorWidgetDelegate _statefulDeliveryControllerMediatorWidgetDelegate = _StatefulDeliveryControllerMediatorWidgetDelegate();
 
   OrderDetailPage({
     Key? key,
-    required this.combinedOrderId
+    required this.orderDetailPageParameter
   }) : super(key: key, pageRestorationId: () => "order-detail-page");
 
   @override
@@ -127,7 +129,7 @@ class OrderDetailPage extends RestorableGetxPage<_OrderDetailPageRestoration> {
   Widget buildPage(BuildContext context) {
     return _StatefulOrderDetailControllerMediatorWidget(
       orderDetailController: _orderDetailController.controller,
-      combinedOrderId: combinedOrderId,
+      orderDetailPageParameter: orderDetailPageParameter,
       statefulDeliveryControllerMediatorWidgetDelegate: _statefulDeliveryControllerMediatorWidgetDelegate
     );
   }
@@ -165,17 +167,17 @@ class _OrderDetailPageRestoration extends ExtendedMixableGetxPageRestoration wit
 }
 
 class OrderDetailPageGetPageBuilderAssistant extends GetPageBuilderAssistant {
-  final String combinedOrderId;
+  final OrderDetailPageParameter orderDetailPageParameter;
 
   OrderDetailPageGetPageBuilderAssistant({
-    required this.combinedOrderId
+    required this.orderDetailPageParameter
   });
 
   @override
-  GetPageBuilder get pageBuilder => (() => OrderDetailPage(combinedOrderId: combinedOrderId));
+  GetPageBuilder get pageBuilder => (() => OrderDetailPage(orderDetailPageParameter: orderDetailPageParameter));
 
   @override
-  GetPageBuilder get pageWithOuterGetxBuilder => (() => GetxPageBuilder.buildRestorableGetxPage(OrderDetailPage(combinedOrderId: combinedOrderId)));
+  GetPageBuilder get pageWithOuterGetxBuilder => (() => GetxPageBuilder.buildRestorableGetxPage(OrderDetailPage(orderDetailPageParameter: orderDetailPageParameter)));
 }
 
 mixin OrderDetailPageRestorationMixin on MixableGetxPageRestoration {
@@ -226,10 +228,29 @@ class OrderDetailPageRestorableRouteFuture extends GetRestorableRouteFuture {
     if (arguments is! String) {
       throw Exception("Arguments must be a string");
     }
+    OrderDetailPageParameter? orderDetailPageParameter;
+    try {
+      orderDetailPageParameter = arguments.toOrderDetailPageParameter();
+    } catch (e) {
+      bool handlingError = false;
+      if (e is MessageError) {
+        if (e.title.toLowerCase() == Constant.textErrorTitleWhenParsingOrderParameterJson.toLowerCase()) {
+          orderDetailPageParameter = DefaultOrderDetailPageParameter(
+            combinedOrderId: arguments
+          );
+          handlingError = true;
+        }
+      }
+      if (!handlingError) {
+        if (orderDetailPageParameter != null) {
+          rethrow;
+        }
+      }
+    }
     return GetExtended.toWithGetPageRouteReturnValue<String?>(
       GetxPageBuilder.buildRestorableGetxPageBuilder(
         OrderDetailPageGetPageBuilderAssistant(
-          combinedOrderId: arguments
+          orderDetailPageParameter: orderDetailPageParameter!
         ),
       ),
       arguments: OrderDetailRouteArgument()
@@ -265,12 +286,12 @@ class _StatefulDeliveryControllerMediatorWidgetDelegate {
 
 class _StatefulOrderDetailControllerMediatorWidget extends StatefulWidget {
   final OrderDetailController orderDetailController;
-  final String combinedOrderId;
+  final OrderDetailPageParameter orderDetailPageParameter;
   final _StatefulDeliveryControllerMediatorWidgetDelegate statefulDeliveryControllerMediatorWidgetDelegate;
 
   const _StatefulOrderDetailControllerMediatorWidget({
     required this.orderDetailController,
-    required this.combinedOrderId,
+    required this.orderDetailPageParameter,
     required this.statefulDeliveryControllerMediatorWidgetDelegate
   });
 
@@ -335,7 +356,7 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
         widget.orderDetailController.shippingPayment(
           ShippingPaymentParameter(
             settlingId: paymentMethod.settlingId,
-            combinedOrderId: widget.combinedOrderId,
+            combinedOrderId: widget.orderDetailPageParameter.combinedOrderId,
             expire: 7
           )
         );
@@ -349,6 +370,12 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
     };
     WidgetsBinding.instance.addObserver(_paymentWidgetBindingObserver!);
     MainRouteObserver.onRefreshOrderDetailAfterDeliveryReview = _refreshOrderDetail;
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      OrderDetailPageParameter orderDetailPageParameter = widget.orderDetailPageParameter;
+      if (orderDetailPageParameter is RedirectToShippingPaymentOrderDetailPageParameter) {
+        _toPaymentMethodPage(OrderDetailPaymentMethodType.shippingPayment, null);
+      }
+    });
   }
 
   Future<LoadDataResult<_LoadOrderDetailResponse>> _loadOrderDetail() async {
@@ -365,7 +392,7 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
       _orderDetailScrollOffset = null;
     }
     LoadDataResult<Order> orderDetailLoadDataResult = await widget.orderDetailController.getOrderBasedId(
-      OrderBasedIdParameter(orderId: widget.combinedOrderId)
+      OrderBasedIdParameter(orderId: widget.orderDetailPageParameter.combinedOrderId)
     );
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (orderDetailLoadDataResult.isSuccess) {
@@ -496,8 +523,7 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
               );
             },
             onPayOrderShipping: () {
-              _orderDetailPaymentMethodType = OrderDetailPaymentMethodType.shippingPayment;
-              PageRestorationHelper.toPaymentMethodPage(context, null);
+              _toPaymentMethodPage(OrderDetailPaymentMethodType.shippingPayment, null);
             },
             orderTransactionListItemControllerState: () => loadOrderDetailResponse.orderTransactionListItemControllerState,
             errorProvider: () => Injector.locator<ErrorProvider>()
@@ -515,6 +541,11 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
     _orderDetailListItemPagingController.refresh();
   }
 
+  void _toPaymentMethodPage(OrderDetailPaymentMethodType? orderDetailPaymentMethodType, String? paymentMethodSettlingId) {
+    _orderDetailPaymentMethodType = orderDetailPaymentMethodType;
+    PageRestorationHelper.toPaymentMethodPage(context, paymentMethodSettlingId);
+  }
+
   @override
   Widget build(BuildContext context) {
     widget.orderDetailController.repurchaseControllerContentDelegate.setRepurchaseDelegate(
@@ -528,8 +559,7 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
               paymentParameterModalDialogPageParameter: PaymentParameterModalDialogPageParameter(
                 paymentParameterModalDialogPageDelegate: _repurchasePaymentParameterModalDialogPageDelegate,
                 onGotoSelectPaymentMethodPage: (paymentMethodSettlingId) {
-                  _orderDetailPaymentMethodType = OrderDetailPaymentMethodType.repurchase;
-                  PageRestorationHelper.toPaymentMethodPage(context, paymentMethodSettlingId);
+                  _toPaymentMethodPage(OrderDetailPaymentMethodType.repurchase, paymentMethodSettlingId);
                 },
                 onGotoSelectCouponPage: (couponId) {
                   PageRestorationHelper.toCouponPage(context, couponId);
@@ -579,6 +609,9 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
         },
         onShippingPaymentRequestProcessSuccessCallback: (shippingPaymentResponse) async {
           _refreshOrderDetail();
+          if (MainRouteObserver.onRefreshOrderList != null) {
+            MainRouteObserver.onRefreshOrderList!();
+          }
         },
         onObserveOrderTransactionDirectly: (onObserveOrderTransactionDirectlyParameter) {
           return OrderTransactionListItemControllerState(
@@ -695,7 +728,7 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
                                     TempOrderDetailBackResultDataHelper.saveTempOrderDetailBackResult(
                                       json.encode(
                                         <String, dynamic>{
-                                          "combined_order_id": widget.combinedOrderId,
+                                          "combined_order_id": widget.orderDetailPageParameter.combinedOrderId,
                                           "status": "expired"
                                         }
                                       )
@@ -782,7 +815,7 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
     _countdownManager.dispose();
     PusherHelper.unsubscribeTransactionSuccessPusherChannel(
       pusherChannelsFlutter: _pusher,
-      orderId: widget.combinedOrderId
+      orderId: widget.orderDetailPageParameter.combinedOrderId
     );
     MainRouteObserver.onRefreshOrderDetailAfterDeliveryReview = null;
     super.dispose();
@@ -808,4 +841,69 @@ extension on _LoadOrderDetailResponse {
 
 enum OrderDetailPaymentMethodType {
   shippingPayment, repurchase
+}
+
+abstract class OrderDetailPageParameter {
+  String combinedOrderId;
+
+  OrderDetailPageParameter({
+    required this.combinedOrderId
+  });
+}
+
+class DefaultOrderDetailPageParameter extends OrderDetailPageParameter {
+  DefaultOrderDetailPageParameter({
+    required super.combinedOrderId
+  });
+}
+
+class RedirectToShippingPaymentOrderDetailPageParameter extends OrderDetailPageParameter {
+  RedirectToShippingPaymentOrderDetailPageParameter({
+    required super.combinedOrderId
+  });
+}
+
+extension OrderDetailPageParameterExt on OrderDetailPageParameter {
+  String toJsonString() => StringUtil.encodeJson(
+    () {
+      if (this is DefaultOrderDetailPageParameter) {
+        DefaultOrderDetailPageParameter defaultOrderDetailPageParameter = this as DefaultOrderDetailPageParameter;
+        return <String, dynamic>{
+          "combined_order_id": defaultOrderDetailPageParameter.combinedOrderId
+        };
+      } else if (this is RedirectToShippingPaymentOrderDetailPageParameter) {
+        RedirectToShippingPaymentOrderDetailPageParameter redirectToShippingPaymentOrderDetailPageParameter = this as RedirectToShippingPaymentOrderDetailPageParameter;
+        return <String, dynamic>{
+          "combined_order_id": redirectToShippingPaymentOrderDetailPageParameter.combinedOrderId
+        };
+      }
+      throw MessageError(title: "OrderDetailPageParameter is not suitable");
+    }()
+  );
+}
+
+extension OrderDetailPageParameterStringExt on String {
+  OrderDetailPageParameter toOrderDetailPageParameter() {
+    Map<String, dynamic> result = {};
+    try {
+      result = StringUtil.decodeJson(this);
+    } catch (e) {
+      throw MessageError(title: Constant.textErrorTitleWhenParsingOrderParameterJson);
+    }
+    if (result.containsKey("type")) {
+      String type = result["type"];
+      if (type == "default") {
+        return DefaultOrderDetailPageParameter(
+          combinedOrderId: result["combined_order_id"]
+        );
+      } else if (type == "redirect_to_shipping_payment") {
+        return RedirectToShippingPaymentOrderDetailPageParameter(
+          combinedOrderId: result["combined_order_id"],
+        );
+      }
+      throw MessageError(title: "\"type\" field is not suitable");
+    } else {
+      throw MessageError(title: "\"type\" field is missing");
+    }
+  }
 }

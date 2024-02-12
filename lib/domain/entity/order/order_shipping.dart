@@ -6,6 +6,7 @@ class OrderShipping {
   String orderId;
   String orderProductId;
   String trackingNumber;
+  bool isPaymentTriggered;
   String status;
   String? notes;
   OrderDetail orderDetail;
@@ -16,6 +17,7 @@ class OrderShipping {
     required this.orderId,
     required this.orderProductId,
     required this.trackingNumber,
+    required this.isPaymentTriggered,
     required this.status,
     this.notes,
     required this.orderDetail,

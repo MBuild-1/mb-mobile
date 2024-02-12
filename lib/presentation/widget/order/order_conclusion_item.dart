@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../domain/entity/delivery/delivery_review.dart';
 import '../../../domain/entity/order/combined_order.dart';
+import '../../../domain/entity/order/order_shipping.dart';
 import '../../../misc/constant.dart';
 import '../../../misc/dialog_helper.dart';
 import '../../../misc/main_route_observer.dart';
@@ -69,8 +70,11 @@ class OrderConclusionItem extends StatelessWidget {
           builder: (context) {
             bool showOrderShippingPayment = false;
             if (order.orderShipping != null) {
-              if (order.orderShipping!.orderDetail.status == "pending") {
-                showOrderShippingPayment = true;
+              OrderShipping orderShipping = order.orderShipping!;
+              if (orderShipping.orderDetail.status == "pending") {
+                if (!orderShipping.isPaymentTriggered) {
+                  showOrderShippingPayment = true;
+                }
               }
             }
             if (showOrderShippingPayment) {

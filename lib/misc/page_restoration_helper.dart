@@ -341,6 +341,19 @@ class _PageRestorationHelperImpl {
     });
   }
 
+  void toOrderDetailPageWithParameter(BuildContext context, OrderDetailPageParameter orderDetailPageParameter) {
+    LoginHelper.checkingLogin(context, () {
+      PageRestorationHelper.findPageRestorationMixin<OrderDetailPageRestorationMixin>(
+        onGetxPageRestorationFound: (restoration) {
+          restoration.orderDetailPageRestorableRouteFuture.present(
+            orderDetailPageParameter.toJsonString()
+          );
+        },
+        context: context
+      );
+    });
+  }
+
   void toDeliveryReviewPage(BuildContext context) {
     LoginHelper.checkingLogin(context, () {
       PageRestorationHelper.findPageRestorationMixin<DeliveryReviewPageRestorationMixin>(

@@ -13,6 +13,7 @@ import '../../../misc/dialog_helper.dart';
 import '../../../misc/multi_language_string.dart';
 import '../../../misc/page_restoration_helper.dart';
 import '../../../misc/web_helper.dart';
+import '../../page/order_detail_page.dart';
 import '../additional_item_widget.dart';
 import '../button/custombutton/sized_outline_gradient_button.dart';
 import '../colorful_chip.dart';
@@ -166,7 +167,11 @@ abstract class OrderItem extends StatelessWidget {
                         OrderConclusionItem(
                           order: order,
                           onBuyAgainTap: onBuyAgainTap,
-                          onPayOrderShipping: () => PageRestorationHelper.toOrderDetailPage(context, order.id),
+                          onPayOrderShipping: () => PageRestorationHelper.toOrderDetailPageWithParameter(
+                            context, RedirectToShippingPaymentOrderDetailPageParameter(
+                              combinedOrderId: order.id
+                            )
+                          ),
                         ),
                       ],
                     ),
