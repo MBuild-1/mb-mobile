@@ -45,6 +45,6 @@ class PaymentMethodModifiedCachedNetworkImage extends CachedNetworkImage {
   PaymentMethodModifiedCachedNetworkImage({
     Key? key,
     required String imageUrl,
-    this.boxFit = BoxFit.fitWidth
+    this.boxFit = BoxFit.contain
   }) : super(key: key, imageUrl: imageUrl);
 }
