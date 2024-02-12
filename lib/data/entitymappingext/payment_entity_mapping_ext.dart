@@ -1,5 +1,6 @@
 import 'package:masterbagasi/data/entitymappingext/summary_value_entity_mapping_ext.dart';
 import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../../domain/entity/payment/payment_method.dart';
 import '../../domain/entity/payment/payment_method_group.dart';
@@ -55,7 +56,7 @@ extension PaymentDetailEntityMappingExt on ResponseWrapper {
     String paymentName = "";
     Map<String, dynamic> responseMap = response as Map<String, dynamic>;
     if (responseMap.containsKey("payment_display_name")) {
-      paymentName = responseMap["payment_display_name"];
+      paymentName = (responseMap["payment_display_name"] as String?).toEmptyStringNonNull;
     } else {
       for (String key in responseMap.keys) {
         if (key.contains("_settling")) {
@@ -64,13 +65,13 @@ extension PaymentDetailEntityMappingExt on ResponseWrapper {
             if (value != null) {
               Map<String, dynamic> valueMap = value as Map<String, dynamic>;
               if (valueMap.containsKey("name")) {
-                paymentName = valueMap["name"];
+                paymentName = (valueMap["name"] as String?).toEmptyStringNonNull;
               } else if (valueMap.containsKey("display_name")) {
-                paymentName = valueMap["display_name"];
+                paymentName = (valueMap["display_name"] as String?).toEmptyStringNonNull;
               } else if (valueMap.containsKey("store")) {
-                paymentName = valueMap["store"];
+                paymentName = (valueMap["store"] as String?).toEmptyStringNonNull;
               } else if (valueMap.containsKey("display_store")) {
-                paymentName = valueMap["display_store"];
+                paymentName = (valueMap["display_store"] as String?).toEmptyStringNonNull;
               }
             }
           }
