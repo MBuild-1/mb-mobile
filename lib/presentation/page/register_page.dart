@@ -858,31 +858,57 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
                       }
                     }
                   ),
-                  if (Platform.isAndroid || Platform.isIOS) ...[
-                    SizedBox(height: 3.h),
-                    Row(
-                      children: [
-                        const Expanded(
-                          child: Divider()
+                  ...() {
+                    List<Widget> loginWidgetList = [];
+                    void addLoginWidget(Widget loginWidget) {
+                      if (loginWidgetList.isNotEmpty) {
+                        loginWidgetList.add(
+                          const SizedBox(height: 12.0)
+                        );
+                      }
+                      loginWidgetList.add(loginWidget);
+                    }
+                    addLoginWidget(
+                      SizedOutlineGradientButton(
+                        width: double.infinity,
+                        outlineGradientButtonType: OutlineGradientButtonType.outline,
+                        onPressed: widget.registerController.registerWithGoogle,
+                        text: "Register With Google".tr,
+                      ),
+                    );
+                    if (Platform.isIOS) {
+                      addLoginWidget(
+                        SizedOutlineGradientButton(
+                          width: double.infinity,
+                          outlineGradientButtonType: OutlineGradientButtonType.outline,
+                          onPressed: widget.registerController.registerWithApple,
+                          text: "Register With Apple".tr,
                         ),
-                        SizedBox(width: 6.w),
-                        Text("or register with".tr, style: TextStyle(
-                          color: Theme.of(context).dividerTheme.color
-                        )),
-                        SizedBox(width: 6.w),
-                        const Expanded(
-                          child: Divider()
+                      );
+                    }
+                    if (loginWidgetList.isNotEmpty) {
+                      loginWidgetList.insertAll(0, [
+                        SizedBox(height: 3.h),
+                        Row(
+                          children: [
+                            const Expanded(
+                              child: Divider()
+                            ),
+                            SizedBox(width: 6.w),
+                            Text("or login with".tr, style: TextStyle(
+                              color: Theme.of(context).dividerTheme.color
+                            )),
+                            SizedBox(width: 6.w),
+                            const Expanded(
+                              child: Divider()
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    SizedBox(height: 3.h),
-                    SizedOutlineGradientButton(
-                      width: double.infinity,
-                      outlineGradientButtonType: OutlineGradientButtonType.outline,
-                      onPressed: widget.registerController.registerWithGoogle,
-                      text: "Register With Google".tr,
-                    ),
-                  ],
+                        const SizedBox(height: 16.0),
+                      ]);
+                    }
+                    return loginWidgetList;
+                  }(),
                   SizedBox(height: 2.h),
                   Builder(
                     builder: (context) {
