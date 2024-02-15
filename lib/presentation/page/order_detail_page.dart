@@ -242,7 +242,7 @@ class OrderDetailPageRestorableRouteFuture extends GetRestorableRouteFuture {
         }
       }
       if (!handlingError) {
-        if (orderDetailPageParameter != null) {
+        if (orderDetailPageParameter == null) {
           rethrow;
         }
       }

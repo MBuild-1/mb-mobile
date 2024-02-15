@@ -219,7 +219,7 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
       orderId: response["order_id"],
       orderProductId: response["order_product_id"],
       trackingNumber: response["tracking_number"] ?? "",
-      isPaymentTriggered: response["is_payment_triggered"] ?? false,
+      isPaymentTriggered: response["is_payment_triggered"] == 1,
       status: response["status"],
       notes: response["notes"],
       orderDetail: ResponseWrapper(response["order"]).mapFromResponseToOrderDetail(),
