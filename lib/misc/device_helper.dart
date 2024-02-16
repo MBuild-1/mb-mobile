@@ -44,13 +44,10 @@ class _DeviceHelperImpl {
         );
       }
       TrackingStatus status = await AppTrackingTransparency.trackingAuthorizationStatus;
-      if (status == TrackingStatus.notDetermined) {
-        status = await AppTrackingTransparency.requestTrackingAuthorization();
-        if (status == TrackingStatus.authorized) {
-          return SuccessTrackingStatusResult(
-            trackingStatus: status
-          );
-        }
+      if (status == TrackingStatus.authorized) {
+        return SuccessTrackingStatusResult(
+          trackingStatus: status
+        );
       }
       late MultiLanguageString errorMessage;
       if (status == TrackingStatus.denied) {
@@ -76,8 +73,8 @@ class _DeviceHelperImpl {
       }
       throw MultiLanguageMessageError(
         title: MultiLanguageString({
-          Constant.textEnUsLanguageKey: "Tracking status is unknown.",
-          Constant.textInIdLanguageKey: "Status pelacakan tidak diketahui."
+          Constant.textEnUsLanguageKey: "There Is Error in Tracking Authorization",
+          Constant.textInIdLanguageKey: "Ada Kesalahan di Otorisasi pelacakan"
         }),
         message: errorMessage
       );
