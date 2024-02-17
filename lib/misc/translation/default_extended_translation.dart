@@ -12,6 +12,8 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Skip": "Lewati",
       "Finish": "Selesai",
       "Not Finish": "Belum Selesai",
+      "Arrived": "Sampai",
+      "Not Arrived": "Belum Sampai",
       "Other Method": "Metode Lain",
       "or login with": "atau login dengan",
       "or register with": "atau daftar dengan",
