@@ -315,6 +315,7 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
   bool _isCheckingOrderTransaction = false;
   final PusherChannelsFlutter _pusher = PusherChannelsFlutter.getInstance();
   final PaymentParameterModalDialogPageDelegate _repurchasePaymentParameterModalDialogPageDelegate = PaymentParameterModalDialogPageDelegate();
+  final PaymentParameterModalDialogPageDelegate _payOrderShippingPaymentParameterModalDialogPageDelegate = PaymentParameterModalDialogPageDelegate();
   OrderDetailPaymentMethodType? _orderDetailPaymentMethodType;
 
   @override
@@ -352,16 +353,10 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
       checkOrderTransactionWhileResuming: _refreshOrderDetail
     );
     widget.statefulDeliveryControllerMediatorWidgetDelegate.onRefreshPaymentMethod = (paymentMethod) {
-      if (_orderDetailPaymentMethodType == OrderDetailPaymentMethodType.shippingPayment) {
-        widget.orderDetailController.shippingPayment(
-          ShippingPaymentParameter(
-            settlingId: paymentMethod.settlingId,
-            combinedOrderId: widget.orderDetailPageParameter.combinedOrderId,
-            expire: 7
-          )
-        );
-      } else if (_orderDetailPaymentMethodType == OrderDetailPaymentMethodType.repurchase) {
+      if (_orderDetailPaymentMethodType == OrderDetailPaymentMethodType.repurchase) {
         _repurchasePaymentParameterModalDialogPageDelegate.onUpdatePaymentMethod(paymentMethod);
+      } else if (_orderDetailPaymentMethodType == OrderDetailPaymentMethodType.shippingPayment) {
+        _payOrderShippingPaymentParameterModalDialogPageDelegate.onUpdatePaymentMethod(paymentMethod);
       }
       _orderDetailPaymentMethodType = null;
     };
@@ -373,7 +368,7 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       OrderDetailPageParameter orderDetailPageParameter = widget.orderDetailPageParameter;
       if (orderDetailPageParameter is RedirectToShippingPaymentOrderDetailPageParameter) {
-        _toPaymentMethodPage(OrderDetailPaymentMethodType.shippingPayment, null);
+        _payOrderShipping();
       }
     });
   }
@@ -522,9 +517,7 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
                 }
               );
             },
-            onPayOrderShipping: () {
-              _toPaymentMethodPage(OrderDetailPaymentMethodType.shippingPayment, null);
-            },
+            onPayOrderShipping: _payOrderShipping,
             orderTransactionListItemControllerState: () => loadOrderDetailResponse.orderTransactionListItemControllerState,
             errorProvider: () => Injector.locator<ErrorProvider>()
           )
@@ -544,6 +537,32 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
   void _toPaymentMethodPage(OrderDetailPaymentMethodType? orderDetailPaymentMethodType, String? paymentMethodSettlingId) {
     _orderDetailPaymentMethodType = orderDetailPaymentMethodType;
     PageRestorationHelper.toPaymentMethodPage(context, paymentMethodSettlingId);
+  }
+
+  void _payOrderShipping() {
+    DialogHelper.showModalBottomDialogPage<int, int>(
+      context: context,
+      modalDialogPageBuilder: (context, parameter) => PaymentParameterModalDialogPage(
+        paymentParameterModalDialogPageParameter: PaymentParameterModalDialogPageParameter(
+          paymentParameterModalDialogPageDelegate: _payOrderShippingPaymentParameterModalDialogPageDelegate,
+          onGotoSelectPaymentMethodPage: (paymentMethodSettlingId) {
+            _toPaymentMethodPage(OrderDetailPaymentMethodType.shippingPayment, paymentMethodSettlingId);
+          },
+          onProcessPaymentParameter: (paymentMethodSettlingId, couponId) {
+            widget.orderDetailController.shippingPayment(
+              ShippingPaymentParameter(
+                settlingId: paymentMethodSettlingId!,
+                combinedOrderId: widget.orderDetailPageParameter.combinedOrderId,
+                expire: 7
+              )
+            );
+          },
+          titleLabel: () => "Second Payment".tr,
+          buttonLabel: () => "Pay".tr
+        )
+      ),
+      parameter: 1
+    );
   }
 
   @override
@@ -608,6 +627,9 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
           );
         },
         onShippingPaymentRequestProcessSuccessCallback: (shippingPaymentResponse) async {
+          // Close payment parameter modal dialog page
+          Get.back();
+
           _refreshOrderDetail();
           if (MainRouteObserver.onRefreshOrderList != null) {
             MainRouteObserver.onRefreshOrderList!();
@@ -869,11 +891,13 @@ extension OrderDetailPageParameterExt on OrderDetailPageParameter {
       if (this is DefaultOrderDetailPageParameter) {
         DefaultOrderDetailPageParameter defaultOrderDetailPageParameter = this as DefaultOrderDetailPageParameter;
         return <String, dynamic>{
+          "type": "default",
           "combined_order_id": defaultOrderDetailPageParameter.combinedOrderId
         };
       } else if (this is RedirectToShippingPaymentOrderDetailPageParameter) {
         RedirectToShippingPaymentOrderDetailPageParameter redirectToShippingPaymentOrderDetailPageParameter = this as RedirectToShippingPaymentOrderDetailPageParameter;
         return <String, dynamic>{
+          "type": "redirect_to_shipping_payment",
           "combined_order_id": redirectToShippingPaymentOrderDetailPageParameter.combinedOrderId
         };
       }

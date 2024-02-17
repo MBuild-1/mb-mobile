@@ -363,7 +363,8 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Order Tracking": "Lacak Pengiriman",
       "Update Application": "Update Aplikasi",
       "Administration Fee": "Biaya Administrasi",
-      "No order data exists": "Tidak ada data order yang tersedia"
+      "No order data exists": "Tidak ada data order yang tersedia",
+      "Second Payment": "Pembayaran Kedua"
     }
   };
 

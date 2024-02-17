@@ -39,7 +39,7 @@ import '../../itemtypelistsubinterceptor/product_entry_container_item_type_list_
 import '../../itemtypelistsubinterceptor/product_entry_header_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/profile_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/province_item_type_list_sub_interceptor.dart';
-import '../../itemtypelistsubinterceptor/purchase_direct_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/payment_parameter_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/row_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/search_filter_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/search_item_type_list_sub_interceptor.dart';
@@ -287,7 +287,7 @@ class ListItemControllerStateItemTypeInterceptorChecker extends ItemTypeListInte
       itemSpacing: itemSpacing,
       listItemControllerStateItemTypeInterceptorChecker: this
     ),
-    PurchaseDirectItemTypeListSubInterceptor(
+    PaymentParameterItemTypeListSubInterceptor(
       padding: padding,
       itemSpacing: itemSpacing,
       listItemControllerStateItemTypeInterceptorChecker: this
