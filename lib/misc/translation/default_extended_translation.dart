@@ -364,7 +364,9 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Update Application": "Update Aplikasi",
       "Administration Fee": "Biaya Administrasi",
       "No order data exists": "Tidak ada data order yang tersedia",
-      "Second Payment": "Pembayaran Kedua"
+      "Second Payment": "Pembayaran Kedua",
+      "Product Chat": "Chat Produk",
+      "Order Chat": "Chat Order"
     }
   };
 
