@@ -35,3 +35,15 @@ class UserProfile {
     required this.phoneNumber,
   });
 }
+
+class NoUserProfile extends UserProfile {
+  NoUserProfile() : super(
+    id: "",
+    userId: "",
+    avatar: null,
+    gender: null,
+    dateBirth: null,
+    placeBirth: null,
+    phoneNumber: null
+  );
+}
