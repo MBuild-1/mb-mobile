@@ -36,6 +36,7 @@ import '../../domain/usecase/help_chat_template_use_case.dart';
 import '../../misc/constant.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/chatlistitemcontrollerstate/chat_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/no_content_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
 import '../../misc/dialog_helper.dart';
 import '../../misc/error/empty_chat_error.dart';
@@ -208,6 +209,7 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<StatefulHelpC
   User? _loggedUser;
   final DefaultChatContainerInterceptingActionListItemControllerState _defaultChatContainerInterceptingActionListItemControllerState = DefaultChatContainerInterceptingActionListItemControllerState();
   LoadDataResult<HelpChatTemplateResponse> _helpChatTemplateResponseLoadDataResult = NoLoadDataResult<HelpChatTemplateResponse>();
+  LoadDataResult<User> _userLoadDataResult = NoLoadDataResult<User>();
   late ColorfulChipTabBarController _helpChatTabColorfulChipTabBarController;
   late List<ColorfulChipTabBarData> _helpChatColorfulChipTabBarDataList;
 
@@ -242,12 +244,9 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<StatefulHelpC
   }
 
   Future<UserMessageResponseWrapper<GetHelpMessageByUserResponse>> getHelpMessageByUser() async {
-    LoadDataResult<User> getUserLoadDataResult = await widget.helpChatController.getUser(
-      GetUserParameter()
-    ).map<User>((value) => value.user);
-    if (getUserLoadDataResult.isFailed) {
+    if (_userLoadDataResult.isFailed) {
       Future<LoadDataResult<GetHelpMessageByUserResponse>> returnUserLoadFailed() async {
-        return getUserLoadDataResult.map<GetHelpMessageByUserResponse>(
+        return _userLoadDataResult.map<GetHelpMessageByUserResponse>(
           // This is for required argument purposes only, not will be used for further process
           (_) => GetHelpMessageByUserResponse(
             id: "",
@@ -259,12 +258,12 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<StatefulHelpC
         );
       }
       return UserMessageResponseWrapper(
-        userLoadDataResult: getUserLoadDataResult,
+        userLoadDataResult: _userLoadDataResult,
         valueLoadDataResult: await returnUserLoadFailed()
       );
     }
     return UserMessageResponseWrapper(
-      userLoadDataResult: getUserLoadDataResult,
+      userLoadDataResult: _userLoadDataResult,
       valueLoadDataResult: await widget.helpChatController.getHelpMessageByUser(
         GetHelpMessageByUserParameter()
       )
@@ -272,6 +271,24 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<StatefulHelpC
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _helpChatListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? listItemControllerStateList) async {
+    _userLoadDataResult = await widget.helpChatController.getUser(
+      GetUserParameter()
+    ).map<User>((value) => value.user);
+    if (_userLoadDataResult.isFailedBecauseCancellation) {
+      return SuccessLoadDataResult(
+        value: PagingDataResult<ListItemControllerState>(
+          page: 1,
+          totalPage: 1,
+          totalItem: 1,
+          itemList: [
+            NoContentListItemControllerState()
+          ]
+        )
+      );
+    }
+    if (_userLoadDataResult.isFailed) {
+      return _userLoadDataResult.map<PagingResult<ListItemControllerState>>((_) => throw UnimplementedError());
+    }
     LoadDataResult<HelpChatTemplateResponse> helpChatTemplateResponseLoadDataResult = await widget.helpChatController.getHelpChatTemplate(HelpChatTemplateParameter());
     void updateHelpChatTemplate() {
       if (helpChatTemplateResponseLoadDataResult.isSuccess) {
