@@ -14,6 +14,7 @@ class PaymentParameterListItemControllerState extends ListItemControllerState {
   void Function() onRemoveCoupon;
   ErrorProvider Function() errorProvider;
   void Function() onUpdateState;
+  bool showSelectCoupon;
 
   PaymentParameterListItemControllerState({
     required this.onGetPaymentMethod,
@@ -24,6 +25,7 @@ class PaymentParameterListItemControllerState extends ListItemControllerState {
     required this.onSelectCoupon,
     required this.onRemoveCoupon,
     required this.errorProvider,
-    required this.onUpdateState
+    required this.onUpdateState,
+    required this.showSelectCoupon
   });
 }

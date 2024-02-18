@@ -1,8 +1,9 @@
 import '../discussion/support_discussion.dart';
 import 'product.dart';
 import 'productentry/product_entry.dart';
+import 'support_product_indicator.dart';
 
-class ProductDetail extends Product implements SupportDiscussion {
+class ProductDetail extends Product implements SupportDiscussion, SupportProductIndicator {
   List<ProductEntry> productEntry;
 
   ProductDetail({
@@ -40,4 +41,13 @@ class ProductDetail extends Product implements SupportDiscussion {
 
   @override
   String get discussionImageUrl => _imageUrl;
+
+  @override
+  String get productIndicatorTitle => name;
+
+  @override
+  double get productIndicatorPrice => price;
+
+  @override
+  String get productIndicatorImageUrl => _imageUrl;
 }

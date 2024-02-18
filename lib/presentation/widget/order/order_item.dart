@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../domain/entity/additionalitem/additional_item.dart';
 import '../../../domain/entity/order/combined_order.dart';
+import '../../../domain/entity/order/order.dart';
 import '../../../domain/entity/order/order_product_detail.dart';
 import '../../../misc/constant.dart';
 import '../../../misc/date_util.dart';
@@ -21,6 +22,7 @@ import '../modified_divider.dart';
 import '../modified_svg_picture.dart';
 import 'order_conclusion_item.dart';
 import 'order_product_detail_item.dart';
+import 'order_type.dart';
 
 abstract class OrderItem extends StatelessWidget {
   final CombinedOrder order;
@@ -65,7 +67,9 @@ abstract class OrderItem extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(orderProductDetailList.isEmpty ? "Warehouse".tr : "Shopping".tr, style: const TextStyle(fontWeight: FontWeight.bold)),
+                                  OrderType(
+                                    combinedOrder: order
+                                  ),
                                   Text(DateUtil.standardDateFormat7.format(order.createdAt))
                                 ]
                               ),

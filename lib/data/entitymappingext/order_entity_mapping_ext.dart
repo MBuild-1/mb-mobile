@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:masterbagasi/data/entitymappingext/additional_item_entity_mapping_ext.dart';
 import 'package:masterbagasi/data/entitymappingext/address_entity_mapping_ext.dart';
 import 'package:masterbagasi/data/entitymappingext/coupon_entity_mapping_ext.dart';
@@ -29,6 +27,7 @@ import '../../domain/entity/order/order_purchasing.dart';
 import '../../domain/entity/order/order_shipping.dart';
 import '../../domain/entity/order/order_summary.dart';
 import '../../domain/entity/order/ordertracking/order_tracking.dart';
+import '../../domain/entity/order/ordertracking/order_tracking_detail.dart';
 import '../../domain/entity/order/ordertracking/order_tracking_location.dart';
 import '../../domain/entity/order/ordertracking/order_tracking_location_address.dart';
 import '../../domain/entity/order/ordertransaction/order_transaction_status_code_and_status_message.dart';
@@ -40,12 +39,9 @@ import '../../domain/entity/order/repurchase/responsetype/default_repurchase_res
 import '../../domain/entity/order/repurchase/responsetype/no_repurchase_response_type.dart';
 import '../../domain/entity/order/repurchase/responsetype/only_warehouse_repurchase_response_type.dart';
 import '../../domain/entity/order/support_order_product.dart';
-import '../../domain/entity/payment/paymentinstruction/payment_instruction_group.dart';
-import '../../domain/entity/summaryvalue/summary_value.dart';
 import '../../misc/constant.dart';
 import '../../misc/date_util.dart';
 import '../../misc/error/message_error.dart';
-import '../../misc/error_helper.dart';
 import '../../misc/multi_language_string.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/response_wrapper.dart';
@@ -71,6 +67,15 @@ extension ProductEntityMappingExt on ResponseWrapper {
       (orderTrackingResponse) => ResponseWrapper(orderTrackingResponse).mapFromResponseToOrderTracking()
     ).toList();
   }
+
+  List<OrderTrackingDetail> mapFromResponseToOrderTrackingDetailList() {
+    if (response == null) {
+      return [];
+    }
+    return response.map<OrderTrackingDetail>(
+      (orderTrackingDetailResponse) => ResponseWrapper(orderTrackingDetailResponse).mapFromResponseToOrderTrackingDetail()
+    ).toList();
+  }
 }
 
 extension OrderDetailEntityMappingExt on ResponseWrapper {
@@ -79,8 +84,7 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
     effectiveOrderSummary ??= response["summary"];
     return Order(
       orderSummary: ResponseWrapper(effectiveOrderSummary).mapFromResponseToOrderSummary(),
-      combinedOrder: ResponseWrapper(response).mapFromResponseToCombinedOrder(),
-      orderTrackingList: ResponseWrapper(response["tracking"]).mapFromResponseToOrderTrackingList()
+      combinedOrder: ResponseWrapper(response).mapFromResponseToCombinedOrder()
     );
   }
 
@@ -89,17 +93,27 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
     effectiveOrderSummary ??= response["summary"];
     return Order(
       orderSummary: ResponseWrapper(effectiveOrderSummary).mapFromResponseToOrderSummary(),
-      combinedOrder: ResponseWrapper(response["combined_order"]).mapFromResponseToCombinedOrder(),
-      orderTrackingList: ResponseWrapper(response["tracking"]).mapFromResponseToOrderTrackingList()
+      combinedOrder: ResponseWrapper(response["combined_order"]).mapFromResponseToCombinedOrder()
     );
   }
 
   OrderTracking mapFromResponseToOrderTracking() {
     return OrderTracking(
+      id: response["id"],
+      orderShippingId: response["order_shipping_id"],
+      trackingNumber: response["tracking_number"],
+      arrived: response["arrived"],
+      weight: ResponseWrapper(response["weight"]).mapFromResponseToDouble()!,
+      orderTrackingDetailList: ResponseWrapper(response["event"]).mapFromResponseToOrderTrackingDetailList()
+    );
+  }
+
+  OrderTrackingDetail mapFromResponseToOrderTrackingDetail() {
+    return OrderTrackingDetail(
       timeStamp: ResponseWrapper(response["timestamp"]).mapFromResponseToDateTime(convertIntoLocalTime: false)!,
       orderTrackingLocation: ResponseWrapper(response["location"]).mapFromResponseToOrderTrackingLocation(),
       description: MultiLanguageString(response["description"]),
-      pieceIdList: response["pieceIds"].map<String>((pieceId) => pieceId as String).toList()
+      pieceIdList: (response["pieceIds"] ?? []).map<String>((pieceId) => pieceId as String).toList()
     );
   }
 
@@ -223,7 +237,8 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
       status: response["status"],
       notes: response["notes"],
       orderDetail: ResponseWrapper(response["order"]).mapFromResponseToOrderDetail(),
-      orderProductInOrderShipping: ResponseWrapper(response["order_product"]).mapFromResponseToOrderProductInOrderShipping()
+      orderProductInOrderShipping: ResponseWrapper(response["order_product"]).mapFromResponseToOrderProductInOrderShipping(),
+      orderTrackingList: ResponseWrapper(response["shipment_trackings"]).mapFromResponseToOrderTrackingList()
     );
   }
 

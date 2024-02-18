@@ -4,7 +4,9 @@ import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 
 import '../../../controller/modaldialogcontroller/order_tracking_modal_dialog_controller.dart';
 import '../../../domain/entity/order/ordertracking/order_tracking.dart';
+import '../../../domain/entity/order/ordertracking/order_tracking_detail.dart';
 import '../../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
+import '../../../misc/controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/order_tracking_detail_list_item_controller_state.dart';
 import '../../../misc/controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/order_tracking_list_item_controller_state.dart';
 import '../../../misc/controllerstate/paging_controller_state.dart';
 import '../../../misc/errorprovider/error_provider.dart';
@@ -87,8 +89,8 @@ class _StatefulOrderTrackingModalDialogControllerMediatorWidgetState extends Sta
     return SuccessLoadDataResult(
       value: PagingDataResult<ListItemControllerState>(
         itemList: <ListItemControllerState>[
-          OrderTrackingListItemControllerState(
-            orderTrackingList: widget.orderTrackingModalDialogPageParameter.orderTrackingList,
+          OrderTrackingDetailListItemControllerState(
+            orderTracking: widget.orderTrackingModalDialogPageParameter.orderTracking,
             errorProvider: () => Injector.locator<ErrorProvider>()
           )
         ],
@@ -130,9 +132,9 @@ class _StatefulOrderTrackingModalDialogControllerMediatorWidgetState extends Sta
 }
 
 class OrderTrackingModalDialogPageParameter {
-  List<OrderTracking> orderTrackingList;
+  OrderTracking orderTracking;
 
   OrderTrackingModalDialogPageParameter({
-    required this.orderTrackingList
+    required this.orderTracking
   });
 }

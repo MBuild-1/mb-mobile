@@ -235,6 +235,9 @@ extension UserDetailEntityMappingExt on ResponseWrapper {
   }
 
   UserProfile mapFromResponseToUserProfile() {
+    if (response == null) {
+      return NoUserProfile();
+    }
     return UserProfile(
       id: response["id"],
       userId: response["user_id"],

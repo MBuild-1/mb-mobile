@@ -129,14 +129,17 @@ class _StatefulPaymentParameterModalDialogControllerMediatorWidgetState extends 
               setState(() => _paymentMethod = null);
             },
             onSelectCoupon: () {
-              String? couponLoadDataResultId = _couponLoadDataResult.resultIfSuccess?.id;
-              widget.paymentParameterModalDialogPageParameter.onGotoSelectCouponPage(couponLoadDataResultId);
+              if (widget.paymentParameterModalDialogPageParameter.onGotoSelectCouponPage != null) {
+                String? couponLoadDataResultId = _couponLoadDataResult.resultIfSuccess?.id;
+                widget.paymentParameterModalDialogPageParameter.onGotoSelectCouponPage!(couponLoadDataResultId);
+              }
             },
             onRemoveCoupon: () {
               setState(() => _couponLoadDataResult = NoLoadDataResult<Coupon>());
             },
             errorProvider: () => Injector.locator(),
-            onUpdateState: () => setState(() {})
+            onUpdateState: () => setState(() {}),
+            showSelectCoupon: widget.paymentParameterModalDialogPageParameter.onGotoSelectCouponPage != null
           )
         ],
         page: 1,
@@ -195,7 +198,7 @@ class _StatefulPaymentParameterModalDialogControllerMediatorWidgetState extends 
 class PaymentParameterModalDialogPageParameter {
   PaymentParameterModalDialogPageDelegate paymentParameterModalDialogPageDelegate;
   void Function(String? paymentMethodSettlingId) onGotoSelectPaymentMethodPage;
-  void Function(String? couponId) onGotoSelectCouponPage;
+  void Function(String? couponId)? onGotoSelectCouponPage;
   void Function(String? paymentMethodSettlingId, String? couponId) onProcessPaymentParameter;
   String Function() titleLabel;
   String Function() buttonLabel;
@@ -203,7 +206,7 @@ class PaymentParameterModalDialogPageParameter {
   PaymentParameterModalDialogPageParameter({
     required this.paymentParameterModalDialogPageDelegate,
     required this.onGotoSelectPaymentMethodPage,
-    required this.onGotoSelectCouponPage,
+    this.onGotoSelectCouponPage,
     required this.onProcessPaymentParameter,
     required this.titleLabel,
     required this.buttonLabel

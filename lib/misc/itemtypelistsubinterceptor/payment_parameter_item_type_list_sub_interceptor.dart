@@ -10,12 +10,12 @@ import '../load_data_result.dart';
 import '../typedef.dart';
 import 'item_type_list_sub_interceptor.dart';
 
-class PurchaseDirectItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItemControllerState> {
+class PaymentParameterItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItemControllerState> {
   final DoubleReturned padding;
   final DoubleReturned itemSpacing;
   final ListItemControllerStateItemTypeInterceptorChecker listItemControllerStateItemTypeInterceptorChecker;
 
-  PurchaseDirectItemTypeListSubInterceptor({
+  PaymentParameterItemTypeListSubInterceptor({
     required this.padding,
     required this.itemSpacing,
     required this.listItemControllerStateItemTypeInterceptorChecker
@@ -36,7 +36,7 @@ class PurchaseDirectItemTypeListSubInterceptor extends ItemTypeListSubIntercepto
         )
       );
 
-      // Selected Payment Method
+      // Select Payment Method
       listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
         i,
         ListItemControllerStateWrapper(
@@ -60,28 +60,29 @@ class PurchaseDirectItemTypeListSubInterceptor extends ItemTypeListSubIntercepto
         newItemTypeList
       );
 
-      newItemTypeList.add(
-        VirtualSpacingListItemControllerState(
-          height: 26.0
-        )
-      );
-
-      // Purchase Direct
-      listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
-        i,
-        ListItemControllerStateWrapper(
-          CouponIndicatorListItemControllerState(
-            getSelectedCouponLoadDataResult: oldItemType.onGetCouponLoadDataResult,
-            setSelectedCouponLoadDataResult: oldItemType.onSetCouponLoadDataResult,
-            errorProvider: oldItemType.errorProvider,
-            onUpdateCoupon: (coupon) {},
-            onUpdateState: oldItemType.onUpdateState,
-            onSelectCoupon: oldItemType.onSelectCoupon
+      // Select Coupon
+      if (oldItemType.showSelectCoupon) {
+        newItemTypeList.add(
+          VirtualSpacingListItemControllerState(
+            height: 26.0
           )
-        ),
-        oldItemTypeList,
-        newItemTypeList
-      );
+        );
+        listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
+          i,
+          ListItemControllerStateWrapper(
+            CouponIndicatorListItemControllerState(
+              getSelectedCouponLoadDataResult: oldItemType.onGetCouponLoadDataResult,
+              setSelectedCouponLoadDataResult: oldItemType.onSetCouponLoadDataResult,
+              errorProvider: oldItemType.errorProvider,
+              onUpdateCoupon: (coupon) {},
+              onUpdateState: oldItemType.onUpdateState,
+              onSelectCoupon: oldItemType.onSelectCoupon
+            )
+          ),
+          oldItemTypeList,
+          newItemTypeList
+        );
+      }
 
       newItemTypeList.add(
         VirtualSpacingListItemControllerState(

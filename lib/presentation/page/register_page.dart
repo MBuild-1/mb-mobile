@@ -868,24 +868,26 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
                       }
                       loginWidgetList.add(loginWidget);
                     }
-                    addLoginWidget(
-                      SizedOutlineGradientButton(
-                        width: double.infinity,
-                        outlineGradientButtonType: OutlineGradientButtonType.outline,
-                        onPressed: widget.registerController.registerWithGoogle,
-                        text: "Register With Google".tr,
-                      ),
-                    );
-                    if (Platform.isIOS) {
+                    if (Platform.isAndroid) {
                       addLoginWidget(
                         SizedOutlineGradientButton(
                           width: double.infinity,
                           outlineGradientButtonType: OutlineGradientButtonType.outline,
-                          onPressed: widget.registerController.registerWithApple,
-                          text: "Register With Apple".tr,
+                          onPressed: widget.registerController.registerWithGoogle,
+                          text: "Register With Google".tr,
                         ),
                       );
                     }
+                    // if (Platform.isIOS) {
+                    //   addLoginWidget(
+                    //     SizedOutlineGradientButton(
+                    //       width: double.infinity,
+                    //       outlineGradientButtonType: OutlineGradientButtonType.outline,
+                    //       onPressed: widget.registerController.registerWithApple,
+                    //       text: "Register With Apple".tr,
+                    //     ),
+                    //   );
+                    // }
                     if (loginWidgetList.isNotEmpty) {
                       loginWidgetList.insertAll(0, [
                         SizedBox(height: 3.h),
