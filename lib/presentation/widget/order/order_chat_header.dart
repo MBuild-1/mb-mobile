@@ -35,6 +35,16 @@ class OrderChatHeader extends StatelessWidget {
             context, orderLoadDataResult as FailedLoadDataResult, errorProvider
           );
         }
+        if (orderLoadDataResult.isNotLoading) {
+          return defaultLoadDataResultWidget.noLoadDataResultWidget(
+            context, orderLoadDataResult as NoLoadDataResult
+          );
+        }
+        if (orderLoadDataResult.isLoading) {
+          return defaultLoadDataResultWidget.isLoadingLoadDataResultWidget(
+            context, orderLoadDataResult as IsLoadingLoadDataResult
+          );
+        }
         return SizedBox(
           child: Material(
             borderRadius: BorderRadius.circular(8.0),
@@ -58,16 +68,12 @@ class OrderChatHeader extends StatelessWidget {
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      OrderType(
-                                        combinedOrder: combinedOrder
+                                      Text(
+                                        combinedOrder.orderCode,
+                                        style: const TextStyle(fontWeight: FontWeight.bold)
                                       ),
-                                      Text(DateUtil.standardDateFormat7.format(combinedOrder.createdAt))
                                     ]
                                   ),
-                                ),
-                                ColorfulChip(
-                                  text: combinedOrder.status,
-                                  color: Colors.grey.shade300
                                 ),
                               ]
                             ),
