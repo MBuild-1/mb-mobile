@@ -44,6 +44,9 @@ class _DeviceHelperImpl {
         );
       }
       TrackingStatus status = await AppTrackingTransparency.trackingAuthorizationStatus;
+      if (status == TrackingStatus.notDetermined) {
+        status = await AppTrackingTransparency.requestTrackingAuthorization();
+      }
       if (status == TrackingStatus.authorized) {
         return SuccessTrackingStatusResult(
           trackingStatus: status
