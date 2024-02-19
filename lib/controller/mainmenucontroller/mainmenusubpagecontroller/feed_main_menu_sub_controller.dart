@@ -145,10 +145,9 @@ class FeedMainMenuSubController extends BaseGetxController {
 
   IDynamicItemCarouselComponentEntity getNewsList() {
     return DynamicItemCarouselComponentEntity(
-      title: MultiLanguageString({
-        Constant.textEnUsLanguageKey: "Master Bagasi's Blog",
-        Constant.textInIdLanguageKey: "Blog Master Bagasi"
-      }),
+      title: MultiLanguageString(
+        TrMultiLanguageStringValue(text: "Master Bagasi's Blog")
+      ),
       onDynamicItemAction: (title, description, observer) async {
         observer(title, description, IsLoadingLoadDataResult<List<News>>());
         LoadDataResult<List<News>> newsPagingDataResult = await getNewsUseCase.execute().future(
