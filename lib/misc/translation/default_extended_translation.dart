@@ -366,7 +366,8 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "No order data exists": "Tidak ada data order yang tersedia",
       "Second Payment": "Pembayaran Kedua",
       "Product Chat": "Chat Produk",
-      "Order Chat": "Chat Order"
+      "Order Chat": "Chat Order",
+      "Tax Rate": "Persentase Pajak"
     }
   };
 

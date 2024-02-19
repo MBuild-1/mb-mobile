@@ -57,7 +57,15 @@ abstract class PaymentMethodItem extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 13.0
                       )
-                    )
+                    ),
+                    if (paymentMethod.taxRate != null) ...[
+                      Text(
+                        "${"Tax Rate".tr}: ${paymentMethod.taxRate}%",
+                        style: const TextStyle(
+                          fontSize: 13.0
+                        )
+                      )
+                    ]
                   ],
                 ),
               )
