@@ -12,6 +12,7 @@ import 'package:masterbagasi/presentation/page/web_viewer_page.dart';
 import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 
 import '../../controller/order_detail_controller.dart';
+import '../../domain/entity/order/arrived_order_request.dart';
 import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderparameter/remove_warehouse_in_order_parameter.dart';
 import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderresponse/modify_warehouse_in_order_response.dart';
 import '../../domain/entity/order/order.dart';
@@ -26,6 +27,7 @@ import '../../domain/usecase/order_transaction_use_case.dart';
 import '../../domain/usecase/shipping_payment_use_case.dart';
 import '../../misc/additionalsummarywidgetparameter/order_transaction_additional_summary_widget_parameter.dart';
 import '../../misc/constant.dart';
+import '../../misc/controllercontentdelegate/arrived_order_controller_content_delegate.dart';
 import '../../misc/controllercontentdelegate/repurchase_controller_content_delegate.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/load_data_result_dynamic_list_item_controller_state.dart';
@@ -67,6 +69,7 @@ import '../../misc/temp_order_detail_back_result_data_helper.dart';
 import '../../misc/toast_helper.dart';
 import '../../misc/widgetbindingobserver/payment_widget_binding_observer.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
+import '../widget/colorful_chip_tab_bar.dart';
 import '../widget/countdown_indicator.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modified_scaffold.dart';
@@ -102,6 +105,7 @@ class OrderDetailPage extends RestorableGetxPage<_OrderDetailPageRestoration> {
         Injector.locator<OrderTransactionUseCase>(),
         Injector.locator<ShippingPaymentUseCase>(),
         Injector.locator<RepurchaseControllerContentDelegate>(),
+        Injector.locator<ArrivedOrderControllerContentDelegate>()
       ),
       tag: pageName
     );
@@ -519,7 +523,16 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
             },
             onPayOrderShipping: _payOrderShipping,
             orderTransactionListItemControllerState: () => loadOrderDetailResponse.orderTransactionListItemControllerState,
-            errorProvider: () => Injector.locator<ErrorProvider>()
+            errorProvider: () => Injector.locator<ErrorProvider>(),
+            onConfirmArrived: (order) => DialogHelper.showPromptConfirmArrived(
+              context, () {
+                widget.orderDetailController.arrivedOrderControllerContentDelegate.arrivedOrder(
+                  ArrivedOrderParameter(
+                    combinedOrderId: order.id
+                  )
+                );
+              }
+            ),
           )
         ],
         page: 1,
@@ -593,6 +606,18 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
             parameter: 1
           );
         }
+      )
+    );
+    widget.orderDetailController.arrivedOrderControllerContentDelegate.setArrivedOrderDelegate(
+      Injector.locator<ArrivedOrderDelegateFactory>().generateArrivedOrderDelegate(
+        onGetBuildContext: () => context,
+        onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
+        onArrivedOrderProcessSuccessCallback: (arrivedOrderResponse) async {
+          _refreshOrderDetail();
+          if (MainRouteObserver.onRefreshOrderList != null) {
+            MainRouteObserver.onRefreshOrderList!();
+          }
+        },
       )
     );
     widget.orderDetailController.setOrderDetailDelegate(

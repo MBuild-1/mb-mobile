@@ -13,6 +13,7 @@ class OrderDetailContainerListItemControllerState extends ListItemControllerStat
   void Function() onShowOrderListIsClosedDialog;
   void Function(CombinedOrder) onOpenOrderInvoice;
   void Function() onPayOrderShipping;
+  void Function(CombinedOrder) onConfirmArrived;
   ListItemControllerState Function() orderTransactionListItemControllerState;
   ErrorProvider Function() errorProvider;
 
@@ -24,6 +25,7 @@ class OrderDetailContainerListItemControllerState extends ListItemControllerStat
     required this.onShowOrderListIsClosedDialog,
     required this.onOpenOrderInvoice,
     required this.onPayOrderShipping,
+    required this.onConfirmArrived,
     required this.orderTransactionListItemControllerState,
     required this.errorProvider
   });

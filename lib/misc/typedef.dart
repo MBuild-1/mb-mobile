@@ -3,6 +3,7 @@ import 'package:masterbagasi/misc/aspect_ratio_value.dart';
 
 import '../controller/base_getx_controller.dart';
 import '../domain/entity/bucket/checkbucket/check_bucket_response.dart';
+import '../domain/entity/order/arrived_order_response.dart';
 import '../domain/entity/order/order.dart';
 import '../domain/entity/product/productbrand/favorite_product_brand.dart';
 import '../domain/entity/wishlist/wishlist.dart';
@@ -59,3 +60,6 @@ typedef OnShowCheckSharedCartRequestProcessFailedCallback = Future<void> Functio
 typedef OnGetPushNotificationSubscriptionId = String Function();
 typedef OnLoginIntoOneSignal = Future<LoadDataResult<String>> Function(String);
 typedef OnRequestTrackingAuthorizationForIos = Future<LoadDataResult<TrackingStatusResult>> Function();
+typedef OnShowArrivedOrderProcessLoadingCallback = Future<void> Function();
+typedef OnArrivedOrderProcessSuccessCallback = Future<void> Function(ArrivedOrderResponse);
+typedef OnShowArrivedOrderProcessFailedCallback = Future<void> Function(dynamic e);

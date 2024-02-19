@@ -20,6 +20,7 @@ import '../domain/usecase/get_order_based_id_use_case.dart';
 import '../domain/usecase/order_transaction_use_case.dart';
 import '../domain/usecase/shipping_payment_use_case.dart';
 import '../misc/additionalsummarywidgetparameter/order_transaction_additional_summary_widget_parameter.dart';
+import '../misc/controllercontentdelegate/arrived_order_controller_content_delegate.dart';
 import '../misc/controllercontentdelegate/repurchase_controller_content_delegate.dart';
 import '../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../misc/countdown/configuration/orderdetail/order_detail_configure_countdown_component.dart';
@@ -50,6 +51,7 @@ class OrderDetailController extends BaseGetxController {
   final OrderTransactionUseCase orderTransactionUseCase;
   final ShippingPaymentUseCase shippingPaymentUseCase;
   final RepurchaseControllerContentDelegate repurchaseControllerContentDelegate;
+  final ArrivedOrderControllerContentDelegate arrivedOrderControllerContentDelegate;
   OrderDetailDelegate? _orderDetailDelegate;
 
   OrderDetailController(
@@ -58,9 +60,13 @@ class OrderDetailController extends BaseGetxController {
     this.modifyWarehouseInOrderUseCase,
     this.orderTransactionUseCase,
     this.shippingPaymentUseCase,
-    this.repurchaseControllerContentDelegate
+    this.repurchaseControllerContentDelegate,
+    this.arrivedOrderControllerContentDelegate
   ) {
     repurchaseControllerContentDelegate.setApiRequestManager(
+      () => apiRequestManager
+    );
+    arrivedOrderControllerContentDelegate.setApiRequestManager(
       () => apiRequestManager
     );
   }

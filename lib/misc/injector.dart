@@ -295,6 +295,7 @@ import 'additionalloadingindicatorchecker/product_detail_additional_paging_resul
 import 'additionalloadingindicatorchecker/shared_cart_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/take_friend_cart_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/wishlist_sub_additional_paging_result_parameter_checker.dart';
+import 'controllercontentdelegate/arrived_order_controller_content_delegate.dart';
 import 'controllercontentdelegate/product_brand_favorite_controller_content_delegate.dart';
 import 'controllercontentdelegate/repurchase_controller_content_delegate.dart';
 import 'controllercontentdelegate/shared_cart_controller_content_delegate.dart';
@@ -568,6 +569,11 @@ class _Injector {
         checkBucketUseCase: locator()
       )
     );
+    locator.registerFactory<ArrivedOrderControllerContentDelegate>(
+      () => ArrivedOrderControllerContentDelegate(
+        arrivedOrderUseCase: locator()
+      )
+    );
 
     // Controller Delegate Factory
     locator.registerLazySingleton<WishlistAndCartDelegateFactory>(
@@ -581,6 +587,9 @@ class _Injector {
     );
     locator.registerLazySingleton<SharedCartDelegateFactory>(
       () => SharedCartDelegateFactory()
+    );
+    locator.registerLazySingleton<ArrivedOrderDelegateFactory>(
+      () => ArrivedOrderDelegateFactory()
     );
 
     // Default Load Data Result Widget
