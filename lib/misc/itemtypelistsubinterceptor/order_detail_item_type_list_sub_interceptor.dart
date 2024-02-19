@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:masterbagasi/misc/ext/address_ext.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/order_purchasing_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
@@ -629,9 +630,9 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
     );
     ListItemControllerState paymentTypeListItemControllerState = TitleAndDescriptionListItemControllerState(
       title: "Address".tr,
-      description: order.combinedOrder.orderProduct.userAddress?.address,
+      description: order.combinedOrder.orderAddress?.address,
       titleAndDescriptionItemInterceptor: (padding, title, titleWidget, description, descriptionWidget, titleAndDescriptionWidget, titleAndDescriptionWidgetList) {
-        Address? userAddress = order.combinedOrder.orderProduct.userAddress;
+        Address? userAddress = order.combinedOrder.orderAddress?.toAddress();
         if (userAddress != null) {
           titleAndDescriptionWidgetList[titleAndDescriptionWidgetList.length - 2] = const SizedBox(height: 5);
         }

@@ -18,6 +18,7 @@ import '../../domain/entity/order/combined_order.dart';
 import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderresponse/change_warehouse_in_order_response.dart';
 import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderresponse/remove_warehouse_in_order_response.dart';
 import '../../domain/entity/order/order.dart';
+import '../../domain/entity/order/order_address.dart';
 import '../../domain/entity/order/order_detail.dart';
 import '../../domain/entity/order/order_product.dart';
 import '../../domain/entity/order/order_product_detail.dart';
@@ -157,6 +158,7 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
       coupon: response["coupon"] != null ? ResponseWrapper(response["coupon"]).mapFromResponseToCoupon() : null,
       user: ResponseWrapper(response["user"]).mapFromResponseToUser(),
       orderProduct: ResponseWrapper(response["order_product"]).mapFromResponseToOrderProduct(),
+      orderAddress: response["order_addresses"] != null ? ResponseWrapper(response["order_addresses"]).mapFromResponseToOrderAddress() : null,
       orderShipping: response["order_shipping"] != null ? ResponseWrapper(response["order_shipping"]).mapFromResponseToOrderShipping() : null,
       orderPurchasingList: response["repurchase"] != null ? response["repurchase"].map<OrderPurchasing>(
         (orderPurchasingResponse) => ResponseWrapper(orderPurchasingResponse).mapFromResponseToOrderPurchasing()
@@ -260,6 +262,32 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
       quantity: response["quantity"],
       notes: response["notes"],
       supportOrderProduct: ResponseWrapper(response).mapFromResponseToSupportOrderProduct()
+    );
+  }
+
+  OrderAddress mapFromResponseToOrderAddress() {
+    if (response == null) {
+      throw MultiLanguageMessageError(
+        title: MultiLanguageString({
+          Constant.textEnUsLanguageKey: "No order address.",
+          Constant.textInIdLanguageKey: "Tidak ada alamat pemesanan."
+        })
+      );
+    }
+    return OrderAddress(
+      id: response["id"],
+      combinedOrderId: response["combined_order_id"],
+      countryId: response["country_id"],
+      label: response["label"],
+      address: response["address"],
+      phoneNumber: response["phone_number"],
+      zipCode: response["zip_code"],
+      city: response["city"],
+      state: response["state"],
+      name: response["name"],
+      email: response["email"],
+      address2: response["address2"],
+      country: ResponseWrapper(response["country"]).mapFromResponseToCountry(),
     );
   }
 

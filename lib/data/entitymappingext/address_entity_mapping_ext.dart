@@ -113,7 +113,7 @@ extension AddressDetailEntityMappingExt on ResponseWrapper {
       name: response["name"],
       code: response["code"],
       phoneCode: response["phone_code"],
-      zone: ResponseWrapper(response["zone"]).mapFromResponseToZone()
+      zone: response["zone"] != null ? ResponseWrapper(response["zone"]).mapFromResponseToZone() : null
     );
   }
 
