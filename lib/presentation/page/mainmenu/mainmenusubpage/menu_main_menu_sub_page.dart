@@ -416,22 +416,22 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
                     titleInterceptor: menuTitleInterceptor,
                     padding: menuPadding
                   ),
-                  ProfileMenuListItemControllerState(
-                    onTap: (context) => DialogHelper.showPromptUnderConstruction(context),
-                    icon: (BuildContext context) => menuIcon(Constant.vectorNotificationConfiguration),
-                    title: 'Notification Configuration'.tr,
-                    description: "${'Manage all kinds of notification messages'.tr}.",
-                    titleInterceptor: menuTitleInterceptor,
-                    padding: menuPadding
-                  ),
-                  ProfileMenuListItemControllerState(
-                    onTap: (context) => DialogHelper.showPromptUnderConstruction(context),
-                    icon: (BuildContext context) => menuIcon(Constant.vectorAccountPrivacy),
-                    title: 'Account Privation'.tr,
-                    description: "${'Manage data usage and connected accounts'.tr}.",
-                    titleInterceptor: menuTitleInterceptor,
-                    padding: menuPadding
-                  ),
+                  // ProfileMenuListItemControllerState(
+                  //   onTap: (context) => DialogHelper.showPromptUnderConstruction(context),
+                  //   icon: (BuildContext context) => menuIcon(Constant.vectorNotificationConfiguration),
+                  //   title: 'Notification Configuration'.tr,
+                  //   description: "${'Manage all kinds of notification messages'.tr}.",
+                  //   titleInterceptor: menuTitleInterceptor,
+                  //   padding: menuPadding
+                  // ),
+                  // ProfileMenuListItemControllerState(
+                  //   onTap: (context) => DialogHelper.showPromptUnderConstruction(context),
+                  //   icon: (BuildContext context) => menuIcon(Constant.vectorAccountPrivacy),
+                  //   title: 'Account Privation'.tr,
+                  //   description: "${'Manage data usage and connected accounts'.tr}.",
+                  //   titleInterceptor: menuTitleInterceptor,
+                  //   padding: menuPadding
+                  // ),
                   SpacingListItemControllerState(),
                   profileDropdownListItemControllerState,
                   SpacingListItemControllerState(),
