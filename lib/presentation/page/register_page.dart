@@ -427,7 +427,7 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
                                         isError: validationResult.isFailed,
                                         controller: _emailTextEditingController,
                                         decoration: DefaultInputDecoration(
-                                          label: Text("Email Or Phone Number".tr),
+                                          label: Text("Email Or WhatsApp Phone Number".tr),
                                           labelStyle: const TextStyle(color: Colors.black),
                                           floatingLabelStyle: const TextStyle(color: Colors.black),
                                           floatingLabelBehavior: FloatingLabelBehavior.always,
