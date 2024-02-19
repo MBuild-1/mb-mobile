@@ -150,7 +150,14 @@ class OrderConclusionItem extends StatelessWidget {
                               parameter: GiveReviewDeliveryReviewDetailModalDialogPageParameter(
                                 selectedRating: 5,
                                 combinedOrderId: order.id,
-                                countryId: (order.orderAddress?.countryId).toEmptyStringNonNull,
+                                countryId: () {
+                                  String orderAddressCountryId = (order.orderAddress?.countryId).toEmptyStringNonNull;
+                                  if (orderAddressCountryId.isNotEmptyString) {
+                                    return orderAddressCountryId;
+                                  }
+                                  String userAddressCountryId = (order.orderProduct.userAddress?.countryId).toEmptyStringNonNull;
+                                  return userAddressCountryId;
+                                }(),
                                 orderCode: order.orderCode
                               )
                             );
