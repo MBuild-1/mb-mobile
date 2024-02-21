@@ -35,7 +35,7 @@
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>This app uses location for tracking order pin point.</string>
     <key>NSUserTrackingUsageDescription</key>
-    <string>This app uses app tracking transparency for allowing user to share tracking user information that using for order shipping, tracking order, and personalization.</string>
+    <string>Your data is used to display content that is appropriate and relevant to your needs.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>
