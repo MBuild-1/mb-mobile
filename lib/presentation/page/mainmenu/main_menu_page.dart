@@ -17,6 +17,7 @@ import '../../../controller/mainmenucontroller/mainmenusubpagecontroller/menu_ma
 import '../../../controller/mainmenucontroller/mainmenusubpagecontroller/wishlist_main_menu_sub_controller.dart';
 import '../../../domain/usecase/get_help_message_by_user_use_case.dart';
 import '../../../misc/constant.dart';
+import '../../../misc/device_helper.dart';
 import '../../../misc/getextended/get_extended.dart';
 import '../../../misc/getextended/get_restorable_route_future.dart';
 import '../../../misc/injector.dart';
@@ -335,6 +336,9 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
       setState(() {});
       widget.mainMenuController.checkLoginStatus(reset: true);
     };
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      DeviceHelper.requestTrackingAuthorization();
+    });
   }
 
   void _initMainMenuPage() {
