@@ -567,102 +567,110 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
               child: Row(
                 children: [
                   Expanded(
-                    child: LoadDataResultImplementerDirectly<CartSummary>(
-                      loadDataResult: _cartSummaryLoadDataResult,
-                      errorProvider: Injector.locator<ErrorProvider>(),
-                      onImplementLoadDataResultDirectly: (cartSummaryLoadDataResult, errorProviderOutput) {
-                        if (cartSummaryLoadDataResult.isNotLoading) {
-                          return const SizedBox();
+                    child: Builder(
+                      builder: (context) {
+                        bool onlyWarehouse = _newCartListItemControllerStateList.isEmpty;
+                        if (onlyWarehouse) {
+                          return Container();
                         }
-                        bool hasLoadingShimmer = cartSummaryLoadDataResult.isNotLoading || cartSummaryLoadDataResult.isLoading;
-                        Widget result = Wrap(
-                          crossAxisAlignment: WrapCrossAlignment.end,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                        return LoadDataResultImplementerDirectly<CartSummary>(
+                          loadDataResult: _cartSummaryLoadDataResult,
+                          errorProvider: Injector.locator<ErrorProvider>(),
+                          onImplementLoadDataResultDirectly: (cartSummaryLoadDataResult, errorProviderOutput) {
+                            if (cartSummaryLoadDataResult.isNotLoading) {
+                              return const SizedBox();
+                            }
+                            bool hasLoadingShimmer = cartSummaryLoadDataResult.isNotLoading || cartSummaryLoadDataResult.isLoading;
+                            Widget result = Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.end,
                               children: [
-                                Text(
-                                  "Shopping Total".tr,
-                                  style: TextStyle(
-                                    backgroundColor: hasLoadingShimmer ? Colors.grey : null
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Builder(
-                                  builder: (context) {
-                                    String text = "No Loading";
-                                    if (cartSummaryLoadDataResult.isLoading) {
-                                      text = "Is Loading";
-                                    } else if (cartSummaryLoadDataResult.isSuccess) {
-                                      SummaryValue finalCartSummaryValue = cartSummaryLoadDataResult.resultIfSuccess!.finalSummaryValue.first;
-                                      if (finalCartSummaryValue.type == "currency") {
-                                        if (finalCartSummaryValue.value is num) {
-                                          text = (finalCartSummaryValue.value as num).toRupiah(withFreeTextIfZero: false);
-                                        } else {
-                                          text = double.parse(finalCartSummaryValue.value as String).toRupiah(withFreeTextIfZero: false);
-                                        }
-                                      } else {
-                                        text = finalCartSummaryValue.value;
-                                      }
-                                    } else if (cartSummaryLoadDataResult.isFailed) {
-                                      text = errorProviderOutput.onGetErrorProviderResult(
-                                        cartSummaryLoadDataResult.resultIfFailed!
-                                      ).toErrorProviderResultNonNull().message;
-                                    }
-                                    return Text(
-                                      text,
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Shopping Total".tr,
                                       style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
                                         backgroundColor: hasLoadingShimmer ? Colors.grey : null
-                                      )
-                                    );
-                                  }
-                                ),
-                              ]
-                            ),
-                            if (cartSummaryLoadDataResult.isSuccess) ...[
-                              TapArea(
-                                onTap: cartSummaryLoadDataResult.isSuccess ? () => DialogHelper.showModalBottomDialogPage<bool, CartSummary>(
-                                  context: context,
-                                  modalDialogPageBuilder: (context, parameter) => CartSummaryCartModalDialogPage(
-                                    cartSummary: parameter!
-                                  ),
-                                  parameter: cartSummaryLoadDataResult.resultIfSuccess!
-                                ) : null,
-                                child: SizedBox(
-                                  width: 40,
-                                  height: 30,
-                                  child: Stack(
-                                    children: [
-                                      Align(
-                                        alignment: Alignment.bottomCenter,
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Transform.rotate(
-                                              angle: math.pi / 2,
-                                              child: SizedBox(
-                                                child: ModifiedSvgPicture.asset(
-                                                  Constant.vectorArrow,
-                                                  height: 15,
-                                                ),
-                                              )
-                                            ),
-                                            const SizedBox(height: 4)
-                                          ],
-                                        ),
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Builder(
+                                      builder: (context) {
+                                        String text = "No Loading";
+                                        if (cartSummaryLoadDataResult.isLoading) {
+                                          text = "Is Loading";
+                                        } else if (cartSummaryLoadDataResult.isSuccess) {
+                                          SummaryValue finalCartSummaryValue = cartSummaryLoadDataResult.resultIfSuccess!.finalSummaryValue.first;
+                                          if (finalCartSummaryValue.type == "currency") {
+                                            if (finalCartSummaryValue.value is num) {
+                                              text = (finalCartSummaryValue.value as num).toRupiah(withFreeTextIfZero: false);
+                                            } else {
+                                              text = double.parse(finalCartSummaryValue.value as String).toRupiah(withFreeTextIfZero: false);
+                                            }
+                                          } else {
+                                            text = finalCartSummaryValue.value;
+                                          }
+                                        } else if (cartSummaryLoadDataResult.isFailed) {
+                                          text = errorProviderOutput.onGetErrorProviderResult(
+                                            cartSummaryLoadDataResult.resultIfFailed!
+                                          ).toErrorProviderResultNonNull().message;
+                                        }
+                                        return Text(
+                                          text,
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                            backgroundColor: hasLoadingShimmer ? Colors.grey : null
+                                          )
+                                        );
+                                      }
+                                    ),
+                                  ]
                                 ),
-                              )
-                            ]
-                          ]
+                                if (cartSummaryLoadDataResult.isSuccess) ...[
+                                  TapArea(
+                                    onTap: cartSummaryLoadDataResult.isSuccess ? () => DialogHelper.showModalBottomDialogPage<bool, CartSummary>(
+                                      context: context,
+                                      modalDialogPageBuilder: (context, parameter) => CartSummaryCartModalDialogPage(
+                                        cartSummary: parameter!
+                                      ),
+                                      parameter: cartSummaryLoadDataResult.resultIfSuccess!
+                                    ) : null,
+                                    child: SizedBox(
+                                      width: 40,
+                                      height: 30,
+                                      child: Stack(
+                                        children: [
+                                          Align(
+                                            alignment: Alignment.bottomCenter,
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Transform.rotate(
+                                                  angle: math.pi / 2,
+                                                  child: SizedBox(
+                                                    child: ModifiedSvgPicture.asset(
+                                                      Constant.vectorArrow,
+                                                      height: 15,
+                                                    ),
+                                                  )
+                                                ),
+                                                const SizedBox(height: 4)
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  )
+                                ]
+                              ]
+                            );
+                            return hasLoadingShimmer ? ModifiedShimmer.fromColors(
+                              child: result
+                            ) : result;
+                          }
                         );
-                        return hasLoadingShimmer ? ModifiedShimmer.fromColors(
-                          child: result
-                        ) : result;
                       }
                     ),
                   ),
@@ -686,7 +694,7 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
                       return SizedOutlineGradientButton(
                         onPressed: onPressed,
                         width: 120,
-                        text: "${"Pay".tr}${!onlyWarehousePay ? " ($_selectedCartCount)" : ""}",
+                        text: "${onlyWarehousePay ? "Send Items".tr : "Pay".tr}${!onlyWarehousePay ? " ($_selectedCartCount)" : ""}",
                         outlineGradientButtonType: OutlineGradientButtonType.solid,
                         outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
                       );
