@@ -235,10 +235,6 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
             buildListItemControllerState: () => CompoundListItemControllerState(
               listItemControllerState: [
                 ...firstListItemControllerStateList,
-                ColorfulDividerListItemControllerState(
-                  lineColorList: [Constant.colorButtonGradient2, Constant.colorButtonGradient3],
-                  lineHeight: 3
-                ),
                 ...middleListItemControllerStateList,
                 ...listItemControllerStateList,
                 if (!isLogin) ...[
@@ -1009,14 +1005,22 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
         },
         onObserveLoadCurrentAddress: (onObserveLoadCurrentAddressParameter) {
           MainRouteObserver.onRefreshAddress = onObserveLoadCurrentAddressParameter.repeatableDynamicItemCarouselAdditionalParameter.onRepeatLoading;
-          return DeliveryToListItemControllerState(
-            addressLoadDataResult: onObserveLoadCurrentAddressParameter.addressLoadDataResult,
-            errorProvider: Injector.locator<ErrorProvider>(),
-            onAddressSelectedChanged: (address) {
-              onObserveLoadCurrentAddressParameter.repeatableDynamicItemCarouselAdditionalParameter.onRepeatLoading();
-            },
-            onGotoAddAddress: () => PageRestorationHelper.toAddressPage(context),
-            selectAddressModalDialogPageActionDelegate: selectAddressModalDialogPageActionDelegate
+          return CompoundListItemControllerState(
+            listItemControllerState: [
+              DeliveryToListItemControllerState(
+                addressLoadDataResult: onObserveLoadCurrentAddressParameter.addressLoadDataResult,
+                errorProvider: Injector.locator<ErrorProvider>(),
+                onAddressSelectedChanged: (address) {
+                  onObserveLoadCurrentAddressParameter.repeatableDynamicItemCarouselAdditionalParameter.onRepeatLoading();
+                },
+                onGotoAddAddress: () => PageRestorationHelper.toAddressPage(context),
+                selectAddressModalDialogPageActionDelegate: selectAddressModalDialogPageActionDelegate
+              ),
+              ColorfulDividerListItemControllerState(
+                lineColorList: [Constant.colorButtonGradient2, Constant.colorButtonGradient3],
+                lineHeight: 3
+              ),
+            ]
           );
         },
         onObserveSuccessLoadProductSponsor: (onObserveSuccessLoadProductSponsorParameter) {

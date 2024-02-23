@@ -53,6 +53,7 @@ import '../../misc/controllerstate/paging_controller_state.dart';
 import '../../misc/date_util.dart';
 import '../../misc/dialog_helper.dart';
 import '../../misc/error/cart_empty_error.dart';
+import '../../misc/error/message_error.dart';
 import '../../misc/error/warehouse_empty_error.dart';
 import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/getextended/get_extended.dart';
@@ -70,6 +71,7 @@ import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
+import '../../misc/string_util.dart';
 import '../../misc/toast_helper.dart';
 import '../notifier/component_notifier.dart';
 import '../notifier/notification_notifier.dart';
@@ -91,7 +93,15 @@ import 'shared_cart_page.dart';
 class CartPage extends RestorableGetxPage<_CartPageRestoration> {
   late final ControllerMember<CartController> _cartController = ControllerMember<CartController>().addToControllerManager(controllerManager);
 
-  CartPage({Key? key}) : super(key: key, pageRestorationId: () => "cart-page");
+  final CartPageParameter cartPageParameter;
+
+  CartPage({
+    Key? key,
+    required this.cartPageParameter
+  }) : super(
+    key: key,
+    pageRestorationId: () => "cart-page"
+  );
 
   @override
   void onSetController() {
@@ -121,6 +131,7 @@ class CartPage extends RestorableGetxPage<_CartPageRestoration> {
   Widget buildPage(BuildContext context) {
     return _StatefulCartControllerMediatorWidget(
       cartController: _cartController.controller,
+      cartPageParameter: cartPageParameter
     );
   }
 }
@@ -146,11 +157,17 @@ class _CartPageRestoration extends ExtendedMixableGetxPageRestoration with CartP
 }
 
 class CartPageGetPageBuilderAssistant extends GetPageBuilderAssistant {
-  @override
-  GetPageBuilder get pageBuilder => (() => CartPage());
+  final CartPageParameter cartPageParameter;
+
+  CartPageGetPageBuilderAssistant({
+    required this.cartPageParameter
+  });
 
   @override
-  GetPageBuilder get pageWithOuterGetxBuilder => (() => GetxPageBuilder.buildRestorableGetxPage(CartPage()));
+  GetPageBuilder get pageBuilder => (() => CartPage(cartPageParameter: cartPageParameter));
+
+  @override
+  GetPageBuilder get pageWithOuterGetxBuilder => (() => GetxPageBuilder.buildRestorableGetxPage(CartPage(cartPageParameter: cartPageParameter)));
 }
 
 mixin CartPageRestorationMixin on MixableGetxPageRestoration {
@@ -187,8 +204,14 @@ class CartPageRestorableRouteFuture extends GetRestorableRouteFuture {
   }
 
   static Route<void>? _getRoute([Object? arguments]) {
+    if (arguments is! String) {
+      throw MessageError(message: "Arguments must be a String");
+    }
+    CartPageParameter cartPageParameter = arguments.toCartPageParameter();
     return GetExtended.toWithGetPageRouteReturnValue<void>(
-      GetxPageBuilder.buildRestorableGetxPageBuilder(CartPageGetPageBuilderAssistant()),
+      GetxPageBuilder.buildRestorableGetxPageBuilder(
+        CartPageGetPageBuilderAssistant(cartPageParameter: cartPageParameter)
+      ),
     );
   }
 
@@ -216,9 +239,11 @@ class CartPageRestorableRouteFuture extends GetRestorableRouteFuture {
 
 class _StatefulCartControllerMediatorWidget extends StatefulWidget {
   final CartController cartController;
+  final CartPageParameter cartPageParameter;
 
   const _StatefulCartControllerMediatorWidget({
-    required this.cartController
+    required this.cartController,
+    required this.cartPageParameter
   });
 
   @override
@@ -272,7 +297,15 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
   @override
   void initState() {
     super.initState();
-    _selectedSolidTabValue = _solidTabValueList[0].value;
+    _selectedSolidTabValue = () {
+      CartPageParameter cartPageParameter = widget.cartPageParameter;
+      if (cartPageParameter is TabRedirectionCartPageParameter) {
+        if (cartPageParameter.tabRedirectionCartType == TabRedirectionCartType.warehouse) {
+          return _solidTabValueList[1].value;
+        }
+      }
+      return _solidTabValueList[0].value;
+    }();
     _selectedSolidTabIndex = _getSelectedSolidTabIndexBasedSelectedSolidTabValue(_selectedSolidTabValue);
     _productNotifier = Provider.of<ProductNotifier>(context, listen: false);
     _cartScrollController = ScrollController();
@@ -771,4 +804,80 @@ class _DefaultCartContainerActionListItemControllerState extends CartContainerAc
 
   @override
   Future<LoadDataResult<RemoveAdditionalItemResponse>> Function(RemoveAdditionalItemParameter) get removeAdditionalItem => _removeAdditionalItem ?? (throw UnimplementedError());
+}
+
+abstract class CartPageParameter {}
+
+class DefaultCartPageParameter extends CartPageParameter {}
+
+class TabRedirectionCartPageParameter extends CartPageParameter {
+  TabRedirectionCartType tabRedirectionCartType;
+
+  TabRedirectionCartPageParameter({
+    required this.tabRedirectionCartType
+  });
+}
+
+enum TabRedirectionCartType {
+  cart, warehouse
+}
+
+extension CartPageParameterExt on CartPageParameter {
+  String toJsonString() => StringUtil.encodeJson(
+    () {
+      if (this is TabRedirectionCartPageParameter) {
+        TabRedirectionCartPageParameter tabRedirectionCartPageParameter = this as TabRedirectionCartPageParameter;
+        return <String, dynamic>{
+          "type": "tab-redirection-page-parameter",
+          "value": <String, dynamic>{
+            "tab_redirection_cart_page_type": () {
+              TabRedirectionCartType tabRedirectionCartType = tabRedirectionCartPageParameter.tabRedirectionCartType;
+              if (tabRedirectionCartType == TabRedirectionCartType.cart) {
+                return "cart";
+              } else if (tabRedirectionCartType == TabRedirectionCartType.warehouse) {
+                return "warehouse";
+              }
+              throw MessageError(title: "Tab redirection cart page type is not suitable");
+            }()
+          }
+        };
+      } else {
+        return <String, dynamic>{
+          "type": "default-cart-page-parameter"
+        };
+      }
+    }()
+  );
+}
+
+extension CartPageParameterStringExt on String {
+  CartPageParameter toCartPageParameter() {
+    Map<String, dynamic> result = StringUtil.decodeJson(this);
+    String? type = result["type"];
+    if (type == "tab-redirection-page-parameter") {
+      return TabRedirectionCartPageParameter(
+        tabRedirectionCartType: () {
+          dynamic value = result["value"];
+          if (value is Map<String, dynamic>) {
+            if (value.containsKey("tab_redirection_cart_page_type")) {
+              String? tabRedirectionCartPageType = value["tab_redirection_cart_page_type"];
+              if (tabRedirectionCartPageType == "cart") {
+                return TabRedirectionCartType.cart;
+              } else if (tabRedirectionCartPageType == "warehouse") {
+                return TabRedirectionCartType.warehouse;
+              } else {
+                throw MessageError(title: "Tab redirection cart page type is not suitable");
+              }
+            } else {
+              throw MessageError(title: "Tab redirection cart page type field is not exist");
+            }
+          } else {
+            throw MessageError(title: "Type must be Map");
+          }
+        }()
+      );
+    } else {
+      return DefaultCartPageParameter();
+    }
+  }
 }

@@ -15,6 +15,7 @@ import '../../../domain/entity/cart/support_cart.dart';
 import '../../../domain/entity/product/product_appearance_data.dart';
 import '../../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../../domain/entity/product/productentry/product_entry.dart';
+import '../../../presentation/page/cart_page.dart';
 import '../../../presentation/page/modaldialogpage/select_address_modal_dialog_page.dart';
 import '../../../presentation/widget/additional_item_summary_widget.dart';
 import '../../../presentation/widget/additional_item_widget.dart';
@@ -865,9 +866,21 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
               children: [
                 ModifiedSvgPicture.asset(Constant.vectorLocation, color: Colors.white),
                 const SizedBox(width: 10),
-                Text.rich(
-                  TextSpan(
-                    children: inlineSpanList
+                Flexible(
+                  child: Builder(
+                    builder: (context) {
+                      TextSpan textSpan = TextSpan(
+                        children: inlineSpanList
+                      );
+                      return Tooltip(
+                        richMessage: textSpan,
+                        child: Text.rich(
+                          textSpan,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                      );
+                    },
                   )
                 )
               ],
@@ -875,15 +888,69 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
           ),
         );
       }
-      if (addressLoadDataResult.isLoading) {
-        return IgnorePointer(
-          child: ModifiedShimmer.fromColors(
-            child: getDeliveryToWidget(addressLoadDataResult)
+      Widget addressWidget = () {
+        if (addressLoadDataResult.isLoading) {
+          return IgnorePointer(
+            child: ModifiedShimmer.fromColors(
+              child: getDeliveryToWidget(addressLoadDataResult)
+            ),
+          );
+        } else {
+          return getDeliveryToWidget(addressLoadDataResult);
+        }
+      }();
+      return Row(
+        children: [
+          Expanded(
+            child: addressWidget
           ),
-        );
-      } else {
-        return getDeliveryToWidget(addressLoadDataResult);
-      }
+          Expanded(
+            child: () {
+              List<InlineSpan> inlineSpanList = [
+                TextSpan(text: "Send Private Items".tr, style: const TextStyle(color: Colors.white)),
+              ];
+              return TapArea(
+                onTap: () async {
+                  LoginHelper.checkingLogin(context, () {
+                    PageRestorationHelper.toCartPage(
+                      context,
+                      cartPageParameter: TabRedirectionCartPageParameter(
+                        tabRedirectionCartType: TabRedirectionCartType.warehouse
+                      )
+                    );
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+                  color: Constant.colorDarkBlue,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Flexible(
+                        child: Builder(
+                          builder: (context) {
+                            TextSpan textSpan = TextSpan(
+                              children: inlineSpanList
+                            );
+                            return Tooltip(
+                              richMessage: textSpan,
+                              child: Text.rich(
+                                textSpan
+                              ),
+                            );
+                          }
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      ModifiedSvgPicture.asset(Constant.vectorArrow, color: Colors.white)
+                    ],
+                  ),
+                ),
+              );
+            }()
+          )
+        ],
+      );
     } else if (item is ProductDetailImageListItemControllerState) {
       List<ProductEntry> productEntryList = item.productEntryList;
       int productEntryIndex = item.onGetProductEntryIndex();

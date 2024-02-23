@@ -369,7 +369,8 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Order Chat": "Chat Order",
       "Tax Rate": "Persentase Pajak",
       "Master Bagasi's Blog": "Blog Master Bagasi",
-      "Send Items": "Kirim Barang"
+      "Send Items": "Kirim Barang",
+      "Send Private Items": "Kirim Barang Pribadi"
     }
   };
 
