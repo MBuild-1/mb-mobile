@@ -317,6 +317,10 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
             return OnlyWarehouseCreateOrderResponseType(
               combinedOrderId: paymentResponse["combined_order_id"]
             );
+          } else if (response is String) {
+            return OnlyWarehouseCreateOrderResponseType(
+              combinedOrderId: response
+            );
           } else {
             return NoCreateOrderResponseType();
           }
