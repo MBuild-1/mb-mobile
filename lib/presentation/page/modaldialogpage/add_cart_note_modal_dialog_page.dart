@@ -104,7 +104,7 @@ class _StatefulAddCartNoteControllerMediatorWidgetState extends State<_StatefulA
                 child: (context, validationResult, validator) => ModifiedTextField(
                   isError: validationResult.isFailed,
                   controller: _addCartTextEditingController,
-                  decoration: DefaultInputDecoration(hintText: "Enter Note".tr),
+                  decoration: DefaultInputDecoration(hintText: "Enter note".tr),
                   onChanged: (value) => validator?.validate(),
                   textInputAction: TextInputAction.next,
                 ),

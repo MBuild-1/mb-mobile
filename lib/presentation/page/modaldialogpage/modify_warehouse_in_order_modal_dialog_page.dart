@@ -262,11 +262,11 @@ class _StatefulModifyWarehouseInOrderControllerMediatorWidgetState extends State
                             var modifyWarehouseInOrderParameter = widget.modifyWarehouseInOrderModalDialogPageParameter.modifyWarehouseInOrderParameter;
                             if (modifyWarehouseInOrderParameter is AddWarehouseInOrderParameter) {
                               if (_localModifyWarehouseInOrderParameter is AddWarehouseInOrderParameter) {
-                                return "Send the Goods to Master Bagasi Warehouse".tr;
+                                return "Send the Goods to WH".tr;
                               } else if (_localModifyWarehouseInOrderParameter is ChangeWarehouseInOrderParameter) {
                                 return "Change New Item".tr;
                               }
-                              return "Send the Goods to Master Bagasi Warehouse".tr;
+                              return "Send the Goods to WH".tr;
                             } else if (modifyWarehouseInOrderParameter is ChangeWarehouseInOrderParameter) {
                               return "Change New Item".tr;
                             } else {
@@ -288,7 +288,7 @@ class _StatefulModifyWarehouseInOrderControllerMediatorWidgetState extends State
                       ),
                     ),
                     const SizedBox(height: 20),
-                    Text("Name".tr),
+                    Text("Item Name".tr),
                     const SizedBox(height: 10),
                     RxConsumer<Validator>(
                       rxValue: widget.modifyWarehouseInOrderModalDialogController.nameValidatorRx,
@@ -296,7 +296,7 @@ class _StatefulModifyWarehouseInOrderControllerMediatorWidgetState extends State
                         child: (context, validationResult, validator) => ModifiedTextField(
                           isError: validationResult.isFailed,
                           controller: _nameTextEditingController,
-                          decoration: const DefaultInputDecoration(hintText: ""),
+                          decoration: const DefaultInputDecoration(hintText: "Input item name"),
                           onChanged: (value) => validator?.validate(),
                           textInputAction: TextInputAction.next,
                         ),
@@ -304,7 +304,7 @@ class _StatefulModifyWarehouseInOrderControllerMediatorWidgetState extends State
                       ),
                     ),
                     const SizedBox(height: 20),
-                    Text("Price".tr),
+                    Text("Estimation Price".tr),
                     const SizedBox(height: 10),
                     RxConsumer<Validator>(
                       rxValue: widget.modifyWarehouseInOrderModalDialogController.priceValidatorRx,
@@ -314,7 +314,7 @@ class _StatefulModifyWarehouseInOrderControllerMediatorWidgetState extends State
                           inputFormatters: [currencyTextInputFormatter],
                           controller: _priceTextEditingController,
                           decoration: DefaultInputDecoration(
-                            hintText: "",
+                            hintText: "Enter estimation price",
                             prefixIcon: WidgetHelper.buildPrefixForTextField(
                               prefix: Text(
                                 "Rp. ",
@@ -339,7 +339,7 @@ class _StatefulModifyWarehouseInOrderControllerMediatorWidgetState extends State
                           isError: validationResult.isFailed,
                           controller: _weightTextEditingController,
                           decoration: DefaultInputDecoration(
-                            hintText: "",
+                            hintText: "Enter estimation weight".tr,
                             suffixIcon: WidgetHelper.buildSuffixForTextField(
                               suffix: Text(
                                 "Kg",
@@ -363,7 +363,7 @@ class _StatefulModifyWarehouseInOrderControllerMediatorWidgetState extends State
                         child: (context, validationResult, validator) => ModifiedTextField(
                           isError: validationResult.isFailed,
                           controller: _quantityTextEditingController,
-                          decoration: const DefaultInputDecoration(hintText: ""),
+                          decoration: const DefaultInputDecoration(hintText: "Enter quantity"),
                           onChanged: (value) => validator?.validate(),
                           textInputAction: TextInputAction.next,
                         ),
@@ -379,7 +379,7 @@ class _StatefulModifyWarehouseInOrderControllerMediatorWidgetState extends State
                         child: (context, validationResult, validator) => ModifiedTextField(
                           isError: validationResult.isFailed,
                           controller: _notesTextEditingController,
-                          decoration: const DefaultInputDecoration(hintText: ""),
+                          decoration: DefaultInputDecoration(hintText: "Enter note".tr),
                           onChanged: (value) => validator?.validate(),
                           textInputAction: TextInputAction.next,
                         ),

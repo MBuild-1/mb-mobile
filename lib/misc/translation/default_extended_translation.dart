@@ -71,7 +71,7 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Add Send Additional Items": "Tambah Kirim Barang",
       "Close Send Additional Items": "Tutup Tambah Kirim Barang",
       "Enter The Items You Want To Send Along With The Estimated Weight and Price": "Masukan Barang Yang Mau Dikirim Beserta Estimasi Berat dan Harga",
-      "Send the Goods to Master Bagasi Warehouse": "Kirim Barang ke Warehouse Master Bagasi",
+      "Send the Goods to WH": "Kirim Barang ke WH",
       "Add Item": "Tambah Barang",
       "Add New Item": "Tambah Barang Baru",
       "Change New Item": "Ubah Barang Baru",
@@ -146,7 +146,7 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Add Cart Note": "Tambah Catatan Keranjang",
       "Change Cart Note": "Ubah Catatan Keranjang",
       "Note": "Catatan",
-      "Enter Note": "Masukan Catatan",
+      "Enter note": "Masukan catatan",
       "Note is required": "Catatan dibutuhkan",
       "Additional Items": "Kiriman Tambahan",
       "Shipping Address": "Alamat Pengiriman",
@@ -369,6 +369,8 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Order Chat": "Chat Order",
       "Tax Rate": "Persentase Pajak",
       "Master Bagasi's Blog": "Blog Master Bagasi",
+      "Item Name": "Nama Barang",
+      "Input item name": "Masukin nama barang",
       "Send Items": "Kirim Barang",
       "Send Private Items": "Kirim Barang Pribadi"
     }

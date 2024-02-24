@@ -78,7 +78,8 @@ class DefaultOrderDataSource implements OrderDataSource {
         "name" : additionalItem.name,
         "price": additionalItem.estimationPrice,
         "weight": additionalItem.estimationWeight,
-        "quantity": additionalItem.quantity
+        "quantity": additionalItem.quantity,
+        if (additionalItem.notes.isNotEmptyString) "notes": additionalItem.notes
       }
     ).toList();
     dynamic data = {

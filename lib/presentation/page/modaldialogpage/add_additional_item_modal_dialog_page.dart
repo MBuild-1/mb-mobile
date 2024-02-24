@@ -70,6 +70,7 @@ class _StatefulAddAdditionalItemControllerMediatorWidgetState extends State<_Sta
   final TextEditingController _additionalEstimationPriceTextEditingController = TextEditingController();
   final TextEditingController _additionalEstimationWeightTextEditingController = TextEditingController();
   final TextEditingController _additionalQuantityTextEditingController = TextEditingController();
+  final TextEditingController _additionalNotesTextEditingController = TextEditingController();
   String _id = "";
 
   final CurrencyTextInputFormatter currencyTextInputFormatter = CurrencyTextInputFormatter(
@@ -88,6 +89,7 @@ class _StatefulAddAdditionalItemControllerMediatorWidgetState extends State<_Sta
       _additionalEstimationPriceTextEditingController.text = currencyTextInputFormatter.formatDouble(additionalItem.estimationPrice);
       _additionalEstimationWeightTextEditingController.text = additionalItem.estimationWeight.toString();
       _additionalQuantityTextEditingController.text = additionalItem.quantity.toString();
+      _additionalNotesTextEditingController.text = additionalItem.notes.toString();
     }
   }
 
@@ -102,6 +104,7 @@ class _StatefulAddAdditionalItemControllerMediatorWidgetState extends State<_Sta
         onGetAdditionalItemEstimationPriceInput: () => StringUtil.filterNumber(_additionalEstimationPriceTextEditingController.text),
         onGetAdditionalItemEstimationWeightInput: () => StringUtil.filterNumberAndDecimal(_additionalEstimationWeightTextEditingController.text),
         onGetAdditionalItemQuantityInput: () => _additionalQuantityTextEditingController.text,
+        onGetAdditionalItemNotesInput: () => _additionalNotesTextEditingController.text,
         onAddAdditionalItemBack: () => Get.back(),
         onShowAdditionalItemRequestProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
         onAddAdditionalItemRequestProcessSuccessCallback: (addAdditionalItemModalDialogResponse, base64StringAddAdditionalItemModalDialogResponse) async {
@@ -125,7 +128,7 @@ class _StatefulAddAdditionalItemControllerMediatorWidgetState extends State<_Sta
               child: ExcludeFocus(
                 child: SizedOutlineGradientButton(
                   onPressed: () {},
-                  text: "Send the Goods to Master Bagasi Warehouse".tr,
+                  text: "Send the Goods to WH".tr,
                   outlineGradientButtonType: OutlineGradientButtonType.outline,
                   outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
                   customGradientButtonVariation: (outlineGradientButtonType) {
@@ -133,7 +136,7 @@ class _StatefulAddAdditionalItemControllerMediatorWidgetState extends State<_Sta
                       outlineGradientButtonType: outlineGradientButtonType,
                       textStyle: TextStyle(
                         color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.bold
+                        fontWeight: FontWeight.bold,
                       )
                     );
                   },
@@ -141,7 +144,7 @@ class _StatefulAddAdditionalItemControllerMediatorWidgetState extends State<_Sta
               ),
             ),
             const SizedBox(height: 20),
-            Text("Name".tr),
+            Text("Item Name".tr),
             const SizedBox(height: 10),
             RxConsumer<Validator>(
               rxValue: widget.addAdditionalItemModalDialogController.additionalItemNameValidatorRx,
@@ -149,7 +152,7 @@ class _StatefulAddAdditionalItemControllerMediatorWidgetState extends State<_Sta
                 child: (context, validationResult, validator) => ModifiedTextField(
                   isError: validationResult.isFailed,
                   controller: _additionalNameTextEditingController,
-                  decoration: DefaultInputDecoration(hintText: "Enter name".tr),
+                  decoration: DefaultInputDecoration(hintText: "Input item name".tr),
                   onChanged: (value) => validator?.validate(),
                   textInputAction: TextInputAction.next,
                 ),
@@ -217,6 +220,22 @@ class _StatefulAddAdditionalItemControllerMediatorWidgetState extends State<_Sta
                   isError: validationResult.isFailed,
                   controller: _additionalQuantityTextEditingController,
                   decoration: DefaultInputDecoration(hintText: "Enter quantity".tr),
+                  onChanged: (value) => validator?.validate(),
+                  textInputAction: TextInputAction.next,
+                ),
+                validator: value,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text("Note".tr),
+            const SizedBox(height: 10),
+            RxConsumer<Validator>(
+              rxValue: widget.addAdditionalItemModalDialogController.additionalItemNotesValidatorRx,
+              onConsumeValue: (context, value) => Field(
+                child: (context, validationResult, validator) => ModifiedTextField(
+                  isError: validationResult.isFailed,
+                  controller: _additionalNotesTextEditingController,
+                  decoration: DefaultInputDecoration(hintText: "Enter note".tr),
                   onChanged: (value) => validator?.validate(),
                   textInputAction: TextInputAction.next,
                 ),
