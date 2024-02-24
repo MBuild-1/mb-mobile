@@ -22,6 +22,7 @@ import '../../widget/field.dart';
 import '../../widget/modified_text_field.dart';
 import '../../widget/password_obscurer.dart';
 import '../../widget/rx_consumer.dart';
+import '../../widget/sized_outline_gradient_button_app_bar_header.dart';
 import 'modal_dialog_page.dart';
 
 class AddAdditionalItemModalDialogPage extends ModalDialogPage<AddAdditionalItemModalDialogController> {
@@ -124,24 +125,8 @@ class _StatefulAddAdditionalItemControllerMediatorWidgetState extends State<_Sta
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            IgnorePointer(
-              child: ExcludeFocus(
-                child: SizedOutlineGradientButton(
-                  onPressed: () {},
-                  text: "Send the Goods to WH".tr,
-                  outlineGradientButtonType: OutlineGradientButtonType.outline,
-                  outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
-                  customGradientButtonVariation: (outlineGradientButtonType) {
-                    return CustomGradientButtonVariation(
-                      outlineGradientButtonType: outlineGradientButtonType,
-                      textStyle: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.bold,
-                      )
-                    );
-                  },
-                ),
-              ),
+            SizedOutlineGradientButtonAppBarHeader(
+              text: "Send the Goods to WH".tr
             ),
             const SizedBox(height: 20),
             Text("Item Name".tr),

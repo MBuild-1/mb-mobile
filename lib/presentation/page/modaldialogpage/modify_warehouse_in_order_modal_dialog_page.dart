@@ -44,6 +44,8 @@ import '../../widget/field.dart';
 import '../../widget/modified_paged_list_view.dart';
 import '../../widget/modified_text_field.dart';
 import '../../widget/rx_consumer.dart';
+import '../../widget/sized_outline_gradient_button_app_bar_header.dart';
+import '../../widget/tap_area.dart';
 import 'modal_dialog_page.dart';
 
 class ModifyWarehouseInOrderModalDialogPage extends ModalDialogPage<ModifyWarehouseInOrderModalDialogController> {
@@ -254,38 +256,22 @@ class _StatefulModifyWarehouseInOrderControllerMediatorWidgetState extends State
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    IgnorePointer(
-                      child: ExcludeFocus(
-                        child: SizedOutlineGradientButton(
-                          onPressed: () {},
-                          text: () {
-                            var modifyWarehouseInOrderParameter = widget.modifyWarehouseInOrderModalDialogPageParameter.modifyWarehouseInOrderParameter;
-                            if (modifyWarehouseInOrderParameter is AddWarehouseInOrderParameter) {
-                              if (_localModifyWarehouseInOrderParameter is AddWarehouseInOrderParameter) {
-                                return "Send the Goods to WH".tr;
-                              } else if (_localModifyWarehouseInOrderParameter is ChangeWarehouseInOrderParameter) {
-                                return "Change New Item".tr;
-                              }
-                              return "Send the Goods to WH".tr;
-                            } else if (modifyWarehouseInOrderParameter is ChangeWarehouseInOrderParameter) {
-                              return "Change New Item".tr;
-                            } else {
-                              return "";
-                            }
-                          }(),
-                          outlineGradientButtonType: OutlineGradientButtonType.outline,
-                          outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
-                          customGradientButtonVariation: (outlineGradientButtonType) {
-                            return CustomGradientButtonVariation(
-                              outlineGradientButtonType: outlineGradientButtonType,
-                              textStyle: TextStyle(
-                                color: Theme.of(context).colorScheme.primary,
-                                fontWeight: FontWeight.bold
-                              )
-                            );
-                          },
-                        ),
-                      ),
+                    SizedOutlineGradientButtonAppBarHeader(
+                      text: () {
+                        var modifyWarehouseInOrderParameter = widget.modifyWarehouseInOrderModalDialogPageParameter.modifyWarehouseInOrderParameter;
+                        if (modifyWarehouseInOrderParameter is AddWarehouseInOrderParameter) {
+                          if (_localModifyWarehouseInOrderParameter is AddWarehouseInOrderParameter) {
+                            return "Send the Goods to WH".tr;
+                          } else if (_localModifyWarehouseInOrderParameter is ChangeWarehouseInOrderParameter) {
+                            return "Change New Item".tr;
+                          }
+                          return "Send the Goods to WH".tr;
+                        } else if (modifyWarehouseInOrderParameter is ChangeWarehouseInOrderParameter) {
+                          return "Change New Item".tr;
+                        } else {
+                          return "";
+                        }
+                      }(),
                     ),
                     const SizedBox(height: 20),
                     Text("Item Name".tr),
