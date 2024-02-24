@@ -372,7 +372,8 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Item Name": "Nama Barang",
       "Input item name": "Masukin nama barang",
       "Send Items": "Kirim Barang",
-      "Send Private Items": "Kirim Barang Pribadi"
+      "Send Private Items": "Kirim Barang Pribadi",
+      "Download Invoice": "Unduh Invoice"
     }
   };
 

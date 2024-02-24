@@ -1034,8 +1034,8 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
       paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
         widgetSubstitution: (context, index) => Text(
           MultiLanguageString({
-            Constant.textEnUsLanguageKey: "Order invoice is generated. Tap button below for open order invoice.",
-            Constant.textInIdLanguageKey: "Invoice Pemesanan sudah dibuat. Tap tombol dibawah untuk membuka invoice pemesanan.",
+            Constant.textEnUsLanguageKey: "Order invoice is generated. Tap button below for download order invoice.",
+            Constant.textInIdLanguageKey: "Invoice Pemesanan sudah dibuat. Tap tombol dibawah untuk mengunduh invoice pemesanan.",
           }).toEmptyStringNonNull
         )
       )
@@ -1054,7 +1054,7 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
             Expanded(
               child: SizedOutlineGradientButton(
                 onPressed: () => orderDetailContainerListItemControllerState.onOpenOrderInvoice(order.combinedOrder),
-                text: "Open".tr,
+                text: "Download Invoice".tr,
                 customPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
                 outlineGradientButtonType: OutlineGradientButtonType.solid,
                 outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
