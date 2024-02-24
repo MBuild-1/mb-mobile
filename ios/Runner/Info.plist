@@ -26,8 +26,10 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>This app uses a camera to capture an image for Master Bagasi's image content purpose.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app uses a photo library to select an image to use as an avatar profile photo.</string>
+	<string>This app uses a photo library to select an image for Master Bagasi's image content purpose.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>This app uses microphone to record voice.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
