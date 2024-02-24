@@ -296,7 +296,7 @@ class _StatefulModifyWarehouseInOrderControllerMediatorWidgetState extends State
                         child: (context, validationResult, validator) => ModifiedTextField(
                           isError: validationResult.isFailed,
                           controller: _nameTextEditingController,
-                          decoration: const DefaultInputDecoration(hintText: "Input item name"),
+                          decoration: DefaultInputDecoration(hintText: "Input item name".tr),
                           onChanged: (value) => validator?.validate(),
                           textInputAction: TextInputAction.next,
                         ),
