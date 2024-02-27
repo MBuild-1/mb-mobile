@@ -5,7 +5,9 @@ import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../domain/entity/order/order.dart';
 import '../presentation/page/product_detail_page.dart';
+import '../presentation/page/reset_password_page.dart';
 import 'main_route_observer.dart';
+import 'notification_redirector_helper.dart';
 import 'page_restoration_helper.dart';
 import 'routeargument/login_route_argument.dart';
 import 'routeargument/main_menu_route_argument.dart';
@@ -74,7 +76,6 @@ class _NavigationHelperImpl {
           if (targetRoute != null) {
             if (!targetRoute.settings.name.isEmptyString) {
               WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                //MaterialIgnorePointer.of(context)?.ignoring = true;
                 String targetRouteName = (targetRoute.settings.name).toEmptyStringNonNull;
                 MainRouteObserver.disposingEventRouteMap[targetRouteName] = () {
                   WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {

@@ -2,11 +2,11 @@ import '../validator/validator.dart';
 import 'validator_group.dart';
 
 class ForgotPasswordValidatorGroup extends ValidatorGroup {
-  Validator emailValidator;
+  Validator emailOrPhoneNumberValidator;
 
   ForgotPasswordValidatorGroup({
-    required this.emailValidator,
+    required this.emailOrPhoneNumberValidator,
   }) {
-    validatorList.add(emailValidator);
+    validatorList.add(emailOrPhoneNumberValidator);
   }
 }

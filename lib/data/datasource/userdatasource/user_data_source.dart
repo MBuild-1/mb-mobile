@@ -6,6 +6,8 @@ import '../../../domain/entity/deleteaccount/verifydeleteaccountotp/verify_delet
 import '../../../domain/entity/deleteaccount/verifydeleteaccountotp/verify_delete_account_otp_response.dart';
 import '../../../domain/entity/forgotpassword/forgot_password_parameter.dart';
 import '../../../domain/entity/forgotpassword/forgot_password_response.dart';
+import '../../../domain/entity/forgotpassword/whatsapp/whatsapp_forgot_password_parameter.dart';
+import '../../../domain/entity/forgotpassword/whatsapp/whatsapp_forgot_password_response.dart';
 import '../../../domain/entity/login/login_parameter.dart';
 import '../../../domain/entity/login/login_response.dart';
 import '../../../domain/entity/login/login_with_apple_parameter.dart';
@@ -72,6 +74,7 @@ abstract class UserDataSource {
   FutureProcessing<CheckActivePinResponse> checkActivePin(CheckActivePinParameter checkActivePinParameter);
   FutureProcessing<ModifyPinResponse> modifyPin(ModifyPinParameter modifyPinParameter);
   FutureProcessing<ForgotPasswordResponse> forgotPassword(ForgotPasswordParameter forgotPasswordParameter);
+  FutureProcessing<WhatsappForgotPasswordResponse> whatsappForgotPassword(WhatsappForgotPasswordParameter whatsappForgotPasswordParameter);
   FutureProcessing<CheckResetPasswordResponse> checkResetPassword(CheckResetPasswordParameter checkResetPasswordParameter);
   FutureProcessing<ResetPasswordResponse> resetPassword(ResetPasswordParameter resetPasswordParameter);
   FutureProcessing<SendDeleteAccountOtpResponse> sendDeleteAccountOtp(SendDeleteAccountOtpParameter sendDeleteAccountOtpParameter);

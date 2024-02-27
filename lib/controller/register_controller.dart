@@ -31,8 +31,10 @@ import '../domain/usecase/register_with_apple_use_case.dart';
 import '../domain/usecase/register_with_google_use_case.dart';
 import '../domain/usecase/send_register_otp_use_case.dart';
 import '../domain/usecase/verify_register_use_case.dart';
+import '../misc/ValidatorHelper.dart';
 import '../misc/apple_sign_in_credential.dart';
 import '../misc/constant.dart';
+import '../misc/error/message_error.dart';
 import '../misc/error/validation_error.dart';
 import '../misc/load_data_result.dart';
 import '../misc/manager/controller_manager.dart';
@@ -131,69 +133,37 @@ class RegisterController extends BaseGetxController {
     registerValidatorGroup = RegisterValidatorGroup(
       emailOrPhoneNumberValidator: Validator(
         onValidate: () {
-          String emailOrPhoneNumber = _registerDelegate!.onGetEmailOrPhoneNumberRegisterInput();
-          // ignore: invalid_use_of_protected_member
-          ValidationResult validationResult = _emailOrPhoneNumberValidator.validating();
-          if (validationResult.isSuccess) {
-            RegisterStepWrapper registerStepWrapper = registerStepWrapperRx.value;
-            RegisterStep registerStep = registerStepWrapper.registerStep;
-            if (registerStep is FirstRegisterStep) {
-              LoadDataResult<List<String>> countryCodeListLoadDataResult = registerStep.countryCodeListLoadDataResult;
-              if (countryCodeListLoadDataResult.isSuccess) {
-                List<String> countryCodeList = countryCodeListLoadDataResult.resultIfSuccess!;
-                if (validationResult is IsPhoneNumberSuccessValidationResult) {
-                  int step = 1;
-                  String temp = "";
-                  for (int i = 0; i < emailOrPhoneNumber.length; i++) {
-                    String c = emailOrPhoneNumber[i];
-                    if (c.isNum) {
-                      temp += c;
-                    }
-                    if (step == 1) {
-                      if (temp.isNotEmpty && temp.length <= 3) {
-                        if (countryCodeList.where((countryCode) => countryCode == temp).isNotEmpty) {
-                          return SuccessValidationResult();
-                        }
-                      }
-                      if (temp.length == 1) {
-                        if (temp == "0") {
-                          return SuccessValidationResult();
-                        }
-                      }
-                    }
-                  }
-                  return FailedValidationResult(
-                    e: ValidationError(
-                      message: MultiLanguageString({
-                        Constant.textEnUsLanguageKey: "Country phone code is not suitable.",
-                        Constant.textInIdLanguageKey: "Kode telepon negara tidak ada yang sesuai."
-                      }).toStringNonNull
-                    )
-                  );
-                }
-                return validationResult;
+          Validator validator = ValidatorHelper.getEmailOrPhoneNumberValidator(
+            onCheckingAfterValidateEmailOrPhoneNumber: () {
+              RegisterStepWrapper registerStepWrapper = registerStepWrapperRx.value;
+              RegisterStep registerStep = registerStepWrapper.registerStep;
+              if (registerStep is FirstRegisterStep) {
+                return SuccessValidationResult();
               } else {
                 return FailedValidationResult(
                   e: ValidationError(
                     message: MultiLanguageString({
-                      Constant.textEnUsLanguageKey: "Country phone code cannot be checked.",
-                      Constant.textInIdLanguageKey: "Kode telepon negara tidak bisa dicek."
+                      Constant.textEnUsLanguageKey: "Make sure this register is in first step while running this validation.",
+                      Constant.textInIdLanguageKey: "Pastikan pendaftaran ini di langkah pertama ketika menjalankan validasi ini."
                     }).toStringNonNull
                   )
                 );
               }
-            } else {
-              return FailedValidationResult(
-                e: ValidationError(
-                  message: MultiLanguageString({
-                    Constant.textEnUsLanguageKey: "Make sure this register is in first step while running this validation.",
-                    Constant.textInIdLanguageKey: "Pastikan pendaftaran ini di langkah pertama ketika menjalankan validasi ini."
-                  }).toStringNonNull
-                )
-              );
+            },
+            onGetEmailOrPhoneNumberValidator: () => _emailOrPhoneNumberValidator,
+            onGetEmailOrPhoneNumberRegisterInput: _registerDelegate!.onGetEmailOrPhoneNumberRegisterInput,
+            onGetCountryCodeListLoadDataResult: () {
+              RegisterStepWrapper registerStepWrapper = registerStepWrapperRx.value;
+              RegisterStep registerStep = registerStepWrapper.registerStep;
+              if (registerStep is FirstRegisterStep) {
+                return registerStep.countryCodeListLoadDataResult;
+              } else {
+                throw MessageError(title: "The register step is not suitable");
+              }
             }
-          }
-          return validationResult;
+          );
+          // ignore: invalid_use_of_protected_member
+          return validator.validating();
         }
       ),
     );

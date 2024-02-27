@@ -281,6 +281,7 @@ import '../domain/usecase/update_read_status_order_conversation_use_case.dart';
 import '../domain/usecase/update_read_status_product_conversation_use_case.dart';
 import '../domain/usecase/verify_delete_account_otp_use_case.dart';
 import '../domain/usecase/verify_register_use_case.dart';
+import '../domain/usecase/whatsapp_forgot_password_use_case.dart';
 import 'additionalloadingindicatorchecker/cart_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/coupon_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/feed_sub_additional_paging_result_parameter_checker.dart';
@@ -621,6 +622,7 @@ class _Injector {
     locator.registerLazySingleton<GetUserUseCase>(() => GetUserUseCase(userRepository: locator()));
     locator.registerLazySingleton<EditUserUseCase>(() => EditUserUseCase(userRepository: locator()));
     locator.registerLazySingleton<ForgotPasswordUseCase>(() => ForgotPasswordUseCase(userRepository: locator()));
+    locator.registerLazySingleton<WhatsappForgotPasswordUseCase>(() => WhatsappForgotPasswordUseCase(userRepository: locator()));
     locator.registerLazySingleton<CheckResetPasswordUseCase>(() => CheckResetPasswordUseCase(userRepository: locator()));
     locator.registerLazySingleton<ResetPasswordUseCase>(() => ResetPasswordUseCase(userRepository: locator()));
     locator.registerLazySingleton<GetProductBrandListUseCase>(() => GetProductBrandListUseCase(productRepository: locator()));

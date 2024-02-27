@@ -333,6 +333,7 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "No Email": "Tidak Ada Email",
       "Cancel Register": "Batalkan Pendaftaran",
       "Cancel Change": "Batalkan Perubahan",
+      "Cancel Reset Password": "Batalkan Atur Ulang Kata Sandi",
       "Product Category": "Kategori Produk",
       "Description": "Deskripsi",
       "Success mark this cart to be checkout by host": "Sukses menandai keranjang ini siap dicheckout oleh host",

@@ -662,7 +662,7 @@ class _PageRestorationHelperImpl {
     PageRestorationHelper.findPageRestorationMixin<ResetPasswordPageRestorationMixin>(
       onGetxPageRestorationFound: (restoration) {
         restoration.resetPasswordPageRestorableRouteFuture.present(
-          resetPasswordPageParameter.toEncodeBase64String()
+          resetPasswordPageParameter.toJsonString()
         );
       },
       context: context

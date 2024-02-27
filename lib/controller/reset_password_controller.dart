@@ -6,9 +6,12 @@ import '../domain/entity/resetpassword/check/check_reset_password_parameter.dart
 import '../domain/entity/resetpassword/check/check_reset_password_response.dart';
 import '../domain/entity/resetpassword/reset_password_parameter.dart';
 import '../domain/entity/resetpassword/reset_password_response.dart';
+import '../domain/entity/resetpassword/whatsapp/check/whatsapp_check_reset_password_parameter.dart';
+import '../domain/entity/resetpassword/whatsapp/whatsapp_reset_password_parameter.dart';
 import '../domain/entity/user/user.dart';
 import '../domain/usecase/check_reset_password_use_case.dart';
 import '../domain/usecase/reset_password_use_case.dart';
+import '../misc/error/message_error.dart';
 import '../misc/error/validation_error.dart';
 import '../misc/load_data_result.dart';
 import '../misc/string_util.dart';
@@ -17,6 +20,7 @@ import '../misc/validation/validation_result.dart';
 import '../misc/validation/validator/compoundvalidator/password_compound_validator.dart';
 import '../misc/validation/validator/validator.dart';
 import '../misc/validation/validatorgroup/reset_password_validator_group.dart';
+import '../presentation/page/reset_password_page.dart';
 import 'base_getx_controller.dart';
 
 typedef _OnGetResetPasswordInput = String Function();
@@ -25,6 +29,9 @@ typedef _OnShowResetPasswordRequestProcessLoadingCallback = Future<void> Functio
 typedef _OnResetPasswordRequestProcessSuccessCallback = Future<void> Function(ResetPasswordResponse);
 typedef _OnShowResetPasswordRequestProcessFailedCallback = Future<void> Function(dynamic e);
 typedef _OnShowCheckPasswordRequestProcessFailedCallback = Future<void> Function(dynamic e);
+typedef _OnShowSubmitWhatsappPhoneNumberOtpRequestProcessLoadingCallback = Future<void> Function();
+typedef _OnSubmitWhatsappPhoneNumberOtpRequestProcessSuccessCallback = Future<void> Function(CheckResetPasswordResponse);
+typedef _OnShowSubmitWhatsappPhoneNumberOtpRequestProcessFailedCallback = Future<void> Function(dynamic e);
 
 class ResetPasswordController extends BaseGetxController {
   final ResetPasswordUseCase resetPasswordUseCase;
@@ -80,21 +87,66 @@ class ResetPasswordController extends BaseGetxController {
     update();
   }
 
-  void checkResetPassword() async {
-    if (!_hasCheckResetPassword) {
-      _hasCheckResetPassword = true;
-      _checkResetPasswordResponseLoadDataResult = IsLoadingLoadDataResult<CheckResetPasswordResponse>();
-      _updateMenuMainMenuState();
-      _checkResetPasswordResponseLoadDataResult = await checkResetPasswordUseCase.execute(
-        CheckResetPasswordParameter(
-          code: _resetPasswordDelegate!.onGetCode()
-        )
+  void submitWhatsappPhoneNumberOtp() async {
+    if (_resetPasswordDelegate != null) {
+      _resetPasswordDelegate!.onShowSubmitWhatsappPhoneNumberOtpRequestProcessLoadingCallback();
+      LoadDataResult<CheckResetPasswordResponse> submitWhatsappPhoneNumberLoadDataResult = await checkResetPasswordUseCase.execute(
+        () {
+          ResetPasswordPageParameterType resetPasswordPageParameterType = _resetPasswordDelegate!.onGetResetPasswordPageParameterType();
+          if (resetPasswordPageParameterType is EmailResetPasswordPageParameterType) {
+            return CheckResetPasswordParameter(
+              code: _resetPasswordDelegate!.onGetCode()
+            );
+          } else if (resetPasswordPageParameterType is WhatsappPhoneNumberResetPasswordPageParameterType) {
+            return WhatsappCheckResetPasswordParameter(
+              code: _resetPasswordDelegate!.onGetCode()
+            );
+          }
+          throw MessageError(title: "Reset password page parameter type is not suitable");
+        }()
       ).future(
         parameter: apiRequestManager.addRequestToCancellationPart('reset-password').value
       );
-      _updateMenuMainMenuState();
-      if (_checkResetPasswordResponseLoadDataResult.isFailed) {
-        _resetPasswordDelegate!.onShowCheckPasswordRequestProcessFailedCallback(_checkResetPasswordResponseLoadDataResult.resultIfFailed);
+      _resetPasswordDelegate!.onResetPasswordBack();
+      if (submitWhatsappPhoneNumberLoadDataResult.isSuccess) {
+        _resetPasswordDelegate!.onSubmitWhatsappPhoneNumberOtpRequestProcessSuccessCallback(submitWhatsappPhoneNumberLoadDataResult.resultIfSuccess!);
+        _checkResetPasswordResponseLoadDataResult = SuccessLoadDataResult<CheckResetPasswordResponse>(
+          value: CheckResetPasswordResponse()
+        );
+        _updateMenuMainMenuState();
+      } else {
+        _resetPasswordDelegate!.onShowSubmitWhatsappPhoneNumberOtpRequestProcessFailedCallback(submitWhatsappPhoneNumberLoadDataResult.resultIfFailed);
+      }
+    }
+  }
+
+  void checkResetPassword() async {
+    if (_resetPasswordDelegate != null) {
+      if (!_hasCheckResetPassword) {
+        _hasCheckResetPassword = true;
+        _checkResetPasswordResponseLoadDataResult = IsLoadingLoadDataResult<CheckResetPasswordResponse>();
+        _updateMenuMainMenuState();
+        _checkResetPasswordResponseLoadDataResult = await checkResetPasswordUseCase.execute(
+          () {
+            ResetPasswordPageParameterType resetPasswordPageParameterType = _resetPasswordDelegate!.onGetResetPasswordPageParameterType();
+            if (resetPasswordPageParameterType is EmailResetPasswordPageParameterType) {
+              return CheckResetPasswordParameter(
+                code: _resetPasswordDelegate!.onGetCode()
+              );
+            } else if (resetPasswordPageParameterType is WhatsappPhoneNumberResetPasswordPageParameterType) {
+              return WhatsappCheckResetPasswordParameter(
+                code: _resetPasswordDelegate!.onGetCode()
+              );
+            }
+            throw MessageError(title: "Reset password page parameter type is not suitable");
+          }()
+        ).future(
+          parameter: apiRequestManager.addRequestToCancellationPart('reset-password').value
+        );
+        _updateMenuMainMenuState();
+        if (_checkResetPasswordResponseLoadDataResult.isFailed) {
+          _resetPasswordDelegate!.onShowCheckPasswordRequestProcessFailedCallback(_checkResetPasswordResponseLoadDataResult.resultIfFailed);
+        }
       }
     }
   }
@@ -105,11 +157,23 @@ class ResetPasswordController extends BaseGetxController {
       if (resetPasswordValidatorGroup.validate()) {
         _resetPasswordDelegate!.onShowResetPasswordRequestProcessLoadingCallback();
         LoadDataResult<ResetPasswordResponse> resetPasswordResponseLoadDataResult = await resetPasswordUseCase.execute(
-          ResetPasswordParameter(
-            code: _resetPasswordDelegate!.onGetCode(),
-            newPassword: _resetPasswordDelegate!.onGetNewPasswordInput(),
-            confirmNewPassword: _resetPasswordDelegate!.onGetConfirmNewPasswordInput()
-          )
+          () {
+            ResetPasswordPageParameterType resetPasswordPageParameterType = _resetPasswordDelegate!.onGetResetPasswordPageParameterType();
+            if (resetPasswordPageParameterType is EmailResetPasswordPageParameterType) {
+              return ResetPasswordParameter(
+                code: _resetPasswordDelegate!.onGetCode(),
+                newPassword: _resetPasswordDelegate!.onGetNewPasswordInput(),
+                confirmNewPassword: _resetPasswordDelegate!.onGetConfirmNewPasswordInput()
+              );
+            } else if (resetPasswordPageParameterType is WhatsappPhoneNumberResetPasswordPageParameterType) {
+              return WhatsappResetPasswordParameter(
+                code: _resetPasswordDelegate!.onGetCode(),
+                newPassword: _resetPasswordDelegate!.onGetNewPasswordInput(),
+                confirmNewPassword: _resetPasswordDelegate!.onGetConfirmNewPasswordInput()
+              );
+            }
+            throw MessageError(title: "Reset password page parameter type is not suitable");
+          }()
         ).future(
           parameter: apiRequestManager.addRequestToCancellationPart('reset-password').value
         );
@@ -134,6 +198,10 @@ class ResetPasswordDelegate {
   _OnResetPasswordRequestProcessSuccessCallback onResetPasswordRequestProcessSuccessCallback;
   _OnShowResetPasswordRequestProcessFailedCallback onShowResetPasswordRequestProcessFailedCallback;
   _OnShowCheckPasswordRequestProcessFailedCallback onShowCheckPasswordRequestProcessFailedCallback;
+  _OnShowSubmitWhatsappPhoneNumberOtpRequestProcessLoadingCallback onShowSubmitWhatsappPhoneNumberOtpRequestProcessLoadingCallback;
+  _OnSubmitWhatsappPhoneNumberOtpRequestProcessSuccessCallback onSubmitWhatsappPhoneNumberOtpRequestProcessSuccessCallback;
+  _OnShowSubmitWhatsappPhoneNumberOtpRequestProcessFailedCallback onShowSubmitWhatsappPhoneNumberOtpRequestProcessFailedCallback;
+  ResetPasswordPageParameterType Function() onGetResetPasswordPageParameterType;
 
   ResetPasswordDelegate({
     required this.onUnfocusAllWidget,
@@ -144,31 +212,10 @@ class ResetPasswordDelegate {
     required this.onShowResetPasswordRequestProcessLoadingCallback,
     required this.onResetPasswordRequestProcessSuccessCallback,
     required this.onShowResetPasswordRequestProcessFailedCallback,
-    required this.onShowCheckPasswordRequestProcessFailedCallback
+    required this.onShowCheckPasswordRequestProcessFailedCallback,
+    required this.onShowSubmitWhatsappPhoneNumberOtpRequestProcessLoadingCallback,
+    required this.onSubmitWhatsappPhoneNumberOtpRequestProcessSuccessCallback,
+    required this.onShowSubmitWhatsappPhoneNumberOtpRequestProcessFailedCallback,
+    required this.onGetResetPasswordPageParameterType
   });
-}
-
-class ResetPasswordPageParameter {
-  String code;
-
-  ResetPasswordPageParameter({
-    required this.code
-  });
-}
-
-extension ResetPasswordPageParameterExt on ResetPasswordPageParameter {
-  String toEncodeBase64String() => StringUtil.encodeBase64StringFromJson(
-    <String, dynamic>{
-      "code": code
-    }
-  );
-}
-
-extension ResetPasswordPageParameterStringExt on String {
-  ResetPasswordPageParameter toResetPasswordPageParameter() {
-    dynamic result = StringUtil.decodeBase64StringToJson(this);
-    return ResetPasswordPageParameter(
-      code: result["code"]
-    );
-  }
 }

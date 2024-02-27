@@ -6,6 +6,8 @@ import '../../domain/entity/deleteaccount/verifydeleteaccountotp/verify_delete_a
 import '../../domain/entity/deleteaccount/verifydeleteaccountotp/verify_delete_account_otp_response.dart';
 import '../../domain/entity/forgotpassword/forgot_password_parameter.dart';
 import '../../domain/entity/forgotpassword/forgot_password_response.dart';
+import '../../domain/entity/forgotpassword/whatsapp/whatsapp_forgot_password_parameter.dart';
+import '../../domain/entity/forgotpassword/whatsapp/whatsapp_forgot_password_response.dart';
 import '../../domain/entity/login/login_parameter.dart';
 import '../../domain/entity/login/login_response.dart';
 import '../../domain/entity/login/login_with_apple_parameter.dart';
@@ -127,6 +129,11 @@ class DefaultUserRepository implements UserRepository {
   @override
   FutureProcessing<LoadDataResult<ForgotPasswordResponse>> forgotPassword(ForgotPasswordParameter forgotPasswordParameter) {
     return userDataSource.forgotPassword(forgotPasswordParameter).mapToLoadDataResult<ForgotPasswordResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<WhatsappForgotPasswordResponse>> whatsappForgotPassword(WhatsappForgotPasswordParameter whatsappForgotPasswordParameter) {
+    return userDataSource.whatsappForgotPassword(whatsappForgotPasswordParameter).mapToLoadDataResult<WhatsappForgotPasswordResponse>();
   }
 
   @override

@@ -180,6 +180,22 @@ class _StringUtilImpl {
     }
     return emailOrPhoneNumber;
   }
+
+  String effectivePhoneNumber(String phoneNumber) {
+    String result = "";
+    for (int i = 0; i < phoneNumber.length; i++) {
+      String c = phoneNumber[i];
+      if (c.isNum) {
+        result += c;
+      }
+      if (result.length == 1) {
+        if (result == "0") {
+          result = "62";
+        }
+      }
+    }
+    return result;
+  }
 }
 
 // ignore: non_constant_identifier_names

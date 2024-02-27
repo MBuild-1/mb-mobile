@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../domain/entity/province/province_map.dart';
 import '../presentation/widget/something_counter.dart';
 import 'refresh_delivery_review.dart';
+import 'validation/validation_result.dart';
 
 class _MainRouteObserver extends RouteObserver {
   Map<String, RouteWrapper?> _routeMap = {};
@@ -20,6 +21,10 @@ class _MainRouteObserver extends RouteObserver {
   Map<String, void Function(Map<String, dynamic>)?> get onRedirectFromNotificationClick => _onRedirectFromNotificationClick;
   Map<String, void Function()?> _onScrollUpIfInProductDetail = {};
   Map<String, void Function()?> get onScrollUpIfInProductDetail => _onScrollUpIfInProductDetail;
+  Map<String, void Function()?> _onResendForgotPasswordWhatsappPhoneNumberOtp = {};
+  Map<String, void Function()?> get onResendForgotPasswordWhatsappPhoneNumberOtp => _onResendForgotPasswordWhatsappPhoneNumberOtp;
+  Map<String, void Function(ValidationResult)?> _onResendForgotPasswordWhatsappPhoneNumberCallbackOtp = {};
+  Map<String, void Function(ValidationResult)?> get onResendForgotPasswordWhatsappPhoneNumberCallbackOtp => _onResendForgotPasswordWhatsappPhoneNumberCallbackOtp;
   Map<String, bool?> _subMainMenuVisibility = {};
   Map<String, bool?> get subMainMenuVisibility => _subMainMenuVisibility;
 
@@ -62,6 +67,12 @@ class _MainRouteObserver extends RouteObserver {
       for (var key in newRouteMap.keys) key: null
     };
     _onScrollUpIfInProductDetail = {
+      for (var key in newRouteMap.keys) key: null
+    };
+    _onResendForgotPasswordWhatsappPhoneNumberOtp = {
+      for (var key in newRouteMap.keys) key: null
+    };
+    _onResendForgotPasswordWhatsappPhoneNumberCallbackOtp = {
       for (var key in newRouteMap.keys) key: null
     };
   }

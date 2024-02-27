@@ -5,6 +5,7 @@ import '../../domain/entity/changepassword/change_password_response.dart';
 import '../../domain/entity/deleteaccount/senddeleteaccountotp/send_delete_account_otp_response.dart';
 import '../../domain/entity/deleteaccount/verifydeleteaccountotp/verify_delete_account_otp_response.dart';
 import '../../domain/entity/forgotpassword/forgot_password_response.dart';
+import '../../domain/entity/forgotpassword/whatsapp/whatsapp_forgot_password_response.dart';
 import '../../domain/entity/login/login_response.dart';
 import '../../domain/entity/login/login_with_apple_response.dart';
 import '../../domain/entity/login/login_with_google_response.dart';
@@ -30,6 +31,8 @@ import '../../domain/entity/register/sendregisterotp/sendregisterotpresponse/wa_
 import '../../domain/entity/register/verify_register_response.dart';
 import '../../domain/entity/resetpassword/check/check_reset_password_response.dart';
 import '../../domain/entity/resetpassword/reset_password_response.dart';
+import '../../domain/entity/resetpassword/whatsapp/check/whatsapp_check_reset_password_response.dart';
+import '../../domain/entity/resetpassword/whatsapp/whatsapp_reset_password_response.dart';
 import '../../domain/entity/user/edituser/edit_user_response.dart';
 import '../../domain/entity/user/getuser/get_user_response.dart';
 import '../../domain/entity/user/user.dart';
@@ -185,12 +188,24 @@ extension UserEntityMappingExt on ResponseWrapper {
     return ForgotPasswordResponse();
   }
 
+  WhatsappForgotPasswordResponse mapFromResponseToWhatsappForgotPasswordResponse() {
+    return WhatsappForgotPasswordResponse();
+  }
+
   CheckResetPasswordResponse mapFromResponseToCheckResetPasswordResponse() {
     return CheckResetPasswordResponse();
   }
 
+  WhatsappCheckResetPasswordResponse mapFromResponseToWhatsappCheckResetPasswordResponse() {
+    return WhatsappCheckResetPasswordResponse();
+  }
+
   ResetPasswordResponse mapFromResponseToResetPasswordResponse() {
     return ResetPasswordResponse();
+  }
+
+  WhatsappResetPasswordResponse mapFromResponseToWhatsappResetPasswordResponse() {
+    return WhatsappResetPasswordResponse();
   }
 
   SendDeleteAccountOtpResponse mapFromResponseToSendDeleteAccountOtpResponse() {

@@ -107,6 +107,7 @@ class _DeeplinkApplinkHelperImpl {
             "type": "reset-password",
             "data": {
               "code": uri.pathSegments.last,
+              "type": "email",
             }
           };
         } else {

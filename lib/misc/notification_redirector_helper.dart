@@ -4,6 +4,8 @@ import 'package:masterbagasi/presentation/page/product_bundle_detail_page.dart';
 import '../controller/reset_password_controller.dart';
 import '../presentation/page/product_detail_page.dart';
 import '../presentation/page/product_entry_page.dart';
+import '../presentation/page/reset_password_page.dart';
+import 'error/message_error.dart';
 import 'page_restoration_helper.dart';
 import 'string_util.dart';
 
@@ -125,11 +127,24 @@ class _NotificationRedirectorHelperImpl {
     "reset-password": (data, context) {
       if (data is Map<String, dynamic>) {
         if (data.containsKey("data")) {
-          String code = data["data"]["code"];
+          dynamic dataValue = data["data"];
+          String code = dataValue["code"];
+          String? type = dataValue["type"];
+          String? value = dataValue["value"];
           PageRestorationHelper.toResetPasswordPage(
             context,
             ResetPasswordPageParameter(
-              code: code
+              code: code,
+              resetPasswordPageParameterType: () {
+                if (type == "email") {
+                  return EmailResetPasswordPageParameterType();
+                } else if (type == "whatsapp-phone-number") {
+                  return WhatsappPhoneNumberResetPasswordPageParameterType(
+                    phoneNumber: value!
+                  );
+                }
+                throw MessageError(title: "Reset password page parameter type is not suitable");
+              }()
             )
           );
         }
