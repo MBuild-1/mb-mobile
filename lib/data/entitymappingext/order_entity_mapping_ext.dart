@@ -11,7 +11,8 @@ import 'package:masterbagasi/misc/ext/string_ext.dart';
 import '../../domain/entity/order/createorderversion1point1/create_order_version_1_point_1_response.dart';
 import '../../domain/entity/order/createorderversion1point1/responsetype/default_create_order_response_type.dart';
 import '../../domain/entity/order/createorderversion1point1/responsetype/no_create_order_response_type.dart';
-import '../../domain/entity/order/createorderversion1point1/responsetype/only_warehouse_order_response_type.dart';
+import '../../domain/entity/order/createorderversion1point1/responsetype/only_warehouse_create_order_response_type.dart';
+import '../../domain/entity/order/createorderversion1point1/responsetype/paypal_create_order_response_type.dart';
 import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderresponse/add_warehouse_in_order_response.dart';
 import '../../domain/entity/order/arrived_order_response.dart';
 import '../../domain/entity/order/combined_order.dart';
@@ -323,6 +324,16 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
           } else if (response is String) {
             return OnlyWarehouseCreateOrderResponseType(
               combinedOrderId: response
+            );
+          } else {
+            return NoCreateOrderResponseType();
+          }
+        }
+        if (message.contains("paypal")) {
+          if (response is Map<String, dynamic>) {
+            return PaypalCreateOrderResponseType(
+              approveLink: response["approve_link"],
+              combinedOrderId: response["combined_order_id"]
             );
           } else {
             return NoCreateOrderResponseType();

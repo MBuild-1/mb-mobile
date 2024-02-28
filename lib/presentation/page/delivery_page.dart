@@ -28,6 +28,7 @@ import '../../domain/entity/coupon/coupon.dart';
 import '../../domain/entity/coupon/coupon_detail_parameter.dart';
 import '../../domain/entity/order/createorderversion1point1/responsetype/create_order_response_type.dart';
 import '../../domain/entity/order/createorderversion1point1/responsetype/default_create_order_response_type.dart';
+import '../../domain/entity/order/createorderversion1point1/responsetype/paypal_create_order_response_type.dart';
 import '../../domain/entity/order/createorderversion1point1/responsetype/with_combined_order_id_create_order_response_type.dart';
 import '../../domain/entity/payment/payment_method.dart';
 import '../../domain/entity/summaryvalue/summary_value.dart';
@@ -71,6 +72,7 @@ import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_it
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
 import '../../misc/string_util.dart';
+import '../../misc/web_helper.dart';
 import '../notifier/component_notifier.dart';
 import '../notifier/notification_notifier.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
@@ -524,8 +526,14 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
         onDeliveryRequestVersion1Point1ProcessSuccessCallback: (createOrderVersion1Point1Response) async {
           Provider.of<NotificationNotifier>(context, listen: false).loadCartLoadDataResult();
           Provider.of<ComponentNotifier>(context, listen: false).updateCart();
-          String combinedOrderId = "";
           CreateOrderResponseType createOrderResponseType = createOrderVersion1Point1Response.createOrderResponseType;
+          if (createOrderResponseType is PaypalCreateOrderResponseType) {
+            NavigationHelper.navigationToPaypalPaymentProcessAfterPurchaseProcess(
+              context, createOrderResponseType.approveLink
+            );
+            return;
+          }
+          String combinedOrderId = "";
           if (createOrderResponseType is WithCombinedOrderIdCreateOrderResponseType) {
             WithCombinedOrderIdCreateOrderResponseType withCombinedOrderIdCreateOrderResponseType = createOrderResponseType as WithCombinedOrderIdCreateOrderResponseType;
             combinedOrderId = withCombinedOrderIdCreateOrderResponseType.combinedOrderId;

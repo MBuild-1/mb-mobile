@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/navigator_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
+import 'package:masterbagasi/misc/web_helper.dart';
 
 import '../domain/entity/order/order.dart';
 import '../presentation/page/product_detail_page.dart';
@@ -54,7 +55,7 @@ class _NavigationHelperImpl {
     navigationAfterPurchaseProcessWithCombinedOrderIdParameter(context, order.combinedOrder.id);
   }
 
-  void navigationAfterPurchaseProcessWithCombinedOrderIdParameter(BuildContext context, String combinedOrderId) {
+  void _navigationAfterPurchaseProcessWithCombinedOrderIdParameter(BuildContext context, void Function(BuildContext) onNavigate) {
     Map<String, RouteWrapper?> routeMap = MainRouteObserver.routeMap;
     List<String> routeKeyList = List.of(routeMap.keys);
     int i = 0;
@@ -81,13 +82,7 @@ class _NavigationHelperImpl {
                   WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
                     BuildContext Function()? buildContextEventFunction = MainRouteObserver.buildContextEventRouteMap[mainMenuRouteKey];
                     if (buildContextEventFunction != null) {
-                      BuildContext mainMenuBuildContext = buildContextEventFunction();
-                      //MaterialIgnorePointer.of(mainMenuBuildContext)?.ignoring = false;
-                      if (combinedOrderId.isNotEmptyString) {
-                        PageRestorationHelper.toOrderDetailPage(mainMenuBuildContext, combinedOrderId);
-                      } else {
-                        ToastHelper.showToast("No order data exists".tr);
-                      }
+                      onNavigate(buildContextEventFunction());
                     }
                     MainRouteObserver.disposingEventRouteMap[targetRouteName] = null;
                   });
@@ -105,6 +100,26 @@ class _NavigationHelperImpl {
         break;
       }
     }
+  }
+
+  void navigationAfterPurchaseProcessWithCombinedOrderIdParameter(BuildContext context, String combinedOrderId) {
+    _navigationAfterPurchaseProcessWithCombinedOrderIdParameter(context, (mainMenuBuildContext) {
+      if (combinedOrderId.isNotEmptyString) {
+        PageRestorationHelper.toOrderDetailPage(mainMenuBuildContext, combinedOrderId);
+      } else {
+        ToastHelper.showToast("No order data exists".tr);
+      }
+    });
+  }
+
+  void navigationToPaypalPaymentProcessAfterPurchaseProcess(BuildContext context, String approveLink) {
+    _navigationAfterPurchaseProcessWithCombinedOrderIdParameter(context, (mainMenuBuildContext) {
+      if (approveLink.isNotEmptyString) {
+        WebHelper.launchUrl(Uri.parse(approveLink));
+      } else {
+        ToastHelper.showToast("No approve link exists".tr);
+      }
+    });
   }
 
   void navigationAfterRegisterProcess(BuildContext context) {
