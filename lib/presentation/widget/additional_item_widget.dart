@@ -159,6 +159,7 @@ class AdditionalItemWidget extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 8.0),
               Row(
@@ -199,10 +200,11 @@ class AdditionalItemWidget extends StatelessWidget {
                 ]
               ),
               if (additionalItem.notes.isNotEmptyString) ...[
-                const SizedBox(height: 8.0),
+                const SizedBox(height: 10.0),
                 Text(
-                  "${"Notes".tr}: ${additionalItem.quantity.toString()}",
+                  "${"Note".tr}: ${additionalItem.notes.toString()}",
                   style: const TextStyle(
+                    fontSize: 11.0,
                     overflow: TextOverflow.ellipsis
                   )
                 )

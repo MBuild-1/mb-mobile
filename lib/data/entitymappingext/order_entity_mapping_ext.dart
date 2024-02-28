@@ -311,8 +311,11 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
           MainStructureResponseWrapper mainStructureResponseWrapper = this as MainStructureResponseWrapper;
           message = mainStructureResponseWrapper.message.toLowerCase();
         }
-        dynamic paymentResponse = response["payment"];
-        if (message.contains("create warehouse")) {
+        dynamic paymentResponse;
+        if (response is Map<String, dynamic>) {
+          paymentResponse = response["payment"];
+        }
+        if (message.contains("warehouse")) {
           if (response is Map<String, dynamic>) {
             return OnlyWarehouseCreateOrderResponseType(
               combinedOrderId: paymentResponse["combined_order_id"]
@@ -324,6 +327,9 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
           } else {
             return NoCreateOrderResponseType();
           }
+        }
+        if (paymentResponse == null) {
+          return NoCreateOrderResponseType();
         }
         return DefaultCreateOrderResponseType(
           transactionId: paymentResponse["transaction_id"],
