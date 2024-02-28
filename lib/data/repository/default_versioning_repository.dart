@@ -1,5 +1,7 @@
-import '../../domain/entity/versioning/canbeupdatedversioning/can_be_updated_versioning_parameter.dart';
-import '../../domain/entity/versioning/canbeupdatedversioning/can_be_updated_versioning_response.dart';
+import '../../domain/entity/versioning/canbeupdatedversioning/all_versioning_parameter.dart';
+import '../../domain/entity/versioning/canbeupdatedversioning/all_versioning_response.dart';
+import '../../domain/entity/versioning/versioningbasedfilter/versioning_based_filter_parameter.dart';
+import '../../domain/entity/versioning/versioningbasedfilter/versioning_based_filter_response.dart';
 import '../../domain/repository/versioning_repository.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/processing/future_processing.dart';
@@ -13,7 +15,12 @@ class DefaultVersioningRepository implements VersioningRepository {
   });
 
   @override
-  FutureProcessing<LoadDataResult<CanBeUpdatedVersioningResponse>> canBeUpdatedVersioning(CanBeUpdatedVersioningParameter canBeUpdatedVersioningParameter) {
-    return versioningDataSource.canBeUpdatedVersioning(canBeUpdatedVersioningParameter).mapToLoadDataResult<CanBeUpdatedVersioningResponse>();
+  FutureProcessing<LoadDataResult<AllVersioningResponse>> allVersioning(AllVersioningParameter canBeUpdatedVersioningParameter) {
+    return versioningDataSource.allVersioning(canBeUpdatedVersioningParameter).mapToLoadDataResult<AllVersioningResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<VersioningBasedFilterResponse>> versioningBasedFilter(VersioningBasedFilterParameter versioningBasedFilterParameter) {
+    return versioningDataSource.versioningBasedFilter(versioningBasedFilterParameter).mapToLoadDataResult<VersioningBasedFilterResponse>();
   }
 }

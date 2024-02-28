@@ -1,9 +1,9 @@
 import '../versioning.dart';
 
-class CanBeUpdatedVersioningResponse {
+class AllVersioningResponse {
   List<Versioning> versioningList;
 
-  CanBeUpdatedVersioningResponse({
+  AllVersioningResponse({
     required this.versioningList
   });
 }

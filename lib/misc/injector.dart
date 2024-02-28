@@ -120,7 +120,7 @@ import '../domain/usecase/auth_identity_change_verify_otp_use_case.dart';
 import '../domain/usecase/auth_identity_send_verify_otp_use_case.dart';
 import '../domain/usecase/auth_identity_use_case.dart';
 import '../domain/usecase/auth_identity_verify_otp_use_case.dart';
-import '../domain/usecase/can_be_updated_versioning_use_case.dart';
+import '../domain/usecase/all_versioning_use_case.dart';
 import '../domain/usecase/change_additional_item_use_case.dart';
 import '../domain/usecase/change_address_use_case.dart';
 import '../domain/usecase/change_password_use_case.dart';
@@ -286,6 +286,7 @@ import '../domain/usecase/update_read_status_order_conversation_use_case.dart';
 import '../domain/usecase/update_read_status_product_conversation_use_case.dart';
 import '../domain/usecase/verify_delete_account_otp_use_case.dart';
 import '../domain/usecase/verify_register_use_case.dart';
+import '../domain/usecase/versioning_based_filter_use_case.dart';
 import '../domain/usecase/whatsapp_forgot_password_use_case.dart';
 import 'additionalloadingindicatorchecker/cart_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/coupon_additional_paging_result_parameter_checker.dart';
@@ -788,7 +789,8 @@ class _Injector {
     locator.registerLazySingleton<PaymentMethodListUseCase>(() => PaymentMethodListUseCase(paymentRepository: locator()));
     locator.registerLazySingleton<PaymentInstructionUseCase>(() => PaymentInstructionUseCase(paymentRepository: locator()));
     locator.registerLazySingleton<ShippingPaymentUseCase>(() => ShippingPaymentUseCase(paymentRepository: locator()));
-    locator.registerLazySingleton<CanBeUpdatedVersioningUseCase>(() => CanBeUpdatedVersioningUseCase(versioningRepository: locator()));
+    locator.registerLazySingleton<AllVersioningUseCase>(() => AllVersioningUseCase(versioningRepository: locator()));
+    locator.registerLazySingleton<VersioningBasedFilterUseCase>(() => VersioningBasedFilterUseCase(versioningRepository: locator()));
 
     // Repository
     locator.registerLazySingleton<UserRepository>(() => DefaultUserRepository(userDataSource: locator()));

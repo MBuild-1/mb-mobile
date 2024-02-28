@@ -1,19 +1,21 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 
-import '../../domain/entity/versioning/canbeupdatedversioning/can_be_updated_versioning_parameter.dart';
-import '../../domain/entity/versioning/canbeupdatedversioning/can_be_updated_versioning_response.dart';
-import '../../domain/usecase/can_be_updated_versioning_use_case.dart';
+import '../../domain/entity/versioning/versioningbasedfilter/versioning_based_filter_parameter.dart';
+import '../../domain/entity/versioning/versioningbasedfilter/versioning_based_filter_response.dart';
+import '../../domain/usecase/versioning_based_filter_use_case.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/api_request_manager.dart';
 
 class VersioningNotifier extends ChangeNotifier {
   late ApiRequestManager apiRequestManager;
 
-  final CanBeUpdatedVersioningUseCase canBeUpdatedVersioningUseCase;
+  final VersioningBasedFilterUseCase versioningBasedFilterUseCase;
 
-  LoadDataResult<CanBeUpdatedVersioningResponse> _canBeUpdatedVersioningResponseLoadDataResult = NoLoadDataResult<CanBeUpdatedVersioningResponse>();
-  LoadDataResult<CanBeUpdatedVersioningResponse> get canBeUpdatedVersioningResponseLoadDataResult => _canBeUpdatedVersioningResponseLoadDataResult;
+  LoadDataResult<VersioningBasedFilterResponse> _specifiedVersioningBasedFilterResponseLoadDataResult = NoLoadDataResult<VersioningBasedFilterResponse>();
+  LoadDataResult<VersioningBasedFilterResponse> get specifiedVersioningBasedFilterResponseLoadDataResult => _specifiedVersioningBasedFilterResponseLoadDataResult;
 
   VersioningNotifierDelegate? _versioningNotifierDelegate;
 
@@ -21,34 +23,42 @@ class VersioningNotifier extends ChangeNotifier {
     _versioningNotifierDelegate = versioningNotifierDelegate;
   }
 
-  VersioningNotifier(this.canBeUpdatedVersioningUseCase) {
+  VersioningNotifier(this.versioningBasedFilterUseCase) {
     apiRequestManager = ApiRequestManager();
     notifyListeners();
   }
 
-  void checkUpdate() async {
+  void checkUpdate(VersioningBasedFilterParameter versioningBasedFilterParameter) async {
     if (_versioningNotifierDelegate != null) {
-      _canBeUpdatedVersioningResponseLoadDataResult = IsLoadingLoadDataResult<CanBeUpdatedVersioningResponse>();
+      _specifiedVersioningBasedFilterResponseLoadDataResult = IsLoadingLoadDataResult<VersioningBasedFilterResponse>();
       notifyListeners();
-      while (!_canBeUpdatedVersioningResponseLoadDataResult.isSuccess) {
-        _canBeUpdatedVersioningResponseLoadDataResult = await canBeUpdatedVersioningUseCase.execute(
-          CanBeUpdatedVersioningParameter()
+      while (!_specifiedVersioningBasedFilterResponseLoadDataResult.isSuccess) {
+        _specifiedVersioningBasedFilterResponseLoadDataResult = await versioningBasedFilterUseCase.execute(
+          versioningBasedFilterParameter
         ).future(
           parameter: apiRequestManager.addRequestToCancellationPart("check-update").value
         );
+        if (_specifiedVersioningBasedFilterResponseLoadDataResult.isFailed) {
+          dynamic e = _specifiedVersioningBasedFilterResponseLoadDataResult.resultIfFailed;
+          if (e is DioError) {
+            if ((e.response?.data["meta"]["message"] as String?).toEmptyStringNonNull.toLowerCase().contains("version not found")) {
+              return;
+            }
+          }
+        }
       }
       notifyListeners();
-      _versioningNotifierDelegate!.onGetCanBeUpdatedVersioningResponse(
-        _canBeUpdatedVersioningResponseLoadDataResult.resultIfSuccess!
+      _versioningNotifierDelegate!.onGetSpecifiedVersioningBasedFilterResponse(
+        _specifiedVersioningBasedFilterResponseLoadDataResult.resultIfSuccess!
       );
     }
   }
 }
 
 class VersioningNotifierDelegate {
-  void Function(CanBeUpdatedVersioningResponse) onGetCanBeUpdatedVersioningResponse;
+  void Function(VersioningBasedFilterResponse) onGetSpecifiedVersioningBasedFilterResponse;
 
   VersioningNotifierDelegate({
-    required this.onGetCanBeUpdatedVersioningResponse
+    required this.onGetSpecifiedVersioningBasedFilterResponse
   });
 }

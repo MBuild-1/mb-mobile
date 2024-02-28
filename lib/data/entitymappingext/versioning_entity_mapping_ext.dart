@@ -1,5 +1,8 @@
-import '../../domain/entity/versioning/canbeupdatedversioning/can_be_updated_versioning_response.dart';
+import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
+
+import '../../domain/entity/versioning/canbeupdatedversioning/all_versioning_response.dart';
 import '../../domain/entity/versioning/versioning.dart';
+import '../../domain/entity/versioning/versioningbasedfilter/versioning_based_filter_response.dart';
 import '../../misc/response_wrapper.dart';
 
 extension VersioningEntityMappingExt on ResponseWrapper {
@@ -11,9 +14,15 @@ extension VersioningEntityMappingExt on ResponseWrapper {
 }
 
 extension VersioningDetailEntityMappingExt on ResponseWrapper {
-  CanBeUpdatedVersioningResponse mapFromResponseToCanBeUpdatedVersioningResponse() {
-    return CanBeUpdatedVersioningResponse(
+  AllVersioningResponse mapFromResponseToAllVersioningResponse() {
+    return AllVersioningResponse(
       versioningList: ResponseWrapper(response).mapFromResponseToVersioningList()
+    );
+  }
+
+  VersioningBasedFilterResponse mapFromResponseToVersioningBasedFilterResponse() {
+    return VersioningBasedFilterResponse(
+      versioning: ResponseWrapper(response).mapFromResponseToVersioning()
     );
   }
 
@@ -21,7 +30,9 @@ extension VersioningDetailEntityMappingExt on ResponseWrapper {
     return Versioning(
       id: response["id"],
       version: response["version"],
-      buildNumber: response["build_number"]
+      buildNumber: response["build_number"],
+      appleLogin: ResponseWrapper(response["apple_signin"]).mapFromResponseToInt() ?? 1,
+      mustBeUpdatedToNewerVersion: ResponseWrapper(response["must_be_updated_to_newer_version"]).mapFromResponseToInt() ?? 0,
     );
   }
 }

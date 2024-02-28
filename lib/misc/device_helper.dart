@@ -9,6 +9,8 @@ import 'package:open_store/open_store.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
+import '../domain/entity/versioning/versioning.dart';
+import '../domain/entity/versioning/versioningbasedfilter/versioning_based_filter_parameter.dart';
 import '../presentation/notifier/versioning_notifier.dart';
 import 'constant.dart';
 import 'dialog_helper.dart';
@@ -102,25 +104,23 @@ class _DeviceHelperImpl {
     VersioningNotifier versioningNotifier = Provider.of<VersioningNotifier>(context, listen: false);
     versioningNotifier.setVersioningNotifierDelegate(
       VersioningNotifierDelegate(
-        onGetCanBeUpdatedVersioningResponse: (canBeUpdatedVersioningResponse) async {
-          PackageInfo packageInfo = await PackageInfo.fromPlatform();
-          int count = canBeUpdatedVersioningResponse.versioningList.where(
-            (versioning) {
-              if (versioning.buildNumber.isEmptyString) {
-                return packageInfo.version.toLowerCase() == versioning.version.toLowerCase();
-              }
-              return (packageInfo.version.toLowerCase() == versioning.version.toLowerCase())
-                && (packageInfo.buildNumber.toLowerCase() == versioning.buildNumber.toEmptyStringNonNull.toLowerCase());
-            }
-          ).length;
-          if (count > 0) {
+        onGetSpecifiedVersioningBasedFilterResponse: (specifiedVersioningBasedFilterResponse) async {
+          Versioning versioning = specifiedVersioningBasedFilterResponse.versioning;
+          if (versioning.mustBeUpdatedToNewerVersion == 1) {
             DialogHelper.showPromptAppMustBeUpdated(context);
           }
         }
       )
     );
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      versioningNotifier.checkUpdate();
+      PackageInfo.fromPlatform().then((packageInfo) {
+        versioningNotifier.checkUpdate(
+          VersioningBasedFilterParameter(
+            version: packageInfo.version,
+            buildNumber: int.parse(packageInfo.buildNumber)
+          )
+        );
+      });
     });
   }
 }
