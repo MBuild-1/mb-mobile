@@ -325,6 +325,7 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
   @override
   void initState() {
     super.initState();
+    DeviceHelper.initVersioningNotifierAndCheckUpdate(context);
     _productNotifier = Provider.of<ProductNotifier>(context, listen: false);
     _initMainMenuPage();
     MainRouteObserver.onResetInitMainMenu = () {

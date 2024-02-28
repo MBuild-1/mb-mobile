@@ -45,6 +45,8 @@ import '../data/datasource/searchdatasource/default_search_data_source.dart';
 import '../data/datasource/searchdatasource/search_data_source.dart';
 import '../data/datasource/userdatasource/default_user_data_source.dart';
 import '../data/datasource/userdatasource/user_data_source.dart';
+import '../data/datasource/versioningdatasource/default_versioning_data_source.dart';
+import '../data/datasource/versioningdatasource/versioning_data_source.dart';
 import '../data/repository/default_address_repository.dart';
 import '../data/repository/default_banner_repository.dart';
 import '../data/repository/default_bucket_repository.dart';
@@ -62,6 +64,7 @@ import '../data/repository/default_product_discussion_repository.dart';
 import '../data/repository/default_product_repository.dart';
 import '../data/repository/default_search_repository.dart';
 import '../data/repository/default_user_repository.dart';
+import '../data/repository/default_versioning_repository.dart';
 import '../domain/dummy/addressdummy/address_dummy.dart';
 import '../domain/dummy/addressdummy/address_user_dummy.dart';
 import '../domain/dummy/addressdummy/country_dummy.dart';
@@ -96,6 +99,7 @@ import '../domain/repository/product_discussion_repository.dart';
 import '../domain/repository/product_repository.dart';
 import '../domain/repository/search_repository.dart';
 import '../domain/repository/user_repository.dart';
+import '../domain/repository/versioning_repository.dart';
 import '../domain/usecase/add_additional_item_use_case.dart';
 import '../domain/usecase/add_address_use_case.dart';
 import '../domain/usecase/add_host_cart_use_case.dart';
@@ -116,6 +120,7 @@ import '../domain/usecase/auth_identity_change_verify_otp_use_case.dart';
 import '../domain/usecase/auth_identity_send_verify_otp_use_case.dart';
 import '../domain/usecase/auth_identity_use_case.dart';
 import '../domain/usecase/auth_identity_verify_otp_use_case.dart';
+import '../domain/usecase/can_be_updated_versioning_use_case.dart';
 import '../domain/usecase/change_additional_item_use_case.dart';
 import '../domain/usecase/change_address_use_case.dart';
 import '../domain/usecase/change_password_use_case.dart';
@@ -783,6 +788,7 @@ class _Injector {
     locator.registerLazySingleton<PaymentMethodListUseCase>(() => PaymentMethodListUseCase(paymentRepository: locator()));
     locator.registerLazySingleton<PaymentInstructionUseCase>(() => PaymentInstructionUseCase(paymentRepository: locator()));
     locator.registerLazySingleton<ShippingPaymentUseCase>(() => ShippingPaymentUseCase(paymentRepository: locator()));
+    locator.registerLazySingleton<CanBeUpdatedVersioningUseCase>(() => CanBeUpdatedVersioningUseCase(versioningRepository: locator()));
 
     // Repository
     locator.registerLazySingleton<UserRepository>(() => DefaultUserRepository(userDataSource: locator()));
@@ -811,6 +817,7 @@ class _Injector {
     locator.registerLazySingleton<BucketRepository>(() => DefaultBucketRepository(bucketDataSource: locator()));
     locator.registerLazySingleton<SearchRepository>(() => DefaultSearchRepository(searchDataSource: locator()));
     locator.registerLazySingleton<PaymentRepository>(() => DefaultPaymentRepository(paymentDataSource: locator()));
+    locator.registerLazySingleton<VersioningRepository>(() => DefaultVersioningRepository(versioningDataSource: locator()));
 
     // Data Sources
     locator.registerLazySingleton<UserDataSource>(() => DefaultUserDataSource(dio: locator()));
@@ -850,6 +857,7 @@ class _Injector {
       )
     );
     locator.registerLazySingleton<PaymentDataSource>(() => DefaultPaymentDataSource(dio: locator()));
+    locator.registerLazySingleton<VersioningDataSource>(() => DefaultVersioningDataSource(dio: locator()));
 
     // Dio
     locator.registerLazySingleton<Dio>(() => DioHttpClient.of());

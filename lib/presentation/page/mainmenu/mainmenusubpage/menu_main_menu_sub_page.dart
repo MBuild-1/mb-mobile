@@ -32,6 +32,7 @@ import '../../../../misc/controllerstate/listitemcontrollerstate/profilemenulist
 import '../../../../misc/controllerstate/listitemcontrollerstate/spacing_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/title_and_description_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/paging_controller_state.dart';
+import '../../../../misc/device_helper.dart';
 import '../../../../misc/dialog_helper.dart';
 import '../../../../misc/entityandlistitemcontrollerstatemediator/horizontal_component_entity_parameterized_entity_and_list_item_controller_state_mediator.dart';
 import '../../../../misc/errorprovider/error_provider.dart';
@@ -332,10 +333,7 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
                   ),
                   ProfileMenuListItemControllerState(
                     onTap: (context) {
-                      OpenStore.instance.open(
-                        appStoreId: '6473609788',
-                        androidAppBundleId: 'com.masterbagasi.masterbagasi'
-                      );
+                      DeviceHelper.updateApplication();
                     },
                     icon: (BuildContext context) => menuIcon(Constant.vectorUpdateApplication),
                     title: 'Update Application'.tr,

@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_exit_app/flutter_exit_app.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:masterbagasi/misc/ext/get_ext.dart';
@@ -21,6 +24,7 @@ import '../presentation/widget/modifiedappbar/modified_app_bar.dart';
 import '../presentation/widget/modifiedcachednetworkimage/modified_cached_network_image.dart';
 import '../presentation/widget/profile_menu_item.dart';
 import 'constant.dart';
+import 'device_helper.dart';
 import 'errorprovider/error_provider.dart';
 import 'multi_language_string.dart';
 import 'page_restoration_helper.dart';
@@ -70,6 +74,7 @@ class _DialogHelperImpl {
   void showPromptYesNoDialog({
     required BuildContext context,
     required WidgetBuilder prompt,
+    bool canBack = true,
     WidgetBuilderWithPromptCallback? yesPromptButton,
     WidgetBuilderWithPromptCallback? noPromptButton,
     VoidCallbackWithBuildContextParameter? onYesPromptButtonTap,
@@ -77,9 +82,10 @@ class _DialogHelperImpl {
   }) {
     showDialog(
       context: context,
+      barrierDismissible: canBack,
       builder: (BuildContext context) {
         return WillPopScope(
-          onWillPop: () async => true,
+          onWillPop: () async => canBack,
           child: Dialog(
             insetPadding: const EdgeInsets.all(16.0),
             child: SizedBox(
@@ -456,6 +462,43 @@ class _DialogHelperImpl {
       ),
       onOkPromptButtonTap: (_) async {
         Get.back();
+      },
+    );
+  }
+
+  void showPromptAppMustBeUpdated(BuildContext context) {
+    DialogHelper.showPromptYesNoDialog(
+      context: context,
+      canBack: false,
+      prompt: (context) => Column(
+        children: [
+          Text("Application Must Be Updated".tr, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18), textAlign: TextAlign.center),
+          const SizedBox(height: 4),
+          Text(
+            MultiLanguageString({
+              Constant.textEnUsLanguageKey: "Because there are very important things that need to be updated, so this application must be updated now.",
+              Constant.textInIdLanguageKey: "Dikarenakan ada hal yang sangat penting yang harus diupdate, jadinya aplikasi ini harus diupdate sekarang."
+            }).toEmptyStringNonNull,
+            textAlign: TextAlign.center
+          ),
+          const SizedBox(height: 4),
+        ]
+      ),
+      yesPromptButton: (context, action) {
+        return Text("Update Application".tr);
+      },
+      noPromptButton: (context, action) {
+        return Text("Exit From Application".tr);
+      },
+      onYesPromptButtonTap: (_) async {
+        DeviceHelper.updateApplication();
+      },
+      onNoPromptButtonTap: (_) async {
+        if (Platform.isIOS) {
+          FlutterExitApp.exitApp(iosForceExit: true);
+        } else {
+          FlutterExitApp.exitApp();
+        }
       },
     );
   }

@@ -374,7 +374,9 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Input item name": "Masukin nama barang",
       "Send Items": "Kirim Barang",
       "Send Private Items": "Kirim Barang Pribadi",
-      "Download Invoice": "Unduh Invoice"
+      "Download Invoice": "Unduh Invoice",
+      "Application Must Be Updated": "Aplikasi Harus Diupdate",
+      "Exit From Application": "Keluar Dari Aplikasi"
     }
   };
 

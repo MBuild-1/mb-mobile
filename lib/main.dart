@@ -9,11 +9,11 @@ import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'domain/usecase/can_be_updated_versioning_use_case.dart';
 import 'domain/usecase/get_cart_list_use_case.dart';
 import 'domain/usecase/get_help_message_notification_count_use_case.dart';
 import 'domain/usecase/get_notification_by_user_list_use_case.dart';
 import 'domain/usecase/get_wishlist_list_ignoring_login_error.dart';
-import 'domain/usecase/get_wishlist_list_use_case.dart';
 import 'firebase_options.dart';
 
 import 'domain/usecase/get_user_use_case.dart';
@@ -26,6 +26,7 @@ import 'presentation/notifier/login_notifier.dart';
 import 'presentation/notifier/component_notifier.dart';
 import 'presentation/notifier/notification_notifier.dart';
 import 'presentation/notifier/product_notifier.dart';
+import 'presentation/notifier/versioning_notifier.dart';
 import 'presentation/page/getx_page.dart';
 import 'presentation/page/redirector_page.dart';
 
@@ -90,6 +91,11 @@ class MyApp extends StatelessWidget {
     );
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider<VersioningNotifier>(
+          create: (_) => VersioningNotifier(
+            Injector.locator<CanBeUpdatedVersioningUseCase>()
+          ),
+        ),
         ChangeNotifierProvider<LoginNotifier>(
           create: (_) => LoginNotifier(Injector.locator<GetUserUseCase>()),
         ),

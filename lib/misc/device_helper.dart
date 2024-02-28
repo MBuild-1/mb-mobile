@@ -1,11 +1,17 @@
 import 'dart:io';
 
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:masterbagasi/misc/ext/future_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
+import 'package:open_store/open_store.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:provider/provider.dart';
 
+import '../presentation/notifier/versioning_notifier.dart';
 import 'constant.dart';
+import 'dialog_helper.dart';
 import 'error/message_error.dart';
 import 'load_data_result.dart';
 import 'multi_language_string.dart';
@@ -83,6 +89,39 @@ class _DeviceHelperImpl {
       );
     }
     return onRequestTrackingAuthorization().getLoadDataResult<TrackingStatusResult>();
+  }
+
+  Future<void> updateApplication() {
+    return OpenStore.instance.open(
+      appStoreId: '6473609788',
+      androidAppBundleId: 'com.masterbagasi.masterbagasi'
+    );
+  }
+
+  void initVersioningNotifierAndCheckUpdate(BuildContext context) {
+    VersioningNotifier versioningNotifier = Provider.of<VersioningNotifier>(context, listen: false);
+    versioningNotifier.setVersioningNotifierDelegate(
+      VersioningNotifierDelegate(
+        onGetCanBeUpdatedVersioningResponse: (canBeUpdatedVersioningResponse) async {
+          PackageInfo packageInfo = await PackageInfo.fromPlatform();
+          int count = canBeUpdatedVersioningResponse.versioningList.where(
+            (versioning) {
+              if (versioning.buildNumber.isEmptyString) {
+                return packageInfo.version.toLowerCase() == versioning.version.toLowerCase();
+              }
+              return (packageInfo.version.toLowerCase() == versioning.version.toLowerCase())
+                && (packageInfo.buildNumber.toLowerCase() == versioning.buildNumber.toEmptyStringNonNull.toLowerCase());
+            }
+          ).length;
+          if (count > 0) {
+            DialogHelper.showPromptAppMustBeUpdated(context);
+          }
+        }
+      )
+    );
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      versioningNotifier.checkUpdate();
+    });
   }
 }
 
