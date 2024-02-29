@@ -935,7 +935,9 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
                             return Tooltip(
                               richMessage: textSpan,
                               child: Text.rich(
-                                textSpan
+                                textSpan,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
                               ),
                             );
                           }
