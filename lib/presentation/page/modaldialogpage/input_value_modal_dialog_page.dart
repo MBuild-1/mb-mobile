@@ -81,7 +81,7 @@ class __StatefulInputValueControllerMediatorWidgetState extends State<_StatefulI
           mainAxisSize: MainAxisSize.min,
           children: [
             SizedOutlineGradientButtonAppBarHeader(
-              text: "Host Cart".tr,
+              text: widget.inputValueModalDialogPageParameter.title(),
             ),
             const SizedBox(height: 20),
             Text(widget.inputValueModalDialogPageParameter.inputTitle()),
