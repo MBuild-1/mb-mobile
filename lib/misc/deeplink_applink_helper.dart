@@ -149,6 +149,20 @@ class _DeeplinkApplinkHelperImpl {
             }
           };
         }
+      } else if (path.contains("/user/order")) {
+        if (uri.queryParameters.containsKey("id")) {
+          String combinedOrderId = uri.queryParameters["id"]!;
+          additionalData = {
+            "type": "order-detail",
+            "data": {
+              "combined_order_id": combinedOrderId
+            }
+          };
+        } else {
+          additionalData = {
+            "type": "order"
+          };
+        }
       } else {
         return;
       }
