@@ -33,6 +33,7 @@ import '../../../misc/parameterizedcomponententityandlistitemcontrollerstatemedi
 import '../../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/horizontal_dynamic_item_carousel_parametered_component_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../../widget/modified_paged_list_view.dart';
 import '../../widget/modifiedappbar/modified_app_bar.dart';
+import '../../widget/normal_text_style_for_appbar.dart';
 import 'modal_dialog_page.dart';
 
 class SelectAddressModalDialogPage extends ModalDialogPage<SelectAddressModalDialogController> {
@@ -221,7 +222,31 @@ class _StatefulSelectAddressControllerMediatorWidgetState extends State<_Statefu
         ModifiedAppBar(
           titleInterceptor: (context, title) => Row(
             children: [
-              Text("${"Where do you want it sent".tr}?"),
+              Expanded(
+                child: Builder(
+                  builder: (context) {
+                    String text = "${"Where do you want it sent".tr}?";
+                    return Tooltip(
+                      message: text,
+                      child: Text(
+                        text,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    );
+                  }
+                )
+              ),
+              const SizedBox(width: 10),
+              NormalTextStyleForAppBar(
+                style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold),
+                softWrap: false,
+                overflow: TextOverflow.ellipsis,
+                child: GestureDetector(
+                  onTap: widget.onGotoAddAddress,
+                  child: Text("Add Address".tr),
+                ),
+              ),
             ],
           ),
           primary: false,
