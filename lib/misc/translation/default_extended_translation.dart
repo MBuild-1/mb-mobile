@@ -371,7 +371,7 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Tax Rate": "Persentase Pajak",
       "Master Bagasi's Blog": "Blog Master Bagasi",
       "Item Name": "Nama Barang",
-      "Input item name": "Masukin nama barang",
+      "Input item name": "Masukan nama barang",
       "Send Items": "Kirim Barang",
       "Send Private Items": "Kirim Barang Pribadi",
       "Download Invoice": "Unduh Invoice",
