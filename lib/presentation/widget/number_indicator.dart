@@ -24,7 +24,7 @@ class NumberIndicator extends StatelessWidget {
         color: Constant.colorMain,
         borderRadius: BorderRadius.circular(3)
       ),
-      padding: const EdgeInsets.symmetric(vertical: 3.0, horizontal: 3.0),
+      padding: const EdgeInsets.symmetric(vertical: 2.5, horizontal: 6.5),
       child: Center(
         child: Text(
           moreThanMaxNumber ? "$maxNumber+" : notificationNumber.toString(),
