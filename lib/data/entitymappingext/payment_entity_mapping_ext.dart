@@ -1,7 +1,9 @@
+import 'package:masterbagasi/data/entitymappingext/order_entity_mapping_ext.dart';
 import 'package:masterbagasi/data/entitymappingext/summary_value_entity_mapping_ext.dart';
 import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
+import '../../domain/entity/order/createorderversion1point1/create_order_version_1_point_1_response.dart';
 import '../../domain/entity/payment/payment_method.dart';
 import '../../domain/entity/payment/payment_method_group.dart';
 import '../../domain/entity/payment/paymentinstruction/payment_instruction.dart';
@@ -130,6 +132,20 @@ extension PaymentDetailEntityMappingExt on ResponseWrapper {
   }
 
   ShippingPaymentResponse mapFromResponseToShippingPaymentResponse() {
-    return ShippingPaymentResponse();
+    bool hasChangeNewResponse = false;
+    dynamic newResponse;
+    if (this is MainStructureResponseWrapper) {
+      if (response is Map<String, dynamic>) {
+        newResponse = Map<String, dynamic>.of(response);
+        (newResponse as Map<String, dynamic>)["message"] = (this as MainStructureResponseWrapper).message;
+        hasChangeNewResponse = true;
+      }
+    }
+    if (!hasChangeNewResponse) {
+      newResponse = response;
+    }
+    return ShippingPaymentResponse(
+      createOrderVersion1Point1Response: ResponseWrapper(newResponse).mapFromResponseToCreateOrderVersion1Point1Response()
+    );
   }
 }

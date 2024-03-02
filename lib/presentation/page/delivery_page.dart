@@ -67,6 +67,7 @@ import '../../misc/itemtypelistsubinterceptor/delivery_cart_item_type_list_sub_i
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/controller_manager.dart';
 import '../../misc/navigation_helper.dart';
+import '../../misc/order_helper.dart';
 import '../../misc/page_restoration_helper.dart';
 import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
@@ -527,19 +528,7 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
         onDeliveryRequestVersion1Point1ProcessSuccessCallback: (createOrderVersion1Point1Response) async {
           Provider.of<NotificationNotifier>(context, listen: false).loadCartLoadDataResult();
           Provider.of<ComponentNotifier>(context, listen: false).updateCart();
-          CreateOrderResponseType createOrderResponseType = createOrderVersion1Point1Response.createOrderResponseType;
-          if (createOrderResponseType is PaypalCreateOrderResponseType) {
-            NavigationHelper.navigationToPaypalPaymentProcessAfterPurchaseProcess(
-              context, createOrderResponseType.approveLink
-            );
-            return;
-          }
-          String combinedOrderId = "";
-          if (createOrderResponseType is WithCombinedOrderIdCreateOrderResponseType) {
-            WithCombinedOrderIdCreateOrderResponseType withCombinedOrderIdCreateOrderResponseType = createOrderResponseType as WithCombinedOrderIdCreateOrderResponseType;
-            combinedOrderId = withCombinedOrderIdCreateOrderResponseType.combinedOrderId;
-          }
-          NavigationHelper.navigationAfterPurchaseProcessWithCombinedOrderIdParameter(context, combinedOrderId);
+          OrderHelper.createOrderFromVersion1Point1Response(context, createOrderVersion1Point1Response);
         },
         onShowCartSummaryProcessCallback: (cartSummaryLoadDataResult) async {
           setState(() {

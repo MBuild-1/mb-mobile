@@ -314,6 +314,8 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
         if (this is MainStructureResponseWrapper) {
           MainStructureResponseWrapper mainStructureResponseWrapper = this as MainStructureResponseWrapper;
           message = mainStructureResponseWrapper.message.toLowerCase();
+        } else {
+          message = response["message"];
         }
         dynamic paymentResponse;
         if (response is Map<String, dynamic>) {
@@ -482,11 +484,20 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
   }
 
   PurchaseDirectResponse mapFromResponseToPurchaseDirectResponse() {
-    dynamic paymentResponse = response["payment"];
+    bool hasChangeNewResponse = false;
+    dynamic newResponse;
+    if (this is MainStructureResponseWrapper) {
+      if (response is Map<String, dynamic>) {
+        newResponse = Map<String, dynamic>.of(response);
+        (newResponse as Map<String, dynamic>)["message"] = (this as MainStructureResponseWrapper).message;
+        hasChangeNewResponse = true;
+      }
+    }
+    if (!hasChangeNewResponse) {
+      newResponse = response;
+    }
     return PurchaseDirectResponse(
-      transactionId: paymentResponse["transaction_id"],
-      orderId: paymentResponse["order_id"],
-      combinedOrderId: paymentResponse["combined_order_id"]
+      createOrderVersion1Point1Response: ResponseWrapper(newResponse).mapFromResponseToCreateOrderVersion1Point1Response()
     );
   }
 }

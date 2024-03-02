@@ -233,7 +233,7 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
   SearchResponse? _originalSearchResponse;
   Timer? _timer;
   final FocusNode _searchFocusNode = FocusNode();
-  SearchFilterModalDialogPageResponse? _searchFilterModalDialogPageResponse;
+  DefaultSearchFilterModalDialogPageResponse? _searchFilterModalDialogPageResponse;
 
   int _searchStatus = 0;
 
@@ -541,16 +541,45 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
   }
 
   void _gotoFilterPage() async {
+    if (_searchStatus <= 0) {
+      dynamic result = await DialogHelper.showModalBottomDialogPage<DefaultSearchFilterModalDialogPageResponse, DefaultSearchFilterModalDialogPageParameter>(
+        context: context,
+        modalDialogPageBuilder: (context, parameter) => SearchFilterModalDialogPage(
+          searchFilterModalDialogPageParameter: parameter!,
+        ),
+        parameter: DefaultSearchFilterModalDialogPageParameter(
+          showPriceRange: false,
+          showSortBased: false,
+          brandSearchRelatedList: [],
+          categorySearchRelatedList: [],
+          provinceSearchRelatedList: [],
+          lastBrandSearchRelated: _searchFilterModalDialogPageResponse != null ? _searchFilterModalDialogPageResponse!.brandSearchRelated : null,
+          lastCategorySearchRelated: _searchFilterModalDialogPageResponse != null ? _searchFilterModalDialogPageResponse!.categorySearchRelated : null,
+          lastProvinceSearchRelated: _searchFilterModalDialogPageResponse != null ? _searchFilterModalDialogPageResponse!.provinceSearchRelated : null,
+          lastSearchSortBy: _searchFilterModalDialogPageResponse != null ? _searchFilterModalDialogPageResponse!.searchSortBy : null,
+          lastPriceMin: _searchFilterModalDialogPageResponse != null ? _searchFilterModalDialogPageResponse!.priceMin : null,
+          lastPriceMax: _searchFilterModalDialogPageResponse != null ? _searchFilterModalDialogPageResponse!.priceMax : null,
+        )
+      );
+      if (result is DefaultSearchFilterModalDialogPageResponse) {
+        _searchFilterModalDialogPageResponse = result.hasFilterResponse ? result : null;
+        _search(
+          resetFilter: false,
+          saveOriginalSearchResponse: false
+        );
+      }
+      return;
+    }
     if (_originalSearchResponse == null) {
       return;
     }
     SearchResponse searchResponse = _originalSearchResponse!;
-    dynamic result = await DialogHelper.showModalBottomDialogPage<SearchFilterModalDialogPageResponse, SearchFilterModalDialogPageParameter>(
+    dynamic result = await DialogHelper.showModalBottomDialogPage<DefaultSearchFilterModalDialogPageResponse, DefaultSearchFilterModalDialogPageParameter>(
       context: context,
       modalDialogPageBuilder: (context, parameter) => SearchFilterModalDialogPage(
         searchFilterModalDialogPageParameter: parameter!,
       ),
-      parameter: SearchFilterModalDialogPageParameter(
+      parameter: DefaultSearchFilterModalDialogPageParameter(
         brandSearchRelatedList: searchResponse.brandSearchRelatedList,
         categorySearchRelatedList: searchResponse.categorySearchRelatedList,
         provinceSearchRelatedList: searchResponse.provinceSearchRelatedList,
@@ -562,7 +591,7 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
         lastPriceMax: _searchFilterModalDialogPageResponse != null ? _searchFilterModalDialogPageResponse!.priceMax : null,
       )
     );
-    if (result is SearchFilterModalDialogPageResponse) {
+    if (result is DefaultSearchFilterModalDialogPageResponse) {
       _searchFilterModalDialogPageResponse = result.hasFilterResponse ? result : null;
       _search(
         resetFilter: false,
@@ -622,6 +651,16 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
         appBar: CoreSearchAppBar(
           value: 0.0,
           showFilterIconButton: () {
+            // if (_searchStatus == 1) {
+            //   if (_firstSearchResponseLoadDataResult.isSuccess) {
+            //     return true;
+            //   } else if (_firstSearchResponseLoadDataResult.isFailed && _originalSearchResponse != null) {
+            //     return true;
+            //   }
+            // } else if (_searchStatus <= 0) {
+            //   return true;
+            // }
+            // return false;
             if (_searchStatus == 1 && _firstSearchResponseLoadDataResult.isSuccess) {
               return true;
             } else if (_searchStatus == 1 && _firstSearchResponseLoadDataResult.isFailed && _originalSearchResponse != null) {
@@ -688,7 +727,7 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
   }
 }
 
-extension on SearchFilterModalDialogPageResponse? {
+extension on DefaultSearchFilterModalDialogPageResponse? {
   bool get hasFilterResponse {
     if (this == null) {
       return false;

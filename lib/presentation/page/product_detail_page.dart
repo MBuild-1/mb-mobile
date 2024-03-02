@@ -75,6 +75,7 @@ import '../../misc/manager/controller_manager.dart';
 import '../../misc/multi_language_string.dart';
 import '../../misc/navigation_helper.dart';
 import '../../misc/on_observe_load_product_delegate.dart';
+import '../../misc/order_helper.dart';
 import '../../misc/page_restoration_helper.dart';
 import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
@@ -1121,7 +1122,7 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
           );
         },
         onBuyDirectlyRequestProcessSuccessCallback: (purchaseDirectResponse) async {
-          NavigationHelper.navigationAfterPurchaseProcessWithCombinedOrderIdParameter(context, purchaseDirectResponse.combinedOrderId);
+          OrderHelper.createOrderFromVersion1Point1Response(context, purchaseDirectResponse.createOrderVersion1Point1Response);
         },
         onShowShareProductRequestProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
         onShowShareProductRequestProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(

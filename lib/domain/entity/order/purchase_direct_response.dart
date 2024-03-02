@@ -1,11 +1,9 @@
+import 'createorderversion1point1/create_order_version_1_point_1_response.dart';
+
 class PurchaseDirectResponse {
-  String transactionId;
-  String orderId;
-  String combinedOrderId;
+  CreateOrderVersion1Point1Response createOrderVersion1Point1Response;
 
   PurchaseDirectResponse({
-    required this.transactionId,
-    required this.orderId,
-    required this.combinedOrderId
+    required this.createOrderVersion1Point1Response
   });
 }
