@@ -234,79 +234,179 @@ class _DialogHelperImpl {
           onWillPop: () async => true,
           child: Dialog(
             insetPadding: const EdgeInsets.all(16.0),
-            child: SizedBox(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            children: [
-                              ModifiedSvgPicture.asset(
-                                height: 100,
-                                Constant.vectorBag,
-                                overrideDefaultColorWithSingleColor: false
-                              ),
-                              const SizedBox(height: 10),
-                              SizedOutlineGradientButton(
-                                onPressed: () async {
-                                  dynamic result = await DialogHelper.showModalDialogPage<bool, String>(
-                                    context: context,
-                                    modalDialogPageBuilder: (context, parameter) => AddHostCartModalDialogPage(),
-                                  );
-                                  if (result != null) {
-                                    if (result) {
-                                      Navigator.of(context).pop();
-                                      PageRestorationHelper.toSharedCartPage(context);
-                                    }
-                                  }
-                                },
-                                text: "Be Host".tr,
-                                outlineGradientButtonType: OutlineGradientButtonType.outline,
-                                outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
-                              )
-                            ]
-                          )
-                        ),
-                        SizedBox(width: 2.w),
-                        Expanded(
-                          child: Column(
-                            children: [
-                              ModifiedSvgPicture.asset(
-                                height: 100,
-                                Constant.vectorBagBlack,
-                                overrideDefaultColorWithSingleColor: false
-                              ),
-                              const SizedBox(height: 10),
-                              SizedOutlineGradientButton(
-                                onPressed: () async {
-                                  dynamic result = await DialogHelper.showModalDialogPage<bool, String>(
-                                    context: context,
-                                    modalDialogPageBuilder: (context, parameter) => TakeFriendCartModalDialogPage(),
-                                  );
-                                  if (result != null) {
-                                    if (result) {
-                                      Navigator.of(context).pop();
-                                      showRequestJoinBucketIsSuccess(context);
-                                    }
-                                  }
-                                },
-                                text: "Take Shopping".tr,
-                                outlineGradientButtonType: OutlineGradientButtonType.solid,
-                                outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
-                              )
-                            ]
-                          )
-                        ),
-                      ]
+            child: Builder(
+              builder: (context) {
+                Widget beHostDescription(bool withColor, bool withText) => Container(
+                  width: double.infinity,
+                  child: Visibility(
+                    visible: withText,
+                    maintainState: true,
+                    maintainAnimation: true,
+                    maintainSize: true,
+                    child: Text(
+                      MultiLanguageString({
+                        Constant.textEnUsLanguageKey: "Get cheap prices by inviting your friend to shop in your basket.",
+                        Constant.textInIdLanguageKey: "Dapatkan harga murah dengan mengundang temanmu belanja di keranjang kamu.",
+                      }).toEmptyStringNonNull,
+                      style: const TextStyle(
+                        fontSize: 12.0
+                      )
                     )
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8.0),
+                    color: withColor ? Constant.colorBlueGray : null
+                  ),
+                );
+                Widget descriptionContainerBackground() {
+                  return Positioned(
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.0),
+                        color: Constant.colorBlueGray
+                      ),
+                    ),
+                  );
+                }
+                Widget takeShoppingDescription(bool withColor, bool withText) => Container(
+                  width: double.infinity,
+                  child: Visibility(
+                    visible: withText,
+                    maintainState: true,
+                    maintainAnimation: true,
+                    maintainSize: true,
+                    child: Text(
+                      MultiLanguageString({
+                        Constant.textEnUsLanguageKey: "Get cheap prices by joining your friend's basket.",
+                        Constant.textInIdLanguageKey: "Dapatkan harga murah dengan bergabung di keranjang teman kamu.",
+                      }).toEmptyStringNonNull,
+                      style: const TextStyle(
+                        fontSize: 12.0
+                      )
+                    )
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8.0),
+                    color: withColor ? Constant.colorBlueGray : null
+                  ),
+                );
+                Widget descriptionStackGroup = Stack(
+                  children: [
+                    takeShoppingDescription(false, false),
+                    beHostDescription(false, false)
                   ],
-                ),
-              ),
+                );
+                return SizedBox(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  ModifiedSvgPicture.asset(
+                                    height: 100,
+                                    Constant.vectorBag,
+                                    overrideDefaultColorWithSingleColor: false
+                                  ),
+                                  const SizedBox(height: 10),
+                                  SizedOutlineGradientButton(
+                                    onPressed: () async {
+                                      dynamic result = await DialogHelper.showModalDialogPage<bool, String>(
+                                        context: context,
+                                        modalDialogPageBuilder: (context, parameter) => AddHostCartModalDialogPage(),
+                                      );
+                                      if (result != null) {
+                                        if (result) {
+                                          Navigator.of(context).pop();
+                                          PageRestorationHelper.toSharedCartPage(context);
+                                        }
+                                      }
+                                    },
+                                    text: "Be Host".tr,
+                                    outlineGradientButtonType: OutlineGradientButtonType.outline,
+                                    outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Stack(
+                                    children: [
+                                      Visibility(
+                                        visible: false,
+                                        maintainState: true,
+                                        maintainAnimation: true,
+                                        maintainSize: true,
+                                        child: descriptionStackGroup
+                                      ),
+                                      descriptionContainerBackground(),
+                                      beHostDescription(false, true),
+                                    ],
+                                  )
+                                ]
+                              )
+                            ),
+                            SizedBox(width: 2.w),
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  ModifiedSvgPicture.asset(
+                                    height: 100,
+                                    Constant.vectorBagBlack,
+                                    overrideDefaultColorWithSingleColor: false
+                                  ),
+                                  const SizedBox(height: 10),
+                                  SizedOutlineGradientButton(
+                                    onPressed: () async {
+                                      dynamic result = await DialogHelper.showModalDialogPage<bool, String>(
+                                        context: context,
+                                        modalDialogPageBuilder: (context, parameter) => TakeFriendCartModalDialogPage(),
+                                      );
+                                      if (result != null) {
+                                        if (result) {
+                                          Navigator.of(context).pop();
+                                          showRequestJoinBucketIsSuccess(context);
+                                        }
+                                      }
+                                    },
+                                    text: "Take Shopping".tr,
+                                    outlineGradientButtonType: OutlineGradientButtonType.solid,
+                                    outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Stack(
+                                    children: [
+                                      Visibility(
+                                        visible: false,
+                                        maintainState: true,
+                                        maintainAnimation: true,
+                                        maintainSize: true,
+                                        child: descriptionStackGroup
+                                      ),
+                                      descriptionContainerBackground(),
+                                      takeShoppingDescription(false, true)
+                                    ]
+                                  )
+                                ]
+                              )
+                            ),
+                          ]
+                        )
+                      ],
+                    ),
+                  ),
+                );
+              }
             ),
           ),
         );
