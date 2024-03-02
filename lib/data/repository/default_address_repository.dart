@@ -13,6 +13,8 @@ import '../../domain/entity/address/current_selected_address_parameter.dart';
 import '../../domain/entity/address/current_selected_address_response.dart';
 import '../../domain/entity/address/remove_address_parameter.dart';
 import '../../domain/entity/address/remove_address_response.dart';
+import '../../domain/entity/address/shipper_address.dart';
+import '../../domain/entity/address/shipper_address_parameter.dart';
 import '../../domain/entity/address/update_current_selected_address_parameter.dart';
 import '../../domain/entity/address/update_current_selected_address_response.dart';
 import '../../domain/repository/address_repository.dart';
@@ -76,5 +78,10 @@ class DefaultAddressRepository implements AddressRepository {
   @override
   FutureProcessing<LoadDataResult<Address>> addressBasedId(AddressBasedIdParameter addressBasedIdParameter) {
     return addressDataSource.addressBasedId(addressBasedIdParameter).mapToLoadDataResult<Address>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<ShipperAddress>> shippingAddress(ShipperAddressParameter shippingAddressParameter) {
+    return addressDataSource.shipperAddress(shippingAddressParameter).mapToLoadDataResult<ShipperAddress>();
   }
 }

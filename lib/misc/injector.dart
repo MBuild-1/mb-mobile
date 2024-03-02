@@ -273,6 +273,7 @@ import '../domain/usecase/search_use_case.dart';
 import '../domain/usecase/send_delete_account_otp_use_case.dart';
 import '../domain/usecase/send_register_otp_use_case.dart';
 import '../domain/usecase/share_product_use_case.dart';
+import '../domain/usecase/shipper_address_use_case.dart';
 import '../domain/usecase/shipping_payment_use_case.dart';
 import '../domain/usecase/show_bucket_by_id_use_case.dart';
 import '../domain/usecase/store_keyword_for_search_history_use_case.dart';
@@ -789,6 +790,7 @@ class _Injector {
     locator.registerLazySingleton<PaymentMethodListUseCase>(() => PaymentMethodListUseCase(paymentRepository: locator()));
     locator.registerLazySingleton<PaymentInstructionUseCase>(() => PaymentInstructionUseCase(paymentRepository: locator()));
     locator.registerLazySingleton<ShippingPaymentUseCase>(() => ShippingPaymentUseCase(paymentRepository: locator()));
+    locator.registerLazySingleton<ShipperAddressUseCase>(() => ShipperAddressUseCase(addressRepository: locator()));
     locator.registerLazySingleton<AllVersioningUseCase>(() => AllVersioningUseCase(versioningRepository: locator()));
     locator.registerLazySingleton<VersioningBasedFilterUseCase>(() => VersioningBasedFilterUseCase(versioningRepository: locator()));
 

@@ -16,6 +16,8 @@ import '../entity/address/current_selected_address_parameter.dart';
 import '../entity/address/current_selected_address_response.dart';
 import '../entity/address/remove_address_parameter.dart';
 import '../entity/address/remove_address_response.dart';
+import '../entity/address/shipper_address.dart';
+import '../entity/address/shipper_address_parameter.dart';
 import '../entity/address/update_current_selected_address_parameter.dart';
 import '../entity/address/update_current_selected_address_response.dart';
 
@@ -30,4 +32,5 @@ abstract class AddressRepository {
   FutureProcessing<LoadDataResult<ChangeAddressResponse>> changeAddress(ChangeAddressParameter changeAddressParameter);
   FutureProcessing<LoadDataResult<RemoveAddressResponse>> removeAddress(RemoveAddressParameter removeAddressParameter);
   FutureProcessing<LoadDataResult<Address>> addressBasedId(AddressBasedIdParameter addressBasedIdParameter);
+  FutureProcessing<LoadDataResult<ShipperAddress>> shippingAddress(ShipperAddressParameter shippingAddressParameter);
 }

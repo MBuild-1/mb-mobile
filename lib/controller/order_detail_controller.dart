@@ -1,6 +1,8 @@
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 
+import '../domain/entity/address/shipper_address.dart';
+import '../domain/entity/address/shipper_address_parameter.dart';
 import '../domain/entity/componententity/dynamic_item_carousel_directly_component_entity.dart';
 import '../domain/entity/componententity/i_dynamic_item_carousel_directly_component_entity.dart';
 import '../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderparameter/modify_warehouse_in_order_parameter.dart';
@@ -18,6 +20,7 @@ import '../domain/entity/summaryvalue/summary_value.dart';
 import '../domain/usecase/add_warehouse_in_order_use_case.dart';
 import '../domain/usecase/get_order_based_id_use_case.dart';
 import '../domain/usecase/order_transaction_use_case.dart';
+import '../domain/usecase/shipper_address_use_case.dart';
 import '../domain/usecase/shipping_payment_use_case.dart';
 import '../misc/additionalsummarywidgetparameter/order_transaction_additional_summary_widget_parameter.dart';
 import '../misc/controllercontentdelegate/arrived_order_controller_content_delegate.dart';
@@ -34,6 +37,7 @@ import '../misc/error/message_error.dart';
 import '../misc/errorprovider/error_provider.dart';
 import '../misc/load_data_result.dart';
 import '../misc/multi_language_string.dart';
+import '../misc/shipper_address_process_additional_parameter.dart';
 import '../misc/typedef.dart';
 import 'base_getx_controller.dart';
 
@@ -50,6 +54,7 @@ class OrderDetailController extends BaseGetxController {
   final ModifyWarehouseInOrderUseCase modifyWarehouseInOrderUseCase;
   final OrderTransactionUseCase orderTransactionUseCase;
   final ShippingPaymentUseCase shippingPaymentUseCase;
+  final ShipperAddressUseCase shipperAddressUseCase;
   final RepurchaseControllerContentDelegate repurchaseControllerContentDelegate;
   final ArrivedOrderControllerContentDelegate arrivedOrderControllerContentDelegate;
   OrderDetailDelegate? _orderDetailDelegate;
@@ -60,6 +65,7 @@ class OrderDetailController extends BaseGetxController {
     this.modifyWarehouseInOrderUseCase,
     this.orderTransactionUseCase,
     this.shippingPaymentUseCase,
+    this.shipperAddressUseCase,
     this.repurchaseControllerContentDelegate,
     this.arrivedOrderControllerContentDelegate
   ) {
@@ -228,6 +234,43 @@ class OrderDetailController extends BaseGetxController {
     );
   }
 
+  IDynamicItemCarouselDirectlyComponentEntity getShipperAddressSection() {
+    return DynamicItemCarouselDirectlyComponentEntity(
+      title: MultiLanguageString("Shipper Address".tr),
+      onDynamicItemAction: (title, description, observer) async {
+        void updateShipperAddressLoadDataResult(LoadDataResult<ShipperAddress> shipperAddressLoadDataResult) {
+          observer(title, description, shipperAddressLoadDataResult);
+          if (_orderDetailDelegate != null) {
+            ShipperAddressProcessAdditionalParameter shipperAddressProcessAdditionalParameter = _orderDetailDelegate!.shipperAddressProcessAdditionalParameter();
+            shipperAddressProcessAdditionalParameter.shipperAddressLoadDataResult = shipperAddressLoadDataResult;
+          }
+        }
+        updateShipperAddressLoadDataResult(IsLoadingLoadDataResult<ShipperAddress>());
+        LoadDataResult<ShipperAddress> shipperAddressPagingDataResult = await shipperAddressUseCase.execute(
+          ShipperAddressParameter()
+        ).future(
+          parameter: apiRequestManager.addRequestToCancellationPart("shipper-address-parameter").value
+        );
+        if (shipperAddressPagingDataResult.isFailedBecauseCancellation) {
+          return;
+        }
+        updateShipperAddressLoadDataResult(shipperAddressPagingDataResult);
+      },
+      observeDynamicItemActionStateDirectly: (title, description, itemLoadDataResult, errorProvider) {
+        LoadDataResult<ShipperAddress> shipperAddressLoadDataResult = itemLoadDataResult.castFromDynamic<ShipperAddress>();
+        if (_orderDetailDelegate != null) {
+          return _orderDetailDelegate!.onObserveShipperAddressDirectly(
+            _OnObserveShipperAddressDirectlyParameter(
+              shipperAddressLoadDataResult: shipperAddressLoadDataResult
+            )
+          );
+        } else {
+          throw MessageError(title: "Order detail delegate must be not null");
+        }
+      },
+    );
+  }
+
   Future<LoadDataResult<Order>> getOrderBasedId(OrderBasedIdParameter orderBasedIdParameter) {
     return getOrderBasedIdUseCase.execute(orderBasedIdParameter).future(
       parameter: apiRequestManager.addRequestToCancellationPart("order-detail").value
@@ -250,9 +293,11 @@ class OrderDetailDelegate {
   _OnShippingPaymentRequestProcessSuccessCallback onShippingPaymentRequestProcessSuccessCallback;
   _OnShowShippingPaymentRequestProcessFailedCallback onShowShippingPaymentRequestProcessFailedCallback;
   ListItemControllerState Function(_OnObserveOrderTransactionDirectlyParameter) onObserveOrderTransactionDirectly;
+  ListItemControllerState Function(_OnObserveShipperAddressDirectlyParameter) onObserveShipperAddressDirectly;
   GetCountdownComponentDataAction Function() onGetCountdownComponentDataAction;
   ErrorProvider Function() onGetErrorProvider;
   OrderTransactionAdditionalSummaryWidgetParameter Function() orderTransactionAdditionalSummaryWidgetParameter;
+  ShipperAddressProcessAdditionalParameter Function() shipperAddressProcessAdditionalParameter;
 
   OrderDetailDelegate({
     required this.onUnfocusAllWidget,
@@ -264,9 +309,11 @@ class OrderDetailDelegate {
     required this.onShippingPaymentRequestProcessSuccessCallback,
     required this.onShowShippingPaymentRequestProcessFailedCallback,
     required this.onObserveOrderTransactionDirectly,
+    required this.onObserveShipperAddressDirectly,
     required this.onGetCountdownComponentDataAction,
     required this.onGetErrorProvider,
-    required this.orderTransactionAdditionalSummaryWidgetParameter
+    required this.orderTransactionAdditionalSummaryWidgetParameter,
+    required this.shipperAddressProcessAdditionalParameter
   });
 }
 
@@ -275,5 +322,13 @@ class _OnObserveOrderTransactionDirectlyParameter {
 
   _OnObserveOrderTransactionDirectlyParameter({
     required this.orderTransactionResponseLoadDataResult
+  });
+}
+
+class _OnObserveShipperAddressDirectlyParameter {
+  LoadDataResult<ShipperAddress> shipperAddressLoadDataResult;
+
+  _OnObserveShipperAddressDirectlyParameter({
+    required this.shipperAddressLoadDataResult
   });
 }

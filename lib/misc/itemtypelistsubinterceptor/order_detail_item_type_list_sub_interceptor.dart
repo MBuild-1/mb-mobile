@@ -8,6 +8,7 @@ import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../../domain/entity/additionalitem/additional_item.dart';
 import '../../domain/entity/address/address.dart';
+import '../../domain/entity/address/shipper_address.dart';
 import '../../domain/entity/order/combined_order.dart';
 import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderitem/optional_fields_warehouse_in_order_item.dart';
 import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderparameter/add_warehouse_in_order_parameter.dart';
@@ -42,6 +43,7 @@ import '../controllerstate/listitemcontrollerstate/divider_list_item_controller_
 import '../controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/load_data_result_dynamic_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/order_detail_container_list_item_controller_state.dart';
+import '../controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/order_shipper_address_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/order_tracking_detail_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/order_tracking_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/order_transaction_list_item_controller_state.dart';
@@ -148,6 +150,11 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
       _interceptForProductInventoryInformation(i, oldItemType, oldItemTypeList, newListItemControllerState);
       newListItemControllerState.add(SpacingListItemControllerState());
       _interceptForOrderSendToWarehouseInformation(i, oldItemType, oldItemTypeList, newListItemControllerState);
+      List<AdditionalItem> additionalItemList = order.combinedOrder.orderProduct.additionalItemList;
+      if (additionalItemList.isNotEmpty) {
+        newListItemControllerState.add(SpacingListItemControllerState());
+        _interceptForShipperAddressPayment(i, oldItemType, oldItemTypeList, newListItemControllerState);
+      }
       newListItemControllerState.add(SpacingListItemControllerState());
       _interceptForOtherProductInformation(i, oldItemType, oldItemTypeList, newListItemControllerState);
       newListItemControllerState.add(SpacingListItemControllerState());
@@ -616,6 +623,37 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
     ListItemControllerState orderTransactionListItemControllerState = orderDetailContainerListItemControllerState.orderTransactionListItemControllerState();
     listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
       i, ListItemControllerStateWrapper(orderTransactionListItemControllerState), oldItemTypeList, newListItemControllerState
+    );
+  }
+
+  void _interceptForShipperAddressPayment(
+    int i,
+    OrderDetailContainerListItemControllerState orderDetailContainerListItemControllerState,
+    List<ListItemControllerState> oldItemTypeList,
+    List<ListItemControllerState> newListItemControllerState
+  ) {
+    newListItemControllerState.add(
+      VirtualSpacingListItemControllerState(height: padding())
+    );
+    ListItemControllerState orderTrackingTitleListItemControllerState = TitleAndDescriptionListItemControllerState(
+      title: "Daftar Barang Kiriman".tr,
+      padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem)
+    );
+    listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
+      i, ListItemControllerStateWrapper(orderTrackingTitleListItemControllerState), oldItemTypeList, newListItemControllerState
+    );
+    newListItemControllerState.add(
+      VirtualSpacingListItemControllerState(height: padding())
+    );
+    ListItemControllerState shipperAddressListItemControllerState = PaddingContainerListItemControllerState(
+      padding: EdgeInsets.symmetric(horizontal: padding()),
+      paddingChildListItemControllerState: orderDetailContainerListItemControllerState.shipperAddressListItemControllerState()
+    );
+    listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
+      i, ListItemControllerStateWrapper(shipperAddressListItemControllerState), oldItemTypeList, newListItemControllerState
+    );
+    newListItemControllerState.add(
+      VirtualSpacingListItemControllerState(height: padding())
     );
   }
 

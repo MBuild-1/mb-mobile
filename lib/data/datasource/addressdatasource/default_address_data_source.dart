@@ -20,6 +20,8 @@ import '../../../domain/entity/address/current_selected_address_parameter.dart';
 import '../../../domain/entity/address/current_selected_address_response.dart';
 import '../../../domain/entity/address/remove_address_parameter.dart';
 import '../../../domain/entity/address/remove_address_response.dart';
+import '../../../domain/entity/address/shipper_address.dart';
+import '../../../domain/entity/address/shipper_address_parameter.dart';
 import '../../../domain/entity/address/update_current_selected_address_parameter.dart';
 import '../../../domain/entity/address/update_current_selected_address_response.dart';
 import '../../../misc/constant.dart';
@@ -171,6 +173,14 @@ class DefaultAddressDataSource implements AddressDataSource {
     return DioHttpClientProcessing((cancelToken) {
       return dio.get("/user/address/${addressBasedIdParameter.addressId}", cancelToken: cancelToken)
         .map<Address>(onMap: (value) => value.wrapResponse().mapFromResponseToAddress());
+    });
+  }
+
+  @override
+  FutureProcessing<ShipperAddress> shipperAddress(ShipperAddressParameter shippingAddressParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.get("/user/order/shipper/address", cancelToken: cancelToken)
+        .map<ShipperAddress>(onMap: (value) => value.wrapResponse().mapFromResponseToShipperAddress());
     });
   }
 }

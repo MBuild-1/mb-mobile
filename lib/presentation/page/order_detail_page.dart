@@ -12,6 +12,7 @@ import 'package:masterbagasi/presentation/page/web_viewer_page.dart';
 import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 
 import '../../controller/order_detail_controller.dart';
+import '../../domain/entity/address/shipper_address.dart';
 import '../../domain/entity/order/arrived_order_request.dart';
 import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderparameter/remove_warehouse_in_order_parameter.dart';
 import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderresponse/modify_warehouse_in_order_response.dart';
@@ -24,6 +25,7 @@ import '../../domain/entity/summaryvalue/summary_value.dart';
 import '../../domain/usecase/add_warehouse_in_order_use_case.dart';
 import '../../domain/usecase/get_order_based_id_use_case.dart';
 import '../../domain/usecase/order_transaction_use_case.dart';
+import '../../domain/usecase/shipper_address_use_case.dart';
 import '../../domain/usecase/shipping_payment_use_case.dart';
 import '../../misc/additionalsummarywidgetparameter/order_transaction_additional_summary_widget_parameter.dart';
 import '../../misc/constant.dart';
@@ -32,6 +34,7 @@ import '../../misc/controllercontentdelegate/repurchase_controller_content_deleg
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/load_data_result_dynamic_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/order_detail_container_list_item_controller_state.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/order_shipper_address_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/order_transaction_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
 import '../../misc/countdown/configuration/orderdetail/order_detail_configure_countdown_component.dart';
@@ -64,6 +67,7 @@ import '../../misc/paging/pagingresult/paging_result.dart';
 import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/horizontal_dynamic_item_carousel_parametered_component_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../../misc/pusher_helper.dart';
 import '../../misc/routeargument/order_detail_route_argument.dart';
+import '../../misc/shipper_address_process_additional_parameter.dart';
 import '../../misc/string_util.dart';
 import '../../misc/temp_order_detail_back_result_data_helper.dart';
 import '../../misc/toast_helper.dart';
@@ -104,6 +108,7 @@ class OrderDetailPage extends RestorableGetxPage<_OrderDetailPageRestoration> {
         Injector.locator<ModifyWarehouseInOrderUseCase>(),
         Injector.locator<OrderTransactionUseCase>(),
         Injector.locator<ShippingPaymentUseCase>(),
+        Injector.locator<ShipperAddressUseCase>(),
         Injector.locator<RepurchaseControllerContentDelegate>(),
         Injector.locator<ArrivedOrderControllerContentDelegate>()
       ),
@@ -315,6 +320,7 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
   final CountdownManager _countdownManager = CountdownManager(countdownComponentList: []);
   LoadDataResult<_LoadOrderDetailResponse> _loadOrderDetailResponseLoadDataResult = NoLoadDataResult<_LoadOrderDetailResponse>();
   late final OrderTransactionAdditionalSummaryWidgetParameter _orderTransactionAdditionalSummaryWidgetParameter;
+  late final ShipperAddressProcessAdditionalParameter _shipperAddressProcessAdditionalParameter;
   PaymentWidgetBindingObserver? _paymentWidgetBindingObserver;
   bool _isCheckingOrderTransaction = false;
   final PusherChannelsFlutter _pusher = PusherChannelsFlutter.getInstance();
@@ -352,6 +358,9 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
           _orderDetailScrollController.jumpTo(0);
         });
       }
+    );
+    _shipperAddressProcessAdditionalParameter = ShipperAddressProcessAdditionalParameter(
+      shipperAddressLoadDataResult: NoLoadDataResult<ShipperAddress>()
     );
     _paymentWidgetBindingObserver = PaymentWidgetBindingObserver(
       checkOrderTransactionWhileResuming: _refreshOrderDetail
@@ -432,9 +441,14 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
         }(),
         parameter: carouselParameterizedEntityMediator
       );
+      ListItemControllerState shipperAddressListItemControllerState = componentEntityMediator.mapWithParameter(
+        widget.orderDetailController.getShipperAddressSection(),
+        parameter: carouselParameterizedEntityMediator
+      );
       return _LoadOrderDetailResponse(
         order: orderDetail,
-        orderTransactionListItemControllerState: orderTransactionListItemControllerState
+        orderTransactionListItemControllerState: orderTransactionListItemControllerState,
+        shipperAddressListItemControllerState: shipperAddressListItemControllerState
       );
     });
   }
@@ -523,6 +537,7 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
             },
             onPayOrderShipping: _payOrderShipping,
             orderTransactionListItemControllerState: () => loadOrderDetailResponse.orderTransactionListItemControllerState,
+            shipperAddressListItemControllerState: () => loadOrderDetailResponse.shipperAddressListItemControllerState,
             errorProvider: () => Injector.locator<ErrorProvider>(),
             onConfirmArrived: (order) => DialogHelper.showPromptConfirmArrived(
               context, () {
@@ -667,6 +682,12 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
             errorProvider: () => Injector.locator<ErrorProvider>()
           );
         },
+        onObserveShipperAddressDirectly: (onObserveShipperAddressDirectlyParameter) {
+          return OrderShipperAddressListItemControllerState(
+            shipperAddressLoadDataResult: onObserveShipperAddressDirectlyParameter.shipperAddressLoadDataResult,
+            errorProvider: () => Injector.locator<ErrorProvider>()
+          );
+        },
         onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
         onGetCountdownComponentDataAction: () {
           return GetCountdownComponentDataAction(
@@ -796,7 +817,8 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
             }
           );
         },
-        orderTransactionAdditionalSummaryWidgetParameter: () => _orderTransactionAdditionalSummaryWidgetParameter
+        orderTransactionAdditionalSummaryWidgetParameter: () => _orderTransactionAdditionalSummaryWidgetParameter,
+        shipperAddressProcessAdditionalParameter: () => _shipperAddressProcessAdditionalParameter
       )
     );
     return ModifiedScaffold(
@@ -872,10 +894,12 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
 class _LoadOrderDetailResponse {
   Order order;
   ListItemControllerState orderTransactionListItemControllerState;
+  ListItemControllerState shipperAddressListItemControllerState;
 
   _LoadOrderDetailResponse({
     required this.order,
-    required this.orderTransactionListItemControllerState
+    required this.orderTransactionListItemControllerState,
+    required this.shipperAddressListItemControllerState
   });
 }
 
@@ -883,6 +907,7 @@ extension on _LoadOrderDetailResponse {
   void merge(_LoadOrderDetailResponse newLoadOrderDetailResponse) {
     order = newLoadOrderDetailResponse.order;
     orderTransactionListItemControllerState = newLoadOrderDetailResponse.orderTransactionListItemControllerState;
+    shipperAddressListItemControllerState = newLoadOrderDetailResponse.shipperAddressListItemControllerState;
   }
 }
 
