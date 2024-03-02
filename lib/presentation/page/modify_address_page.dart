@@ -31,6 +31,7 @@ import '../widget/field.dart';
 import '../widget/loaddataresultimplementer/load_data_result_implementer.dart';
 import '../widget/modified_loading_indicator.dart';
 import '../widget/modified_scaffold.dart';
+import '../widget/modified_svg_picture.dart';
 import '../widget/modified_text_field.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import '../widget/rx_consumer.dart';
@@ -289,10 +290,41 @@ class _StatefulModifyAddressControllerMediatorWidgetState extends State<_Statefu
       },
       child: SingleChildScrollView(
         controller: _scrollController,
-        padding: EdgeInsets.all(4.w),
+        padding: EdgeInsets.all(4.w).copyWith(top: 5.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Container(
+              width: double.infinity,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ModifiedSvgPicture.asset(
+                    Constant.vectorInformation,
+                    width: 19.0,
+                    color: Constant.colorBrown2,
+                  ),
+                  const SizedBox(width: 10.0),
+                  Expanded(
+                    child: Text(
+                      MultiLanguageString({
+                        Constant.textEnUsLanguageKey: "Remote Area Alert. Your address may be a remote area zone. To find out whether your area is a remote zone or not, ask our customer service a question.",
+                        Constant.textInIdLanguageKey: "Waspada Remote Area. Alamat anda mungkin saja merupakan zona remote area. Untuk mengetahui apakah wilayah anda merupakan zona remote atau tidak, ajukan pertanyaan kepada customer service kami.",
+                      }).toEmptyStringNonNull,
+                      style: const TextStyle(
+                        fontSize: 12.0
+                      )
+                    ),
+                  )
+                ]
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16.0),
+                color: Constant.colorLightOrange3
+              ),
+            ),
+            const SizedBox(height: 20),
             if (_failedModifyAddressError != null)
               ...[
                 Builder(
