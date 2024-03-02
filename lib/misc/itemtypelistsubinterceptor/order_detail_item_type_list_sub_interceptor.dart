@@ -19,6 +19,7 @@ import '../../domain/entity/order/order_product_detail.dart';
 import '../../domain/entity/order/order_product_inventory.dart';
 import '../../domain/entity/order/ordertracking/order_tracking.dart';
 import '../../domain/entity/order/ordertracking/order_tracking_detail.dart';
+import '../../domain/entity/order/ordertransaction/ordertransactionresponse/midtrans_order_transaction_response.dart';
 import '../../domain/entity/order/ordertransaction/ordertransactionresponse/order_transaction_response.dart';
 import '../../domain/entity/summaryvalue/summary_value.dart';
 import '../../presentation/page/modaldialogpage/order_tracking_modal_dialog_page.dart';

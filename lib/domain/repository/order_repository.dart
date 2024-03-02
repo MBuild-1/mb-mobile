@@ -13,6 +13,7 @@ import '../entity/order/order.dart';
 import '../entity/order/order_based_id_parameter.dart';
 import '../entity/order/order_paging_parameter.dart';
 import '../entity/order/ordertransaction/order_transaction_parameter.dart';
+import '../entity/order/ordertransaction/ordertransactionresponse/midtrans_order_transaction_response.dart';
 import '../entity/order/ordertransaction/ordertransactionresponse/order_transaction_response.dart';
 import '../entity/order/purchase_direct_parameter.dart';
 import '../entity/order/purchase_direct_response.dart';

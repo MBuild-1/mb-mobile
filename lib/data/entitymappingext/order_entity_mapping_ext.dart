@@ -33,14 +33,17 @@ import '../../domain/entity/order/ordertracking/order_tracking_detail.dart';
 import '../../domain/entity/order/ordertracking/order_tracking_location.dart';
 import '../../domain/entity/order/ordertracking/order_tracking_location_address.dart';
 import '../../domain/entity/order/ordertransaction/order_transaction_status_code_and_status_message.dart';
-import '../../domain/entity/order/ordertransaction/ordertransactionsummary/order_transaction_summary.dart';
 import '../../domain/entity/order/ordertransaction/ordertransactionresponse/order_transaction_response.dart';
+import '../../domain/entity/order/ordertransaction/ordertransactionresponse/paypal_order_transaction_response.dart';
+import '../../domain/entity/order/ordertransaction/ordertransactionsummary/order_transaction_summary.dart';
+import '../../domain/entity/order/ordertransaction/ordertransactionresponse/midtrans_order_transaction_response.dart';
 import '../../domain/entity/order/purchase_direct_response.dart';
 import '../../domain/entity/order/repurchase/repurchase_response.dart';
 import '../../domain/entity/order/repurchase/responsetype/default_repurchase_response_type.dart';
 import '../../domain/entity/order/repurchase/responsetype/no_repurchase_response_type.dart';
 import '../../domain/entity/order/repurchase/responsetype/only_warehouse_repurchase_response_type.dart';
 import '../../domain/entity/order/support_order_product.dart';
+import '../../domain/entity/payment/paymentinstruction/paymentinstructiontransactionsummary/payment_instruction_transaction_summary.dart';
 import '../../misc/constant.dart';
 import '../../misc/date_util.dart';
 import '../../misc/error/message_error.dart';
@@ -407,56 +410,75 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
   }
 
   OrderTransactionResponse mapFromResponseToOrderTransactionResponse() {
+    String type = (response["type"] as String?).toEmptyStringNonNull.toLowerCase();
     dynamic paymentResponse = response["payment"];
-    String statusCode = paymentResponse["status_code"];
-    String statusMessage = paymentResponse["status_message"];
-    if (statusCode.isNotEmptyString) {
-      if (statusCode[0] != "2") {
-        if (statusCode != "407") {
-          throw MultiLanguageMessageError(
-            title: MultiLanguageString({
-              Constant.textEnUsLanguageKey: "Failed to Load Payment Details",
-              Constant.textInIdLanguageKey: "Gagal Memuat Rincian Pembayaran"
-            }),
-            message: MultiLanguageString({
-              Constant.textEnUsLanguageKey: "Please try refresh again.",
-              Constant.textInIdLanguageKey: "Silahkan coba refresh kembali."
-            }),
-            value: OrderTransactionStatusCodeAndStatusMessage(
-              statusCode: statusCode,
-              statusMessage: statusMessage
-            )
-          );
+    String paymentType = (paymentResponse["payment_type"] as String?).toEmptyStringNonNull;
+    String paymentStepType = (paymentResponse["payment_step_type"] as String?).toEmptyStringNonNull;
+    OrderTransactionSummary orderTransactionSummary = ResponseWrapper(response["payment_detail"]).mapFromResponseToOrderTransactionSummary();
+    PaymentInstructionTransactionSummary paymentInstructionTransactionSummary = ResponseWrapper(response["payment_instruction"]).mapFromResponseToPaymentInstructionTransactionSummary();
+    if (type == "midtrans") {
+      String statusCode = paymentResponse["status_code"];
+      String statusMessage = paymentResponse["status_message"];
+      if (statusCode.isNotEmptyString) {
+        if (statusCode[0] != "2") {
+          if (statusCode != "407") {
+            throw MultiLanguageMessageError(
+              title: MultiLanguageString({
+                Constant.textEnUsLanguageKey: "Failed to Load Payment Details",
+                Constant.textInIdLanguageKey: "Gagal Memuat Rincian Pembayaran"
+              }),
+              message: MultiLanguageString({
+                Constant.textEnUsLanguageKey: "Please try refresh again.",
+                Constant.textInIdLanguageKey: "Silahkan coba refresh kembali."
+              }),
+              value: OrderTransactionStatusCodeAndStatusMessage(
+                statusCode: statusCode,
+                statusMessage: statusMessage
+              )
+            );
+          }
         }
       }
+      return MidtransOrderTransactionResponse(
+        paymentType: paymentType,
+        paymentStepType: paymentStepType,
+        orderId: paymentResponse["order_id"],
+        transactionId: paymentResponse["transaction_id"],
+        transactionStatus: paymentResponse["transaction_status"],
+        statusCode: statusCode,
+        statusMessage: statusMessage,
+        grossAmount: ResponseWrapper(paymentResponse["gross_amount"]).mapFromResponseToDouble()!,
+        transactionDateTime: DateUtil.convertUtcOffset(
+          ResponseWrapper(paymentResponse["transaction_time"]).mapFromResponseToDateTime(
+            dateFormat: DateUtil.standardDateFormat,
+            convertIntoLocalTime: false
+          )!,
+          0,
+          oldUtcOffset: 7
+        ),
+        expiryDateTime: DateUtil.convertUtcOffset(
+          ResponseWrapper(paymentResponse["expiry_time"]).mapFromResponseToDateTime(
+            dateFormat: DateUtil.standardDateFormat,
+            convertIntoLocalTime: false
+          )!,
+          0,
+          oldUtcOffset: 7
+        ),
+        orderTransactionSummary: orderTransactionSummary,
+        paymentInstructionTransactionSummary: paymentInstructionTransactionSummary,
+      );
+    } else if (type == "paypal") {
+      return PaypalOrderTransactionResponse(
+        paymentType: paymentType,
+        paymentStepType: paymentStepType,
+        status: paymentResponse["status"],
+        selfLink: paymentResponse["self_link"],
+        orderTransactionSummary: orderTransactionSummary,
+        paymentInstructionTransactionSummary: paymentInstructionTransactionSummary,
+      );
+    } else {
+      throw MessageError(title: "Order transaction response is not suitable");
     }
-    return OrderTransactionResponse(
-      paymentStepType: (paymentResponse["payment_step_type"] as String?).toEmptyStringNonNull,
-      orderId: paymentResponse["order_id"],
-      transactionId: paymentResponse["transaction_id"],
-      transactionStatus: paymentResponse["transaction_status"],
-      statusCode: statusCode,
-      statusMessage: statusMessage,
-      grossAmount: ResponseWrapper(paymentResponse["gross_amount"]).mapFromResponseToDouble()!,
-      transactionDateTime: DateUtil.convertUtcOffset(
-        ResponseWrapper(paymentResponse["transaction_time"]).mapFromResponseToDateTime(
-          dateFormat: DateUtil.standardDateFormat,
-          convertIntoLocalTime: false
-        )!,
-        0,
-        oldUtcOffset: 7
-      ),
-      expiryDateTime: DateUtil.convertUtcOffset(
-        ResponseWrapper(paymentResponse["expiry_time"]).mapFromResponseToDateTime(
-          dateFormat: DateUtil.standardDateFormat,
-          convertIntoLocalTime: false
-        )!,
-        0,
-        oldUtcOffset: 7
-      ),
-      orderTransactionSummary: ResponseWrapper(response["payment_detail"]).mapFromResponseToOrderTransactionSummary(),
-      paymentInstructionTransactionSummary: ResponseWrapper(response["payment_instruction"]).mapFromResponseToPaymentInstructionTransactionSummary(),
-    );
   }
 
   PurchaseDirectResponse mapFromResponseToPurchaseDirectResponse() {

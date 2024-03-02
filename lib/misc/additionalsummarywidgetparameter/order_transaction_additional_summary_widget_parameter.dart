@@ -1,5 +1,6 @@
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 
+import '../../domain/entity/order/ordertransaction/ordertransactionresponse/midtrans_order_transaction_response.dart';
 import '../../domain/entity/order/ordertransaction/ordertransactionresponse/order_transaction_response.dart';
 import '../../presentation/page/modaldialogpage/payment_instruction_modal_dialog_page.dart';
 import '../errorprovider/error_provider.dart';

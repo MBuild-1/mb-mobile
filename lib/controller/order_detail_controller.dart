@@ -11,6 +11,8 @@ import '../domain/entity/order/order.dart';
 import '../domain/entity/order/order_based_id_parameter.dart';
 import '../domain/entity/order/ordertransaction/order_transaction_parameter.dart';
 import '../domain/entity/order/ordertransaction/order_transaction_status_code_and_status_message.dart';
+import '../domain/entity/order/ordertransaction/ordertransactionresponse/midtrans_order_transaction_response.dart';
+import '../domain/entity/order/ordertransaction/ordertransactionresponse/no_order_transaction_response.dart';
 import '../domain/entity/order/ordertransaction/ordertransactionresponse/order_transaction_response.dart';
 import '../domain/entity/order/ordertransaction/ordertransactionsummary/order_transaction_summary.dart';
 import '../domain/entity/payment/paymentinstruction/paymentinstructiontransactionsummary/payment_instruction_transaction_summary.dart';
@@ -195,23 +197,7 @@ class OrderDetailController extends BaseGetxController {
             if (value is OrderTransactionStatusCodeAndStatusMessage) {
               if (value.statusCode == "404" && value.statusMessage.toLowerCase().contains("transaction doesn't exist")) {
                 orderTransactionResponsePagingDataResult = SuccessLoadDataResult<OrderTransactionResponse>(
-                  value: OrderTransactionResponse(
-                    paymentStepType: "",
-                    orderId: "",
-                    transactionId: "",
-                    transactionStatus: "",
-                    statusCode: value.statusCode,
-                    statusMessage: value.statusMessage,
-                    grossAmount: 0.0,
-                    transactionDateTime: DateTime.now(),
-                    expiryDateTime: DateTime.now(),
-                    orderTransactionSummary: OrderTransactionSummary(
-                      orderTransactionSummaryValueList: []
-                    ),
-                    paymentInstructionTransactionSummary: PaymentInstructionTransactionSummary(
-                      paymentInstructionTransactionSummaryValueList: []
-                    )
-                  )
+                  value: NoOrderTransactionResponse()
                 );
               }
             }

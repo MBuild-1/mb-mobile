@@ -18,6 +18,7 @@ import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderp
 import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderresponse/modify_warehouse_in_order_response.dart';
 import '../../domain/entity/order/order.dart';
 import '../../domain/entity/order/order_based_id_parameter.dart';
+import '../../domain/entity/order/ordertransaction/ordertransactionresponse/midtrans_order_transaction_response.dart';
 import '../../domain/entity/order/ordertransaction/ordertransactionresponse/order_transaction_response.dart';
 import '../../domain/entity/payment/payment_method.dart';
 import '../../domain/entity/payment/shippingpayment/shipping_payment_parameter.dart';
@@ -713,11 +714,17 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
                       }
                     }
                   } else {
-                    DateTime localExpiryDateTime = DateUtil.convertUtcOffset(
-                      configureCountdownComponent.orderTransactionResponse.expiryDateTime,
-                      DateTime.now().timeZoneOffset.inHours,
-                      oldUtcOffset: 0
-                    );
+                    DateTime localExpiryDateTime = () {
+                      DateTime? currentlyExpireDateTime = configureCountdownComponent.orderTransactionResponse.expiryDateTime;
+                      if (currentlyExpireDateTime == null) {
+                        throw MessageError(title: "Expiry datetime is null, this transaction type might not support expire date time.");
+                      }
+                      return DateUtil.convertUtcOffset(
+                        currentlyExpireDateTime,
+                        DateTime.now().timeZoneOffset.inHours,
+                        oldUtcOffset: 0
+                      );
+                    }();
                     int countdownValue = () {
                       late int value;
                       if (tagString == "expired_remaining") {

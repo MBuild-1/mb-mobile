@@ -318,7 +318,7 @@ class _WidgetHelperImpl {
       String? summaryValueDescription;
       String summaryValueType = summaryValue.type;
       void addSpacing() {
-        if (i > 0) {
+        if (columnWidget.isNotEmpty) {
           double height = 10.0;
           if (summaryValueType == "header") {
             height = 15.0;
@@ -644,6 +644,68 @@ class _WidgetHelperImpl {
                       ),
                     );
                   }
+                )
+              ]
+            );
+          } else {
+            String? link = summaryValueContent["link"] as String?;
+            String colorHexString = (summaryValueContent["color"] as String?).toEmptyStringNonNull;
+            Color color = ColorHelper.fromHex(colorHexString);
+            TextStyle getDefaultTextStyle() {
+              return TextStyle(
+                color: Constant.colorDarkBlue,
+                fontWeight: FontWeight.bold
+              );
+            }
+            addColumnWidgetList(
+              <Widget>[
+                SizedOutlineGradientButton(
+                  onPressed: link.isNotEmptyString ? () {
+                    WebHelper.launchUrl(Uri.parse(link!));
+                  } : null,
+                  text: "Submit".tr,
+                  outlineGradientButtonType: OutlineGradientButtonType.solid,
+                  outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
+                  childInterceptor: (textStyle) {
+                    return SizedBox(
+                      width: double.infinity,
+                      child: Center(
+                        child: Builder(
+                          builder: (context) {
+                            if (summaryValueContent["image"] != null) {
+                              return SizedBox(
+                                width: ResponseWrapper(summaryValueContent["image_width"]).mapFromResponseToDouble(),
+                                height: ResponseWrapper(summaryValueContent["image_height"]).mapFromResponseToDouble(),
+                                child: SummaryValueModifiedCachedNetworkImage(
+                                  imageUrl: (summaryValueContent["image"] as String?).toEmptyStringNonNull,
+                                  boxFit: () {
+                                    return BoxFit.contain;
+                                  }()
+                                )
+                              );
+                            } else {
+                              return Text(
+                                (summaryValueContent["text"] as String?).toEmptyStringNonNull,
+                                style: textStyle
+                              );
+                            }
+                          }
+                        ),
+                      ),
+                    );
+                  },
+                  customGradientButtonVariation: (outlineGradientButtonType) {
+                    return CustomGradientButtonVariation(
+                      outlineGradientButtonType: outlineGradientButtonType,
+                      gradient: SweepGradient(
+                        stops: const [1],
+                        colors: [color],
+                      ),
+                      backgroundColor: color,
+                      textStyle: getDefaultTextStyle()
+                    );
+                  },
+
                 )
               ]
             );
