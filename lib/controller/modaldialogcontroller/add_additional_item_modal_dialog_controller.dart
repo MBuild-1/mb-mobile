@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:masterbagasi/misc/ext/double_ext.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
@@ -54,7 +55,7 @@ class AddAdditionalItemModalDialogController extends ModalDialogController {
         onValidate: () {
           String estimationPrice = _addAdditionalItemModalDialogDelegate!.onGetAdditionalItemEstimationPriceInput();
           if (!estimationPrice.isEmptyString) {
-            double? estimationPriceValue = double.tryParse(estimationPrice);
+            double? estimationPriceValue = estimationPrice.tryParseDoubleWithAdditionalChecking();
             if (estimationPriceValue != null) {
               return SuccessValidationResult();
             } else {
@@ -69,7 +70,7 @@ class AddAdditionalItemModalDialogController extends ModalDialogController {
         onValidate: () {
           String estimationWeight = _addAdditionalItemModalDialogDelegate!.onGetAdditionalItemEstimationWeightInput();
           if (!estimationWeight.isEmptyString) {
-            double? estimationWeightValue = double.tryParse(estimationWeight);
+            double? estimationWeightValue = estimationWeight.tryParseDoubleWithAdditionalChecking();
             if (estimationWeightValue != null) {
               return SuccessValidationResult();
             } else {
@@ -119,8 +120,8 @@ class AddAdditionalItemModalDialogController extends ModalDialogController {
         AdditionalItem additionalItem = AdditionalItem(
           id: _addAdditionalItemModalDialogDelegate!.onGetAdditionalItemIdInput(),
           name: _addAdditionalItemModalDialogDelegate!.onGetAdditionalItemNameInput(),
-          estimationPrice: double.parse(_addAdditionalItemModalDialogDelegate!.onGetAdditionalItemEstimationPriceInput()),
-          estimationWeight: double.parse(_addAdditionalItemModalDialogDelegate!.onGetAdditionalItemEstimationWeightInput()),
+          estimationPrice: StringUtil.filterNumber(_addAdditionalItemModalDialogDelegate!.onGetAdditionalItemEstimationPriceInput()).parseDoubleWithAdditionalChecking(),
+          estimationWeight: _addAdditionalItemModalDialogDelegate!.onGetAdditionalItemEstimationWeightInput().parseDoubleWithAdditionalChecking(),
           quantity: int.parse(_addAdditionalItemModalDialogDelegate!.onGetAdditionalItemQuantityInput()),
           notes: _addAdditionalItemModalDialogDelegate!.onGetAdditionalItemNotesInput()
         );

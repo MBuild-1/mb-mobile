@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:masterbagasi/misc/ext/double_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/misc/ext/validation_result_ext.dart';
@@ -208,7 +209,7 @@ class _StatefulModifyWarehouseInOrderControllerMediatorWidgetState extends State
         onGetAdditionalItemList: () => _additionalItemList,
         onGetNameInput: () => _nameTextEditingController.text,
         onGetPriceInput: () => StringUtil.filterNumber(_priceTextEditingController.text),
-        onGetWeightInput: () => StringUtil.filterNumberAndDecimal(_weightTextEditingController.text),
+        onGetWeightInput: () => _weightTextEditingController.text,
         onGetQuantityInput: () => _quantityTextEditingController.text,
         onGetNotesInput: () => _notesTextEditingController.text,
         onAddAdditionalItemBack: () async => Get.back(),
@@ -316,26 +317,33 @@ class _StatefulModifyWarehouseInOrderControllerMediatorWidgetState extends State
                       ),
                     ),
                     const SizedBox(height: 20),
-                    Text("Weight".tr),
+                    Text("Estimation Weight".tr),
                     const SizedBox(height: 10),
                     RxConsumer<Validator>(
                       rxValue: widget.modifyWarehouseInOrderModalDialogController.weightValidatorRx,
                       onConsumeValue: (context, value) => Field(
-                        child: (context, validationResult, validator) => ModifiedTextField(
-                          isError: validationResult.isFailed,
-                          controller: _weightTextEditingController,
-                          decoration: DefaultInputDecoration(
-                            hintText: "Enter estimation weight".tr,
-                            suffixIcon: WidgetHelper.buildSuffixForTextField(
-                              suffix: Text(
-                                "Kg",
-                                style: TextStyle(color: Constant.colorDarkBlack, fontSize: 16)
+                        child: (context, validationResult, validator) => Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            WidgetHelper.buildWeightInputHint(),
+                            const SizedBox(height: 8),
+                            ModifiedTextField(
+                              isError: validationResult.isFailed,
+                              controller: _weightTextEditingController,
+                              decoration: DefaultInputDecoration(
+                                hintText: "Enter estimation weight".tr,
+                                suffixIcon: WidgetHelper.buildSuffixForTextField(
+                                  suffix: Text(
+                                    "Kg",
+                                    style: TextStyle(color: Constant.colorDarkBlack, fontSize: 16)
+                                  ),
+                                ),
+                                suffixIconConstraints: const BoxConstraints(minWidth: 0.0, minHeight: 0.0)
                               ),
+                              onChanged: (value) => validator?.validate(),
+                              textInputAction: TextInputAction.next,
                             ),
-                            suffixIconConstraints: const BoxConstraints(minWidth: 0.0, minHeight: 0.0)
-                          ),
-                          onChanged: (value) => validator?.validate(),
-                          textInputAction: TextInputAction.next,
+                          ],
                         ),
                         validator: value,
                       ),
@@ -385,8 +393,8 @@ class _StatefulModifyWarehouseInOrderControllerMediatorWidgetState extends State
                                 AdditionalItem(
                                   id: "",
                                   name: _nameTextEditingController.text,
-                                  estimationPrice: double.parse(StringUtil.filterNumber(_priceTextEditingController.text)),
-                                  estimationWeight: double.parse(StringUtil.filterNumberAndDecimal(_weightTextEditingController.text)),
+                                  estimationPrice: StringUtil.filterNumber(_priceTextEditingController.text).parseDoubleWithAdditionalChecking(),
+                                  estimationWeight: StringUtil.filterNumberAndDecimal(_weightTextEditingController.text).parseDoubleWithAdditionalChecking(),
                                   quantity: int.parse(_quantityTextEditingController.text),
                                   notes: _notesTextEditingController.text
                                 )
@@ -402,8 +410,8 @@ class _StatefulModifyWarehouseInOrderControllerMediatorWidgetState extends State
                               if (additionalItemIterable.isNotEmpty) {
                                 AdditionalItem willBeEditAdditionalItem = additionalItemIterable.first;
                                 willBeEditAdditionalItem.name = _nameTextEditingController.text;
-                                willBeEditAdditionalItem.estimationPrice = double.parse(StringUtil.filterNumber(_priceTextEditingController.text));
-                                willBeEditAdditionalItem.estimationWeight = double.parse(StringUtil.filterNumberAndDecimal(_weightTextEditingController.text));
+                                willBeEditAdditionalItem.estimationPrice = StringUtil.filterNumber(_priceTextEditingController.text).parseDoubleWithAdditionalChecking();
+                                willBeEditAdditionalItem.estimationWeight = StringUtil.filterNumberAndDecimal(_weightTextEditingController.text).parseDoubleWithAdditionalChecking();
                                 willBeEditAdditionalItem.quantity = int.parse(_quantityTextEditingController.text);
                                 willBeEditAdditionalItem.notes = _notesTextEditingController.text;
                               }

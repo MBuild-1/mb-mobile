@@ -17,16 +17,22 @@ class _StringUtilImpl {
   static const _sizeSuffixes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
 
   String filterNumber(String input) {
-    RegExp regex = RegExp(r'[0-9]');
-    Iterable<Match> matches = regex.allMatches(input);
-    String result = matches.map((match) => match.group(0)!).join();
+    String result = "";
+    for (int i = 0; i < input.length; i++) {
+      if (input[i].isNumericOnly) {
+        result += input[i];
+      }
+    }
     return result;
   }
 
   String filterNumberAndDecimal(String input) {
-    RegExp regex = RegExp(r'[0-9.]');
-    Iterable<Match> matches = regex.allMatches(input);
-    String result = matches.map((match) => match.group(0)!).join();
+    String result = "";
+    for (int i = 0; i < input.length; i++) {
+      if (input[i].isNumericOnly || input[i] == "." || input[i] == ",") {
+        result += input[i];
+      }
+    }
     return result;
   }
 

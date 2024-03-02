@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:masterbagasi/misc/ext/double_ext.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/number_ext.dart';
 import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
@@ -337,7 +338,7 @@ class _WidgetHelperImpl {
         if (summaryValue.value is num) {
           summaryValueDescription = (summaryValue.value as num).toRupiah(withFreeTextIfZero: false);
         } else {
-          summaryValueDescription = double.parse(summaryValue.value as String).toRupiah(withFreeTextIfZero: false);
+          summaryValueDescription = (summaryValue.value as String).parseDoubleWithAdditionalChecking().toRupiah(withFreeTextIfZero: false);
         }
       } else if (summaryValueType == "header") {
         addColumnWidget(
@@ -675,6 +676,17 @@ class _WidgetHelperImpl {
         onInterceptSummaryWidget: onInterceptSummaryWidget,
         additionalSummaryWidgetParameter: additionalSummaryWidgetParameter
       )
+    );
+  }
+
+
+  Widget buildWeightInputHint() {
+    return Text(
+      MultiLanguageString({
+        Constant.textInIdLanguageKey: "Masukkan berat dalam kilogram dan gunakan koma (,) atau titik (.) sebagai pemisah desimal (contoh: 1,8 atau 1.8)",
+        Constant.textEnUsLanguageKey: "Enter the weight in kilograms and use a comma (,) or dot (.) as the decimal separator (example: 1.8 or 1.8)"
+      }).toEmptyStringNonNull,
+      style: TextStyle(color: Constant.colorDarkGrey, fontSize: 12)
     );
   }
 }

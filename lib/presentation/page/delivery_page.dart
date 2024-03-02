@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:masterbagasi/misc/ext/double_ext.dart';
 import 'package:masterbagasi/misc/ext/error_provider_ext.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/number_ext.dart';
@@ -613,7 +614,7 @@ class _StatefulDeliveryControllerMediatorWidgetState extends State<_StatefulDeli
                                             if (finalCartSummaryValue.value is num) {
                                               text = (finalCartSummaryValue.value as num).toRupiah(withFreeTextIfZero: false);
                                             } else {
-                                              text = double.parse(finalCartSummaryValue.value as String).toRupiah(withFreeTextIfZero: false);
+                                              text = (finalCartSummaryValue.value as String).parseDoubleWithAdditionalChecking().toRupiah(withFreeTextIfZero: false);
                                             }
                                           } else {
                                             text = finalCartSummaryValue.value;

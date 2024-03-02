@@ -102,8 +102,8 @@ class _StatefulAddAdditionalItemControllerMediatorWidgetState extends State<_Sta
         onGetHasParameter: () => widget.serializedJsonAdditionalItemModalDialogParameter.isNotEmptyString,
         onGetAdditionalItemIdInput: () => _id,
         onGetAdditionalItemNameInput: () => _additionalNameTextEditingController.text,
-        onGetAdditionalItemEstimationPriceInput: () => StringUtil.filterNumber(_additionalEstimationPriceTextEditingController.text),
-        onGetAdditionalItemEstimationWeightInput: () => StringUtil.filterNumberAndDecimal(_additionalEstimationWeightTextEditingController.text),
+        onGetAdditionalItemEstimationPriceInput: () => _additionalEstimationPriceTextEditingController.text,
+        onGetAdditionalItemEstimationWeightInput: () => _additionalEstimationWeightTextEditingController.text,
         onGetAdditionalItemQuantityInput: () => _additionalQuantityTextEditingController.text,
         onGetAdditionalItemNotesInput: () => _additionalNotesTextEditingController.text,
         onAddAdditionalItemBack: () => Get.back(),
@@ -176,21 +176,28 @@ class _StatefulAddAdditionalItemControllerMediatorWidgetState extends State<_Sta
             RxConsumer<Validator>(
               rxValue: widget.addAdditionalItemModalDialogController.additionalItemEstimationWeightValidatorRx,
               onConsumeValue: (context, value) => Field(
-                child: (context, validationResult, validator) => ModifiedTextField(
-                  isError: validationResult.isFailed,
-                  controller: _additionalEstimationWeightTextEditingController,
-                  decoration: DefaultInputDecoration(
-                    hintText: "Enter estimation weight".tr,
-                    suffixIcon: WidgetHelper.buildSuffixForTextField(
-                      suffix: Text(
-                        "Kg",
-                        style: TextStyle(color: Constant.colorDarkBlack, fontSize: 16)
+                child: (context, validationResult, validator) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    WidgetHelper.buildWeightInputHint(),
+                    const SizedBox(height: 8),
+                    ModifiedTextField(
+                      isError: validationResult.isFailed,
+                      controller: _additionalEstimationWeightTextEditingController,
+                      decoration: DefaultInputDecoration(
+                        hintText: "Enter estimation weight".tr,
+                        suffixIcon: WidgetHelper.buildSuffixForTextField(
+                          suffix: Text(
+                            "Kg",
+                            style: TextStyle(color: Constant.colorDarkBlack, fontSize: 16)
+                          ),
+                        ),
+                        suffixIconConstraints: const BoxConstraints(minWidth: 0.0, minHeight: 0.0)
                       ),
+                      onChanged: (value) => validator?.validate(),
+                      textInputAction: TextInputAction.next,
                     ),
-                    suffixIconConstraints: const BoxConstraints(minWidth: 0.0, minHeight: 0.0)
-                  ),
-                  onChanged: (value) => validator?.validate(),
-                  textInputAction: TextInputAction.next,
+                  ],
                 ),
                 validator: value,
               ),
