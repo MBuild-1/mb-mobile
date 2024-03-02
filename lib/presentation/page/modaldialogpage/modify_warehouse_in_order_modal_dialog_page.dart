@@ -300,7 +300,7 @@ class _StatefulModifyWarehouseInOrderControllerMediatorWidgetState extends State
                           inputFormatters: [currencyTextInputFormatter],
                           controller: _priceTextEditingController,
                           decoration: DefaultInputDecoration(
-                            hintText: "Enter estimation price",
+                            hintText: "Enter estimation price".tr,
                             prefixIcon: WidgetHelper.buildPrefixForTextField(
                               prefix: Text(
                                 "Rp. ",
