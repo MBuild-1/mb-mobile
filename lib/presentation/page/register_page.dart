@@ -60,6 +60,7 @@ import '../../misc/validation/validator/validator.dart';
 import '../../misc/web_helper.dart';
 import '../../misc/widget_helper.dart';
 import '../notifier/login_notifier.dart';
+import '../notifier/third_party_login_notifier.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/field.dart';
 import '../widget/modified_scaffold.dart';
@@ -242,6 +243,7 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
   void initState() {
     super.initState();
     _loginNotifier = Provider.of<LoginNotifier>(context, listen: false);
+    DeviceHelper.checkThirdPartyLoginVisibility(context);
     _googleSignIn = GoogleSignIn(
       scopes: [
         'email',
@@ -857,79 +859,22 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
                       }
                     }
                   ),
-                  ...() {
-                    List<Widget> loginWidgetList = [];
-                    void addLoginWidget(Widget loginWidget) {
-                      if (loginWidgetList.isNotEmpty) {
-                        loginWidgetList.add(
-                          const SizedBox(height: 12.0)
-                        );
-                      }
-                      loginWidgetList.add(loginWidget);
-                    }
-                    if (Platform.isAndroid) {
-                      addLoginWidget(
-                        SizedOutlineGradientButton(
-                          width: double.infinity,
-                          outlineGradientButtonType: OutlineGradientButtonType.outline,
-                          onPressed: widget.registerController.registerWithGoogle,
-                          text: "Register With Google".tr,
-                        ),
-                      );
-                    }
-                    // if (Platform.isIOS) {
-                    //   addLoginWidget(
-                    //     SizedOutlineGradientButton(
-                    //       width: double.infinity,
-                    //       outlineGradientButtonType: OutlineGradientButtonType.outline,
-                    //       onPressed: widget.registerController.registerWithApple,
-                    //       text: "Register With Apple".tr,
-                    //     ),
-                    //   );
-                    // }
-                    if (loginWidgetList.isNotEmpty) {
-                      loginWidgetList.insertAll(0, [
-                        SizedBox(height: 3.h),
-                        Row(
-                          children: [
-                            const Expanded(
-                              child: Divider()
-                            ),
-                            SizedBox(width: 6.w),
-                            Text("or login with".tr, style: TextStyle(
-                              color: Theme.of(context).dividerTheme.color
-                            )),
-                            SizedBox(width: 6.w),
-                            const Expanded(
-                              child: Divider()
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16.0),
-                      ]);
-                    }
-                    return loginWidgetList;
-                  }(),
-                  SizedBox(height: 2.h),
-                  Builder(
-                    builder: (context) {
-                      _termAndConditionsTapGestureRecognizer.onTap = () {
-                        WebHelper.launchUrl(Uri.parse(Constant.textTermAndConditionsUrl));
-                      };
-                      _privacyPolicyTapGestureRecognizer.onTap = () {
-                        WebHelper.launchUrl(Uri.parse(Constant.textPrivacyPolicyUrl));
-                      };
-                      return Text.rich(
-                        "By signing up".trTextSpan(
-                          parameter: SignUpRecognizer(
-                            termAndConditionsTapGestureRecognizer: _termAndConditionsTapGestureRecognizer,
-                            privacyPolicyTapGestureRecognizer: _privacyPolicyTapGestureRecognizer
-                          ),
-                        ),
-                        textAlign: TextAlign.center,
-                      );
-                    }
-                  )
+                  WidgetHelper.buildThirdPartyLoginButton(
+                    context: context,
+                    orWithText: "or register with".tr,
+                    googleButton: () => SizedOutlineGradientButton(
+                      width: double.infinity,
+                      outlineGradientButtonType: OutlineGradientButtonType.outline,
+                      onPressed: widget.registerController.registerWithGoogle,
+                      text: "Register With Google".tr,
+                    ),
+                    appleButton: () => SizedOutlineGradientButton(
+                      width: double.infinity,
+                      outlineGradientButtonType: OutlineGradientButtonType.outline,
+                      onPressed: widget.registerController.registerWithApple,
+                      text: "Register With Apple".tr,
+                    ),
+                  ),
                 ],
               ),
             ),

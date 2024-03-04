@@ -1,9 +1,9 @@
-class VersioningBasedFilterParameter {
+class ThirdPartyLoginVisibilityParameter {
   String? version;
   int? buildNumber;
   String? deviceName;
 
-  VersioningBasedFilterParameter({
+  ThirdPartyLoginVisibilityParameter({
     required this.version,
     this.buildNumber,
     this.deviceName

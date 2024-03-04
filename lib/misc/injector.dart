@@ -279,6 +279,7 @@ import '../domain/usecase/show_bucket_by_id_use_case.dart';
 import '../domain/usecase/store_keyword_for_search_history_use_case.dart';
 import '../domain/usecase/store_search_last_seen_history_use_case.dart';
 import '../domain/usecase/take_friend_cart_use_case.dart';
+import '../domain/usecase/third_party_login_visibility_use_case.dart';
 import '../domain/usecase/trigger_bucket_ready_use_case.dart';
 import '../domain/usecase/update_cart_quantity_use_case.dart';
 import '../domain/usecase/update_current_selected_address_use_case.dart';
@@ -793,6 +794,7 @@ class _Injector {
     locator.registerLazySingleton<ShipperAddressUseCase>(() => ShipperAddressUseCase(addressRepository: locator()));
     locator.registerLazySingleton<AllVersioningUseCase>(() => AllVersioningUseCase(versioningRepository: locator()));
     locator.registerLazySingleton<VersioningBasedFilterUseCase>(() => VersioningBasedFilterUseCase(versioningRepository: locator()));
+    locator.registerLazySingleton<ThirdPartyLoginVisibilityUseCase>(() => ThirdPartyLoginVisibilityUseCase(versioningRepository: locator()));
 
     // Repository
     locator.registerLazySingleton<UserRepository>(() => DefaultUserRepository(userDataSource: locator()));

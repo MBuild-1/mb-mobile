@@ -9,8 +9,10 @@ import 'package:open_store/open_store.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
+import '../domain/entity/login/third_party_login_visibility_parameter.dart';
 import '../domain/entity/versioning/versioning.dart';
 import '../domain/entity/versioning/versioningbasedfilter/versioning_based_filter_parameter.dart';
+import '../presentation/notifier/third_party_login_notifier.dart';
 import '../presentation/notifier/versioning_notifier.dart';
 import 'constant.dart';
 import 'dialog_helper.dart';
@@ -22,20 +24,29 @@ import 'trackingstatusresult/success_tracking_status_result.dart';
 import 'trackingstatusresult/tracking_status_result.dart';
 
 class _DeviceHelperImpl {
-  String getLowercaseDeviceName() {
+  String getLowercaseDeviceName({
+    bool separateSpecificAppleDeviceName = false
+  }) {
     if (Platform.isAndroid) {
       return "android";
     } else if (Platform.isIOS || Platform.isMacOS) {
-      return "apple";
+      if (!separateSpecificAppleDeviceName) {
+        return "apple";
+      } else {
+        if (Platform.isIOS) {
+          return "ios";
+        } else if (Platform.isMacOS) {
+          return "macos";
+        }
+      }
     } else if (Platform.isFuchsia) {
       return "fuchsia";
     } else if (Platform.isLinux) {
       return "linux";
     } else if (Platform.isWindows) {
       return "windows";
-    } else {
-      return "";
     }
+    return "";
   }
 
   Future<LoadDataResult<TrackingStatusResult>> requestTrackingAuthorization() async {
@@ -107,7 +118,9 @@ class _DeviceHelperImpl {
         onGetSpecifiedVersioningBasedFilterResponse: (specifiedVersioningBasedFilterResponse) async {
           Versioning versioning = specifiedVersioningBasedFilterResponse.versioning;
           if (versioning.mustBeUpdatedToNewerVersion == 1) {
-            DialogHelper.showPromptAppMustBeUpdated(context);
+            if (versioning.isLatest != 1) {
+              DialogHelper.showPromptAppMustBeUpdated(context);
+            }
           }
         }
       )
@@ -117,7 +130,28 @@ class _DeviceHelperImpl {
         versioningNotifier.checkUpdate(
           VersioningBasedFilterParameter(
             version: packageInfo.version,
-            buildNumber: int.parse(packageInfo.buildNumber)
+            buildNumber: int.parse(packageInfo.buildNumber),
+            deviceName: getLowercaseDeviceName(
+              separateSpecificAppleDeviceName: true
+            )
+          )
+        );
+      });
+    });
+  }
+
+  void checkThirdPartyLoginVisibility(BuildContext context) {
+    ThirdPartyLoginNotifier thirdPartyLoginNotifier = Provider.of<ThirdPartyLoginNotifier>(context, listen: false);
+    thirdPartyLoginNotifier.resetThirdPartyLoginVisibilityValue();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      PackageInfo.fromPlatform().then((packageInfo) {
+        thirdPartyLoginNotifier.checkThirdPartyLoginVisibility(
+          ThirdPartyLoginVisibilityParameter(
+            version: packageInfo.version,
+            buildNumber: int.parse(packageInfo.buildNumber),
+            deviceName: getLowercaseDeviceName(
+              separateSpecificAppleDeviceName: true
+            )
           )
         );
       });

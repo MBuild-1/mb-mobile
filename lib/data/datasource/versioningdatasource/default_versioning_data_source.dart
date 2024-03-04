@@ -41,7 +41,8 @@ class DefaultVersioningDataSource implements VersioningDataSource {
         cancelToken: cancelToken,
         queryParameters: <String, dynamic>{
           if (versioningBasedFilterParameter.version.isNotEmptyString) "version": versioningBasedFilterParameter.version!,
-          if (versioningBasedFilterParameter.buildNumber != null) "build_number": versioningBasedFilterParameter.buildNumber
+          if (versioningBasedFilterParameter.buildNumber != null) "build_number": versioningBasedFilterParameter.buildNumber,
+          if (versioningBasedFilterParameter.deviceName.isNotEmptyString) "device_name": versioningBasedFilterParameter.deviceName!,
         },
         options: OptionsBuilder.multipartData().withBaseUrl(dio.options.baseUrl.replaceAll("v1", "v1.1")).buildExtended()
       ).map<VersioningBasedFilterResponse>(

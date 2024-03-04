@@ -32,7 +32,9 @@ extension VersioningDetailEntityMappingExt on ResponseWrapper {
       version: response["version"],
       buildNumber: response["build_number"],
       appleLogin: ResponseWrapper(response["apple_signin"]).mapFromResponseToInt() ?? 1,
+      googleLogin: ResponseWrapper(response["google_signin"]).mapFromResponseToInt() ?? 1,
       mustBeUpdatedToNewerVersion: ResponseWrapper(response["must_be_updated_to_newer_version"]).mapFromResponseToInt() ?? 0,
+      isLatest: ResponseWrapper(response["is_latest"]).mapFromResponseToInt() ?? 0,
     );
   }
 }

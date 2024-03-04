@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -9,10 +11,12 @@ import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
+import '../domain/entity/login/third_party_login_visibility.dart';
 import '../domain/entity/payment/paymentinstruction/paymentinstructiontransactionsummary/payment_instruction_transaction_summary.dart';
 import '../domain/entity/product/productbundle/product_bundle.dart';
 import '../domain/entity/summaryvalue/summary_value.dart';
 import '../presentation/notifier/product_notifier.dart';
+import '../presentation/notifier/third_party_login_notifier.dart';
 import '../presentation/page/modaldialogpage/payment_instruction_modal_dialog_page.dart';
 import '../presentation/widget/button/add_or_remove_cart_button.dart';
 import '../presentation/widget/button/add_or_remove_wishlist_button.dart';
@@ -22,6 +26,7 @@ import '../presentation/widget/countdown_indicator.dart';
 import '../presentation/widget/horizontal_justified_title_and_description.dart';
 import '../presentation/widget/loaddataresultimplementer/load_data_result_implementer_directly.dart';
 import '../presentation/widget/modified_divider.dart';
+import '../presentation/widget/modified_loading_indicator.dart';
 import '../presentation/widget/modified_shimmer.dart';
 import '../presentation/widget/modified_svg_picture.dart';
 import '../presentation/widget/modifiedcachednetworkimage/product_modified_cached_network_image.dart';
@@ -749,6 +754,85 @@ class _WidgetHelperImpl {
         Constant.textEnUsLanguageKey: "Enter the weight in kilograms and use a comma (,) or dot (.) as the decimal separator (example: 1.8 or 1.8)"
       }).toEmptyStringNonNull,
       style: TextStyle(color: Constant.colorDarkGrey, fontSize: 12)
+    );
+  }
+
+  Widget buildThirdPartyLoginButton({
+    required BuildContext context,
+    required String orWithText,
+    required Widget Function() googleButton,
+    required Widget Function() appleButton,
+  }) {
+    return Consumer<ThirdPartyLoginNotifier>(
+      builder: (_, thirdPartyLoginNotifier, __) {
+        LoadDataResult<ThirdPartyLoginVisibility> thirdPartyLoginVisibilityLoadDataResult = thirdPartyLoginNotifier.thirdPartyLoginVisibilityLoadDataResult;
+        if (thirdPartyLoginVisibilityLoadDataResult.isLoading || thirdPartyLoginVisibilityLoadDataResult.isNotLoading) {
+          return Column(
+            children: const [
+              SizedBox(height: 12.0),
+              ModifiedLoadingIndicator()
+            ],
+          );
+        }
+        ThirdPartyLoginVisibility thirdPartyLoginVisibility = thirdPartyLoginVisibilityLoadDataResult.resultIfSuccess!;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ...() {
+              List<Widget> loginWidgetList = [];
+              void addLoginWidget(Widget loginWidget) {
+                if (loginWidgetList.isNotEmpty) {
+                  loginWidgetList.add(
+                    const SizedBox(height: 12.0)
+                  );
+                }
+                loginWidgetList.add(loginWidget);
+              }
+              if (Platform.isAndroid || Platform.isIOS) {
+                bool addLoginWithGoogleWidget = true;
+                if (Platform.isIOS) {
+                  addLoginWithGoogleWidget = thirdPartyLoginVisibility.isGoogleLoginVisible;
+                }
+                if (addLoginWithGoogleWidget) {
+                  addLoginWidget(
+                    googleButton()
+                  );
+                }
+              }
+              if (Platform.isIOS) {
+                bool addLoginWithAppleWidget = thirdPartyLoginVisibility.isAppleLoginVisible;
+                if (addLoginWithAppleWidget) {
+                  addLoginWidget(
+                    appleButton()
+                  );
+                }
+              }
+              if (loginWidgetList.isNotEmpty) {
+                loginWidgetList.insertAll(0, [
+                  SizedBox(height: 3.h),
+                  Row(
+                    children: [
+                      const Expanded(
+                        child: Divider()
+                      ),
+                      SizedBox(width: 6.w),
+                      Text("or login with".tr, style: TextStyle(
+                        color: Theme.of(context).dividerTheme.color
+                      )),
+                      SizedBox(width: 6.w),
+                      const Expanded(
+                        child: Divider()
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16.0),
+                ]);
+              }
+              return loginWidgetList;
+            }()
+          ],
+        );
+      }
     );
   }
 }
