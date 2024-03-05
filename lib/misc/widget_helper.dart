@@ -762,6 +762,8 @@ class _WidgetHelperImpl {
     required String orWithText,
     required Widget Function() googleButton,
     required Widget Function() appleButton,
+    bool forceShowGoogleButton = false,
+    bool forceShowAppleButton = false
   }) {
     return Consumer<ThirdPartyLoginNotifier>(
       builder: (_, thirdPartyLoginNotifier, __) {
@@ -788,25 +790,39 @@ class _WidgetHelperImpl {
                 }
                 loginWidgetList.add(loginWidget);
               }
+
+              // Google Login Widget
+              bool addLoginWithGoogleWidget = false;
               if (Platform.isAndroid || Platform.isIOS) {
-                bool addLoginWithGoogleWidget = true;
                 if (Platform.isIOS) {
                   addLoginWithGoogleWidget = thirdPartyLoginVisibility.isGoogleLoginVisible;
-                }
-                if (addLoginWithGoogleWidget) {
-                  addLoginWidget(
-                    googleButton()
-                  );
+                } else {
+                  addLoginWithGoogleWidget = true;
                 }
               }
+              if (forceShowGoogleButton) {
+                addLoginWithGoogleWidget = true;
+              }
+              if (addLoginWithGoogleWidget) {
+                addLoginWidget(
+                  googleButton()
+                );
+              }
+
+              // Apple Login Widget
+              bool addLoginWithAppleWidget = false;
               if (Platform.isIOS) {
-                bool addLoginWithAppleWidget = thirdPartyLoginVisibility.isAppleLoginVisible;
-                if (addLoginWithAppleWidget) {
-                  addLoginWidget(
-                    appleButton()
-                  );
-                }
+                addLoginWithAppleWidget = thirdPartyLoginVisibility.isAppleLoginVisible;
               }
+              if (forceShowAppleButton) {
+                addLoginWithAppleWidget = true;
+              }
+              if (addLoginWithAppleWidget) {
+                addLoginWidget(
+                  appleButton()
+                );
+              }
+
               if (loginWidgetList.isNotEmpty) {
                 loginWidgetList.insertAll(0, [
                   SizedBox(height: 3.h),
