@@ -506,7 +506,7 @@ class HomeMainMenuSubController extends BaseGetxController {
           LoadDataResult<List<ProductEntry>> productEntryPagingDataResult = await getProductEntryWithConditionPagingUseCase.execute(
             ProductWithConditionPagingParameter(
               page: 1,
-              itemEachPageCount: 10,
+              itemEachPageCount: 20,
               withCondition: {
                 "type": "sponsor",
                 "brand": bannerData.toLowerCase(),

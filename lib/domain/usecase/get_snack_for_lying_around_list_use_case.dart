@@ -17,7 +17,7 @@ class GetSnackForLyingAroundListUseCase {
     return productRepository.productWithConditionPaging(
       ProductWithConditionPagingParameter(
         page: 1,
-        itemEachPageCount: 10,
+        itemEachPageCount: 20,
         withCondition: {
           'category': 'cemilan-buat-rebahan',
         }

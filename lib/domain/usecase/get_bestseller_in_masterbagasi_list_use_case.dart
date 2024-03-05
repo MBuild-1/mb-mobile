@@ -17,7 +17,7 @@ class GetBestsellerInMasterbagasiListUseCase {
     return productRepository.productWithConditionPaging(
       ProductWithConditionPagingParameter(
         page: 1,
-        itemEachPageCount: 10,
+        itemEachPageCount: 20,
         withCondition: {
           'type': 'best-seller',
         }
