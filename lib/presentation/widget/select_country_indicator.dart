@@ -1,4 +1,4 @@
-import 'package:flag/flag_widget.dart';
+import 'package:country_flags/country_flags.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -51,7 +51,7 @@ class SelectCountryIndicator extends StatelessWidget {
             SizedBox(
               width: 16,
               height: 12,
-              child: Flag.fromString(selectedCountry!.code),
+              child: CountryFlags.flag(selectedCountry!.code),
             ),
             const SizedBox(width: 10),
             Text(

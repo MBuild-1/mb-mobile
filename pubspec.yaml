@@ -80,7 +80,7 @@ dependencies:
   svg_path_parser: ^1.1.1
   google_sign_in: ^6.1.4
   pointycastle: ^3.7.3
-  flag: ^6.0.0
+  country_flags: ^1.0.0
   video_thumbnail: ^0.5.3
   path_provider: ^2.1.0
   pusher_channels_flutter: ^2.2.0
