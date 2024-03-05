@@ -164,7 +164,17 @@ class _DeeplinkApplinkHelperImpl {
           };
         }
       } else {
-        return;
+        if (uri.queryParameters.containsKey("code")) {
+          String countryCode = uri.queryParameters["code"]!;
+          additionalData = {
+            "type": "check-rates-for-various-countries",
+            "data": {
+              "country_code": countryCode
+            }
+          };
+        } else {
+          return;
+        }
       }
       var notificationRedirectorMap = NotificationRedirectorHelper.notificationRedirectorMap;
       if (notificationRedirectorMap.containsKey(additionalData["type"])) {

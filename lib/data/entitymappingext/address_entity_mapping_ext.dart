@@ -37,6 +37,7 @@ import '../../domain/entity/address/remove_address_response.dart';
 import '../../domain/entity/address/shipper_address.dart';
 import '../../domain/entity/address/update_current_selected_address_response.dart';
 import '../../domain/entity/address/zone.dart';
+import '../../domain/entity/delivery/country_based_country_code_response.dart';
 import '../../misc/constant.dart';
 import '../../misc/error/message_error.dart';
 import '../../misc/multi_language_string.dart';
@@ -146,6 +147,12 @@ extension AddressDetailEntityMappingExt on ResponseWrapper {
     return ShipperAddress(
       name: response["name"],
       address: response["address"]
+    );
+  }
+
+  CountryBasedCountryCodeResponse mapFromResponseToCountryBasedCountryCodeResponse() {
+    return CountryBasedCountryCodeResponse(
+      country: ResponseWrapper(response).mapFromResponseToCountry()
     );
   }
 }

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:masterbagasi/presentation/page/product_bundle_detail_page.dart';
 
 import '../controller/reset_password_controller.dart';
+import '../presentation/page/modaldialogpage/check_rates_for_various_countries_modal_dialog_page.dart';
 import '../presentation/page/product_detail_page.dart';
 import '../presentation/page/product_entry_page.dart';
 import '../presentation/page/reset_password_page.dart';
+import 'dialog_helper.dart';
 import 'error/message_error.dart';
 import 'page_restoration_helper.dart';
 import 'string_util.dart';
@@ -147,6 +150,28 @@ class _NotificationRedirectorHelperImpl {
               }()
             )
           );
+        }
+      }
+    },
+    "check-rates-for-various-countries": (data, context) async {
+      if (data is Map<String, dynamic>) {
+        if (data.containsKey("data")) {
+          dynamic dataValue = data["data"];
+          String countryCode = dataValue["country_code"];
+          await DialogHelper.showModalDialogPage<String, String>(
+            context: context,
+            modalDialogPageBuilder: (context, parameter) => CheckRatesForVariousCountriesModalDialogPage(
+              checkRatesForVariousCountriesModalDialogPageParameter: CheckRatesForVariousCountriesModalDialogPageParameter(
+                countryCode: countryCode,
+                onGotoCountryDeliveryReview: (countryId) {
+                  PageRestorationHelper.toCountryDeliveryReviewPage(
+                    countryId, context
+                  );
+                },
+              )
+            ),
+          );
+          Get.back();
         }
       }
     }

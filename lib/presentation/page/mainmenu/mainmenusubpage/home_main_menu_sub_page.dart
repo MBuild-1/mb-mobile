@@ -803,11 +803,13 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
                           DialogHelper.showModalDialogPage<String, String>(
                             context: context,
                             modalDialogPageBuilder: (context, parameter) => CheckRatesForVariousCountriesModalDialogPage(
-                              onGotoCountryDeliveryReview: (countryId) {
-                                PageRestorationHelper.toCountryDeliveryReviewPage(
-                                  countryId, this.context
-                                );
-                              },
+                              checkRatesForVariousCountriesModalDialogPageParameter: CheckRatesForVariousCountriesModalDialogPageParameter(
+                                onGotoCountryDeliveryReview: (countryId) {
+                                  PageRestorationHelper.toCountryDeliveryReviewPage(
+                                    countryId, this.context
+                                  );
+                                },
+                              )
                             ),
                           );
                         },

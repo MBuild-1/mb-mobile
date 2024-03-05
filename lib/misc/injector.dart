@@ -127,6 +127,7 @@ import '../domain/usecase/change_password_use_case.dart';
 import '../domain/usecase/check_reset_password_use_case.dart';
 import '../domain/usecase/checkout_bucket_version_1_point_1_use_case.dart';
 import '../domain/usecase/create_order_version_1_point_1_use_case.dart';
+import '../domain/usecase/get_country_based_country_code.dart';
 import '../domain/usecase/get_product_bundle_detail_by_slug_use_case.dart';
 import '../domain/usecase/get_product_detail_by_slug_use_case.dart';
 import '../domain/usecase/help_chat_template_use_case.dart';
@@ -715,6 +716,7 @@ class _Injector {
     locator.registerLazySingleton<UpdateCartQuantityUseCase>(() => UpdateCartQuantityUseCase(cartRepository: locator()));
     locator.registerLazySingleton<AddHostCartUseCase>(() => AddHostCartUseCase(cartRepository: locator()));
     locator.registerLazySingleton<TakeFriendCartUseCase>(() => TakeFriendCartUseCase(cartRepository: locator()));
+    locator.registerLazySingleton<GetCountryBasedCountryCodeUseCase>(() => GetCountryBasedCountryCodeUseCase(addressRepository: locator()));
     locator.registerLazySingleton<GetCurrentSelectedAddressUseCase>(() => GetCurrentSelectedAddressUseCase(addressRepository: locator()));
     locator.registerLazySingleton<GetAddressBasedIdUseCase>(() => GetAddressBasedIdUseCase(addressRepository: locator()));
     locator.registerLazySingleton<GetAddressListUseCase>(() => GetAddressListUseCase(addressRepository: locator()));
