@@ -368,7 +368,7 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Second Payment": "Pembayaran Kedua",
       "Product Chat": "Chat Produk",
       "Order Chat": "Chat Order",
-      "Tax Rate": "Persentase Pajak",
+      "Administrative Fee": "Biaya Administrasi",
       "Master Bagasi's Blog": "Blog Master Bagasi",
       "Item Name": "Nama Barang",
       "Input item name": "Masukan nama barang",
