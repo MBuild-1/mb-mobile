@@ -42,7 +42,7 @@ class IntroductionPageViewChildrenBuilder extends PreloadPageViewChildrenBuilder
           image: introductionImageList[1],
           titleTop: "Dari Indonesia",
           titleBottom: "untuk dunia",
-          description: "E-commerce pertama karya anak bangsa, untuk pasar dunia.",
+          description: "Cross border Commerce pertama karya anak bangsa, untuk pasar dunia.",
           top: topMarginForPageViewContent
         ),
         _buildIntroductionPage(
