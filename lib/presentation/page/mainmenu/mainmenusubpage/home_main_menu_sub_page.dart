@@ -41,6 +41,7 @@ import '../../../../misc/controllerstate/listitemcontrollerstate/no_content_list
 import '../../../../misc/controllerstate/listitemcontrollerstate/padding_container_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/positioned_container_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/product_bundle_highlight_list_item_controller_state.dart';
+import '../../../../misc/controllerstate/listitemcontrollerstate/product_bundle_highlight_multiple_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/single_banner_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/stack_container_list_item_controller_state.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/title_and_description_list_item_controller_state.dart';
@@ -684,8 +685,8 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
                   verticalSpace: 0.3.h,
                 ),
                 VirtualSpacingListItemControllerState(height: 3.w),
-                ProductBundleHighlightListItemControllerState(
-                  productBundle: onObserveSuccessLoadProductBundleHighlightParameter.productBundle,
+                ProductBundleHighlightMultipleListItemControllerState(
+                  productBundleList: onObserveSuccessLoadProductBundleHighlightParameter.productBundleList,
                   onAddWishlist: (productBundleOutput) => widget.homeMainMenuSubController.wishlistAndCartControllerContentDelegate.addToWishlist(
                     productBundleOutput, () {
                       Completer<bool> checkingLoginCompleter = Completer<bool>();

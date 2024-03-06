@@ -7,6 +7,7 @@ class ProductBundleHighlightListItem extends ProductBundleItem {
     super.onAddWishlist,
     super.onRemoveWishlist,
     super.onAddCart,
-    super.onRemoveCart
+    super.onRemoveCart,
+    super.hasBackground = true
   });
 }

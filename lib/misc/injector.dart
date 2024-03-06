@@ -340,6 +340,7 @@ class _Injector {
         getProductBrandListUseCase: locator(),
         getProductBundleListUseCase: locator(),
         getProductBundleHighlightUseCase: locator(),
+        getProductBundlePagingUseCase: locator(),
         getSnackForLyingAroundListUseCase: locator(),
         getBestsellerInMasterbagasiListUseCase: locator(),
         getSelectedFashionBrandsListUseCase: locator(),

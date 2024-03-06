@@ -76,6 +76,7 @@ import '../../../presentation/widget/product/horizontal_product_item.dart';
 import '../../../presentation/widget/product/vertical_product_item.dart';
 import '../../../presentation/widget/product_bundle_header_list_item.dart';
 import '../../../presentation/widget/product_bundle_highlight_list_item.dart';
+import '../../../presentation/widget/product_bundle_highlight_multiple_list_item.dart';
 import '../../../presentation/widget/product_category_header_list_item.dart';
 import '../../../presentation/widget/product_detail_brand_list_item.dart';
 import '../../../presentation/widget/product_detail_short_header.dart';
@@ -193,6 +194,7 @@ import '../../controllerstate/listitemcontrollerstate/paymentmethodlistitemcontr
 import '../../controllerstate/listitemcontrollerstate/positioned_container_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/product_bundle_header_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/product_bundle_highlight_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/product_bundle_highlight_multiple_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/product_category_header_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/product_detail_brand_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/product_detail_header_list_item_controller_state.dart';
@@ -1041,6 +1043,14 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
       return ProvinceMapHeaderListItem(
         provinceMap: item.provinceMap,
         onSelectProvince: item.onSelectProvince,
+      );
+    } else if (item is ProductBundleHighlightMultipleListItemControllerState) {
+      return ProductBundleHighlightMultipleListItem(
+        productBundleList: item.productBundleList,
+        onAddWishlist: item.onAddWishlist,
+        onRemoveWishlist: item.onRemoveWishlist,
+        onAddCart: item.onAddCart,
+        onRemoveCart: item.onRemoveCart,
       );
     } else if (item is ProductBundleHighlightListItemControllerState) {
       return ProductBundleHighlightListItem(
