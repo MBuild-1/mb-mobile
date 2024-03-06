@@ -158,13 +158,21 @@ class ProductDetailPage extends RestorableGetxPage<_ProductDetailPageRestoration
     onCompleteAddressPage: (result) {
       if (result != null) {
         if (result) {
-          int step = _statefulProductDetailControllerMediatorWidgetDelegate._selectAddressBecauseAddressIsEmptyWhileInBuyDirectlyProcessStep;
-          if (step == 1) {
-            _statefulProductDetailControllerMediatorWidgetDelegate._selectAddressBecauseAddressIsEmptyWhileInBuyDirectlyProcessStep = 2;
+          ProductDetailSelectAddressType productDetailSelectAddressType = _statefulProductDetailControllerMediatorWidgetDelegate._productDetailSelectAddressType;
+          if (productDetailSelectAddressType == ProductDetailSelectAddressType.selectBecauseAddressIsEmpty) {
+            int step = _statefulProductDetailControllerMediatorWidgetDelegate._selectAddressBecauseAddressIsEmptyWhileInBuyDirectlyProcessStep;
+            if (step == 1) {
+              _statefulProductDetailControllerMediatorWidgetDelegate._selectAddressBecauseAddressIsEmptyWhileInBuyDirectlyProcessStep = 2;
+            }
+            _selectAddressModalDialogPageActionDelegate.refresh();
+          } else if (productDetailSelectAddressType == ProductDetailSelectAddressType.selectWhileInPurchaseDirect) {
+            if (_statefulProductDetailControllerMediatorWidgetDelegate.onRefreshSelectedAddress != null) {
+              _statefulProductDetailControllerMediatorWidgetDelegate.onRefreshSelectedAddress!();
+            }
           }
-          _selectAddressModalDialogPageActionDelegate.refresh();
         }
       }
+      _statefulProductDetailControllerMediatorWidgetDelegate._productDetailSelectAddressType = ProductDetailSelectAddressType.none;
     },
     onCompleteSelectPaymentMethod: (result) {
       if (result != null) {
@@ -319,6 +327,10 @@ class ProductDetailPageRestorableRouteFuture extends GetRestorableRouteFuture {
   }
 }
 
+enum ProductDetailSelectAddressType {
+  none, selectBecauseAddressIsEmpty, selectWhileInPurchaseDirect
+}
+
 class _StatefulProductDetailControllerMediatorWidget extends StatefulWidget {
   final ProductDetailController productDetailController;
   final SelectAddressModalDialogPageActionDelegate selectAddressModalDialogPageActionDelegate;
@@ -340,6 +352,8 @@ class _StatefulProductDetailControllerMediatorWidget extends StatefulWidget {
 
 class _StatefulProductDetailControllerMediatorWidgetDelegate {
   int _selectAddressBecauseAddressIsEmptyWhileInBuyDirectlyProcessStep = 0;
+  ProductDetailSelectAddressType _productDetailSelectAddressType = ProductDetailSelectAddressType.none;
+  void Function()? onRefreshSelectedAddress;
   void Function(PaymentMethod)? onRefreshPaymentMethod;
   void Function(String)? onRefreshCouponId;
 }
@@ -382,6 +396,9 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
     _productVariantColorfulChipTabBarController.addListener(() => setState(() {}));
     MainRouteObserver.onScrollUpIfInProductDetail[getRouteMapKey(widget.pageName)] = () {
       _productDetailScrollController.jumpTo(0.0);
+    };
+    widget.statefulProductDetailControllerMediatorWidgetDelegate.onRefreshSelectedAddress = () {
+      _paymentParameterModalDialogPageDelegate.onUpdateAddress();
     };
     widget.statefulProductDetailControllerMediatorWidgetDelegate.onRefreshPaymentMethod = (paymentMethod) {
       _paymentParameterModalDialogPageDelegate.onUpdatePaymentMethod(paymentMethod);
@@ -1087,6 +1104,7 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
                   context: context,
                   modalDialogPageBuilder: (context, parameter) => SelectAddressModalDialogPage(
                     onGotoAddAddress: () {
+                      widget.statefulProductDetailControllerMediatorWidgetDelegate._productDetailSelectAddressType = ProductDetailSelectAddressType.selectBecauseAddressIsEmpty;
                       widget.statefulProductDetailControllerMediatorWidgetDelegate._selectAddressBecauseAddressIsEmptyWhileInBuyDirectlyProcessStep = 1;
                       PageRestorationHelper.toAddressPage(context);
                     },
@@ -1218,6 +1236,10 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
                                   },
                                   onGotoSelectCouponPage: (couponId) {
                                     PageRestorationHelper.toCouponPage(context, couponId);
+                                  },
+                                  onGotoSelectAddress: () {
+                                    widget.statefulProductDetailControllerMediatorWidgetDelegate._productDetailSelectAddressType = ProductDetailSelectAddressType.selectWhileInPurchaseDirect;
+                                    PageRestorationHelper.toAddressPage(context);
                                   },
                                   onProcessPaymentParameter: (paymentMethodSettlingId, couponId) {
                                     _selectedPaymentMethodSettlingId = paymentMethodSettlingId;
