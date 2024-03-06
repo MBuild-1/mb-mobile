@@ -488,7 +488,7 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
                     paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
                       widgetSubstitution: (context, index) {
                         return Text(
-                          "Warehouse".tr,
+                          "Personal Stuffs".tr,
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         );
                       }
@@ -778,7 +778,7 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
                     paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
                       widgetSubstitution: (context, index) {
                         return Text(
-                          "Warehouse".tr,
+                          "Personal Stuffs".tr,
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         );
                       }

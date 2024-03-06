@@ -832,7 +832,7 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
       VirtualSpacingListItemControllerState(height: padding())
     );
     ListItemControllerState paymentTypeListItemControllerState = TitleAndDescriptionListItemControllerState(
-      title: "Order Send to Warehouse List".tr,
+      title: "Order Send to Personal Stuffs List".tr,
       titleInterceptor: (text, textStyle) => Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -882,8 +882,8 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
             return WidgetSubstitutionListItemControllerState(
               widgetSubstitution: (context, index) => Text(
                 MultiLanguageString({
-                  Constant.textEnUsLanguageKey: "No order send to warehouse list.",
-                  Constant.textInIdLanguageKey: "Tidak ada daftar kirim barang ke warehouse.",
+                  Constant.textEnUsLanguageKey: "No order send to personal stuffs list.",
+                  Constant.textInIdLanguageKey: "Tidak ada daftar kirim barang ke barang pribadi.",
                 }).toEmptyStringNonNull
               )
             );

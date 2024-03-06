@@ -295,7 +295,7 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Free": "Gratis",
       "Request Failed": "Request Gagal",
       "No Message": "Tidak Ada Pesan",
-      "Order Send to Warehouse List": "Daftar Kirim Barang Ke Warehouse",
+      "Order Send to Personal Stuffs List": "Daftar Kirim Barang Ke Barang Pribadi",
       "Other Order Product List": "Daftar Product Lainnya",
       "Product Inventory": "Inventori Produk",
       "Type Product Discussion": "Ketikan Diskusi Produk",
@@ -376,7 +376,8 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Send Private Items": "Kirim Barang Pribadi",
       "Download Invoice": "Unduh Invoice",
       "Application Must Be Updated": "Aplikasi Harus Diupdate",
-      "Exit From Application": "Keluar Dari Aplikasi"
+      "Exit From Application": "Keluar Dari Aplikasi",
+      "Personal Stuffs": "Barang Pribadi"
     }
   };
 

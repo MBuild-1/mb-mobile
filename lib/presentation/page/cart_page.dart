@@ -284,9 +284,9 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
     ),
     SolidTabValue(
       text: MultiLanguageString(
-        TrMultiLanguageStringValue(text: "Warehouse")
+        TrMultiLanguageStringValue(text: "Personal Stuffs")
       ),
-      value: "warehouse"
+      value: "personal stuffs"
     )
   ];
   int _selectedSolidTabIndex = 0;
@@ -699,8 +699,8 @@ class _StatefulCartControllerMediatorWidgetState extends State<_StatefulCartCont
                     const SizedBox(height: 4),
                     HorizontalJustifiedTitleAndDescription(
                       title: MultiLanguageString({
-                        Constant.textEnUsLanguageKey: "Selected warehouse",
-                        Constant.textInIdLanguageKey: "Warehouse yang dipilih"
+                        Constant.textEnUsLanguageKey: "Selected personal stuffs",
+                        Constant.textInIdLanguageKey: "Barang pribadi yang dipilih"
                       }).toEmptyStringNonNull,
                       description: "$_selectedAdditionalItemCount item",
                       titleWidgetInterceptor: (title, widget) => Text(
@@ -835,7 +835,7 @@ extension CartPageParameterExt on CartPageParameter {
               if (tabRedirectionCartType == TabRedirectionCartType.cart) {
                 return "cart";
               } else if (tabRedirectionCartType == TabRedirectionCartType.warehouse) {
-                return "warehouse";
+                return "personal stuffs";
               }
               throw MessageError(title: "Tab redirection cart page type is not suitable");
             }()
@@ -863,7 +863,7 @@ extension CartPageParameterStringExt on String {
               String? tabRedirectionCartPageType = value["tab_redirection_cart_page_type"];
               if (tabRedirectionCartPageType == "cart") {
                 return TabRedirectionCartType.cart;
-              } else if (tabRedirectionCartPageType == "warehouse") {
+              } else if (tabRedirectionCartPageType == "personal stuffs") {
                 return TabRedirectionCartType.warehouse;
               } else {
                 throw MessageError(title: "Tab redirection cart page type is not suitable");

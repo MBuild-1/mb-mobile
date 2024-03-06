@@ -16,7 +16,7 @@ class OrderType extends StatelessWidget {
   Widget build(BuildContext context) {
     List<OrderProductDetail> orderProductDetailList = combinedOrder.orderProduct.orderProductDetailList;
     return Text(
-      orderProductDetailList.isEmpty ? "Warehouse".tr : "Shopping".tr,
+      orderProductDetailList.isEmpty ? "Personal Stuffs".tr : "Shopping".tr,
       style: const TextStyle(fontWeight: FontWeight.bold)
     );
   }

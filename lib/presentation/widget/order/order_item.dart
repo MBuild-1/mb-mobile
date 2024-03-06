@@ -102,7 +102,7 @@ abstract class OrderItem extends StatelessWidget {
                             result.add(const SizedBox(height: 12));
                             if (allIsNotEmpty) {
                               result.addAll([
-                                Text("Warehouse".tr),
+                                Text("Personal Stuffs".tr),
                                 SizedBox(height: titleAndContentHeight)
                               ]);
                             }

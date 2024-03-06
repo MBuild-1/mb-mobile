@@ -101,7 +101,7 @@ class ShipperAddressItemTypeListSubInterceptor extends ItemTypeListSubIntercepto
                                           ),
                                         ),
                                         TextSpan(
-                                          text: "(${"Warehouse".tr})",
+                                          text: "(${"Personal Stuffs".tr})",
                                           style: const TextStyle(
                                             fontSize: 16.0
                                           ),
