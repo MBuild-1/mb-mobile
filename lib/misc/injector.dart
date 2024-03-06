@@ -238,6 +238,7 @@ import '../domain/usecase/get_wishlist_list_use_case.dart';
 import '../domain/usecase/get_wishlist_paging_use_case.dart';
 import '../domain/usecase/give_review_delivery_review_detail_use_case.dart';
 import '../domain/usecase/leave_bucket_use_case.dart';
+import '../domain/usecase/login_or_register_with_apple_via_callback_use_case.dart';
 import '../domain/usecase/login_use_case.dart';
 import '../domain/usecase/login_with_apple_use_case.dart';
 import '../domain/usecase/login_with_google_use_case.dart';
@@ -798,6 +799,7 @@ class _Injector {
     locator.registerLazySingleton<AllVersioningUseCase>(() => AllVersioningUseCase(versioningRepository: locator()));
     locator.registerLazySingleton<VersioningBasedFilterUseCase>(() => VersioningBasedFilterUseCase(versioningRepository: locator()));
     locator.registerLazySingleton<ThirdPartyLoginVisibilityUseCase>(() => ThirdPartyLoginVisibilityUseCase(versioningRepository: locator()));
+    locator.registerLazySingleton<LoginOrRegisterWithAppleViaCallbackUseCase>(() => LoginOrRegisterWithAppleViaCallbackUseCase(userRepository: locator()));
 
     // Repository
     locator.registerLazySingleton<UserRepository>(() => DefaultUserRepository(userDataSource: locator()));

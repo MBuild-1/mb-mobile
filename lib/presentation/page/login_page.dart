@@ -35,9 +35,11 @@ import '../../misc/load_data_result.dart';
 import '../../misc/login_helper.dart';
 import '../../misc/main_route_observer.dart';
 import '../../misc/manager/controller_manager.dart';
+import '../../misc/navigation_helper.dart';
 import '../../misc/page_restoration_helper.dart';
 import '../../misc/routeargument/login_route_argument.dart';
 import '../../misc/validation/validator/validator.dart';
+import '../../misc/web_helper.dart';
 import '../../misc/widget_helper.dart';
 import '../notifier/login_notifier.dart';
 import '../notifier/notification_notifier.dart';
@@ -95,7 +97,8 @@ class LoginPage extends RestorableGetxPage<_LoginPageRestoration> {
   Widget buildPage(BuildContext context) {
     return _StatefulLoginControllerMediatorWidget(
       loginController: _loginController.controller,
-      statefulLoginControllerMediatorWidgetDelegate: _statefulLoginControllerMediatorWidgetDelegate
+      statefulLoginControllerMediatorWidgetDelegate: _statefulLoginControllerMediatorWidgetDelegate,
+      pageName: pageName
     );
   }
 }
@@ -212,10 +215,12 @@ class _StatefulLoginControllerMediatorWidgetDelegate {
 class _StatefulLoginControllerMediatorWidget extends StatefulWidget {
   final LoginController loginController;
   final _StatefulLoginControllerMediatorWidgetDelegate statefulLoginControllerMediatorWidgetDelegate;
+  final String pageName;
 
   const _StatefulLoginControllerMediatorWidget({
     required this.loginController,
-    required this.statefulLoginControllerMediatorWidgetDelegate
+    required this.statefulLoginControllerMediatorWidgetDelegate,
+    required this.pageName
   });
 
   @override
@@ -246,7 +251,17 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
       for (var element in routeMap.entries) {
         element.value?.requestLoginChangeValue = 1;
       }
-      Get.back();
+      NavigationHelper.navigationAfterLoginOrRegisterProcess(context);
+    };
+    MainRouteObserver.onLoginOrRegisterAppleViaCallbackRequestProcessSuccessCallback[getRouteMapKey(widget.pageName)] = (loginResponse, onBack) async {
+      if (await widget.loginController.loginOneSignal(loginResponse.userId)) {
+        return;
+      }
+      await LoginHelper.saveToken(loginResponse.token).future();
+      if (onBack != null) {
+        onBack();
+      }
+      _onLoginRequestProcessSuccessCallback();
     };
     _loginNotifier = Provider.of<LoginNotifier>(context, listen: false);
     _notificationNotifier = Provider.of<NotificationNotifier>(context, listen: false);
@@ -472,7 +487,9 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
                   appleButton: () => SizedOutlineGradientButton(
                     width: double.infinity,
                     outlineGradientButtonType: OutlineGradientButtonType.outline,
-                    onPressed: widget.loginController.loginWithApple,
+                    onPressed: () {
+                      WebHelper.launchUrl(Uri.parse("https://apple-auth.masterbagasi.com/auth/apple"));
+                    },
                     text: "Login With Apple".tr,
                   )
                 ),
@@ -495,6 +512,7 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
 
   @override
   void dispose() {
+    MainRouteObserver.onLoginOrRegisterAppleViaCallbackRequestProcessSuccessCallback[getRouteMapKey(widget.pageName)] = null;
     _emailTextEditingController.dispose();
     _passwordTextEditingController.dispose();
     _forgotPasswordTapGestureRecognizer.dispose();

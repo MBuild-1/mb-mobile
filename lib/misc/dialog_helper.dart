@@ -235,7 +235,7 @@ class _DialogHelperImpl {
           child: Dialog(
             insetPadding: const EdgeInsets.all(16.0),
             child: Builder(
-              builder: (context) {
+              builder: (builderContext) {
                 Widget beHostDescription(bool withColor, bool withText) => Container(
                   width: double.infinity,
                   child: Visibility(

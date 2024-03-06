@@ -14,6 +14,8 @@ import '../../../domain/entity/login/login_with_apple_parameter.dart';
 import '../../../domain/entity/login/login_with_apple_response.dart';
 import '../../../domain/entity/login/login_with_google_parameter.dart';
 import '../../../domain/entity/login/login_with_google_response.dart';
+import '../../../domain/entity/loginorregister/login_or_register_with_apple_via_callback_parameter.dart';
+import '../../../domain/entity/loginorregister/login_or_register_with_apple_via_callback_response.dart';
 import '../../../domain/entity/logout/logout_parameter.dart';
 import '../../../domain/entity/logout/logout_response.dart';
 import '../../../domain/entity/pin/checkactivepin/check_active_pin_parameter.dart';
@@ -85,4 +87,5 @@ abstract class UserDataSource {
   FutureProcessing<AuthIdentityChangeInputResponse> authIdentityChangeInput(AuthIdentityChangeInputParameter authIdentityChangeInputParameter);
   FutureProcessing<AuthIdentityChangeVerifyOtpResponse> authIdentityChangeVerifyOtp(AuthIdentityChangeVerifyOtpParameter authIdentityChangeVerifyOtpParameter);
   FutureProcessing<AuthIdentityChangeResponse> authIdentityChange(AuthIdentityChangeParameter authIdentityChangeParameter);
+  FutureProcessing<LoginOrRegisterWithAppleViaCallbackResponse> loginOrRegisterWithAppleViaCallback(LoginOrRegisterWithAppleViaCallbackParameter loginOrRegisterWithAppleViaCallbackParameter);
 }

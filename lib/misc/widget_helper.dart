@@ -811,8 +811,12 @@ class _WidgetHelperImpl {
 
               // Apple Login Widget
               bool addLoginWithAppleWidget = false;
-              if (Platform.isIOS) {
-                addLoginWithAppleWidget = thirdPartyLoginVisibility.isAppleLoginVisible;
+              if (Platform.isAndroid || Platform.isIOS) {
+                if (Platform.isIOS) {
+                  addLoginWithAppleWidget = thirdPartyLoginVisibility.isAppleLoginVisible;
+                } else {
+                  addLoginWithAppleWidget = true;
+                }
               }
               if (forceShowAppleButton) {
                 addLoginWithAppleWidget = true;

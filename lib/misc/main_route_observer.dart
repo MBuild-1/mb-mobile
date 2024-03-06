@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../domain/entity/login/login_response.dart';
 import '../domain/entity/province/province_map.dart';
 import '../presentation/widget/something_counter.dart';
 import 'refresh_delivery_review.dart';
@@ -27,6 +28,8 @@ class _MainRouteObserver extends RouteObserver {
   Map<String, void Function(ValidationResult)?> get onResendForgotPasswordWhatsappPhoneNumberCallbackOtp => _onResendForgotPasswordWhatsappPhoneNumberCallbackOtp;
   Map<String, bool?> _subMainMenuVisibility = {};
   Map<String, bool?> get subMainMenuVisibility => _subMainMenuVisibility;
+  Map<String, void Function(LoginResponse, void Function()?)?> _onLoginOrRegisterAppleViaCallbackRequestProcessSuccessCallback = {};
+  Map<String, void Function(LoginResponse, void Function()?)?> get onLoginOrRegisterAppleViaCallbackRequestProcessSuccessCallback => _onLoginOrRegisterAppleViaCallbackRequestProcessSuccessCallback;
 
   void Function(int)? onChangeMainMenuTap;
   void Function()? onRefreshWishlistInMainMenu;
@@ -73,6 +76,9 @@ class _MainRouteObserver extends RouteObserver {
       for (var key in newRouteMap.keys) key: null
     };
     _onResendForgotPasswordWhatsappPhoneNumberCallbackOtp = {
+      for (var key in newRouteMap.keys) key: null
+    };
+    _onLoginOrRegisterAppleViaCallbackRequestProcessSuccessCallback = {
       for (var key in newRouteMap.keys) key: null
     };
   }

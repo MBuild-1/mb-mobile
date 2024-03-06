@@ -122,7 +122,7 @@ class _NavigationHelperImpl {
     });
   }
 
-  void navigationAfterRegisterProcess(BuildContext context) {
+  void navigationAfterLoginOrRegisterProcess(BuildContext context) {
     Map<String, RouteWrapper?> routeMap = MainRouteObserver.routeMap;
     List<String> routeKeyList = List.of(routeMap.keys);
     int i = 0;

@@ -16,6 +16,8 @@ import '../entity/login/login_with_apple_parameter.dart';
 import '../entity/login/login_with_apple_response.dart';
 import '../entity/login/login_with_google_parameter.dart';
 import '../entity/login/login_with_google_response.dart';
+import '../entity/loginorregister/login_or_register_with_apple_via_callback_parameter.dart';
+import '../entity/loginorregister/login_or_register_with_apple_via_callback_response.dart';
 import '../entity/logout/logout_parameter.dart';
 import '../entity/logout/logout_response.dart';
 import '../entity/pin/checkactivepin/check_active_pin_parameter.dart';
@@ -86,4 +88,5 @@ abstract class UserRepository {
   FutureProcessing<LoadDataResult<AuthIdentityChangeInputResponse>> authIdentityChangeInput(AuthIdentityChangeInputParameter authIdentityChangeInputParameter);
   FutureProcessing<LoadDataResult<AuthIdentityChangeVerifyOtpResponse>> authIdentityChangeVerifyOtp(AuthIdentityChangeVerifyOtpParameter authIdentityChangeVerifyOtpParameter);
   FutureProcessing<LoadDataResult<AuthIdentityChangeResponse>> authIdentityChange(AuthIdentityChangeParameter authIdentityChangeParameter);
+  FutureProcessing<LoadDataResult<LoginOrRegisterWithAppleViaCallbackResponse>> loginOrRegisterWithAppleViaCallback(LoginOrRegisterWithAppleViaCallbackParameter loginOrRegisterWithAppleViaCallbackParameter);
 }

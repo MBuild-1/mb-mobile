@@ -9,6 +9,7 @@ import '../../domain/entity/forgotpassword/whatsapp/whatsapp_forgot_password_res
 import '../../domain/entity/login/login_response.dart';
 import '../../domain/entity/login/login_with_apple_response.dart';
 import '../../domain/entity/login/login_with_google_response.dart';
+import '../../domain/entity/loginorregister/login_or_register_with_apple_via_callback_response.dart';
 import '../../domain/entity/logout/logout_response.dart';
 import '../../domain/entity/pin/checkactivepin/check_active_pin_response.dart';
 import '../../domain/entity/pin/modifypin/modifypinresponse/change_modify_pin_response.dart';
@@ -234,6 +235,12 @@ extension UserEntityMappingExt on ResponseWrapper {
 
   AuthIdentityChangeResponse mapFromResponseToAuthIdentityChangeResponse() {
     return AuthIdentityChangeResponse();
+  }
+
+  LoginOrRegisterWithAppleViaCallbackResponse mapFromResponseToLoginOrRegisterWithAppleViaCallbackResponse() {
+    return LoginOrRegisterWithAppleViaCallbackResponse(
+      loginResponse: ResponseWrapper(response).mapFromResponseToLoginResponse()
+    );
   }
 }
 

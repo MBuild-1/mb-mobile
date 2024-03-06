@@ -14,6 +14,7 @@ import 'domain/usecase/get_cart_list_use_case.dart';
 import 'domain/usecase/get_help_message_notification_count_use_case.dart';
 import 'domain/usecase/get_notification_by_user_list_use_case.dart';
 import 'domain/usecase/get_wishlist_list_ignoring_login_error.dart';
+import 'domain/usecase/login_or_register_with_apple_via_callback_use_case.dart';
 import 'domain/usecase/third_party_login_visibility_use_case.dart';
 import 'domain/usecase/versioning_based_filter_use_case.dart';
 import 'firebase_options.dart';
@@ -105,7 +106,10 @@ class MyApp extends StatelessWidget {
           ),
         ),
         ChangeNotifierProvider<LoginNotifier>(
-          create: (_) => LoginNotifier(Injector.locator<GetUserUseCase>()),
+          create: (_) => LoginNotifier(
+            Injector.locator<GetUserUseCase>(),
+            Injector.locator<LoginOrRegisterWithAppleViaCallbackUseCase>()
+          ),
         ),
         ChangeNotifierProvider<ComponentNotifier>(
           create: (_) => ComponentNotifier(),

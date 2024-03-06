@@ -276,7 +276,7 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
           for (var element in routeMap.entries) {
             element.value?.requestLoginChangeValue = 1;
           }
-          NavigationHelper.navigationAfterRegisterProcess(context);
+          NavigationHelper.navigationAfterLoginOrRegisterProcess(context);
         },
         onShowRegisterFirstStepRequestProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
         onShowRegisterFirstStepRequestProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
@@ -871,7 +871,9 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
                     appleButton: () => SizedOutlineGradientButton(
                       width: double.infinity,
                       outlineGradientButtonType: OutlineGradientButtonType.outline,
-                      onPressed: widget.registerController.registerWithApple,
+                      onPressed: () {
+                        WebHelper.launchUrl(Uri.parse("https://apple-auth.masterbagasi.com/auth/apple"));
+                      },
                       text: "Register With Apple".tr,
                     ),
                   ),

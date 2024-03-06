@@ -22,6 +22,8 @@ import '../../../domain/entity/login/login_with_apple_parameter.dart';
 import '../../../domain/entity/login/login_with_apple_response.dart';
 import '../../../domain/entity/login/login_with_google_parameter.dart';
 import '../../../domain/entity/login/login_with_google_response.dart';
+import '../../../domain/entity/loginorregister/login_or_register_with_apple_via_callback_parameter.dart';
+import '../../../domain/entity/loginorregister/login_or_register_with_apple_via_callback_response.dart';
 import '../../../domain/entity/logout/logout_parameter.dart';
 import '../../../domain/entity/logout/logout_response.dart';
 import '../../../domain/entity/pin/checkactivepin/check_active_pin_parameter.dart';
@@ -638,6 +640,19 @@ class DefaultUserDataSource implements UserDataSource {
       );
       return dio.post("/auth/identity/change", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
         .map<AuthIdentityChangeResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToAuthIdentityChangeResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<LoginOrRegisterWithAppleViaCallbackResponse> loginOrRegisterWithAppleViaCallback(LoginOrRegisterWithAppleViaCallbackParameter loginOrRegisterWithAppleViaCallbackParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.get(
+        "",
+        cancelToken: cancelToken,
+        options: OptionsBuilder.withBaseUrl(loginOrRegisterWithAppleViaCallbackParameter.link).buildExtended()
+      ).map<LoginOrRegisterWithAppleViaCallbackResponse>(
+        onMap: (value) => value.wrapResponse().mapFromResponseToLoginOrRegisterWithAppleViaCallbackResponse()
+      );
     });
   }
 }

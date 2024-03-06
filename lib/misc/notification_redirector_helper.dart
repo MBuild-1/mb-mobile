@@ -1,15 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/presentation/page/product_bundle_detail_page.dart';
+import 'package:provider/provider.dart';
 
 import '../controller/reset_password_controller.dart';
+import '../domain/entity/login/login_response.dart';
+import '../presentation/notifier/login_notifier.dart';
 import '../presentation/page/modaldialogpage/check_rates_for_various_countries_modal_dialog_page.dart';
 import '../presentation/page/product_detail_page.dart';
 import '../presentation/page/product_entry_page.dart';
 import '../presentation/page/reset_password_page.dart';
 import 'dialog_helper.dart';
 import 'error/message_error.dart';
+import 'errorprovider/error_provider.dart';
+import 'injector.dart';
+import 'load_data_result.dart';
+import 'main_route_observer.dart';
 import 'page_restoration_helper.dart';
+import 'routeargument/login_route_argument.dart';
 import 'string_util.dart';
 
 class _NotificationRedirectorHelperImpl {
@@ -172,6 +182,61 @@ class _NotificationRedirectorHelperImpl {
             ),
           );
           Get.back();
+        }
+      }
+    },
+    "login-with-apple-callback": (data, context) async {
+      String? _getLoginPageRouteKey() {
+        Map<String, RouteWrapper?> routeMap = MainRouteObserver.routeMap;
+        List<String> routeKeyList = List.of(routeMap.keys);
+        int i = 0;
+        int? foundedI;
+        for (var element in routeMap.entries) {
+          var arguments = element.value?.route?.settings.arguments;
+          if (arguments is LoginRouteArgument) {
+            foundedI = i;
+            break;
+          }
+          i++;
+        }
+        if (foundedI != null) {
+          String mainMenuRouteKey = routeKeyList[foundedI];
+          return mainMenuRouteKey;
+        }
+        return null;
+      }
+      String loginPageRouteKey = _getLoginPageRouteKey().toEmptyStringNonNull;
+      if (MainRouteObserver.onLoginOrRegisterAppleViaCallbackRequestProcessSuccessCallback[loginPageRouteKey] == null) {
+        Get.back();
+        return;
+      }
+      if (data is Map<String, dynamic>) {
+        if (data.containsKey("data")) {
+          dynamic dataValue = data["data"];
+          String link = dataValue["link"];
+          DialogHelper.showLoadingDialog(context);
+          LoginNotifier loginNotifier = Provider.of<LoginNotifier>(context, listen: false);
+          LoadDataResult<LoginResponse> loginResponseResult = await loginNotifier.loginOrRegisterWithAppleViaCallback(link);
+          if (loginResponseResult.isFailedBecauseCancellation) {
+            return;
+          }
+          if (loginResponseResult.isSuccess) {
+            MainRouteObserver.onLoginOrRegisterAppleViaCallbackRequestProcessSuccessCallback[loginPageRouteKey]!(
+              loginResponseResult.resultIfSuccess!,
+              () {
+                Get.back();
+                Get.back();
+              }
+            );
+          } else if (loginResponseResult.isFailed) {
+            Get.back();
+            Get.back();
+            DialogHelper.showFailedModalBottomDialogFromErrorProvider(
+              context: context,
+              errorProvider: Injector.locator<ErrorProvider>(),
+              e: loginResponseResult.resultIfFailed
+            );
+          }
         }
       }
     }
