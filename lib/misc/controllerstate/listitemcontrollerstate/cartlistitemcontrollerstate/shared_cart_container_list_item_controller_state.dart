@@ -1,3 +1,4 @@
+import '../../../../domain/entity/address/address.dart';
 import '../../../../domain/entity/bucket/bucket.dart';
 import '../../../../domain/entity/bucket/bucket_member.dart';
 import '../../../../domain/entity/cart/cart.dart';
@@ -13,6 +14,7 @@ class SharedCartContainerListItemControllerState extends CartContainerListItemCo
   LoadDataResult<BucketMember> Function() bucketMemberLoadDataResult;
   LoadDataResult<List<Cart>> Function() cartListLoadDataResult;
   LoadDataResult<User> Function() userLoadDataResult;
+  LoadDataResult<Address> Function() addressLoadDataResult;
   LoadDataResult<PaymentMethod> Function() selectedPaymentMethodLoadDataResult;
   void Function(BucketMember) onExpandBucketMemberRequest;
   void Function() onUnExpandBucketMemberRequest;
@@ -30,6 +32,7 @@ class SharedCartContainerListItemControllerState extends CartContainerListItemCo
     required this.bucketMemberLoadDataResult,
     required this.cartListLoadDataResult,
     required this.userLoadDataResult,
+    required this.addressLoadDataResult,
     required this.selectedPaymentMethodLoadDataResult,
     required this.onExpandBucketMemberRequest,
     required this.onUnExpandBucketMemberRequest,

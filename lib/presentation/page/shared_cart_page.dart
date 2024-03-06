@@ -20,6 +20,7 @@ import '../../domain/entity/additionalitem/change_additional_item_parameter.dart
 import '../../domain/entity/additionalitem/change_additional_item_response.dart';
 import '../../domain/entity/additionalitem/remove_additional_item_parameter.dart';
 import '../../domain/entity/additionalitem/remove_additional_item_response.dart';
+import '../../domain/entity/address/address.dart';
 import '../../domain/entity/bucket/approveorrejectrequestbucket/approve_or_reject_request_bucket_parameter.dart';
 import '../../domain/entity/bucket/bucket.dart';
 import '../../domain/entity/bucket/bucket_member.dart';
@@ -42,6 +43,7 @@ import '../../domain/usecase/create_bucket_use_case.dart';
 import '../../domain/usecase/destroy_bucket_use_case.dart';
 import '../../domain/usecase/get_additional_item_use_case.dart';
 import '../../domain/usecase/get_cart_list_use_case.dart';
+import '../../domain/usecase/get_current_selected_address_use_case.dart';
 import '../../domain/usecase/get_shared_cart_summary_use_case.dart';
 import '../../domain/usecase/get_user_use_case.dart';
 import '../../domain/usecase/leave_bucket_use_case.dart';
@@ -58,6 +60,7 @@ import '../../misc/constant.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/cart_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/shared_cart_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/no_content_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
 import '../../misc/dialog_helper.dart';
 import '../../misc/errorprovider/error_provider.dart';
@@ -87,6 +90,7 @@ import '../widget/modified_shimmer.dart';
 import '../widget/modified_svg_picture.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import '../widget/tap_area.dart';
+import 'address_page.dart';
 import 'getx_page.dart';
 import 'dart:math' as math;
 
@@ -125,12 +129,22 @@ class SharedCartPage extends RestorableGetxPage<_SharedCartPageRestoration> {
         Injector.locator<CheckoutBucketVersion1Point1UseCase>(),
         Injector.locator<LeaveBucketUseCase>(),
         Injector.locator<DestroyBucketUseCase>(),
+        Injector.locator<GetCurrentSelectedAddressUseCase>()
       ), tag: pageName
     );
   }
 
   @override
   _SharedCartPageRestoration createPageRestoration() => _SharedCartPageRestoration(
+    onCompleteSelectAddress: (result) {
+      if (result != null) {
+        if (result) {
+          if (_statefulSharedCartControllerMediatorWidgetDelegate.onRefreshAddress != null) {
+            _statefulSharedCartControllerMediatorWidgetDelegate.onRefreshAddress!();
+          }
+        }
+      }
+    },
     onCompleteSelectPaymentMethod: (result) {
       if (result != null) {
         if (_statefulSharedCartControllerMediatorWidgetDelegate.onRefreshPaymentMethod != null) {
@@ -149,16 +163,20 @@ class SharedCartPage extends RestorableGetxPage<_SharedCartPageRestoration> {
   }
 }
 
-class _SharedCartPageRestoration extends ExtendedMixableGetxPageRestoration with PaymentMethodPageRestorationMixin {
+class _SharedCartPageRestoration extends ExtendedMixableGetxPageRestoration with PaymentMethodPageRestorationMixin, AddressPageRestorationMixin {
+  final RouteCompletionCallback<bool?>? _onCompleteSelectAddress;
   final RouteCompletionCallback<String?>? _onCompleteSelectPaymentMethod;
 
   _SharedCartPageRestoration({
+    RouteCompletionCallback<bool?>? onCompleteSelectAddress,
     RouteCompletionCallback<String?>? onCompleteSelectPaymentMethod
-  }) : _onCompleteSelectPaymentMethod = onCompleteSelectPaymentMethod;
+  }) : _onCompleteSelectAddress = onCompleteSelectAddress,
+      _onCompleteSelectPaymentMethod = onCompleteSelectPaymentMethod;
 
   @override
   // ignore: unnecessary_overrides
   void initState() {
+    onCompleteSelectAddress = _onCompleteSelectAddress;
     onCompleteSelectPaymentMethod = _onCompleteSelectPaymentMethod;
     super.initState();
   }
@@ -246,6 +264,7 @@ class SharedCartPageRestorableRouteFuture extends GetRestorableRouteFuture {
 }
 
 class _StatefulSharedCartControllerMediatorWidgetDelegate {
+  void Function()? onRefreshAddress;
   void Function(PaymentMethod)? onRefreshPaymentMethod;
 }
 
@@ -274,6 +293,8 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
   List<Cart> _selectedCartList = [];
   LoadDataResult<User> _fetchedUserLoadDataResult = NoLoadDataResult<User>();
   LoadDataResult<User> _userLoadDataResult = NoLoadDataResult<User>();
+  LoadDataResult<Address> _fetchedAddressLoadDataResult = NoLoadDataResult<Address>();
+  LoadDataResult<Address> _addressLoadDataResult = NoLoadDataResult<Address>();
   LoadDataResult<Bucket> _fetchedBucketLoadDataResult = NoLoadDataResult<Bucket>();
   LoadDataResult<Bucket> _bucketLoadDataResult = NoLoadDataResult<Bucket>();
   LoadDataResult<BucketMember> _fetchedBucketMemberLoadDataResult = NoLoadDataResult<BucketMember>();
@@ -314,6 +335,13 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
       setState(() {});
       widget.sharedCartController.getSharedCartSummary(_bucketId!);
     };
+    widget.statefulSharedCartControllerMediatorWidgetDelegate.onRefreshAddress = () async {
+      _addressLoadDataResult = IsLoadingLoadDataResult<Address>();
+      setState(() {});
+      await _updateSharedCartDataAndState();
+      _addressLoadDataResult = _fetchedAddressLoadDataResult;
+      setState(() {});
+    };
   }
 
   void _updateCartInformation() {
@@ -345,6 +373,7 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
         return;
       }
     }
+    _fetchedAddressLoadDataResult = await widget.sharedCartController.getCurrentSelectedAddress();
     _fetchedBucketLoadDataResult = (await widget.sharedCartController.showBucketByLoggedUserId()).map<Bucket>(
       (value) => value.bucket
     );
@@ -400,9 +429,12 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
     if (!generateErrorWhileInitOrRefresh) {
       _fillerErrorValueNotifier.value = null;
     }
+    // Address is not mandatory to be success (because address will only as appearance object)
     if (_fetchedUserLoadDataResult.isSuccess && _fetchedBucketLoadDataResult.isSuccess
-        && _fetchedBucketMemberLoadDataResult.isSuccess && _fetchedCartListLoadDataResult.isSuccess) {
+      && _fetchedBucketMemberLoadDataResult.isSuccess
+      && _fetchedCartListLoadDataResult.isSuccess) {
       _userLoadDataResult = _fetchedUserLoadDataResult;
+      _addressLoadDataResult = _fetchedAddressLoadDataResult;
       _bucketLoadDataResult = _fetchedBucketLoadDataResult;
       _bucketMemberLoadDataResult = _fetchedBucketMemberLoadDataResult;
       _cartListLoadDataResult = _fetchedCartListLoadDataResult;
@@ -416,6 +448,22 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
       Provider.of<ComponentNotifier>(context, listen: false).updateCart();
     });
     await _updateSharedCartData(generateErrorWhileInitOrRefresh: true);
+    bool allSuccessLoadData = _userLoadDataResult.isSuccess
+        && _bucketLoadDataResult.isSuccess
+        && _bucketMemberLoadDataResult.isSuccess
+        && _cartListLoadDataResult.isSuccess;
+    if (!allSuccessLoadData) {
+      return SuccessLoadDataResult(
+        value: PagingDataResult<ListItemControllerState>(
+          itemList: [
+            NoContentListItemControllerState()
+          ],
+          page: 1,
+          totalPage: 1,
+          totalItem: 1
+        ),
+      );
+    }
     Bucket bucket = _bucketLoadDataResult.resultIfSuccess!;
     _bucketId = bucket.id;
     try {
@@ -438,6 +486,7 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
             bucketLoadDataResult: () => _bucketLoadDataResult,
             bucketMemberLoadDataResult: () => _bucketMemberLoadDataResult,
             cartListLoadDataResult: () => _cartListLoadDataResult,
+            addressLoadDataResult: () => _addressLoadDataResult,
             userLoadDataResult: () => _userLoadDataResult,
             selectedPaymentMethodLoadDataResult: () => _selectedPaymentMethodLoadDataResult,
             onAcceptOrDeclineSharedCart: (parameter) {
@@ -896,7 +945,7 @@ class _StatefulSharedCartControllerMediatorWidgetState extends State<_StatefulSh
     _updateSharedCartDataAndState();
   }
 
-  void _updateSharedCartDataAndState() async {
+  Future<void> _updateSharedCartDataAndState() async {
     await _updateSharedCartData();
     setState(() {});
     widget.sharedCartController.getSharedCartSummary(_bucketId!);
