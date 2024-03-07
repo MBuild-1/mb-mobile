@@ -12,10 +12,13 @@ import 'package:masterbagasi/presentation/page/web_viewer_page.dart';
 import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 
 import '../../controller/order_detail_controller.dart';
+import '../../domain/entity/address/shipper_address.dart';
+import '../../domain/entity/order/arrived_order_request.dart';
 import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderparameter/remove_warehouse_in_order_parameter.dart';
 import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderresponse/modify_warehouse_in_order_response.dart';
 import '../../domain/entity/order/order.dart';
 import '../../domain/entity/order/order_based_id_parameter.dart';
+import '../../domain/entity/order/ordertransaction/ordertransactionresponse/midtrans_order_transaction_response.dart';
 import '../../domain/entity/order/ordertransaction/ordertransactionresponse/order_transaction_response.dart';
 import '../../domain/entity/payment/payment_method.dart';
 import '../../domain/entity/payment/shippingpayment/shipping_payment_parameter.dart';
@@ -23,13 +26,16 @@ import '../../domain/entity/summaryvalue/summary_value.dart';
 import '../../domain/usecase/add_warehouse_in_order_use_case.dart';
 import '../../domain/usecase/get_order_based_id_use_case.dart';
 import '../../domain/usecase/order_transaction_use_case.dart';
+import '../../domain/usecase/shipper_address_use_case.dart';
 import '../../domain/usecase/shipping_payment_use_case.dart';
 import '../../misc/additionalsummarywidgetparameter/order_transaction_additional_summary_widget_parameter.dart';
 import '../../misc/constant.dart';
+import '../../misc/controllercontentdelegate/arrived_order_controller_content_delegate.dart';
 import '../../misc/controllercontentdelegate/repurchase_controller_content_delegate.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/load_data_result_dynamic_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/order_detail_container_list_item_controller_state.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/order_shipper_address_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/order_transaction_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
 import '../../misc/countdown/configuration/orderdetail/order_detail_configure_countdown_component.dart';
@@ -43,6 +49,7 @@ import '../../misc/countdown/get_countdown_component_data_action.dart';
 import '../../misc/date_util.dart';
 import '../../misc/dialog_helper.dart';
 import '../../misc/entityandlistitemcontrollerstatemediator/horizontal_component_entity_parameterized_entity_and_list_item_controller_state_mediator.dart';
+import '../../misc/error/message_error.dart';
 import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
@@ -61,17 +68,22 @@ import '../../misc/paging/pagingresult/paging_result.dart';
 import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/horizontal_dynamic_item_carousel_parametered_component_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../../misc/pusher_helper.dart';
 import '../../misc/routeargument/order_detail_route_argument.dart';
+import '../../misc/shipper_address_process_additional_parameter.dart';
+import '../../misc/string_util.dart';
 import '../../misc/temp_order_detail_back_result_data_helper.dart';
 import '../../misc/toast_helper.dart';
 import '../../misc/widgetbindingobserver/payment_widget_binding_observer.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
+import '../widget/colorful_chip_tab_bar.dart';
 import '../widget/countdown_indicator.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modified_scaffold.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
+import 'coupon_page.dart';
 import 'getx_page.dart';
 import 'modaldialogpage/modify_warehouse_in_order_modal_dialog_page.dart';
 import 'modaldialogpage/payment_instruction_modal_dialog_page.dart';
+import 'modaldialogpage/payment_parameter_modal_dialog_page.dart';
 import 'order_chat_page.dart';
 import 'payment_instruction_page.dart';
 import 'payment_method_page.dart';
@@ -80,12 +92,12 @@ import 'pdf_viewer_page.dart';
 class OrderDetailPage extends RestorableGetxPage<_OrderDetailPageRestoration> {
   late final ControllerMember<OrderDetailController> _orderDetailController = ControllerMember<OrderDetailController>().addToControllerManager(controllerManager);
 
-  final String combinedOrderId;
+  final OrderDetailPageParameter orderDetailPageParameter;
   final _StatefulDeliveryControllerMediatorWidgetDelegate _statefulDeliveryControllerMediatorWidgetDelegate = _StatefulDeliveryControllerMediatorWidgetDelegate();
 
   OrderDetailPage({
     Key? key,
-    required this.combinedOrderId
+    required this.orderDetailPageParameter
   }) : super(key: key, pageRestorationId: () => "order-detail-page");
 
   @override
@@ -97,7 +109,9 @@ class OrderDetailPage extends RestorableGetxPage<_OrderDetailPageRestoration> {
         Injector.locator<ModifyWarehouseInOrderUseCase>(),
         Injector.locator<OrderTransactionUseCase>(),
         Injector.locator<ShippingPaymentUseCase>(),
+        Injector.locator<ShipperAddressUseCase>(),
         Injector.locator<RepurchaseControllerContentDelegate>(),
+        Injector.locator<ArrivedOrderControllerContentDelegate>()
       ),
       tag: pageName
     );
@@ -108,7 +122,14 @@ class OrderDetailPage extends RestorableGetxPage<_OrderDetailPageRestoration> {
     onCompleteSelectPaymentMethod: (result) {
       if (result != null) {
         if (_statefulDeliveryControllerMediatorWidgetDelegate.onRefreshPaymentMethod != null) {
-          _statefulDeliveryControllerMediatorWidgetDelegate.onRefreshPaymentMethod!(result!.toPaymentMethodPageResponse().paymentMethod);
+          _statefulDeliveryControllerMediatorWidgetDelegate.onRefreshPaymentMethod!(result.toPaymentMethodPageResponse().paymentMethod);
+        }
+      }
+    },
+    onCompleteSelectCoupon: (result) {
+      if (result != null) {
+        if (_statefulDeliveryControllerMediatorWidgetDelegate.onRefreshCouponId != null) {
+          _statefulDeliveryControllerMediatorWidgetDelegate.onRefreshCouponId!(result);
         }
       }
     }
@@ -118,23 +139,27 @@ class OrderDetailPage extends RestorableGetxPage<_OrderDetailPageRestoration> {
   Widget buildPage(BuildContext context) {
     return _StatefulOrderDetailControllerMediatorWidget(
       orderDetailController: _orderDetailController.controller,
-      combinedOrderId: combinedOrderId,
+      orderDetailPageParameter: orderDetailPageParameter,
       statefulDeliveryControllerMediatorWidgetDelegate: _statefulDeliveryControllerMediatorWidgetDelegate
     );
   }
 }
 
-class _OrderDetailPageRestoration extends ExtendedMixableGetxPageRestoration with WebViewerPageRestorationMixin, OrderChatPageRestorationMixin, PdfViewerPageRestorationMixin, PaymentInstructionPageRestorationMixin, PaymentMethodPageRestorationMixin {
+class _OrderDetailPageRestoration extends ExtendedMixableGetxPageRestoration with WebViewerPageRestorationMixin, OrderChatPageRestorationMixin, PdfViewerPageRestorationMixin, PaymentInstructionPageRestorationMixin, PaymentMethodPageRestorationMixin, CouponPageRestorationMixin {
   final RouteCompletionCallback<String?>? _onCompleteSelectPaymentMethod;
+  final RouteCompletionCallback<String?>? _onCompleteSelectCoupon;
 
   _OrderDetailPageRestoration({
-    RouteCompletionCallback<String?>? onCompleteSelectPaymentMethod
-  }) : _onCompleteSelectPaymentMethod = onCompleteSelectPaymentMethod;
+    RouteCompletionCallback<String?>? onCompleteSelectPaymentMethod,
+    RouteCompletionCallback<String?>? onCompleteSelectCoupon
+  }) : _onCompleteSelectPaymentMethod = onCompleteSelectPaymentMethod,
+      _onCompleteSelectCoupon = onCompleteSelectCoupon;
 
   @override
   // ignore: unnecessary_overrides
   void initState() {
     onCompleteSelectPaymentMethod = _onCompleteSelectPaymentMethod;
+    onCompleteSelectCoupon = _onCompleteSelectCoupon;
     super.initState();
   }
 
@@ -152,17 +177,17 @@ class _OrderDetailPageRestoration extends ExtendedMixableGetxPageRestoration wit
 }
 
 class OrderDetailPageGetPageBuilderAssistant extends GetPageBuilderAssistant {
-  final String combinedOrderId;
+  final OrderDetailPageParameter orderDetailPageParameter;
 
   OrderDetailPageGetPageBuilderAssistant({
-    required this.combinedOrderId
+    required this.orderDetailPageParameter
   });
 
   @override
-  GetPageBuilder get pageBuilder => (() => OrderDetailPage(combinedOrderId: combinedOrderId));
+  GetPageBuilder get pageBuilder => (() => OrderDetailPage(orderDetailPageParameter: orderDetailPageParameter));
 
   @override
-  GetPageBuilder get pageWithOuterGetxBuilder => (() => GetxPageBuilder.buildRestorableGetxPage(OrderDetailPage(combinedOrderId: combinedOrderId)));
+  GetPageBuilder get pageWithOuterGetxBuilder => (() => GetxPageBuilder.buildRestorableGetxPage(OrderDetailPage(orderDetailPageParameter: orderDetailPageParameter)));
 }
 
 mixin OrderDetailPageRestorationMixin on MixableGetxPageRestoration {
@@ -213,10 +238,29 @@ class OrderDetailPageRestorableRouteFuture extends GetRestorableRouteFuture {
     if (arguments is! String) {
       throw Exception("Arguments must be a string");
     }
+    OrderDetailPageParameter? orderDetailPageParameter;
+    try {
+      orderDetailPageParameter = arguments.toOrderDetailPageParameter();
+    } catch (e) {
+      bool handlingError = false;
+      if (e is MessageError) {
+        if (e.title.toLowerCase() == Constant.textErrorTitleWhenParsingOrderParameterJson.toLowerCase()) {
+          orderDetailPageParameter = DefaultOrderDetailPageParameter(
+            combinedOrderId: arguments
+          );
+          handlingError = true;
+        }
+      }
+      if (!handlingError) {
+        if (orderDetailPageParameter == null) {
+          rethrow;
+        }
+      }
+    }
     return GetExtended.toWithGetPageRouteReturnValue<String?>(
       GetxPageBuilder.buildRestorableGetxPageBuilder(
         OrderDetailPageGetPageBuilderAssistant(
-          combinedOrderId: arguments
+          orderDetailPageParameter: orderDetailPageParameter!
         ),
       ),
       arguments: OrderDetailRouteArgument()
@@ -247,16 +291,17 @@ class OrderDetailPageRestorableRouteFuture extends GetRestorableRouteFuture {
 
 class _StatefulDeliveryControllerMediatorWidgetDelegate {
   void Function(PaymentMethod)? onRefreshPaymentMethod;
+  void Function(String)? onRefreshCouponId;
 }
 
 class _StatefulOrderDetailControllerMediatorWidget extends StatefulWidget {
   final OrderDetailController orderDetailController;
-  final String combinedOrderId;
+  final OrderDetailPageParameter orderDetailPageParameter;
   final _StatefulDeliveryControllerMediatorWidgetDelegate statefulDeliveryControllerMediatorWidgetDelegate;
 
   const _StatefulOrderDetailControllerMediatorWidget({
     required this.orderDetailController,
-    required this.combinedOrderId,
+    required this.orderDetailPageParameter,
     required this.statefulDeliveryControllerMediatorWidgetDelegate
   });
 
@@ -276,9 +321,13 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
   final CountdownManager _countdownManager = CountdownManager(countdownComponentList: []);
   LoadDataResult<_LoadOrderDetailResponse> _loadOrderDetailResponseLoadDataResult = NoLoadDataResult<_LoadOrderDetailResponse>();
   late final OrderTransactionAdditionalSummaryWidgetParameter _orderTransactionAdditionalSummaryWidgetParameter;
+  late final ShipperAddressProcessAdditionalParameter _shipperAddressProcessAdditionalParameter;
   PaymentWidgetBindingObserver? _paymentWidgetBindingObserver;
   bool _isCheckingOrderTransaction = false;
   final PusherChannelsFlutter _pusher = PusherChannelsFlutter.getInstance();
+  final PaymentParameterModalDialogPageDelegate _repurchasePaymentParameterModalDialogPageDelegate = PaymentParameterModalDialogPageDelegate();
+  final PaymentParameterModalDialogPageDelegate _payOrderShippingPaymentParameterModalDialogPageDelegate = PaymentParameterModalDialogPageDelegate();
+  OrderDetailPaymentMethodType? _orderDetailPaymentMethodType;
 
   @override
   void initState() {
@@ -311,20 +360,31 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
         });
       }
     );
+    _shipperAddressProcessAdditionalParameter = ShipperAddressProcessAdditionalParameter(
+      shipperAddressLoadDataResult: NoLoadDataResult<ShipperAddress>()
+    );
     _paymentWidgetBindingObserver = PaymentWidgetBindingObserver(
       checkOrderTransactionWhileResuming: _refreshOrderDetail
     );
     widget.statefulDeliveryControllerMediatorWidgetDelegate.onRefreshPaymentMethod = (paymentMethod) {
-      widget.orderDetailController.shippingPayment(
-        ShippingPaymentParameter(
-          settlingId: paymentMethod.settlingId,
-          combinedOrderId: widget.combinedOrderId,
-          expire: 7
-        )
-      );
+      if (_orderDetailPaymentMethodType == OrderDetailPaymentMethodType.repurchase) {
+        _repurchasePaymentParameterModalDialogPageDelegate.onUpdatePaymentMethod(paymentMethod);
+      } else if (_orderDetailPaymentMethodType == OrderDetailPaymentMethodType.shippingPayment) {
+        _payOrderShippingPaymentParameterModalDialogPageDelegate.onUpdatePaymentMethod(paymentMethod);
+      }
+      _orderDetailPaymentMethodType = null;
+    };
+    widget.statefulDeliveryControllerMediatorWidgetDelegate.onRefreshCouponId = (couponId) {
+      _repurchasePaymentParameterModalDialogPageDelegate.onUpdateCoupon(couponId);
     };
     WidgetsBinding.instance.addObserver(_paymentWidgetBindingObserver!);
     MainRouteObserver.onRefreshOrderDetailAfterDeliveryReview = _refreshOrderDetail;
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      OrderDetailPageParameter orderDetailPageParameter = widget.orderDetailPageParameter;
+      if (orderDetailPageParameter is RedirectToShippingPaymentOrderDetailPageParameter) {
+        _payOrderShipping();
+      }
+    });
   }
 
   Future<LoadDataResult<_LoadOrderDetailResponse>> _loadOrderDetail() async {
@@ -341,7 +401,7 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
       _orderDetailScrollOffset = null;
     }
     LoadDataResult<Order> orderDetailLoadDataResult = await widget.orderDetailController.getOrderBasedId(
-      OrderBasedIdParameter(orderId: widget.combinedOrderId)
+      OrderBasedIdParameter(orderId: widget.orderDetailPageParameter.combinedOrderId)
     );
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (orderDetailLoadDataResult.isSuccess) {
@@ -382,9 +442,14 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
         }(),
         parameter: carouselParameterizedEntityMediator
       );
+      ListItemControllerState shipperAddressListItemControllerState = componentEntityMediator.mapWithParameter(
+        widget.orderDetailController.getShipperAddressSection(),
+        parameter: carouselParameterizedEntityMediator
+      );
       return _LoadOrderDetailResponse(
         order: orderDetail,
-        orderTransactionListItemControllerState: orderTransactionListItemControllerState
+        orderTransactionListItemControllerState: orderTransactionListItemControllerState,
+        shipperAddressListItemControllerState: shipperAddressListItemControllerState
       );
     });
   }
@@ -471,11 +536,19 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
                 }
               );
             },
-            onPayOrderShipping: () {
-              PageRestorationHelper.toPaymentMethodPage(context, null);
-            },
+            onPayOrderShipping: _payOrderShipping,
             orderTransactionListItemControllerState: () => loadOrderDetailResponse.orderTransactionListItemControllerState,
-            errorProvider: () => Injector.locator<ErrorProvider>()
+            shipperAddressListItemControllerState: () => loadOrderDetailResponse.shipperAddressListItemControllerState,
+            errorProvider: () => Injector.locator<ErrorProvider>(),
+            onConfirmArrived: (order) => DialogHelper.showPromptConfirmArrived(
+              context, () {
+                widget.orderDetailController.arrivedOrderControllerContentDelegate.arrivedOrder(
+                  ArrivedOrderParameter(
+                    combinedOrderId: order.id
+                  )
+                );
+              }
+            ),
           )
         ],
         page: 1,
@@ -490,12 +563,77 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
     _orderDetailListItemPagingController.refresh();
   }
 
+  void _toPaymentMethodPage(OrderDetailPaymentMethodType? orderDetailPaymentMethodType, String? paymentMethodSettlingId) {
+    _orderDetailPaymentMethodType = orderDetailPaymentMethodType;
+    PageRestorationHelper.toPaymentMethodPage(context, paymentMethodSettlingId);
+  }
+
+  void _payOrderShipping() {
+    DialogHelper.showModalBottomDialogPage<int, int>(
+      context: context,
+      modalDialogPageBuilder: (context, parameter) => PaymentParameterModalDialogPage(
+        paymentParameterModalDialogPageParameter: PaymentParameterModalDialogPageParameter(
+          paymentParameterModalDialogPageDelegate: _payOrderShippingPaymentParameterModalDialogPageDelegate,
+          onGotoSelectPaymentMethodPage: (paymentMethodSettlingId) {
+            _toPaymentMethodPage(OrderDetailPaymentMethodType.shippingPayment, paymentMethodSettlingId);
+          },
+          onProcessPaymentParameter: (paymentMethodSettlingId, couponId) {
+            widget.orderDetailController.shippingPayment(
+              ShippingPaymentParameter(
+                settlingId: paymentMethodSettlingId!,
+                combinedOrderId: widget.orderDetailPageParameter.combinedOrderId,
+                expire: 7
+              )
+            );
+          },
+          titleLabel: () => "Second Payment".tr,
+          buttonLabel: () => "Pay".tr
+        )
+      ),
+      parameter: 1
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     widget.orderDetailController.repurchaseControllerContentDelegate.setRepurchaseDelegate(
       Injector.locator<RepurchaseDelegateFactory>().generateRepurchaseDelegate(
         onGetBuildContext: () => context,
-        onGetErrorProvider: () => Injector.locator<ErrorProvider>()
+        onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
+        onBeginRepurchase: (repurchaseAction) {
+          DialogHelper.showModalBottomDialogPage<int, int>(
+            context: context,
+            modalDialogPageBuilder: (context, parameter) => PaymentParameterModalDialogPage(
+              paymentParameterModalDialogPageParameter: PaymentParameterModalDialogPageParameter(
+                paymentParameterModalDialogPageDelegate: _repurchasePaymentParameterModalDialogPageDelegate,
+                onGotoSelectPaymentMethodPage: (paymentMethodSettlingId) {
+                  _toPaymentMethodPage(OrderDetailPaymentMethodType.repurchase, paymentMethodSettlingId);
+                },
+                onGotoSelectCouponPage: (couponId) {
+                  PageRestorationHelper.toCouponPage(context, couponId);
+                },
+                onProcessPaymentParameter: (paymentMethodSettlingId, couponId) {
+                  repurchaseAction.onStartRepurchase(paymentMethodSettlingId, couponId);
+                },
+                titleLabel: () => "Buy Again".tr,
+                buttonLabel: () => "Buy Again".tr
+              )
+            ),
+            parameter: 1
+          );
+        }
+      )
+    );
+    widget.orderDetailController.arrivedOrderControllerContentDelegate.setArrivedOrderDelegate(
+      Injector.locator<ArrivedOrderDelegateFactory>().generateArrivedOrderDelegate(
+        onGetBuildContext: () => context,
+        onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
+        onArrivedOrderProcessSuccessCallback: (arrivedOrderResponse) async {
+          _refreshOrderDetail();
+          if (MainRouteObserver.onRefreshOrderList != null) {
+            MainRouteObserver.onRefreshOrderList!();
+          }
+        },
       )
     );
     widget.orderDetailController.setOrderDetailDelegate(
@@ -530,12 +668,24 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
           );
         },
         onShippingPaymentRequestProcessSuccessCallback: (shippingPaymentResponse) async {
+          // Close payment parameter modal dialog page
+          Get.back();
+
           _refreshOrderDetail();
+          if (MainRouteObserver.onRefreshOrderList != null) {
+            MainRouteObserver.onRefreshOrderList!();
+          }
         },
         onObserveOrderTransactionDirectly: (onObserveOrderTransactionDirectlyParameter) {
           return OrderTransactionListItemControllerState(
             orderTransactionResponseLoadDataResult: onObserveOrderTransactionDirectlyParameter.orderTransactionResponseLoadDataResult,
             orderTransactionAdditionalSummaryWidgetParameter: () => _orderTransactionAdditionalSummaryWidgetParameter,
+            errorProvider: () => Injector.locator<ErrorProvider>()
+          );
+        },
+        onObserveShipperAddressDirectly: (onObserveShipperAddressDirectlyParameter) {
+          return OrderShipperAddressListItemControllerState(
+            shipperAddressLoadDataResult: onObserveShipperAddressDirectlyParameter.shipperAddressLoadDataResult,
             errorProvider: () => Injector.locator<ErrorProvider>()
           );
         },
@@ -564,20 +714,32 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
                       }
                     }
                   } else {
-                    DateTime localExpiryDateTime = DateUtil.convertUtcOffset(
-                      configureCountdownComponent.orderTransactionResponse.expiryDateTime,
-                      DateTime.now().timeZoneOffset.inHours,
-                      oldUtcOffset: 0
-                    );
-                    int countdownValue = () {
-                      if (tagString == "expired_remaining") {
-                        return localExpiryDateTime.difference(DateTime.now()).inMilliseconds;
-                      } else {
-                        return lastValue["value"] as int;
+                    DateTime localExpiryDateTime = () {
+                      DateTime? currentlyExpireDateTime = configureCountdownComponent.orderTransactionResponse.expiryDateTime;
+                      if (currentlyExpireDateTime == null) {
+                        throw MessageError(title: "Expiry datetime is null, this transaction type might not support expire date time.");
                       }
+                      return DateUtil.convertUtcOffset(
+                        currentlyExpireDateTime,
+                        DateTime.now().timeZoneOffset.inHours,
+                        oldUtcOffset: 0
+                      );
+                    }();
+                    int countdownValue = () {
+                      late int value;
+                      if (tagString == "expired_remaining") {
+                        value = localExpiryDateTime.difference(DateTime.now()).inMilliseconds;
+                      } else {
+                        value = lastValue["value"] as int;
+                      }
+                      if (value < 0) {
+                        value = 0;
+                      }
+                      return value;
                     }();
                     dynamic tag = DefaultCountdownComponentDelegateTagData(
                       tagString: tagString,
+                      paymentStepType: configureCountdownComponent.orderTransactionResponse.paymentStepType,
                       countdownValue: countdownValue,
                       expiredDateTime: localExpiryDateTime,
                       onRefresh: _refreshOrderDetail
@@ -630,23 +792,25 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
                             if (countdownComponentDelegate is DefaultCountdownComponentDelegate) {
                               dynamic tag = countdownComponentDelegate.tag;
                               if (tag is DefaultCountdownComponentDelegateTagData) {
-                                if (tag.tagString == "expired_remaining") {
-                                  ToastHelper.showToast(
-                                    MultiLanguageString({
-                                      Constant.textInIdLanguageKey: "Pembayaran Anda sudah expired.",
-                                      Constant.textEnUsLanguageKey: "Your payment is expired."
-                                    }).toEmptyStringNonNull
-                                  );
-                                  TempOrderDetailBackResultDataHelper.saveTempOrderDetailBackResult(
-                                    json.encode(
-                                      <String, dynamic>{
-                                        "combined_order_id": widget.combinedOrderId,
-                                        "status": "expired"
-                                      }
-                                    )
-                                  ).future().then((value) {
-                                    NavigationHelper.navigationBackFromOrderDetailToOrder(context);
-                                  });
+                                if (tag.paymentStepType == "first_payment") {
+                                  if (tag.tagString == "expired_remaining") {
+                                    ToastHelper.showToast(
+                                      MultiLanguageString({
+                                        Constant.textInIdLanguageKey: "Pembayaran Anda sudah expired.",
+                                        Constant.textEnUsLanguageKey: "Your payment is expired."
+                                      }).toEmptyStringNonNull
+                                    );
+                                    TempOrderDetailBackResultDataHelper.saveTempOrderDetailBackResult(
+                                      json.encode(
+                                        <String, dynamic>{
+                                          "combined_order_id": widget.orderDetailPageParameter.combinedOrderId,
+                                          "status": "expired"
+                                        }
+                                      )
+                                    ).future().then((value) {
+                                      NavigationHelper.navigationBackFromOrderDetailToOrder(context);
+                                    });
+                                  }
                                 }
                               }
                             }
@@ -660,7 +824,8 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
             }
           );
         },
-        orderTransactionAdditionalSummaryWidgetParameter: () => _orderTransactionAdditionalSummaryWidgetParameter
+        orderTransactionAdditionalSummaryWidgetParameter: () => _orderTransactionAdditionalSummaryWidgetParameter,
+        shipperAddressProcessAdditionalParameter: () => _shipperAddressProcessAdditionalParameter
       )
     );
     return ModifiedScaffold(
@@ -726,7 +891,7 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
     _countdownManager.dispose();
     PusherHelper.unsubscribeTransactionSuccessPusherChannel(
       pusherChannelsFlutter: _pusher,
-      orderId: widget.combinedOrderId
+      orderId: widget.orderDetailPageParameter.combinedOrderId
     );
     MainRouteObserver.onRefreshOrderDetailAfterDeliveryReview = null;
     super.dispose();
@@ -736,10 +901,12 @@ class _StatefulOrderDetailControllerMediatorWidgetState extends State<_StatefulO
 class _LoadOrderDetailResponse {
   Order order;
   ListItemControllerState orderTransactionListItemControllerState;
+  ListItemControllerState shipperAddressListItemControllerState;
 
   _LoadOrderDetailResponse({
     required this.order,
-    required this.orderTransactionListItemControllerState
+    required this.orderTransactionListItemControllerState,
+    required this.shipperAddressListItemControllerState
   });
 }
 
@@ -747,5 +914,77 @@ extension on _LoadOrderDetailResponse {
   void merge(_LoadOrderDetailResponse newLoadOrderDetailResponse) {
     order = newLoadOrderDetailResponse.order;
     orderTransactionListItemControllerState = newLoadOrderDetailResponse.orderTransactionListItemControllerState;
+    shipperAddressListItemControllerState = newLoadOrderDetailResponse.shipperAddressListItemControllerState;
+  }
+}
+
+enum OrderDetailPaymentMethodType {
+  shippingPayment, repurchase
+}
+
+abstract class OrderDetailPageParameter {
+  String combinedOrderId;
+
+  OrderDetailPageParameter({
+    required this.combinedOrderId
+  });
+}
+
+class DefaultOrderDetailPageParameter extends OrderDetailPageParameter {
+  DefaultOrderDetailPageParameter({
+    required super.combinedOrderId
+  });
+}
+
+class RedirectToShippingPaymentOrderDetailPageParameter extends OrderDetailPageParameter {
+  RedirectToShippingPaymentOrderDetailPageParameter({
+    required super.combinedOrderId
+  });
+}
+
+extension OrderDetailPageParameterExt on OrderDetailPageParameter {
+  String toJsonString() => StringUtil.encodeJson(
+    () {
+      if (this is DefaultOrderDetailPageParameter) {
+        DefaultOrderDetailPageParameter defaultOrderDetailPageParameter = this as DefaultOrderDetailPageParameter;
+        return <String, dynamic>{
+          "type": "default",
+          "combined_order_id": defaultOrderDetailPageParameter.combinedOrderId
+        };
+      } else if (this is RedirectToShippingPaymentOrderDetailPageParameter) {
+        RedirectToShippingPaymentOrderDetailPageParameter redirectToShippingPaymentOrderDetailPageParameter = this as RedirectToShippingPaymentOrderDetailPageParameter;
+        return <String, dynamic>{
+          "type": "redirect_to_shipping_payment",
+          "combined_order_id": redirectToShippingPaymentOrderDetailPageParameter.combinedOrderId
+        };
+      }
+      throw MessageError(title: "OrderDetailPageParameter is not suitable");
+    }()
+  );
+}
+
+extension OrderDetailPageParameterStringExt on String {
+  OrderDetailPageParameter toOrderDetailPageParameter() {
+    Map<String, dynamic> result = {};
+    try {
+      result = StringUtil.decodeJson(this);
+    } catch (e) {
+      throw MessageError(title: Constant.textErrorTitleWhenParsingOrderParameterJson);
+    }
+    if (result.containsKey("type")) {
+      String type = result["type"];
+      if (type == "default") {
+        return DefaultOrderDetailPageParameter(
+          combinedOrderId: result["combined_order_id"]
+        );
+      } else if (type == "redirect_to_shipping_payment") {
+        return RedirectToShippingPaymentOrderDetailPageParameter(
+          combinedOrderId: result["combined_order_id"],
+        );
+      }
+      throw MessageError(title: "\"type\" field is not suitable");
+    } else {
+      throw MessageError(title: "\"type\" field is missing");
+    }
   }
 }

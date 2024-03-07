@@ -6,10 +6,16 @@ import '../../../domain/entity/deleteaccount/verifydeleteaccountotp/verify_delet
 import '../../../domain/entity/deleteaccount/verifydeleteaccountotp/verify_delete_account_otp_response.dart';
 import '../../../domain/entity/forgotpassword/forgot_password_parameter.dart';
 import '../../../domain/entity/forgotpassword/forgot_password_response.dart';
+import '../../../domain/entity/forgotpassword/whatsapp/whatsapp_forgot_password_parameter.dart';
+import '../../../domain/entity/forgotpassword/whatsapp/whatsapp_forgot_password_response.dart';
 import '../../../domain/entity/login/login_parameter.dart';
 import '../../../domain/entity/login/login_response.dart';
+import '../../../domain/entity/login/login_with_apple_parameter.dart';
+import '../../../domain/entity/login/login_with_apple_response.dart';
 import '../../../domain/entity/login/login_with_google_parameter.dart';
 import '../../../domain/entity/login/login_with_google_response.dart';
+import '../../../domain/entity/loginorregister/login_or_register_with_apple_via_callback_parameter.dart';
+import '../../../domain/entity/loginorregister/login_or_register_with_apple_via_callback_response.dart';
 import '../../../domain/entity/logout/logout_parameter.dart';
 import '../../../domain/entity/logout/logout_response.dart';
 import '../../../domain/entity/pin/checkactivepin/check_active_pin_parameter.dart';
@@ -22,6 +28,8 @@ import '../../../domain/entity/register/register_parameter.dart';
 import '../../../domain/entity/register/register_response.dart';
 import '../../../domain/entity/register/register_second_step_parameter.dart';
 import '../../../domain/entity/register/register_second_step_response.dart';
+import '../../../domain/entity/register/register_with_apple_parameter.dart';
+import '../../../domain/entity/register/register_with_apple_response.dart';
 import '../../../domain/entity/register/register_with_google_parameter.dart';
 import '../../../domain/entity/register/register_with_google_response.dart';
 import '../../../domain/entity/register/sendregisterotp/sendregisterotpresponse/send_register_otp_response.dart';
@@ -53,12 +61,14 @@ import '../../../misc/processing/future_processing.dart';
 abstract class UserDataSource {
   FutureProcessing<LoginResponse> login(LoginParameter loginParameter);
   FutureProcessing<LoginWithGoogleResponse> loginWithGoogle(LoginWithGoogleParameter loginWithGoogleParameter);
+  FutureProcessing<LoginWithAppleResponse> loginWithApple(LoginWithAppleParameter loginWithAppleParameter);
   FutureProcessing<RegisterFirstStepResponse> registerFirstStep(RegisterFirstStepParameter registerFirstStepParameter);
   FutureProcessing<SendRegisterOtpResponse> sendRegisterOtp(SendRegisterOtpParameter sendRegisterOtpParameter);
   FutureProcessing<VerifyRegisterResponse> verifyRegister(VerifyRegisterParameter verifyRegisterParameter);
   FutureProcessing<RegisterSecondStepResponse> registerSecondStep(RegisterSecondStepParameter registerSecondStepParameter);
   FutureProcessing<RegisterResponse> register(RegisterParameter registerParameter);
   FutureProcessing<RegisterWithGoogleResponse> registerWithGoogle(RegisterWithGoogleParameter registerWithGoogleParameter);
+  FutureProcessing<RegisterWithAppleResponse> registerWithApple(RegisterWithAppleParameter registerWithAppleParameter);
   FutureProcessing<LogoutResponse> logout(LogoutParameter logoutParameter);
   FutureProcessing<GetUserResponse> getUser(GetUserParameter getUserParameter);
   FutureProcessing<EditUserResponse> editUser(EditUserParameter editUserParameter);
@@ -66,6 +76,7 @@ abstract class UserDataSource {
   FutureProcessing<CheckActivePinResponse> checkActivePin(CheckActivePinParameter checkActivePinParameter);
   FutureProcessing<ModifyPinResponse> modifyPin(ModifyPinParameter modifyPinParameter);
   FutureProcessing<ForgotPasswordResponse> forgotPassword(ForgotPasswordParameter forgotPasswordParameter);
+  FutureProcessing<WhatsappForgotPasswordResponse> whatsappForgotPassword(WhatsappForgotPasswordParameter whatsappForgotPasswordParameter);
   FutureProcessing<CheckResetPasswordResponse> checkResetPassword(CheckResetPasswordParameter checkResetPasswordParameter);
   FutureProcessing<ResetPasswordResponse> resetPassword(ResetPasswordParameter resetPasswordParameter);
   FutureProcessing<SendDeleteAccountOtpResponse> sendDeleteAccountOtp(SendDeleteAccountOtpParameter sendDeleteAccountOtpParameter);
@@ -76,4 +87,5 @@ abstract class UserDataSource {
   FutureProcessing<AuthIdentityChangeInputResponse> authIdentityChangeInput(AuthIdentityChangeInputParameter authIdentityChangeInputParameter);
   FutureProcessing<AuthIdentityChangeVerifyOtpResponse> authIdentityChangeVerifyOtp(AuthIdentityChangeVerifyOtpParameter authIdentityChangeVerifyOtpParameter);
   FutureProcessing<AuthIdentityChangeResponse> authIdentityChange(AuthIdentityChangeParameter authIdentityChangeParameter);
+  FutureProcessing<LoginOrRegisterWithAppleViaCallbackResponse> loginOrRegisterWithAppleViaCallback(LoginOrRegisterWithAppleViaCallbackParameter loginOrRegisterWithAppleViaCallbackParameter);
 }

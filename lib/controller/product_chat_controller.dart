@@ -6,10 +6,13 @@ import '../domain/entity/chat/product/get_product_message_by_product_parameter.d
 import '../domain/entity/chat/product/get_product_message_by_product_response.dart';
 import '../domain/entity/chat/product/get_product_message_by_user_parameter.dart';
 import '../domain/entity/chat/product/get_product_message_by_user_response.dart';
+import '../domain/entity/product/product_detail.dart';
+import '../domain/entity/product/product_detail_parameter.dart';
 import '../domain/entity/user/getuser/get_user_parameter.dart';
 import '../domain/entity/user/getuser/get_user_response.dart';
 import '../domain/usecase/answer_product_conversation_use_case.dart';
 import '../domain/usecase/create_product_conversation_use_case.dart';
+import '../domain/usecase/get_product_detail_use_case.dart';
 import '../domain/usecase/get_product_message_by_product_use_case.dart';
 import '../domain/usecase/get_product_message_by_user_use_case.dart';
 import '../domain/usecase/get_user_use_case.dart';
@@ -22,6 +25,7 @@ class ProductChatController extends BaseGetxController {
   final CreateProductConversationUseCase createProductConversationUseCase;
   final AnswerProductConversationUseCase answerProductConversationUseCase;
   final GetUserUseCase getUserUseCase;
+  final GetProductDetailUseCase getProductDetailUseCase;
 
   ProductChatController(
     super.controllerManager,
@@ -29,7 +33,8 @@ class ProductChatController extends BaseGetxController {
     this.getProductMessageByProductUseCase,
     this.createProductConversationUseCase,
     this.answerProductConversationUseCase,
-    this.getUserUseCase
+    this.getUserUseCase,
+    this.getProductDetailUseCase
   );
 
   Future<LoadDataResult<GetProductMessageByUserResponse>> getProductMessageByUser(GetProductMessageByUserParameter getProductMessageByUserParameter) {
@@ -59,6 +64,12 @@ class ProductChatController extends BaseGetxController {
   Future<LoadDataResult<GetUserResponse>> getUser(GetUserParameter getUserParameter) {
     return getUserUseCase.execute(getUserParameter).future(
       parameter: apiRequestManager.addRequestToCancellationPart("get-user", duplicate: true).value
+    );
+  }
+
+  Future<LoadDataResult<ProductDetail>> getProductDetail(ProductDetailParameter productDetailParameter) {
+    return getProductDetailUseCase.execute(productDetailParameter).future(
+      parameter: apiRequestManager.addRequestToCancellationPart("get-product-detail").value
     );
   }
 }

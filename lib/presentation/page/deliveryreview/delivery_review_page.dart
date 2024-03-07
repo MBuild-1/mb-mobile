@@ -7,23 +7,30 @@ import '../../../../misc/getextended/get_restorable_route_future.dart';
 import '../../../../misc/manager/controller_manager.dart';
 import '../../../controller/deliveryreviewcontroller/deliveryreviewsubpagecontroller/history_delivery_review_sub_controller.dart';
 import '../../../controller/deliveryreviewcontroller/deliveryreviewsubpagecontroller/waiting_to_be_reviewed_delivery_review_sub_controller.dart';
+import '../../../domain/entity/payment/payment_method.dart';
 import '../../../misc/controllercontentdelegate/repurchase_controller_content_delegate.dart';
+import '../../../misc/dialog_helper.dart';
 import '../../../misc/errorprovider/error_provider.dart';
 import '../../../misc/injector.dart';
 import '../../../misc/main_route_observer.dart';
+import '../../../misc/page_restoration_helper.dart';
 import '../../../misc/refresh_delivery_review.dart';
 import '../../widget/modified_scaffold.dart';
 import '../../widget/modified_tab_bar.dart';
 import '../../widget/modifiedappbar/modified_app_bar.dart';
 import '../country_delivery_review_page.dart';
+import '../coupon_page.dart';
 import '../getx_page.dart';
+import '../modaldialogpage/payment_parameter_modal_dialog_page.dart';
 import '../order_detail_page.dart';
+import '../payment_method_page.dart';
 import 'deliveryreviewsubpage/history_delivery_review_sub_page.dart';
 import 'deliveryreviewsubpage/waiting_to_be_reviewed_delivery_review_sub_page.dart';
 
 class DeliveryReviewPage extends RestorableGetxPage<_DeliveryReviewPageRestoration> {
   late final ControllerMember<DeliveryReviewController> _deliveryReviewController = ControllerMember<DeliveryReviewController>().addToControllerManager(controllerManager);
   late final List<List<dynamic>> _deliveryReviewSubControllerList;
+  final _StatefulDeliveryReviewControllerMediatorWidgetDelegate _statefulDeliveryReviewControllerMediatorWidgetDelegate = _StatefulDeliveryReviewControllerMediatorWidgetDelegate();
 
   DeliveryReviewPage({Key? key}) : super(key: key, pageRestorationId: () => "delivery-review-page") {
     _deliveryReviewSubControllerList = [
@@ -64,22 +71,49 @@ class DeliveryReviewPage extends RestorableGetxPage<_DeliveryReviewPageRestorati
   }
 
   @override
-  _DeliveryReviewPageRestoration createPageRestoration() => _DeliveryReviewPageRestoration();
+  _DeliveryReviewPageRestoration createPageRestoration() => _DeliveryReviewPageRestoration(
+    onCompleteSelectPaymentMethod: (result) {
+      if (result != null) {
+        if (_statefulDeliveryReviewControllerMediatorWidgetDelegate.onRefreshPaymentMethod != null) {
+          _statefulDeliveryReviewControllerMediatorWidgetDelegate.onRefreshPaymentMethod!(result.toPaymentMethodPageResponse().paymentMethod);
+        }
+      }
+    },
+    onCompleteSelectCoupon: (result) {
+      if (result != null) {
+        if (_statefulDeliveryReviewControllerMediatorWidgetDelegate.onRefreshCouponId != null) {
+          _statefulDeliveryReviewControllerMediatorWidgetDelegate.onRefreshCouponId!(result);
+        }
+      }
+    }
+  );
 
   @override
   Widget buildPage(BuildContext context) {
     return _StatefulDeliveryReviewControllerMediatorWidget(
       deliveryReviewController: _deliveryReviewController.controller,
       deliveryReviewSubControllerList: _deliveryReviewSubControllerList,
-      pageName: pageName
+      pageName: pageName,
+      statefulDeliveryReviewControllerMediatorWidgetDelegate: _statefulDeliveryReviewControllerMediatorWidgetDelegate
     );
   }
 }
 
-class _DeliveryReviewPageRestoration extends ExtendedMixableGetxPageRestoration with CountryDeliveryReviewPageRestorationMixin, OrderDetailPageRestorationMixin {
+class _DeliveryReviewPageRestoration extends ExtendedMixableGetxPageRestoration with CountryDeliveryReviewPageRestorationMixin, OrderDetailPageRestorationMixin, PaymentMethodPageRestorationMixin, CouponPageRestorationMixin {
+  final RouteCompletionCallback<String?>? _onCompleteSelectPaymentMethod;
+  final RouteCompletionCallback<String?>? _onCompleteSelectCoupon;
+
+  _DeliveryReviewPageRestoration({
+    RouteCompletionCallback<String?>? onCompleteSelectPaymentMethod,
+    RouteCompletionCallback<String?>? onCompleteSelectCoupon
+  }) : _onCompleteSelectPaymentMethod = onCompleteSelectPaymentMethod,
+      _onCompleteSelectCoupon = onCompleteSelectCoupon;
+
   @override
   // ignore: unnecessary_overrides
   void initState() {
+    onCompleteSelectPaymentMethod = _onCompleteSelectPaymentMethod;
+    onCompleteSelectCoupon = _onCompleteSelectCoupon;
     super.initState();
   }
 
@@ -165,15 +199,22 @@ class DeliveryReviewPageRestorableRouteFuture extends GetRestorableRouteFuture {
   }
 }
 
+class _StatefulDeliveryReviewControllerMediatorWidgetDelegate {
+  void Function(PaymentMethod)? onRefreshPaymentMethod;
+  void Function(String)? onRefreshCouponId;
+}
+
 class _StatefulDeliveryReviewControllerMediatorWidget extends StatefulWidget {
   final DeliveryReviewController deliveryReviewController;
   final List<List<dynamic>> deliveryReviewSubControllerList;
   final String pageName;
+  final _StatefulDeliveryReviewControllerMediatorWidgetDelegate statefulDeliveryReviewControllerMediatorWidgetDelegate;
 
   const _StatefulDeliveryReviewControllerMediatorWidget({
     required this.deliveryReviewController,
     required this.deliveryReviewSubControllerList,
-    required this.pageName
+    required this.pageName,
+    required this.statefulDeliveryReviewControllerMediatorWidgetDelegate
   });
 
   @override
@@ -183,6 +224,7 @@ class _StatefulDeliveryReviewControllerMediatorWidget extends StatefulWidget {
 class _StatefulDeliveryReviewControllerMediatorWidgetState extends State<_StatefulDeliveryReviewControllerMediatorWidget> with SingleTickerProviderStateMixin {
   late final TabController _tabController;
   int _tabControllerIndex = 0;
+  final PaymentParameterModalDialogPageDelegate _repurchasePaymentParameterModalDialogPageDelegate = PaymentParameterModalDialogPageDelegate();
 
   @override
   void initState() {
@@ -192,6 +234,12 @@ class _StatefulDeliveryReviewControllerMediatorWidgetState extends State<_Statef
       setState(() => _tabControllerIndex = _tabController.index);
     });
     MainRouteObserver.onRefreshDeliveryReview = RefreshDeliveryReview();
+    widget.statefulDeliveryReviewControllerMediatorWidgetDelegate.onRefreshPaymentMethod = (paymentMethod) {
+      _repurchasePaymentParameterModalDialogPageDelegate.onUpdatePaymentMethod(paymentMethod);
+    };
+    widget.statefulDeliveryReviewControllerMediatorWidgetDelegate.onRefreshCouponId = (couponId) {
+      _repurchasePaymentParameterModalDialogPageDelegate.onUpdateCoupon(couponId);
+    };
   }
 
   @override
@@ -199,7 +247,29 @@ class _StatefulDeliveryReviewControllerMediatorWidgetState extends State<_Statef
     widget.deliveryReviewController.repurchaseControllerContentDelegate.setRepurchaseDelegate(
       Injector.locator<RepurchaseDelegateFactory>().generateRepurchaseDelegate(
         onGetBuildContext: () => context,
-        onGetErrorProvider: () => Injector.locator<ErrorProvider>()
+        onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
+        onBeginRepurchase: (repurchaseAction) {
+          DialogHelper.showModalBottomDialogPage<int, int>(
+            context: context,
+            modalDialogPageBuilder: (context, parameter) => PaymentParameterModalDialogPage(
+              paymentParameterModalDialogPageParameter: PaymentParameterModalDialogPageParameter(
+                paymentParameterModalDialogPageDelegate: _repurchasePaymentParameterModalDialogPageDelegate,
+                onGotoSelectPaymentMethodPage: (paymentMethodSettlingId) {
+                  PageRestorationHelper.toPaymentMethodPage(context, paymentMethodSettlingId);
+                },
+                onGotoSelectCouponPage: (couponId) {
+                  PageRestorationHelper.toCouponPage(context, couponId);
+                },
+                onProcessPaymentParameter: (paymentMethodSettlingId, couponId) {
+                  repurchaseAction.onStartRepurchase(paymentMethodSettlingId, couponId);
+                },
+                titleLabel: () => "Buy Again".tr,
+                buttonLabel: () => "Buy Again".tr
+              )
+            ),
+            parameter: 1
+          );
+        }
       )
     );
     return ModifiedScaffold(

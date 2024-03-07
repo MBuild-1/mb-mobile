@@ -9,6 +9,7 @@ import '../../domain/entity/additionalitem/additional_item.dart';
 import '../../domain/entity/additionalitem/additional_item_list_parameter.dart';
 import '../../domain/entity/additionalitem/remove_additional_item_parameter.dart';
 import '../../domain/entity/additionalitem/remove_additional_item_response.dart';
+import '../../domain/entity/address/address.dart';
 import '../../domain/entity/bucket/bucket.dart';
 import '../../domain/entity/bucket/bucket_member.dart';
 import '../../domain/entity/cart/cart.dart';
@@ -45,6 +46,7 @@ import '../controllerstate/listitemcontrollerstate/loading_list_item_controller_
 import '../controllerstate/listitemcontrollerstate/non_expanded_item_in_row_child_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/padding_container_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/row_container_list_item_controller_state.dart';
+import '../controllerstate/listitemcontrollerstate/shipping_address_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/spacing_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/virtual_spacing_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/widget_substitution_list_item_controller_state.dart';
@@ -464,6 +466,7 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
         LoadDataResult<Bucket> bucketLoadDataResult = sharedCartContainerListItemControllerState.bucketLoadDataResult();
         LoadDataResult<BucketMember> bucketMemberLoadDataResult = sharedCartContainerListItemControllerState.bucketMemberLoadDataResult();
         LoadDataResult<User> userLoadDataResult = sharedCartContainerListItemControllerState.userLoadDataResult();
+        LoadDataResult<Address> addressLoadDataResult = sharedCartContainerListItemControllerState.addressLoadDataResult();
         Bucket bucket = bucketLoadDataResult.resultIfSuccess!;
         Iterable<BucketMember> bucketMemberIterable = bucket.bucketMemberList.where(
           (bucketMember) => bucketMember.userId == userLoadDataResult.resultIfSuccess!.id
@@ -488,7 +491,7 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
                     paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
                       widgetSubstitution: (context, index) {
                         return Text(
-                          "Warehouse".tr,
+                          "Personal Stuffs".tr,
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         );
                       }
@@ -589,6 +592,26 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
             }
           )
         );
+
+        // Address in shared cart
+        if (loggedUserHostBucket == 1) {
+          listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
+            i,
+            ListItemControllerStateWrapper(
+              CompoundListItemControllerState(
+                listItemControllerState: [
+                  VirtualSpacingListItemControllerState(height: 24.0),
+                  ShippingAddressListItemControllerState(
+                    shippingLoadDataResult: addressLoadDataResult,
+                    errorProvider: oldItemType.errorProvider
+                  )
+                ]
+              )
+            ),
+            oldItemTypeList,
+            newItemTypeList
+          );
+        }
 
         // Selected Payment Method
         if (loggedUserHostBucket == 1) {
@@ -778,7 +801,7 @@ class CartItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListItem
                     paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
                       widgetSubstitution: (context, index) {
                         return Text(
-                          "Warehouse".tr,
+                          "Personal Stuffs".tr,
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         );
                       }

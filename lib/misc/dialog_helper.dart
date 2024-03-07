@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_exit_app/flutter_exit_app.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:masterbagasi/misc/ext/get_ext.dart';
@@ -21,6 +24,7 @@ import '../presentation/widget/modifiedappbar/modified_app_bar.dart';
 import '../presentation/widget/modifiedcachednetworkimage/modified_cached_network_image.dart';
 import '../presentation/widget/profile_menu_item.dart';
 import 'constant.dart';
+import 'device_helper.dart';
 import 'errorprovider/error_provider.dart';
 import 'multi_language_string.dart';
 import 'page_restoration_helper.dart';
@@ -70,6 +74,7 @@ class _DialogHelperImpl {
   void showPromptYesNoDialog({
     required BuildContext context,
     required WidgetBuilder prompt,
+    bool canBack = true,
     WidgetBuilderWithPromptCallback? yesPromptButton,
     WidgetBuilderWithPromptCallback? noPromptButton,
     VoidCallbackWithBuildContextParameter? onYesPromptButtonTap,
@@ -77,9 +82,10 @@ class _DialogHelperImpl {
   }) {
     showDialog(
       context: context,
+      barrierDismissible: canBack,
       builder: (BuildContext context) {
         return WillPopScope(
-          onWillPop: () async => true,
+          onWillPop: () async => canBack,
           child: Dialog(
             insetPadding: const EdgeInsets.all(16.0),
             child: SizedBox(
@@ -228,79 +234,179 @@ class _DialogHelperImpl {
           onWillPop: () async => true,
           child: Dialog(
             insetPadding: const EdgeInsets.all(16.0),
-            child: SizedBox(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            children: [
-                              ModifiedSvgPicture.asset(
-                                height: 100,
-                                Constant.vectorBag,
-                                overrideDefaultColorWithSingleColor: false
-                              ),
-                              const SizedBox(height: 10),
-                              SizedOutlineGradientButton(
-                                onPressed: () async {
-                                  dynamic result = await DialogHelper.showModalDialogPage<bool, String>(
-                                    context: context,
-                                    modalDialogPageBuilder: (context, parameter) => AddHostCartModalDialogPage(),
-                                  );
-                                  if (result != null) {
-                                    if (result) {
-                                      Navigator.of(context).pop();
-                                      PageRestorationHelper.toSharedCartPage(context);
-                                    }
-                                  }
-                                },
-                                text: "Be Host".tr,
-                                outlineGradientButtonType: OutlineGradientButtonType.outline,
-                                outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
-                              )
-                            ]
-                          )
-                        ),
-                        SizedBox(width: 2.w),
-                        Expanded(
-                          child: Column(
-                            children: [
-                              ModifiedSvgPicture.asset(
-                                height: 100,
-                                Constant.vectorBagBlack,
-                                overrideDefaultColorWithSingleColor: false
-                              ),
-                              const SizedBox(height: 10),
-                              SizedOutlineGradientButton(
-                                onPressed: () async {
-                                  dynamic result = await DialogHelper.showModalDialogPage<bool, String>(
-                                    context: context,
-                                    modalDialogPageBuilder: (context, parameter) => TakeFriendCartModalDialogPage(),
-                                  );
-                                  if (result != null) {
-                                    if (result) {
-                                      Navigator.of(context).pop();
-                                      showRequestJoinBucketIsSuccess(context);
-                                    }
-                                  }
-                                },
-                                text: "Take Shopping".tr,
-                                outlineGradientButtonType: OutlineGradientButtonType.solid,
-                                outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
-                              )
-                            ]
-                          )
-                        ),
-                      ]
+            child: Builder(
+              builder: (builderContext) {
+                Widget beHostDescription(bool withColor, bool withText) => Container(
+                  width: double.infinity,
+                  child: Visibility(
+                    visible: withText,
+                    maintainState: true,
+                    maintainAnimation: true,
+                    maintainSize: true,
+                    child: Text(
+                      MultiLanguageString({
+                        Constant.textEnUsLanguageKey: "Get cheap prices by inviting your friend to shop in your basket.",
+                        Constant.textInIdLanguageKey: "Dapatkan harga murah dengan mengundang temanmu belanja di keranjang kamu.",
+                      }).toEmptyStringNonNull,
+                      style: const TextStyle(
+                        fontSize: 12.0
+                      )
                     )
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8.0),
+                    color: withColor ? Constant.colorBlueGray : null
+                  ),
+                );
+                Widget descriptionContainerBackground() {
+                  return Positioned(
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.0),
+                        color: Constant.colorBlueGray
+                      ),
+                    ),
+                  );
+                }
+                Widget takeShoppingDescription(bool withColor, bool withText) => Container(
+                  width: double.infinity,
+                  child: Visibility(
+                    visible: withText,
+                    maintainState: true,
+                    maintainAnimation: true,
+                    maintainSize: true,
+                    child: Text(
+                      MultiLanguageString({
+                        Constant.textEnUsLanguageKey: "Get cheap prices by joining your friend's basket.",
+                        Constant.textInIdLanguageKey: "Dapatkan harga murah dengan bergabung di keranjang teman kamu.",
+                      }).toEmptyStringNonNull,
+                      style: const TextStyle(
+                        fontSize: 12.0
+                      )
+                    )
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8.0),
+                    color: withColor ? Constant.colorBlueGray : null
+                  ),
+                );
+                Widget descriptionStackGroup = Stack(
+                  children: [
+                    takeShoppingDescription(false, false),
+                    beHostDescription(false, false)
                   ],
-                ),
-              ),
+                );
+                return SizedBox(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  ModifiedSvgPicture.asset(
+                                    height: 100,
+                                    Constant.vectorBag,
+                                    overrideDefaultColorWithSingleColor: false
+                                  ),
+                                  const SizedBox(height: 10),
+                                  SizedOutlineGradientButton(
+                                    onPressed: () async {
+                                      dynamic result = await DialogHelper.showModalDialogPage<bool, String>(
+                                        context: context,
+                                        modalDialogPageBuilder: (context, parameter) => AddHostCartModalDialogPage(),
+                                      );
+                                      if (result != null) {
+                                        if (result) {
+                                          Navigator.of(context).pop();
+                                          PageRestorationHelper.toSharedCartPage(context);
+                                        }
+                                      }
+                                    },
+                                    text: "Be Host".tr,
+                                    outlineGradientButtonType: OutlineGradientButtonType.outline,
+                                    outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Stack(
+                                    children: [
+                                      Visibility(
+                                        visible: false,
+                                        maintainState: true,
+                                        maintainAnimation: true,
+                                        maintainSize: true,
+                                        child: descriptionStackGroup
+                                      ),
+                                      descriptionContainerBackground(),
+                                      beHostDescription(false, true),
+                                    ],
+                                  )
+                                ]
+                              )
+                            ),
+                            SizedBox(width: 2.w),
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  ModifiedSvgPicture.asset(
+                                    height: 100,
+                                    Constant.vectorBagBlack,
+                                    overrideDefaultColorWithSingleColor: false
+                                  ),
+                                  const SizedBox(height: 10),
+                                  SizedOutlineGradientButton(
+                                    onPressed: () async {
+                                      dynamic result = await DialogHelper.showModalDialogPage<bool, String>(
+                                        context: context,
+                                        modalDialogPageBuilder: (context, parameter) => TakeFriendCartModalDialogPage(),
+                                      );
+                                      if (result != null) {
+                                        if (result) {
+                                          Navigator.of(context).pop();
+                                          showRequestJoinBucketIsSuccess(context);
+                                        }
+                                      }
+                                    },
+                                    text: "Take Shopping".tr,
+                                    outlineGradientButtonType: OutlineGradientButtonType.solid,
+                                    outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Stack(
+                                    children: [
+                                      Visibility(
+                                        visible: false,
+                                        maintainState: true,
+                                        maintainAnimation: true,
+                                        maintainSize: true,
+                                        child: descriptionStackGroup
+                                      ),
+                                      descriptionContainerBackground(),
+                                      takeShoppingDescription(false, true)
+                                    ]
+                                  )
+                                ]
+                              )
+                            ),
+                          ]
+                        )
+                      ],
+                    ),
+                  ),
+                );
+              }
             ),
           ),
         );
@@ -416,6 +522,33 @@ class _DialogHelperImpl {
     );
   }
 
+  void showPromptCancelResetPassword(BuildContext context, void Function() cancelRegister) {
+    DialogHelper.showPromptYesNoDialog(
+      context: context,
+      prompt: (context) => Column(
+        children: [
+          Text("Cancel Reset Password".tr, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18), textAlign: TextAlign.center),
+          const SizedBox(height: 4),
+          Text(
+            MultiLanguageString({
+              Constant.textEnUsLanguageKey: "Are you sure you want to cancel your reset password? If you want to reset password again, you have to start from the beginning again.",
+              Constant.textInIdLanguageKey: "Apakah anda yakin ingin membatalkan atur ulang kata sandi? Jika ingin melakukan atur ulang kata sandi lagi, harus dimulai dari awal lagi langkahnya."
+            }).toEmptyStringNonNull,
+            textAlign: TextAlign.center
+          ),
+          const SizedBox(height: 4),
+        ]
+      ),
+      onYesPromptButtonTap: (_) async {
+        Get.back();
+        cancelRegister();
+      },
+      onNoPromptButtonTap: (_) async {
+        Get.back();
+      },
+    );
+  }
+
   void showPromptUnderConstruction(BuildContext context) {
     DialogHelper.showPromptOkDialog(
       context: context,
@@ -429,6 +562,43 @@ class _DialogHelperImpl {
       ),
       onOkPromptButtonTap: (_) async {
         Get.back();
+      },
+    );
+  }
+
+  void showPromptAppMustBeUpdated(BuildContext context) {
+    DialogHelper.showPromptYesNoDialog(
+      context: context,
+      canBack: false,
+      prompt: (context) => Column(
+        children: [
+          Text("Application Must Be Updated".tr, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18), textAlign: TextAlign.center),
+          const SizedBox(height: 4),
+          Text(
+            MultiLanguageString({
+              Constant.textEnUsLanguageKey: "Because there are very important things that need to be updated, so this application must be updated now.",
+              Constant.textInIdLanguageKey: "Dikarenakan ada hal yang sangat penting yang harus diupdate, jadinya aplikasi ini harus diupdate sekarang."
+            }).toEmptyStringNonNull,
+            textAlign: TextAlign.center
+          ),
+          const SizedBox(height: 4),
+        ]
+      ),
+      yesPromptButton: (context, action) {
+        return Text("Update Application".tr);
+      },
+      noPromptButton: (context, action) {
+        return Text("Exit From Application".tr);
+      },
+      onYesPromptButtonTap: (_) async {
+        DeviceHelper.updateApplication();
+      },
+      onNoPromptButtonTap: (_) async {
+        if (Platform.isIOS) {
+          FlutterExitApp.exitApp(iosForceExit: true);
+        } else {
+          FlutterExitApp.exitApp();
+        }
       },
     );
   }

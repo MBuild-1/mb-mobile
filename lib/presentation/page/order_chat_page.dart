@@ -14,20 +14,25 @@ import '../../domain/entity/chat/order/get_order_message_by_combined_order_respo
 import '../../domain/entity/chat/order/order_message.dart';
 import '../../domain/entity/chat/user_chat.dart';
 import '../../domain/entity/chat/user_message_response_wrapper.dart';
+import '../../domain/entity/order/order.dart';
+import '../../domain/entity/order/order_based_id_parameter.dart';
 import '../../domain/entity/user/getuser/get_user_parameter.dart';
 import '../../domain/entity/user/user.dart';
 import '../../domain/usecase/answer_order_conversation_use_case.dart';
 import '../../domain/usecase/answer_order_conversation_version_1_point_1_use_case.dart';
 import '../../domain/usecase/create_order_conversation_use_case.dart';
+import '../../domain/usecase/get_order_based_id_use_case.dart';
 import '../../domain/usecase/get_order_message_by_combined_order_use_case.dart';
 import '../../domain/usecase/get_order_message_by_user_use_case.dart';
 import '../../domain/usecase/get_user_use_case.dart';
 import '../../misc/constant.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/chatlistitemcontrollerstate/chat_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/no_content_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
 import '../../misc/error/empty_chat_error.dart';
 import '../../misc/error/message_error.dart';
+import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
@@ -45,6 +50,7 @@ import '../widget/modified_paged_list_view.dart';
 import '../widget/modified_scaffold.dart';
 import '../widget/modified_svg_picture.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
+import '../widget/order/order_chat_header.dart';
 import '../widget/tap_area.dart';
 import 'getx_page.dart';
 
@@ -66,6 +72,7 @@ class OrderChatPage extends RestorableGetxPage<_OrderChatPageRestoration> {
         Injector.locator<AnswerOrderConversationUseCase>(),
         Injector.locator<AnswerOrderConversationVersion1Point1UseCase>(),
         Injector.locator<GetUserUseCase>(),
+        Injector.locator<GetOrderBasedIdUseCase>()
       ),
       tag: pageName
     );
@@ -206,7 +213,10 @@ class _StatefulOrderChatControllerMediatorWidgetState extends State<_StatefulOrd
   bool _showLoadingIndicatorInTextField = false;
   String _orderConversationId = "";
   User? _loggedUser;
+  LoadDataResult<Order> _orderLoadDataResult = NoLoadDataResult<Order>();
+  LoadDataResult<User> _userLoadDataResult = NoLoadDataResult<User>();
   final DefaultChatContainerInterceptingActionListItemControllerState _defaultChatContainerInterceptingActionListItemControllerState = DefaultChatContainerInterceptingActionListItemControllerState();
+  bool _hasLoadData = false;
 
   void _scrollToDown() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -236,12 +246,9 @@ class _StatefulOrderChatControllerMediatorWidgetState extends State<_StatefulOrd
   }
 
   Future<UserMessageResponseWrapper<GetOrderMessageByCombinedOrderResponse>> getOrderMessageByCombinedOrder() async {
-    LoadDataResult<User> getUserLoadDataResult = await widget.orderChatController.getUser(
-      GetUserParameter()
-    ).map<User>((value) => value.user);
-    if (getUserLoadDataResult.isFailed) {
+    if (_userLoadDataResult.isFailed) {
       Future<LoadDataResult<GetOrderMessageByCombinedOrderResponse>> returnUserLoadFailed() async {
-        return getUserLoadDataResult.map<GetOrderMessageByCombinedOrderResponse>(
+        return _userLoadDataResult.map<GetOrderMessageByCombinedOrderResponse>(
           // This is for required argument purposes only, not will be used for further process
           (_) => GetOrderMessageByCombinedOrderResponse(
             getOrderMessageByCombinedOrderResponseMember: GetOrderMessageByCombinedOrderResponseMember(
@@ -259,12 +266,12 @@ class _StatefulOrderChatControllerMediatorWidgetState extends State<_StatefulOrd
         );
       }
       return UserMessageResponseWrapper(
-        userLoadDataResult: getUserLoadDataResult,
+        userLoadDataResult: _userLoadDataResult,
         valueLoadDataResult: await returnUserLoadFailed()
       );
     }
     return UserMessageResponseWrapper(
-      userLoadDataResult: getUserLoadDataResult,
+      userLoadDataResult: _userLoadDataResult,
       valueLoadDataResult: await widget.orderChatController.getOrderMessageByCombinedOrder(
         GetOrderMessageByCombinedOrderParameter(combinedOrderId: widget.combinedOrderId)
       )
@@ -272,6 +279,54 @@ class _StatefulOrderChatControllerMediatorWidgetState extends State<_StatefulOrd
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _helpChatListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? listItemControllerStateList) async {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _hasLoadData = false;
+      _orderLoadDataResult = IsLoadingLoadDataResult<Order>();
+      setState(() {});
+    });
+    LoadDataResult<Order> orderLoadDataResult = await widget.orderChatController.getOrderBasedId(
+      OrderBasedIdParameter(orderId: widget.combinedOrderId)
+    );
+    if (orderLoadDataResult.isFailedBecauseCancellation) {
+      return SuccessLoadDataResult(
+        value: PagingDataResult<ListItemControllerState>(
+          page: 1,
+          totalPage: 1,
+          totalItem: 1,
+          itemList: [
+            NoContentListItemControllerState()
+          ]
+        )
+      );
+    }
+    if (orderLoadDataResult.isFailed) {
+      return orderLoadDataResult.map<PagingResult<ListItemControllerState>>((_) => throw UnimplementedError());
+    }
+    _userLoadDataResult = await widget.orderChatController.getUser(
+      GetUserParameter()
+    ).map<User>((value) => value.user);
+    if (_userLoadDataResult.isFailedBecauseCancellation) {
+      return SuccessLoadDataResult(
+        value: PagingDataResult<ListItemControllerState>(
+          page: 1,
+          totalPage: 1,
+          totalItem: 1,
+          itemList: [
+            NoContentListItemControllerState()
+          ]
+        )
+      );
+    }
+    if (_userLoadDataResult.isFailed) {
+      return _userLoadDataResult.map<PagingResult<ListItemControllerState>>((_) => throw UnimplementedError());
+    }
+    void hasLoadData() {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        _hasLoadData = true;
+        _orderLoadDataResult = orderLoadDataResult;
+        setState(() {});
+      });
+    }
     UserMessageResponseWrapper<GetOrderMessageByCombinedOrderResponse> getOrderMessageByCombinedOrderResponseLoadDataResult = await getOrderMessageByCombinedOrder();
     if (getOrderMessageByCombinedOrderResponseLoadDataResult.valueLoadDataResult.isFailed) {
       dynamic e = getOrderMessageByCombinedOrderResponseLoadDataResult.valueLoadDataResult.resultIfFailed;
@@ -279,6 +334,7 @@ class _StatefulOrderChatControllerMediatorWidgetState extends State<_StatefulOrd
         _isFirstEmpty = true;
         User user = getOrderMessageByCombinedOrderResponseLoadDataResult.userLoadDataResult.resultIfSuccess!;
         _loggedUser = user;
+        hasLoadData();
         return SuccessLoadDataResult(
           value: PagingDataResult<ListItemControllerState>(
             itemList: [
@@ -304,6 +360,7 @@ class _StatefulOrderChatControllerMediatorWidgetState extends State<_StatefulOrd
         conversationId: getOrderMessageByCombinedOrderResponseLoadDataResult.valueLoadDataResult.resultIfSuccess!.getOrderMessageByCombinedOrderResponseMember.id,
       );
     }
+    hasLoadData();
     return getOrderMessageByCombinedOrderResponseLoadDataResult.valueLoadDataResult.map<PagingResult<ListItemControllerState>>((getOrderMessageByUserResponse) {
       _orderConversationId = getOrderMessageByUserResponse.getOrderMessageByCombinedOrderResponseMember.id;
       User user = getOrderMessageByCombinedOrderResponseLoadDataResult.userLoadDataResult.resultIfSuccess!;
@@ -338,6 +395,16 @@ class _StatefulOrderChatControllerMediatorWidgetState extends State<_StatefulOrd
       body: SafeArea(
         child: Column(
           children: [
+            if (_hasLoadData) ...[
+              const SizedBox(height: 1),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+                child: OrderChatHeader(
+                  orderLoadDataResult: _orderLoadDataResult,
+                  errorProvider: Injector.locator<ErrorProvider>()
+                ),
+              ),
+            ],
             Expanded(
               child: ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
                 reverse: true,

@@ -15,19 +15,24 @@ import '../../domain/entity/chat/product/get_product_message_by_product_response
 import '../../domain/entity/chat/product/product_message.dart';
 import '../../domain/entity/chat/user_chat.dart';
 import '../../domain/entity/chat/user_message_response_wrapper.dart';
+import '../../domain/entity/product/product_detail.dart';
+import '../../domain/entity/product/product_detail_parameter.dart';
 import '../../domain/entity/user/getuser/get_user_parameter.dart';
 import '../../domain/entity/user/user.dart';
 import '../../domain/usecase/answer_product_conversation_use_case.dart';
 import '../../domain/usecase/create_product_conversation_use_case.dart';
+import '../../domain/usecase/get_product_detail_use_case.dart';
 import '../../domain/usecase/get_product_message_by_product_use_case.dart';
 import '../../domain/usecase/get_product_message_by_user_use_case.dart';
 import '../../domain/usecase/get_user_use_case.dart';
 import '../../misc/constant.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/chatlistitemcontrollerstate/chat_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/no_content_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
 import '../../misc/error/empty_chat_error.dart';
 import '../../misc/error/message_error.dart';
+import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
@@ -45,6 +50,7 @@ import '../widget/modified_paged_list_view.dart';
 import '../widget/modified_scaffold.dart';
 import '../widget/modified_svg_picture.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
+import '../widget/product/product_chat_header.dart';
 import '../widget/tap_area.dart';
 import 'getx_page.dart';
 
@@ -65,6 +71,7 @@ class ProductChatPage extends RestorableGetxPage<_ProductChatPageRestoration> {
         Injector.locator<CreateProductConversationUseCase>(),
         Injector.locator<AnswerProductConversationUseCase>(),
         Injector.locator<GetUserUseCase>(),
+        Injector.locator<GetProductDetailUseCase>(),
       ),
       tag: pageName
     );
@@ -205,7 +212,10 @@ class _StatefulProductChatControllerMediatorWidgetState extends State<_StatefulP
   bool _showLoadingIndicatorInTextField = false;
   String _productConversationId = "";
   User? _loggedUser;
+  LoadDataResult<ProductDetail> _productDetailLoadDataResult = NoLoadDataResult<ProductDetail>();
+  LoadDataResult<User> _userLoadDataResult = NoLoadDataResult<User>();
   final DefaultChatContainerInterceptingActionListItemControllerState _defaultChatContainerInterceptingActionListItemControllerState = DefaultChatContainerInterceptingActionListItemControllerState();
+  bool _hasLoadData = false;
 
   void _scrollToDown() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -235,12 +245,9 @@ class _StatefulProductChatControllerMediatorWidgetState extends State<_StatefulP
   }
 
   Future<UserMessageResponseWrapper<GetProductMessageByProductResponse>> getProductMessageByProduct() async {
-    LoadDataResult<User> getUserLoadDataResult = await widget.productChatController.getUser(
-      GetUserParameter()
-    ).map<User>((value) => value.user);
-    if (getUserLoadDataResult.isFailed) {
+    if (_userLoadDataResult.isFailed) {
       Future<LoadDataResult<GetProductMessageByProductResponse>> returnUserLoadFailed() async {
-        return getUserLoadDataResult.map<GetProductMessageByProductResponse>(
+        return _userLoadDataResult.map<GetProductMessageByProductResponse>(
           // This is for required argument purposes only, not will be used for further process
           (_) => GetProductMessageByProductResponse(
             id: "",
@@ -252,12 +259,12 @@ class _StatefulProductChatControllerMediatorWidgetState extends State<_StatefulP
         );
       }
       return UserMessageResponseWrapper(
-        userLoadDataResult: getUserLoadDataResult,
+        userLoadDataResult: _userLoadDataResult,
         valueLoadDataResult: await returnUserLoadFailed()
       );
     }
     return UserMessageResponseWrapper(
-      userLoadDataResult: getUserLoadDataResult,
+      userLoadDataResult: _userLoadDataResult,
       valueLoadDataResult: await widget.productChatController.getProductMessageByProduct(
         GetProductMessageByProductParameter(productId: widget.productId)
       )
@@ -265,6 +272,54 @@ class _StatefulProductChatControllerMediatorWidgetState extends State<_StatefulP
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _helpChatListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? listItemControllerStateList) async {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _hasLoadData = false;
+      _productDetailLoadDataResult = IsLoadingLoadDataResult<ProductDetail>();
+      setState(() {});
+    });
+    LoadDataResult<ProductDetail> productDetailLoadDataResult = await widget.productChatController.getProductDetail(
+      ProductDetailParameter(productId: widget.productId)
+    );
+    if (productDetailLoadDataResult.isFailedBecauseCancellation) {
+      return SuccessLoadDataResult(
+        value: PagingDataResult<ListItemControllerState>(
+          page: 1,
+          totalPage: 1,
+          totalItem: 1,
+          itemList: [
+            NoContentListItemControllerState()
+          ]
+        )
+      );
+    }
+    if (productDetailLoadDataResult.isFailed) {
+      return productDetailLoadDataResult.map<PagingResult<ListItemControllerState>>((_) => throw UnimplementedError());
+    }
+    _userLoadDataResult = await widget.productChatController.getUser(
+      GetUserParameter()
+    ).map<User>((value) => value.user);
+    if (_userLoadDataResult.isFailedBecauseCancellation) {
+      return SuccessLoadDataResult(
+        value: PagingDataResult<ListItemControllerState>(
+          page: 1,
+          totalPage: 1,
+          totalItem: 1,
+          itemList: [
+            NoContentListItemControllerState()
+          ]
+        )
+      );
+    }
+    if (_userLoadDataResult.isFailed) {
+      return _userLoadDataResult.map<PagingResult<ListItemControllerState>>((_) => throw UnimplementedError());
+    }
+    void hasLoadData() {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        _hasLoadData = true;
+        _productDetailLoadDataResult = productDetailLoadDataResult;
+        setState(() {});
+      });
+    }
     UserMessageResponseWrapper<GetProductMessageByProductResponse> getProductMessageByProductResponseLoadDataResult = await getProductMessageByProduct();
     if (getProductMessageByProductResponseLoadDataResult.valueLoadDataResult.isFailed) {
       dynamic e = getProductMessageByProductResponseLoadDataResult.valueLoadDataResult.resultIfFailed;
@@ -272,6 +327,7 @@ class _StatefulProductChatControllerMediatorWidgetState extends State<_StatefulP
         _isFirstEmpty = true;
         User user = getProductMessageByProductResponseLoadDataResult.userLoadDataResult.resultIfSuccess!;
         _loggedUser = user;
+        hasLoadData();
         return SuccessLoadDataResult(
           value: PagingDataResult<ListItemControllerState>(
             itemList: [
@@ -297,6 +353,7 @@ class _StatefulProductChatControllerMediatorWidgetState extends State<_StatefulP
         conversationId: getProductMessageByProductResponseLoadDataResult.valueLoadDataResult.resultIfSuccess!.id,
       );
     }
+    hasLoadData();
     return getProductMessageByProductResponseLoadDataResult.valueLoadDataResult.map<PagingResult<ListItemControllerState>>((getProductMessageByUserResponse) {
       _productConversationId = getProductMessageByUserResponse.id;
       User user = getProductMessageByProductResponseLoadDataResult.userLoadDataResult.resultIfSuccess!;
@@ -331,6 +388,16 @@ class _StatefulProductChatControllerMediatorWidgetState extends State<_StatefulP
       body: SafeArea(
         child: Column(
           children: [
+            if (_hasLoadData) ...[
+              const SizedBox(height: 1),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+                child: ProductChatHeader(
+                  productDetailLoadDataResult: _productDetailLoadDataResult,
+                  errorProvider: Injector.locator<ErrorProvider>()
+                ),
+              ),
+            ],
             Expanded(
               child: ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
                 reverse: true,

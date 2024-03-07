@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../domain/entity/delivery/delivery_review.dart';
 import '../../../domain/entity/order/combined_order.dart';
+import '../../../domain/entity/order/order_shipping.dart';
 import '../../../misc/constant.dart';
 import '../../../misc/dialog_helper.dart';
 import '../../../misc/main_route_observer.dart';
@@ -18,13 +19,15 @@ class OrderConclusionItem extends StatelessWidget {
   final bool inOrderDetail;
   final void Function(CombinedOrder) onBuyAgainTap;
   final void Function() onPayOrderShipping;
+  final void Function(CombinedOrder) onConfirmArrived;
 
   const OrderConclusionItem({
     super.key,
     required this.order,
     this.inOrderDetail = false,
     required this.onBuyAgainTap,
-    required this.onPayOrderShipping
+    required this.onPayOrderShipping,
+    required this.onConfirmArrived
   });
 
   @override
@@ -69,8 +72,11 @@ class OrderConclusionItem extends StatelessWidget {
           builder: (context) {
             bool showOrderShippingPayment = false;
             if (order.orderShipping != null) {
-              if (order.orderShipping!.orderDetail.status == "pending") {
-                showOrderShippingPayment = true;
+              OrderShipping orderShipping = order.orderShipping!;
+              if (orderShipping.orderDetail.status == "pending") {
+                if (!orderShipping.isPaymentTriggered) {
+                  showOrderShippingPayment = true;
+                }
               }
             }
             if (showOrderShippingPayment) {
@@ -144,7 +150,14 @@ class OrderConclusionItem extends StatelessWidget {
                               parameter: GiveReviewDeliveryReviewDetailModalDialogPageParameter(
                                 selectedRating: 5,
                                 combinedOrderId: order.id,
-                                countryId: (order.orderProduct.userAddress?.countryId).toEmptyStringNonNull,
+                                countryId: () {
+                                  String orderAddressCountryId = (order.orderAddress?.countryId).toEmptyStringNonNull;
+                                  if (orderAddressCountryId.isNotEmptyString) {
+                                    return orderAddressCountryId;
+                                  }
+                                  String userAddressCountryId = (order.orderProduct.userAddress?.countryId).toEmptyStringNonNull;
+                                  return userAddressCountryId;
+                                }(),
                                 orderCode: order.orderCode
                               )
                             );
@@ -172,6 +185,27 @@ class OrderConclusionItem extends StatelessWidget {
               return Container();
             }
           }
+        ),
+        Builder(
+          builder: (BuildContext context) {
+            if (order.status.toLowerCase() == "sedang dikirim") {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 15),
+                  SizedOutlineGradientButton(
+                    onPressed:() => onConfirmArrived(order),
+                    text: "Confirm Arrived".tr,
+                    customPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                    outlineGradientButtonType: OutlineGradientButtonType.solid,
+                    outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
+                  )
+                ]
+              );
+            } else {
+              return Container();
+            }
+          },
         )
       ],
     );

@@ -8,8 +8,8 @@ import 'package:masterbagasi/misc/ext/string_ext.dart';
 import '../../../domain/entity/additionalitem/additional_item.dart';
 import '../../../domain/entity/cart/cart.dart';
 import '../../../domain/entity/cart/support_cart.dart';
-import '../../../domain/entity/order/create_order_version_1_point_1_parameter.dart';
-import '../../../domain/entity/order/create_order_version_1_point_1_response.dart';
+import '../../../domain/entity/order/createorderversion1point1/create_order_version_1_point_1_parameter.dart';
+import '../../../domain/entity/order/createorderversion1point1/create_order_version_1_point_1_response.dart';
 import '../../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderitem/all_required_fields_warehouse_in_order_item.dart';
 import '../../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderitem/optional_fields_warehouse_in_order_item.dart';
 import '../../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderparameter/add_warehouse_in_order_parameter.dart';
@@ -29,14 +29,14 @@ import '../../../domain/entity/order/order.dart';
 import '../../../domain/entity/order/order_based_id_parameter.dart';
 import '../../../domain/entity/order/order_paging_parameter.dart';
 import '../../../domain/entity/order/ordertransaction/order_transaction_parameter.dart';
+import '../../../domain/entity/order/ordertransaction/ordertransactionresponse/midtrans_order_transaction_response.dart';
 import '../../../domain/entity/order/ordertransaction/ordertransactionresponse/order_transaction_response.dart';
 import '../../../domain/entity/order/purchase_direct_parameter.dart';
 import '../../../domain/entity/order/purchase_direct_response.dart';
-import '../../../domain/entity/order/repurchase_parameter.dart';
+import '../../../domain/entity/order/repurchase/repurchase_parameter.dart';
 import '../../../domain/entity/order/shipping_review_order_list_parameter.dart';
 import '../../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../../misc/error/message_error.dart';
-import '../../../misc/load_data_result.dart';
 import '../../../misc/option_builder.dart';
 import '../../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../../misc/processing/dio_http_client_processing.dart';
@@ -78,7 +78,8 @@ class DefaultOrderDataSource implements OrderDataSource {
         "name" : additionalItem.name,
         "price": additionalItem.estimationPrice,
         "weight": additionalItem.estimationWeight,
-        "quantity": additionalItem.quantity
+        "quantity": additionalItem.quantity,
+        if (additionalItem.notes.isNotEmptyString) "notes": additionalItem.notes
       }
     ).toList();
     dynamic data = {
@@ -137,6 +138,8 @@ class DefaultOrderDataSource implements OrderDataSource {
     return DioHttpClientProcessing((cancelToken) {
       dynamic data = {
         "combined_order_id": repurchaseParameter.combinedOrderId,
+        if (repurchaseParameter.couponId.isNotEmptyString) "voucher_id": repurchaseParameter.couponId!,
+        if (repurchaseParameter.settlingId.isNotEmptyString) "settling_id": repurchaseParameter.settlingId,
       };
       return dio.post("/user/order/repurchase", data: data, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
         .map<Order>(onMap: (value) => value.wrapResponse().mapFromResponseToOrder());

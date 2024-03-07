@@ -1,5 +1,5 @@
-import '../../../domain/entity/order/create_order_version_1_point_1_parameter.dart';
-import '../../../domain/entity/order/create_order_version_1_point_1_response.dart';
+import '../../../domain/entity/order/createorderversion1point1/create_order_version_1_point_1_parameter.dart';
+import '../../../domain/entity/order/createorderversion1point1/create_order_version_1_point_1_response.dart';
 import '../../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderparameter/modify_warehouse_in_order_parameter.dart';
 import '../../../domain/entity/order/arrived_order_request.dart';
 import '../../../domain/entity/order/arrived_order_response.dart';
@@ -13,7 +13,7 @@ import '../../../domain/entity/order/ordertransaction/order_transaction_paramete
 import '../../../domain/entity/order/ordertransaction/ordertransactionresponse/order_transaction_response.dart';
 import '../../../domain/entity/order/purchase_direct_parameter.dart';
 import '../../../domain/entity/order/purchase_direct_response.dart';
-import '../../../domain/entity/order/repurchase_parameter.dart';
+import '../../../domain/entity/order/repurchase/repurchase_parameter.dart';
 import '../../../domain/entity/order/shipping_review_order_list_parameter.dart';
 import '../../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../../misc/processing/future_processing.dart';

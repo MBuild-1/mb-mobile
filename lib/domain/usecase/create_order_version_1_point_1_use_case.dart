@@ -1,8 +1,8 @@
 import '../../misc/load_data_result.dart';
 import '../../misc/processing/future_processing.dart';
 import '../entity/order/create_order_parameter.dart';
-import '../entity/order/create_order_version_1_point_1_parameter.dart';
-import '../entity/order/create_order_version_1_point_1_response.dart';
+import '../entity/order/createorderversion1point1/create_order_version_1_point_1_parameter.dart';
+import '../entity/order/createorderversion1point1/create_order_version_1_point_1_response.dart';
 import '../entity/order/order.dart';
 import '../repository/order_repository.dart';
 

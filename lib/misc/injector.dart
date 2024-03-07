@@ -45,6 +45,8 @@ import '../data/datasource/searchdatasource/default_search_data_source.dart';
 import '../data/datasource/searchdatasource/search_data_source.dart';
 import '../data/datasource/userdatasource/default_user_data_source.dart';
 import '../data/datasource/userdatasource/user_data_source.dart';
+import '../data/datasource/versioningdatasource/default_versioning_data_source.dart';
+import '../data/datasource/versioningdatasource/versioning_data_source.dart';
 import '../data/repository/default_address_repository.dart';
 import '../data/repository/default_banner_repository.dart';
 import '../data/repository/default_bucket_repository.dart';
@@ -62,6 +64,7 @@ import '../data/repository/default_product_discussion_repository.dart';
 import '../data/repository/default_product_repository.dart';
 import '../data/repository/default_search_repository.dart';
 import '../data/repository/default_user_repository.dart';
+import '../data/repository/default_versioning_repository.dart';
 import '../domain/dummy/addressdummy/address_dummy.dart';
 import '../domain/dummy/addressdummy/address_user_dummy.dart';
 import '../domain/dummy/addressdummy/country_dummy.dart';
@@ -96,6 +99,7 @@ import '../domain/repository/product_discussion_repository.dart';
 import '../domain/repository/product_repository.dart';
 import '../domain/repository/search_repository.dart';
 import '../domain/repository/user_repository.dart';
+import '../domain/repository/versioning_repository.dart';
 import '../domain/usecase/add_additional_item_use_case.dart';
 import '../domain/usecase/add_address_use_case.dart';
 import '../domain/usecase/add_host_cart_use_case.dart';
@@ -116,12 +120,14 @@ import '../domain/usecase/auth_identity_change_verify_otp_use_case.dart';
 import '../domain/usecase/auth_identity_send_verify_otp_use_case.dart';
 import '../domain/usecase/auth_identity_use_case.dart';
 import '../domain/usecase/auth_identity_verify_otp_use_case.dart';
+import '../domain/usecase/all_versioning_use_case.dart';
 import '../domain/usecase/change_additional_item_use_case.dart';
 import '../domain/usecase/change_address_use_case.dart';
 import '../domain/usecase/change_password_use_case.dart';
 import '../domain/usecase/check_reset_password_use_case.dart';
 import '../domain/usecase/checkout_bucket_version_1_point_1_use_case.dart';
 import '../domain/usecase/create_order_version_1_point_1_use_case.dart';
+import '../domain/usecase/get_country_based_country_code.dart';
 import '../domain/usecase/get_product_bundle_detail_by_slug_use_case.dart';
 import '../domain/usecase/get_product_detail_by_slug_use_case.dart';
 import '../domain/usecase/help_chat_template_use_case.dart';
@@ -232,7 +238,9 @@ import '../domain/usecase/get_wishlist_list_use_case.dart';
 import '../domain/usecase/get_wishlist_paging_use_case.dart';
 import '../domain/usecase/give_review_delivery_review_detail_use_case.dart';
 import '../domain/usecase/leave_bucket_use_case.dart';
+import '../domain/usecase/login_or_register_with_apple_via_callback_use_case.dart';
 import '../domain/usecase/login_use_case.dart';
+import '../domain/usecase/login_with_apple_use_case.dart';
 import '../domain/usecase/login_with_google_use_case.dart';
 import '../domain/usecase/logout_use_case.dart';
 import '../domain/usecase/modify_pin_use_case.dart';
@@ -246,6 +254,7 @@ import '../domain/usecase/read_transaction_notification_use_case.dart';
 import '../domain/usecase/register_first_step_use_case.dart';
 import '../domain/usecase/register_second_step_use_case.dart';
 import '../domain/usecase/register_use_case.dart';
+import '../domain/usecase/register_with_apple_use_case.dart';
 import '../domain/usecase/register_with_google_use_case.dart';
 import '../domain/usecase/remove_additional_item_use_case.dart';
 import '../domain/usecase/remove_address_use_case.dart';
@@ -266,11 +275,13 @@ import '../domain/usecase/search_use_case.dart';
 import '../domain/usecase/send_delete_account_otp_use_case.dart';
 import '../domain/usecase/send_register_otp_use_case.dart';
 import '../domain/usecase/share_product_use_case.dart';
+import '../domain/usecase/shipper_address_use_case.dart';
 import '../domain/usecase/shipping_payment_use_case.dart';
 import '../domain/usecase/show_bucket_by_id_use_case.dart';
 import '../domain/usecase/store_keyword_for_search_history_use_case.dart';
 import '../domain/usecase/store_search_last_seen_history_use_case.dart';
 import '../domain/usecase/take_friend_cart_use_case.dart';
+import '../domain/usecase/third_party_login_visibility_use_case.dart';
 import '../domain/usecase/trigger_bucket_ready_use_case.dart';
 import '../domain/usecase/update_cart_quantity_use_case.dart';
 import '../domain/usecase/update_current_selected_address_use_case.dart';
@@ -279,6 +290,8 @@ import '../domain/usecase/update_read_status_order_conversation_use_case.dart';
 import '../domain/usecase/update_read_status_product_conversation_use_case.dart';
 import '../domain/usecase/verify_delete_account_otp_use_case.dart';
 import '../domain/usecase/verify_register_use_case.dart';
+import '../domain/usecase/versioning_based_filter_use_case.dart';
+import '../domain/usecase/whatsapp_forgot_password_use_case.dart';
 import 'additionalloadingindicatorchecker/cart_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/coupon_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/feed_sub_additional_paging_result_parameter_checker.dart';
@@ -293,6 +306,7 @@ import 'additionalloadingindicatorchecker/product_detail_additional_paging_resul
 import 'additionalloadingindicatorchecker/shared_cart_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/take_friend_cart_additional_paging_result_parameter_checker.dart';
 import 'additionalloadingindicatorchecker/wishlist_sub_additional_paging_result_parameter_checker.dart';
+import 'controllercontentdelegate/arrived_order_controller_content_delegate.dart';
 import 'controllercontentdelegate/product_brand_favorite_controller_content_delegate.dart';
 import 'controllercontentdelegate/repurchase_controller_content_delegate.dart';
 import 'controllercontentdelegate/shared_cart_controller_content_delegate.dart';
@@ -327,6 +341,7 @@ class _Injector {
         getProductBrandListUseCase: locator(),
         getProductBundleListUseCase: locator(),
         getProductBundleHighlightUseCase: locator(),
+        getProductBundlePagingUseCase: locator(),
         getSnackForLyingAroundListUseCase: locator(),
         getBestsellerInMasterbagasiListUseCase: locator(),
         getSelectedFashionBrandsListUseCase: locator(),
@@ -566,6 +581,11 @@ class _Injector {
         checkBucketUseCase: locator()
       )
     );
+    locator.registerFactory<ArrivedOrderControllerContentDelegate>(
+      () => ArrivedOrderControllerContentDelegate(
+        arrivedOrderUseCase: locator()
+      )
+    );
 
     // Controller Delegate Factory
     locator.registerLazySingleton<WishlistAndCartDelegateFactory>(
@@ -580,6 +600,9 @@ class _Injector {
     locator.registerLazySingleton<SharedCartDelegateFactory>(
       () => SharedCartDelegateFactory()
     );
+    locator.registerLazySingleton<ArrivedOrderDelegateFactory>(
+      () => ArrivedOrderDelegateFactory()
+    );
 
     // Default Load Data Result Widget
     locator.registerLazySingleton<DefaultLoadDataResultWidget>(() => MainDefaultLoadDataResultWidget());
@@ -587,12 +610,14 @@ class _Injector {
     // Use Case
     locator.registerLazySingleton<LoginUseCase>(() => LoginUseCase(userRepository: locator()));
     locator.registerLazySingleton<LoginWithGoogleUseCase>(() => LoginWithGoogleUseCase(userRepository: locator()));
+    locator.registerLazySingleton<LoginWithAppleUseCase>(() => LoginWithAppleUseCase(userRepository: locator()));
     locator.registerLazySingleton<RegisterUseCase>(() => RegisterUseCase(userRepository: locator()));
     locator.registerLazySingleton<RegisterFirstStepUseCase>(() => RegisterFirstStepUseCase(userRepository: locator()));
     locator.registerLazySingleton<VerifyRegisterUseCase>(() => VerifyRegisterUseCase(userRepository: locator()));
     locator.registerLazySingleton<SendRegisterOtpUseCase>(() => SendRegisterOtpUseCase(userRepository: locator()));
     locator.registerLazySingleton<RegisterSecondStepUseCase>(() => RegisterSecondStepUseCase(userRepository: locator()));
     locator.registerLazySingleton<RegisterWithGoogleUseCase>(() => RegisterWithGoogleUseCase(userRepository: locator()));
+    locator.registerLazySingleton<RegisterWithAppleUseCase>(() => RegisterWithAppleUseCase(userRepository: locator()));
     locator.registerLazySingleton<SendDeleteAccountOtpUseCase>(() => SendDeleteAccountOtpUseCase(userRepository: locator()));
     locator.registerLazySingleton<VerifyDeleteAccountOtpUseCase>(() => VerifyDeleteAccountOtpUseCase(userRepository: locator()));
     locator.registerLazySingleton<AuthIdentityChangeInputUseCase>(() => AuthIdentityChangeInputUseCase(userRepository: locator()));
@@ -608,6 +633,7 @@ class _Injector {
     locator.registerLazySingleton<GetUserUseCase>(() => GetUserUseCase(userRepository: locator()));
     locator.registerLazySingleton<EditUserUseCase>(() => EditUserUseCase(userRepository: locator()));
     locator.registerLazySingleton<ForgotPasswordUseCase>(() => ForgotPasswordUseCase(userRepository: locator()));
+    locator.registerLazySingleton<WhatsappForgotPasswordUseCase>(() => WhatsappForgotPasswordUseCase(userRepository: locator()));
     locator.registerLazySingleton<CheckResetPasswordUseCase>(() => CheckResetPasswordUseCase(userRepository: locator()));
     locator.registerLazySingleton<ResetPasswordUseCase>(() => ResetPasswordUseCase(userRepository: locator()));
     locator.registerLazySingleton<GetProductBrandListUseCase>(() => GetProductBrandListUseCase(productRepository: locator()));
@@ -692,6 +718,7 @@ class _Injector {
     locator.registerLazySingleton<UpdateCartQuantityUseCase>(() => UpdateCartQuantityUseCase(cartRepository: locator()));
     locator.registerLazySingleton<AddHostCartUseCase>(() => AddHostCartUseCase(cartRepository: locator()));
     locator.registerLazySingleton<TakeFriendCartUseCase>(() => TakeFriendCartUseCase(cartRepository: locator()));
+    locator.registerLazySingleton<GetCountryBasedCountryCodeUseCase>(() => GetCountryBasedCountryCodeUseCase(addressRepository: locator()));
     locator.registerLazySingleton<GetCurrentSelectedAddressUseCase>(() => GetCurrentSelectedAddressUseCase(addressRepository: locator()));
     locator.registerLazySingleton<GetAddressBasedIdUseCase>(() => GetAddressBasedIdUseCase(addressRepository: locator()));
     locator.registerLazySingleton<GetAddressListUseCase>(() => GetAddressListUseCase(addressRepository: locator()));
@@ -768,6 +795,11 @@ class _Injector {
     locator.registerLazySingleton<PaymentMethodListUseCase>(() => PaymentMethodListUseCase(paymentRepository: locator()));
     locator.registerLazySingleton<PaymentInstructionUseCase>(() => PaymentInstructionUseCase(paymentRepository: locator()));
     locator.registerLazySingleton<ShippingPaymentUseCase>(() => ShippingPaymentUseCase(paymentRepository: locator()));
+    locator.registerLazySingleton<ShipperAddressUseCase>(() => ShipperAddressUseCase(addressRepository: locator()));
+    locator.registerLazySingleton<AllVersioningUseCase>(() => AllVersioningUseCase(versioningRepository: locator()));
+    locator.registerLazySingleton<VersioningBasedFilterUseCase>(() => VersioningBasedFilterUseCase(versioningRepository: locator()));
+    locator.registerLazySingleton<ThirdPartyLoginVisibilityUseCase>(() => ThirdPartyLoginVisibilityUseCase(versioningRepository: locator()));
+    locator.registerLazySingleton<LoginOrRegisterWithAppleViaCallbackUseCase>(() => LoginOrRegisterWithAppleViaCallbackUseCase(userRepository: locator()));
 
     // Repository
     locator.registerLazySingleton<UserRepository>(() => DefaultUserRepository(userDataSource: locator()));
@@ -796,6 +828,7 @@ class _Injector {
     locator.registerLazySingleton<BucketRepository>(() => DefaultBucketRepository(bucketDataSource: locator()));
     locator.registerLazySingleton<SearchRepository>(() => DefaultSearchRepository(searchDataSource: locator()));
     locator.registerLazySingleton<PaymentRepository>(() => DefaultPaymentRepository(paymentDataSource: locator()));
+    locator.registerLazySingleton<VersioningRepository>(() => DefaultVersioningRepository(versioningDataSource: locator()));
 
     // Data Sources
     locator.registerLazySingleton<UserDataSource>(() => DefaultUserDataSource(dio: locator()));
@@ -835,6 +868,7 @@ class _Injector {
       )
     );
     locator.registerLazySingleton<PaymentDataSource>(() => DefaultPaymentDataSource(dio: locator()));
+    locator.registerLazySingleton<VersioningDataSource>(() => DefaultVersioningDataSource(dio: locator()));
 
     // Dio
     locator.registerLazySingleton<Dio>(() => DioHttpClient.of());

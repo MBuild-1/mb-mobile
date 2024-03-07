@@ -12,6 +12,7 @@ import '../../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../../widget/field.dart';
 import '../../widget/modified_text_field.dart';
 import '../../widget/rx_consumer.dart';
+import '../../widget/sized_outline_gradient_button_app_bar_header.dart';
 import 'modal_dialog_page.dart';
 
 class InputValueModalDialogPage extends ModalDialogPage<InputValueModalDialogController> {
@@ -79,24 +80,8 @@ class __StatefulInputValueControllerMediatorWidgetState extends State<_StatefulI
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            IgnorePointer(
-              child: ExcludeFocus(
-                child: SizedOutlineGradientButton(
-                  onPressed: () {},
-                  text: widget.inputValueModalDialogPageParameter.title(),
-                  outlineGradientButtonType: OutlineGradientButtonType.outline,
-                  outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
-                  customGradientButtonVariation: (outlineGradientButtonType) {
-                    return CustomGradientButtonVariation(
-                      outlineGradientButtonType: outlineGradientButtonType,
-                      textStyle: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.bold
-                      )
-                    );
-                  },
-                ),
-              ),
+            SizedOutlineGradientButtonAppBarHeader(
+              text: widget.inputValueModalDialogPageParameter.title(),
             ),
             const SizedBox(height: 20),
             Text(widget.inputValueModalDialogPageParameter.inputTitle()),

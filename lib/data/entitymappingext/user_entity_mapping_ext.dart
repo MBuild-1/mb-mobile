@@ -5,8 +5,11 @@ import '../../domain/entity/changepassword/change_password_response.dart';
 import '../../domain/entity/deleteaccount/senddeleteaccountotp/send_delete_account_otp_response.dart';
 import '../../domain/entity/deleteaccount/verifydeleteaccountotp/verify_delete_account_otp_response.dart';
 import '../../domain/entity/forgotpassword/forgot_password_response.dart';
+import '../../domain/entity/forgotpassword/whatsapp/whatsapp_forgot_password_response.dart';
 import '../../domain/entity/login/login_response.dart';
+import '../../domain/entity/login/login_with_apple_response.dart';
 import '../../domain/entity/login/login_with_google_response.dart';
+import '../../domain/entity/loginorregister/login_or_register_with_apple_via_callback_response.dart';
 import '../../domain/entity/logout/logout_response.dart';
 import '../../domain/entity/pin/checkactivepin/check_active_pin_response.dart';
 import '../../domain/entity/pin/modifypin/modifypinresponse/change_modify_pin_response.dart';
@@ -18,6 +21,7 @@ import '../../domain/entity/pin/modifypin/modifypinresponse/validate_while_login
 import '../../domain/entity/register/register_first_step_response.dart';
 import '../../domain/entity/register/register_response.dart';
 import '../../domain/entity/register/register_second_step_response.dart';
+import '../../domain/entity/register/register_with_apple_response.dart';
 import '../../domain/entity/register/register_with_google_response.dart';
 import '../../domain/entity/register/sendregisterotp/sendregisterotpparameter/email_send_register_otp_parameter.dart';
 import '../../domain/entity/register/sendregisterotp/sendregisterotpparameter/send_register_otp_parameter.dart';
@@ -28,6 +32,8 @@ import '../../domain/entity/register/sendregisterotp/sendregisterotpresponse/wa_
 import '../../domain/entity/register/verify_register_response.dart';
 import '../../domain/entity/resetpassword/check/check_reset_password_response.dart';
 import '../../domain/entity/resetpassword/reset_password_response.dart';
+import '../../domain/entity/resetpassword/whatsapp/check/whatsapp_check_reset_password_response.dart';
+import '../../domain/entity/resetpassword/whatsapp/whatsapp_reset_password_response.dart';
 import '../../domain/entity/user/edituser/edit_user_response.dart';
 import '../../domain/entity/user/getuser/get_user_response.dart';
 import '../../domain/entity/user/user.dart';
@@ -51,6 +57,15 @@ extension UserEntityMappingExt on ResponseWrapper {
 
   LoginWithGoogleResponse mapFromResponseToLoginWithGoogleResponse() {
     return LoginWithGoogleResponse(
+      userId: response["user"]["id"],
+      token: response["access_token"],
+      tokenType: response["token_type"],
+      expiresIn: response["expires_in"]
+    );
+  }
+
+  LoginWithAppleResponse mapFromResponseToLoginWithAppleResponse() {
+    return LoginWithAppleResponse(
       userId: response["user"]["id"],
       token: response["access_token"],
       tokenType: response["token_type"],
@@ -115,6 +130,15 @@ extension UserEntityMappingExt on ResponseWrapper {
     );
   }
 
+  RegisterWithAppleResponse mapFromResponseToRegisterWithAppleResponse() {
+    return RegisterWithAppleResponse(
+      userId: response["user"]["id"],
+      token: response["access_token"],
+      tokenType: response["token_type"],
+      expiresIn: response["expires_in"]
+    );
+  }
+
   LogoutResponse mapFromResponseToLogoutResponse() {
     return LogoutResponse();
   }
@@ -165,12 +189,24 @@ extension UserEntityMappingExt on ResponseWrapper {
     return ForgotPasswordResponse();
   }
 
+  WhatsappForgotPasswordResponse mapFromResponseToWhatsappForgotPasswordResponse() {
+    return WhatsappForgotPasswordResponse();
+  }
+
   CheckResetPasswordResponse mapFromResponseToCheckResetPasswordResponse() {
     return CheckResetPasswordResponse();
   }
 
+  WhatsappCheckResetPasswordResponse mapFromResponseToWhatsappCheckResetPasswordResponse() {
+    return WhatsappCheckResetPasswordResponse();
+  }
+
   ResetPasswordResponse mapFromResponseToResetPasswordResponse() {
     return ResetPasswordResponse();
+  }
+
+  WhatsappResetPasswordResponse mapFromResponseToWhatsappResetPasswordResponse() {
+    return WhatsappResetPasswordResponse();
   }
 
   SendDeleteAccountOtpResponse mapFromResponseToSendDeleteAccountOtpResponse() {
@@ -200,6 +236,12 @@ extension UserEntityMappingExt on ResponseWrapper {
   AuthIdentityChangeResponse mapFromResponseToAuthIdentityChangeResponse() {
     return AuthIdentityChangeResponse();
   }
+
+  LoginOrRegisterWithAppleViaCallbackResponse mapFromResponseToLoginOrRegisterWithAppleViaCallbackResponse() {
+    return LoginOrRegisterWithAppleViaCallbackResponse(
+      loginResponse: ResponseWrapper(response).mapFromResponseToLoginResponse()
+    );
+  }
 }
 
 extension UserDetailEntityMappingExt on ResponseWrapper {
@@ -215,6 +257,9 @@ extension UserDetailEntityMappingExt on ResponseWrapper {
   }
 
   UserProfile mapFromResponseToUserProfile() {
+    if (response == null) {
+      return NoUserProfile();
+    }
     return UserProfile(
       id: response["id"],
       userId: response["user_id"],

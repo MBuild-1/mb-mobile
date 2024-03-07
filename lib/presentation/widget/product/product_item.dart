@@ -44,6 +44,9 @@ abstract class ProductItem extends StatelessWidget {
   bool get showPicture => true;
 
   @protected
+  bool get showBadge => true;
+
+  @protected
   bool get showContent => true;
 
   @protected
@@ -165,7 +168,9 @@ abstract class ProductItem extends StatelessWidget {
                               imageUrl: productAppearanceData.imageUrl.toEmptyStringNonNull,
                             )
                           ),
-                          ..._productBadge()
+                          if (showBadge) ...[
+                            ..._productBadge()
+                          ]
                         ],
                       )
                     ),

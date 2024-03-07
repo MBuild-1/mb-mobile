@@ -8,6 +8,7 @@ import '../../controllerstate/listitemcontrollerstate/additionalitemlistitemcont
 import '../../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/cart_header_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/cartlistitemcontrollerstate/separatedcartcontainerlistitemcontrollerstate/warehouse_separated_container_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/compound_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/divider_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/padding_container_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/spacing_list_item_controller_state.dart';
@@ -81,7 +82,10 @@ class WarehouseSeparatedCartItemTypeListSubInterceptor extends SeparatedCartItem
         ListItemControllerState newAdditionalItemListControllerState = CompoundListItemControllerState(
           listItemControllerState: [
             if (k > 0) ...[
-              VirtualSpacingListItemControllerState(height: 14),
+              PaddingContainerListItemControllerState(
+                padding: EdgeInsets.symmetric(horizontal: padding()),
+                paddingChildListItemControllerState: DividerListItemControllerState()
+              )
             ],
             WidgetSubstitutionWithInjectionListItemControllerState(
               widgetSubstitutionWithInjection: (context, index, widgetList) {

@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../domain/entity/additionalitem/additional_item.dart';
 import '../../../domain/entity/order/combined_order.dart';
+import '../../../domain/entity/order/order.dart';
 import '../../../domain/entity/order/order_product_detail.dart';
 import '../../../misc/constant.dart';
 import '../../../misc/date_util.dart';
@@ -13,6 +14,7 @@ import '../../../misc/dialog_helper.dart';
 import '../../../misc/multi_language_string.dart';
 import '../../../misc/page_restoration_helper.dart';
 import '../../../misc/web_helper.dart';
+import '../../page/order_detail_page.dart';
 import '../additional_item_widget.dart';
 import '../button/custombutton/sized_outline_gradient_button.dart';
 import '../colorful_chip.dart';
@@ -20,6 +22,7 @@ import '../modified_divider.dart';
 import '../modified_svg_picture.dart';
 import 'order_conclusion_item.dart';
 import 'order_product_detail_item.dart';
+import 'order_type.dart';
 
 abstract class OrderItem extends StatelessWidget {
   final CombinedOrder order;
@@ -64,7 +67,9 @@ abstract class OrderItem extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(orderProductDetailList.isEmpty ? "Warehouse".tr : "Shopping".tr, style: const TextStyle(fontWeight: FontWeight.bold)),
+                                  OrderType(
+                                    combinedOrder: order
+                                  ),
                                   Text(DateUtil.standardDateFormat7.format(order.createdAt))
                                 ]
                               ),
@@ -97,7 +102,7 @@ abstract class OrderItem extends StatelessWidget {
                             result.add(const SizedBox(height: 12));
                             if (allIsNotEmpty) {
                               result.addAll([
-                                Text("Warehouse".tr),
+                                Text("Personal Stuffs".tr),
                                 SizedBox(height: titleAndContentHeight)
                               ]);
                             }
@@ -137,19 +142,6 @@ abstract class OrderItem extends StatelessWidget {
                                 )
                               );
                             }
-                            if (order.status.toLowerCase() == "sedang dikirim") {
-                              addRowWidget(
-                                Expanded(
-                                  child: SizedOutlineGradientButton(
-                                    onPressed:() => onConfirmArrived(order),
-                                    text: "Confirm Arrived".tr,
-                                    customPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                                    outlineGradientButtonType: OutlineGradientButtonType.solid,
-                                    outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
-                                  )
-                                )
-                              );
-                            }
                             if (rowWidget.isEmpty) {
                               return const SizedBox();
                             }
@@ -166,7 +158,12 @@ abstract class OrderItem extends StatelessWidget {
                         OrderConclusionItem(
                           order: order,
                           onBuyAgainTap: onBuyAgainTap,
-                          onPayOrderShipping: () => PageRestorationHelper.toOrderDetailPage(context, order.id),
+                          onPayOrderShipping: () => PageRestorationHelper.toOrderDetailPageWithParameter(
+                            context, RedirectToShippingPaymentOrderDetailPageParameter(
+                              combinedOrderId: order.id
+                            )
+                          ),
+                          onConfirmArrived: onConfirmArrived
                         ),
                       ],
                     ),

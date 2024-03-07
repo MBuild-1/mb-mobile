@@ -7,8 +7,9 @@ import '../../wishlist/support_wishlist.dart';
 import '../product.dart';
 import '../product_appearance_data.dart';
 import '../productvariant/product_variant.dart';
+import '../support_product_indicator.dart';
 
-class ProductEntry implements ProductEntryAppearanceData, SupportCart, SupportWishlist, SupportOrderProduct, SupportDiscussion, SupportSearch {
+class ProductEntry implements ProductEntryAppearanceData, SupportCart, SupportWishlist, SupportOrderProduct, SupportDiscussion, SupportSearch, SupportProductIndicator {
   String id;
   @override
   String productId;
@@ -65,6 +66,15 @@ class ProductEntry implements ProductEntryAppearanceData, SupportCart, SupportWi
 
   @override
   String get discussionImageUrl => imageUrl;
+
+  @override
+  String get productIndicatorTitle => name;
+
+  @override
+  double get productIndicatorPrice => sellingPrice.toDouble();
+
+  @override
+  String get productIndicatorImageUrl => imageUrl;
 
   ProductEntry({
     required this.id,

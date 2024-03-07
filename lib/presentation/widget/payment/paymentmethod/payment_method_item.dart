@@ -30,7 +30,7 @@ abstract class PaymentMethodItem extends StatelessWidget {
           child: Row(
             children: [
               SizedBox(
-                height: 20,
+                height: 50,
                 child: AspectRatio(
                   aspectRatio: 1.0,
                   child: ClipRRect(
@@ -40,7 +40,7 @@ abstract class PaymentMethodItem extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: 20.0),
+              const SizedBox(width: 22.0),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -57,7 +57,15 @@ abstract class PaymentMethodItem extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 13.0
                       )
-                    )
+                    ),
+                    if (paymentMethod.taxRate != null) ...[
+                      Text(
+                        "${"Administrative Fee".tr}: ${paymentMethod.taxRate}%",
+                        style: const TextStyle(
+                          fontSize: 13.0
+                        )
+                      )
+                    ]
                   ],
                 ),
               )

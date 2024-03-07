@@ -2,8 +2,9 @@ import '../../cart/support_cart.dart';
 import '../../discussion/support_discussion.dart';
 import '../../order/support_order_product.dart';
 import '../../wishlist/support_wishlist.dart';
+import '../support_product_indicator.dart';
 
-class ProductBundle implements SupportCart, SupportWishlist, SupportOrderProduct, SupportDiscussion {
+class ProductBundle implements SupportCart, SupportWishlist, SupportOrderProduct, SupportDiscussion, SupportProductIndicator {
   String id;
   String name;
   String slug;
@@ -59,6 +60,15 @@ class ProductBundle implements SupportCart, SupportWishlist, SupportOrderProduct
 
   @override
   String get discussionImageUrl => imageUrl;
+
+  @override
+  String get productIndicatorTitle => name;
+
+  @override
+  double get productIndicatorPrice => price;
+
+  @override
+  String get productIndicatorImageUrl => imageUrl;
 
   ProductBundle({
     required this.id,

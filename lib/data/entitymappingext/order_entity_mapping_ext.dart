@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:masterbagasi/data/entitymappingext/additional_item_entity_mapping_ext.dart';
 import 'package:masterbagasi/data/entitymappingext/address_entity_mapping_ext.dart';
 import 'package:masterbagasi/data/entitymappingext/coupon_entity_mapping_ext.dart';
@@ -10,13 +8,18 @@ import 'package:masterbagasi/data/entitymappingext/user_entity_mapping_ext.dart'
 import 'package:masterbagasi/misc/ext/response_wrapper_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
-import '../../domain/entity/order/create_order_version_1_point_1_response.dart';
+import '../../domain/entity/order/createorderversion1point1/create_order_version_1_point_1_response.dart';
+import '../../domain/entity/order/createorderversion1point1/responsetype/default_create_order_response_type.dart';
+import '../../domain/entity/order/createorderversion1point1/responsetype/no_create_order_response_type.dart';
+import '../../domain/entity/order/createorderversion1point1/responsetype/only_warehouse_create_order_response_type.dart';
+import '../../domain/entity/order/createorderversion1point1/responsetype/paypal_create_order_response_type.dart';
 import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderresponse/add_warehouse_in_order_response.dart';
 import '../../domain/entity/order/arrived_order_response.dart';
 import '../../domain/entity/order/combined_order.dart';
 import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderresponse/change_warehouse_in_order_response.dart';
 import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderresponse/remove_warehouse_in_order_response.dart';
 import '../../domain/entity/order/order.dart';
+import '../../domain/entity/order/order_address.dart';
 import '../../domain/entity/order/order_detail.dart';
 import '../../domain/entity/order/order_product.dart';
 import '../../domain/entity/order/order_product_detail.dart';
@@ -26,18 +29,24 @@ import '../../domain/entity/order/order_purchasing.dart';
 import '../../domain/entity/order/order_shipping.dart';
 import '../../domain/entity/order/order_summary.dart';
 import '../../domain/entity/order/ordertracking/order_tracking.dart';
+import '../../domain/entity/order/ordertracking/order_tracking_detail.dart';
 import '../../domain/entity/order/ordertracking/order_tracking_location.dart';
 import '../../domain/entity/order/ordertracking/order_tracking_location_address.dart';
-import '../../domain/entity/order/ordertransaction/ordertransactionsummary/order_transaction_summary.dart';
+import '../../domain/entity/order/ordertransaction/order_transaction_status_code_and_status_message.dart';
 import '../../domain/entity/order/ordertransaction/ordertransactionresponse/order_transaction_response.dart';
+import '../../domain/entity/order/ordertransaction/ordertransactionresponse/paypal_order_transaction_response.dart';
+import '../../domain/entity/order/ordertransaction/ordertransactionsummary/order_transaction_summary.dart';
+import '../../domain/entity/order/ordertransaction/ordertransactionresponse/midtrans_order_transaction_response.dart';
 import '../../domain/entity/order/purchase_direct_response.dart';
+import '../../domain/entity/order/repurchase/repurchase_response.dart';
+import '../../domain/entity/order/repurchase/responsetype/default_repurchase_response_type.dart';
+import '../../domain/entity/order/repurchase/responsetype/no_repurchase_response_type.dart';
+import '../../domain/entity/order/repurchase/responsetype/only_warehouse_repurchase_response_type.dart';
 import '../../domain/entity/order/support_order_product.dart';
-import '../../domain/entity/payment/paymentinstruction/payment_instruction_group.dart';
-import '../../domain/entity/summaryvalue/summary_value.dart';
+import '../../domain/entity/payment/paymentinstruction/paymentinstructiontransactionsummary/payment_instruction_transaction_summary.dart';
 import '../../misc/constant.dart';
 import '../../misc/date_util.dart';
 import '../../misc/error/message_error.dart';
-import '../../misc/error_helper.dart';
 import '../../misc/multi_language_string.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/response_wrapper.dart';
@@ -63,6 +72,15 @@ extension ProductEntityMappingExt on ResponseWrapper {
       (orderTrackingResponse) => ResponseWrapper(orderTrackingResponse).mapFromResponseToOrderTracking()
     ).toList();
   }
+
+  List<OrderTrackingDetail> mapFromResponseToOrderTrackingDetailList() {
+    if (response == null) {
+      return [];
+    }
+    return response.map<OrderTrackingDetail>(
+      (orderTrackingDetailResponse) => ResponseWrapper(orderTrackingDetailResponse).mapFromResponseToOrderTrackingDetail()
+    ).toList();
+  }
 }
 
 extension OrderDetailEntityMappingExt on ResponseWrapper {
@@ -71,8 +89,7 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
     effectiveOrderSummary ??= response["summary"];
     return Order(
       orderSummary: ResponseWrapper(effectiveOrderSummary).mapFromResponseToOrderSummary(),
-      combinedOrder: ResponseWrapper(response).mapFromResponseToCombinedOrder(),
-      orderTrackingList: ResponseWrapper(response["tracking"]).mapFromResponseToOrderTrackingList()
+      combinedOrder: ResponseWrapper(response).mapFromResponseToCombinedOrder()
     );
   }
 
@@ -81,17 +98,27 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
     effectiveOrderSummary ??= response["summary"];
     return Order(
       orderSummary: ResponseWrapper(effectiveOrderSummary).mapFromResponseToOrderSummary(),
-      combinedOrder: ResponseWrapper(response["combined_order"]).mapFromResponseToCombinedOrder(),
-      orderTrackingList: ResponseWrapper(response["tracking"]).mapFromResponseToOrderTrackingList()
+      combinedOrder: ResponseWrapper(response["combined_order"]).mapFromResponseToCombinedOrder()
     );
   }
 
   OrderTracking mapFromResponseToOrderTracking() {
     return OrderTracking(
+      id: response["id"],
+      orderShippingId: response["order_shipping_id"],
+      trackingNumber: response["tracking_number"],
+      arrived: response["arrived"],
+      weight: ResponseWrapper(response["weight"]).mapFromResponseToDouble()!,
+      orderTrackingDetailList: ResponseWrapper(response["event"]).mapFromResponseToOrderTrackingDetailList()
+    );
+  }
+
+  OrderTrackingDetail mapFromResponseToOrderTrackingDetail() {
+    return OrderTrackingDetail(
       timeStamp: ResponseWrapper(response["timestamp"]).mapFromResponseToDateTime(convertIntoLocalTime: false)!,
       orderTrackingLocation: ResponseWrapper(response["location"]).mapFromResponseToOrderTrackingLocation(),
       description: MultiLanguageString(response["description"]),
-      pieceIdList: response["pieceIds"].map<String>((pieceId) => pieceId as String).toList()
+      pieceIdList: (response["pieceIds"] ?? []).map<String>((pieceId) => pieceId as String).toList()
     );
   }
 
@@ -135,6 +162,7 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
       coupon: response["coupon"] != null ? ResponseWrapper(response["coupon"]).mapFromResponseToCoupon() : null,
       user: ResponseWrapper(response["user"]).mapFromResponseToUser(),
       orderProduct: ResponseWrapper(response["order_product"]).mapFromResponseToOrderProduct(),
+      orderAddress: response["order_addresses"] != null ? ResponseWrapper(response["order_addresses"]).mapFromResponseToOrderAddress() : null,
       orderShipping: response["order_shipping"] != null ? ResponseWrapper(response["order_shipping"]).mapFromResponseToOrderShipping() : null,
       orderPurchasingList: response["repurchase"] != null ? response["repurchase"].map<OrderPurchasing>(
         (orderPurchasingResponse) => ResponseWrapper(orderPurchasingResponse).mapFromResponseToOrderPurchasing()
@@ -211,10 +239,12 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
       orderId: response["order_id"],
       orderProductId: response["order_product_id"],
       trackingNumber: response["tracking_number"] ?? "",
+      isPaymentTriggered: response["is_payment_triggered"] == 1,
       status: response["status"],
       notes: response["notes"],
       orderDetail: ResponseWrapper(response["order"]).mapFromResponseToOrderDetail(),
-      orderProductInOrderShipping: ResponseWrapper(response["order_product"]).mapFromResponseToOrderProductInOrderShipping()
+      orderProductInOrderShipping: ResponseWrapper(response["order_product"]).mapFromResponseToOrderProductInOrderShipping(),
+      orderTrackingList: ResponseWrapper(response["shipment_trackings"]).mapFromResponseToOrderTrackingList()
     );
   }
 
@@ -239,6 +269,32 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
     );
   }
 
+  OrderAddress mapFromResponseToOrderAddress() {
+    if (response == null) {
+      throw MultiLanguageMessageError(
+        title: MultiLanguageString({
+          Constant.textEnUsLanguageKey: "No order address.",
+          Constant.textInIdLanguageKey: "Tidak ada alamat pemesanan."
+        })
+      );
+    }
+    return OrderAddress(
+      id: response["id"],
+      combinedOrderId: response["combined_order_id"],
+      countryId: response["country_id"],
+      label: response["label"],
+      address: response["address"],
+      phoneNumber: response["phone_number"],
+      zipCode: response["zip_code"],
+      city: response["city"],
+      state: response["state"],
+      name: response["name"],
+      email: response["email"],
+      address2: response["address2"],
+      country: ResponseWrapper(response["country"]).mapFromResponseToCountry(),
+    );
+  }
+
   SupportOrderProduct mapFromResponseToSupportOrderProduct() {
     dynamic productEntry = response["product_entry"];
     dynamic bundling = response["bundling"];
@@ -252,11 +308,78 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
   }
 
   CreateOrderVersion1Point1Response mapFromResponseToCreateOrderVersion1Point1Response() {
-    dynamic paymentResponse = response["payment"];
     return CreateOrderVersion1Point1Response(
-      transactionId: paymentResponse["transaction_id"],
-      orderId: paymentResponse["order_id"],
-      combinedOrderId: paymentResponse["combined_order_id"]
+      createOrderResponseType: () {
+        String message = "";
+        if (this is MainStructureResponseWrapper) {
+          MainStructureResponseWrapper mainStructureResponseWrapper = this as MainStructureResponseWrapper;
+          message = mainStructureResponseWrapper.message.toLowerCase();
+        } else {
+          message = response["message"];
+        }
+        dynamic paymentResponse;
+        if (response is Map<String, dynamic>) {
+          paymentResponse = response["payment"];
+        }
+        if (message.contains("warehouse")) {
+          if (response is Map<String, dynamic>) {
+            return OnlyWarehouseCreateOrderResponseType(
+              combinedOrderId: paymentResponse["combined_order_id"]
+            );
+          } else if (response is String) {
+            return OnlyWarehouseCreateOrderResponseType(
+              combinedOrderId: response
+            );
+          } else {
+            return NoCreateOrderResponseType();
+          }
+        }
+        if (message.contains("paypal")) {
+          if (response is Map<String, dynamic>) {
+            return PaypalCreateOrderResponseType(
+              approveLink: response["approve_link"],
+              combinedOrderId: response["combined_order_id"]
+            );
+          } else {
+            return NoCreateOrderResponseType();
+          }
+        }
+        if (paymentResponse == null) {
+          return NoCreateOrderResponseType();
+        }
+        return DefaultCreateOrderResponseType(
+          transactionId: paymentResponse["transaction_id"],
+          orderId: paymentResponse["order_id"],
+          combinedOrderId: paymentResponse["combined_order_id"]
+        );
+      }()
+    );
+  }
+
+  RepurchaseResponse mapFromResponseToRepurchaseResponse() {
+    return RepurchaseResponse(
+      repurchaseResponseType: () {
+        String message = "";
+        if (this is MainStructureResponseWrapper) {
+          MainStructureResponseWrapper mainStructureResponseWrapper = this as MainStructureResponseWrapper;
+          message = mainStructureResponseWrapper.message.toLowerCase();
+        }
+        dynamic paymentResponse = response["payment"];
+        if (message.contains("create warehouse")) {
+          if (response is Map<String, dynamic>) {
+            return OnlyWarehouseRepurchaseResponseType(
+              combinedOrderId: paymentResponse["combined_order_id"]
+            );
+          } else {
+            return NoRepurchaseResponseType();
+          }
+        }
+        return DefaultRepurchaseResponseType(
+          transactionId: paymentResponse["transaction_id"],
+          orderId: paymentResponse["order_id"],
+          combinedOrderId: paymentResponse["combined_order_id"]
+        );
+      }()
     );
   }
 
@@ -289,56 +412,92 @@ extension OrderDetailEntityMappingExt on ResponseWrapper {
   }
 
   OrderTransactionResponse mapFromResponseToOrderTransactionResponse() {
+    String type = (response["type"] as String?).toEmptyStringNonNull.toLowerCase();
     dynamic paymentResponse = response["payment"];
-    String statusCode = paymentResponse["status_code"];
-    if (statusCode.isNotEmptyString) {
-      if (statusCode[0] != "2") {
-        if (statusCode != "407") {
-          throw MultiLanguageMessageError(
-            title: MultiLanguageString({
-              Constant.textEnUsLanguageKey: "Failed to Load Payment Details",
-              Constant.textInIdLanguageKey: "Gagal Memuat Rincian Pembayaran"
-            }),
-            message: MultiLanguageString({
-              Constant.textEnUsLanguageKey: "Please try refresh again.",
-              Constant.textInIdLanguageKey: "Silahkan coba refresh kembali."
-            }),
-          );
+    String paymentType = (paymentResponse["payment_type"] as String?).toEmptyStringNonNull;
+    String paymentStepType = (paymentResponse["payment_step_type"] as String?).toEmptyStringNonNull;
+    OrderTransactionSummary orderTransactionSummary = ResponseWrapper(response["payment_detail"]).mapFromResponseToOrderTransactionSummary();
+    PaymentInstructionTransactionSummary paymentInstructionTransactionSummary = ResponseWrapper(response["payment_instruction"]).mapFromResponseToPaymentInstructionTransactionSummary();
+    if (type == "midtrans") {
+      String statusCode = paymentResponse["status_code"];
+      String statusMessage = paymentResponse["status_message"];
+      if (statusCode.isNotEmptyString) {
+        if (statusCode[0] != "2") {
+          if (statusCode != "407") {
+            throw MultiLanguageMessageError(
+              title: MultiLanguageString({
+                Constant.textEnUsLanguageKey: "Failed to Load Payment Details",
+                Constant.textInIdLanguageKey: "Gagal Memuat Rincian Pembayaran"
+              }),
+              message: MultiLanguageString({
+                Constant.textEnUsLanguageKey: "Please try refresh again.",
+                Constant.textInIdLanguageKey: "Silahkan coba refresh kembali."
+              }),
+              value: OrderTransactionStatusCodeAndStatusMessage(
+                statusCode: statusCode,
+                statusMessage: statusMessage
+              )
+            );
+          }
         }
       }
+      return MidtransOrderTransactionResponse(
+        paymentType: paymentType,
+        paymentStepType: paymentStepType,
+        orderId: paymentResponse["order_id"],
+        transactionId: paymentResponse["transaction_id"],
+        transactionStatus: paymentResponse["transaction_status"],
+        statusCode: statusCode,
+        statusMessage: statusMessage,
+        grossAmount: ResponseWrapper(paymentResponse["gross_amount"]).mapFromResponseToDouble()!,
+        transactionDateTime: DateUtil.convertUtcOffset(
+          ResponseWrapper(paymentResponse["transaction_time"]).mapFromResponseToDateTime(
+            dateFormat: DateUtil.standardDateFormat,
+            convertIntoLocalTime: false
+          )!,
+          0,
+          oldUtcOffset: 7
+        ),
+        expiryDateTime: DateUtil.convertUtcOffset(
+          ResponseWrapper(paymentResponse["expiry_time"]).mapFromResponseToDateTime(
+            dateFormat: DateUtil.standardDateFormat,
+            convertIntoLocalTime: false
+          )!,
+          0,
+          oldUtcOffset: 7
+        ),
+        orderTransactionSummary: orderTransactionSummary,
+        paymentInstructionTransactionSummary: paymentInstructionTransactionSummary,
+      );
+    } else if (type == "paypal") {
+      return PaypalOrderTransactionResponse(
+        paymentType: paymentType,
+        paymentStepType: paymentStepType,
+        status: paymentResponse["status"],
+        selfLink: paymentResponse["self_link"],
+        orderTransactionSummary: orderTransactionSummary,
+        paymentInstructionTransactionSummary: paymentInstructionTransactionSummary,
+      );
+    } else {
+      throw MessageError(title: "Order transaction response is not suitable");
     }
-    return OrderTransactionResponse(
-      orderId: paymentResponse["order_id"],
-      transactionId: paymentResponse["transaction_id"],
-      transactionStatus: paymentResponse["transaction_status"],
-      grossAmount: ResponseWrapper(paymentResponse["gross_amount"]).mapFromResponseToDouble()!,
-      transactionDateTime: DateUtil.convertUtcOffset(
-        ResponseWrapper(paymentResponse["transaction_time"]).mapFromResponseToDateTime(
-          dateFormat: DateUtil.standardDateFormat,
-          convertIntoLocalTime: false
-        )!,
-        0,
-        oldUtcOffset: 7
-      ),
-      expiryDateTime: DateUtil.convertUtcOffset(
-        ResponseWrapper(paymentResponse["expiry_time"]).mapFromResponseToDateTime(
-          dateFormat: DateUtil.standardDateFormat,
-          convertIntoLocalTime: false
-        )!,
-        0,
-        oldUtcOffset: 7
-      ),
-      orderTransactionSummary: ResponseWrapper(response["payment_detail"]).mapFromResponseToOrderTransactionSummary(),
-      paymentInstructionTransactionSummary: ResponseWrapper(response["payment_instruction"]).mapFromResponseToPaymentInstructionTransactionSummary(),
-    );
   }
 
   PurchaseDirectResponse mapFromResponseToPurchaseDirectResponse() {
-    dynamic paymentResponse = response["payment"];
+    bool hasChangeNewResponse = false;
+    dynamic newResponse;
+    if (this is MainStructureResponseWrapper) {
+      if (response is Map<String, dynamic>) {
+        newResponse = Map<String, dynamic>.of(response);
+        (newResponse as Map<String, dynamic>)["message"] = (this as MainStructureResponseWrapper).message;
+        hasChangeNewResponse = true;
+      }
+    }
+    if (!hasChangeNewResponse) {
+      newResponse = response;
+    }
     return PurchaseDirectResponse(
-      transactionId: paymentResponse["transaction_id"],
-      orderId: paymentResponse["order_id"],
-      combinedOrderId: paymentResponse["combined_order_id"]
+      createOrderVersion1Point1Response: ResponseWrapper(newResponse).mapFromResponseToCreateOrderVersion1Point1Response()
     );
   }
 }

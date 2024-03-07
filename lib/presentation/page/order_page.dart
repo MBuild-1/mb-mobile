@@ -11,9 +11,11 @@ import '../../controller/order_controller.dart';
 import '../../domain/entity/order/arrived_order_request.dart';
 import '../../domain/entity/order/combined_order.dart';
 import '../../domain/entity/order/order_paging_parameter.dart';
+import '../../domain/entity/payment/payment_method.dart';
 import '../../domain/usecase/arrived_order_use_case.dart';
 import '../../domain/usecase/get_order_paging_use_case.dart';
 import '../../misc/constant.dart';
+import '../../misc/controllercontentdelegate/arrived_order_controller_content_delegate.dart';
 import '../../misc/controllercontentdelegate/repurchase_controller_content_delegate.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/order_container_list_item_controller_state.dart';
@@ -31,6 +33,7 @@ import '../../misc/load_data_result.dart';
 import '../../misc/main_route_observer.dart';
 import '../../misc/manager/controller_manager.dart';
 import '../../misc/multi_language_string.dart';
+import '../../misc/page_restoration_helper.dart';
 import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
@@ -41,8 +44,11 @@ import '../widget/colorful_chip_tab_bar.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modified_scaffold.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
+import 'coupon_page.dart';
 import 'getx_page.dart';
+import 'modaldialogpage/payment_parameter_modal_dialog_page.dart';
 import 'order_detail_page.dart';
+import 'payment_method_page.dart';
 
 class OrderPage extends RestorableGetxPage<_OrderPageRestoration> {
   late final ControllerMember<OrderController> _orderPageController = ControllerMember<OrderController>().addToControllerManager(controllerManager);
@@ -58,7 +64,8 @@ class OrderPage extends RestorableGetxPage<_OrderPageRestoration> {
         controllerManager,
         Injector.locator<GetOrderPagingUseCase>(),
         Injector.locator<ArrivedOrderUseCase>(),
-        Injector.locator<RepurchaseControllerContentDelegate>()
+        Injector.locator<RepurchaseControllerContentDelegate>(),
+        Injector.locator<ArrivedOrderControllerContentDelegate>()
       ),
       tag: pageName
     );
@@ -91,6 +98,20 @@ class OrderPage extends RestorableGetxPage<_OrderPageRestoration> {
         TempOrderDetailBackResultDataHelper.deleteTempOrderDetailBackResult().future();
       }
     },
+    onCompleteSelectPaymentMethod: (result) {
+      if (result != null) {
+        if (_statefulOrderControllerMediatorWidgetDelegate.onRefreshPaymentMethod != null) {
+          _statefulOrderControllerMediatorWidgetDelegate.onRefreshPaymentMethod!(result.toPaymentMethodPageResponse().paymentMethod);
+        }
+      }
+    },
+    onCompleteSelectCoupon: (result) {
+      if (result != null) {
+        if (_statefulOrderControllerMediatorWidgetDelegate.onRefreshCouponId != null) {
+          _statefulOrderControllerMediatorWidgetDelegate.onRefreshCouponId!(result);
+        }
+      }
+    }
   );
 
   @override
@@ -102,17 +123,25 @@ class OrderPage extends RestorableGetxPage<_OrderPageRestoration> {
   }
 }
 
-class _OrderPageRestoration extends ExtendedMixableGetxPageRestoration with WebViewerPageRestorationMixin, OrderDetailPageRestorationMixin {
+class _OrderPageRestoration extends ExtendedMixableGetxPageRestoration with WebViewerPageRestorationMixin, OrderDetailPageRestorationMixin, PaymentMethodPageRestorationMixin, CouponPageRestorationMixin {
   final RouteCompletionCallback<String?>? _onCompleteOrderDetailPage;
+  final RouteCompletionCallback<String?>? _onCompleteSelectPaymentMethod;
+  final RouteCompletionCallback<String?>? _onCompleteSelectCoupon;
 
   _OrderPageRestoration({
-    RouteCompletionCallback<String?>? onCompleteOrderDetailPage
-  }) : _onCompleteOrderDetailPage = onCompleteOrderDetailPage;
+    RouteCompletionCallback<String?>? onCompleteOrderDetailPage,
+    RouteCompletionCallback<String?>? onCompleteSelectPaymentMethod,
+    RouteCompletionCallback<String?>? onCompleteSelectCoupon
+  }) : _onCompleteOrderDetailPage = onCompleteOrderDetailPage,
+      _onCompleteSelectPaymentMethod = onCompleteSelectPaymentMethod,
+      _onCompleteSelectCoupon = onCompleteSelectCoupon;
 
   @override
   // ignore: unnecessary_overrides
   void initState() {
     onCompleteOrderDetailPage = _onCompleteOrderDetailPage;
+    onCompleteSelectPaymentMethod = _onCompleteSelectPaymentMethod;
+    onCompleteSelectCoupon = _onCompleteSelectCoupon;
     super.initState();
   }
 
@@ -201,6 +230,8 @@ class OrderPageRestorableRouteFuture extends GetRestorableRouteFuture {
 
 class _StatefulOrderControllerMediatorWidgetDelegate {
   void Function(String)? onRemoveOrder;
+  void Function(PaymentMethod)? onRefreshPaymentMethod;
+  void Function(String)? onRefreshCouponId;
 }
 
 class _StatefulOrderControllerMediatorWidget extends StatefulWidget {
@@ -226,6 +257,7 @@ class _StatefulOrderControllerMediatorWidgetState extends State<_StatefulOrderCo
 
   final ValueNotifier<dynamic> _fillerErrorValueNotifier = ValueNotifier(null);
   final DefaultOrderContainerInterceptingActionListItemControllerState _defaultOrderContainerInterceptingActionListItemControllerState = DefaultOrderContainerInterceptingActionListItemControllerState();
+  final PaymentParameterModalDialogPageDelegate _repurchasePaymentParameterModalDialogPageDelegate = PaymentParameterModalDialogPageDelegate();
 
   @override
   void initState() {
@@ -286,6 +318,12 @@ class _StatefulOrderControllerMediatorWidgetState extends State<_StatefulOrderCo
         onRemoveOrder(combinedOrderId);
       }
     };
+    widget.statefulOrderControllerMediatorWidgetDelegate.onRefreshPaymentMethod = (paymentMethod) {
+      _repurchasePaymentParameterModalDialogPageDelegate.onUpdatePaymentMethod(paymentMethod);
+    };
+    widget.statefulOrderControllerMediatorWidgetDelegate.onRefreshCouponId = (couponId) {
+      _repurchasePaymentParameterModalDialogPageDelegate.onUpdateCoupon(couponId);
+    };
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _orderListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? orderListItemControllerStateList) async {
@@ -298,13 +336,15 @@ class _StatefulOrderControllerMediatorWidgetState extends State<_StatefulOrderCo
         OrderContainerListItemControllerState(
           orderList: [],
           onOrderTap: (order) {},
-          onConfirmArrived: (order) => DialogHelper.showPromptConfirmArrived(context, () {
-            widget.orderController.arrivedOrder(
-              ArrivedOrderParameter(
-                combinedOrderId: order.id
-              )
-            );
-          }),
+          onConfirmArrived: (order) => DialogHelper.showPromptConfirmArrived(
+            context, () {
+              widget.orderController.arrivedOrderControllerContentDelegate.arrivedOrder(
+                ArrivedOrderParameter(
+                  combinedOrderId: order.id
+                )
+              );
+            }
+          ),
           onBuyAgainTap: (order) => widget.orderController.repurchaseControllerContentDelegate.repurchase(order.id),
           onUpdateState: () => setState(() {}),
           orderTabColorfulChipTabBarController: _orderTabColorfulChipTabBarController,
@@ -368,14 +408,35 @@ class _StatefulOrderControllerMediatorWidgetState extends State<_StatefulOrderCo
     widget.orderController.repurchaseControllerContentDelegate.setRepurchaseDelegate(
       Injector.locator<RepurchaseDelegateFactory>().generateRepurchaseDelegate(
         onGetBuildContext: () => context,
-        onGetErrorProvider: () => Injector.locator<ErrorProvider>()
+        onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
+        onBeginRepurchase: (repurchaseAction) {
+          DialogHelper.showModalBottomDialogPage<int, int>(
+            context: context,
+            modalDialogPageBuilder: (context, parameter) => PaymentParameterModalDialogPage(
+              paymentParameterModalDialogPageParameter: PaymentParameterModalDialogPageParameter(
+                paymentParameterModalDialogPageDelegate: _repurchasePaymentParameterModalDialogPageDelegate,
+                onGotoSelectPaymentMethodPage: (paymentMethodSettlingId) {
+                  PageRestorationHelper.toPaymentMethodPage(context, paymentMethodSettlingId);
+                },
+                onGotoSelectCouponPage: (couponId) {
+                  PageRestorationHelper.toCouponPage(context, couponId);
+                },
+                onProcessPaymentParameter: (paymentMethodSettlingId, couponId) {
+                  repurchaseAction.onStartRepurchase(paymentMethodSettlingId, couponId);
+                },
+                titleLabel: () => "Buy Again".tr,
+                buttonLabel: () => "Buy Again".tr
+              )
+            ),
+            parameter: 1
+          );
+        }
       )
     );
-    widget.orderController.setOrderDelegate(
-      OrderDelegate(
-        onUnfocusAllWidget: () => FocusScope.of(context).unfocus(),
-        onBack: () => Get.back(),
-        onShowArrivedOrderProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
+    widget.orderController.arrivedOrderControllerContentDelegate.setArrivedOrderDelegate(
+      Injector.locator<ArrivedOrderDelegateFactory>().generateArrivedOrderDelegate(
+        onGetBuildContext: () => context,
+        onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
         onArrivedOrderProcessSuccessCallback: (arrivedOrderResponse) async {
           int index = 0;
           for (int i = 0; i < _orderColorfulChipTabBarDataList.length; i++) {
@@ -390,11 +451,6 @@ class _StatefulOrderControllerMediatorWidgetState extends State<_StatefulOrderCo
           }
           _orderTabColorfulChipTabBarController.value = index;
         },
-        onShowArrivedOrderProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
-          context: context,
-          errorProvider: Injector.locator<ErrorProvider>(),
-          e: e
-        ),
       )
     );
     return ModifiedScaffold(

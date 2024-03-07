@@ -14,10 +14,16 @@ import '../../../domain/entity/deleteaccount/verifydeleteaccountotp/verify_delet
 import '../../../domain/entity/deleteaccount/verifydeleteaccountotp/verify_delete_account_otp_response.dart';
 import '../../../domain/entity/forgotpassword/forgot_password_parameter.dart';
 import '../../../domain/entity/forgotpassword/forgot_password_response.dart';
+import '../../../domain/entity/forgotpassword/whatsapp/whatsapp_forgot_password_parameter.dart';
+import '../../../domain/entity/forgotpassword/whatsapp/whatsapp_forgot_password_response.dart';
 import '../../../domain/entity/login/login_parameter.dart';
 import '../../../domain/entity/login/login_response.dart';
+import '../../../domain/entity/login/login_with_apple_parameter.dart';
+import '../../../domain/entity/login/login_with_apple_response.dart';
 import '../../../domain/entity/login/login_with_google_parameter.dart';
 import '../../../domain/entity/login/login_with_google_response.dart';
+import '../../../domain/entity/loginorregister/login_or_register_with_apple_via_callback_parameter.dart';
+import '../../../domain/entity/loginorregister/login_or_register_with_apple_via_callback_response.dart';
 import '../../../domain/entity/logout/logout_parameter.dart';
 import '../../../domain/entity/logout/logout_response.dart';
 import '../../../domain/entity/pin/checkactivepin/check_active_pin_parameter.dart';
@@ -35,6 +41,8 @@ import '../../../domain/entity/register/register_parameter.dart';
 import '../../../domain/entity/register/register_response.dart';
 import '../../../domain/entity/register/register_second_step_parameter.dart';
 import '../../../domain/entity/register/register_second_step_response.dart';
+import '../../../domain/entity/register/register_with_apple_parameter.dart';
+import '../../../domain/entity/register/register_with_apple_response.dart';
 import '../../../domain/entity/register/register_with_google_parameter.dart';
 import '../../../domain/entity/register/register_with_google_response.dart';
 import '../../../domain/entity/register/sendregisterotp/sendregisterotpparameter/email_send_register_otp_parameter.dart';
@@ -47,6 +55,8 @@ import '../../../domain/entity/resetpassword/check/check_reset_password_paramete
 import '../../../domain/entity/resetpassword/check/check_reset_password_response.dart';
 import '../../../domain/entity/resetpassword/reset_password_parameter.dart';
 import '../../../domain/entity/resetpassword/reset_password_response.dart';
+import '../../../domain/entity/resetpassword/whatsapp/check/whatsapp_check_reset_password_parameter.dart';
+import '../../../domain/entity/resetpassword/whatsapp/whatsapp_reset_password_parameter.dart';
 import '../../../domain/entity/user/edituser/edit_user_parameter.dart';
 import '../../../domain/entity/user/edituser/edit_user_response.dart';
 import '../../../domain/entity/user/getuser/get_user_parameter.dart';
@@ -119,6 +129,21 @@ class DefaultUserDataSource implements UserDataSource {
     return DioHttpClientProcessing((cancelToken) {
       return dio.post("/auth/google", data: formData, queryParameters: {"device_id": loginWithGoogleParameter.pushNotificationSubscriptionId}, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
         .map<LoginWithGoogleResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToLoginWithGoogleResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<LoginWithAppleResponse> loginWithApple(LoginWithAppleParameter loginWithAppleParameter) {
+    FormData formData = FormData.fromMap(
+      <String, dynamic> {
+        "authorization_code": loginWithAppleParameter.appleSignInCredential.authorizationCode,
+        "identity_token": loginWithAppleParameter.appleSignInCredential.identityToken,
+        "device_name": loginWithAppleParameter.deviceName
+      }
+    );
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.post("/auth/apple", data: formData, queryParameters: {"device_id": loginWithAppleParameter.pushNotificationSubscriptionId}, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+        .map<LoginWithAppleResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToLoginWithAppleResponse());
     });
   }
 
@@ -246,6 +271,21 @@ class DefaultUserDataSource implements UserDataSource {
     return DioHttpClientProcessing((cancelToken) {
       return dio.post("/auth/google", data: formData, queryParameters: {"device_id": registerWithGoogleParameter.pushNotificationSubscriptionId}, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
         .map<RegisterWithGoogleResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToRegisterWithGoogleResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<RegisterWithAppleResponse> registerWithApple(RegisterWithAppleParameter registerWithAppleParameter) {
+    FormData formData = FormData.fromMap(
+      <String, dynamic> {
+        "authorization_code": registerWithAppleParameter.appleSignInCredential.authorizationCode,
+        "identity_token": registerWithAppleParameter.appleSignInCredential.identityToken,
+        "device_name": registerWithAppleParameter.deviceName
+      }
+    );
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.post("/auth/apple", data: formData, queryParameters: {"device_id": registerWithAppleParameter.pushNotificationSubscriptionId}, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+        .map<RegisterWithAppleResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToRegisterWithAppleResponse());
     });
   }
 
@@ -418,10 +458,33 @@ class DefaultUserDataSource implements UserDataSource {
   }
 
   @override
+  FutureProcessing<WhatsappForgotPasswordResponse> whatsappForgotPassword(WhatsappForgotPasswordParameter whatsappForgotPasswordParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      FormData formData = FormData.fromMap(
+        <String, dynamic> {
+          "phone": whatsappForgotPasswordParameter.phoneNumber
+        }
+      );
+      return dio.post("/forget-password/otp/wa", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+        .map<WhatsappForgotPasswordResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToWhatsappForgotPasswordResponse());
+    });
+  }
+
+  @override
   FutureProcessing<CheckResetPasswordResponse> checkResetPassword(CheckResetPasswordParameter checkResetPasswordParameter) {
     return DioHttpClientProcessing((cancelToken) {
-      return dio.get("/check/${checkResetPasswordParameter.code}/reset-password", queryParameters: {}, cancelToken: cancelToken)
-        .map<CheckResetPasswordResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToCheckResetPasswordResponse());
+      if (checkResetPasswordParameter is WhatsappCheckResetPasswordParameter) {
+        FormData formData = FormData.fromMap(
+          <String, dynamic> {
+            "otp": checkResetPasswordParameter.code,
+          }
+        );
+        return dio.post("/check/forget-password/otp", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
+          .map<CheckResetPasswordResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToWhatsappCheckResetPasswordResponse());
+      } else {
+        return dio.get("/check/${checkResetPasswordParameter.code}/reset-password", queryParameters: {}, cancelToken: cancelToken)
+          .map<CheckResetPasswordResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToCheckResetPasswordResponse());
+      }
     });
   }
 
@@ -430,13 +493,35 @@ class DefaultUserDataSource implements UserDataSource {
     return DioHttpClientProcessing((cancelToken) {
       FormData formData = FormData.fromMap(
         <String, dynamic> {
-          "code": resetPasswordParameter.code,
+          if (resetPasswordParameter is WhatsappResetPasswordParameter) ...{
+            "otp": resetPasswordParameter.code
+          } else ...{
+            "code": resetPasswordParameter.code
+          },
           "new_password": resetPasswordParameter.newPassword,
           "new_password_confirmation": resetPasswordParameter.confirmNewPassword
         }
       );
-      return dio.post("/update/reset-password", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
-        .map<ResetPasswordResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToResetPasswordResponse());
+      return dio.post(
+        () {
+          if (resetPasswordParameter is WhatsappResetPasswordParameter) {
+            return "/reset-password/wa";
+          } else {
+            return "/update/reset-password";
+          }
+        }(),
+        data: formData,
+        cancelToken: cancelToken,
+        options: OptionsBuilder.multipartData().build()
+      ).map<ResetPasswordResponse>(
+        onMap: (value) {
+          if (resetPasswordParameter is WhatsappResetPasswordParameter) {
+            return value.wrapResponse().mapFromResponseToWhatsappResetPasswordResponse();
+          } else {
+            return value.wrapResponse().mapFromResponseToResetPasswordResponse();
+          }
+        }
+      );
     });
   }
 
@@ -555,6 +640,19 @@ class DefaultUserDataSource implements UserDataSource {
       );
       return dio.post("/auth/identity/change", data: formData, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())
         .map<AuthIdentityChangeResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToAuthIdentityChangeResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<LoginOrRegisterWithAppleViaCallbackResponse> loginOrRegisterWithAppleViaCallback(LoginOrRegisterWithAppleViaCallbackParameter loginOrRegisterWithAppleViaCallbackParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.get(
+        "",
+        cancelToken: cancelToken,
+        options: OptionsBuilder.withBaseUrl(loginOrRegisterWithAppleViaCallbackParameter.link).buildExtended()
+      ).map<LoginOrRegisterWithAppleViaCallbackResponse>(
+        onMap: (value) => value.wrapResponse().mapFromResponseToLoginOrRegisterWithAppleViaCallbackResponse()
+      );
     });
   }
 }

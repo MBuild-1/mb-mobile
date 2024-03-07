@@ -56,8 +56,8 @@ class ModifyWarehouseItemTypeListSubInterceptor extends ItemTypeListSubIntercept
                         SizedBox(height: padding()),
                         Text(
                           MultiLanguageString({
-                            Constant.textEnUsLanguageKey: "No order send to warehouse list.",
-                            Constant.textInIdLanguageKey: "Tidak ada daftar kirim barang ke warehouse.",
+                            Constant.textEnUsLanguageKey: "No order send to personal stuffs list.",
+                            Constant.textInIdLanguageKey: "Tidak ada daftar kirim barang ke barang pribadi.",
                           }).toEmptyStringNonNull
                         ),
                         const SizedBox(height: 12.0),

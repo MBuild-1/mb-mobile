@@ -11,6 +11,7 @@ import '../../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../../widget/field.dart';
 import '../../widget/modified_text_field.dart';
 import '../../widget/rx_consumer.dart';
+import '../../widget/sized_outline_gradient_button_app_bar_header.dart';
 import 'modal_dialog_page.dart';
 
 class AddCartNoteModalDialogPage extends ModalDialogPage<AddCartNoteModalDialogController> {
@@ -76,24 +77,8 @@ class _StatefulAddCartNoteControllerMediatorWidgetState extends State<_StatefulA
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            IgnorePointer(
-              child: ExcludeFocus(
-                child: SizedOutlineGradientButton(
-                  onPressed: () {},
-                  text: widget.notes.isEmptyString ? "Add Cart Note".tr : "Change Cart Note".tr,
-                  outlineGradientButtonType: OutlineGradientButtonType.outline,
-                  outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
-                  customGradientButtonVariation: (outlineGradientButtonType) {
-                    return CustomGradientButtonVariation(
-                      outlineGradientButtonType: outlineGradientButtonType,
-                      textStyle: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.bold
-                      )
-                    );
-                  },
-                ),
-              ),
+            SizedOutlineGradientButtonAppBarHeader(
+              text: widget.notes.isEmptyString ? "Add Cart Note".tr : "Change Cart Note".tr,
             ),
             const SizedBox(height: 20),
             Text("Note".tr),
@@ -104,7 +89,7 @@ class _StatefulAddCartNoteControllerMediatorWidgetState extends State<_StatefulA
                 child: (context, validationResult, validator) => ModifiedTextField(
                   isError: validationResult.isFailed,
                   controller: _addCartTextEditingController,
-                  decoration: DefaultInputDecoration(hintText: "Enter Note".tr),
+                  decoration: DefaultInputDecoration(hintText: "Enter note".tr),
                   onChanged: (value) => validator?.validate(),
                   textInputAction: TextInputAction.next,
                 ),

@@ -28,7 +28,7 @@ class EmailOrPhoneNumberValidator extends Validator {
   ValidationResult validating() {
     String emailOrPhoneNumberValue = emailOrPhoneNumber();
     if (emailOrPhoneNumberValue.isEmptyString) {
-      return FailedValidationResult(e: ValidationError(message: "${"Email or phone number is required".tr}."));
+      return FailedValidationResult(e: ValidationError(message: "${"Email or WhatsApp phone number is required".tr}."));
     } else if (!(emailOrPhoneNumberValue.isEmail || emailOrPhoneNumberValue.isPhoneNumber)) {
       late String suggestion;
       if (emailOrPhoneNumberValue.contains('@') || emailOrPhoneNumberValue.contains('.') || !GetUtils.isNumericOnly(emailOrPhoneNumberValue)) {
@@ -42,7 +42,7 @@ class EmailOrPhoneNumberValidator extends Validator {
           Constant.textEnUsLanguageKey: "You might be typing a phone number.\r\nExample: 628888888888."
         }).toStringNonNull;
       }
-      return FailedValidationResult(e: ValidationError(message: "${"This input must be an email or phone number".tr}.\r\n$suggestion"));
+      return FailedValidationResult(e: ValidationError(message: "${"This input must be an email or WhatsApp phone number".tr}.\r\n$suggestion"));
     } else {
       if (_onValidateAfterValidateEmailOrPhoneNumberFormat != null) {
         _onValidateAfterValidateEmailOrPhoneNumberFormat!();

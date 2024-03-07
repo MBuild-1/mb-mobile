@@ -6,7 +6,7 @@ class Country {
   String name;
   String code;
   String phoneCode;
-  Zone zone;
+  Zone? zone;
 
   Country({
     required this.id,

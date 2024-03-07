@@ -211,11 +211,13 @@ class _PageRestorationHelperImpl {
     );
   }
 
-  void toCartPage(BuildContext context) {
+  void toCartPage(BuildContext context, {CartPageParameter? cartPageParameter}) {
     LoginHelper.checkingLogin(context, () {
       PageRestorationHelper.findPageRestorationMixin<CartPageRestorationMixin>(
         onGetxPageRestorationFound: (restoration) {
-          restoration.cartPageRestorableRouteFuture.present();
+          restoration.cartPageRestorableRouteFuture.present(
+            (cartPageParameter ?? DefaultCartPageParameter()
+          ).toJsonString());
         },
         context: context
       );
@@ -335,6 +337,19 @@ class _PageRestorationHelperImpl {
       PageRestorationHelper.findPageRestorationMixin<OrderDetailPageRestorationMixin>(
         onGetxPageRestorationFound: (restoration) {
           restoration.orderDetailPageRestorableRouteFuture.present(combinedOrderId);
+        },
+        context: context
+      );
+    });
+  }
+
+  void toOrderDetailPageWithParameter(BuildContext context, OrderDetailPageParameter orderDetailPageParameter) {
+    LoginHelper.checkingLogin(context, () {
+      PageRestorationHelper.findPageRestorationMixin<OrderDetailPageRestorationMixin>(
+        onGetxPageRestorationFound: (restoration) {
+          restoration.orderDetailPageRestorableRouteFuture.present(
+            orderDetailPageParameter.toJsonString()
+          );
         },
         context: context
       );
@@ -647,7 +662,7 @@ class _PageRestorationHelperImpl {
     PageRestorationHelper.findPageRestorationMixin<ResetPasswordPageRestorationMixin>(
       onGetxPageRestorationFound: (restoration) {
         restoration.resetPasswordPageRestorableRouteFuture.present(
-          resetPasswordPageParameter.toEncodeBase64String()
+          resetPasswordPageParameter.toJsonString()
         );
       },
       context: context

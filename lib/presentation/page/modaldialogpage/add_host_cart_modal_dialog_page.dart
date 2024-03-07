@@ -15,6 +15,7 @@ import '../../widget/field.dart';
 import '../../widget/modified_text_field.dart';
 import '../../widget/password_obscurer.dart';
 import '../../widget/rx_consumer.dart';
+import '../../widget/sized_outline_gradient_button_app_bar_header.dart';
 import 'modal_dialog_page.dart';
 
 class AddHostCartModalDialogPage extends ModalDialogPage<AddHostCartModalDialogController> {
@@ -79,24 +80,8 @@ class _StatefulAddHostCartControllerMediatorWidgetState extends State<_StatefulA
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          IgnorePointer(
-            child: ExcludeFocus(
-              child: SizedOutlineGradientButton(
-                onPressed: () {},
-                text: "Host Cart".tr,
-                outlineGradientButtonType: OutlineGradientButtonType.outline,
-                outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
-                customGradientButtonVariation: (outlineGradientButtonType) {
-                  return CustomGradientButtonVariation(
-                    outlineGradientButtonType: outlineGradientButtonType,
-                    textStyle: TextStyle(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.bold
-                    )
-                  );
-                },
-              ),
-            ),
+          SizedOutlineGradientButtonAppBarHeader(
+            text: "Host Cart".tr,
           ),
           const SizedBox(height: 20),
           Text("Host Cart Username".tr),

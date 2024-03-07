@@ -7,7 +7,7 @@ class PaymentMethod {
   int paymentActive;
   String paymentImage;
   int serviceFee;
-  int? taxRate;
+  double? taxRate;
 
   PaymentMethod({
     required this.settlingId,

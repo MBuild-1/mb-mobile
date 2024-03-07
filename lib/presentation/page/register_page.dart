@@ -11,6 +11,7 @@ import 'package:masterbagasi/misc/ext/validation_result_ext.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:provider/provider.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../controller/register_controller.dart';
@@ -26,9 +27,11 @@ import '../../domain/usecase/get_user_use_case.dart';
 import '../../domain/usecase/register_first_step_use_case.dart';
 import '../../domain/usecase/register_second_step_use_case.dart';
 import '../../domain/usecase/register_use_case.dart';
+import '../../domain/usecase/register_with_apple_use_case.dart';
 import '../../domain/usecase/register_with_google_use_case.dart';
 import '../../domain/usecase/send_register_otp_use_case.dart';
 import '../../domain/usecase/verify_register_use_case.dart';
+import '../../misc/apple_sign_in_credential.dart';
 import '../../misc/constant.dart';
 import '../../misc/device_helper.dart';
 import '../../misc/dialog_helper.dart';
@@ -57,6 +60,7 @@ import '../../misc/validation/validator/validator.dart';
 import '../../misc/web_helper.dart';
 import '../../misc/widget_helper.dart';
 import '../notifier/login_notifier.dart';
+import '../notifier/third_party_login_notifier.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/field.dart';
 import '../widget/modified_scaffold.dart';
@@ -86,6 +90,7 @@ class RegisterPage extends RestorableGetxPage<_RegisterPageRestoration> {
         controllerManager,
         Injector.locator<RegisterUseCase>(),
         Injector.locator<RegisterWithGoogleUseCase>(),
+        Injector.locator<RegisterWithAppleUseCase>(),
         Injector.locator<RegisterFirstStepUseCase>(),
         Injector.locator<SendRegisterOtpUseCase>(),
         Injector.locator<VerifyRegisterUseCase>(),
@@ -238,6 +243,7 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
   void initState() {
     super.initState();
     _loginNotifier = Provider.of<LoginNotifier>(context, listen: false);
+    DeviceHelper.checkThirdPartyLoginVisibility(context);
     _googleSignIn = GoogleSignIn(
       scopes: [
         'email',
@@ -270,7 +276,7 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
           for (var element in routeMap.entries) {
             element.value?.requestLoginChangeValue = 1;
           }
-          NavigationHelper.navigationAfterRegisterProcess(context);
+          NavigationHelper.navigationAfterLoginOrRegisterProcess(context);
         },
         onShowRegisterFirstStepRequestProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
         onShowRegisterFirstStepRequestProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
@@ -322,6 +328,18 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
           }
           GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
           return googleSignInAuthentication.idToken;
+        },
+        onRegisterWithApple: () async {
+          final credential = await SignInWithApple.getAppleIDCredential(
+            scopes: [
+              AppleIDAuthorizationScopes.email,
+              AppleIDAuthorizationScopes.fullName,
+            ],
+          );
+          return AppleSignInCredential(
+            identityToken: credential.identityToken,
+            authorizationCode: credential.authorizationCode
+          );
         },
         onLoginIntoOneSignal: (externalId) async {
           try {
@@ -410,7 +428,7 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
                                         isError: validationResult.isFailed,
                                         controller: _emailTextEditingController,
                                         decoration: DefaultInputDecoration(
-                                          label: Text("Email Or Phone Number".tr),
+                                          label: Text("Email Or WhatsApp Phone Number".tr),
                                           labelStyle: const TextStyle(color: Colors.black),
                                           floatingLabelStyle: const TextStyle(color: Colors.black),
                                           floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -841,51 +859,24 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
                       }
                     }
                   ),
-                  if (Platform.isAndroid || Platform.isIOS) ...[
-                    SizedBox(height: 3.h),
-                    Row(
-                      children: [
-                        const Expanded(
-                          child: Divider()
-                        ),
-                        SizedBox(width: 6.w),
-                        Text("or register with".tr, style: TextStyle(
-                          color: Theme.of(context).dividerTheme.color
-                        )),
-                        SizedBox(width: 6.w),
-                        const Expanded(
-                          child: Divider()
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 3.h),
-                    SizedOutlineGradientButton(
+                  WidgetHelper.buildThirdPartyLoginButton(
+                    context: context,
+                    orWithText: "or register with".tr,
+                    googleButton: () => SizedOutlineGradientButton(
                       width: double.infinity,
                       outlineGradientButtonType: OutlineGradientButtonType.outline,
                       onPressed: widget.registerController.registerWithGoogle,
                       text: "Register With Google".tr,
                     ),
-                  ],
-                  SizedBox(height: 2.h),
-                  Builder(
-                    builder: (context) {
-                      _termAndConditionsTapGestureRecognizer.onTap = () {
-                        WebHelper.launchUrl(Uri.parse(Constant.textTermAndConditionsUrl));
-                      };
-                      _privacyPolicyTapGestureRecognizer.onTap = () {
-                        WebHelper.launchUrl(Uri.parse(Constant.textPrivacyPolicyUrl));
-                      };
-                      return Text.rich(
-                        "By signing up".trTextSpan(
-                          parameter: SignUpRecognizer(
-                            termAndConditionsTapGestureRecognizer: _termAndConditionsTapGestureRecognizer,
-                            privacyPolicyTapGestureRecognizer: _privacyPolicyTapGestureRecognizer
-                          ),
-                        ),
-                        textAlign: TextAlign.center,
-                      );
-                    }
-                  )
+                    appleButton: () => SizedOutlineGradientButton(
+                      width: double.infinity,
+                      outlineGradientButtonType: OutlineGradientButtonType.outline,
+                      onPressed: () {
+                        WebHelper.launchUrl(Uri.parse("https://apple-auth.masterbagasi.com/auth/apple"));
+                      },
+                      text: "Register With Apple".tr,
+                    ),
+                  ),
                 ],
               ),
             ),

@@ -9,6 +9,8 @@ import '../domain/entity/additionalitem/change_additional_item_parameter.dart';
 import '../domain/entity/additionalitem/change_additional_item_response.dart';
 import '../domain/entity/additionalitem/remove_additional_item_parameter.dart';
 import '../domain/entity/additionalitem/remove_additional_item_response.dart';
+import '../domain/entity/address/address.dart';
+import '../domain/entity/address/current_selected_address_parameter.dart';
 import '../domain/entity/bucket/approveorrejectrequestbucket/approve_or_reject_request_bucket_parameter.dart';
 import '../domain/entity/bucket/approveorrejectrequestbucket/approve_or_reject_request_bucket_response.dart';
 import '../domain/entity/bucket/bucket.dart';
@@ -55,6 +57,7 @@ import '../domain/usecase/destroy_bucket_use_case.dart';
 import '../domain/usecase/get_additional_item_use_case.dart';
 import '../domain/usecase/get_cart_list_use_case.dart';
 import '../domain/usecase/get_cart_summary_use_case.dart';
+import '../domain/usecase/get_current_selected_address_use_case.dart';
 import '../domain/usecase/get_shared_cart_summary_use_case.dart';
 import '../domain/usecase/get_user_use_case.dart';
 import '../domain/usecase/leave_bucket_use_case.dart';
@@ -123,6 +126,7 @@ class SharedCartController extends BaseGetxController {
   final CheckoutBucketVersion1Point1UseCase checkoutBucketVersion1Point1UseCase;
   final LeaveBucketUseCase leaveBucketUseCase;
   final DestroyBucketUseCase destroyBucketUseCase;
+  final GetCurrentSelectedAddressUseCase getCurrentSelectedAddressUseCase;
 
   MainSharedCartDelegate? _mainSharedCartDelegate;
 
@@ -148,7 +152,8 @@ class SharedCartController extends BaseGetxController {
     this.checkoutBucketUseCase,
     this.checkoutBucketVersion1Point1UseCase,
     this.leaveBucketUseCase,
-    this.destroyBucketUseCase
+    this.destroyBucketUseCase,
+    this.getCurrentSelectedAddressUseCase
   );
 
   Future<LoadDataResult<List<Cart>>> getCartList(CartListParameter cartListParameter) {
@@ -241,6 +246,14 @@ class SharedCartController extends BaseGetxController {
       parameter: apiRequestManager.addRequestToCancellationPart("get-user").value
     ).map<User>(
       (value) => value.user
+    );
+  }
+
+  Future<LoadDataResult<Address>> getCurrentSelectedAddress() {
+    return getCurrentSelectedAddressUseCase.execute(CurrentSelectedAddressParameter()).future(
+      parameter: apiRequestManager.addRequestToCancellationPart("get-current-selected_address").value
+    ).map<Address>(
+      (value) => value.address
     );
   }
 

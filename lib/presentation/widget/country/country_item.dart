@@ -1,4 +1,4 @@
-import 'package:flag/flag_widget.dart';
+import 'package:country_flags/country_flags.dart';
 import 'package:flutter/material.dart';
 
 import '../../../domain/entity/address/country.dart';
@@ -36,7 +36,7 @@ abstract class CountryItem extends StatelessWidget {
                 SizedBox(
                   width: 16,
                   height: 12,
-                  child: Flag.fromString(country.code),
+                  child: CountryFlags.flag(country.code),
                 ),
                 const SizedBox(width: 12),
                 Text(country.name, style: const TextStyle(fontWeight: FontWeight.bold)),

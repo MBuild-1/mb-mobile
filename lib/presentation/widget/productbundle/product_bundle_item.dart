@@ -20,6 +20,7 @@ abstract class ProductBundleItem extends StatelessWidget {
   final OnRemoveWishlistWithProductBundle? onRemoveWishlist;
   final OnAddCartWithProductBundle? onAddCart;
   final OnRemoveCartWithProductBundle? onRemoveCart;
+  final bool hasBackground;
 
   const ProductBundleItem({
     super.key,
@@ -27,7 +28,8 @@ abstract class ProductBundleItem extends StatelessWidget {
     this.onAddWishlist,
     this.onRemoveWishlist,
     this.onAddCart,
-    this.onRemoveCart
+    this.onRemoveCart,
+    required this.hasBackground
   });
 
   @override
@@ -40,9 +42,9 @@ abstract class ProductBundleItem extends StatelessWidget {
       child: AspectRatio(
         aspectRatio: Constant.aspectRatioValueProductBundleArea.toDouble(),
         child: Material(
-          color: Colors.white,
+          color: hasBackground ? Colors.white : Colors.transparent,
           borderRadius: borderRadius,
-          elevation: 3,
+          elevation: hasBackground ? 3 : 0.0,
           child: InkWell(
             onTap: () => PageRestorationHelper.toProductBundleDetailPage(
               context, DefaultProductBundleDetailPageParameter(

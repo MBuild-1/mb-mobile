@@ -15,7 +15,7 @@ class GetSelectedBeautyBrandsListUseCase {
 
   FutureProcessing<LoadDataResult<List<ProductBrand>>> execute() {
     return productRepository.selectedBeautyProductBrandPaging(
-      ProductBrandPagingParameter(page: 1, itemEachPageCount: 10)
+      ProductBrandPagingParameter(page: 1, itemEachPageCount: 20)
     ).map<LoadDataResult<List<ProductBrand>>>(
       onMap: (productBrandPagingDataResult) {
         return productBrandPagingDataResult.map<List<ProductBrand>>(

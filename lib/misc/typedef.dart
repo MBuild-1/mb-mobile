@@ -3,12 +3,12 @@ import 'package:masterbagasi/misc/aspect_ratio_value.dart';
 
 import '../controller/base_getx_controller.dart';
 import '../domain/entity/bucket/checkbucket/check_bucket_response.dart';
-import '../domain/entity/cart/cart.dart';
+import '../domain/entity/order/arrived_order_response.dart';
 import '../domain/entity/order/order.dart';
 import '../domain/entity/product/productbrand/favorite_product_brand.dart';
-import '../domain/entity/wishlist/support_wishlist.dart';
 import '../domain/entity/wishlist/wishlist.dart';
 import 'load_data_result.dart';
+import 'trackingstatusresult/tracking_status_result.dart';
 import 'validation/validation_result.dart';
 import 'validation/validator/validator.dart';
 
@@ -59,3 +59,7 @@ typedef OnCheckSharedCartRequestProcessSuccessCallback = Future<void> Function(C
 typedef OnShowCheckSharedCartRequestProcessFailedCallback = Future<void> Function(dynamic e);
 typedef OnGetPushNotificationSubscriptionId = String Function();
 typedef OnLoginIntoOneSignal = Future<LoadDataResult<String>> Function(String);
+typedef OnRequestTrackingAuthorizationForIos = Future<LoadDataResult<TrackingStatusResult>> Function();
+typedef OnShowArrivedOrderProcessLoadingCallback = Future<void> Function();
+typedef OnArrivedOrderProcessSuccessCallback = Future<void> Function(ArrivedOrderResponse);
+typedef OnShowArrivedOrderProcessFailedCallback = Future<void> Function(dynamic e);

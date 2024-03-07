@@ -39,7 +39,7 @@ import '../../itemtypelistsubinterceptor/product_entry_container_item_type_list_
 import '../../itemtypelistsubinterceptor/product_entry_header_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/profile_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/province_item_type_list_sub_interceptor.dart';
-import '../../itemtypelistsubinterceptor/purchase_direct_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/payment_parameter_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/row_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/search_filter_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/search_item_type_list_sub_interceptor.dart';
@@ -48,6 +48,7 @@ import '../../itemtypelistsubinterceptor/select_value_item_type_list_sub_interce
 import '../../itemtypelistsubinterceptor/separatedcartitemtypelistsubinterceptor/cart_separated_cart_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/separatedcartitemtypelistsubinterceptor/warehouse_separated_cart_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/shimmer_container_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/shipper_address_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/shipping_address_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/stack_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/verticalgriditemtypelistsubinterceptor/vertical_grid_item_type_list_sub_interceptor.dart';
@@ -225,6 +226,11 @@ class ListItemControllerStateItemTypeInterceptorChecker extends ItemTypeListInte
       itemSpacing: itemSpacing,
       listItemControllerStateItemTypeInterceptorChecker: this
     ),
+    ShipperAddressItemTypeListSubInterceptor(
+      padding: padding,
+      itemSpacing: itemSpacing,
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
     ProductEntryHeaderItemTypeListSubInterceptor(
       listItemControllerStateItemTypeInterceptorChecker: this
     ),
@@ -287,7 +293,7 @@ class ListItemControllerStateItemTypeInterceptorChecker extends ItemTypeListInte
       itemSpacing: itemSpacing,
       listItemControllerStateItemTypeInterceptorChecker: this
     ),
-    PurchaseDirectItemTypeListSubInterceptor(
+    PaymentParameterItemTypeListSubInterceptor(
       padding: padding,
       itemSpacing: itemSpacing,
       listItemControllerStateItemTypeInterceptorChecker: this

@@ -1,16 +1,19 @@
-import '../../../../misc/multi_language_string.dart';
-import 'order_tracking_location.dart';
+import 'order_tracking_detail.dart';
 
 class OrderTracking {
-  DateTime timeStamp;
-  OrderTrackingLocation orderTrackingLocation;
-  MultiLanguageString description;
-  List<String> pieceIdList;
+  String id;
+  String orderShippingId;
+  String trackingNumber;
+  int arrived;
+  double weight;
+  List<OrderTrackingDetail> orderTrackingDetailList;
 
   OrderTracking({
-    required this.timeStamp,
-    required this.orderTrackingLocation,
-    required this.description,
-    required this.pieceIdList
+    required this.id,
+    required this.orderShippingId,
+    required this.trackingNumber,
+    required this.arrived,
+    required this.weight,
+    required this.orderTrackingDetailList
   });
 }

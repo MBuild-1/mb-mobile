@@ -6,10 +6,16 @@ import '../../domain/entity/deleteaccount/verifydeleteaccountotp/verify_delete_a
 import '../../domain/entity/deleteaccount/verifydeleteaccountotp/verify_delete_account_otp_response.dart';
 import '../../domain/entity/forgotpassword/forgot_password_parameter.dart';
 import '../../domain/entity/forgotpassword/forgot_password_response.dart';
+import '../../domain/entity/forgotpassword/whatsapp/whatsapp_forgot_password_parameter.dart';
+import '../../domain/entity/forgotpassword/whatsapp/whatsapp_forgot_password_response.dart';
 import '../../domain/entity/login/login_parameter.dart';
 import '../../domain/entity/login/login_response.dart';
+import '../../domain/entity/login/login_with_apple_parameter.dart';
+import '../../domain/entity/login/login_with_apple_response.dart';
 import '../../domain/entity/login/login_with_google_parameter.dart';
 import '../../domain/entity/login/login_with_google_response.dart';
+import '../../domain/entity/loginorregister/login_or_register_with_apple_via_callback_parameter.dart';
+import '../../domain/entity/loginorregister/login_or_register_with_apple_via_callback_response.dart';
 import '../../domain/entity/logout/logout_parameter.dart';
 import '../../domain/entity/logout/logout_response.dart';
 import '../../domain/entity/pin/checkactivepin/check_active_pin_parameter.dart';
@@ -22,6 +28,8 @@ import '../../domain/entity/register/register_parameter.dart';
 import '../../domain/entity/register/register_response.dart';
 import '../../domain/entity/register/register_second_step_parameter.dart';
 import '../../domain/entity/register/register_second_step_response.dart';
+import '../../domain/entity/register/register_with_apple_parameter.dart';
+import '../../domain/entity/register/register_with_apple_response.dart';
 import '../../domain/entity/register/register_with_google_parameter.dart';
 import '../../domain/entity/register/register_with_google_response.dart';
 import '../../domain/entity/register/sendregisterotp/sendregisterotpparameter/send_register_otp_parameter.dart';
@@ -71,6 +79,11 @@ class DefaultUserRepository implements UserRepository {
   }
 
   @override
+  FutureProcessing<LoadDataResult<LoginWithAppleResponse>> loginWithApple(LoginWithAppleParameter loginWithAppleParameter) {
+    return userDataSource.loginWithApple(loginWithAppleParameter).mapToLoadDataResult<LoginWithAppleResponse>();
+  }
+
+  @override
   FutureProcessing<LoadDataResult<RegisterResponse>> register(RegisterParameter registerParameter) {
     return userDataSource.register(registerParameter).mapToLoadDataResult<RegisterResponse>();
   }
@@ -78,6 +91,11 @@ class DefaultUserRepository implements UserRepository {
   @override
   FutureProcessing<LoadDataResult<RegisterWithGoogleResponse>> registerWithGoogle(RegisterWithGoogleParameter registerWithGoogleParameter) {
     return userDataSource.registerWithGoogle(registerWithGoogleParameter).mapToLoadDataResult<RegisterWithGoogleResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<RegisterWithAppleResponse>> registerWithApple(RegisterWithAppleParameter registerWithAppleParameter) {
+    return userDataSource.registerWithApple(registerWithAppleParameter).mapToLoadDataResult<RegisterWithAppleResponse>();
   }
 
   @override
@@ -113,6 +131,11 @@ class DefaultUserRepository implements UserRepository {
   @override
   FutureProcessing<LoadDataResult<ForgotPasswordResponse>> forgotPassword(ForgotPasswordParameter forgotPasswordParameter) {
     return userDataSource.forgotPassword(forgotPasswordParameter).mapToLoadDataResult<ForgotPasswordResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<WhatsappForgotPasswordResponse>> whatsappForgotPassword(WhatsappForgotPasswordParameter whatsappForgotPasswordParameter) {
+    return userDataSource.whatsappForgotPassword(whatsappForgotPasswordParameter).mapToLoadDataResult<WhatsappForgotPasswordResponse>();
   }
 
   @override
@@ -183,5 +206,10 @@ class DefaultUserRepository implements UserRepository {
   @override
   FutureProcessing<LoadDataResult<AuthIdentityChangeResponse>> authIdentityChange(AuthIdentityChangeParameter authIdentityChangeParameter) {
     return userDataSource.authIdentityChange(authIdentityChangeParameter).mapToLoadDataResult<AuthIdentityChangeResponse>();
+  }
+
+  @override
+  FutureProcessing<LoadDataResult<LoginOrRegisterWithAppleViaCallbackResponse>> loginOrRegisterWithAppleViaCallback(LoginOrRegisterWithAppleViaCallbackParameter loginOrRegisterWithAppleViaCallbackParameter) {
+    return userDataSource.loginOrRegisterWithAppleViaCallback(loginOrRegisterWithAppleViaCallbackParameter).mapToLoadDataResult<LoginOrRegisterWithAppleViaCallbackResponse>();
   }
 }

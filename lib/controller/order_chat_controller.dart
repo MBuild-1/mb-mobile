@@ -8,11 +8,14 @@ import '../domain/entity/chat/order/get_order_message_by_combined_order_paramete
 import '../domain/entity/chat/order/get_order_message_by_combined_order_response.dart';
 import '../domain/entity/chat/order/get_order_message_by_user_parameter.dart';
 import '../domain/entity/chat/order/get_order_message_by_user_response.dart';
+import '../domain/entity/order/order.dart';
+import '../domain/entity/order/order_based_id_parameter.dart';
 import '../domain/entity/user/getuser/get_user_parameter.dart';
 import '../domain/entity/user/getuser/get_user_response.dart';
 import '../domain/usecase/answer_order_conversation_use_case.dart';
 import '../domain/usecase/answer_order_conversation_version_1_point_1_use_case.dart';
 import '../domain/usecase/create_order_conversation_use_case.dart';
+import '../domain/usecase/get_order_based_id_use_case.dart';
 import '../domain/usecase/get_order_message_by_combined_order_use_case.dart';
 import '../domain/usecase/get_order_message_by_user_use_case.dart';
 import '../domain/usecase/get_user_use_case.dart';
@@ -26,6 +29,7 @@ class OrderChatController extends BaseGetxController {
   final AnswerOrderConversationUseCase answerOrderConversationUseCase;
   final AnswerOrderConversationVersion1Point1UseCase answerOrderConversationVersion1Point1UseCase;
   final GetUserUseCase getUserUseCase;
+  final GetOrderBasedIdUseCase getOrderBasedIdUseCase;
 
   OrderChatController(
     super.controllerManager,
@@ -34,7 +38,8 @@ class OrderChatController extends BaseGetxController {
     this.createOrderConversationUseCase,
     this.answerOrderConversationUseCase,
     this.answerOrderConversationVersion1Point1UseCase,
-    this.getUserUseCase
+    this.getUserUseCase,
+    this.getOrderBasedIdUseCase
   );
 
   Future<LoadDataResult<GetOrderMessageByUserResponse>> getOrderMessageByUser(GetOrderMessageByUserParameter getOrderMessageByUserParameter) {
@@ -70,6 +75,12 @@ class OrderChatController extends BaseGetxController {
   Future<LoadDataResult<GetUserResponse>> getUser(GetUserParameter getUserParameter) {
     return getUserUseCase.execute(getUserParameter).future(
       parameter: apiRequestManager.addRequestToCancellationPart("get-user", duplicate: true).value
+    );
+  }
+
+  Future<LoadDataResult<Order>> getOrderBasedId(OrderBasedIdParameter orderBasedIdParameter) {
+    return getOrderBasedIdUseCase.execute(orderBasedIdParameter).future(
+      parameter: apiRequestManager.addRequestToCancellationPart("get-order-based-id").value
     );
   }
 }

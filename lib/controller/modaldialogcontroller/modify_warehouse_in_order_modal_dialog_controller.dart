@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:masterbagasi/misc/ext/double_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../../domain/entity/additionalitem/additional_item.dart';
@@ -42,7 +43,7 @@ class ModifyWarehouseInOrderModalDialogController extends ModalDialogController 
         onValidate: () {
           String estimationPrice = _modifyWarehouseInOrderModalDialogDelegate!.onGetPriceInput();
           if (!estimationPrice.isEmptyString) {
-            double? estimationPriceValue = double.tryParse(estimationPrice);
+            double? estimationPriceValue = estimationPrice.tryParseDoubleWithAdditionalChecking();
             if (estimationPriceValue != null) {
               return SuccessValidationResult();
             } else {
@@ -57,7 +58,7 @@ class ModifyWarehouseInOrderModalDialogController extends ModalDialogController 
         onValidate: () {
           String estimationWeight = _modifyWarehouseInOrderModalDialogDelegate!.onGetWeightInput();
           if (!estimationWeight.isEmptyString) {
-            double? estimationWeightValue = double.tryParse(estimationWeight);
+            double? estimationWeightValue = estimationWeight.tryParseDoubleWithAdditionalChecking();
             if (estimationWeightValue != null) {
               return SuccessValidationResult();
             } else {
@@ -121,7 +122,7 @@ class ModifyWarehouseInOrderModalDialogController extends ModalDialogController 
             } else if (modifyWarehouseInOrderParameter is ChangeWarehouseInOrderParameter) {
               var optionalFieldsWarehouseInOrderItem = modifyWarehouseInOrderParameter.optionalFieldsWarehouseInOrderItem;
               optionalFieldsWarehouseInOrderItem.name = _modifyWarehouseInOrderModalDialogDelegate!.onGetNameInput();
-              optionalFieldsWarehouseInOrderItem.weight = double.parse(_modifyWarehouseInOrderModalDialogDelegate!.onGetWeightInput());
+              optionalFieldsWarehouseInOrderItem.weight = _modifyWarehouseInOrderModalDialogDelegate!.onGetWeightInput().parseDoubleWithAdditionalChecking();
               optionalFieldsWarehouseInOrderItem.price = int.parse(_modifyWarehouseInOrderModalDialogDelegate!.onGetPriceInput());
               optionalFieldsWarehouseInOrderItem.quantity = int.parse(_modifyWarehouseInOrderModalDialogDelegate!.onGetQuantityInput());
               optionalFieldsWarehouseInOrderItem.notes = _modifyWarehouseInOrderModalDialogDelegate!.onGetNotesInput();

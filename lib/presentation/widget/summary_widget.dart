@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:masterbagasi/misc/ext/double_ext.dart';
 import 'package:masterbagasi/misc/ext/number_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
@@ -80,7 +81,7 @@ class SummaryWidget extends StatelessWidget {
         if (cartSummaryValue.value is num) {
           cartSummaryValueDescription = (cartSummaryValue.value as num).toRupiah(withFreeTextIfZero: false);
         } else {
-          cartSummaryValueDescription = double.parse(cartSummaryValue.value as String).toRupiah(withFreeTextIfZero: false);
+          cartSummaryValueDescription = (cartSummaryValue.value as String).parseDoubleWithAdditionalChecking().toRupiah(withFreeTextIfZero: false);
         }
       } else if (cartSummaryValueType == "header") {
         columnWidget.add(

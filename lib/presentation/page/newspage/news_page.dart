@@ -217,7 +217,7 @@ class _StatefulNewsControllerMediatorWidgetState extends State<_StatefulNewsCont
       appBar: ModifiedAppBar(
         titleInterceptor: (context, title) => Row(
           children: [
-            Text("News".tr),
+            Text("Master Bagasi's Blog".tr),
           ],
         ),
       ),

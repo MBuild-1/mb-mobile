@@ -7,6 +7,7 @@ import 'package:sizer/sizer.dart';
 
 import '../../domain/entity/user/user.dart';
 import '../../misc/constant.dart';
+import '../../misc/dialog_helper.dart';
 import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/page_restoration_helper.dart';
@@ -143,7 +144,7 @@ class _MenuProfileHeaderState extends State<MenuProfileHeader> with AutomaticKee
               child: Material(
                 borderRadius: BorderRadius.circular(8.0),
                 child: InkWell(
-                  onTap: () => PageRestorationHelper.toMsmePartnerPage(context),
+                  onTap: () => DialogHelper.showPromptUnderConstruction(context), //() => PageRestorationHelper.toMsmePartnerPage(context),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                     child: Row(
@@ -177,7 +178,7 @@ class _MenuProfileHeaderState extends State<MenuProfileHeader> with AutomaticKee
               child: Material(
                 borderRadius: BorderRadius.circular(8.0),
                 child: InkWell(
-                  onTap: () => PageRestorationHelper.toAffiliatePage(context),
+                  onTap: () => DialogHelper.showPromptUnderConstruction(context),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                     child: Row(
