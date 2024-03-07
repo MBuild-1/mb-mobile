@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:masterbagasi/misc/ext/double_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/misc/ext/validation_result_ext.dart';
@@ -44,6 +45,8 @@ import '../../widget/field.dart';
 import '../../widget/modified_paged_list_view.dart';
 import '../../widget/modified_text_field.dart';
 import '../../widget/rx_consumer.dart';
+import '../../widget/sized_outline_gradient_button_app_bar_header.dart';
+import '../../widget/tap_area.dart';
 import 'modal_dialog_page.dart';
 
 class ModifyWarehouseInOrderModalDialogPage extends ModalDialogPage<ModifyWarehouseInOrderModalDialogController> {
@@ -206,7 +209,7 @@ class _StatefulModifyWarehouseInOrderControllerMediatorWidgetState extends State
         onGetAdditionalItemList: () => _additionalItemList,
         onGetNameInput: () => _nameTextEditingController.text,
         onGetPriceInput: () => StringUtil.filterNumber(_priceTextEditingController.text),
-        onGetWeightInput: () => StringUtil.filterNumberAndDecimal(_weightTextEditingController.text),
+        onGetWeightInput: () => _weightTextEditingController.text,
         onGetQuantityInput: () => _quantityTextEditingController.text,
         onGetNotesInput: () => _notesTextEditingController.text,
         onAddAdditionalItemBack: () async => Get.back(),
@@ -254,41 +257,25 @@ class _StatefulModifyWarehouseInOrderControllerMediatorWidgetState extends State
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    IgnorePointer(
-                      child: ExcludeFocus(
-                        child: SizedOutlineGradientButton(
-                          onPressed: () {},
-                          text: () {
-                            var modifyWarehouseInOrderParameter = widget.modifyWarehouseInOrderModalDialogPageParameter.modifyWarehouseInOrderParameter;
-                            if (modifyWarehouseInOrderParameter is AddWarehouseInOrderParameter) {
-                              if (_localModifyWarehouseInOrderParameter is AddWarehouseInOrderParameter) {
-                                return "Send the Goods to Master Bagasi Warehouse".tr;
-                              } else if (_localModifyWarehouseInOrderParameter is ChangeWarehouseInOrderParameter) {
-                                return "Change New Item".tr;
-                              }
-                              return "Send the Goods to Master Bagasi Warehouse".tr;
-                            } else if (modifyWarehouseInOrderParameter is ChangeWarehouseInOrderParameter) {
-                              return "Change New Item".tr;
-                            } else {
-                              return "";
-                            }
-                          }(),
-                          outlineGradientButtonType: OutlineGradientButtonType.outline,
-                          outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
-                          customGradientButtonVariation: (outlineGradientButtonType) {
-                            return CustomGradientButtonVariation(
-                              outlineGradientButtonType: outlineGradientButtonType,
-                              textStyle: TextStyle(
-                                color: Theme.of(context).colorScheme.primary,
-                                fontWeight: FontWeight.bold
-                              )
-                            );
-                          },
-                        ),
-                      ),
+                    SizedOutlineGradientButtonAppBarHeader(
+                      text: () {
+                        var modifyWarehouseInOrderParameter = widget.modifyWarehouseInOrderModalDialogPageParameter.modifyWarehouseInOrderParameter;
+                        if (modifyWarehouseInOrderParameter is AddWarehouseInOrderParameter) {
+                          if (_localModifyWarehouseInOrderParameter is AddWarehouseInOrderParameter) {
+                            return "Send the Goods to WH".tr;
+                          } else if (_localModifyWarehouseInOrderParameter is ChangeWarehouseInOrderParameter) {
+                            return "Change New Item".tr;
+                          }
+                          return "Send the Goods to WH".tr;
+                        } else if (modifyWarehouseInOrderParameter is ChangeWarehouseInOrderParameter) {
+                          return "Change New Item".tr;
+                        } else {
+                          return "";
+                        }
+                      }(),
                     ),
                     const SizedBox(height: 20),
-                    Text("Name".tr),
+                    Text("Item Name".tr),
                     const SizedBox(height: 10),
                     RxConsumer<Validator>(
                       rxValue: widget.modifyWarehouseInOrderModalDialogController.nameValidatorRx,
@@ -296,7 +283,7 @@ class _StatefulModifyWarehouseInOrderControllerMediatorWidgetState extends State
                         child: (context, validationResult, validator) => ModifiedTextField(
                           isError: validationResult.isFailed,
                           controller: _nameTextEditingController,
-                          decoration: const DefaultInputDecoration(hintText: ""),
+                          decoration: DefaultInputDecoration(hintText: "Input item name".tr),
                           onChanged: (value) => validator?.validate(),
                           textInputAction: TextInputAction.next,
                         ),
@@ -304,7 +291,7 @@ class _StatefulModifyWarehouseInOrderControllerMediatorWidgetState extends State
                       ),
                     ),
                     const SizedBox(height: 20),
-                    Text("Price".tr),
+                    Text("Estimation Price".tr),
                     const SizedBox(height: 10),
                     RxConsumer<Validator>(
                       rxValue: widget.modifyWarehouseInOrderModalDialogController.priceValidatorRx,
@@ -314,7 +301,7 @@ class _StatefulModifyWarehouseInOrderControllerMediatorWidgetState extends State
                           inputFormatters: [currencyTextInputFormatter],
                           controller: _priceTextEditingController,
                           decoration: DefaultInputDecoration(
-                            hintText: "",
+                            hintText: "Enter estimation price".tr,
                             prefixIcon: WidgetHelper.buildPrefixForTextField(
                               prefix: Text(
                                 "Rp. ",
@@ -330,26 +317,33 @@ class _StatefulModifyWarehouseInOrderControllerMediatorWidgetState extends State
                       ),
                     ),
                     const SizedBox(height: 20),
-                    Text("Weight".tr),
+                    Text("Estimation Weight".tr),
                     const SizedBox(height: 10),
                     RxConsumer<Validator>(
                       rxValue: widget.modifyWarehouseInOrderModalDialogController.weightValidatorRx,
                       onConsumeValue: (context, value) => Field(
-                        child: (context, validationResult, validator) => ModifiedTextField(
-                          isError: validationResult.isFailed,
-                          controller: _weightTextEditingController,
-                          decoration: DefaultInputDecoration(
-                            hintText: "",
-                            suffixIcon: WidgetHelper.buildSuffixForTextField(
-                              suffix: Text(
-                                "Kg",
-                                style: TextStyle(color: Constant.colorDarkBlack, fontSize: 16)
+                        child: (context, validationResult, validator) => Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            WidgetHelper.buildWeightInputHint(),
+                            const SizedBox(height: 8),
+                            ModifiedTextField(
+                              isError: validationResult.isFailed,
+                              controller: _weightTextEditingController,
+                              decoration: DefaultInputDecoration(
+                                hintText: "Enter estimation weight".tr,
+                                suffixIcon: WidgetHelper.buildSuffixForTextField(
+                                  suffix: Text(
+                                    "Kg",
+                                    style: TextStyle(color: Constant.colorDarkBlack, fontSize: 16)
+                                  ),
+                                ),
+                                suffixIconConstraints: const BoxConstraints(minWidth: 0.0, minHeight: 0.0)
                               ),
+                              onChanged: (value) => validator?.validate(),
+                              textInputAction: TextInputAction.next,
                             ),
-                            suffixIconConstraints: const BoxConstraints(minWidth: 0.0, minHeight: 0.0)
-                          ),
-                          onChanged: (value) => validator?.validate(),
-                          textInputAction: TextInputAction.next,
+                          ],
                         ),
                         validator: value,
                       ),
@@ -363,7 +357,7 @@ class _StatefulModifyWarehouseInOrderControllerMediatorWidgetState extends State
                         child: (context, validationResult, validator) => ModifiedTextField(
                           isError: validationResult.isFailed,
                           controller: _quantityTextEditingController,
-                          decoration: const DefaultInputDecoration(hintText: ""),
+                          decoration: const DefaultInputDecoration(hintText: "Enter quantity"),
                           onChanged: (value) => validator?.validate(),
                           textInputAction: TextInputAction.next,
                         ),
@@ -379,7 +373,7 @@ class _StatefulModifyWarehouseInOrderControllerMediatorWidgetState extends State
                         child: (context, validationResult, validator) => ModifiedTextField(
                           isError: validationResult.isFailed,
                           controller: _notesTextEditingController,
-                          decoration: const DefaultInputDecoration(hintText: ""),
+                          decoration: DefaultInputDecoration(hintText: "Enter note".tr),
                           onChanged: (value) => validator?.validate(),
                           textInputAction: TextInputAction.next,
                         ),
@@ -399,8 +393,8 @@ class _StatefulModifyWarehouseInOrderControllerMediatorWidgetState extends State
                                 AdditionalItem(
                                   id: "",
                                   name: _nameTextEditingController.text,
-                                  estimationPrice: double.parse(StringUtil.filterNumber(_priceTextEditingController.text)),
-                                  estimationWeight: double.parse(StringUtil.filterNumberAndDecimal(_weightTextEditingController.text)),
+                                  estimationPrice: StringUtil.filterNumber(_priceTextEditingController.text).parseDoubleWithAdditionalChecking(),
+                                  estimationWeight: StringUtil.filterNumberAndDecimal(_weightTextEditingController.text).parseDoubleWithAdditionalChecking(),
                                   quantity: int.parse(_quantityTextEditingController.text),
                                   notes: _notesTextEditingController.text
                                 )
@@ -416,8 +410,8 @@ class _StatefulModifyWarehouseInOrderControllerMediatorWidgetState extends State
                               if (additionalItemIterable.isNotEmpty) {
                                 AdditionalItem willBeEditAdditionalItem = additionalItemIterable.first;
                                 willBeEditAdditionalItem.name = _nameTextEditingController.text;
-                                willBeEditAdditionalItem.estimationPrice = double.parse(StringUtil.filterNumber(_priceTextEditingController.text));
-                                willBeEditAdditionalItem.estimationWeight = double.parse(StringUtil.filterNumberAndDecimal(_weightTextEditingController.text));
+                                willBeEditAdditionalItem.estimationPrice = StringUtil.filterNumber(_priceTextEditingController.text).parseDoubleWithAdditionalChecking();
+                                willBeEditAdditionalItem.estimationWeight = StringUtil.filterNumberAndDecimal(_weightTextEditingController.text).parseDoubleWithAdditionalChecking();
                                 willBeEditAdditionalItem.quantity = int.parse(_quantityTextEditingController.text);
                                 willBeEditAdditionalItem.notes = _notesTextEditingController.text;
                               }

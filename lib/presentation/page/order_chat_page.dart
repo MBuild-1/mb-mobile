@@ -214,6 +214,7 @@ class _StatefulOrderChatControllerMediatorWidgetState extends State<_StatefulOrd
   String _orderConversationId = "";
   User? _loggedUser;
   LoadDataResult<Order> _orderLoadDataResult = NoLoadDataResult<Order>();
+  LoadDataResult<User> _userLoadDataResult = NoLoadDataResult<User>();
   final DefaultChatContainerInterceptingActionListItemControllerState _defaultChatContainerInterceptingActionListItemControllerState = DefaultChatContainerInterceptingActionListItemControllerState();
   bool _hasLoadData = false;
 
@@ -245,12 +246,9 @@ class _StatefulOrderChatControllerMediatorWidgetState extends State<_StatefulOrd
   }
 
   Future<UserMessageResponseWrapper<GetOrderMessageByCombinedOrderResponse>> getOrderMessageByCombinedOrder() async {
-    LoadDataResult<User> getUserLoadDataResult = await widget.orderChatController.getUser(
-      GetUserParameter()
-    ).map<User>((value) => value.user);
-    if (getUserLoadDataResult.isFailed) {
+    if (_userLoadDataResult.isFailed) {
       Future<LoadDataResult<GetOrderMessageByCombinedOrderResponse>> returnUserLoadFailed() async {
-        return getUserLoadDataResult.map<GetOrderMessageByCombinedOrderResponse>(
+        return _userLoadDataResult.map<GetOrderMessageByCombinedOrderResponse>(
           // This is for required argument purposes only, not will be used for further process
           (_) => GetOrderMessageByCombinedOrderResponse(
             getOrderMessageByCombinedOrderResponseMember: GetOrderMessageByCombinedOrderResponseMember(
@@ -268,12 +266,12 @@ class _StatefulOrderChatControllerMediatorWidgetState extends State<_StatefulOrd
         );
       }
       return UserMessageResponseWrapper(
-        userLoadDataResult: getUserLoadDataResult,
+        userLoadDataResult: _userLoadDataResult,
         valueLoadDataResult: await returnUserLoadFailed()
       );
     }
     return UserMessageResponseWrapper(
-      userLoadDataResult: getUserLoadDataResult,
+      userLoadDataResult: _userLoadDataResult,
       valueLoadDataResult: await widget.orderChatController.getOrderMessageByCombinedOrder(
         GetOrderMessageByCombinedOrderParameter(combinedOrderId: widget.combinedOrderId)
       )
@@ -301,6 +299,34 @@ class _StatefulOrderChatControllerMediatorWidgetState extends State<_StatefulOrd
         )
       );
     }
+    if (orderLoadDataResult.isFailed) {
+      return orderLoadDataResult.map<PagingResult<ListItemControllerState>>((_) => throw UnimplementedError());
+    }
+    _userLoadDataResult = await widget.orderChatController.getUser(
+      GetUserParameter()
+    ).map<User>((value) => value.user);
+    if (_userLoadDataResult.isFailedBecauseCancellation) {
+      return SuccessLoadDataResult(
+        value: PagingDataResult<ListItemControllerState>(
+          page: 1,
+          totalPage: 1,
+          totalItem: 1,
+          itemList: [
+            NoContentListItemControllerState()
+          ]
+        )
+      );
+    }
+    if (_userLoadDataResult.isFailed) {
+      return _userLoadDataResult.map<PagingResult<ListItemControllerState>>((_) => throw UnimplementedError());
+    }
+    void hasLoadData() {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        _hasLoadData = true;
+        _orderLoadDataResult = orderLoadDataResult;
+        setState(() {});
+      });
+    }
     UserMessageResponseWrapper<GetOrderMessageByCombinedOrderResponse> getOrderMessageByCombinedOrderResponseLoadDataResult = await getOrderMessageByCombinedOrder();
     if (getOrderMessageByCombinedOrderResponseLoadDataResult.valueLoadDataResult.isFailed) {
       dynamic e = getOrderMessageByCombinedOrderResponseLoadDataResult.valueLoadDataResult.resultIfFailed;
@@ -308,6 +334,7 @@ class _StatefulOrderChatControllerMediatorWidgetState extends State<_StatefulOrd
         _isFirstEmpty = true;
         User user = getOrderMessageByCombinedOrderResponseLoadDataResult.userLoadDataResult.resultIfSuccess!;
         _loggedUser = user;
+        hasLoadData();
         return SuccessLoadDataResult(
           value: PagingDataResult<ListItemControllerState>(
             itemList: [
@@ -333,11 +360,7 @@ class _StatefulOrderChatControllerMediatorWidgetState extends State<_StatefulOrd
         conversationId: getOrderMessageByCombinedOrderResponseLoadDataResult.valueLoadDataResult.resultIfSuccess!.getOrderMessageByCombinedOrderResponseMember.id,
       );
     }
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _hasLoadData = true;
-      _orderLoadDataResult = orderLoadDataResult;
-      setState(() {});
-    });
+    hasLoadData();
     return getOrderMessageByCombinedOrderResponseLoadDataResult.valueLoadDataResult.map<PagingResult<ListItemControllerState>>((getOrderMessageByUserResponse) {
       _orderConversationId = getOrderMessageByUserResponse.getOrderMessageByCombinedOrderResponseMember.id;
       User user = getOrderMessageByCombinedOrderResponseLoadDataResult.userLoadDataResult.resultIfSuccess!;

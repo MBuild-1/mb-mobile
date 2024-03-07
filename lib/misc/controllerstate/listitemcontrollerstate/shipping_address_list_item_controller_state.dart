@@ -6,9 +6,11 @@ import 'list_item_controller_state.dart';
 class ShippingAddressListItemControllerState extends ListItemControllerState {
   LoadDataResult<Address> shippingLoadDataResult;
   ErrorProvider Function() errorProvider;
+  void Function()? onChangeOtherAddress;
 
   ShippingAddressListItemControllerState({
     required this.shippingLoadDataResult,
-    required this.errorProvider
+    required this.errorProvider,
+    this.onChangeOtherAddress
   });
 }

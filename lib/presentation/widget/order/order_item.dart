@@ -102,7 +102,7 @@ abstract class OrderItem extends StatelessWidget {
                             result.add(const SizedBox(height: 12));
                             if (allIsNotEmpty) {
                               result.addAll([
-                                Text("Warehouse".tr),
+                                Text("Personal Stuffs".tr),
                                 SizedBox(height: titleAndContentHeight)
                               ]);
                             }
@@ -142,19 +142,6 @@ abstract class OrderItem extends StatelessWidget {
                                 )
                               );
                             }
-                            if (order.status.toLowerCase() == "sedang dikirim") {
-                              addRowWidget(
-                                Expanded(
-                                  child: SizedOutlineGradientButton(
-                                    onPressed:() => onConfirmArrived(order),
-                                    text: "Confirm Arrived".tr,
-                                    customPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                                    outlineGradientButtonType: OutlineGradientButtonType.solid,
-                                    outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,
-                                  )
-                                )
-                              );
-                            }
                             if (rowWidget.isEmpty) {
                               return const SizedBox();
                             }
@@ -176,6 +163,7 @@ abstract class OrderItem extends StatelessWidget {
                               combinedOrderId: order.id
                             )
                           ),
+                          onConfirmArrived: onConfirmArrived
                         ),
                       ],
                     ),

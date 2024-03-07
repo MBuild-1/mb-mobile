@@ -34,8 +34,10 @@ import '../../domain/entity/address/address_user.dart';
 import '../../domain/entity/address/change_address_response.dart';
 import '../../domain/entity/address/country.dart';
 import '../../domain/entity/address/remove_address_response.dart';
+import '../../domain/entity/address/shipper_address.dart';
 import '../../domain/entity/address/update_current_selected_address_response.dart';
 import '../../domain/entity/address/zone.dart';
+import '../../domain/entity/delivery/country_based_country_code_response.dart';
 import '../../misc/constant.dart';
 import '../../misc/error/message_error.dart';
 import '../../misc/multi_language_string.dart';
@@ -113,7 +115,7 @@ extension AddressDetailEntityMappingExt on ResponseWrapper {
       name: response["name"],
       code: response["code"],
       phoneCode: response["phone_code"],
-      zone: ResponseWrapper(response["zone"]).mapFromResponseToZone()
+      zone: response["zone"] != null ? ResponseWrapper(response["zone"]).mapFromResponseToZone() : null
     );
   }
 
@@ -139,5 +141,18 @@ extension AddressDetailEntityMappingExt on ResponseWrapper {
 
   RemoveAddressResponse mapFromResponseToRemoveAddressResponse() {
     return RemoveAddressResponse();
+  }
+
+  ShipperAddress mapFromResponseToShipperAddress() {
+    return ShipperAddress(
+      name: response["name"],
+      address: response["address"]
+    );
+  }
+
+  CountryBasedCountryCodeResponse mapFromResponseToCountryBasedCountryCodeResponse() {
+    return CountryBasedCountryCodeResponse(
+      country: ResponseWrapper(response).mapFromResponseToCountry()
+    );
   }
 }

@@ -48,6 +48,7 @@ import '../../itemtypelistsubinterceptor/select_value_item_type_list_sub_interce
 import '../../itemtypelistsubinterceptor/separatedcartitemtypelistsubinterceptor/cart_separated_cart_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/separatedcartitemtypelistsubinterceptor/warehouse_separated_cart_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/shimmer_container_item_type_list_sub_interceptor.dart';
+import '../../itemtypelistsubinterceptor/shipper_address_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/shipping_address_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/stack_container_item_type_list_sub_interceptor.dart';
 import '../../itemtypelistsubinterceptor/verticalgriditemtypelistsubinterceptor/vertical_grid_item_type_list_sub_interceptor.dart';
@@ -221,6 +222,11 @@ class ListItemControllerStateItemTypeInterceptorChecker extends ItemTypeListInte
       listItemControllerStateItemTypeInterceptorChecker: this
     ),
     ShippingAddressItemTypeListSubInterceptor(
+      padding: padding,
+      itemSpacing: itemSpacing,
+      listItemControllerStateItemTypeInterceptorChecker: this
+    ),
+    ShipperAddressItemTypeListSubInterceptor(
       padding: padding,
       itemSpacing: itemSpacing,
       listItemControllerStateItemTypeInterceptorChecker: this

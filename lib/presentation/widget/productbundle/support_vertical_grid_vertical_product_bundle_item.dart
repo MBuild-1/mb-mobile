@@ -18,20 +18,14 @@ import 'product_bundle_item.dart';
 
 class SupportVerticalGridVerticalProductBundleItem extends ProductBundleItem {
   const SupportVerticalGridVerticalProductBundleItem({
-    Key? key,
-    required ProductBundle productBundle,
-    OnAddWishlistWithProductBundle? onAddWishlist,
-    OnRemoveWishlistWithProductBundle? onRemoveWishlist,
-    OnAddCartWithProductBundle? onAddCart,
-    OnRemoveCartWithProductBundle? onRemoveCart
-  }) : super(
-    key: key,
-    productBundle: productBundle,
-    onAddWishlist: onAddWishlist,
-    onRemoveWishlist: onRemoveWishlist,
-    onAddCart: onAddCart,
-    onRemoveCart: onRemoveCart
-  );
+    super.key,
+    required super.productBundle,
+    super.onAddWishlist,
+    super.onRemoveWishlist,
+    super.onAddCart,
+    super.onRemoveCart,
+    super.hasBackground = true
+  });
 
   @override
   Widget build(BuildContext context) {

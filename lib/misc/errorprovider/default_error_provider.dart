@@ -101,15 +101,15 @@ class DefaultErrorProvider extends ErrorProvider {
       effectiveMessageMultiLanguageString = messageMultiLanguageString;
     } else {
       effectiveMessageMultiLanguageString = MultiLanguageString({
-        Constant.textEnUsLanguageKey: "For now, item in warehouse is empty.",
-        Constant.textInIdLanguageKey: "Untuk sekarang, barang di warehouse kosong.",
+        Constant.textEnUsLanguageKey: "For now, item in personal stuffs is empty.",
+        Constant.textInIdLanguageKey: "Untuk sekarang, barang di barang pribadi kosong.",
       });
     }
     return onGetErrorProviderResult(
       MultiLanguageMessageError(
         title: MultiLanguageString({
-          Constant.textEnUsLanguageKey: "Item in Warehouse Is Empty",
-          Constant.textInIdLanguageKey: "Barang di Warehouse Kosong",
+          Constant.textEnUsLanguageKey: "Item in Personal Stuffs Is Empty",
+          Constant.textInIdLanguageKey: "Barang di Barang Pribadi Kosong",
         }),
         message: effectiveMessageMultiLanguageString,
         imageAssetUrl: Constant.imageEmptyErrorCart

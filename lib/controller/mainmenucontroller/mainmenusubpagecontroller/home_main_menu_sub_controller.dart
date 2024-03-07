@@ -19,6 +19,8 @@ import '../../../domain/entity/product/productbrand/product_brand.dart';
 import '../../../domain/entity/product/productbrand/product_brand_list_parameter.dart';
 import '../../../domain/entity/product/productbundle/product_bundle.dart';
 import '../../../domain/entity/product/productbundle/product_bundle_highlight_parameter.dart';
+import '../../../domain/entity/product/productbundle/product_bundle_list_parameter.dart';
+import '../../../domain/entity/product/productbundle/product_bundle_paging_parameter.dart';
 import '../../../domain/entity/product/productcategory/product_category.dart';
 import '../../../domain/entity/product/productcategory/product_category_list_parameter.dart';
 import '../../../domain/entity/product/productentry/product_entry.dart';
@@ -37,6 +39,7 @@ import '../../../domain/usecase/get_only_for_you_list_use_case.dart';
 import '../../../domain/usecase/get_product_brand_use_case.dart';
 import '../../../domain/usecase/get_product_bundle_highlight_use_case.dart';
 import '../../../domain/usecase/get_product_bundle_list_use_case.dart';
+import '../../../domain/usecase/get_product_bundle_paging_use_case.dart';
 import '../../../domain/usecase/get_product_category_list_use_case.dart';
 import '../../../domain/usecase/get_product_entry_with_condition_paging_use_case.dart';
 import '../../../domain/usecase/get_product_viral_list_use_case.dart';
@@ -67,6 +70,7 @@ class HomeMainMenuSubController extends BaseGetxController {
   final GetProductCategoryListUseCase getProductCategoryListUseCase;
   final GetProductBundleListUseCase getProductBundleListUseCase;
   final GetProductBundleHighlightUseCase getProductBundleHighlightUseCase;
+  final GetProductBundlePagingUseCase getProductBundlePagingUseCase;
   final GetSnackForLyingAroundListUseCase getSnackForLyingAroundListUseCase;
   final GetBestsellerInMasterbagasiListUseCase getBestsellerInMasterbagasiListUseCase;
   final GetSelectedFashionBrandsListUseCase getSelectedFashionBrandsListUseCase;
@@ -95,6 +99,7 @@ class HomeMainMenuSubController extends BaseGetxController {
     this.getProductCategoryListUseCase,
     this.getProductBundleListUseCase,
     this.getProductBundleHighlightUseCase,
+    this.getProductBundlePagingUseCase,
     this.addWishlistUseCase,
     this.getSnackForLyingAroundListUseCase,
     this.getBestsellerInMasterbagasiListUseCase,
@@ -506,7 +511,7 @@ class HomeMainMenuSubController extends BaseGetxController {
           LoadDataResult<List<ProductEntry>> productEntryPagingDataResult = await getProductEntryWithConditionPagingUseCase.execute(
             ProductWithConditionPagingParameter(
               page: 1,
-              itemEachPageCount: 10,
+              itemEachPageCount: 20,
               withCondition: {
                 "type": "sponsor",
                 "brand": bannerData.toLowerCase(),
@@ -576,18 +581,18 @@ class HomeMainMenuSubController extends BaseGetxController {
           Constant.textInIdLanguageKey: "Product Bundle Highlight"
         }),
         onDynamicItemAction: (title, description, observer) async {
-          observer(title, description, IsLoadingLoadDataResult<ProductBundle>());
-          LoadDataResult<ProductBundle> productBundleHighlightDataResult = await getProductBundleHighlightUseCase.execute(
-            ProductBundleHighlightParameter()
+          observer(title, description, IsLoadingLoadDataResult<List<ProductBundle>>());
+          LoadDataResult<List<ProductBundle>> productBundleHighlightMultipleListDataResult = await getProductBundlePagingUseCase.execute(
+            ProductBundlePagingParameter(page: 1, itemEachPageCount: 20)
           ).future(
-            parameter: apiRequestManager.addRequestToCancellationPart("product-bundle-highlight").value
-          );
-          if (productBundleHighlightDataResult.isFailedBecauseCancellation) {
+            parameter: apiRequestManager.addRequestToCancellationPart("product-bundle-highlight-multiple").value
+          ).map((value) {
+            return value.itemList;
+          });
+          if (productBundleHighlightMultipleListDataResult.isFailedBecauseCancellation) {
             return;
           }
-          observer(title, description, productBundleHighlightDataResult.map<ProductBundle>(
-            (productBundleHighlight) => productBundleHighlight
-          ));
+          observer(title, description, productBundleHighlightMultipleListDataResult);
         },
         onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
           if (_homeMainMenuDelegate != null) {
@@ -603,13 +608,13 @@ class HomeMainMenuSubController extends BaseGetxController {
           }
         },
         onObserveSuccessDynamicItemActionState: (title, description, loadDataResult) {
-          ProductBundle productBundle = loadDataResult.resultIfSuccess!;
+          List<ProductBundle> productBundleList = loadDataResult.resultIfSuccess!;
           if (_homeMainMenuDelegate != null) {
             return _homeMainMenuDelegate!.onObserveSuccessLoadProductBundleHighlight(
               _OnObserveSuccessLoadProductBundleHighlightParameter(
                 title: title,
                 description: description,
-                productBundle: productBundle
+                productBundleList: productBundleList
               )
             );
           }
@@ -1024,6 +1029,7 @@ class HomeMainMenuSubControllerInjectionFactory {
   final GetProductCategoryListUseCase getProductCategoryListUseCase;
   final GetProductBundleListUseCase getProductBundleListUseCase;
   final GetProductBundleHighlightUseCase getProductBundleHighlightUseCase;
+  final GetProductBundlePagingUseCase getProductBundlePagingUseCase;
   final GetSnackForLyingAroundListUseCase getSnackForLyingAroundListUseCase;
   final GetBestsellerInMasterbagasiListUseCase getBestsellerInMasterbagasiListUseCase;
   final GetSelectedFashionBrandsListUseCase getSelectedFashionBrandsListUseCase;
@@ -1049,6 +1055,7 @@ class HomeMainMenuSubControllerInjectionFactory {
     required this.getProductCategoryListUseCase,
     required this.getProductBundleListUseCase,
     required this.getProductBundleHighlightUseCase,
+    required this.getProductBundlePagingUseCase,
     required this.getSnackForLyingAroundListUseCase,
     required this.getBestsellerInMasterbagasiListUseCase,
     required this.getSelectedFashionBrandsListUseCase,
@@ -1078,6 +1085,7 @@ class HomeMainMenuSubControllerInjectionFactory {
         getProductCategoryListUseCase,
         getProductBundleListUseCase,
         getProductBundleHighlightUseCase,
+        getProductBundlePagingUseCase,
         addWishlistUseCase,
         getSnackForLyingAroundListUseCase,
         getBestsellerInMasterbagasiListUseCase,
@@ -1130,12 +1138,12 @@ class HomeMainMenuDelegate {
 class _OnObserveSuccessLoadProductBundleHighlightParameter {
   MultiLanguageString? title;
   MultiLanguageString? description;
-  ProductBundle productBundle;
+  List<ProductBundle> productBundleList;
 
   _OnObserveSuccessLoadProductBundleHighlightParameter({
     required this.title,
     required this.description,
-    required this.productBundle,
+    required this.productBundleList,
   });
 }
 

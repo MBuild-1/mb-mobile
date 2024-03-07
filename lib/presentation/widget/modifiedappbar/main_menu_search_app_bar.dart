@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:provider/provider.dart';
@@ -7,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../../../misc/constant.dart';
 import '../../../misc/page_restoration_helper.dart';
 import '../../notifier/notification_notifier.dart';
+import '../modified_svg_picture.dart';
 import '../modified_vertical_divider.dart';
 import '../notification_icon_indicator.dart';
 import '../notification_number_indicator.dart';
@@ -109,7 +109,7 @@ class MainMenuSearchAppBar extends SearchAppBar {
                         Center(
                           child: NotificationIconIndicator(
                             notificationNumber: notificationNotifier.notificationLoadDataResult.resultIfSuccess ?? 0,
-                            icon: SvgPicture.asset(
+                            icon: ModifiedSvgPicture.asset(
                               Constant.vectorNotificationIconNotif,
                               color: Constant.colorGrey6,
                               height: 25,
@@ -132,7 +132,7 @@ class MainMenuSearchAppBar extends SearchAppBar {
                         Center(
                           child: NotificationIconIndicator(
                             notificationNumber: notificationNotifier.inboxLoadDataResult.resultIfSuccess ?? 0,
-                            icon: SvgPicture.asset(
+                            icon: ModifiedSvgPicture.asset(
                               Constant.vectorNotificationIconInbox,
                               color: Constant.colorGrey6,
                               height: 25,
@@ -155,7 +155,7 @@ class MainMenuSearchAppBar extends SearchAppBar {
                         Center(
                           child: NotificationIconIndicator(
                             notificationNumber: notificationNotifier.cartLoadDataResult.resultIfSuccess ?? 0,
-                            icon: SvgPicture.asset(
+                            icon: ModifiedSvgPicture.asset(
                               Constant.vectorNotificationIconCart,
                               color: Constant.colorGrey6,
                               height: 25,

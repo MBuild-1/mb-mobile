@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:masterbagasi/misc/ext/error_provider_ext.dart';
+import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/misc/ext/validation_result_ext.dart';
 import 'package:masterbagasi/misc/temp_login_data_while_input_pin_helper.dart';
@@ -15,6 +16,8 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../controller/login_controller.dart';
+import '../../domain/entity/login/third_party_login_visibility.dart';
+import '../../domain/entity/login/third_party_login_visibility_parameter.dart';
 import '../../domain/usecase/get_user_use_case.dart';
 import '../../domain/usecase/login_use_case.dart';
 import '../../domain/usecase/login_with_apple_use_case.dart';
@@ -32,14 +35,19 @@ import '../../misc/load_data_result.dart';
 import '../../misc/login_helper.dart';
 import '../../misc/main_route_observer.dart';
 import '../../misc/manager/controller_manager.dart';
+import '../../misc/navigation_helper.dart';
 import '../../misc/page_restoration_helper.dart';
 import '../../misc/routeargument/login_route_argument.dart';
 import '../../misc/validation/validator/validator.dart';
+import '../../misc/web_helper.dart';
+import '../../misc/widget_helper.dart';
 import '../notifier/login_notifier.dart';
 import '../notifier/notification_notifier.dart';
 import '../notifier/product_notifier.dart';
+import '../notifier/third_party_login_notifier.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/field.dart';
+import '../widget/modified_loading_indicator.dart';
 import '../widget/modified_scaffold.dart';
 import '../widget/modified_text_field.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
@@ -89,7 +97,8 @@ class LoginPage extends RestorableGetxPage<_LoginPageRestoration> {
   Widget buildPage(BuildContext context) {
     return _StatefulLoginControllerMediatorWidget(
       loginController: _loginController.controller,
-      statefulLoginControllerMediatorWidgetDelegate: _statefulLoginControllerMediatorWidgetDelegate
+      statefulLoginControllerMediatorWidgetDelegate: _statefulLoginControllerMediatorWidgetDelegate,
+      pageName: pageName
     );
   }
 }
@@ -206,10 +215,12 @@ class _StatefulLoginControllerMediatorWidgetDelegate {
 class _StatefulLoginControllerMediatorWidget extends StatefulWidget {
   final LoginController loginController;
   final _StatefulLoginControllerMediatorWidgetDelegate statefulLoginControllerMediatorWidgetDelegate;
+  final String pageName;
 
   const _StatefulLoginControllerMediatorWidget({
     required this.loginController,
-    required this.statefulLoginControllerMediatorWidgetDelegate
+    required this.statefulLoginControllerMediatorWidgetDelegate,
+    required this.pageName
   });
 
   @override
@@ -240,11 +251,22 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
       for (var element in routeMap.entries) {
         element.value?.requestLoginChangeValue = 1;
       }
-      Get.back();
+      NavigationHelper.navigationAfterLoginOrRegisterProcess(context);
+    };
+    MainRouteObserver.onLoginOrRegisterAppleViaCallbackRequestProcessSuccessCallback[getRouteMapKey(widget.pageName)] = (loginResponse, onBack) async {
+      if (await widget.loginController.loginOneSignal(loginResponse.userId)) {
+        return;
+      }
+      await LoginHelper.saveToken(loginResponse.token).future();
+      if (onBack != null) {
+        onBack();
+      }
+      _onLoginRequestProcessSuccessCallback();
     };
     _loginNotifier = Provider.of<LoginNotifier>(context, listen: false);
     _notificationNotifier = Provider.of<NotificationNotifier>(context, listen: false);
     _productNotifier = Provider.of<ProductNotifier>(context, listen: false);
+    DeviceHelper.checkThirdPartyLoginVisibility(context);
     _googleSignIn = GoogleSignIn(
       scopes: [
         'email',
@@ -321,7 +343,6 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
           }
         },
         onGetPushNotificationSubscriptionId: () => OneSignal.User.pushSubscription.id.toEmptyStringNonNull,
-        onRequestTrackingAuthorizationForIos: () => DeviceHelper.requestTrackingAuthorization(),
         onSubscribeChatCountRealtimeChannel: (userId) async => await SomethingCounter.of(context)?.subscribeChatCount(userId),
         onSubscribeNotificationCountRealtimeChannel: (userId) async => await SomethingCounter.of(context)?.subscribeNotificationCount(userId),
       )
@@ -398,7 +419,7 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
                       isError: validationResult.isFailed,
                       controller: _emailTextEditingController,
                       decoration: DefaultInputDecoration(
-                        label: Text("Email Or Phone Number".tr),
+                        label: Text("Email Or WhatsApp Phone Number".tr),
                         labelStyle: const TextStyle(color: Colors.black),
                         floatingLabelStyle: const TextStyle(color: Colors.black),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -454,59 +475,24 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
                   onPressed: widget.loginController.login,
                   text: "Login".tr,
                 ),
-                ...() {
-                  List<Widget> loginWidgetList = [];
-                  void addLoginWidget(Widget loginWidget) {
-                    if (loginWidgetList.isNotEmpty) {
-                      loginWidgetList.add(
-                        const SizedBox(height: 12.0)
-                      );
-                    }
-                    loginWidgetList.add(loginWidget);
-                  }
-                  if (Platform.isAndroid) {
-                    addLoginWidget(
-                      SizedOutlineGradientButton(
-                        width: double.infinity,
-                        outlineGradientButtonType: OutlineGradientButtonType.outline,
-                        onPressed: widget.loginController.loginWithGoogle,
-                        text: "Login With Google".tr,
-                      ),
-                    );
-                  }
-                  // if (Platform.isIOS) {
-                  //   addLoginWidget(
-                  //     SizedOutlineGradientButton(
-                  //       width: double.infinity,
-                  //       outlineGradientButtonType: OutlineGradientButtonType.outline,
-                  //       onPressed: widget.loginController.loginWithApple,
-                  //       text: "Login With Apple".tr,
-                  //     ),
-                  //   );
-                  // }
-                  if (loginWidgetList.isNotEmpty) {
-                    loginWidgetList.insertAll(0, [
-                      SizedBox(height: 3.h),
-                      Row(
-                        children: [
-                          const Expanded(
-                            child: Divider()
-                          ),
-                          SizedBox(width: 6.w),
-                          Text("or login with".tr, style: TextStyle(
-                            color: Theme.of(context).dividerTheme.color
-                          )),
-                          SizedBox(width: 6.w),
-                          const Expanded(
-                            child: Divider()
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16.0),
-                    ]);
-                  }
-                  return loginWidgetList;
-                }(),
+                WidgetHelper.buildThirdPartyLoginButton(
+                  context: context,
+                  orWithText: "or login with".tr,
+                  googleButton: () => SizedOutlineGradientButton(
+                    width: double.infinity,
+                    outlineGradientButtonType: OutlineGradientButtonType.outline,
+                    onPressed: widget.loginController.loginWithGoogle,
+                    text: "Login With Google".tr,
+                  ),
+                  appleButton: () => SizedOutlineGradientButton(
+                    width: double.infinity,
+                    outlineGradientButtonType: OutlineGradientButtonType.outline,
+                    onPressed: () {
+                      WebHelper.launchUrl(Uri.parse("https://apple-auth.masterbagasi.com/auth/apple"));
+                    },
+                    text: "Login With Apple".tr,
+                  )
+                ),
                 SizedBox(height: 2.h),
                 Builder(
                   builder: (context) {
@@ -526,6 +512,7 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
 
   @override
   void dispose() {
+    MainRouteObserver.onLoginOrRegisterAppleViaCallbackRequestProcessSuccessCallback[getRouteMapKey(widget.pageName)] = null;
     _emailTextEditingController.dispose();
     _passwordTextEditingController.dispose();
     _forgotPasswordTapGestureRecognizer.dispose();

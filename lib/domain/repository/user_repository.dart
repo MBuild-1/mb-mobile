@@ -8,12 +8,16 @@ import '../entity/deleteaccount/verifydeleteaccountotp/verify_delete_account_otp
 import '../entity/deleteaccount/verifydeleteaccountotp/verify_delete_account_otp_response.dart';
 import '../entity/forgotpassword/forgot_password_parameter.dart';
 import '../entity/forgotpassword/forgot_password_response.dart';
+import '../entity/forgotpassword/whatsapp/whatsapp_forgot_password_parameter.dart';
+import '../entity/forgotpassword/whatsapp/whatsapp_forgot_password_response.dart';
 import '../entity/login/login_parameter.dart';
 import '../entity/login/login_response.dart';
 import '../entity/login/login_with_apple_parameter.dart';
 import '../entity/login/login_with_apple_response.dart';
 import '../entity/login/login_with_google_parameter.dart';
 import '../entity/login/login_with_google_response.dart';
+import '../entity/loginorregister/login_or_register_with_apple_via_callback_parameter.dart';
+import '../entity/loginorregister/login_or_register_with_apple_via_callback_response.dart';
 import '../entity/logout/logout_parameter.dart';
 import '../entity/logout/logout_response.dart';
 import '../entity/pin/checkactivepin/check_active_pin_parameter.dart';
@@ -69,6 +73,7 @@ abstract class UserRepository {
   FutureProcessing<LoadDataResult<CheckActivePinResponse>> checkActivePin(CheckActivePinParameter checkActivePinParameter);
   FutureProcessing<LoadDataResult<ModifyPinResponse>> modifyPin(ModifyPinParameter modifyPinParameter);
   FutureProcessing<LoadDataResult<ForgotPasswordResponse>> forgotPassword(ForgotPasswordParameter forgotPasswordParameter);
+  FutureProcessing<LoadDataResult<WhatsappForgotPasswordResponse>> whatsappForgotPassword(WhatsappForgotPasswordParameter whatsappForgotPasswordParameter);
   FutureProcessing<LoadDataResult<CheckResetPasswordResponse>> checkResetPassword(CheckResetPasswordParameter checkResetPasswordParameter);
   FutureProcessing<LoadDataResult<ResetPasswordResponse>> resetPassword(ResetPasswordParameter resetPasswordParameter);
   FutureProcessing<LoadDataResult<RegisterFirstStepResponse>> registerFirstStep(RegisterFirstStepParameter registerFirstStepParameter);
@@ -83,4 +88,5 @@ abstract class UserRepository {
   FutureProcessing<LoadDataResult<AuthIdentityChangeInputResponse>> authIdentityChangeInput(AuthIdentityChangeInputParameter authIdentityChangeInputParameter);
   FutureProcessing<LoadDataResult<AuthIdentityChangeVerifyOtpResponse>> authIdentityChangeVerifyOtp(AuthIdentityChangeVerifyOtpParameter authIdentityChangeVerifyOtpParameter);
   FutureProcessing<LoadDataResult<AuthIdentityChangeResponse>> authIdentityChange(AuthIdentityChangeParameter authIdentityChangeParameter);
+  FutureProcessing<LoadDataResult<LoginOrRegisterWithAppleViaCallbackResponse>> loginOrRegisterWithAppleViaCallback(LoginOrRegisterWithAppleViaCallbackParameter loginOrRegisterWithAppleViaCallbackParameter);
 }

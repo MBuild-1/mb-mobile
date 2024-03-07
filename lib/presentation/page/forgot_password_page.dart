@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/error_provider_ext.dart';
+import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/validation_result_ext.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../controller/forgot_password_controller.dart';
 import '../../domain/usecase/forgot_password_use_case.dart';
+import '../../domain/usecase/get_country_list_use_case.dart';
+import '../../domain/usecase/whatsapp_forgot_password_use_case.dart';
 import '../../misc/constant.dart';
 import '../../misc/dialog_helper.dart';
 import '../../misc/errorprovider/error_provider.dart';
@@ -13,12 +16,21 @@ import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
 import '../../misc/injector.dart';
 import '../../misc/inputdecoration/default_input_decoration.dart';
+import '../../misc/load_data_result.dart';
+import '../../misc/main_route_observer.dart';
 import '../../misc/manager/controller_manager.dart';
+import '../../misc/navigation_helper.dart';
+import '../../misc/page_restoration_helper.dart';
+import '../../misc/routeargument/forgot_password_route_argument.dart';
+import '../../misc/string_util.dart';
 import '../../misc/toast_helper.dart';
+import '../../misc/validation/validationresult/is_email_success_validation_result.dart';
+import '../../misc/validation/validationresult/is_phone_number_success_validation_result.dart';
 import '../../misc/validation/validator/validator.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/field.dart';
 import '../widget/modified_scaffold.dart';
+import '../widget/modified_shimmer.dart';
 import '../widget/modified_text_field.dart';
 import '../widget/modifiedappbar/modified_app_bar.dart';
 import '../widget/rx_consumer.dart';
@@ -35,6 +47,8 @@ class ForgotPasswordPage extends RestorableGetxPage<_ForgotPasswordPageRestorati
       ForgotPasswordController(
         controllerManager,
         Injector.locator<ForgotPasswordUseCase>(),
+        Injector.locator<WhatsappForgotPasswordUseCase>(),
+        Injector.locator<GetCountryListUseCase>()
       ),
       tag: pageName
     );
@@ -47,6 +61,7 @@ class ForgotPasswordPage extends RestorableGetxPage<_ForgotPasswordPageRestorati
   Widget buildPage(BuildContext context) {
     return _StatefulForgotPasswordControllerMediatorWidget(
       forgotPasswordController: _forgotPasswordPageController.controller,
+      pageName: pageName
     );
   }
 }
@@ -115,6 +130,7 @@ class ForgotPasswordPageRestorableRouteFuture extends GetRestorableRouteFuture {
   static Route<void>? _getRoute([Object? arguments]) {
     return GetExtended.toWithGetPageRouteReturnValue<void>(
       GetxPageBuilder.buildRestorableGetxPageBuilder(ForgotPasswordPageGetPageBuilderAssistant()),
+      arguments: ForgotPasswordRouteArgument()
     );
   }
 
@@ -142,9 +158,11 @@ class ForgotPasswordPageRestorableRouteFuture extends GetRestorableRouteFuture {
 
 class _StatefulForgotPasswordControllerMediatorWidget extends StatefulWidget {
   final ForgotPasswordController forgotPasswordController;
+  final String pageName;
 
   const _StatefulForgotPasswordControllerMediatorWidget({
-    required this.forgotPasswordController
+    required this.forgotPasswordController,
+    required this.pageName
   });
 
   @override
@@ -158,6 +176,9 @@ class _StatefulForgotPasswordControllerMediatorWidgetState extends State<_Statef
   @override
   void initState() {
     super.initState();
+    MainRouteObserver.onResendForgotPasswordWhatsappPhoneNumberOtp[getRouteMapKey(widget.pageName)] = () {
+      widget.forgotPasswordController.forgotPassword(true);
+    };
   }
 
   @override
@@ -165,15 +186,40 @@ class _StatefulForgotPasswordControllerMediatorWidgetState extends State<_Statef
     widget.forgotPasswordController.setForgotPasswordDelegate(
       ForgotPasswordDelegate(
         onUnfocusAllWidget: () => FocusScope.of(context).unfocus(),
-        onGetEmailForgotPasswordInput: () => _emailTextEditingController.text.trim(),
+        onGetEmailOrPhoneNumberForgotPasswordInput: () => _emailTextEditingController.text.trim(),
         onLoginBack: () => Get.back(),
         onShowForgotPasswordRequestProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
         onShowForgotPasswordRequestProcessFailedCallback: (e) async {
           setState(() => _failedLoginError = e);
         },
-        onForgotPasswordRequestProcessSuccessCallback: () async {
+        onForgotPasswordRequestProcessSuccessCallback: (typeValidationResult) async {
+          if (typeValidationResult is IsPhoneNumberSuccessValidationResult) {
+            String currentRoute = MainRouteObserver.getCurrentRoute();
+            if (MainRouteObserver.onRedirectFromNotificationClick[currentRoute] != null) {
+              Map<String, dynamic> additionalData = {
+                "type": "reset-password",
+                "data": {
+                  "code": "",
+                  "type": "whatsapp-phone-number",
+                  "value": StringUtil.effectivePhoneNumber(_emailTextEditingController.text)
+                }
+              };
+              MainRouteObserver.onRedirectFromNotificationClick[currentRoute]!(additionalData);
+            }
+            return;
+          } else if (typeValidationResult is IsEmailSuccessValidationResult) {
+            Get.back();
+            ToastHelper.showToast("${"Please check your email for next step".tr}.");
+            return;
+          }
           Get.back();
-          ToastHelper.showToast("${"Please check your email for next step".tr}.");
+        },
+        onForgotPasswordCalledFromCallbackRequestProcessSuccessCallback: (typeValidationResult) async {
+          if (typeValidationResult is IsPhoneNumberSuccessValidationResult) {
+            if (MainRouteObserver.onResendForgotPasswordWhatsappPhoneNumberCallbackOtp[getRouteMapKey(widget.pageName)] != null) {
+              MainRouteObserver.onResendForgotPasswordWhatsappPhoneNumberCallbackOtp[getRouteMapKey(widget.pageName)]!(typeValidationResult);
+            }
+          }
         },
       )
     );
@@ -233,29 +279,53 @@ class _StatefulForgotPasswordControllerMediatorWidgetState extends State<_Statef
                     ),
                   ],
                 SizedBox(height: 3.h),
-                RxConsumer<Validator>(
-                  rxValue: widget.forgotPasswordController.emailValidatorRx,
-                  onConsumeValue: (context, value) => Field(
-                    child: (context, validationResult, validator) => ModifiedTextField(
-                      isError: validationResult.isFailed,
-                      controller: _emailTextEditingController,
-                      decoration: DefaultInputDecoration(
-                        label: Text("Email".tr),
-                        labelStyle: const TextStyle(color: Colors.black),
-                        floatingLabelStyle: const TextStyle(color: Colors.black),
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                      ),
-                      onChanged: (value) => validator?.validate(),
-                      textInputAction: TextInputAction.next,
-                    ),
-                    validator: value,
-                  ),
-                ),
-                SizedBox(height: 3.h),
-                SizedOutlineGradientButton(
-                  width: double.infinity,
-                  onPressed: widget.forgotPasswordController.forgotPassword,
-                  text: "Submit".tr,
+                RxConsumer<LoadDataResultWrapper<List<String>>>(
+                  rxValue: widget.forgotPasswordController.countryListLoadDataResultWrapperRx,
+                  onConsumeValue: (context, countryListLoadDataResultWrapper) => Builder(
+                    builder: (context) {
+                      LoadDataResult<List<String>> countryCodeListLoadDataResult = countryListLoadDataResultWrapper.loadDataResult;
+                      bool isLoading = !countryCodeListLoadDataResult.isSuccess;
+                      Widget result = Column(
+                        children: [
+                          if (!isLoading) ...[
+                            RxConsumer<Validator>(
+                              rxValue: widget.forgotPasswordController.emailOrPhoneNumberValidatorRx,
+                              onConsumeValue: (context, value) => Field(
+                                child: (context, validationResult, validator) => ModifiedTextField(
+                                  isError: validationResult.isFailed,
+                                  controller: _emailTextEditingController,
+                                  decoration: DefaultInputDecoration(
+                                    label: Text("Email Or WhatsApp Phone Number".tr),
+                                    labelStyle: const TextStyle(color: Colors.black),
+                                    floatingLabelStyle: const TextStyle(color: Colors.black),
+                                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                                  ),
+                                  onChanged: (value) => validator?.validate(),
+                                  textInputAction: TextInputAction.next,
+                                ),
+                                validator: value,
+                              ),
+                            )
+                          ] else ...[
+                            Container(
+                              height: 52,
+                              decoration: BoxDecoration(
+                                color: Colors.grey,
+                                borderRadius: Constant.inputBorderRadius
+                              ),
+                            )
+                          ],
+                          SizedBox(height: 3.h),
+                          SizedOutlineGradientButton(
+                            width: double.infinity,
+                            onPressed: () => widget.forgotPasswordController.forgotPassword(false),
+                            text: "Submit".tr,
+                          ),
+                        ]
+                      );
+                      return isLoading ? ModifiedShimmer.fromColors(child: result) : result;
+                    }
+                  )
                 ),
               ],
             ),
@@ -268,6 +338,8 @@ class _StatefulForgotPasswordControllerMediatorWidgetState extends State<_Statef
   @override
   void dispose() {
     _emailTextEditingController.dispose();
+    MainRouteObserver.onScrollUpIfInProductDetail[getRouteMapKey(widget.pageName)] = null;
+    MainRouteObserver.onResendForgotPasswordWhatsappPhoneNumberCallbackOtp[getRouteMapKey(widget.pageName)] = null;
     super.dispose();
   }
 }

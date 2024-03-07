@@ -79,7 +79,7 @@ class SearchItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListIt
       VerticalGridPaddingContentSubInterceptorSupportListItemControllerState verticalGridPaddingContentSubInterceptorSupportListItemControllerState = VerticalGridPaddingContentSubInterceptorSupportListItemControllerState(
         childListItemControllerStateList: wishlistListItemControllerStateList
       );
-      SearchFilterModalDialogPageResponse? searchFilterModalDialogPageResponse = oldItemType.searchFilterModalDialogPageResponse();
+      DefaultSearchFilterModalDialogPageResponse? searchFilterModalDialogPageResponse = oldItemType.searchFilterModalDialogPageResponse();
       bool hasSearchFilter = searchFilterModalDialogPageResponse != null;
       listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
         i,

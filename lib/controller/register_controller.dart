@@ -31,8 +31,10 @@ import '../domain/usecase/register_with_apple_use_case.dart';
 import '../domain/usecase/register_with_google_use_case.dart';
 import '../domain/usecase/send_register_otp_use_case.dart';
 import '../domain/usecase/verify_register_use_case.dart';
+import '../misc/ValidatorHelper.dart';
 import '../misc/apple_sign_in_credential.dart';
 import '../misc/constant.dart';
+import '../misc/error/message_error.dart';
 import '../misc/error/validation_error.dart';
 import '../misc/load_data_result.dart';
 import '../misc/manager/controller_manager.dart';
@@ -131,69 +133,37 @@ class RegisterController extends BaseGetxController {
     registerValidatorGroup = RegisterValidatorGroup(
       emailOrPhoneNumberValidator: Validator(
         onValidate: () {
-          String emailOrPhoneNumber = _registerDelegate!.onGetEmailOrPhoneNumberRegisterInput();
-          // ignore: invalid_use_of_protected_member
-          ValidationResult validationResult = _emailOrPhoneNumberValidator.validating();
-          if (validationResult.isSuccess) {
-            RegisterStepWrapper registerStepWrapper = registerStepWrapperRx.value;
-            RegisterStep registerStep = registerStepWrapper.registerStep;
-            if (registerStep is FirstRegisterStep) {
-              LoadDataResult<List<String>> countryCodeListLoadDataResult = registerStep.countryCodeListLoadDataResult;
-              if (countryCodeListLoadDataResult.isSuccess) {
-                List<String> countryCodeList = countryCodeListLoadDataResult.resultIfSuccess!;
-                if (validationResult is IsPhoneNumberSuccessValidationResult) {
-                  int step = 1;
-                  String temp = "";
-                  for (int i = 0; i < emailOrPhoneNumber.length; i++) {
-                    String c = emailOrPhoneNumber[i];
-                    if (c.isNum) {
-                      temp += c;
-                    }
-                    if (step == 1) {
-                      if (temp.isNotEmpty && temp.length <= 3) {
-                        if (countryCodeList.where((countryCode) => countryCode == temp).isNotEmpty) {
-                          return SuccessValidationResult();
-                        }
-                      }
-                      if (temp.length == 1) {
-                        if (temp == "0") {
-                          return SuccessValidationResult();
-                        }
-                      }
-                    }
-                  }
-                  return FailedValidationResult(
-                    e: ValidationError(
-                      message: MultiLanguageString({
-                        Constant.textEnUsLanguageKey: "Country phone code is not suitable.",
-                        Constant.textInIdLanguageKey: "Kode telepon negara tidak ada yang sesuai."
-                      }).toStringNonNull
-                    )
-                  );
-                }
-                return validationResult;
+          Validator validator = ValidatorHelper.getEmailOrPhoneNumberValidator(
+            onCheckingAfterValidateEmailOrPhoneNumber: () {
+              RegisterStepWrapper registerStepWrapper = registerStepWrapperRx.value;
+              RegisterStep registerStep = registerStepWrapper.registerStep;
+              if (registerStep is FirstRegisterStep) {
+                return SuccessValidationResult();
               } else {
                 return FailedValidationResult(
                   e: ValidationError(
                     message: MultiLanguageString({
-                      Constant.textEnUsLanguageKey: "Country phone code cannot be checked.",
-                      Constant.textInIdLanguageKey: "Kode telepon negara tidak bisa dicek."
+                      Constant.textEnUsLanguageKey: "Make sure this register is in first step while running this validation.",
+                      Constant.textInIdLanguageKey: "Pastikan pendaftaran ini di langkah pertama ketika menjalankan validasi ini."
                     }).toStringNonNull
                   )
                 );
               }
-            } else {
-              return FailedValidationResult(
-                e: ValidationError(
-                  message: MultiLanguageString({
-                    Constant.textEnUsLanguageKey: "Make sure this register is in first step while running this validation.",
-                    Constant.textInIdLanguageKey: "Pastikan pendaftaran ini di langkah pertama ketika menjalankan validasi ini."
-                  }).toStringNonNull
-                )
-              );
+            },
+            onGetEmailOrPhoneNumberValidator: () => _emailOrPhoneNumberValidator,
+            onGetEmailOrPhoneNumberRegisterInput: _registerDelegate!.onGetEmailOrPhoneNumberRegisterInput,
+            onGetCountryCodeListLoadDataResult: () {
+              RegisterStepWrapper registerStepWrapper = registerStepWrapperRx.value;
+              RegisterStep registerStep = registerStepWrapper.registerStep;
+              if (registerStep is FirstRegisterStep) {
+                return registerStep.countryCodeListLoadDataResult;
+              } else {
+                throw MessageError(title: "The register step is not suitable");
+              }
             }
-          }
-          return validationResult;
+          );
+          // ignore: invalid_use_of_protected_member
+          return validator.validating();
         }
       ),
     );
@@ -265,30 +235,25 @@ class RegisterController extends BaseGetxController {
       _registerDelegate!.onUnfocusAllWidget();
       if (registerValidatorGroup.validate()) {
         _registerDelegate!.onShowRegisterRequestProcessLoadingCallback();
-        LoadDataResult<TrackingStatusResult> requestAuthForIosTrackingStatusResult = await _registerDelegate!.onRequestTrackingAuthorizationForIos();
-        if (requestAuthForIosTrackingStatusResult.isSuccess) {
-          LoadDataResult<RegisterFirstStepResponse> registerFirstStepLoadDataResult = await registerFirstStepUseCase.execute(
-            RegisterFirstStepParameter(
-              emailOrPhoneNumber: StringUtil.effectiveEmailOrPhoneNumber(
-                _registerDelegate!.onGetEmailOrPhoneNumberRegisterInput(),
-                _emailOrPhoneNumberValidator
-              )
+        LoadDataResult<RegisterFirstStepResponse> registerFirstStepLoadDataResult = await registerFirstStepUseCase.execute(
+          RegisterFirstStepParameter(
+            emailOrPhoneNumber: StringUtil.effectiveEmailOrPhoneNumber(
+              _registerDelegate!.onGetEmailOrPhoneNumberRegisterInput(),
+              _emailOrPhoneNumberValidator
             )
-          ).future(
-            parameter: apiRequestManager.addRequestToCancellationPart('register-first-step').value
+          )
+        ).future(
+          parameter: apiRequestManager.addRequestToCancellationPart('register-first-step').value
+        );
+        _registerDelegate!.onRegisterBack();
+        if (registerFirstStepLoadDataResult.isSuccess) {
+          _updateRegisterStep(
+            SendRegisterOtpRegisterStep(
+              registerFirstStepResponse: registerFirstStepLoadDataResult.resultIfSuccess!
+            )
           );
-          _registerDelegate!.onRegisterBack();
-          if (registerFirstStepLoadDataResult.isSuccess) {
-            _updateRegisterStep(
-              SendRegisterOtpRegisterStep(
-                registerFirstStepResponse: registerFirstStepLoadDataResult.resultIfSuccess!
-              )
-            );
-          } else {
-            _registerDelegate!.onShowRegisterRequestProcessFailedCallback(registerFirstStepLoadDataResult.resultIfFailed);
-          }
         } else {
-          _registerDelegate!.onShowRegisterRequestProcessFailedCallback(requestAuthForIosTrackingStatusResult.resultIfFailed!);
+          _registerDelegate!.onShowRegisterRequestProcessFailedCallback(registerFirstStepLoadDataResult.resultIfFailed);
         }
       }
     }
@@ -448,73 +413,23 @@ class RegisterController extends BaseGetxController {
   void registerWithGoogle() async {
     if (_registerDelegate != null) {
       _registerDelegate!.onUnfocusAllWidget();
-      LoadDataResult<TrackingStatusResult> requestAuthForIosTrackingStatusResult = await _registerDelegate!.onRequestTrackingAuthorizationForIos();
-      if (requestAuthForIosTrackingStatusResult.isSuccess) {
-        String? idToken = await _registerDelegate!.onRegisterWithGoogle();
-        if (idToken.isNotEmptyString) {
-          _registerDelegate!.onShowRegisterRequestProcessLoadingCallback();
-          LoadDataResult<RegisterWithGoogleResponse> registerWithGoogleLoadDataResult = await registerWithGoogleUseCase.execute(
-            RegisterWithGoogleParameter(
-              idToken: idToken!,
-              pushNotificationSubscriptionId: _registerDelegate!.onGetPushNotificationSubscriptionId(),
-              deviceName: _registerDelegate!.onGetLoginDeviceNameInput()
-            )
-          ).future(
-            parameter: apiRequestManager.addRequestToCancellationPart('register-with-google').value
-          );
-          if (registerWithGoogleLoadDataResult.isSuccess) {
-            if (await loginOneSignal(registerWithGoogleLoadDataResult.resultIfSuccess!.userId)) {
-              return;
-            }
-            await _registerDelegate!.onSaveToken(registerWithGoogleLoadDataResult.resultIfSuccess!.token);
-            LoadDataResult<User> userLoadDataResult = await getUserUseCase.execute(
-              GetUserParameter()
-            ).future(
-              parameter: apiRequestManager.addRequestToCancellationPart('get-user-after-register').value
-            ).map<User>(
-              (getUserResponse) => getUserResponse.user
-            );
-            if (userLoadDataResult.isSuccess) {
-              User user = userLoadDataResult.resultIfSuccess!;
-              await _registerDelegate!.onSubscribeChatCountRealtimeChannel(user.id);
-              await _registerDelegate!.onSubscribeNotificationCountRealtimeChannel(user.id);
-            }
-            _registerDelegate!.onRegisterBack();
-            _registerDelegate!.onRegisterRequestProcessSuccessCallback();
-          } else {
-            _registerDelegate!.onRegisterBack();
-            _registerDelegate!.onShowRegisterRequestProcessFailedCallback(registerWithGoogleLoadDataResult.resultIfFailed);
-          }
-        }
-      } else {
-        _registerDelegate!.onShowRegisterRequestProcessFailedCallback(
-          requestAuthForIosTrackingStatusResult.resultIfFailed!
-        );
-      }
-    }
-  }
-
-  void registerWithApple() async {
-    if (_registerDelegate != null) {
-      _registerDelegate!.onUnfocusAllWidget();
-      LoadDataResult<TrackingStatusResult> requestAuthForIosTrackingStatusResult = await _registerDelegate!.onRequestTrackingAuthorizationForIos();
-      if (requestAuthForIosTrackingStatusResult.isSuccess) {
-        AppleSignInCredential appleSignInCredential = await _registerDelegate!.onRegisterWithApple();
+      String? idToken = await _registerDelegate!.onRegisterWithGoogle();
+      if (idToken.isNotEmptyString) {
         _registerDelegate!.onShowRegisterRequestProcessLoadingCallback();
-        LoadDataResult<RegisterWithAppleResponse> registerWithAppleLoadDataResult = await registerWithAppleUseCase.execute(
-          RegisterWithAppleParameter(
-            appleSignInCredential: appleSignInCredential,
+        LoadDataResult<RegisterWithGoogleResponse> registerWithGoogleLoadDataResult = await registerWithGoogleUseCase.execute(
+          RegisterWithGoogleParameter(
+            idToken: idToken!,
             pushNotificationSubscriptionId: _registerDelegate!.onGetPushNotificationSubscriptionId(),
             deviceName: _registerDelegate!.onGetLoginDeviceNameInput()
           )
         ).future(
-          parameter: apiRequestManager.addRequestToCancellationPart('register-with-apple').value
+          parameter: apiRequestManager.addRequestToCancellationPart('register-with-google').value
         );
-        if (registerWithAppleLoadDataResult.isSuccess) {
-          if (await loginOneSignal(registerWithAppleLoadDataResult.resultIfSuccess!.userId)) {
+        if (registerWithGoogleLoadDataResult.isSuccess) {
+          if (await loginOneSignal(registerWithGoogleLoadDataResult.resultIfSuccess!.userId)) {
             return;
           }
-          await _registerDelegate!.onSaveToken(registerWithAppleLoadDataResult.resultIfSuccess!.token);
+          await _registerDelegate!.onSaveToken(registerWithGoogleLoadDataResult.resultIfSuccess!.token);
           LoadDataResult<User> userLoadDataResult = await getUserUseCase.execute(
             GetUserParameter()
           ).future(
@@ -531,12 +446,48 @@ class RegisterController extends BaseGetxController {
           _registerDelegate!.onRegisterRequestProcessSuccessCallback();
         } else {
           _registerDelegate!.onRegisterBack();
-          _registerDelegate!.onShowRegisterRequestProcessFailedCallback(registerWithAppleLoadDataResult.resultIfFailed);
+          _registerDelegate!.onShowRegisterRequestProcessFailedCallback(registerWithGoogleLoadDataResult.resultIfFailed);
         }
-      } else {
-        _registerDelegate!.onShowRegisterRequestProcessFailedCallback(
-          requestAuthForIosTrackingStatusResult.resultIfFailed!
+      }
+    }
+  }
+
+  void registerWithApple() async {
+    if (_registerDelegate != null) {
+      _registerDelegate!.onUnfocusAllWidget();
+      AppleSignInCredential appleSignInCredential = await _registerDelegate!.onRegisterWithApple();
+      _registerDelegate!.onShowRegisterRequestProcessLoadingCallback();
+      LoadDataResult<RegisterWithAppleResponse> registerWithAppleLoadDataResult = await registerWithAppleUseCase.execute(
+        RegisterWithAppleParameter(
+          appleSignInCredential: appleSignInCredential,
+          pushNotificationSubscriptionId: _registerDelegate!.onGetPushNotificationSubscriptionId(),
+          deviceName: _registerDelegate!.onGetLoginDeviceNameInput()
+        )
+      ).future(
+        parameter: apiRequestManager.addRequestToCancellationPart('register-with-apple').value
+      );
+      if (registerWithAppleLoadDataResult.isSuccess) {
+        if (await loginOneSignal(registerWithAppleLoadDataResult.resultIfSuccess!.userId)) {
+          return;
+        }
+        await _registerDelegate!.onSaveToken(registerWithAppleLoadDataResult.resultIfSuccess!.token);
+        LoadDataResult<User> userLoadDataResult = await getUserUseCase.execute(
+          GetUserParameter()
+        ).future(
+          parameter: apiRequestManager.addRequestToCancellationPart('get-user-after-register').value
+        ).map<User>(
+          (getUserResponse) => getUserResponse.user
         );
+        if (userLoadDataResult.isSuccess) {
+          User user = userLoadDataResult.resultIfSuccess!;
+          await _registerDelegate!.onSubscribeChatCountRealtimeChannel(user.id);
+          await _registerDelegate!.onSubscribeNotificationCountRealtimeChannel(user.id);
+        }
+        _registerDelegate!.onRegisterBack();
+        _registerDelegate!.onRegisterRequestProcessSuccessCallback();
+      } else {
+        _registerDelegate!.onRegisterBack();
+        _registerDelegate!.onShowRegisterRequestProcessFailedCallback(registerWithAppleLoadDataResult.resultIfFailed);
       }
     }
   }
@@ -598,7 +549,6 @@ class RegisterDelegate {
   _OnSaveToken onSaveToken;
   OnLoginIntoOneSignal onLoginIntoOneSignal;
   OnGetPushNotificationSubscriptionId onGetPushNotificationSubscriptionId;
-  OnRequestTrackingAuthorizationForIos onRequestTrackingAuthorizationForIos;
   Future<void> Function(String) onSubscribeChatCountRealtimeChannel;
   Future<void> Function(String) onSubscribeNotificationCountRealtimeChannel;
 
@@ -628,7 +578,6 @@ class RegisterDelegate {
     required this.onSaveToken,
     required this.onLoginIntoOneSignal,
     required this.onGetPushNotificationSubscriptionId,
-    required this.onRequestTrackingAuthorizationForIos,
     required this.onSubscribeChatCountRealtimeChannel,
     required this.onSubscribeNotificationCountRealtimeChannel
   });

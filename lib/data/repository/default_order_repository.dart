@@ -14,6 +14,7 @@ import '../../domain/entity/order/order.dart';
 import '../../domain/entity/order/order_based_id_parameter.dart';
 import '../../domain/entity/order/order_paging_parameter.dart';
 import '../../domain/entity/order/ordertransaction/order_transaction_parameter.dart';
+import '../../domain/entity/order/ordertransaction/ordertransactionresponse/midtrans_order_transaction_response.dart';
 import '../../domain/entity/order/ordertransaction/ordertransactionresponse/order_transaction_response.dart';
 import '../../domain/entity/order/purchase_direct_parameter.dart';
 import '../../domain/entity/order/purchase_direct_response.dart';

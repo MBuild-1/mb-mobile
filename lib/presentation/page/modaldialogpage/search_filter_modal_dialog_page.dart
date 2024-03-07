@@ -32,7 +32,7 @@ import 'modal_dialog_page.dart';
 class SearchFilterModalDialogPage extends ModalDialogPage<SearchFilterModalDialogController> {
   SearchFilterModalDialogController get searchFilterModalDialogController => modalDialogController.controller;
 
-  final SearchFilterModalDialogPageParameter searchFilterModalDialogPageParameter;
+  final DefaultSearchFilterModalDialogPageParameter searchFilterModalDialogPageParameter;
 
   SearchFilterModalDialogPage({
     Key? key,
@@ -57,7 +57,7 @@ class SearchFilterModalDialogPage extends ModalDialogPage<SearchFilterModalDialo
 
 class _StatefulSearchFilterControllerMediatorWidget extends StatefulWidget {
   final SearchFilterModalDialogController searchFilterModalDialogController;
-  final SearchFilterModalDialogPageParameter searchFilterModalDialogPageParameter;
+  final DefaultSearchFilterModalDialogPageParameter searchFilterModalDialogPageParameter;
 
   const _StatefulSearchFilterControllerMediatorWidget({
     required this.searchFilterModalDialogController,
@@ -124,7 +124,7 @@ class _StatefulSearchFilterControllerMediatorWidgetState extends State<_Stateful
     _searchFilterListItemPagingControllerState.isPagingControllerExist = true;
 
     _searchFilterColorfulChipTabBarControllerList = [];
-    SearchFilterModalDialogPageParameter searchFilterModalDialogPageParameter = widget.searchFilterModalDialogPageParameter;
+    DefaultSearchFilterModalDialogPageParameter searchFilterModalDialogPageParameter = widget.searchFilterModalDialogPageParameter;
 
     // Sort By
     int sortByIndex = -1;
@@ -202,14 +202,14 @@ class _StatefulSearchFilterControllerMediatorWidgetState extends State<_Stateful
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _searchFilterListItemPagingControllerStateListener(int pageKey) async {
-    SearchFilterModalDialogPageParameter searchFilterModalDialogPageParameter = widget.searchFilterModalDialogPageParameter;
+    DefaultSearchFilterModalDialogPageParameter searchFilterModalDialogPageParameter = widget.searchFilterModalDialogPageParameter;
     return SuccessLoadDataResult<PagingResult<ListItemControllerState>>(
       value: PagingDataResult<ListItemControllerState>(
         itemList: [
           SearchFilterContainerListItemControllerState(
             onUpdateState: () => setState(() {}),
             searchFilterContainerMemberListItemValueList: [
-              if (_searchSortByList.isNotEmpty) ...[
+              if (widget.searchFilterModalDialogPageParameter.showSortBased && _searchSortByList.isNotEmpty) ...[
                 SearchFilterGroupListItemValue(
                   searchFilterGroup: SearchFilterGroup(
                     name: "Sort By".tr,
@@ -218,17 +218,19 @@ class _StatefulSearchFilterControllerMediatorWidgetState extends State<_Stateful
                   onGetColorfulChipTabBarController: () => _sortByColorfulChipTabBarController
                 ),
               ],
-              SearchFilterNumberRangeListItemValue(
-                range1Text: "Price From".tr,
-                range1InputText: "Input Price From".tr,
-                range1InputHintText: "Type Price From".tr,
-                range2Text: "Price To".tr,
-                range2InputText: "Input Price To".tr,
-                range2InputHintText: "Type Price To".tr,
-                onGetRange1TextEditingController: () => _priceMinTextEditingController,
-                onGetRange2TextEditingController: () => _priceMaxTextEditingController,
-                name: "Price Range".tr,
-              ),
+              if (widget.searchFilterModalDialogPageParameter.showPriceRange) ...[
+                SearchFilterNumberRangeListItemValue(
+                  range1Text: "Price From".tr,
+                  range1InputText: "Input Price From".tr,
+                  range1InputHintText: "Type Price From".tr,
+                  range2Text: "Price To".tr,
+                  range2InputText: "Input Price To".tr,
+                  range2InputHintText: "Type Price To".tr,
+                  onGetRange1TextEditingController: () => _priceMinTextEditingController,
+                  onGetRange2TextEditingController: () => _priceMaxTextEditingController,
+                  name: "Price Range".tr,
+                ),
+              ],
               if (searchFilterModalDialogPageParameter.brandSearchRelatedList.isNotEmpty) ...[
                 SearchFilterGroupListItemValue(
                   searchFilterGroup: SearchFilterGroup(
@@ -299,7 +301,7 @@ class _StatefulSearchFilterControllerMediatorWidgetState extends State<_Stateful
               Expanded(
                 child: SizedOutlineGradientButton(
                   onPressed: () {
-                    SearchFilterModalDialogPageParameter searchFilterModalDialogPageParameter = widget.searchFilterModalDialogPageParameter;
+                    DefaultSearchFilterModalDialogPageParameter searchFilterModalDialogPageParameter = widget.searchFilterModalDialogPageParameter;
                     List<BrandSearchRelated> brandSearchRelatedList = searchFilterModalDialogPageParameter.brandSearchRelatedList;
                     List<CategorySearchRelated> categorySearchRelatedList = searchFilterModalDialogPageParameter.categorySearchRelatedList;
                     List<ProvinceSearchRelated> provinceSearchRelatedList = searchFilterModalDialogPageParameter.provinceSearchRelatedList;
@@ -320,7 +322,7 @@ class _StatefulSearchFilterControllerMediatorWidgetState extends State<_Stateful
                       }
                     }
                     Get.back(
-                      result: SearchFilterModalDialogPageResponse(
+                      result: DefaultSearchFilterModalDialogPageResponse(
                         brandSearchRelated: _brandColorfulChipTabBarController.value > -1 ? brandSearchRelatedList[_brandColorfulChipTabBarController.value] : null,
                         categorySearchRelated: _categoryColorfulChipTabBarController.value > -1 ? categorySearchRelatedList[_categoryColorfulChipTabBarController.value] : null,
                         provinceSearchRelated: _provinceColorfulChipTabBarController.value > -1 ? provinceSearchRelatedList[_provinceColorfulChipTabBarController.value] : null,
@@ -402,7 +404,19 @@ class _StatefulSearchFilterControllerMediatorWidgetState extends State<_Stateful
   }
 }
 
-class SearchFilterModalDialogPageParameter {
+abstract class SearchFilterModalDialogPageParameter {}
+
+class PreSearchFilterModalDialogPageParameter extends SearchFilterModalDialogPageParameter {
+  final CategorySearchRelated? categorySearchRelated;
+
+  PreSearchFilterModalDialogPageParameter({
+    required this.categorySearchRelated
+  });
+}
+
+class DefaultSearchFilterModalDialogPageParameter extends SearchFilterModalDialogPageParameter {
+  final bool showSortBased;
+  final bool showPriceRange;
   final List<BrandSearchRelated> brandSearchRelatedList;
   final List<CategorySearchRelated> categorySearchRelatedList;
   final List<ProvinceSearchRelated> provinceSearchRelatedList;
@@ -413,7 +427,9 @@ class SearchFilterModalDialogPageParameter {
   final int? lastPriceMin;
   final int? lastPriceMax;
 
-  const SearchFilterModalDialogPageParameter({
+  DefaultSearchFilterModalDialogPageParameter({
+    this.showSortBased = true,
+    this.showPriceRange = true,
     required this.brandSearchRelatedList,
     required this.categorySearchRelatedList,
     required this.provinceSearchRelatedList,
@@ -426,7 +442,17 @@ class SearchFilterModalDialogPageParameter {
   });
 }
 
-class SearchFilterModalDialogPageResponse {
+abstract class SearchFilterModalDialogPageResponse {}
+
+class PreSearchFilterModalDialogPageResponse extends SearchFilterModalDialogPageResponse {
+  final CategorySearchRelated? categorySearchRelated;
+
+  PreSearchFilterModalDialogPageResponse({
+    required this.categorySearchRelated
+  });
+}
+
+class DefaultSearchFilterModalDialogPageResponse extends SearchFilterModalDialogPageResponse {
   final BrandSearchRelated? brandSearchRelated;
   final CategorySearchRelated? categorySearchRelated;
   final ProvinceSearchRelated? provinceSearchRelated;
@@ -434,7 +460,7 @@ class SearchFilterModalDialogPageResponse {
   final int? priceMin;
   final int? priceMax;
 
-  const SearchFilterModalDialogPageResponse({
+  DefaultSearchFilterModalDialogPageResponse({
     required this.brandSearchRelated,
     required this.categorySearchRelated,
     required this.provinceSearchRelated,

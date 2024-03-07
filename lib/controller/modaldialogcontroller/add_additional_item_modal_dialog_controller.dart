@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:masterbagasi/misc/ext/double_ext.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
@@ -33,6 +34,7 @@ class AddAdditionalItemModalDialogController extends ModalDialogController {
   late Rx<Validator> additionalItemEstimationPriceValidatorRx;
   late Rx<Validator> additionalItemEstimationWeightValidatorRx;
   late Rx<Validator> additionalItemQuantityValidatorRx;
+  late Rx<Validator> additionalItemNotesValidatorRx;
   late final AddAdditionalItemValidatorGroup addAdditionalItemValidatorGroup;
 
   final AddAdditionalItemUseCase addAdditionalItemUseCase;
@@ -53,7 +55,7 @@ class AddAdditionalItemModalDialogController extends ModalDialogController {
         onValidate: () {
           String estimationPrice = _addAdditionalItemModalDialogDelegate!.onGetAdditionalItemEstimationPriceInput();
           if (!estimationPrice.isEmptyString) {
-            double? estimationPriceValue = double.tryParse(estimationPrice);
+            double? estimationPriceValue = estimationPrice.tryParseDoubleWithAdditionalChecking();
             if (estimationPriceValue != null) {
               return SuccessValidationResult();
             } else {
@@ -68,7 +70,7 @@ class AddAdditionalItemModalDialogController extends ModalDialogController {
         onValidate: () {
           String estimationWeight = _addAdditionalItemModalDialogDelegate!.onGetAdditionalItemEstimationWeightInput();
           if (!estimationWeight.isEmptyString) {
-            double? estimationWeightValue = double.tryParse(estimationWeight);
+            double? estimationWeightValue = estimationWeight.tryParseDoubleWithAdditionalChecking();
             if (estimationWeightValue != null) {
               return SuccessValidationResult();
             } else {
@@ -94,11 +96,15 @@ class AddAdditionalItemModalDialogController extends ModalDialogController {
           }
         }
       ),
+      additionalItemNotesValidator: Validator(
+        onValidate: () => SuccessValidationResult()
+      ),
     );
     additionalItemNameValidatorRx = addAdditionalItemValidatorGroup.additionalItemNameValidator.obs;
     additionalItemEstimationPriceValidatorRx = addAdditionalItemValidatorGroup.additionalItemEstimationPriceValidator.obs;
     additionalItemEstimationWeightValidatorRx = addAdditionalItemValidatorGroup.additionalItemEstimationWeightValidator.obs;
     additionalItemQuantityValidatorRx = addAdditionalItemValidatorGroup.additionalItemQuantityValidator.obs;
+    additionalItemNotesValidatorRx = addAdditionalItemValidatorGroup.additionalItemNotesValidator.obs;
   }
 
   AddAdditionalItemModalDialogController setAddAdditionalItemModalDialogDelegate(AddAdditionalItemModalDialogDelegate addAdditionalItemModalDialogDelegate) {
@@ -114,9 +120,10 @@ class AddAdditionalItemModalDialogController extends ModalDialogController {
         AdditionalItem additionalItem = AdditionalItem(
           id: _addAdditionalItemModalDialogDelegate!.onGetAdditionalItemIdInput(),
           name: _addAdditionalItemModalDialogDelegate!.onGetAdditionalItemNameInput(),
-          estimationPrice: double.parse(_addAdditionalItemModalDialogDelegate!.onGetAdditionalItemEstimationPriceInput()),
-          estimationWeight: double.parse(_addAdditionalItemModalDialogDelegate!.onGetAdditionalItemEstimationWeightInput()),
+          estimationPrice: StringUtil.filterNumber(_addAdditionalItemModalDialogDelegate!.onGetAdditionalItemEstimationPriceInput()).parseDoubleWithAdditionalChecking(),
+          estimationWeight: _addAdditionalItemModalDialogDelegate!.onGetAdditionalItemEstimationWeightInput().parseDoubleWithAdditionalChecking(),
           quantity: int.parse(_addAdditionalItemModalDialogDelegate!.onGetAdditionalItemQuantityInput()),
+          notes: _addAdditionalItemModalDialogDelegate!.onGetAdditionalItemNotesInput()
         );
         if (!_addAdditionalItemModalDialogDelegate!.onGetHasParameter()) {
           LoadDataResult<AddAdditionalItemResponse> addAdditionalItemResponseLoadDataResult = await addAdditionalItemUseCase.execute(
@@ -145,7 +152,8 @@ class AddAdditionalItemModalDialogController extends ModalDialogController {
                 name: additionalItem.name,
                 estimationPrice: additionalItem.estimationPrice,
                 estimationWeight: additionalItem.estimationWeight,
-                quantity: additionalItem.quantity
+                quantity: additionalItem.quantity,
+                notes: additionalItem.notes
               )
             )
           ).future(
@@ -178,6 +186,7 @@ class AddAdditionalItemModalDialogDelegate {
   _OnGetAddAdditionalItemInput onGetAdditionalItemEstimationPriceInput;
   _OnGetAddAdditionalItemInput onGetAdditionalItemEstimationWeightInput;
   _OnGetAddAdditionalItemInput onGetAdditionalItemQuantityInput;
+  _OnGetAddAdditionalItemInput onGetAdditionalItemNotesInput;
   _OnShowAdditionalItemRequestProcessLoadingCallback onShowAdditionalItemRequestProcessLoadingCallback;
   _OnAddAdditionalItemRequestProcessSuccessCallback onAddAdditionalItemRequestProcessSuccessCallback;
   _OnShowAdditionalItemRequestProcessFailedCallback onShowAdditionalItemRequestProcessFailedCallback;
@@ -194,6 +203,7 @@ class AddAdditionalItemModalDialogDelegate {
     required this.onAddAdditionalItemRequestProcessSuccessCallback,
     required this.onShowAdditionalItemRequestProcessFailedCallback,
     required this.onGetAdditionalItemQuantityInput,
+    required this.onGetAdditionalItemNotesInput,
     required this.onAddAdditionalItemBack
   });
 }
@@ -213,7 +223,8 @@ extension AddAdditionalItemModalDialogParameterExt on AddAdditionalItemModalDial
       "name": additionalItem.name,
       "estimation_price": additionalItem.estimationPrice,
       "estimation_weight": additionalItem.estimationWeight,
-      "quantity": additionalItem.quantity
+      "quantity": additionalItem.quantity,
+      "notes": additionalItem.notes
     }
   );
 }
@@ -227,7 +238,8 @@ extension AddAdditionalItemModalDialogParameterStringExt on String {
         name: result["name"],
         estimationPrice: result["estimation_price"],
         estimationWeight: result["estimation_weight"],
-        quantity: result["quantity"]
+        quantity: result["quantity"],
+        notes: result["notes"]
       )
     );
   }
@@ -248,7 +260,8 @@ extension AddAdditionalItemModalDialogResponseExt on AddAdditionalItemModalDialo
       "name": additionalItem.name,
       "estimation_price": additionalItem.estimationPrice,
       "estimation_weight": additionalItem.estimationWeight,
-      "quantity": additionalItem.quantity
+      "quantity": additionalItem.quantity,
+      "notes": additionalItem.notes
     }
   );
 }
@@ -262,7 +275,8 @@ extension AddAdditionalItemModalDialogResponseStringExt on String {
         name: result["name"],
         estimationPrice: result["estimation_price"],
         estimationWeight: result["estimation_weight"],
-        quantity: result["quantity"]
+        quantity: result["quantity"],
+        notes: result["notes"]
       )
     );
   }

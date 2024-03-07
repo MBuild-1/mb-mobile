@@ -86,6 +86,7 @@ class SizedOutlineGradientButton extends StatelessWidget {
           child != null ? child! : Center(
             child: Text(
               text.toEmptyStringNonNull,
+              textAlign: TextAlign.center,
               style: textStyle,
             )
           )

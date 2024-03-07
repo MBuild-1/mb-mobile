@@ -11,7 +11,7 @@ class SearchContainerListItemControllerState extends ListItemControllerState {
   Color Function() onGetColorfulChipTabBarColor;
   void Function() onUpdateState;
   void Function() onGotoFilterModalDialog;
-  SearchFilterModalDialogPageResponse? Function() searchFilterModalDialogPageResponse;
+  DefaultSearchFilterModalDialogPageResponse? Function() searchFilterModalDialogPageResponse;
   OnRemoveWishlistWithProductAppearanceData onRemoveWishlistWithProductAppearanceData;
   OnAddWishlistWithProductAppearanceData onAddWishlistWithProductAppearanceData;
   OnAddCartWithProductAppearanceData onAddProductCart;

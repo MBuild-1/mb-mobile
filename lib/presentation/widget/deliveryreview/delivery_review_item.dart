@@ -1,4 +1,4 @@
-import 'package:flag/flag_widget.dart';
+import 'package:country_flags/country_flags.dart';
 import 'package:flutter/material.dart';
 import 'package:masterbagasi/misc/ext/number_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
@@ -66,7 +66,7 @@ abstract class DeliveryReviewItem extends StatelessWidget {
                             child: FittedBox(
                               fit: BoxFit.cover,
                               child: SizedBox(
-                                child: deliveryReview.countryCode.isNotEmptyString ? Flag.fromString(
+                                child: deliveryReview.countryCode.isNotEmptyString ? CountryFlags.flag(
                                   deliveryReview.countryCode
                                 ) : Container(
                                   decoration: BoxDecoration(

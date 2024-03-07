@@ -15,6 +15,7 @@ import '../../domain/entity/payment/payment_method.dart';
 import '../../domain/usecase/arrived_order_use_case.dart';
 import '../../domain/usecase/get_order_paging_use_case.dart';
 import '../../misc/constant.dart';
+import '../../misc/controllercontentdelegate/arrived_order_controller_content_delegate.dart';
 import '../../misc/controllercontentdelegate/repurchase_controller_content_delegate.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/order_container_list_item_controller_state.dart';
@@ -63,7 +64,8 @@ class OrderPage extends RestorableGetxPage<_OrderPageRestoration> {
         controllerManager,
         Injector.locator<GetOrderPagingUseCase>(),
         Injector.locator<ArrivedOrderUseCase>(),
-        Injector.locator<RepurchaseControllerContentDelegate>()
+        Injector.locator<RepurchaseControllerContentDelegate>(),
+        Injector.locator<ArrivedOrderControllerContentDelegate>()
       ),
       tag: pageName
     );
@@ -334,13 +336,15 @@ class _StatefulOrderControllerMediatorWidgetState extends State<_StatefulOrderCo
         OrderContainerListItemControllerState(
           orderList: [],
           onOrderTap: (order) {},
-          onConfirmArrived: (order) => DialogHelper.showPromptConfirmArrived(context, () {
-            widget.orderController.arrivedOrder(
-              ArrivedOrderParameter(
-                combinedOrderId: order.id
-              )
-            );
-          }),
+          onConfirmArrived: (order) => DialogHelper.showPromptConfirmArrived(
+            context, () {
+              widget.orderController.arrivedOrderControllerContentDelegate.arrivedOrder(
+                ArrivedOrderParameter(
+                  combinedOrderId: order.id
+                )
+              );
+            }
+          ),
           onBuyAgainTap: (order) => widget.orderController.repurchaseControllerContentDelegate.repurchase(order.id),
           onUpdateState: () => setState(() {}),
           orderTabColorfulChipTabBarController: _orderTabColorfulChipTabBarController,
@@ -429,11 +433,10 @@ class _StatefulOrderControllerMediatorWidgetState extends State<_StatefulOrderCo
         }
       )
     );
-    widget.orderController.setOrderDelegate(
-      OrderDelegate(
-        onUnfocusAllWidget: () => FocusScope.of(context).unfocus(),
-        onBack: () => Get.back(),
-        onShowArrivedOrderProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
+    widget.orderController.arrivedOrderControllerContentDelegate.setArrivedOrderDelegate(
+      Injector.locator<ArrivedOrderDelegateFactory>().generateArrivedOrderDelegate(
+        onGetBuildContext: () => context,
+        onGetErrorProvider: () => Injector.locator<ErrorProvider>(),
         onArrivedOrderProcessSuccessCallback: (arrivedOrderResponse) async {
           int index = 0;
           for (int i = 0; i < _orderColorfulChipTabBarDataList.length; i++) {
@@ -448,11 +451,6 @@ class _StatefulOrderControllerMediatorWidgetState extends State<_StatefulOrderCo
           }
           _orderTabColorfulChipTabBarController.value = index;
         },
-        onShowArrivedOrderProcessFailedCallback: (e) async => DialogHelper.showFailedModalBottomDialogFromErrorProvider(
-          context: context,
-          errorProvider: Injector.locator<ErrorProvider>(),
-          e: e
-        ),
       )
     );
     return ModifiedScaffold(

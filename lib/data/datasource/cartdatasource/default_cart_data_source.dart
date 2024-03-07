@@ -201,7 +201,8 @@ class DefaultCartDataSource implements CartDataSource {
         "name" : additionalItem.name,
         "price": additionalItem.estimationPrice,
         "weight": additionalItem.estimationWeight,
-        "quantity": additionalItem.quantity
+        "quantity": additionalItem.quantity,
+        if (additionalItem.notes.isNotEmptyString) "notes": additionalItem.notes
       }
     ).toList();
     dynamic data = {
@@ -235,7 +236,8 @@ class DefaultCartDataSource implements CartDataSource {
             "name" : additionalItem.name,
             "price": additionalItem.estimationPrice,
             "weight": additionalItem.estimationWeight,
-            "quantity": additionalItem.quantity
+            "quantity": additionalItem.quantity,
+            if (additionalItem.notes.isNotEmptyString) "notes": additionalItem.notes
           }
         ]
       };
@@ -253,6 +255,7 @@ class DefaultCartDataSource implements CartDataSource {
         if (changeAdditionalItem.name.isNotEmptyString) "name": changeAdditionalItem.name,
         if (changeAdditionalItem.estimationPrice != null) "price": changeAdditionalItem.estimationPrice,
         if (changeAdditionalItem.estimationWeight != null) "weight": changeAdditionalItem.estimationWeight,
+        if (changeAdditionalItem.notes.isNotEmptyString) "notes": changeAdditionalItem.notes,
         "_method": "PUT"
       });
       return dio.post("user/send-wh/${changeAdditionalItemParameter.changeAdditionalItem.id}", data: data, cancelToken: cancelToken, options: OptionsBuilder.multipartData().build())

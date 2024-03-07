@@ -1,22 +1,31 @@
 import 'package:get/get.dart';
+import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/rx_ext.dart';
 
 import '../../domain/entity/address/country.dart';
 import '../../domain/entity/cargo/cargo.dart';
 import '../../domain/entity/cargo/cargo_list_parameter.dart';
+import '../../domain/entity/delivery/country_based_country_code_parameter.dart';
+import '../../domain/entity/delivery/country_based_country_code_response.dart';
 import '../../domain/entity/delivery/country_delivery_review_based_country_parameter.dart';
 import '../../domain/entity/delivery/country_delivery_review_response.dart';
 import '../../domain/usecase/check_rates_for_various_countries_use_case.dart';
+import '../../domain/usecase/get_country_based_country_code.dart';
 import '../../domain/usecase/get_country_delivery_review_use_case.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/controller_manager.dart';
 import 'modal_dialog_controller.dart';
 
 typedef _OnGetSelectedCountry = Country? Function();
+typedef _OnCheckRatesForVariousCountriesBack = void Function();
+typedef _OnShowGetCountryBasedCountryCodeProcessLoadingCallback = Future<void> Function();
+typedef _OnGetCountryBasedCountryCodeProcessSuccessCallback = Future<void> Function(CountryBasedCountryCodeResponse);
+typedef _OnShowGetCountryBasedCountryCodeProcessFailedCallback = Future<void> Function(dynamic e);
 
 class CheckRatesForVariousCountriesModalDialogController extends ModalDialogController {
   final CheckRatesForVariousCountriesUseCase checkRatesForVariousCountriesUseCase;
   final GetCountryDeliveryReviewUseCase getCountryDeliveryReviewUseCase;
+  final GetCountryBasedCountryCodeUseCase getCountryBasedCountryCodeUseCase;
 
   LoadDataResult<List<Cargo>> _cargoLoadDataResult = NoLoadDataResult<List<Cargo>>();
   LoadDataResult<CountryDeliveryReviewResponse> _countryDeliveryReviewLoadDataResult = NoLoadDataResult<CountryDeliveryReviewResponse>();
@@ -29,7 +38,8 @@ class CheckRatesForVariousCountriesModalDialogController extends ModalDialogCont
   CheckRatesForVariousCountriesModalDialogController(
     ControllerManager? controllerManager,
     this.checkRatesForVariousCountriesUseCase,
-    this.getCountryDeliveryReviewUseCase
+    this.getCountryDeliveryReviewUseCase,
+    this.getCountryBasedCountryCodeUseCase
   ) : super(controllerManager) {
     cargoLoadDataResultWrapperRx = LoadDataResultWrapper<List<Cargo>>(_cargoLoadDataResult).obs;
     countryDeliveryReviewLoadDataResultWrapperRx = LoadDataResultWrapper<CountryDeliveryReviewResponse>(_countryDeliveryReviewLoadDataResult).obs;
@@ -37,6 +47,23 @@ class CheckRatesForVariousCountriesModalDialogController extends ModalDialogCont
       cargoLoadDataResult: _cargoLoadDataResult,
       countryDeliveryReviewLoadDataResult: _countryDeliveryReviewLoadDataResult
     ).obs;
+  }
+
+  void getCountryBasedCountryCode(CountryBasedCountryCodeParameter countryBasedCountryCodeParameter) async {
+    if (_cartDelegate != null) {
+      _cartDelegate!.onShowGetCountryBasedCountryCodeProcessLoadingCallback();
+      LoadDataResult<CountryBasedCountryCodeResponse> countryBasedCountryCodeResponseLoadDataResult = await getCountryBasedCountryCodeUseCase.execute(
+        countryBasedCountryCodeParameter
+      ).future(
+        parameter: apiRequestManager.addRequestToCancellationPart('auth-identity-change-input').value
+      );
+      _cartDelegate!.onCheckRatesForVariousCountriesBack();
+      if (countryBasedCountryCodeResponseLoadDataResult.isSuccess) {
+        _cartDelegate!.onGetCountryBasedCountryCodeProcessSuccessCallback(countryBasedCountryCodeResponseLoadDataResult.resultIfSuccess!);
+      } else {
+        _cartDelegate!.onShowGetCountryBasedCountryCodeProcessFailedCallback(countryBasedCountryCodeResponseLoadDataResult.resultIfFailed);
+      }
+    }
   }
 
   void loadCargo() async {
@@ -95,9 +122,17 @@ class CheckRatesForVariousCountriesModalDialogController extends ModalDialogCont
 
 class CartDelegate {
   _OnGetSelectedCountry onGetSelectedCountry;
+  _OnCheckRatesForVariousCountriesBack onCheckRatesForVariousCountriesBack;
+  _OnShowGetCountryBasedCountryCodeProcessLoadingCallback onShowGetCountryBasedCountryCodeProcessLoadingCallback;
+  _OnGetCountryBasedCountryCodeProcessSuccessCallback onGetCountryBasedCountryCodeProcessSuccessCallback;
+  _OnShowGetCountryBasedCountryCodeProcessFailedCallback onShowGetCountryBasedCountryCodeProcessFailedCallback;
 
   CartDelegate({
-    required this.onGetSelectedCountry
+    required this.onGetSelectedCountry,
+    required this.onCheckRatesForVariousCountriesBack,
+    required this.onShowGetCountryBasedCountryCodeProcessLoadingCallback,
+    required this.onGetCountryBasedCountryCodeProcessSuccessCallback,
+    required this.onShowGetCountryBasedCountryCodeProcessFailedCallback,
   });
 }
 

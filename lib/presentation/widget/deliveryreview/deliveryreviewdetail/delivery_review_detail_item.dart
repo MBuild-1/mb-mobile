@@ -1,4 +1,4 @@
-import 'package:flag/flag_widget.dart';
+import 'package:country_flags/country_flags.dart';
 import 'package:flutter/material.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
@@ -62,7 +62,7 @@ abstract class DeliveryReviewDetailItem extends StatelessWidget {
                     width: 30,
                     child: AspectRatio(
                       aspectRatio: 4 / 3,
-                      child: Flag.fromString(deliveryReview.countryCode)
+                      child: CountryFlags.flag(deliveryReview.countryCode)
                     ),
                   ),
                   const SizedBox(width: 20),

@@ -1,12 +1,8 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:uni_links/uni_links.dart';
-import 'package:convert/convert.dart';
-
-import 'encryption_helper.dart';
 import 'main_route_observer.dart';
 import 'notification_redirector_helper.dart';
 import 'routeargument/reset_password_route_argument.dart';
@@ -92,9 +88,17 @@ class _DeeplinkApplinkHelperImpl {
 
   void handlingUri(Uri? uri) {
     if (uri != null) {
-      String path = uri.path;
+      String urlString = uri.toString();
       late Map<String, dynamic> additionalData;
-      if (path.contains("/reset-password/check-code")) {
+      if (urlString.contains("/api/auth/apple")) {
+        String link = urlString;
+        additionalData = {
+          "type": "login-with-apple-callback",
+          "data": {
+            "link": link
+          }
+        };
+      } else if (urlString.contains("/reset-password/check-code")) {
         if (uri.pathSegments.isNotEmpty) {
           // Check if reset password is exist
           for (MapEntry<String, RouteWrapper?> routeMapEntry in MainRouteObserver.routeMap.entries) {
@@ -107,12 +111,13 @@ class _DeeplinkApplinkHelperImpl {
             "type": "reset-password",
             "data": {
               "code": uri.pathSegments.last,
+              "type": "email",
             }
           };
         } else {
           return;
         }
-      } else if (path.contains("/product/category")) {
+      } else if (urlString.contains("/product/category")) {
         String category = uri.pathSegments.last;
         additionalData = {
           "type": "product-category",
@@ -120,7 +125,7 @@ class _DeeplinkApplinkHelperImpl {
             "category": category
           }
         };
-      } else if (path.contains("/product/brand")) {
+      } else if (urlString.contains("/product/brand")) {
         String brand = uri.pathSegments.last;
         additionalData = {
           "type": "product-brand",
@@ -128,7 +133,7 @@ class _DeeplinkApplinkHelperImpl {
             "brand": brand
           }
         };
-      } else if (path.contains("/product/bundling")) {
+      } else if (urlString.contains("/product/bundling")) {
         if (uri.queryParameters.containsKey("slug")) {
           String slug = uri.queryParameters["slug"]!;
           additionalData = {
@@ -138,7 +143,7 @@ class _DeeplinkApplinkHelperImpl {
             }
           };
         }
-      } else if (path.contains("/product/details")) {
+      } else if (urlString.contains("/product/details")) {
         if (uri.queryParameters.containsKey("slug")) {
           String slug = uri.queryParameters["slug"]!;
           additionalData = {
@@ -148,8 +153,32 @@ class _DeeplinkApplinkHelperImpl {
             }
           };
         }
+      } else if (urlString.contains("/user/order")) {
+        if (uri.queryParameters.containsKey("id")) {
+          String combinedOrderId = uri.queryParameters["id"]!;
+          additionalData = {
+            "type": "order-detail",
+            "data": {
+              "combined_order_id": combinedOrderId
+            }
+          };
+        } else {
+          additionalData = {
+            "type": "order"
+          };
+        }
       } else {
-        return;
+        if (uri.queryParameters.containsKey("code")) {
+          String countryCode = uri.queryParameters["code"]!;
+          additionalData = {
+            "type": "check-rates-for-various-countries",
+            "data": {
+              "country_code": countryCode
+            }
+          };
+        } else {
+          return;
+        }
       }
       var notificationRedirectorMap = NotificationRedirectorHelper.notificationRedirectorMap;
       if (notificationRedirectorMap.containsKey(additionalData["type"])) {

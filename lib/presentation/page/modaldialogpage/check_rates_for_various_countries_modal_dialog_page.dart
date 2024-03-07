@@ -3,18 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/number_ext.dart';
+import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../controller/modaldialogcontroller/check_rates_for_various_countries_modal_dialog_controller.dart';
 import '../../../domain/entity/address/country.dart';
 import '../../../domain/entity/cargo/cargo.dart';
+import '../../../domain/entity/delivery/country_based_country_code_parameter.dart';
 import '../../../domain/entity/delivery/country_delivery_review_response.dart';
 import '../../../domain/usecase/check_rates_for_various_countries_use_case.dart';
+import '../../../domain/usecase/get_country_based_country_code.dart';
 import '../../../domain/usecase/get_country_delivery_review_use_case.dart';
 import '../../../misc/constant.dart';
+import '../../../misc/dialog_helper.dart';
 import '../../../misc/errorprovider/error_provider.dart';
 import '../../../misc/injector.dart';
-import '../../../misc/load_data_result.dart';
 import '../../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../../widget/loaddataresultimplementer/load_data_result_implementer.dart';
 import '../../widget/rx_consumer.dart';
@@ -23,11 +26,12 @@ import 'modal_dialog_page.dart';
 
 class CheckRatesForVariousCountriesModalDialogPage extends ModalDialogPage<CheckRatesForVariousCountriesModalDialogController> {
   CheckRatesForVariousCountriesModalDialogController get checkRatesForVariousCountriesModalDialogController => modalDialogController.controller;
-  final void Function(String) onGotoCountryDeliveryReview;
+
+  final CheckRatesForVariousCountriesModalDialogPageParameter checkRatesForVariousCountriesModalDialogPageParameter;
 
   CheckRatesForVariousCountriesModalDialogPage({
     Key? key,
-    required this.onGotoCountryDeliveryReview
+    required this.checkRatesForVariousCountriesModalDialogPageParameter
   }) : super(key: key);
 
   @override
@@ -36,6 +40,7 @@ class CheckRatesForVariousCountriesModalDialogPage extends ModalDialogPage<Check
       controllerManager,
       Injector.locator<CheckRatesForVariousCountriesUseCase>(),
       Injector.locator<GetCountryDeliveryReviewUseCase>(),
+      Injector.locator<GetCountryBasedCountryCodeUseCase>()
     );
   }
 
@@ -43,18 +48,18 @@ class CheckRatesForVariousCountriesModalDialogPage extends ModalDialogPage<Check
   Widget buildPage(BuildContext context) {
     return _StatefulCheckRatesForVariousCountriesControllerMediatorWidget(
       checkRatesForVariousCountriesModalDialogController: checkRatesForVariousCountriesModalDialogController,
-      onGotoCountryDeliveryReview: (countryId) => onGotoCountryDeliveryReview(countryId)
+      checkRatesForVariousCountriesModalDialogPageParameter: checkRatesForVariousCountriesModalDialogPageParameter
     );
   }
 }
 
 class _StatefulCheckRatesForVariousCountriesControllerMediatorWidget extends StatefulWidget {
   final CheckRatesForVariousCountriesModalDialogController checkRatesForVariousCountriesModalDialogController;
-  final void Function(String) onGotoCountryDeliveryReview;
+  final CheckRatesForVariousCountriesModalDialogPageParameter checkRatesForVariousCountriesModalDialogPageParameter;
 
   const _StatefulCheckRatesForVariousCountriesControllerMediatorWidget({
     required this.checkRatesForVariousCountriesModalDialogController,
-    required this.onGotoCountryDeliveryReview
+    required this.checkRatesForVariousCountriesModalDialogPageParameter,
   });
 
   @override
@@ -65,16 +70,44 @@ class _StatefulCheckRatesForVariousCountriesControllerMediatorWidgetState extend
   Country? _selectedCountry;
 
   @override
-  Widget build(BuildContext context) {
-    TextStyle getDefaultTextStyle() {
-      return TextStyle(
-        color: Constant.colorDarkBlue,
-        fontWeight: FontWeight.bold
-      );
+  void initState() {
+    super.initState();
+    String? countryCode = widget.checkRatesForVariousCountriesModalDialogPageParameter.countryCode;
+    if (countryCode.isNotEmptyString) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        widget.checkRatesForVariousCountriesModalDialogController.getCountryBasedCountryCode(
+          CountryBasedCountryCodeParameter(
+            countryCode: countryCode!
+          )
+        );
+      });
     }
+  }
+
+  void _loadCargoAndCountryDeliveryReview() {
+    widget.checkRatesForVariousCountriesModalDialogController.loadCargo();
+    widget.checkRatesForVariousCountriesModalDialogController.loadCountryDeliveryReview();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     widget.checkRatesForVariousCountriesModalDialogController.setCartDelegate(
       CartDelegate(
-        onGetSelectedCountry: () => _selectedCountry
+        onGetSelectedCountry: () => _selectedCountry,
+        onCheckRatesForVariousCountriesBack: () => Get.back(),
+        onShowGetCountryBasedCountryCodeProcessLoadingCallback: () async => DialogHelper.showLoadingDialog(context),
+        onGetCountryBasedCountryCodeProcessSuccessCallback: (countryBasedCountryCodeResponse) async {
+          setState(() => _selectedCountry = countryBasedCountryCodeResponse.country);
+          _loadCargoAndCountryDeliveryReview();
+        },
+        onShowGetCountryBasedCountryCodeProcessFailedCallback: (e) async {
+          DialogHelper.showFailedModalBottomDialogFromErrorProvider(
+            context: context,
+            errorProvider: Injector.locator<ErrorProvider>(),
+            e: e,
+            onPressed: () => Get.back(result: true)
+          );
+        },
       )
     );
     return Padding(
@@ -89,8 +122,7 @@ class _StatefulCheckRatesForVariousCountriesControllerMediatorWidgetState extend
             selectedCountry: _selectedCountry,
             onSelectCountry: (country) {
               setState(() => _selectedCountry = country);
-              widget.checkRatesForVariousCountriesModalDialogController.loadCargo();
-              widget.checkRatesForVariousCountriesModalDialogController.loadCountryDeliveryReview();
+              _loadCargoAndCountryDeliveryReview();
             }
           ),
           RxConsumer<CheckRatesForVariousCountriesResult>(
@@ -327,7 +359,7 @@ class _StatefulCheckRatesForVariousCountriesControllerMediatorWidgetState extend
                           SizedOutlineGradientButton(
                             onPressed: () {
                               if (_selectedCountry != null) {
-                                widget.onGotoCountryDeliveryReview(_selectedCountry!.id);
+                                widget.checkRatesForVariousCountriesModalDialogPageParameter.onGotoCountryDeliveryReview(_selectedCountry!.id);
                               }
                             },
                             text: "Delivery Review".tr,
@@ -347,4 +379,14 @@ class _StatefulCheckRatesForVariousCountriesControllerMediatorWidgetState extend
       )
     );
   }
+}
+
+class CheckRatesForVariousCountriesModalDialogPageParameter {
+  String? countryCode;
+  void Function(String) onGotoCountryDeliveryReview;
+
+  CheckRatesForVariousCountriesModalDialogPageParameter({
+    this.countryCode,
+    required this.onGotoCountryDeliveryReview
+  });
 }

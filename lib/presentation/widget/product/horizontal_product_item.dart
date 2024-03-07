@@ -21,6 +21,14 @@ class HorizontalProductItem extends ProductItem implements HorizontalScalable {
   @override
   bool get showContent => horizontalProductAppearance == HorizontalProductAppearance.full;
 
+  @override
+  bool get showBadge {
+    if (horizontalProductAppearance == HorizontalProductAppearance.onlyPicture) {
+      return false;
+    }
+    return super.showBadge;
+  }
+
   HorizontalProductItem({
     Key? key,
     required ProductAppearanceData productAppearanceData,

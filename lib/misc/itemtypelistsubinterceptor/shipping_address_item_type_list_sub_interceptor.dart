@@ -52,7 +52,9 @@ class ShippingAddressItemTypeListSubInterceptor extends ItemTypeListSubIntercept
         color: Constant.colorSpacingListItem,
         padding: EdgeInsets.symmetric(horizontal: padding(), vertical: padding()),
         child: SizedOutlineGradientButton(
-          onPressed: () => PageRestorationHelper.toAddressPage(context),
+          onPressed: oldItemType.onChangeOtherAddress != null
+            ? oldItemType.onChangeOtherAddress!
+            : () => PageRestorationHelper.toAddressPage(context),
           text: "Change Other Address".tr,
           outlineGradientButtonType: OutlineGradientButtonType.outline,
           outlineGradientButtonVariation: OutlineGradientButtonVariation.variation5,

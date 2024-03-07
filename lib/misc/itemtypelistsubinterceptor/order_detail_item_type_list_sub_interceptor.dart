@@ -1,12 +1,14 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:masterbagasi/misc/ext/address_ext.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/order_purchasing_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../../domain/entity/additionalitem/additional_item.dart';
 import '../../domain/entity/address/address.dart';
+import '../../domain/entity/address/shipper_address.dart';
 import '../../domain/entity/order/combined_order.dart';
 import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderitem/optional_fields_warehouse_in_order_item.dart';
 import '../../domain/entity/order/modifywarehouseinorder/modifywarehouseinorderparameter/add_warehouse_in_order_parameter.dart';
@@ -17,6 +19,7 @@ import '../../domain/entity/order/order_product_detail.dart';
 import '../../domain/entity/order/order_product_inventory.dart';
 import '../../domain/entity/order/ordertracking/order_tracking.dart';
 import '../../domain/entity/order/ordertracking/order_tracking_detail.dart';
+import '../../domain/entity/order/ordertransaction/ordertransactionresponse/midtrans_order_transaction_response.dart';
 import '../../domain/entity/order/ordertransaction/ordertransactionresponse/order_transaction_response.dart';
 import '../../domain/entity/summaryvalue/summary_value.dart';
 import '../../presentation/page/modaldialogpage/order_tracking_modal_dialog_page.dart';
@@ -41,6 +44,7 @@ import '../controllerstate/listitemcontrollerstate/divider_list_item_controller_
 import '../controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/load_data_result_dynamic_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/order_detail_container_list_item_controller_state.dart';
+import '../controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/order_shipper_address_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/order_tracking_detail_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/order_tracking_list_item_controller_state.dart';
 import '../controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/order_transaction_list_item_controller_state.dart';
@@ -147,6 +151,11 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
       _interceptForProductInventoryInformation(i, oldItemType, oldItemTypeList, newListItemControllerState);
       newListItemControllerState.add(SpacingListItemControllerState());
       _interceptForOrderSendToWarehouseInformation(i, oldItemType, oldItemTypeList, newListItemControllerState);
+      List<AdditionalItem> additionalItemList = order.combinedOrder.orderProduct.additionalItemList;
+      if (additionalItemList.isNotEmpty) {
+        newListItemControllerState.add(SpacingListItemControllerState());
+        _interceptForShipperAddressPayment(i, oldItemType, oldItemTypeList, newListItemControllerState);
+      }
       newListItemControllerState.add(SpacingListItemControllerState());
       _interceptForOtherProductInformation(i, oldItemType, oldItemTypeList, newListItemControllerState);
       newListItemControllerState.add(SpacingListItemControllerState());
@@ -561,7 +570,8 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
           order: order.combinedOrder,
           inOrderDetail: true,
           onBuyAgainTap: orderDetailContainerListItemControllerState.onBuyAgainTap,
-          onPayOrderShipping: orderDetailContainerListItemControllerState.onPayOrderShipping
+          onPayOrderShipping: orderDetailContainerListItemControllerState.onPayOrderShipping,
+          onConfirmArrived: orderDetailContainerListItemControllerState.onConfirmArrived,
         )
       )
     );
@@ -617,6 +627,37 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
     );
   }
 
+  void _interceptForShipperAddressPayment(
+    int i,
+    OrderDetailContainerListItemControllerState orderDetailContainerListItemControllerState,
+    List<ListItemControllerState> oldItemTypeList,
+    List<ListItemControllerState> newListItemControllerState
+  ) {
+    newListItemControllerState.add(
+      VirtualSpacingListItemControllerState(height: padding())
+    );
+    ListItemControllerState orderTrackingTitleListItemControllerState = TitleAndDescriptionListItemControllerState(
+      title: "Daftar Barang Kiriman".tr,
+      padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem)
+    );
+    listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
+      i, ListItemControllerStateWrapper(orderTrackingTitleListItemControllerState), oldItemTypeList, newListItemControllerState
+    );
+    newListItemControllerState.add(
+      VirtualSpacingListItemControllerState(height: padding())
+    );
+    ListItemControllerState shipperAddressListItemControllerState = PaddingContainerListItemControllerState(
+      padding: EdgeInsets.symmetric(horizontal: padding()),
+      paddingChildListItemControllerState: orderDetailContainerListItemControllerState.shipperAddressListItemControllerState()
+    );
+    listItemControllerStateItemTypeInterceptorChecker.interceptEachListItem(
+      i, ListItemControllerStateWrapper(shipperAddressListItemControllerState), oldItemTypeList, newListItemControllerState
+    );
+    newListItemControllerState.add(
+      VirtualSpacingListItemControllerState(height: padding())
+    );
+  }
+
   void _interceptForAddressInformation(
     int i,
     OrderDetailContainerListItemControllerState orderDetailContainerListItemControllerState,
@@ -629,9 +670,9 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
     );
     ListItemControllerState paymentTypeListItemControllerState = TitleAndDescriptionListItemControllerState(
       title: "Address".tr,
-      description: order.combinedOrder.orderProduct.userAddress?.address,
+      description: order.combinedOrder.orderAddress?.address,
       titleAndDescriptionItemInterceptor: (padding, title, titleWidget, description, descriptionWidget, titleAndDescriptionWidget, titleAndDescriptionWidgetList) {
-        Address? userAddress = order.combinedOrder.orderProduct.userAddress;
+        Address? userAddress = order.combinedOrder.orderAddress?.toAddress();
         if (userAddress != null) {
           titleAndDescriptionWidgetList[titleAndDescriptionWidgetList.length - 2] = const SizedBox(height: 5);
         }
@@ -791,7 +832,7 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
       VirtualSpacingListItemControllerState(height: padding())
     );
     ListItemControllerState paymentTypeListItemControllerState = TitleAndDescriptionListItemControllerState(
-      title: "Order Send to Warehouse List".tr,
+      title: "Order Send to Personal Stuffs List".tr,
       titleInterceptor: (text, textStyle) => Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -841,8 +882,8 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
             return WidgetSubstitutionListItemControllerState(
               widgetSubstitution: (context, index) => Text(
                 MultiLanguageString({
-                  Constant.textEnUsLanguageKey: "No order send to warehouse list.",
-                  Constant.textInIdLanguageKey: "Tidak ada daftar kirim barang ke warehouse.",
+                  Constant.textEnUsLanguageKey: "No order send to personal stuffs list.",
+                  Constant.textInIdLanguageKey: "Tidak ada daftar kirim barang ke barang pribadi.",
                 }).toEmptyStringNonNull
               )
             );
@@ -1032,8 +1073,8 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
       paddingChildListItemControllerState: WidgetSubstitutionListItemControllerState(
         widgetSubstitution: (context, index) => Text(
           MultiLanguageString({
-            Constant.textEnUsLanguageKey: "Order invoice is generated. Tap button below for open order invoice.",
-            Constant.textInIdLanguageKey: "Invoice Pemesanan sudah dibuat. Tap tombol dibawah untuk membuka invoice pemesanan.",
+            Constant.textEnUsLanguageKey: "Order invoice is generated. Tap button below for download order invoice.",
+            Constant.textInIdLanguageKey: "Invoice Pemesanan sudah dibuat. Tap tombol dibawah untuk mengunduh invoice pemesanan.",
           }).toEmptyStringNonNull
         )
       )
@@ -1052,7 +1093,7 @@ class OrderDetailItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<L
             Expanded(
               child: SizedOutlineGradientButton(
                 onPressed: () => orderDetailContainerListItemControllerState.onOpenOrderInvoice(order.combinedOrder),
-                text: "Open".tr,
+                text: "Download Invoice".tr,
                 customPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
                 outlineGradientButtonType: OutlineGradientButtonType.solid,
                 outlineGradientButtonVariation: OutlineGradientButtonVariation.variation2,

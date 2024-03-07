@@ -233,6 +233,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.1"
+  country_flags:
+    dependency: "direct main"
+    description:
+      name: country_flags
+      sha256: "4e6377d72d0b1e7feb56c554aa8bfe161e248f5b84242e6bf52dcc5f4c9ca64f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   cross_file:
     dependency: transitive
     description:
@@ -313,14 +321,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.9"
-  enum_to_string:
-    dependency: transitive
-    description:
-      name: enum_to_string
-      sha256: bd9e83a33b754cb43a75b36a9af2a0b92a757bfd9847d2621ca0b1bed45f8e7a
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.1"
   fake_async:
     dependency: transitive
     description:
@@ -417,14 +417,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.1"
-  flag:
-    dependency: "direct main"
-    description:
-      name: flag
-      sha256: "13ded2a1ec2d8e67bf076d3329ce256a7a2f6f5b1080ddb41c23eb0742571aff"
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.0.0"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -446,6 +438,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.3.0"
+  flutter_exit_app:
+    dependency: "direct main"
+    description:
+      name: flutter_exit_app
+      sha256: a8dc0eafc095ffb04790fb39f49f22f3de4e0470112221094a716d5843a7add6
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.2"
   flutter_inappwebview:
     dependency: "direct main"
     description:
