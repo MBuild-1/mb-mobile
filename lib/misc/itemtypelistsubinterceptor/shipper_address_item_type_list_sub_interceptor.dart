@@ -64,8 +64,8 @@ class ShipperAddressItemTypeListSubInterceptor extends ItemTypeListSubIntercepto
                   children: [
                     Text(
                       MultiLanguageString({
-                        Constant.textInIdLanguageKey: "Kamu belum mengirim daftar kirimanmu.\r\nSegera kirim daftar kirimanmu ke warehouse kami di:",
-                        Constant.textEnUsLanguageKey: "You haven't sent your shipment list yet.\r\nImmediately send your shipment list to our warehouse at:"
+                        Constant.textInIdLanguageKey: "Apakah kamu masih ingin menambah daftar kiriman pribadi kamu? Jika iya, masih ada kesempatan untuk melengkapi, ya.",
+                        Constant.textEnUsLanguageKey: "Do you still want to add to your personal stuffs list? If yes, there is still a chance to complete it, yes"
                       }).toEmptyStringNonNull,
                       style: const TextStyle(),
                     ),
