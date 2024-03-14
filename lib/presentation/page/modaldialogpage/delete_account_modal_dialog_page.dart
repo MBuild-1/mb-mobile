@@ -153,10 +153,6 @@ class _StatefulDeleteAccountModalDialogControllerMediatorWidgetState extends Sta
         Constant.textEnUsLanguageKey: "If there is an incomplete payment, you cannot delete the account."
       }),
       MultiLanguageString({
-        Constant.textInIdLanguageKey: "Setelah akun dihapus, kamu tidak bisa menggunakan email kamu yang sudah dihapus untuk daftar kembali.",
-        Constant.textEnUsLanguageKey: "After an account is deleted, you cannot use your deleted email to register again."
-      }),
-      MultiLanguageString({
         Constant.textInIdLanguageKey: "Setelah akun kamu berhasil dihapus, Master Bagasi akan tetap menyimpan seluruh data transaksi untuk keperluan audit.",
         Constant.textEnUsLanguageKey: "After your account has been successfully deleted, Master Bagasi will continue to store all transaction data for audit purposes."
       })
