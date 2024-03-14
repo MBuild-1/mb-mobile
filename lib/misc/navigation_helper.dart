@@ -14,11 +14,44 @@ import 'routeargument/login_route_argument.dart';
 import 'routeargument/main_menu_route_argument.dart';
 import 'routeargument/order_detail_route_argument.dart';
 import 'routeargument/order_route_argument.dart';
+import 'routeargument/product_chat_route_argument.dart';
 import 'routeargument/product_detail_route_argument.dart';
 import 'routeargument/product_discussion_route_argument.dart';
 import 'toast_helper.dart';
 
 class _NavigationHelperImpl {
+  void navigationToProductDetailFromProductChat(BuildContext context, String productId) {
+    Map<String, RouteWrapper?> routeMap = MainRouteObserver.routeMap;
+    List<String> routeKeyList = List.of(routeMap.keys);
+    int i = 0;
+    int? beforeI;
+    if (routeKeyList.isNotEmpty) {
+      i = routeKeyList.length - 1;
+      var arguments = routeMap[routeKeyList[i]]?.route?.settings.arguments;
+      if (arguments is ProductChatRouteArgument) {
+        beforeI = i - 1;
+      }
+    }
+    if (beforeI != null) {
+      while (beforeI! > -1) {
+        RouteSettings? routeSettings = routeMap[routeKeyList[beforeI]]?.route?.settings;
+        String routeName = routeSettings!.name ?? "";
+        var arguments = routeSettings.arguments;
+        if (arguments is ProductDetailRouteArgument) {
+          Navigator.of(context).popUntil((route) => route.settings.name == routeName);
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            if (MainRouteObserver.onScrollUpIfInProductDetail.containsKey(routeName)) {
+              MainRouteObserver.onScrollUpIfInProductDetail[routeName]!();
+            }
+          });
+          return;
+        }
+        beforeI -= 1;
+      }
+    }
+    PageRestorationHelper.toProductChatPage(productId, context);
+  }
+
   void navigationToProductDetailFromProductDiscussion(BuildContext context, ProductDetailPageParameter productDetailPageParameter) {
     Map<String, RouteWrapper?> routeMap = MainRouteObserver.routeMap;
     List<String> routeKeyList = List.of(routeMap.keys);

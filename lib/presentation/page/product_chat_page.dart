@@ -39,6 +39,7 @@ import '../../misc/injector.dart';
 import '../../misc/itemtypelistsubinterceptor/chat_item_type_list_sub_interceptor.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/manager/controller_manager.dart';
+import '../../misc/navigation_helper.dart';
 import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
@@ -89,7 +90,7 @@ class ProductChatPage extends RestorableGetxPage<_ProductChatPageRestoration> {
   }
 }
 
-class _ProductChatPageRestoration extends ExtendedMixableGetxPageRestoration with ProductChatPageRestorationMixin {
+class _ProductChatPageRestoration extends ExtendedMixableGetxPageRestoration {
   @override
   // ignore: unnecessary_overrides
   void initState() {
@@ -394,7 +395,10 @@ class _StatefulProductChatControllerMediatorWidgetState extends State<_StatefulP
                 padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
                 child: ProductChatHeader(
                   productDetailLoadDataResult: _productDetailLoadDataResult,
-                  errorProvider: Injector.locator<ErrorProvider>()
+                  errorProvider: Injector.locator<ErrorProvider>(),
+                  onTap: (productDetail) {
+                    NavigationHelper.navigationToProductDetailFromProductChat(context, productDetail.productId);
+                  },
                 ),
               ),
             ],

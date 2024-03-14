@@ -11,11 +11,13 @@ import 'product_indicator.dart';
 class ProductChatHeader extends StatelessWidget {
   final LoadDataResult<ProductDetail> productDetailLoadDataResult;
   final ErrorProvider errorProvider;
+  final void Function(ProductDetail) onTap;
 
   const ProductChatHeader({
     super.key,
     required this.productDetailLoadDataResult,
-    required this.errorProvider
+    required this.errorProvider,
+    required this.onTap
   });
 
   @override
@@ -43,6 +45,7 @@ class ProductChatHeader extends StatelessWidget {
           child: Material(
             borderRadius: BorderRadius.circular(8.0),
             child: InkWell(
+              onTap: productDetailLoadDataResult.isSuccess ? () => onTap(productDetailLoadDataResult.resultIfSuccess!) : null,
               borderRadius: BorderRadius.circular(8.0),
               child: Builder(
                 builder: (context) {
