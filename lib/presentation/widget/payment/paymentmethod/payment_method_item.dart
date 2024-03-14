@@ -53,19 +53,17 @@ abstract class PaymentMethodItem extends StatelessWidget {
                       )
                     ),
                     Text(
-                      "${"Administration Fee".tr}: ${paymentMethod.serviceFee.toRupiah()}",
+                      () {
+                        String administrationFee = "${"Administration Fee".tr}: ${paymentMethod.serviceFee.toRupiah()}";
+                        if (paymentMethod.taxRate != null) {
+                          administrationFee += " + ${paymentMethod.taxRate}%";
+                        }
+                        return administrationFee;
+                      }(),
                       style: const TextStyle(
                         fontSize: 13.0
                       )
                     ),
-                    if (paymentMethod.taxRate != null) ...[
-                      Text(
-                        "${"Administrative Fee".tr}: ${paymentMethod.taxRate}%",
-                        style: const TextStyle(
-                          fontSize: 13.0
-                        )
-                      )
-                    ]
                   ],
                 ),
               )
