@@ -261,9 +261,7 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
                 ProfileMenuListItemControllerState(
                   onTap: (context) async {
                     final InAppReview inAppReview = InAppReview.instance;
-                    if (await inAppReview.isAvailable()) {
-                      inAppReview.requestReview();
-                    }
+                    inAppReview.openStoreListing(appStoreId: '6473609788');
                   },
                   icon: (BuildContext context) => menuIcon(Constant.vectorReviewThisApplication),
                   title: 'Review This App'.tr,
