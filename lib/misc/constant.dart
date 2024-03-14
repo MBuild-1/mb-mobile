@@ -321,6 +321,7 @@ class _ConstantImpl {
   String get textPrivacyPolicyUrl => "https://m.masterbagasi.com/privacy-policy";
   String get textLowerCaseAddressAlreadySetPrimary => "address already set primary";
   String get textErrorTitleWhenParsingOrderParameterJson => "Error when parsing order parameter json";
+  String get textDefaultUrl => "https://masterbagasi.com";
 
   String get carouselKeyIndonesianCategoryProduct => "carousel_key_indonesian_category_product";
   String get carouselKeyIndonesianOriginalBrand => "carousel_key_indonesian_original_brand";
@@ -363,6 +364,7 @@ class _ConstantImpl {
   String get envValueBaseUrl => EnvironmentConfig.instance.baseUrl;
   String get envValueElasticEntryEndpointPath => EnvironmentConfig.instance.elasticEntryEndpointPath;
   String get envValueMidtransSnapUrl => EnvironmentConfig.instance.midtransSnapUrl;
+  String get envValueAppleLoginWebUrl => EnvironmentConfig.instance.appleLoginWebUrl;
 }
 
 // ignore: non_constant_identifier_names

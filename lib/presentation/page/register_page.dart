@@ -48,6 +48,7 @@ import '../../misc/main_route_observer.dart';
 import '../../misc/manager/controller_manager.dart';
 import '../../misc/multi_language_string.dart';
 import '../../misc/navigation_helper.dart';
+import '../../misc/page_restoration_helper.dart';
 import '../../misc/recognizer/sign_up_recognizer.dart';
 import '../../misc/registerstep/first_register_step.dart';
 import '../../misc/registerstep/register_step.dart';
@@ -74,6 +75,7 @@ import '../widget/rx_consumer.dart';
 import '../widget/something_counter.dart';
 import '../widget/tap_area.dart';
 import 'getx_page.dart';
+import 'login_with_apple_web_viewer_page.dart';
 import 'modaldialogpage/select_value_modal_dialog_page.dart';
 import 'web_viewer_page.dart';
 import 'dart:math' as math;
@@ -112,7 +114,7 @@ class RegisterPage extends RestorableGetxPage<_RegisterPageRestoration> {
   }
 }
 
-class _RegisterPageRestoration extends ExtendedMixableGetxPageRestoration with WebViewerPageRestorationMixin {
+class _RegisterPageRestoration extends ExtendedMixableGetxPageRestoration with WebViewerPageRestorationMixin, LoginWithAppleWebViewerPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
@@ -872,7 +874,7 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
                       width: double.infinity,
                       outlineGradientButtonType: OutlineGradientButtonType.outline,
                       onPressed: () {
-                        WebHelper.launchUrl(Uri.parse("https://apple-auth.masterbagasi.com/auth/apple"));
+                        PageRestorationHelper.toLoginWithAppleWebViewerPage(context);
                       },
                       text: "Register With Apple".tr,
                     ),

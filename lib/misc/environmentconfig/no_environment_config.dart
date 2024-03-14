@@ -9,4 +9,6 @@ class NoEnvironmentConfig extends EnvironmentConfig {
   String get elasticEntryEndpointPath => "";
   @override
   String get midtransSnapUrl => "";
+  @override
+  String get appleLoginWebUrl => "";
 }

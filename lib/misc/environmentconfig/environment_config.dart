@@ -7,4 +7,5 @@ abstract class EnvironmentConfig {
   String get baseUrl;
   String get elasticEntryEndpointPath;
   String get midtransSnapUrl;
+  String get appleLoginWebUrl;
 }

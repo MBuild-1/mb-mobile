@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:masterbagasi/data/entitymappingext/user_entity_mapping_ext.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/presentation/page/product_bundle_detail_page.dart';
@@ -19,6 +22,7 @@ import 'injector.dart';
 import 'load_data_result.dart';
 import 'main_route_observer.dart';
 import 'page_restoration_helper.dart';
+import 'response_wrapper.dart';
 import 'routeargument/login_route_argument.dart';
 import 'string_util.dart';
 
@@ -213,10 +217,23 @@ class _NotificationRedirectorHelperImpl {
       if (data is Map<String, dynamic>) {
         if (data.containsKey("data")) {
           dynamic dataValue = data["data"];
-          String link = dataValue["link"];
+          String? link = dataValue["link"];
+          String? dataContent = dataValue["content"];
           DialogHelper.showLoadingDialog(context);
           LoginNotifier loginNotifier = Provider.of<LoginNotifier>(context, listen: false);
-          LoadDataResult<LoginResponse> loginResponseResult = await loginNotifier.loginOrRegisterWithAppleViaCallback(link);
+          LoadDataResult<LoginResponse> loginResponseResult = await (() async {
+            if (dataContent.isNotEmptyString) {
+              return SuccessLoadDataResult<LoginResponse>(
+                value: MainStructureResponseWrapper.factory(
+                  json.decode(dataContent.toEmptyStringNonNull)
+                ).mapFromResponseToLoginResponse()
+              );
+            } else if (link.isNotEmptyString) {
+              return await loginNotifier.loginOrRegisterWithAppleViaCallback(link!);
+            } else {
+              return FailedLoadDataResult.throwException<LoginResponse>(() => throw MessageError(title: "Data content and link is null or empty"))!;
+            }
+          })();
           if (loginResponseResult.isFailedBecauseCancellation) {
             return;
           }

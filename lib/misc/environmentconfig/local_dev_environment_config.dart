@@ -9,4 +9,6 @@ class LocalDevEnvironmentConfig extends EnvironmentConfig {
   String get elasticEntryEndpointPath => "entry_v5";
   @override
   String get midtransSnapUrl => "https://app.sandbox.midtrans.com/snap/v2/vtweb/";
+  @override
+  String get appleLoginWebUrl => "https://staging.apple-auth.masterbagasi.com/auth/apple";
 }

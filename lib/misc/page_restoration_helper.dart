@@ -29,6 +29,7 @@ import '../presentation/page/host_cart_page.dart';
 import '../presentation/page/inbox_page.dart';
 import '../presentation/page/introduction_page.dart';
 import '../presentation/page/login_page.dart';
+import '../presentation/page/login_with_apple_web_viewer_page.dart';
 import '../presentation/page/mainmenu/main_menu_page.dart';
 import '../presentation/page/modify_address_page.dart';
 import '../presentation/page/msme_partner_page.dart';
@@ -278,6 +279,15 @@ class _PageRestorationHelperImpl {
           parameterString += "${parameterString.isEmpty ? "" : "&"}$effectiveKey=$effectiveValue";
         });
         restoration.webViewerPageRestorableRouteFuture.present(Uri.encodeFull("masterbagasi://webviewer?$parameterString"));
+      },
+      context: context
+    );
+  }
+
+  void toLoginWithAppleWebViewerPage(BuildContext context) {
+    PageRestorationHelper.findPageRestorationMixin<LoginWithAppleWebViewerPageRestorationMixin>(
+      onGetxPageRestorationFound: (restoration) {
+        restoration.loginWithAppleWebViewerPageRestorableRouteFuture.present();
       },
       context: context
     );

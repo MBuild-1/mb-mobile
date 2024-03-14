@@ -9,4 +9,6 @@ class ProdEnvironmentConfig extends EnvironmentConfig {
   String get elasticEntryEndpointPath => "entry_v6";
   @override
   String get midtransSnapUrl => "https://app.midtrans.com/snap/v2/vtweb/";
+  @override
+  String get appleLoginWebUrl => "https://apple-auth.masterbagasi.com/auth/apple";
 }

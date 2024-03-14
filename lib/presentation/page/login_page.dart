@@ -58,6 +58,7 @@ import '../widget/something_counter.dart';
 import 'accountsecurity/modify_pin_page.dart';
 import 'forgot_password_page.dart';
 import 'getx_page.dart';
+import 'login_with_apple_web_viewer_page.dart';
 import 'register_page.dart';
 
 class LoginPage extends RestorableGetxPage<_LoginPageRestoration> {
@@ -103,7 +104,7 @@ class LoginPage extends RestorableGetxPage<_LoginPageRestoration> {
   }
 }
 
-class _LoginPageRestoration extends ExtendedMixableGetxPageRestoration with RegisterPageRestorationMixin, ForgotPasswordPageRestorationMixin, ModifyPinPageRestorationMixin {
+class _LoginPageRestoration extends ExtendedMixableGetxPageRestoration with RegisterPageRestorationMixin, ForgotPasswordPageRestorationMixin, ModifyPinPageRestorationMixin, LoginWithAppleWebViewerPageRestorationMixin {
   final RouteCompletionCallback<bool?>? _onCompleteInputPin;
 
   _LoginPageRestoration({
@@ -488,7 +489,7 @@ class _StatefulLoginControllerMediatorWidgetState extends State<_StatefulLoginCo
                     width: double.infinity,
                     outlineGradientButtonType: OutlineGradientButtonType.outline,
                     onPressed: () {
-                      WebHelper.launchUrl(Uri.parse("https://apple-auth.masterbagasi.com/auth/apple"));
+                      PageRestorationHelper.toLoginWithAppleWebViewerPage(context);
                     },
                     text: "Login With Apple".tr,
                   )
