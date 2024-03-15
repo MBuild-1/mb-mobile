@@ -751,7 +751,7 @@ class _WidgetHelperImpl {
     return Text(
       MultiLanguageString({
         Constant.textInIdLanguageKey: "Masukkan berat dalam kilogram dan gunakan koma (,) atau titik (.) sebagai pemisah desimal (contoh: 1,8 atau 1.8)",
-        Constant.textEnUsLanguageKey: "Enter the weight in kilograms and use a comma (,) or dot (.) as the decimal separator (example: 1.8 or 1.8)"
+        Constant.textEnUsLanguageKey: "Enter the weight in kilograms and use a comma (,) or dot (.) as the decimal separator (example: 1,8 or 1.8)"
       }).toEmptyStringNonNull,
       style: TextStyle(color: Constant.colorDarkGrey, fontSize: 12)
     );
