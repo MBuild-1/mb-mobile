@@ -75,6 +75,7 @@ import '../../misc/manager/controller_manager.dart';
 import '../../misc/multi_language_string.dart';
 import '../../misc/navigation_helper.dart';
 import '../../misc/on_observe_load_product_delegate.dart';
+import '../../misc/on_update_product_detail_short_discussion_delegate.dart';
 import '../../misc/order_helper.dart';
 import '../../misc/page_restoration_helper.dart';
 import '../../misc/paging/modified_paging_controller.dart';
@@ -362,7 +363,7 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
   late final ScrollController _productDetailScrollController;
   late final ModifiedPagingController<int, ListItemControllerState> _productDetailListItemPagingController;
   late final PagingControllerState<int, ListItemControllerState> _productDetailListItemPagingControllerState;
-  final List<LoadDataResultDynamicListItemControllerState> _dynamicItemLoadDataResultDynamicListItemControllerStateList = [];
+  final List<BaseLoadDataResultDynamicListItemControllerState> _dynamicItemLoadDataResultDynamicListItemControllerStateList = [];
   late ColorfulChipTabBarController _productVariantColorfulChipTabBarController;
   LoadDataResult<ProductDetail> _productDetailLoadDataResult = NoLoadDataResult<ProductDetail>();
   Timer? _timer;
@@ -371,6 +372,7 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
   final PaymentParameterModalDialogPageDelegate _paymentParameterModalDialogPageDelegate = PaymentParameterModalDialogPageDelegate();
   String? _selectedPaymentMethodSettlingId;
   String? _selectedCouponId;
+  RepeatableDynamicItemCarouselAdditionalParameter? _productDiscussionRepeatableDynamicItemCarouselAdditionalParameter;
 
   @override
   void initState() {
@@ -406,9 +408,18 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
     widget.statefulProductDetailControllerMediatorWidgetDelegate.onRefreshCouponId = (couponId) {
       _paymentParameterModalDialogPageDelegate.onUpdateCoupon(couponId);
     };
+    MainRouteObserver.onUpdateProductDetailShortDiscussion[getRouteMapKey(widget.pageName)] = () {
+      return OnUpdateProductDetailShortDiscussionDelegate(
+        onGetProductId: () => _productId,
+        onUpdateProductDetailShortDiscussion: () {
+          _productDiscussionRepeatableDynamicItemCarouselAdditionalParameter?.onRepeatLoading();
+        }
+      );
+    };
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _productDetailListItemPagingControllerStateListener(int pageKey) async {
+    _productDiscussionRepeatableDynamicItemCarouselAdditionalParameter = null;
     HorizontalComponentEntityParameterizedEntityAndListItemControllerStateMediator componentEntityMediator = Injector.locator<HorizontalComponentEntityParameterizedEntityAndListItemControllerStateMediator>();
     HorizontalDynamicItemCarouselParameterizedEntityAndListItemControllerStateMediatorParameter carouselParameterizedEntityMediator = HorizontalDynamicItemCarouselParameterizedEntityAndListItemControllerStateMediatorParameter(
       onSetState: () => setState(() {}),
@@ -1051,7 +1062,12 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
         onGetSelectedPaymentMethodSettlingId: () => _selectedPaymentMethodSettlingId,
         onGetSelectedCouponId: () => _selectedCouponId,
         onObserveLoadShortProductDiscussionDirectly: (onObserveLoadShortProductDiscussionParameter) {
-          ProductDiscussion productDiscussion = onObserveLoadShortProductDiscussionParameter.productDiscussionSuccessLoadDataResult.resultIfSuccess!;
+          _productDiscussionRepeatableDynamicItemCarouselAdditionalParameter ??= onObserveLoadShortProductDiscussionParameter.repeatableDynamicItemCarouselAdditionalParameter;
+          ListItemControllerState? resultListItemControllerState = onObserveLoadShortProductDiscussionParameter.onGetDefaultListItemControllerState();
+          if (resultListItemControllerState != null) {
+            return resultListItemControllerState;
+          }
+          ProductDiscussion productDiscussion = onObserveLoadShortProductDiscussionParameter.successResultProductDiscussion!;
           return ShortProductDiscussionContainerListItemControllerState(
             productDiscussionListItemValue: ProductDiscussionListItemValue(
               isExpanded: true,
@@ -1284,6 +1300,7 @@ class _StatefulProductDetailControllerMediatorWidgetState extends State<_Statefu
   void dispose() {
     _timer?.cancel();
     MainRouteObserver.onScrollUpIfInProductDetail[getRouteMapKey(widget.pageName)] = null;
+    MainRouteObserver.onUpdateProductDetailShortDiscussion[getRouteMapKey(widget.pageName)] = null;
     _productDetailScrollController.dispose();
     _productDetailListItemPagingController.dispose();
     super.dispose();

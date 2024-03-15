@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../domain/entity/login/login_response.dart';
 import '../domain/entity/province/province_map.dart';
 import '../presentation/widget/something_counter.dart';
+import 'on_update_product_detail_short_discussion_delegate.dart';
 import 'refresh_delivery_review.dart';
 import 'validation/validation_result.dart';
 
@@ -30,6 +31,8 @@ class _MainRouteObserver extends RouteObserver {
   Map<String, bool?> get subMainMenuVisibility => _subMainMenuVisibility;
   Map<String, void Function(LoginResponse, void Function()?)?> _onLoginOrRegisterAppleViaCallbackRequestProcessSuccessCallback = {};
   Map<String, void Function(LoginResponse, void Function()?)?> get onLoginOrRegisterAppleViaCallbackRequestProcessSuccessCallback => _onLoginOrRegisterAppleViaCallbackRequestProcessSuccessCallback;
+  Map<String, OnUpdateProductDetailShortDiscussionDelegate Function()?> _onUpdateProductDetailShortDiscussion = {};
+  Map<String, OnUpdateProductDetailShortDiscussionDelegate Function()?> get onUpdateProductDetailShortDiscussion => _onUpdateProductDetailShortDiscussion;
 
   void Function(int)? onChangeMainMenuTap;
   void Function()? onRefreshWishlistInMainMenu;
@@ -79,6 +82,9 @@ class _MainRouteObserver extends RouteObserver {
       for (var key in newRouteMap.keys) key: null
     };
     _onLoginOrRegisterAppleViaCallbackRequestProcessSuccessCallback = {
+      for (var key in newRouteMap.keys) key: null
+    };
+    _onUpdateProductDetailShortDiscussion = {
       for (var key in newRouteMap.keys) key: null
     };
   }

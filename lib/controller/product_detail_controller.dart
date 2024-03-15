@@ -3,6 +3,7 @@ import 'package:masterbagasi/misc/ext/string_ext.dart';
 
 import '../domain/entity/cart/support_cart.dart';
 import '../domain/entity/componententity/dynamic_item_carousel_component_entity.dart';
+import '../domain/entity/componententity/dynamic_item_carousel_directly_component_entity.dart';
 import '../domain/entity/componententity/i_component_entity.dart';
 import '../domain/entity/componententity/i_dynamic_item_carousel_component_entity.dart';
 import '../domain/entity/order/purchase_direct_parameter.dart';
@@ -40,8 +41,11 @@ import '../domain/usecase/store_search_last_seen_history_use_case.dart';
 import '../misc/constant.dart';
 import '../misc/controllercontentdelegate/product_brand_favorite_controller_content_delegate.dart';
 import '../misc/controllercontentdelegate/wishlist_and_cart_controller_content_delegate.dart';
+import '../misc/controllerstate/listitemcontrollerstate/failed_prompt_indicator_list_item_controller_state.dart';
 import '../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../misc/controllerstate/listitemcontrollerstate/loading_list_item_controller_state.dart';
+import '../misc/controllerstate/listitemcontrollerstate/no_content_list_item_controller_state.dart';
+import '../misc/entityandlistitemcontrollerstatemediator/horizontal_component_entity_parameterized_entity_and_list_item_controller_state_mediator.dart';
 import '../misc/error/message_error.dart';
 import '../misc/load_data_result.dart';
 import '../misc/multi_language_string.dart';
@@ -339,7 +343,8 @@ class ProductDetailController extends BaseGetxController {
   }
 
   IComponentEntity getShortProductDiscussion() {
-    return DynamicItemCarouselComponentEntity(
+    RepeatableDynamicItemCarouselAdditionalParameter repeatableDynamicItemCarouselAdditionalParameter = RepeatableDynamicItemCarouselAdditionalParameter();
+    return DynamicItemCarouselDirectlyComponentEntity(
       title: MultiLanguageString(""),
       onDynamicItemAction: (title, description, observer) async {
         observer(title, description, IsLoadingLoadDataResult<ProductDiscussion>());
@@ -360,20 +365,31 @@ class ProductDetailController extends BaseGetxController {
         }
         observer(title, description, productDiscussionLoadDataResult);
       },
-      onObserveLoadingDynamicItemActionState: (title, description, loadDataResult) {
-        return LoadingListItemControllerState();
-      },
-      onObserveSuccessDynamicItemActionState: (title, description, loadDataResult) {
+      observeDynamicItemActionStateDirectly: (title, description, loadDataResult, errorProvider) {
         LoadDataResult<ProductDiscussion> productDiscussionLoadDataResult = loadDataResult.castFromDynamic<ProductDiscussion>();
         if (_productDetailMainMenuDelegate != null) {
           return _productDetailMainMenuDelegate!.onObserveLoadShortProductDiscussionDirectly(
             _OnObserveLoadShortProductDiscussionParameter(
-              productDiscussionSuccessLoadDataResult: productDiscussionLoadDataResult as SuccessLoadDataResult<ProductDiscussion>
+              successResultProductDiscussion: productDiscussionLoadDataResult.resultIfSuccess,
+              repeatableDynamicItemCarouselAdditionalParameter: repeatableDynamicItemCarouselAdditionalParameter,
+              onGetDefaultListItemControllerState: () {
+                if (productDiscussionLoadDataResult.isLoading) {
+                  return LoadingListItemControllerState();
+                } else if (productDiscussionLoadDataResult.isFailed) {
+                  return FailedPromptIndicatorListItemControllerState(
+                    errorProvider: errorProvider,
+                    e: productDiscussionLoadDataResult.resultIfFailed
+                  );
+                } else {
+                  return null;
+                }
+              }
             )
           );
         }
-        throw MessageError(title: "Product detail delegate must be not null");
+        return NoContentListItemControllerState();
       },
+      dynamicItemCarouselAdditionalParameter: repeatableDynamicItemCarouselAdditionalParameter
     );
   }
 
@@ -479,9 +495,13 @@ class ProductDetailMainMenuDelegate {
 }
 
 class _OnObserveLoadShortProductDiscussionParameter {
-  SuccessLoadDataResult<ProductDiscussion> productDiscussionSuccessLoadDataResult;
+  ProductDiscussion? successResultProductDiscussion;
+  ListItemControllerState? Function() onGetDefaultListItemControllerState;
+  RepeatableDynamicItemCarouselAdditionalParameter repeatableDynamicItemCarouselAdditionalParameter;
 
   _OnObserveLoadShortProductDiscussionParameter({
-    required this.productDiscussionSuccessLoadDataResult
+    required this.successResultProductDiscussion,
+    required this.onGetDefaultListItemControllerState,
+    required this.repeatableDynamicItemCarouselAdditionalParameter
   });
 }

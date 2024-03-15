@@ -9,7 +9,6 @@ import 'navigation_helper.dart';
 class _OrderHelperImpl {
   void createOrderFromVersion1Point1Response(BuildContext context, CreateOrderVersion1Point1Response createOrderVersion1Point1Response) {
     CreateOrderResponseType createOrderResponseType = createOrderVersion1Point1Response.createOrderResponseType;
-    print("createOrderResponseType: $createOrderResponseType");
     if (createOrderResponseType is PaypalCreateOrderResponseType) {
       NavigationHelper.navigationToPaypalPaymentProcessAfterPurchaseProcess(
         context, createOrderResponseType.approveLink

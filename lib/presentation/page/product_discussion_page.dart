@@ -466,6 +466,7 @@ class _StatefulProductDiscussionControllerMediatorWidgetState extends State<_Sta
       }
     }
     _checkDiscussionEmpty();
+    _refreshShortProductDiscussionInProductDetail();
   }
 
   dynamic _getEmptyError() {
@@ -487,10 +488,10 @@ class _StatefulProductDiscussionControllerMediatorWidgetState extends State<_Sta
 
   dynamic _onEvent(dynamic event) {
     try {
-      var functionList = MainRouteObserver.onRefreshProductDiscussion.values.toList();
-      for (int i = functionList.length - 1; i >= 0; i--) {
-        if (functionList[i] != null) {
-          functionList[i]!();
+      var onRefreshProductDiscussionFunctionList = MainRouteObserver.onRefreshProductDiscussion.values.toList();
+      for (int i = onRefreshProductDiscussionFunctionList.length - 1; i >= 0; i--) {
+        if (onRefreshProductDiscussionFunctionList[i] != null) {
+          onRefreshProductDiscussionFunctionList[i]!();
         }
       }
     } catch (e) {
@@ -771,6 +772,22 @@ class _StatefulProductDiscussionControllerMediatorWidgetState extends State<_Sta
           _fillerErrorValueNotifier.value = _getEmptyError();
         } else {
           _fillerErrorValueNotifier.value = null;
+        }
+      }
+    }
+  }
+
+  void _refreshShortProductDiscussionInProductDetail() {
+    var onRefreshShortProductDiscussionInProductDetailFunctionList = MainRouteObserver.onUpdateProductDetailShortDiscussion.values.toList();
+    for (int i = onRefreshShortProductDiscussionInProductDetailFunctionList.length - 1; i >= 0; i--) {
+      if (onRefreshShortProductDiscussionInProductDetailFunctionList[i] != null) {
+        var onUpdateProductDetailShortDiscussionDelegate = onRefreshShortProductDiscussionInProductDetailFunctionList[i]!();
+        String productId1 = onUpdateProductDetailShortDiscussionDelegate.onGetProductId();
+        String productId2 = widget.productDiscussionPageParameter.productId.toEmptyStringNonNull;
+        if (productId1.isNotEmptyString && productId2.isNotEmptyString) {
+          if (productId1 == productId2) {
+            onUpdateProductDetailShortDiscussionDelegate.onUpdateProductDetailShortDiscussion();
+          }
         }
       }
     }
