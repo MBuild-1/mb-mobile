@@ -9,12 +9,14 @@ import '../../../misc/controllerstate/listitemcontrollerstate/list_item_controll
 import '../../../misc/controllerstate/listitemcontrollerstate/selectlanguagelistitemcontrollerstate/select_language_container_list_item_controller_state.dart';
 import '../../../misc/controllerstate/paging_controller_state.dart';
 import '../../../misc/getextended/get_extended.dart';
+import '../../../misc/language_helper.dart';
 import '../../../misc/load_data_result.dart';
 import '../../../misc/multi_language_string.dart';
 import '../../../misc/paging/modified_paging_controller.dart';
 import '../../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../../misc/paging/pagingresult/paging_result.dart';
+import '../../../misc/selected_language_based_index_value_helper.dart';
 import '../../../misc/selected_language_helper.dart';
 import '../../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../../widget/modified_paged_list_view.dart';
@@ -58,30 +60,12 @@ class _StatefulSelectLanguageControllerMediatorWidgetState extends State<_Statef
   late final PagingControllerState<int, ListItemControllerState> _selectLanguageListItemPagingControllerState;
 
   SelectLanguage? _selectedLanguage;
-  late List<SelectLanguage> _selectLanguageList;
 
   @override
   void initState() {
     super.initState();
-    String selectedLanguageLocaleString = SelectedLanguageHelper.getSelectedLanguage().result;
-    _selectLanguageList = <SelectLanguage>[
-      SelectLanguage(
-        nameMultiLanguageString: MultiLanguageString({
-          Constant.textInIdLanguageKey: "Bahasa Dari Sistem",
-          Constant.textEnUsLanguageKey: "Language From System",
-        }),
-        localeString: "",
-      ),
-      SelectLanguage(
-        nameMultiLanguageString: MultiLanguageString("Indonesia"),
-        localeString: Constant.textInIdLanguageKey
-      ),
-      SelectLanguage(
-        nameMultiLanguageString: MultiLanguageString("English (United States)"),
-        localeString: Constant.textEnUsLanguageKey
-      )
-    ];
-    Iterable<SelectLanguage> selectLanguageIterable = _selectLanguageList.where(
+    String selectedLanguageLocaleString = LanguageHelper.getSelectedLanguage().result;
+    Iterable<SelectLanguage> selectLanguageIterable = LanguageHelper.selectLanguageList.where(
       (value) => value.localeString == selectedLanguageLocaleString
     );
     if (selectLanguageIterable.isNotEmpty) {
@@ -110,10 +94,10 @@ class _StatefulSelectLanguageControllerMediatorWidgetState extends State<_Statef
       value: PagingDataResult<ListItemControllerState>(
         page: 1,
         totalPage: 1,
-        totalItem: _selectLanguageList.length,
+        totalItem: LanguageHelper.selectLanguageList.length,
         itemList: [
           SelectLanguageContainerListItemControllerState(
-            selectLanguageList: _selectLanguageList,
+            selectLanguageList: LanguageHelper.selectLanguageList,
             onGetSelectLanguage: () => _selectedLanguage,
             onSelectLanguage: (selectLanguage) => _selectedLanguage = selectLanguage,
             onUpdateState: () => setState(() {})
@@ -128,8 +112,9 @@ class _StatefulSelectLanguageControllerMediatorWidgetState extends State<_Statef
     widget.selectLanguageModalDialogController.setSelectLanguageDelegate(
       SelectLanguageDelegate(
         onGetSelectedLanguage: () => _selectedLanguage,
-        onSaveSelectedLanguage: (localeString) async {
-          await SelectedLanguageHelper.saveSelectedLanguage(localeString).future();
+        onSaveSelectedLanguage: (selectedLanguage) async {
+          await SelectedLanguageHelper.saveSelectedLanguage(selectedLanguage.localeString).future();
+          await SelectedLanguageBasedIndexValueHelper.saveSelectedLanguageBasedIndexValue(selectedLanguage.indexValue).future();
           Get.back(result: 1);
         }
       )

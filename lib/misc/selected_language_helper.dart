@@ -7,7 +7,7 @@ import 'processing/default_processing.dart';
 import 'processing/future_processing.dart';
 
 abstract class _SelectedLanguageHelperImpl {
-  FutureProcessing<LoadDataResult<void>> saveSelectedLanguage(String tempLoginDataWhileInputPin);
+  FutureProcessing<LoadDataResult<void>> saveSelectedLanguage(String saveSelectedLanguage);
   DefaultProcessing<String> getSelectedLanguage();
   FutureProcessing<LoadDataResult<void>> deleteSelectedLanguage();
 }

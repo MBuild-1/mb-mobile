@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:masterbagasi/misc/ext/language_ext.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
@@ -9,6 +10,7 @@ import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 import '../../domain/entity/user/user.dart';
 import '../../misc/deeplink_applink_helper.dart';
 import '../../misc/getextended/get_extended.dart';
+import '../../misc/language_helper.dart';
 import '../../misc/load_data_result.dart';
 import '../../misc/login_helper.dart';
 import '../../misc/main_route_observer.dart';
@@ -52,8 +54,8 @@ class _SomethingCounterState extends State<SomethingCounter> with RestorationMix
     super.initState();
     _localeWidgetBindingObserver = LocaleWidgetBindingObserver(
       onUpdateWhileDeviceLocaleIsChange: () {
-        String selectedLanguageLocaleString = SelectedLanguageHelper.getSelectedLanguage().result;
-        if (selectedLanguageLocaleString.isEmpty) {
+        String selectedLanguageLocaleString = LanguageHelper.getSelectedLanguage().result;
+        if (selectedLanguageLocaleString.isLanguageFromSystem) {
           updateLanguage();
         }
       }

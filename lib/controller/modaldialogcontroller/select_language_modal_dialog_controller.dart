@@ -2,7 +2,7 @@ import '../../domain/entity/selectlanguage/select_language.dart';
 import 'modal_dialog_controller.dart';
 
 typedef _OnGetSelectedLanguage = SelectLanguage? Function();
-typedef _OnSaveSelectedLanguage = Future<void> Function(String);
+typedef _OnSaveSelectedLanguage = Future<void> Function(SelectLanguage);
 
 class SelectLanguageModalDialogController extends ModalDialogController {
   SelectLanguageDelegate? _selectLanguageDelegate;
@@ -20,7 +20,7 @@ class SelectLanguageModalDialogController extends ModalDialogController {
     if (_selectLanguageDelegate != null) {
       SelectLanguage? selectedLanguage = _selectLanguageDelegate!.onGetSelectedLanguage();
       if (selectedLanguage != null) {
-        _selectLanguageDelegate!.onSaveSelectedLanguage(selectedLanguage.localeString);
+        _selectLanguageDelegate!.onSaveSelectedLanguage(selectedLanguage);
       }
     }
   }

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:masterbagasi/misc/ext/language_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/misc/translation/extended_translation.dart';
 import '../../controller/base_getx_controller.dart';
 import '../../presentation/page/getx_page.dart';
 import '../constant.dart';
+import '../language_helper.dart';
 import '../locale/ignore_deprecated_locale.dart';
 import '../main_route_observer.dart';
 import '../manager/controller_manager.dart';
@@ -283,8 +285,8 @@ you can only use widgets and widget functions here''';
   }
 
   Locale? get deviceLocale {
-    String selectedLanguageLocaleString = SelectedLanguageHelper.getSelectedLanguage().result;
-    if (selectedLanguageLocaleString.isNotEmptyString) {
+    String selectedLanguageLocaleString = LanguageHelper.getSelectedLanguage().result;
+    if (selectedLanguageLocaleString.isNotLanguageFromSystem) {
       return GetExtended.fromStringToLocale(selectedLanguageLocaleString);
     }
     Locale? locale = Get.deviceLocale;

@@ -307,6 +307,7 @@ class _ConstantImpl {
   String get tempPaymentInstructionHiveTableKey => 'temp_payment_instruction_hive_table_key';
   String get tempOrderDetailBackResultHiveTableKey => 'temp_order_detail_back_result_hive_table_key';
   String get saveSelectedLanguageHiveTableKey => 'save_selected_language_hive_table_key';
+  String get saveSelectedLanguageBasedIndexValueHiveTableKey => 'save_selected_language_based_index_value_hive_table_key';
   String get textIdKey => 'id';
   String get textTypeKey => 'type';
   String get textUrlKey => 'url';
