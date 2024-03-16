@@ -245,7 +245,7 @@ class _DialogHelperImpl {
                     maintainSize: true,
                     child: Text(
                       MultiLanguageString({
-                        Constant.textEnUsLanguageKey: "Get cheap prices by inviting your friend to shop in your basket.",
+                        Constant.textEnUsLanguageKey: "Get a great price by inviting your friends to shop in your cart.",
                         Constant.textInIdLanguageKey: "Dapatkan harga murah dengan mengundang temanmu belanja di keranjang kamu.",
                       }).toEmptyStringNonNull,
                       style: const TextStyle(
@@ -283,7 +283,7 @@ class _DialogHelperImpl {
                     maintainSize: true,
                     child: Text(
                       MultiLanguageString({
-                        Constant.textEnUsLanguageKey: "Get cheap prices by joining your friend's basket.",
+                        Constant.textEnUsLanguageKey: "Get a great price by joining your friend's cart.",
                         Constant.textInIdLanguageKey: "Dapatkan harga murah dengan bergabung di keranjang teman kamu.",
                       }).toEmptyStringNonNull,
                       style: const TextStyle(
@@ -335,7 +335,7 @@ class _DialogHelperImpl {
                                         }
                                       }
                                     },
-                                    text: "Be Host".tr,
+                                    text: "Be The Host".tr,
                                     outlineGradientButtonType: OutlineGradientButtonType.outline,
                                     outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
                                   ),

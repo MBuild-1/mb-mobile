@@ -64,7 +64,7 @@ class DefaultExtendedTranslation extends ExtendedTranslation {
       "Create Host Cart": "Buat Keranjang Tuan Rumah",
       "Take Cart Friend": "Titip Keranjang Teman",
       "Join": "Bergabung",
-      "Be Host": "Jadi Tuan Rumah",
+      "Be The Host": "Jadi Tuan Rumah",
       "Take Shopping": "Titip Belanja",
       "Shared Cart": "Keranjang Bersama",
       "Host": "Tuan Rumah",
