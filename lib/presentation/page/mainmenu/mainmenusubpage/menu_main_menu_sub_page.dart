@@ -304,7 +304,7 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
                   ProfileMenuListItemControllerState(
                     onTap: (context) => PageRestorationHelper.toHelpChatPage(context),
                     icon: (BuildContext context) => menuIcon(Constant.vectorInbox2),
-                    title: 'Chat'.tr,
+                    title: 'Chat Masta'.tr,
                     titleInterceptor: menuTitleInterceptor,
                     padding: menuPadding
                   ),
@@ -330,52 +330,9 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
                     padding: menuPadding
                   ),
                   ProfileMenuListItemControllerState(
-                    onTap: (context) {
-                      DeviceHelper.updateApplication();
-                    },
-                    icon: (BuildContext context) => menuIcon(Constant.vectorUpdateApplication),
-                    title: 'Update Application'.tr,
-                    titleInterceptor: menuTitleInterceptor,
-                    padding: menuPadding
-                  ),
-                  ProfileMenuListItemControllerState(
-                    onTap: (context) => PageRestorationHelper.toInboxPage(
-                      context, inboxPageParameter: InboxPageParameter(
-                        showInboxMenu: false,
-                        showFaq: true,
-                        title: 'FAQ'.tr
-                      )
-                    ),
-                    icon: (BuildContext context) => menuIcon(Constant.vectorFaq),
-                    title: 'FAQ'.tr,
-                    titleInterceptor: menuTitleInterceptor,
-                    padding: menuPadding
-                  ),
-                  ProfileMenuListItemControllerState(
                     onTap: (context) => widget.menuMainMenuSubController.sharedCartControllerContentDelegate.checkSharedCart(),
                     icon: (BuildContext context) => menuIcon(Constant.vectorSharedCart),
                     title: 'Shared Cart'.tr,
-                    titleInterceptor: menuTitleInterceptor,
-                    padding: menuPadding
-                  ),
-                  ProfileMenuListItemControllerState(
-                    onTap: (context) async {
-                      dynamic result = await DialogHelper.showModalBottomDialogPage<int, int>(
-                        context: context,
-                        modalDialogPageBuilder: (context, parameter) => SelectLanguageModalDialogPage(),
-                        parameter: 1
-                      );
-                      if (result is int) {
-                        if (result == 1) {
-                          DialogHelper.showLoadingDialog(context);
-                          await Future.delayed(const Duration(milliseconds: 300));
-                          SomethingCounter.of(context)?.updateLanguage();
-                          Get.back();
-                        }
-                      }
-                    },
-                    icon: (BuildContext context) => menuIcon(Constant.vectorSelectLanguage),
-                    title: 'Select Language'.tr,
                     titleInterceptor: menuTitleInterceptor,
                     padding: menuPadding
                   ),
@@ -409,6 +366,36 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
                     icon: (BuildContext context) => menuIcon(Constant.vectorAccountSecurity),
                     title: 'Account Security'.tr,
                     description: "${'Password, PIN, and personal data verification'.tr}.",
+                    titleInterceptor: menuTitleInterceptor,
+                    padding: menuPadding
+                  ),
+                  ProfileMenuListItemControllerState(
+                    onTap: (context) async {
+                      dynamic result = await DialogHelper.showModalBottomDialogPage<int, int>(
+                        context: context,
+                        modalDialogPageBuilder: (context, parameter) => SelectLanguageModalDialogPage(),
+                        parameter: 1
+                      );
+                      if (result is int) {
+                        if (result == 1) {
+                          DialogHelper.showLoadingDialog(context);
+                          await Future.delayed(const Duration(milliseconds: 300));
+                          SomethingCounter.of(context)?.updateLanguage();
+                          Get.back();
+                        }
+                      }
+                    },
+                    icon: (BuildContext context) => menuIcon(Constant.vectorSelectLanguage),
+                    title: 'Select Language'.tr,
+                    titleInterceptor: menuTitleInterceptor,
+                    padding: menuPadding
+                  ),
+                  ProfileMenuListItemControllerState(
+                    onTap: (context) {
+                      DeviceHelper.updateApplication();
+                    },
+                    icon: (BuildContext context) => menuIcon(Constant.vectorUpdateApplication),
+                    title: 'Update Application'.tr,
                     titleInterceptor: menuTitleInterceptor,
                     padding: menuPadding
                   ),

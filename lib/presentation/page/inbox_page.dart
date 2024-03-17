@@ -254,7 +254,7 @@ class _StatefulInboxControllerMediatorWidgetState extends State<_StatefulInboxCo
                       notificationNumber: _notificationNotifier.inboxLoadDataResult.resultIfSuccess ?? 0,
                       icon: ModifiedSvgPicture.asset(Constant.vectorChat, color: iconColor, width: 20.0),
                     ),
-                    title: 'Chat'.tr,
+                    title: 'Chat Masta'.tr,
                     description: "Your private conversations".tr,
                     descriptionInterceptor: descriptionInterceptor
                   ),

@@ -375,7 +375,7 @@ class _StatefulHelpChatControllerMediatorWidgetState extends State<StatefulHelpC
               overrideDefaultColorWithSingleColor: false
             ),
             const SizedBox(width: 10),
-            Text("Mista".tr),
+            Text("Masta".tr),
           ],
         ),
       ) : null,
