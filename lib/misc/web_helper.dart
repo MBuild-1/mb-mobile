@@ -5,6 +5,7 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart' as in_app_web_vi
 import 'package:flutter_web_browser/flutter_web_browser.dart';
 
 import 'constant.dart';
+import 'page_restoration_helper.dart';
 
 abstract class WebLaunchUrlType {
   const WebLaunchUrlType();
@@ -17,10 +18,12 @@ class NativeWebLaunchUrlType extends WebLaunchUrlType {
 class WebViewWebLaunchUrlType extends WebLaunchUrlType {
   BuildContext Function() onGetBuildContext;
   Map<String, dynamic> header;
+  bool canShare;
 
   WebViewWebLaunchUrlType({
     required this.onGetBuildContext,
-    required this.header
+    this.header = const {},
+    this.canShare = true
   });
 }
 
@@ -58,21 +61,19 @@ class _WebHelperImpl {
         );
       }
     } else if (webLaunchUrlType is WebViewWebLaunchUrlType) {
-      final in_app_web_view.InAppBrowser browser = in_app_web_view.InAppBrowser();
-      await browser.openUrlRequest(
-        urlRequest: in_app_web_view.URLRequest(
-          url: uri,
-          headers: webLaunchUrlType.header.map(
-            (key, value) => MapEntry<String, String>(
-              key, value as String
-            )
-          )
-        ),
-        options: in_app_web_view.InAppBrowserClassOptions(
-          android: in_app_web_view.AndroidInAppBrowserOptions(),
-          ios: in_app_web_view.IOSInAppBrowserOptions(),
-          crossPlatform: in_app_web_view.InAppBrowserOptions(),
-        ),
+      PageRestorationHelper.toWebViewerPage(
+        webLaunchUrlType.onGetBuildContext(),
+        <String, dynamic>{
+          Constant.textUrlKey: uri.toString(),
+          if (webLaunchUrlType.header.isNotEmpty) ...{
+            Constant.textHeaderKey: webLaunchUrlType.header.map(
+              (key, value) => MapEntry<String, String>(
+                key, value as String
+              )
+            ),
+          },
+          Constant.textCanShareKey: webLaunchUrlType.header
+        }
       );
     }
   }

@@ -26,6 +26,7 @@ import '../widget/normal_text_style_for_appbar.dart';
 import '../widget/rx_consumer.dart';
 import '../widget/tap_area.dart';
 import 'getx_page.dart';
+import 'web_viewer_page.dart';
 
 class AffiliatePage extends RestorableGetxPage<_AffiliatePageRestoration> {
   late final ControllerMember<AffiliateController> _affiliateController = ControllerMember<AffiliateController>().addToControllerManager(controllerManager);
@@ -55,7 +56,7 @@ class AffiliatePage extends RestorableGetxPage<_AffiliatePageRestoration> {
   }
 }
 
-class _AffiliatePageRestoration extends ExtendedMixableGetxPageRestoration {
+class _AffiliatePageRestoration extends ExtendedMixableGetxPageRestoration with WebViewerPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
@@ -191,7 +192,12 @@ class _StatefulAffiliateControllerMediatorWidgetState extends State<_StatefulAff
               ),
               TapArea(
                 onTap: () {
-                  WebHelper.launchUrl(Uri.parse("https://masterbagasi.com/affiliate"));
+                  WebHelper.launchUrl(
+                    Uri.parse(Constant.textAffiliateUrl),
+                    webLaunchUrlType: WebViewWebLaunchUrlType(
+                      onGetBuildContext: () => context
+                    )
+                  );
                 },
                 child: NormalTextStyleForAppBar(
                   style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold),

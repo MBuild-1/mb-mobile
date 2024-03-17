@@ -271,11 +271,6 @@ class _StatefulLoginWithAppleWebViewerPageState extends State<_StatefulLoginWith
                             onProgressChanged: (controller, progress) async {
                               _progress = progress;
                               setState(() {});
-                              if (_isLoading && _progress == 100) {
-                                await _onPageFinishedLoading();
-                              } else if (!_isLoading) {
-                                _onPageStartedLoading();
-                              }
                             },
                             onLoadStart: (controller, url) => _onPageStartedLoading(),
                             onLoadStop: (controller, url) async {
@@ -288,7 +283,6 @@ class _StatefulLoginWithAppleWebViewerPageState extends State<_StatefulLoginWith
                               String result = parseHtmlString((await controller.getHtml()).toString());
                               if (urlString.contains(Constant.textDefaultUrl) && urlString.contains("/api/auth/apple")) {
                                 setState(() => _isSuccessLoginViaApple = true);
-                                await _onPageFinishedLoading();
                                 String jsonResultString = result;
                                 String currentRoute = MainRouteObserver.getCurrentRoute();
                                 if (MainRouteObserver.onRedirectFromNotificationClick[currentRoute] != null) {
@@ -302,18 +296,9 @@ class _StatefulLoginWithAppleWebViewerPageState extends State<_StatefulLoginWith
                               } else if (result.toLowerCase().contains("success redirect")) {
                                 Navigator.of(context).popUntilLogin();
                               }
+                              await _onPageFinishedLoading();
                             },
                             onLoadError: (InAppWebViewController controller, Uri? url, int code, String message) {
-                              setState(() {
-                                _webLoadingFailedLoadDataResult = FailedLoadDataResult.throwException<bool>(
-                                  () => throw MessageError(
-                                    title: "Web Cannot Be Loaded".tr,
-                                    message: message
-                                  )
-                                );
-                              });
-                            },
-                            onLoadHttpError: (InAppWebViewController controller, Uri? url, int code, String message) {
                               setState(() {
                                 _webLoadingFailedLoadDataResult = FailedLoadDataResult.throwException<bool>(
                                   () => throw MessageError(

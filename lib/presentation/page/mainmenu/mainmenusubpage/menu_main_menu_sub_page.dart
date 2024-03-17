@@ -215,7 +215,12 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
               profileDropdownListItemControllerState.profileMenuListItemControllerStateList = [
                 ProfileMenuListItemControllerState(
                   onTap: (context) {
-                    WebHelper.launchUrl(Uri.parse("https://m.masterbagasi.com/about-us"));
+                    WebHelper.launchUrl(
+                      Uri.parse(Constant.textAboutUsUrl),
+                      webLaunchUrlType: WebViewWebLaunchUrlType(
+                        onGetBuildContext: () => context
+                      )
+                    );
                   },
                   icon: (BuildContext context) => menuIcon(Constant.vectorAboutMasterbagasi),
                   title: 'About Master Bagasi'.tr,
@@ -224,7 +229,12 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
                 ),
                 ProfileMenuListItemControllerState(
                   onTap: (context) {
-                    WebHelper.launchUrl(Uri.parse("https://m.masterbagasi.com/mb-care"));
+                    WebHelper.launchUrl(
+                      Uri.parse(Constant.textMasterBagasiCareUrl),
+                      webLaunchUrlType: WebViewWebLaunchUrlType(
+                        onGetBuildContext: () => context
+                      )
+                    );
                   },
                   icon: (BuildContext context) => menuIcon((double size) => Icon(Icons.help_center, size: size)),
                   title: 'Master Bagasi Care'.tr,
@@ -233,7 +243,12 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
                 ),
                 ProfileMenuListItemControllerState(
                   onTap: (context) {
-                    WebHelper.launchUrl(Uri.parse(Constant.textTermAndConditionsUrl));
+                    WebHelper.launchUrl(
+                      Uri.parse(Constant.textTermAndConditionsUrl),
+                      webLaunchUrlType: WebViewWebLaunchUrlType(
+                        onGetBuildContext: () => context
+                      )
+                    );
                   },
                   icon: (BuildContext context) => menuIcon(Constant.vectorTermsAndConditions),
                   title: 'Terms & Conditions'.tr,
@@ -242,7 +257,12 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
                 ),
                 ProfileMenuListItemControllerState(
                   onTap: (context) {
-                    WebHelper.launchUrl(Uri.parse(Constant.textPrivacyPolicyUrl));
+                    WebHelper.launchUrl(
+                      Uri.parse(Constant.textPrivacyPolicyUrl),
+                      webLaunchUrlType: WebViewWebLaunchUrlType(
+                        onGetBuildContext: () => context
+                      )
+                    );
                   },
                   icon: (BuildContext context) => menuIcon(Constant.vectorPrivacyPolicy),
                   title: 'Privacy Policy'.tr,
@@ -251,7 +271,12 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
                 ),
                 ProfileMenuListItemControllerState(
                   onTap: (context) {
-                    WebHelper.launchUrl(Uri.parse("https://masterbagasi.com/contact-us"));
+                    WebHelper.launchUrl(
+                      Uri.parse(Constant.textContactUsUrl),
+                      webLaunchUrlType: WebViewWebLaunchUrlType(
+                        onGetBuildContext: () => context
+                      )
+                    );
                   },
                   icon: (BuildContext context) => menuIcon((double size) => Icon(Icons.contact_support, size: size)),
                   title: 'Contact Us'.tr,

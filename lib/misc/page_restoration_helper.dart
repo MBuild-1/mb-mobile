@@ -272,6 +272,9 @@ class _PageRestorationHelperImpl {
           } else if (key == Constant.textHeaderKey) {
             effectiveKey = Constant.textHeaderKey;
             effectiveValue = base64.encode(utf8.encode(json.encode(value)));
+          } else if (key == Constant.textCanShareKey) {
+            effectiveKey = Constant.textCanShareKey;
+            effectiveValue = base64.encode(utf8.encode(value));
           } else {
             effectiveKey = key;
             effectiveValue = value;

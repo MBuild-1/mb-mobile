@@ -184,6 +184,9 @@ class _StatefulWebViewerPageState extends State<_StatefulWebViewerPage> {
       if (otherParameterMap.containsKey(Constant.textHeaderKey)) {
         _header = json.decode(utf8.decode(base64.decode(otherParameterMap[Constant.textHeaderKey])));
       }
+      if (otherParameterMap.containsKey(Constant.textCanShareKey)) {
+        _canShare = utf8.decode(base64.decode(otherParameterMap[Constant.textCanShareKey])) == "1";
+      }
     }
   }
 
@@ -279,25 +282,10 @@ class _StatefulWebViewerPageState extends State<_StatefulWebViewerPage> {
                   onProgressChanged: (controller, progress) async {
                     _progress = progress;
                     setState(() {});
-                    if (_isLoading && _progress == 100) {
-                      await _onPageFinishedLoading();
-                    } else if (!_isLoading) {
-                      _onPageStartedLoading();
-                    }
                   },
                   onLoadStart: (controller, url) => _onPageStartedLoading(),
                   onLoadStop: (controller, url) async => await _onPageFinishedLoading(),
                   onLoadError: (InAppWebViewController controller, Uri? url, int code, String message) {
-                    setState(() {
-                      _webLoadingFailedLoadDataResult = FailedLoadDataResult.throwException<bool>(
-                        () => throw MessageError(
-                          title: "Web Cannot Be Loaded".tr,
-                          message: message
-                        )
-                      );
-                    });
-                  },
-                  onLoadHttpError: (InAppWebViewController controller, Uri? url, int code, String message) {
                     setState(() {
                       _webLoadingFailedLoadDataResult = FailedLoadDataResult.throwException<bool>(
                         () => throw MessageError(
