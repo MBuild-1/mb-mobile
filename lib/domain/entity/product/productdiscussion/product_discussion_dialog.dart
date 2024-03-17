@@ -10,7 +10,7 @@ class ProductDiscussionDialog {
   String discussion;
   DateTime discussionDate;
   ProductDiscussionUser productDiscussionUser;
-  ProductInDiscussion productInDiscussion;
+  ProductInDiscussion? productInDiscussion;
   List<ProductDiscussionDialog> replyProductDiscussionDialogList;
 
   ProductDiscussionDialog({

@@ -491,7 +491,7 @@ extension ProductDiscussionDetailEntityMappingExt on ResponseWrapper {
       newBundleId = response["bundle_id"];
     }
     if (productInDiscussion == null) {
-      newProductInDiscussion = ResponseWrapper(response["product"]).mapFromResponseToProductInDiscussion();
+      newProductInDiscussion = response["product"] != null ? ResponseWrapper(response["product"]).mapFromResponseToProductInDiscussion() : null;
     }
     return ProductDiscussionDialog(
       id: response["id"],
@@ -501,7 +501,7 @@ extension ProductDiscussionDetailEntityMappingExt on ResponseWrapper {
       discussion: response["message"],
       discussionDate: ResponseWrapper(response["created_at"]).mapFromResponseToDateTime(dateFormat: null)!,
       productDiscussionUser: ResponseWrapper(response["user"]).mapFromResponseToProductDiscussionUser(),
-      productInDiscussion: productInDiscussion ?? newProductInDiscussion!,
+      productInDiscussion: productInDiscussion ?? newProductInDiscussion,
       replyProductDiscussionDialogList: response["sub_discussion_product"] != null ? response["sub_discussion_product"].map<ProductDiscussionDialog>(
         (replyProductDiscussionDialogResponse) => ResponseWrapper(replyProductDiscussionDialogResponse).mapFromResponseToProductDiscussionDialog(
           productInDiscussion: newProductInDiscussion,

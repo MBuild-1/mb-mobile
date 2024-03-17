@@ -63,7 +63,7 @@ class ProductDiscussionDialogContainsListItemValue {
   String discussion;
   DateTime discussionDate;
   ProductDiscussionUser productDiscussionUser;
-  ProductInDiscussion productInDiscussion;
+  ProductInDiscussion? productInDiscussion;
 
   ProductDiscussionDialogContainsListItemValue({
     required this.id,
