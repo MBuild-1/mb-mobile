@@ -243,7 +243,7 @@ class _StatefulMenuMainMenuSubControllerMediatorWidgetState extends State<_State
                   onTap: () {
                     void Function(int)? onChangeMainMenuTap = MainRouteObserver.onChangeMainMenuTap;
                     if (onChangeMainMenuTap != null) {
-                      onChangeMainMenuTap(3);
+                      onChangeMainMenuTap(4);
                     }
                   },
                   icon: (BuildContext context) => menuIcon(Constant.vectorWishlist),
