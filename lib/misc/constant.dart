@@ -58,6 +58,7 @@ class _ConstantImpl {
   String get imageEmptyErrorTransaction => _getImagesAssets("empty_error_transaction.png");
   String get imageEmptyErrorWishlist => _getImagesAssets("empty_error_wishlist.png");
   String get imageComingSoon => _getImagesAssets("coming_soon.png");
+  String get imageHaveToLogin => _getImagesAssets("have_to_login.png");
 
   String get baseVectorsAssetsPath => "assets/vectors/";
   String _getVectorsAssets(String vectorAssetsPath) => "$baseVectorsAssetsPath$vectorAssetsPath";

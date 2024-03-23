@@ -53,7 +53,8 @@ class DefaultErrorProvider extends ErrorProvider {
     } else if (e is TokenEmptyError) {
       return ErrorProviderResult(
         title: "You Are Not Login".tr,
-        message: "Please login through below button".tr
+        message: "Please login through below button".tr,
+        imageAssetUrl: Constant.imageHaveToLogin
       );
     } else if (e is ComingSoonError) {
       return ErrorProviderResult(
