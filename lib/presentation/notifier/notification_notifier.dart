@@ -134,6 +134,15 @@ class NotificationNotifier extends ChangeNotifier {
     _notificationLoadDataResult = SuccessLoadDataResult<int>(
       value: 0
     );
+    _transactionNotificationLoadDataResult = SuccessLoadDataResult<int>(
+      value: 0
+    );
+    _infoNotificationLoadDataResult = SuccessLoadDataResult<int>(
+      value: 0
+    );
+    _promoNotificationLoadDataResult = SuccessLoadDataResult<int>(
+      value: 0
+    );
     notifyListeners();
   }
 }

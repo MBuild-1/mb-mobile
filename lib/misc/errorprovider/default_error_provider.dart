@@ -57,8 +57,9 @@ class DefaultErrorProvider extends ErrorProvider {
       );
     } else if (e is ComingSoonError) {
       return ErrorProviderResult(
-        title: "Coming Soon".tr,
+        title: "",
         message: "",
+        imageAssetUrl: Constant.imageComingSoon
       );
     } else if (e is PlatformException) {
       return ErrorProviderResult(

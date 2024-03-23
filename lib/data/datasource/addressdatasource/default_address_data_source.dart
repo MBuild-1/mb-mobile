@@ -26,6 +26,8 @@ import '../../../domain/entity/address/update_current_selected_address_parameter
 import '../../../domain/entity/address/update_current_selected_address_response.dart';
 import '../../../domain/entity/delivery/country_based_country_code_parameter.dart';
 import '../../../domain/entity/delivery/country_based_country_code_response.dart';
+import '../../../domain/entity/delivery/country_based_id_parameter.dart';
+import '../../../domain/entity/delivery/country_based_id_response.dart';
 import '../../../misc/constant.dart';
 import '../../../misc/error_helper.dart';
 import '../../../misc/option_builder.dart';
@@ -191,6 +193,14 @@ class DefaultAddressDataSource implements AddressDataSource {
     return DioHttpClientProcessing((cancelToken) {
       return dio.get("/country/code/${countryBasedCountryCodeParameter.countryCode}", cancelToken: cancelToken)
         .map<CountryBasedCountryCodeResponse>(onMap: (value) => value.wrapResponse().mapFromResponseToCountryBasedCountryCodeResponse());
+    });
+  }
+
+  @override
+  FutureProcessing<CountryBasedIdResponse> countryBasedId(CountryBasedIdParameter countryBasedIdParameter) {
+    return DioHttpClientProcessing((cancelToken) {
+      return dio.get("/country/${countryBasedIdParameter.countryId}", cancelToken: cancelToken)
+        .map<CountryBasedIdResponse>(onMap: (value) => value.wrapResponse().mapFromResponseCountryBasedIdResponse());
     });
   }
 }

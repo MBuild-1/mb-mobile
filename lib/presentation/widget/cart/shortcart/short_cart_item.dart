@@ -15,6 +15,7 @@ typedef OnSelectCart = void Function(Cart);
 abstract class ShortCartItem extends StatelessWidget {
   final Cart cart;
   final OnSelectCart? onSelectCart;
+  final double elevation;
 
   @protected
   double? get itemWidth;
@@ -25,7 +26,8 @@ abstract class ShortCartItem extends StatelessWidget {
   const ShortCartItem({
     super.key,
     required this.cart,
-    this.onSelectCart
+    this.onSelectCart,
+    this.elevation = 3
   });
 
   @override
@@ -44,7 +46,7 @@ abstract class ShortCartItem extends StatelessWidget {
         child: Material(
           color: Colors.white,
           borderRadius: borderRadius,
-          elevation: 3,
+          elevation: elevation,
           child: InkWell(
             onTap: onSelectCart != null ? () => onSelectCart!(cart) : () {
               SupportCart supportCart = cart.supportCart;

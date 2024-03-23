@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import 'package:masterbagasi/domain/entity/pin/modifypin/modifypinparameter/create_modify_pin_parameter.dart';
 import 'package:masterbagasi/misc/ext/error_provider_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
-import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
@@ -35,6 +35,7 @@ import '../../../misc/string_util.dart';
 import '../../../misc/temp_login_data_while_input_pin_helper.dart';
 import '../../../misc/toast_helper.dart';
 import '../../widget/button/custombutton/sized_outline_gradient_button.dart';
+import '../../widget/modified_pin_input.dart';
 import '../../widget/modified_scaffold.dart';
 import '../../widget/modified_svg_picture.dart';
 import '../../widget/modifiedappbar/modified_app_bar.dart';
@@ -252,6 +253,11 @@ class _StatefulModifyPinControllerMediatorWidgetState extends State<_StatefulMod
         onShowModifyPinRequestProcessFailedCallback: (e) async {
           ErrorProviderResult errorProviderResult = Injector.locator<ErrorProvider>().onGetErrorProviderResult(e).toErrorProviderResultNonNull();
           ToastHelper.showToast(errorProviderResult.message);
+          if (_modifyPinParameter is RemoveModifyPinParameter || _modifyPinParameter is ValidateModifyPinParameter) {
+            WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+              _focusNode.requestFocus();
+            });
+          }
         },
         onModifyPinRequestProcessSuccessCallback: (modifyPinResponse) async {
           if (modifyPinResponse is CreateModifyPinResponse) {
@@ -387,44 +393,10 @@ class _StatefulModifyPinControllerMediatorWidgetState extends State<_StatefulMod
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 50),
-                    SizedBox(
-                      width: 180,
-                      child: PinCodeTextField(
-                        onTap: () async {
-                          WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-                            _focusNode.unfocus();
-                            await Future.delayed(const Duration(milliseconds: 10));
-                            _focusNode.requestFocus();
-                          });
-                        },
-                        focusNode: _focusNode,
-                        appContext: context,
-                        length: 6,
-                        obscureText: true,
-                        animationType: AnimationType.none,
-                        pinTheme: PinTheme(
-                          selectedColor: Constant.colorMain,
-                          activeColor: Constant.colorMain,
-                          inactiveColor: Constant.colorMain,
-                          borderRadius: BorderRadius.circular(5),
-                          fieldHeight: 40,
-                          fieldWidth: 30,
-                          activeFillColor: Colors.black,
-                        ),
-                        animationDuration: const Duration(milliseconds: 0),
-                        enableActiveFill: false,
-                        controller: _textEditingController,
-                        cursorColor: Colors.black,
-                        keyboardType: TextInputType.number,
-                        hintCharacter: '●',
-                        autoDisposeControllers: false,
-                        autoFocus: false,
-                        autoUnfocus: false,
-                        onCompleted: _onCompleted,
-                        beforeTextPaste: (text) {
-                          return false;
-                        },
-                      ),
+                    ModifiedPinInput(
+                      focusNode: _focusNode,
+                      textEditingController: _textEditingController,
+                      onCompleted: _onCompleted
                     ),
                     if (_modifyPinParameter is CreateModifyPinParameter || _modifyPinParameter is ChangeModifyPinParameter) ...[
                       const SizedBox(height: 50),
@@ -452,7 +424,9 @@ class _StatefulModifyPinControllerMediatorWidgetState extends State<_StatefulMod
 
   void _onCompleted(String value) {
     void errorConfirmationPin() async {
-      _focusNode.requestFocus();
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        _focusNode.requestFocus();
+      });
       _errorText = MultiLanguageString({
         Constant.textInIdLanguageKey: "Konfirmasi PIN yang anda masukan tidak sesuai dengan PIN yang dimasukan.",
         Constant.textEnUsLanguageKey: "Confirm that the PIN you entered does not match the PIN entered."
@@ -468,8 +442,10 @@ class _StatefulModifyPinControllerMediatorWidgetState extends State<_StatefulMod
         createModifyPinParameter.pin = _textEditingController.text;
         _textEditingController.clear();
         _step += 1;
-        _focusNode.requestFocus();
         setState(() {});
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          _focusNode.requestFocus();
+        });
       } else if (_step == 2) {
         createModifyPinParameter.confirmPin = _textEditingController.text;
         _textEditingController.clear();
@@ -487,13 +463,17 @@ class _StatefulModifyPinControllerMediatorWidgetState extends State<_StatefulMod
         changeModifyPinParameter.currentPin = _textEditingController.text;
         _textEditingController.clear();
         _step += 1;
-        _focusNode.requestFocus();
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          _focusNode.requestFocus();
+        });
         setState(() {});
       } else if (_step == 2) {
         changeModifyPinParameter.newPin = _textEditingController.text;
         _textEditingController.clear();
         _step += 1;
-        _focusNode.requestFocus();
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          _focusNode.requestFocus();
+        });
         setState(() {});
       } else if (_step == 3) {
         changeModifyPinParameter.confirmNewPin = _textEditingController.text;

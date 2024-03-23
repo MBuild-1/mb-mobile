@@ -316,11 +316,7 @@ class _DialogHelperImpl {
                             Expanded(
                               child: Column(
                                 children: [
-                                  ModifiedSvgPicture.asset(
-                                    height: 100,
-                                    Constant.vectorBag,
-                                    overrideDefaultColorWithSingleColor: false
-                                  ),
+
                                   const SizedBox(height: 10),
                                   SizedOutlineGradientButton(
                                     onPressed: () async {
@@ -835,7 +831,7 @@ class _DialogHelperImpl {
   }) {
     showModalBottomSheetPage(
       context: context,
-      backgroundColor: Theme.of(context).canvasColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       builder: (context) => Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -1038,7 +1034,7 @@ class _DialogHelperImpl {
   }) async {
     dynamic result = await showModalBottomSheetPage(
       context: context,
-      backgroundColor: Theme.of(context).canvasColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       builder: (context) => GetxPageBuilder.buildDefaultGetxPage(modalDialogPageBuilder(context, parameter)),
       enableDrag: enableDrag
     );
@@ -1068,7 +1064,7 @@ class _DialogHelperImpl {
   }) async {
     dynamic result = await showDialogPage(
       context: context,
-      backgroundColor: Theme.of(context).canvasColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       builder: (context) => GetxPageBuilder.buildDefaultGetxPage(modalDialogPageBuilder(context, parameter)),
       enableDrag: enableDrag,
       barrierDismissible: barrierDismissible

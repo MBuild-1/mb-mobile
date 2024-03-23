@@ -10,6 +10,7 @@ import '../../../../controller/mainmenucontroller/mainmenusubpagecontroller/feed
 import '../../../../domain/entity/video/defaultvideo/default_video.dart';
 import '../../../../domain/entity/video/shortvideo/short_video.dart';
 import '../../../../misc/additionalloadingindicatorchecker/feed_sub_additional_paging_result_parameter_checker.dart';
+import '../../../../misc/backgroundappbarscaffoldtype/color_background_app_bar_scaffold_type.dart';
 import '../../../../misc/carouselbackground/carousel_background.dart';
 import '../../../../misc/constant.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/builder_list_item_controller_state.dart';
@@ -247,9 +248,12 @@ class _StatefulFeedMainMenuSubControllerMediatorWidgetState extends State<_State
     return WidgetHelper.checkVisibility(
       MainRouteObserver.subMainMenuVisibility[Constant.subPageKeyFeedMainMenu],
       () => BackgroundAppBarScaffold(
-        backgroundAppBarImage: _feedAppBarBackgroundAssetImage,
+        backgroundAppBarScaffoldType: ColorBackgroundAppBarScaffoldType(
+          color: Constant.colorDarkBlack2
+        ),
         appBar: MainMenuSearchAppBar(value: 0.0),
         withModifiedScaffold: false,
+        backgroundColor: Constant.colorSurfaceGrey,
         body: Expanded(
           child: ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
             pagingControllerState: _feedMainMenuSubListItemPagingControllerState,

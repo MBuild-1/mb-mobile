@@ -81,7 +81,7 @@ class InboxPage extends RestorableGetxPage<_InboxPageRestoration> {
   }
 }
 
-class _InboxPageRestoration extends ExtendedMixableGetxPageRestoration with InboxPageRestorationMixin, ProductDiscussionPageRestorationMixin, DeliveryReviewPageRestorationMixin, HelpPageRestorationMixin, HelpChatPageRestorationMixin, ChatHistoryPageRestorationMixin, WebViewerPageRestorationMixin, NotificationPageRestorationMixin {
+class _InboxPageRestoration extends ExtendedMixableGetxPageRestoration with ProductDiscussionPageRestorationMixin, DeliveryReviewPageRestorationMixin, HelpPageRestorationMixin, HelpChatPageRestorationMixin, ChatHistoryPageRestorationMixin, WebViewerPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {

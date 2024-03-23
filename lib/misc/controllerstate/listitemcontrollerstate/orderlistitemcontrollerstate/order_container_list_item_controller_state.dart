@@ -15,6 +15,7 @@ class OrderContainerListItemControllerState extends ListItemControllerState {
   ColorfulChipTabBarController orderTabColorfulChipTabBarController;
   List<ColorfulChipTabBarData> orderColorfulChipTabBarDataList;
   ErrorProvider errorProvider;
+  ListItemControllerState Function()? shortCartListItemControllerState;
   OrderContainerStateStorageListItemControllerState orderContainerStateStorageListItemControllerState;
   OrderContainerInterceptingActionListItemControllerState orderContainerInterceptingActionListItemControllerState;
 
@@ -27,6 +28,7 @@ class OrderContainerListItemControllerState extends ListItemControllerState {
     required this.orderTabColorfulChipTabBarController,
     required this.orderColorfulChipTabBarDataList,
     required this.errorProvider,
+    this.shortCartListItemControllerState,
     required this.orderContainerStateStorageListItemControllerState,
     required this.orderContainerInterceptingActionListItemControllerState
   });

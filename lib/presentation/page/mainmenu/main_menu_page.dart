@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/presentation/page/product_detail_page.dart';
@@ -66,9 +67,10 @@ import '../search_page.dart';
 import '../shared_cart_page.dart';
 import '../videopage/video_page.dart';
 import '../web_viewer_page.dart';
-import 'mainmenusubpage/explore_nusantara_main_menu_page.dart';
+import 'mainmenusubpage/explore_nusantara_sub_main_menu_page.dart';
 import 'mainmenusubpage/feed_main_menu_sub_page.dart';
 import 'mainmenusubpage/home_main_menu_sub_page.dart';
+import 'mainmenusubpage/mbestie_main_menu_sub_page.dart';
 import 'mainmenusubpage/menu_main_menu_sub_page.dart';
 import 'mainmenusubpage/wishlist_main_menu_sub_page.dart';
 
@@ -113,6 +115,18 @@ class MainMenuPage extends RestorableGetxPage<_MainMenuPageRestoration> {
         },
         () => MainRouteObserver.subMainMenuVisibility[Constant.subPageKeyExploreNusantaraMainMenu] = false,
         () => MainRouteObserver.subMainMenuVisibility[Constant.subPageKeyExploreNusantaraMainMenu] = true
+      ],
+      [
+        ControllerMember<MenuMainMenuSubController>().addToControllerManager(controllerManager),
+        () => Injector.locator<MenuMainMenuSubControllerInjectionFactory>().inject(controllerManager, pageName),
+        () {
+          void Function()? onRefresh = MainRouteObserver.controllerMediatorMap[Constant.subPageKeyMBestieMainMenu];
+          if (onRefresh != null) {
+            onRefresh();
+          }
+        },
+        () => MainRouteObserver.subMainMenuVisibility[Constant.subPageKeyMBestieMainMenu] = false,
+        () => MainRouteObserver.subMainMenuVisibility[Constant.subPageKeyMBestieMainMenu] = true
       ],
       [
         ControllerMember<WishlistMainMenuSubController>().addToControllerManager(controllerManager),
@@ -198,7 +212,7 @@ class MainMenuPage extends RestorableGetxPage<_MainMenuPageRestoration> {
   }
 }
 
-class _MainMenuPageRestoration extends ExtendedMixableGetxPageRestoration with MainMenuPageRestorationMixin, LoginPageRestorationMixin, ProductEntryPageRestorationMixin, ProductDetailPageRestorationMixin, ProductCategoryDetailPageRestorationMixin, ProductBundlePageRestorationMixin, ProductBundleDetailPageRestorationMixin, CartPageRestorationMixin, ProductBrandPageRestorationMixin, WebViewerPageRestorationMixin, OrderPageRestorationMixin, DeliveryReviewPageRestorationMixin, FavoriteProductBrandPageRestorationMixin, ProductDiscussionPageRestorationMixin, MainMenuPageRestorationMixin, AddressPageRestorationMixin, InboxPageRestorationMixin, AffiliatePageRestorationMixin, MsmePartnerPageRestorationMixin, CountryDeliveryReviewPageRestorationMixin, HelpPageRestorationMixin, HelpChatPageRestorationMixin, SearchPageRestorationMixin, NotificationPageRestorationMixin, VideoPageRestorationMixin, NewsPageRestorationMixin, NewsDetailPageRestorationMixin, AccountSecurityPageRestorationMixin, SharedCartPageRestorationMixin, EditProfilePageRestorationMixin, ProductCategoryPageRestorationMixin, OrderDetailPageRestorationMixin {
+class _MainMenuPageRestoration extends ExtendedMixableGetxPageRestoration with MainMenuPageRestorationMixin, LoginPageRestorationMixin, ProductEntryPageRestorationMixin, ProductDetailPageRestorationMixin, ProductCategoryDetailPageRestorationMixin, ProductBundlePageRestorationMixin, ProductBundleDetailPageRestorationMixin, ProductBrandPageRestorationMixin, WebViewerPageRestorationMixin, OrderPageRestorationMixin, DeliveryReviewPageRestorationMixin, FavoriteProductBrandPageRestorationMixin, ProductDiscussionPageRestorationMixin, MainMenuPageRestorationMixin, AddressPageRestorationMixin, AffiliatePageRestorationMixin, MsmePartnerPageRestorationMixin, CountryDeliveryReviewPageRestorationMixin, HelpPageRestorationMixin, HelpChatPageRestorationMixin, SearchPageRestorationMixin, VideoPageRestorationMixin, NewsPageRestorationMixin, NewsDetailPageRestorationMixin, AccountSecurityPageRestorationMixin, SharedCartPageRestorationMixin, EditProfilePageRestorationMixin, ProductCategoryPageRestorationMixin, OrderDetailPageRestorationMixin {
   final RouteCompletionCallback<bool?>? _onCompleteAddressPage;
   final RouteCompletionCallback<bool?>? _onCompleteEditProfilePage;
 
@@ -375,6 +389,13 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       widget.mainMenuController.checkLoginStatus();
     });
+    Widget bottomNavigationIcon(Widget icon) {
+      return SizedBox(
+        width: 20,
+        height: 20,
+        child: icon
+      );
+    }
     return WillPopScope(
       onWillPop: () async {
         if (_canBack) {
@@ -405,6 +426,7 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
                         HomeMainMenuSubPage(ancestorPageName: widget.pageName),
                         FeedMainMenuSubPage(ancestorPageName: widget.pageName),
                         ExploreNusantaraMainMenuSubPage(ancestorPageName: widget.pageName),
+                        MBestieMainMenuSubPage(ancestorPageName: widget.pageName),
                         WishlistMainMenuSubPage(ancestorPageName: widget.pageName),
                         MenuMainMenuSubPage(ancestorPageName: widget.pageName),
                       ],
@@ -507,38 +529,41 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
                 onTap: (selectedIndex) => _onItemTappedWithContext(selectedIndex, context),
                 items: [
                   CustomBottomNavigationBarItem(
-                    icon: ModifiedSvgPicture.asset(Constant.vectorHomeUnselected, overrideDefaultColorWithSingleColor: false),
-                    activeIcon: ModifiedSvgPicture.asset(Constant.vectorHomeSelected, overrideDefaultColorWithSingleColor: false),
+                    icon: bottomNavigationIcon(ModifiedSvgPicture.asset(Constant.vectorHomeUnselected, overrideDefaultColorWithSingleColor: false)),
+                    activeIcon: bottomNavigationIcon(ModifiedSvgPicture.asset(Constant.vectorHomeSelected, overrideDefaultColorWithSingleColor: false)),
                     label: 'Home',
                     hideLabelWhenInactive: false,
                   ),
                   CustomBottomNavigationBarItem(
-                    icon: ModifiedSvgPicture.asset(Constant.vectorFeedUnselected, overrideDefaultColorWithSingleColor: false),
-                    activeIcon: ModifiedSvgPicture.asset(Constant.vectorFeedSelected, overrideDefaultColorWithSingleColor: false),
+                    icon: bottomNavigationIcon(ModifiedSvgPicture.asset(Constant.vectorFeedUnselected, overrideDefaultColorWithSingleColor: false)),
+                    activeIcon: bottomNavigationIcon(ModifiedSvgPicture.asset(Constant.vectorFeedSelected, overrideDefaultColorWithSingleColor: false)),
                     label: MultiLanguageString({
-                      Constant.textInIdLanguageKey: "Suguhan",
+                      Constant.textInIdLanguageKey: "Sajian",
                       Constant.textEnUsLanguageKey: "Feed"
                     }).toStringNonNull,
                     hideLabelWhenInactive: false
                   ),
                   CustomBottomNavigationBarItem(
-                    icon: ModifiedSvgPicture.asset(Constant.vectorExploreUnselected, overrideDefaultColorWithSingleColor: false),
-                    activeIcon: ModifiedSvgPicture.asset(Constant.vectorExploreSelected, overrideDefaultColorWithSingleColor: false),
-                    label: MultiLanguageString({
-                      Constant.textInIdLanguageKey: "Jelajah Nusantara",
-                      Constant.textEnUsLanguageKey: "Explore Nusantara"
-                    }).toStringNonNull,
+                    icon: bottomNavigationIcon(ModifiedSvgPicture.asset(Constant.vectorExploreUnselected, overrideDefaultColorWithSingleColor: false)),
+                    activeIcon: bottomNavigationIcon(ModifiedSvgPicture.asset(Constant.vectorExploreSelected, overrideDefaultColorWithSingleColor: false)),
+                    label: "Nusantara",
                     hideLabelWhenInactive: false
                   ),
                   CustomBottomNavigationBarItem(
-                    icon: ModifiedSvgPicture.asset(Constant.vectorWishlistUnselected, overrideDefaultColorWithSingleColor: false),
-                    activeIcon: ModifiedSvgPicture.asset(Constant.vectorWishlistSelected, overrideDefaultColorWithSingleColor: false),
+                    icon: bottomNavigationIcon(ModifiedSvgPicture.asset(Constant.vectorMBestieUnselected, overrideDefaultColorWithSingleColor: false)),
+                    activeIcon: bottomNavigationIcon(ModifiedSvgPicture.asset(Constant.vectorMBestieSelected, overrideDefaultColorWithSingleColor: false)),
+                    label: "MBestie",
+                    hideLabelWhenInactive: false
+                  ),
+                  CustomBottomNavigationBarItem(
+                    icon: bottomNavigationIcon(ModifiedSvgPicture.asset(Constant.vectorWishlistUnselected, overrideDefaultColorWithSingleColor: false)),
+                    activeIcon: bottomNavigationIcon(ModifiedSvgPicture.asset(Constant.vectorWishlistSelected, overrideDefaultColorWithSingleColor: false)),
                     label: 'Wishlist',
                     hideLabelWhenInactive: false
                   ),
                   CustomBottomNavigationBarItem(
-                    icon: ModifiedSvgPicture.asset(Constant.vectorMenuUnselected, overrideDefaultColorWithSingleColor: false),
-                    activeIcon: ModifiedSvgPicture.asset(Constant.vectorMenuSelected, overrideDefaultColorWithSingleColor: false),
+                    icon: bottomNavigationIcon(ModifiedSvgPicture.asset(Constant.vectorMenuUnselected, overrideDefaultColorWithSingleColor: false)),
+                    activeIcon: bottomNavigationIcon(ModifiedSvgPicture.asset(Constant.vectorMenuSelected, overrideDefaultColorWithSingleColor: false)),
                     label: 'Menu',
                     hideLabelWhenInactive: false
                   ),
@@ -582,7 +607,6 @@ class _StatefulMainMenuControllerMediatorWidgetState extends State<_StatefulMain
   void dispose() {
     MainRouteObserver.onRefreshAddress = null;
     MainRouteObserver.onRefreshProfile = null;
-    MainRouteObserver.onRefreshCartInMainMenu = null;
     MainRouteObserver.onRefreshWishlistInMainMenu = null;
     MainRouteObserver.onChangeSelectedProvince = null;
     MainRouteObserver.onResetInitMainMenu = null;

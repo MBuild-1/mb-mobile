@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../../domain/entity/address/country.dart';
 import '../../../misc/constant.dart';
+import '../modified_country_flag.dart';
 
 typedef OnSelectCountry = void Function(Country);
 
@@ -33,10 +34,9 @@ abstract class CountryItem extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             child: Row(
               children: [
-                SizedBox(
+                ModifiedCountryFlag(
                   width: 16,
-                  height: 12,
-                  child: CountryFlags.flag(country.code),
+                  countryCode: country.code,
                 ),
                 const SizedBox(width: 12),
                 Text(country.name, style: const TextStyle(fontWeight: FontWeight.bold)),

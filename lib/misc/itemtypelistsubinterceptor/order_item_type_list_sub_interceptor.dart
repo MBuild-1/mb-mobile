@@ -61,13 +61,19 @@ class OrderItemTypeListSubInterceptor extends ItemTypeListSubInterceptor<ListIte
         )
       ).toList();
       List<ListItemControllerState> newListItemControllerState = [];
-      newListItemControllerState.add(
+      newListItemControllerState.addAll([
+        if (oldItemType.shortCartListItemControllerState != null) ...[
+          oldItemType.shortCartListItemControllerState!(),
+          VirtualSpacingListItemControllerState(
+            height: 16
+          ),
+        ],
         ColorfulChipTabBarListItemControllerState(
           colorfulChipTabBarController: oldItemType.orderTabColorfulChipTabBarController,
           colorfulChipTabBarDataList: oldItemType.orderColorfulChipTabBarDataList,
           isWrap: false
         ),
-      );
+      ]);
       if (defaultOrderContainerStateStorageListItemControllerState._combinedOrderPagingDataResult.isSuccess) {
         PagingDataResult<CombinedOrder> combinedOrderPagingDataResult = defaultOrderContainerStateStorageListItemControllerState._combinedOrderPagingDataResult.resultIfSuccess!;
         if (combinedOrderPagingDataResult.page == 1 && combinedOrderPagingDataResult.itemList.isEmpty) {

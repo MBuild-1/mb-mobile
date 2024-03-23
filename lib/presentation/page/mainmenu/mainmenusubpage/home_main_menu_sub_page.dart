@@ -20,6 +20,7 @@ import '../../../../domain/entity/homemainmenucomponententity/separator_home_mai
 import '../../../../domain/entity/location/location.dart';
 import '../../../../misc/additionalloadingindicatorchecker/home_sub_additional_paging_result_parameter_checker.dart';
 import '../../../../misc/aspect_ratio_value.dart';
+import '../../../../misc/backgroundappbarscaffoldtype/color_background_app_bar_scaffold_type.dart';
 import '../../../../misc/carouselbackground/asset_carousel_background.dart';
 import '../../../../misc/carouselbackground/carousel_background.dart';
 import '../../../../misc/carousellistitemtype/carousel_list_item_type.dart';
@@ -424,12 +425,11 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
               ],
             );
           }
-          late CarouselBackground? carouselBackground;
+          CarouselBackground? carouselBackground;
           TitleInterceptor? titleInterceptor;
           CarouselListItemType? carouselListItemType;
           ParameterizedEntityAndListItemControllerStateMediatorParameter? additionalParameter;
           if (data == Constant.carouselKeyIndonesianCategoryProduct) {
-            carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternGrey);
             titleInterceptor = (text, style) => titleArea(
               title: Text(text.toStringNonNull, style: style?.copyWith()),
               onInterceptTextStyle: (style) => style.copyWith(),
@@ -447,7 +447,7 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
               )
             );
           } else if (data == Constant.carouselKeyIsViral) {
-            carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternBlue);
+            carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternBlack);
             titleInterceptor = (text, style) => titleArea(
               title: Text(text.toStringNonNull, style: style?.copyWith(color: Colors.white)),
               onTapMore: () => PageRestorationHelper.toProductEntryPage(
@@ -464,7 +464,7 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
               ),
             );
           } else if (data == Constant.carouselKeyReadyToEatStreetFoodStyle) {
-            carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternBlue);
+            carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternBlack);
             titleInterceptor = (text, style) => titleArea(
               title: Text(text.toStringNonNull, style: style?.copyWith(color: Colors.white)),
               onTapMore: () => PageRestorationHelper.toProductEntryPage(
@@ -477,7 +477,7 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
               ),
             );
           } else if (data == Constant.carouselKeySnackForLyingAround) {
-            carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternBlue);
+            carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternBlack);
             titleInterceptor = (text, style) => titleArea(
               title: Text(text.toStringNonNull, style: style?.copyWith(color: Colors.white)),
               onTapMore: () => PageRestorationHelper.toProductEntryPage(
@@ -490,9 +490,9 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
               ),
             );
           } else if (data == Constant.carouselKeyProductBundleHighlight) {
-            carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternBlue);
+            carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternBlack);
           } else if (data == Constant.carouselKeyBestSellingInMasterBagasi) {
-            carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternBlue);
+            carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternBlack);
             titleInterceptor = (text, style) => titleArea(
               title: Text(text.toStringNonNull, style: style?.copyWith(color: Colors.white)),
               onTapMore: () => PageRestorationHelper.toProductEntryPage(
@@ -535,7 +535,7 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
               title: Text(text.toStringNonNull, style: style?.copyWith(color: Colors.white)),
             );
           } else if (data == Constant.carouselKeyCoffeeAndTeaOriginIndonesia) {
-            carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternBlue);
+            carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternBlack);
             titleInterceptor = (text, style) => titleArea(
               title: Text(text.toStringNonNull, style: style?.copyWith(color: Colors.white)),
               onTapMore: () => PageRestorationHelper.toProductEntryPage(
@@ -548,7 +548,7 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
               ),
             );
           } else if (data == Constant.carouselKeyBeautyProductIndonesia) {
-            carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternBlue);
+            carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternBlack);
             titleInterceptor = (text, style) => titleArea(
               title: Text(text.toStringNonNull, style: style?.copyWith(color: Colors.white)),
               onTapMore: () => PageRestorationHelper.toProductEntryPage(
@@ -561,7 +561,7 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
               ),
             );
           } else if (data == Constant.carouselKeyFashionProductIndonesia) {
-            carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternBlue);
+            carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternBlack);
             titleInterceptor = (text, style) => titleArea(
               title: Text(text.toStringNonNull, style: style?.copyWith(color: Colors.white)),
               onTapMore: () => PageRestorationHelper.toProductEntryPage(
@@ -574,7 +574,7 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
               ),
             );
           } else if (data == Constant.carouselKeyOnlyForYou) {
-            carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternBlue);
+            carouselBackground = AssetCarouselBackground(assetImageName: Constant.imagePatternBlack);
             titleInterceptor = (text, style) => titleArea(
               title: Text(text.toStringNonNull, style: style?.copyWith(color: Colors.white)),
               onTapMore: () => PageRestorationHelper.toProductEntryPage(
@@ -651,93 +651,94 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
       HomeMainMenuDelegate(
         onObserveLoadProductDelegate: onObserveLoadProductDelegateFactory.generateOnObserveLoadProductDelegate(),
         onObserveSuccessLoadProductBundleHighlight: (onObserveSuccessLoadProductBundleHighlightParameter) {
-          return DecoratedContainerListItemControllerState(
-            padding: EdgeInsets.all(Constant.paddingListItem),
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage(Constant.imagePatternGrey3),
-                fit: BoxFit.cover,
-                opacity: 0.4
-              )
-            ),
-            decoratedChildListItemControllerState: CompoundListItemControllerState(
-              listItemControllerState: [
-                TitleAndDescriptionListItemControllerState(
-                  title: "Save More With Bundles".tr,
-                  titleAndDescriptionItemInterceptor: (padding, title, titleWidget, description, descriptionWidget, titleAndDescriptionWidget, titleAndDescriptionWidgetList) {
-                    return Row(
-                      children: [
-                        Expanded(child: titleAndDescriptionWidget),
-                        TapArea(
-                          onTap: () => PageRestorationHelper.toProductBundlePage(context),
-                          child: Text(
-                            "More".tr,
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.primary,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12
+          return CompoundListItemControllerState(
+            listItemControllerState: [
+              DecoratedContainerListItemControllerState(
+                padding: EdgeInsets.symmetric(horizontal: Constant.paddingListItem),
+                decoration: const BoxDecoration(),
+                decoratedChildListItemControllerState: CompoundListItemControllerState(
+                  listItemControllerState: [
+                    TitleAndDescriptionListItemControllerState(
+                      title: "Save More With Bundles".tr,
+                      titleAndDescriptionItemInterceptor: (padding, title, titleWidget, description, descriptionWidget, titleAndDescriptionWidget, titleAndDescriptionWidgetList) {
+                        return Row(
+                          children: [
+                            Expanded(child: titleAndDescriptionWidget),
+                            TapArea(
+                              onTap: () => PageRestorationHelper.toProductBundlePage(context),
+                              child: Text(
+                                "More".tr,
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12
+                                )
+                              ),
                             )
-                          ),
-                        )
-                      ]
-                    );
-                  },
-                  verticalSpace: 0.3.h,
-                ),
-                VirtualSpacingListItemControllerState(height: 3.w),
-                ProductBundleHighlightMultipleListItemControllerState(
-                  productBundleList: onObserveSuccessLoadProductBundleHighlightParameter.productBundleList,
-                  onAddWishlist: (productBundleOutput) => widget.homeMainMenuSubController.wishlistAndCartControllerContentDelegate.addToWishlist(
-                    productBundleOutput, () {
-                      Completer<bool> checkingLoginCompleter = Completer<bool>();
-                      LoginHelper.checkingLogin(
-                        context,
-                        () => checkingLoginCompleter.complete(true),
-                        resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
-                        showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
-                      );
-                      return checkingLoginCompleter.future;
-                    }
-                  ),
-                  onRemoveWishlist: (productBundleOutput) => widget.homeMainMenuSubController.wishlistAndCartControllerContentDelegate.removeFromWishlist(
-                    productBundleOutput, () {
-                      Completer<bool> checkingLoginCompleter = Completer<bool>();
-                      LoginHelper.checkingLogin(
-                        context,
-                        () => checkingLoginCompleter.complete(true),
-                        resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
-                        showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
-                      );
-                      return checkingLoginCompleter.future;
-                    }
-                  ),
-                  onAddCart: (productBundleOutput) => widget.homeMainMenuSubController.wishlistAndCartControllerContentDelegate.addToCart(
-                    productBundleOutput, () {
-                      Completer<bool> checkingLoginCompleter = Completer<bool>();
-                      LoginHelper.checkingLogin(
-                        context,
-                        () => checkingLoginCompleter.complete(true),
-                        resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
-                        showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
-                      );
-                      return checkingLoginCompleter.future;
-                    }
-                  ),
-                  onRemoveCart: (productBundleOutput) => widget.homeMainMenuSubController.wishlistAndCartControllerContentDelegate.removeFromCart(
-                    productBundleOutput, () {
-                      Completer<bool> checkingLoginCompleter = Completer<bool>();
-                      LoginHelper.checkingLogin(
-                        context,
-                        () => checkingLoginCompleter.complete(true),
-                        resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
-                        showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
-                      );
-                      return checkingLoginCompleter.future;
-                    }
-                  ),
+                          ]
+                        );
+                      },
+                      verticalSpace: 0.3.h,
+                    ),
+                    VirtualSpacingListItemControllerState(height: 3.w),
+                    ProductBundleHighlightMultipleListItemControllerState(
+                      productBundleList: onObserveSuccessLoadProductBundleHighlightParameter.productBundleList,
+                      onAddWishlist: (productBundleOutput) => widget.homeMainMenuSubController.wishlistAndCartControllerContentDelegate.addToWishlist(
+                        productBundleOutput, () {
+                          Completer<bool> checkingLoginCompleter = Completer<bool>();
+                          LoginHelper.checkingLogin(
+                            context,
+                            () => checkingLoginCompleter.complete(true),
+                            resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
+                            showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
+                          );
+                          return checkingLoginCompleter.future;
+                        }
+                      ),
+                      onRemoveWishlist: (productBundleOutput) => widget.homeMainMenuSubController.wishlistAndCartControllerContentDelegate.removeFromWishlist(
+                        productBundleOutput, () {
+                          Completer<bool> checkingLoginCompleter = Completer<bool>();
+                          LoginHelper.checkingLogin(
+                            context,
+                            () => checkingLoginCompleter.complete(true),
+                            resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
+                            showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
+                          );
+                          return checkingLoginCompleter.future;
+                        }
+                      ),
+                      onAddCart: (productBundleOutput) => widget.homeMainMenuSubController.wishlistAndCartControllerContentDelegate.addToCart(
+                        productBundleOutput, () {
+                          Completer<bool> checkingLoginCompleter = Completer<bool>();
+                          LoginHelper.checkingLogin(
+                            context,
+                            () => checkingLoginCompleter.complete(true),
+                            resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
+                            showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
+                          );
+                          return checkingLoginCompleter.future;
+                        }
+                      ),
+                      onRemoveCart: (productBundleOutput) => widget.homeMainMenuSubController.wishlistAndCartControllerContentDelegate.removeFromCart(
+                        productBundleOutput, () {
+                          Completer<bool> checkingLoginCompleter = Completer<bool>();
+                          LoginHelper.checkingLogin(
+                            context,
+                            () => checkingLoginCompleter.complete(true),
+                            resultIfHasNotBeenLogin: () => checkingLoginCompleter.complete(false),
+                            showLoginPageWhenHasCallbackIfHasNotBeenLogin: true
+                          );
+                          return checkingLoginCompleter.future;
+                        }
+                      ),
+                    )
+                  ]
                 )
-              ]
-            )
+              ),
+              VirtualSpacingListItemControllerState(
+                height: Constant.paddingListItem
+              )
+            ]
           );
         },
         onObserveLoadingLoadProductBundleHighlight: (onObserveLoadingLoadProductBundleHighlightParameter) {
@@ -755,11 +756,10 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
             return WidgetSubstitutionWithInjectionListItemControllerState(
               widgetSubstitutionWithInjection: (context, index, widgetList) {
                 return Padding(
-                  padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 8.0),
+                  padding: const EdgeInsets.all(8.0),
                   child: ClipRRect(
-                    borderRadius: const BorderRadius.only(
-                      bottomLeft: Radius.circular(10.0),
-                      bottomRight: Radius.circular(10.0)
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(10.0)
                     ),
                     child: Column(
                       children: widgetList
@@ -1019,10 +1019,6 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
                 onGotoAddAddress: () => PageRestorationHelper.toAddressPage(context),
                 selectAddressModalDialogPageActionDelegate: selectAddressModalDialogPageActionDelegate
               ),
-              ColorfulDividerListItemControllerState(
-                lineColorList: [Constant.colorButtonGradient2, Constant.colorButtonGradient3],
-                lineHeight: 3
-              ),
             ]
           );
         },
@@ -1064,10 +1060,12 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
                             children: [
                               Expanded(
                                 child: Text(
-                                  MultiLanguageString({
-                                    Constant.textEnUsLanguageKey: "Selected Brand",
-                                    Constant.textInIdLanguageKey: "Brand Pilihan"
-                                  }).toEmptyStringNonNull,
+                                  loadSponsorBannerAndContentResponse.brandName.isNotEmptyString
+                                    ? loadSponsorBannerAndContentResponse.brandName
+                                    : MultiLanguageString({
+                                        Constant.textEnUsLanguageKey: "Selected Brand",
+                                        Constant.textInIdLanguageKey: "Brand Pilihan"
+                                      }).toEmptyStringNonNull,
                                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold
@@ -1145,9 +1143,12 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
     return WidgetHelper.checkVisibility(
       MainRouteObserver.subMainMenuVisibility[Constant.subPageKeyHomeMainMenu],
       () => BackgroundAppBarScaffold(
-        backgroundAppBarImage: _homeAppBarBackgroundAssetImage,
+        backgroundAppBarScaffoldType: ColorBackgroundAppBarScaffoldType(
+          color: Constant.colorDarkBlack2
+        ),
         appBar: MainMenuSearchAppBar(value: 0.0),
         withModifiedScaffold: false,
+        backgroundColor: Constant.colorSurfaceGrey,
         body: Expanded(
           child: ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(
             pagingControllerState: _homeMainMenuSubListItemPagingControllerState,

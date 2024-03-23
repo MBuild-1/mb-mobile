@@ -5,9 +5,11 @@ import '../../list_item_controller_state.dart';
 abstract class ShortCartListItemControllerState extends ListItemControllerState {
   Cart cart;
   OnSelectCart? onSelectCart;
+  double elevation;
 
   ShortCartListItemControllerState({
     required this.cart,
-    this.onSelectCart
+    this.onSelectCart,
+    this.elevation = 3
   });
 }

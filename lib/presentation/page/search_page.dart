@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart' hide SearchDelegate;
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
@@ -30,6 +31,7 @@ import '../../domain/usecase/search_use_case.dart';
 import '../../domain/usecase/store_keyword_for_search_history_use_case.dart';
 import '../../domain/usecase/store_search_last_seen_history_use_case.dart';
 import '../../misc/additionalloadingindicatorchecker/typing_search_additional_paging_result_parameter_checker.dart';
+import '../../misc/backgroundappbarscaffoldtype/color_background_app_bar_scaffold_type.dart';
 import '../../misc/constant.dart';
 import '../../misc/controllercontentdelegate/wishlist_and_cart_controller_content_delegate.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
@@ -79,6 +81,7 @@ class SearchPage extends RestorableGetxPage<_SearchPageRestoration> {
   }) : super(
     key: key,
     pageRestorationId: () => "search-page",
+    systemUiOverlayStyle: SystemUiOverlayStyle.light
   );
 
   @override
@@ -647,7 +650,9 @@ class _StatefulSearchControllerMediatorWidgetState extends State<_StatefulSearch
         return true;
       },
       child: BackgroundAppBarScaffold(
-        backgroundAppBarImage: _searchAppBarBackgroundAssetImage,
+        backgroundAppBarScaffoldType: ColorBackgroundAppBarScaffoldType(
+          color: Constant.colorDarkBlack2
+        ),
         appBar: CoreSearchAppBar(
           value: 0.0,
           showFilterIconButton: () {

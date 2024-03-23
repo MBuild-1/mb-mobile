@@ -13,11 +13,15 @@ class UserDummy {
       userProfile: UserProfile(
         id: "1",
         userId: "",
+        provinceId: "",
+        countryId: "",
         avatar: "",
         gender: "",
         dateBirth: DateTime.now(),
         placeBirth: "",
-        phoneNumber: ""
+        phoneNumber: "",
+        username: "",
+        biography: ""
       )
     );
   }
@@ -32,11 +36,15 @@ class UserDummy {
       userProfile: UserProfile(
         id: "1",
         userId: "1",
+        provinceId: "",
+        countryId: "",
         avatar: "",
         gender: "male",
         dateBirth: DateTime.now(),
         placeBirth: "Jakarta",
-        phoneNumber: "081234567890"
+        phoneNumber: "081234567890",
+        username: "",
+        biography: ""
       )
     );
   }

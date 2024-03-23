@@ -6,6 +6,7 @@ import 'package:masterbagasi/misc/ext/string_ext.dart';
 import '../../../domain/entity/delivery/delivery_review.dart';
 import '../../../misc/constant.dart';
 import '../../../misc/page_restoration_helper.dart';
+import '../modified_country_flag.dart';
 import '../profile_picture_cache_network_image.dart';
 
 abstract class DeliveryReviewItem extends StatelessWidget {
@@ -66,8 +67,9 @@ abstract class DeliveryReviewItem extends StatelessWidget {
                             child: FittedBox(
                               fit: BoxFit.cover,
                               child: SizedBox(
-                                child: deliveryReview.countryCode.isNotEmptyString ? CountryFlags.flag(
-                                  deliveryReview.countryCode
+                                child: deliveryReview.countryCode.isNotEmptyString ? ModifiedCountryFlag(
+                                  width: 16,
+                                  countryCode: deliveryReview.countryCode,
                                 ) : Container(
                                   decoration: BoxDecoration(
                                     image: DecorationImage(

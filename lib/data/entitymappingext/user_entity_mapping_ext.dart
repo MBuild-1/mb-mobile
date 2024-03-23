@@ -263,11 +263,15 @@ extension UserDetailEntityMappingExt on ResponseWrapper {
     return UserProfile(
       id: response["id"],
       userId: response["user_id"],
+      provinceId: response["province_id"],
+      countryId: response["country_id"],
+      username: (response["username"] as String?).toEmptyStringNonNull,
       avatar: response["avatar"],
       gender: response["gender"],
       dateBirth: ResponseWrapper(response["date_birth"]).mapFromResponseToDateTime(),
       placeBirth: response["place_birth"],
-      phoneNumber: response["phone_number"]
+      phoneNumber: response["phone_number"],
+      biography: response["biography"]
     );
   }
 }

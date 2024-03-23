@@ -6,6 +6,7 @@ import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/paging_controller_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/presentation/page/web_viewer_page.dart';
+import 'package:provider/provider.dart';
 
 import '../../controller/order_controller.dart';
 import '../../domain/entity/order/arrived_order_request.dart';
@@ -14,13 +15,17 @@ import '../../domain/entity/order/order_paging_parameter.dart';
 import '../../domain/entity/payment/payment_method.dart';
 import '../../domain/usecase/arrived_order_use_case.dart';
 import '../../domain/usecase/get_order_paging_use_case.dart';
+import '../../domain/usecase/get_short_my_cart_use_case.dart';
+import '../../misc/carouselbackground/carousel_background.dart';
 import '../../misc/constant.dart';
 import '../../misc/controllercontentdelegate/arrived_order_controller_content_delegate.dart';
 import '../../misc/controllercontentdelegate/repurchase_controller_content_delegate.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
+import '../../misc/controllerstate/listitemcontrollerstate/load_data_result_dynamic_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/orderlistitemcontrollerstate/order_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
 import '../../misc/dialog_helper.dart';
+import '../../misc/entityandlistitemcontrollerstatemediator/horizontal_component_entity_parameterized_entity_and_list_item_controller_state_mediator.dart';
 import '../../misc/error/message_error.dart';
 import '../../misc/error_helper.dart';
 import '../../misc/errorprovider/error_provider.dart';
@@ -33,17 +38,25 @@ import '../../misc/load_data_result.dart';
 import '../../misc/main_route_observer.dart';
 import '../../misc/manager/controller_manager.dart';
 import '../../misc/multi_language_string.dart';
+import '../../misc/on_observe_load_product_delegate.dart';
 import '../../misc/page_restoration_helper.dart';
 import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
+import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/carousel_background_parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
+import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/cart_refresh_delegate_parameterized_entity_and_list_item_controller_state_mediator_parameter.dart';
+import '../../misc/parameterizedcomponententityandlistitemcontrollerstatemediatorparameter/horizontal_dynamic_item_carousel_parametered_component_entity_and_list_item_controller_state_mediator_parameter.dart';
 import '../../misc/routeargument/order_route_argument.dart';
 import '../../misc/temp_order_detail_back_result_data_helper.dart';
+import '../notifier/notification_notifier.dart';
 import '../widget/colorful_chip_tab_bar.dart';
 import '../widget/modified_paged_list_view.dart';
 import '../widget/modified_scaffold.dart';
-import '../widget/modifiedappbar/modified_app_bar.dart';
+import '../widget/modifiedappbar/modified_app_bar.dart' hide TitleInterceptor;
+import '../widget/number_indicator.dart';
+import '../widget/tap_area.dart';
+import '../widget/titleanddescriptionitem/title_and_description_item.dart';
 import 'coupon_page.dart';
 import 'getx_page.dart';
 import 'modaldialogpage/payment_parameter_modal_dialog_page.dart';
@@ -64,6 +77,7 @@ class OrderPage extends RestorableGetxPage<_OrderPageRestoration> {
         controllerManager,
         Injector.locator<GetOrderPagingUseCase>(),
         Injector.locator<ArrivedOrderUseCase>(),
+        Injector.locator<GetShortMyCartUseCase>(),
         Injector.locator<RepurchaseControllerContentDelegate>(),
         Injector.locator<ArrivedOrderControllerContentDelegate>()
       ),
@@ -118,7 +132,8 @@ class OrderPage extends RestorableGetxPage<_OrderPageRestoration> {
   Widget buildPage(BuildContext context) {
     return _StatefulOrderControllerMediatorWidget(
       orderController: _orderPageController.controller,
-      statefulOrderControllerMediatorWidgetDelegate: _statefulOrderControllerMediatorWidgetDelegate
+      statefulOrderControllerMediatorWidgetDelegate: _statefulOrderControllerMediatorWidgetDelegate,
+      pageName: pageName
     );
   }
 }
@@ -237,10 +252,12 @@ class _StatefulOrderControllerMediatorWidgetDelegate {
 class _StatefulOrderControllerMediatorWidget extends StatefulWidget {
   final OrderController orderController;
   final _StatefulOrderControllerMediatorWidgetDelegate statefulOrderControllerMediatorWidgetDelegate;
+  final String pageName;
 
   const _StatefulOrderControllerMediatorWidget({
     required this.orderController,
-    required this.statefulOrderControllerMediatorWidgetDelegate
+    required this.statefulOrderControllerMediatorWidgetDelegate,
+    required this.pageName
   });
 
   @override
@@ -258,6 +275,8 @@ class _StatefulOrderControllerMediatorWidgetState extends State<_StatefulOrderCo
   final ValueNotifier<dynamic> _fillerErrorValueNotifier = ValueNotifier(null);
   final DefaultOrderContainerInterceptingActionListItemControllerState _defaultOrderContainerInterceptingActionListItemControllerState = DefaultOrderContainerInterceptingActionListItemControllerState();
   final PaymentParameterModalDialogPageDelegate _repurchasePaymentParameterModalDialogPageDelegate = PaymentParameterModalDialogPageDelegate();
+
+  final List<BaseLoadDataResultDynamicListItemControllerState> _dynamicItemLoadDataResultDynamicListItemControllerStateList = [];
 
   @override
   void initState() {
@@ -332,6 +351,15 @@ class _StatefulOrderControllerMediatorWidgetState extends State<_StatefulOrderCo
       _fillerErrorValueNotifier.value = null;
     });
     if (pageKey == 1) {
+      HorizontalComponentEntityParameterizedEntityAndListItemControllerStateMediator componentEntityMediator = Injector.locator<HorizontalComponentEntityParameterizedEntityAndListItemControllerStateMediator>();
+      HorizontalDynamicItemCarouselParameterizedEntityAndListItemControllerStateMediatorParameter carouselParameterizedEntityMediator = HorizontalDynamicItemCarouselParameterizedEntityAndListItemControllerStateMediatorParameter(
+        onSetState: () => setState(() {}),
+        dynamicItemLoadDataResultDynamicListItemControllerStateList: _dynamicItemLoadDataResultDynamicListItemControllerStateList
+      );
+      ListItemControllerState shortCartListItemControllerState = componentEntityMediator.mapWithParameter(
+        widget.orderController.getMyCart(),
+        parameter: carouselParameterizedEntityMediator
+      );
       resultListItemControllerState = [
         OrderContainerListItemControllerState(
           orderList: [],
@@ -351,7 +379,8 @@ class _StatefulOrderControllerMediatorWidgetState extends State<_StatefulOrderCo
           orderColorfulChipTabBarDataList: _orderColorfulChipTabBarDataList,
           errorProvider: Injector.locator<ErrorProvider>(),
           orderContainerStateStorageListItemControllerState: DefaultOrderContainerStateStorageListItemControllerState(),
-          orderContainerInterceptingActionListItemControllerState: _defaultOrderContainerInterceptingActionListItemControllerState
+          orderContainerInterceptingActionListItemControllerState: _defaultOrderContainerInterceptingActionListItemControllerState,
+          shortCartListItemControllerState: () => shortCartListItemControllerState
         )
       ];
       return SuccessLoadDataResult<PagingDataResult<ListItemControllerState>>(
@@ -405,6 +434,86 @@ class _StatefulOrderControllerMediatorWidgetState extends State<_StatefulOrderCo
 
   @override
   Widget build(BuildContext context) {
+    OnObserveLoadProductDelegateFactory onObserveLoadProductDelegateFactory = Injector.locator<OnObserveLoadProductDelegateFactory>()
+      ..onInjectLoadCartCarouselParameterizedEntity = (
+        () => CartRefreshDelegateParameterizedEntityAndListItemControllerStateMediatorParameter(
+          onGetRepeatableDynamicItemCarouselAdditionalParameter: (repeatableDynamicItemCarouselAdditionalParameter) {
+            MainRouteObserver.onRefreshCartInMainMenuInEachPage[getRouteMapKey(widget.pageName)] = () {
+              repeatableDynamicItemCarouselAdditionalParameter.onRepeatLoading();
+            };
+          }
+        )
+      )
+      ..onInjectCarouselParameterizedEntity = (
+        (data) {
+          Widget moreTapArea({
+            void Function()? onTap,
+            TextStyle Function(TextStyle)? onInterceptTextStyle
+          }) {
+            TextStyle textStyle = TextStyle(
+              color: Theme.of(context).colorScheme.primary,
+              fontWeight: FontWeight.bold,
+              fontSize: 12
+            );
+            return TapArea(
+              onTap: onTap,
+              child: Text(
+                "More".tr,
+                style: onInterceptTextStyle != null ? onInterceptTextStyle(textStyle) : textStyle
+              ),
+            );
+          }
+          Widget titleArea({
+            required Widget title,
+            void Function()? onTapMore,
+            TextStyle Function(TextStyle)? onInterceptTextStyle
+          }) {
+            return Row(
+              children: [
+                Expanded(child: title),
+                const SizedBox(width: 10),
+                if (onTapMore != null) ...[
+                  moreTapArea(
+                    onTap: onTapMore,
+                    onInterceptTextStyle: onInterceptTextStyle
+                  )
+                ]
+              ],
+            );
+          }
+          CarouselBackground? carouselBackground;
+          TitleInterceptor? titleInterceptor;
+          if (data == Constant.carouselKeyShortMyCart) {
+            titleInterceptor = (text, style) => titleArea(
+              title: Row(
+                children: [
+                  Flexible(
+                    child: Text(
+                      text.toStringNonNull,
+                      style: style?.copyWith()
+                    )
+                  ),
+                  const SizedBox(width: 8),
+                  Consumer<NotificationNotifier>(
+                    builder: (_, notificationNotifier, __) => NumberIndicator(
+                      notificationNumber: notificationNotifier.cartLoadDataResult.resultIfSuccess ?? 0,
+                      fontSize: 10,
+                    )
+                  )
+                ],
+              ),
+              onInterceptTextStyle: (style) => style.copyWith(),
+              onTapMore: () => PageRestorationHelper.toCartPage(context)
+            );
+          } else {
+            titleInterceptor = (text, style) => Container();
+          }
+          return CarouselParameterizedEntityAndListItemControllerStateMediatorParameter(
+            carouselBackground: carouselBackground,
+            titleInterceptor: titleInterceptor
+          );
+        }
+      );
     widget.orderController.repurchaseControllerContentDelegate.setRepurchaseDelegate(
       Injector.locator<RepurchaseDelegateFactory>().generateRepurchaseDelegate(
         onGetBuildContext: () => context,
@@ -451,6 +560,11 @@ class _StatefulOrderControllerMediatorWidgetState extends State<_StatefulOrderCo
           }
           _orderTabColorfulChipTabBarController.value = index;
         },
+      )
+    );
+    widget.orderController.setOrderDelegate(
+      OrderDelegate(
+        onObserveLoadProductDelegate: onObserveLoadProductDelegateFactory.generateOnObserveLoadProductDelegate(),
       )
     );
     return ModifiedScaffold(

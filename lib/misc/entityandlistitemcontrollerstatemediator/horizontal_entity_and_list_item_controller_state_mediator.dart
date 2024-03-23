@@ -53,8 +53,8 @@ class HorizontalParameterizedEntityAndListItemControllerStateMediator extends Pa
       return _checkingForProductBrand(entity, parameter: parameter);
     } else if (entity is ProductBundle) {
       return _checkingForProductBundle(entity, parameter: parameter);
-    } else if (entity is Cart) {
-      return HorizontalShortCartListItemControllerState(cart: entity);
+    } else if (entity is CartCarouselCompoundParameterized) {
+      return HorizontalShortCartListItemControllerState(cart: entity.cart, elevation: entity.elevation);
     } else if (entity is AddressCarouselCompoundParameterized) {
       return _checkingForAddress(entity, parameter: parameter);
     } else {

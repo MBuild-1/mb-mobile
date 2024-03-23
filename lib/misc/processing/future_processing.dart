@@ -3,6 +3,7 @@ import '../load_data_result.dart';
 import 'processing.dart';
 
 typedef _FutureFunction<T> = Future<T> Function({dynamic parameter});
+typedef MapWithParameterResultType<O, T> = O Function(T, dynamic);
 
 class FutureProcessing<T> extends Processing<T> {
   final _FutureFunction<T> _future;

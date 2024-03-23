@@ -3,12 +3,18 @@ import 'package:flutter/material.dart';
 class ProfileImagePlaceholder extends StatelessWidget {
   final double diameter;
   final Color backgroundColor;
+  final bool withShadow;
 
-  const ProfileImagePlaceholder({Key? key, required this.diameter, this.backgroundColor = Colors.white}) : super(key: key);
+  const ProfileImagePlaceholder({
+    Key? key,
+    required this.diameter,
+    this.backgroundColor = Colors.white,
+    this.withShadow = false
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return CircleAvatar(
+    Widget circleAvatar = CircleAvatar(
       backgroundColor: backgroundColor,
       radius: diameter,
       child: Icon(
@@ -17,5 +23,18 @@ class ProfileImagePlaceholder extends StatelessWidget {
         size: diameter - 10
       ),
     );
+    return withShadow ? Container(
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            blurRadius: 2,
+            spreadRadius: 1.5,
+            color: Colors.black.withOpacity(0.5)
+          )
+        ],
+        shape: BoxShape.circle
+      ),
+      child: circleAvatar
+    ) : circleAvatar;
   }
 }

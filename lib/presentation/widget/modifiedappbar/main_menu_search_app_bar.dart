@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 
 import '../../../misc/constant.dart';
 import '../../../misc/page_restoration_helper.dart';
+import '../../../misc/search_app_bar_icon_dimension.dart';
+import '../../../misc/widget_helper.dart';
 import '../../notifier/notification_notifier.dart';
 import '../modified_svg_picture.dart';
 import '../modified_vertical_divider.dart';
@@ -36,6 +38,9 @@ class MainMenuSearchAppBar extends SearchAppBar {
     return (context) {
       final ModalRoute<dynamic>? parentRoute = ModalRoute.of(context);
       final bool canPop = parentRoute?.canPop ?? false;
+      SearchAppBarDimension searchAppBarDimension = SearchAppBarDimension(
+        iconButtonSize: searchTextFieldHeight
+      );
       return Container(
         padding: const EdgeInsets.all(0.0),
         child: Consumer<NotificationNotifier>(
@@ -61,11 +66,11 @@ class MainMenuSearchAppBar extends SearchAppBar {
                                   child: Row(
                                     children: [
                                       const SizedBox(width: 12.0),
-                                      IconTheme(
+                                      const IconTheme(
                                         data: IconThemeData(
-                                          color: Colors.grey.shade600
+                                          color: Colors.white
                                         ),
-                                        child: const BackButtonIcon(),
+                                        child: BackButtonIcon(),
                                       ),
                                       const SizedBox(width: 8),
                                       ModifiedVerticalDivider(
@@ -81,98 +86,39 @@ class MainMenuSearchAppBar extends SearchAppBar {
                           )
                         ],
                         const SizedBox(width: 8),
-                        Icon(Icons.search, color: Constant.colorGrey8),
+                        const Icon(Icons.search, color: Colors.white),
                         const SizedBox(width: 5),
                         Expanded(
                           child: Text(
                             "Search in Master Bagasi".tr,
-                            style: TextStyle(
-                              color: Constant.colorGrey8,
+                            style: const TextStyle(
+                              color: Colors.white,
                               fontSize: 13
                             )
                           )
+                        ),
+                        SizedBox(
+                          width: searchAppBarDimension.iconButtonSize + 12.0
                         ),
                       ],
                     ),
                   ),
                 ),
               ),
-              Row(
-                children: [
-                  TapArea(
-                    onTap: () => PageRestorationHelper.toNotificationPage(context),
-                    child: Stack(
-                      children: [
-                        Container(
-                          width: 30,
-                        ),
-                        Center(
-                          child: NotificationIconIndicator(
-                            notificationNumber: notificationNotifier.notificationLoadDataResult.resultIfSuccess ?? 0,
-                            icon: ModifiedSvgPicture.asset(
-                              Constant.vectorNotificationIconNotif,
-                              color: Constant.colorGrey6,
-                              height: 25,
-                              width: 25,
-                              fit: BoxFit.fitHeight,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 5),
-                  TapArea(
-                    onTap: () => PageRestorationHelper.toInboxPage(context),
-                    child: Stack(
-                      children: [
-                        Container(
-                          width: 30,
-                        ),
-                        Center(
-                          child: NotificationIconIndicator(
-                            notificationNumber: notificationNotifier.inboxLoadDataResult.resultIfSuccess ?? 0,
-                            icon: ModifiedSvgPicture.asset(
-                              Constant.vectorNotificationIconInbox,
-                              color: Constant.colorGrey6,
-                              height: 25,
-                              width: 25,
-                              fit: BoxFit.fitHeight,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 5),
-                  TapArea(
-                    onTap: () => PageRestorationHelper.toCartPage(context),
-                    child: Stack(
-                      children: [
-                        Container(
-                          width: 30,
-                        ),
-                        Center(
-                          child: NotificationIconIndicator(
-                            notificationNumber: notificationNotifier.cartLoadDataResult.resultIfSuccess ?? 0,
-                            icon: ModifiedSvgPicture.asset(
-                              Constant.vectorNotificationIconCart,
-                              color: Constant.colorGrey6,
-                              height: 25,
-                              width: 25,
-                              fit: BoxFit.fitHeight,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 12.0)
-                ],
-              )
             ]
           )
         )
+      );
+    };
+  }
+
+  @override
+  Widget? Function(BuildContext, Widget?, Widget)? get searchContentInterceptor {
+    return (context, oldTitle, oldSearchContent) {
+      return WidgetHelper.buildSearchTextFieldWithSearchAppBarIcon(
+        context: context,
+        searchTextFieldHeight: searchTextFieldHeight,
+        searchTextField: oldSearchContent
       );
     };
   }

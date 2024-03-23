@@ -5,11 +5,13 @@ import '../domain/entity/user/edituser/edit_user_parameter.dart';
 import '../domain/entity/user/edituser/edit_user_response.dart';
 import '../domain/entity/user/getuser/get_user_parameter.dart';
 import '../domain/entity/user/user.dart';
+import '../domain/entity/user/user_and_loaded_related_user_data.dart';
 import '../domain/entity/verifyeditprofile/authidentity/auth_identity_parameter_and_response.dart';
 import '../domain/entity/verifyeditprofile/authidentity/auth_identity_response.dart';
 import '../domain/entity/verifyeditprofile/authidentity/parameter/auth_identity_parameter.dart';
 import '../domain/usecase/auth_identity_use_case.dart';
 import '../domain/usecase/edit_user_use_case.dart';
+import '../domain/usecase/get_user_and_loaded_related_user_data_use_case.dart';
 import '../domain/usecase/get_user_use_case.dart';
 import '../misc/load_data_result.dart';
 import '../misc/typedef.dart';
@@ -25,7 +27,7 @@ typedef _OnShowAuthIdentityRequestProcessFailedCallback = Future<void> Function(
 
 class EditProfileController extends BaseGetxController {
   final EditUserUseCase editUserUseCase;
-  final GetUserUseCase getUserUseCase;
+  final GetUserAndLoadedRelatedUserDataUseCase getUserAndLoadedRelatedUserDataUseCase;
   final AuthIdentityUseCase authIdentityUseCase;
 
   EditProfileDelegate? _editProfileDelegate;
@@ -33,15 +35,13 @@ class EditProfileController extends BaseGetxController {
   EditProfileController(
     super.controllerManager,
     this.editUserUseCase,
-    this.getUserUseCase,
+    this.getUserAndLoadedRelatedUserDataUseCase,
     this.authIdentityUseCase
   );
 
-  Future<LoadDataResult<User>> getUserProfile(GetUserParameter getUserParameter) {
-    return getUserUseCase.execute(getUserParameter).future(
+  Future<LoadDataResult<UserAndLoadedRelatedUserData>> getUserProfile(GetUserParameter getUserParameter) {
+    return getUserAndLoadedRelatedUserDataUseCase.execute(getUserParameter).future(
       parameter: apiRequestManager.addRequestToCancellationPart("user-profile").value
-    ).map<User>(
-      (getUserResponse) => getUserResponse.user
     );
   }
 

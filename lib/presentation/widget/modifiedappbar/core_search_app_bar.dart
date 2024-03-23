@@ -61,11 +61,11 @@ class CoreSearchAppBar extends SearchAppBar {
             if (canPop) ...[
               TapArea(
                 onTap: () => Navigator.maybePop(context),
-                child: IconTheme(
+                child: const IconTheme(
                   data: IconThemeData(
-                    color: Colors.grey.shade600
+                    color: Colors.white
                   ),
-                  child: const BackButtonIcon(),
+                  child: BackButtonIcon(),
                 ),
               ),
               const SizedBox(width: 8),
@@ -76,7 +76,7 @@ class CoreSearchAppBar extends SearchAppBar {
               ),
               const SizedBox(width: 8),
             ],
-            Icon(Icons.search, color: Constant.colorGrey8),
+            const Icon(Icons.search, color: Colors.white),
             const SizedBox(width: 5),
             Expanded(
               child: Builder(
@@ -85,8 +85,8 @@ class CoreSearchAppBar extends SearchAppBar {
                     controller: searchTextEditingController,
                     decoration: InputDecoration.collapsed(
                       hintText: "Search in Master Bagasi".tr,
-                      hintStyle: TextStyle(
-                        color: Constant.colorGrey8
+                      hintStyle: const TextStyle(
+                        color: Colors.white
                       )
                     ),
                     onEditingComplete: onSearch != null ? () {
@@ -95,8 +95,8 @@ class CoreSearchAppBar extends SearchAppBar {
                       }
                     } : null,
                     textInputAction: TextInputAction.done,
-                    style: TextStyle(
-                      color: Colors.grey.shade600,
+                    style: const TextStyle(
+                      color: Colors.white,
                       fontSize: 14
                     ),
                     focusNode: searchFocusNode
@@ -124,7 +124,7 @@ class CoreSearchAppBar extends SearchAppBar {
             if (showFilterIconButton) ...[
               TapArea(
                 onTap: onTapSearchFilterIcon ?? () {},
-                child: Icon(Icons.filter_list, color: filterIconButtonColor == null ? Constant.colorGrey8 : filterIconButtonColor!),
+                child: Icon(Icons.filter_list, color: filterIconButtonColor == null ? Colors.white : filterIconButtonColor!),
               )
             ]
           ]
@@ -140,6 +140,7 @@ class CoreSearchAppBar extends SearchAppBar {
     }
     return (context, oldTitle) {
       return Material(
+        color: Constant.colorGrey12,
         borderRadius: Constant.inputBorderRadius,
         child: Row(
           children: [

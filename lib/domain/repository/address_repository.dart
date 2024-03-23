@@ -22,6 +22,8 @@ import '../entity/address/update_current_selected_address_parameter.dart';
 import '../entity/address/update_current_selected_address_response.dart';
 import '../entity/delivery/country_based_country_code_parameter.dart';
 import '../entity/delivery/country_based_country_code_response.dart';
+import '../entity/delivery/country_based_id_parameter.dart';
+import '../entity/delivery/country_based_id_response.dart';
 
 abstract class AddressRepository {
   FutureProcessing<LoadDataResult<CurrentSelectedAddressResponse>> currentSelectedAddress(CurrentSelectedAddressParameter currentSelectedAddressParameter);
@@ -36,4 +38,5 @@ abstract class AddressRepository {
   FutureProcessing<LoadDataResult<Address>> addressBasedId(AddressBasedIdParameter addressBasedIdParameter);
   FutureProcessing<LoadDataResult<ShipperAddress>> shippingAddress(ShipperAddressParameter shippingAddressParameter);
   FutureProcessing<LoadDataResult<CountryBasedCountryCodeResponse>> countryBasedCountryCode(CountryBasedCountryCodeParameter countryBasedCountryCodeParameter);
+  FutureProcessing<LoadDataResult<CountryBasedIdResponse>> countryBasedId(CountryBasedIdParameter countryBasedIdParameter);
 }

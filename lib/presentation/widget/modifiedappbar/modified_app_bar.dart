@@ -214,7 +214,7 @@ class ModifiedAppBarState extends State<ModifiedAppBar> {
 
     final double toolbarHeight = widget.toolbarHeight ?? appBarTheme.toolbarHeight ?? kToolbarHeight;
     final bool backwardsCompatibility = widget.backwardsCompatibility ?? appBarTheme.backwardsCompatibility ?? false;
-    final Color effectiveBackgroundColor = widget.backgroundColor ?? theme.canvasColor;
+    final Color effectiveBackgroundColor = widget.backgroundColor ?? theme.scaffoldBackgroundColor;
     final Color? interceptedBackgroundColor = widget.backgroundColorInterceptor != null
         ? widget.backgroundColorInterceptor!(context, effectiveBackgroundColor)
         : effectiveBackgroundColor;

@@ -169,6 +169,7 @@ class _StatefulWebViewerPageState extends State<_StatefulWebViewerPage> {
   bool _canGoBack = false;
   bool _canGoForward = false;
   bool _canShare = false;
+  bool _actualValueOfCanShare = false;
   int _progress = 0;
   FailedLoadDataResult<bool>? _webLoadingFailedLoadDataResult;
 
@@ -185,7 +186,8 @@ class _StatefulWebViewerPageState extends State<_StatefulWebViewerPage> {
         _header = json.decode(utf8.decode(base64.decode(otherParameterMap[Constant.textHeaderKey])));
       }
       if (otherParameterMap.containsKey(Constant.textCanShareKey)) {
-        _canShare = utf8.decode(base64.decode(otherParameterMap[Constant.textCanShareKey])) == "1";
+        _actualValueOfCanShare = utf8.decode(base64.decode(otherParameterMap[Constant.textCanShareKey])) == "1";
+        _canShare = _actualValueOfCanShare;
       }
     }
   }
@@ -326,7 +328,6 @@ class _StatefulWebViewerPageState extends State<_StatefulWebViewerPage> {
   void _resetCanGoBackAndForwardEnabled() {
     _canGoBack = false;
     _canGoForward = false;
-    _canShare = false;
     _webLoadingFailedLoadDataResult = null;
     setState(() {});
   }
@@ -335,7 +336,6 @@ class _StatefulWebViewerPageState extends State<_StatefulWebViewerPage> {
     if (_webViewController != null) {
       _canGoBack = await _webViewController!.canGoBack();
       _canGoForward = await _webViewController!.canGoForward();
-      _canShare = true;
     }
     setState(() {});
   }

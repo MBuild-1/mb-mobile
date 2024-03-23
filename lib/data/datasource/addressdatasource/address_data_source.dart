@@ -19,6 +19,8 @@ import '../../../domain/entity/address/update_current_selected_address_parameter
 import '../../../domain/entity/address/update_current_selected_address_response.dart';
 import '../../../domain/entity/delivery/country_based_country_code_parameter.dart';
 import '../../../domain/entity/delivery/country_based_country_code_response.dart';
+import '../../../domain/entity/delivery/country_based_id_parameter.dart';
+import '../../../domain/entity/delivery/country_based_id_response.dart';
 import '../../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../../misc/processing/future_processing.dart';
 
@@ -35,4 +37,5 @@ abstract class AddressDataSource {
   FutureProcessing<Address> addressBasedId(AddressBasedIdParameter addressBasedIdParameter);
   FutureProcessing<ShipperAddress> shipperAddress(ShipperAddressParameter shippingAddressParameter);
   FutureProcessing<CountryBasedCountryCodeResponse> countryBasedCountryCode(CountryBasedCountryCodeParameter countryBasedCountryCodeParameter);
+  FutureProcessing<CountryBasedIdResponse> countryBasedId(CountryBasedIdParameter countryBasedIdParameter);
 }

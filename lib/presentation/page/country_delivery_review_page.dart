@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/domain/dummy/addressdummy/country_dummy.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
@@ -11,6 +12,7 @@ import '../../domain/entity/delivery/country_delivery_review_header_content.dart
 import '../../domain/entity/delivery/country_delivery_review_response.dart';
 import '../../domain/entity/delivery/countrydeliveryreviewmedia/country_delivery_review_media.dart';
 import '../../domain/usecase/get_country_delivery_review_use_case.dart';
+import '../../misc/backgroundappbarscaffoldtype/color_background_app_bar_scaffold_type.dart';
 import '../../misc/constant.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/countrydeliveryreviewlistitemcontrollerstate/country_delivery_review_container_list_item_controller_state.dart';
 import '../../misc/controllerstate/listitemcontrollerstate/countrydeliveryreviewlistitemcontrollerstate/country_delivery_review_header_list_item_controller_state.dart';
@@ -53,7 +55,8 @@ class CountryDeliveryReviewPage extends RestorableGetxPage<_CountryDeliveryRevie
     required this.countryId
   }) : super(
     key: key,
-    pageRestorationId: () => "country-delivery-review-page"
+    pageRestorationId: () => "country-delivery-review-page",
+    systemUiOverlayStyle: SystemUiOverlayStyle.light
   );
 
   @override
@@ -79,7 +82,7 @@ class CountryDeliveryReviewPage extends RestorableGetxPage<_CountryDeliveryRevie
   }
 }
 
-class _CountryDeliveryReviewPageRestoration extends ExtendedMixableGetxPageRestoration with CountryDeliveryReviewPageRestorationMixin, CountryDeliveryReviewMediaViewPageRestorationMixin, NotificationPageRestorationMixin, CartPageRestorationMixin, InboxPageRestorationMixin, SearchPageRestorationMixin {
+class _CountryDeliveryReviewPageRestoration extends ExtendedMixableGetxPageRestoration with CountryDeliveryReviewPageRestorationMixin, CountryDeliveryReviewMediaViewPageRestorationMixin, SearchPageRestorationMixin {
   @override
   // ignore: unnecessary_overrides
   void initState() {
@@ -315,7 +318,9 @@ class _StatefulCountryDeliveryReviewControllerMediatorWidgetState extends State<
   @override
   Widget build(BuildContext context) {
     return BackgroundAppBarScaffold(
-      backgroundAppBarImage: _countryDeliveryReviewAppBarBackgroundAssetImage,
+      backgroundAppBarScaffoldType: ColorBackgroundAppBarScaffoldType(
+        color: Constant.colorDarkBlack2
+      ),
       appBar: MainMenuSearchAppBar(value: 0.0),
       body: Expanded(
         child: ModifiedPagedListView<int, ListItemControllerState>.fromPagingControllerState(

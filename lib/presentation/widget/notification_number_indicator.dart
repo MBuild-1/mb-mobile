@@ -19,10 +19,10 @@ class NotificationNumberIndicator extends StatelessWidget {
     bool moreThanMaxNumber = notificationNumber > maxNumber;
     return Container(
       width: moreThanMaxNumber ? 18 : 14,
-      height: 14,
+      height: 16,
       decoration: BoxDecoration(
         color: Constant.colorMain,
-        borderRadius: BorderRadius.circular(3)
+        borderRadius: BorderRadius.circular(8)
       ),
       child: Center(
         child: Text(

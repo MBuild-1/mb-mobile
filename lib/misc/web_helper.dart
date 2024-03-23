@@ -72,7 +72,7 @@ class _WebHelperImpl {
               )
             ),
           },
-          Constant.textCanShareKey: webLaunchUrlType.header
+          Constant.textCanShareKey: webLaunchUrlType.canShare ? "1" : "0"
         }
       );
     }

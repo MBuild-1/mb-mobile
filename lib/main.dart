@@ -144,7 +144,7 @@ class MyApp extends StatelessWidget {
               seedColor: Constant.colorMain,
             ).copyWith(
               primary: Constant.colorMain,
-              secondary: Constant.colorMain
+              secondary: Constant.colorMain,
             ),
             textTheme: textTheme,
             primaryTextTheme: textTheme,
@@ -158,7 +158,7 @@ class MyApp extends StatelessWidget {
             tabBarTheme: TabBarTheme(
               labelColor: Constant.colorMain,
               unselectedLabelColor: Constant.colorTabUnselected
-            )
+            ),
           ),
           localizationsDelegates: const [
             GlobalWidgetsLocalizations.delegate,

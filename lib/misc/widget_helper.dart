@@ -15,11 +15,13 @@ import '../domain/entity/login/third_party_login_visibility.dart';
 import '../domain/entity/payment/paymentinstruction/paymentinstructiontransactionsummary/payment_instruction_transaction_summary.dart';
 import '../domain/entity/product/productbundle/product_bundle.dart';
 import '../domain/entity/summaryvalue/summary_value.dart';
+import '../presentation/notifier/notification_notifier.dart';
 import '../presentation/notifier/product_notifier.dart';
 import '../presentation/notifier/third_party_login_notifier.dart';
 import '../presentation/page/modaldialogpage/payment_instruction_modal_dialog_page.dart';
 import '../presentation/widget/button/add_or_remove_cart_button.dart';
 import '../presentation/widget/button/add_or_remove_wishlist_button.dart';
+import '../presentation/widget/button/app_bar_icon_button.dart';
 import '../presentation/widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../presentation/widget/colorful_chip.dart';
 import '../presentation/widget/countdown_indicator.dart';
@@ -31,6 +33,7 @@ import '../presentation/widget/modified_shimmer.dart';
 import '../presentation/widget/modified_svg_picture.dart';
 import '../presentation/widget/modifiedcachednetworkimage/product_modified_cached_network_image.dart';
 import '../presentation/widget/modifiedcachednetworkimage/summary_value_modified_cached_network_image.dart';
+import '../presentation/widget/notification_number_indicator.dart';
 import '../presentation/widget/productbundle/product_bundle_item.dart';
 import '../presentation/widget/prompt_indicator.dart';
 import '../presentation/widget/tap_area.dart';
@@ -50,6 +53,7 @@ import 'login_helper.dart';
 import 'multi_language_string.dart';
 import 'page_restoration_helper.dart';
 import 'response_wrapper.dart';
+import 'search_app_bar_icon_dimension.dart';
 import 'toast_helper.dart';
 import 'web_helper.dart';
 
@@ -87,6 +91,8 @@ class _WidgetHelperImpl {
   Widget buildPromptIndicator({
     required BuildContext context,
     Image? image,
+    double? imageWidth,
+    double? imageHeight,
     String? promptTitleText,
     String? promptText,
     String? buttonText,
@@ -95,6 +101,8 @@ class _WidgetHelperImpl {
   }) {
     return PromptIndicator(
       image: image,
+      imageWidth: imageWidth,
+      imageHeight: imageHeight,
       promptTitleText: promptTitleText,
       promptText: promptText,
       buttonText: buttonText ?? "OK",
@@ -106,6 +114,8 @@ class _WidgetHelperImpl {
   Widget buildSuccessPromptIndicator({
     required BuildContext context,
     Image? image,
+    double? imageWidth,
+    double? imageHeight,
     String? promptTitleText = "Success",
     String? promptText = "This process has been success...",
     String? buttonText,
@@ -114,6 +124,8 @@ class _WidgetHelperImpl {
   }) {
     return buildPromptIndicator(
       context: context,
+      imageWidth: imageWidth,
+      imageHeight: imageHeight,
       image: image ?? Image.asset(Constant.imageSuccess),
       promptTitleText: promptTitleText,
       promptText: promptText,
@@ -126,6 +138,8 @@ class _WidgetHelperImpl {
   Widget buildFailedPromptIndicator({
     required BuildContext context,
     Image? image,
+    double? imageWidth,
+    double? imageHeight,
     String? promptTitleText,
     String? promptText,
     String? buttonText,
@@ -134,6 +148,8 @@ class _WidgetHelperImpl {
   }) {
     return buildPromptIndicator(
       context: context,
+      imageWidth: imageWidth,
+      imageHeight: imageHeight,
       image: image ?? Image.asset(Constant.imageFailed),
       promptTitleText: promptTitleText,
       promptText: promptText,
@@ -147,12 +163,16 @@ class _WidgetHelperImpl {
     required BuildContext context,
     required ErrorProvider errorProvider,
     required dynamic e,
+    double? imageWidth,
+    double? imageHeight,
     String? buttonText,
     VoidCallback? onPressed,
     PromptIndicatorType promptIndicatorType = PromptIndicatorType.vertical
   }) {
     ErrorProviderResult? errorProviderResult = errorProvider.onGetErrorProviderResult(e);
     return buildPromptIndicator(
+      imageWidth: imageWidth,
+      imageHeight: imageHeight,
       context: context,
       image: errorProviderResult != null ? Image.asset(errorProviderResult.imageAssetUrl.isEmpty ? Constant.imageFailed : errorProviderResult.imageAssetUrl) : null,
       promptTitleText: errorProviderResult?.title,
@@ -836,7 +856,7 @@ class _WidgetHelperImpl {
                         child: Divider()
                       ),
                       SizedBox(width: 6.w),
-                      Text("or login with".tr, style: TextStyle(
+                      Text(orWithText, style: TextStyle(
                         color: Theme.of(context).dividerTheme.color
                       )),
                       SizedBox(width: 6.w),
@@ -853,6 +873,94 @@ class _WidgetHelperImpl {
           ],
         );
       }
+    );
+  }
+
+  Widget buildSearchTextFieldWithSearchAppBarIcon({
+    required BuildContext context,
+    required double searchTextFieldHeight,
+    required Widget searchTextField
+  }) {
+    Widget expandedSearchTextWidget(bool visible) => Expanded(
+      child: Visibility(
+        visible: visible,
+        maintainState: true,
+        maintainAnimation: true,
+        maintainSize: true,
+        child: searchTextField,
+      ),
+    );
+    SearchAppBarDimension searchAppBarDimension = SearchAppBarDimension(
+      iconButtonSize: searchTextFieldHeight
+    );
+    return Stack(
+      children: [
+        Row(
+          children: [
+            expandedSearchTextWidget(true),
+            SizedBox(
+              width: searchAppBarDimension.iconAreaWidth - (searchAppBarDimension.iconButtonSize / 2)
+            )
+          ]
+        ),
+        Consumer<NotificationNotifier>(
+          builder: (_, notificationNotifier, __) => Row(
+            children: [
+              expandedSearchTextWidget(false),
+              AppBarIconButton(
+                padding: const EdgeInsets.all(6.0),
+                size: searchAppBarDimension.iconButtonSize,
+                icon: ModifiedSvgPicture.asset(
+                  Constant.vectorMenuSearchBarTransaction,
+                  overrideDefaultColorWithSingleColor: false
+                ),
+                overlay: Positioned(
+                  top: 0,
+                  right: 0,
+                  child: NotificationNumberIndicator(
+                    notificationNumber: notificationNotifier.notificationLoadDataResult.resultIfSuccess ?? 0,
+                  )
+                ),
+                onTap: () => PageRestorationHelper.toNotificationPage(context)
+              ),
+              SizedBox(width: searchAppBarDimension.spacingWidth),
+              AppBarIconButton(
+                padding: const EdgeInsets.all(6.0),
+                size: searchAppBarDimension.iconButtonSize,
+                icon: ModifiedSvgPicture.asset(
+                  Constant.vectorMenuSearchBarCart,
+                  overrideDefaultColorWithSingleColor: false
+                ),
+                overlay: Positioned(
+                  top: 0,
+                  right: 0,
+                  child: NotificationNumberIndicator(
+                    notificationNumber: notificationNotifier.cartLoadDataResult.resultIfSuccess ?? 0,
+                  )
+                ),
+                onTap: () => PageRestorationHelper.toCartPage(context)
+              ),
+              SizedBox(width: searchAppBarDimension.spacingWidth),
+              AppBarIconButton(
+                padding: const EdgeInsets.all(6.0),
+                size: searchAppBarDimension.iconButtonSize,
+                icon: ModifiedSvgPicture.asset(
+                  Constant.vectorMenuSearchBarChat,
+                  overrideDefaultColorWithSingleColor: false
+                ),
+                overlay: Positioned(
+                  top: 0,
+                  right: 0,
+                  child: NotificationNumberIndicator(
+                    notificationNumber: notificationNotifier.inboxLoadDataResult.resultIfSuccess ?? 0,
+                  )
+                ),
+                onTap: () => PageRestorationHelper.toInboxPage(context)
+              ),
+            ],
+          ),
+        )
+      ],
     );
   }
 }

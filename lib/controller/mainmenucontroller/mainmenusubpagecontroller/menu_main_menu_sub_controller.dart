@@ -12,8 +12,10 @@ import '../../../domain/entity/logout/logout_parameter.dart';
 import '../../../domain/entity/logout/logout_response.dart';
 import '../../../domain/entity/user/getuser/get_user_parameter.dart';
 import '../../../domain/entity/user/user.dart';
+import '../../../domain/entity/user/user_and_loaded_related_user_data.dart';
 import '../../../domain/usecase/get_my_cart_use_case.dart';
 import '../../../domain/usecase/get_short_my_cart_use_case.dart';
+import '../../../domain/usecase/get_user_and_loaded_related_user_data_use_case.dart';
 import '../../../domain/usecase/get_user_use_case.dart';
 import '../../../domain/usecase/logout_use_case.dart';
 import '../../../misc/constant.dart';
@@ -40,22 +42,24 @@ typedef _OnDeleteToken = Future<void> Function();
 
 class MenuMainMenuSubController extends BaseGetxController {
   final GetUserUseCase getUserUseCase;
+  final GetUserAndLoadedRelatedUserDataUseCase getUserAndLoadedRelatedUserDataUseCase;
   final GetShortMyCartUseCase getShortMyCartUseCase;
   final LogoutUseCase logoutUseCase;
   MenuMainMenuSubDelegate? _menuMainMenuSubDelegate;
   final SharedCartControllerContentDelegate sharedCartControllerContentDelegate;
 
-  LoadDataResult<User> _userLoadDataResult = NoLoadDataResult<User>();
-  late Rx<LoadDataResultWrapper<User>> userLoadDataResultWrapperRx;
+  LoadDataResult<UserAndLoadedRelatedUserData> _userLoadDataResult = NoLoadDataResult<UserAndLoadedRelatedUserData>();
+  late Rx<LoadDataResultWrapper<UserAndLoadedRelatedUserData>> userLoadDataResultWrapperRx;
 
   MenuMainMenuSubController(
     super.controllerManager,
     this.getUserUseCase,
+    this.getUserAndLoadedRelatedUserDataUseCase,
     this.getShortMyCartUseCase,
     this.logoutUseCase,
     this.sharedCartControllerContentDelegate
   ) {
-    userLoadDataResultWrapperRx = LoadDataResultWrapper<User>(_userLoadDataResult).obs;
+    userLoadDataResultWrapperRx = LoadDataResultWrapper<UserAndLoadedRelatedUserData>(_userLoadDataResult).obs;
     sharedCartControllerContentDelegate.setApiRequestManager(
       () => apiRequestManager
     );
@@ -96,6 +100,7 @@ class MenuMainMenuSubController extends BaseGetxController {
               description: description,
               cartList: cartList,
               data: Constant.carouselKeyShortMyCart,
+              elevation: 0,
               repeatableDynamicItemCarouselAdditionalParameter: repeatableDynamicItemCarouselAdditionalParameter
             )
           );
@@ -118,12 +123,10 @@ class MenuMainMenuSubController extends BaseGetxController {
   }
 
   void loadLoggedUser() async {
-    _userLoadDataResult = IsLoadingLoadDataResult<User>();
+    _userLoadDataResult = IsLoadingLoadDataResult<UserAndLoadedRelatedUserData>();
     _updateMenuMainMenuState();
-    _userLoadDataResult = await getUserUseCase.execute(GetUserParameter()).future(
+    _userLoadDataResult = await getUserAndLoadedRelatedUserDataUseCase.execute(GetUserParameter()).future(
       parameter: apiRequestManager.addRequestToCancellationPart("user").value
-    ).map<User>(
-      (getUserResponse) => getUserResponse.user
     );
     if (_userLoadDataResult.isFailedBecauseCancellation) {
       return;
@@ -136,7 +139,7 @@ class MenuMainMenuSubController extends BaseGetxController {
   }
 
   void _updateMenuMainMenuState() {
-    userLoadDataResultWrapperRx.valueFromLast((value) => LoadDataResultWrapper<User>(_userLoadDataResult));
+    userLoadDataResultWrapperRx.valueFromLast((value) => LoadDataResultWrapper<UserAndLoadedRelatedUserData>(_userLoadDataResult));
     update();
   }
 
@@ -184,12 +187,14 @@ class MenuMainMenuSubController extends BaseGetxController {
 
 class MenuMainMenuSubControllerInjectionFactory {
   final GetUserUseCase getUserUseCase;
+  final GetUserAndLoadedRelatedUserDataUseCase getUserAndLoadedRelatedUserDataUseCase;
   final GetShortMyCartUseCase getShortMyCartUseCase;
   final LogoutUseCase logoutUseCase;
   final SharedCartControllerContentDelegate sharedCartControllerContentDelegate;
 
   MenuMainMenuSubControllerInjectionFactory({
     required this.getUserUseCase,
+    required this.getUserAndLoadedRelatedUserDataUseCase,
     required this.getShortMyCartUseCase,
     required this.logoutUseCase,
     required this.sharedCartControllerContentDelegate
@@ -200,6 +205,7 @@ class MenuMainMenuSubControllerInjectionFactory {
       MenuMainMenuSubController(
         controllerManager,
         getUserUseCase,
+        getUserAndLoadedRelatedUserDataUseCase,
         getShortMyCartUseCase,
         logoutUseCase,
         sharedCartControllerContentDelegate
@@ -211,7 +217,6 @@ class MenuMainMenuSubControllerInjectionFactory {
 
 class MenuMainMenuSubDelegate {
   OnObserveLoadProductDelegate onObserveLoadProductDelegate;
-  ListItemControllerState Function(_OnObserveLoadLoggedUserDirectlyParameter) onObserveLoadLoggedUserDirectly;
   OnUnfocusAllWidget onUnfocusAllWidget;
   _OnDeleteToken onDeleteToken;
   _OnShowLogoutRequestProcessLoadingCallback onShowLogoutRequestProcessLoadingCallback;
@@ -223,7 +228,6 @@ class MenuMainMenuSubDelegate {
 
   MenuMainMenuSubDelegate({
     required this.onObserveLoadProductDelegate,
-    required this.onObserveLoadLoggedUserDirectly,
     required this.onUnfocusAllWidget,
     required this.onDeleteToken,
     required this.onShowLogoutRequestProcessLoadingCallback,

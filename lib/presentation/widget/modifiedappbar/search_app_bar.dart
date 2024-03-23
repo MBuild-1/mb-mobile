@@ -38,7 +38,8 @@ abstract class SearchAppBar extends ModifiedAppBar {
     key: key,
     leading: leading,
     automaticallyImplyLeading: automaticallyImplyLeading,
-    bottom: bottom
+    bottom: bottom,
+    backgroundColor: Constant.colorDarkBlack2
   );
 
   double get searchTextFieldHeight => 40.0;
@@ -67,7 +68,7 @@ abstract class SearchAppBar extends ModifiedAppBar {
             hintText: "Search in Master Bagasi".tr,
             filled: true,
             fillColor: Colors.transparent,
-            prefixIcon: const Icon(Icons.search),
+            prefixIcon: const Icon(Icons.search, color: Colors.white),
             contentPadding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0)
           )
         )
@@ -80,41 +81,52 @@ abstract class SearchAppBar extends ModifiedAppBar {
     };
   }
 
+  Widget? Function(BuildContext, Widget?, Widget)? get searchContentInterceptor => null;
+
   @override
   TitleInterceptor? get titleInterceptor {
-    return (context, oldTitle) => Row(
-      children: [
-        Expanded(
-          child: SizedBox(
-            height: searchTextFieldHeight,
-            child: Material(
-              borderRadius: Constant.inputBorderRadius,
+    return (context, oldTitle) {
+      Widget result = Row(
+        children: [
+          Expanded(
+            child: SizedBox(
+              height: searchTextFieldHeight,
               child: Builder(
                 builder: (context) {
-                  if (isSearchText) {
-                    return textFieldBuilder(context);
-                  }
-                  VoidCallback? effectiveOnSearchTextFieldTapped;
-                  if (onSearchTextFieldTapped != null) {
-                    effectiveOnSearchTextFieldTapped = onSearchTextFieldTapped!;
-                  } else {
-                    effectiveOnSearchTextFieldTapped = () {
-                      PageRestorationHelper.toSearchPage(context);
-                    };
-                  }
-                  return InkWell(
+                  Widget searchTextWidget = Material(
+                    color: Constant.colorGrey12,
                     borderRadius: Constant.inputBorderRadius,
-                    onTap: effectiveOnSearchTextFieldTapped,
-                    child: textFieldBuilder(context)
+                    child: Builder(
+                      builder: (context) {
+                        if (isSearchText) {
+                          return textFieldBuilder(context);
+                        }
+                        VoidCallback? effectiveOnSearchTextFieldTapped;
+                        if (onSearchTextFieldTapped != null) {
+                          effectiveOnSearchTextFieldTapped = onSearchTextFieldTapped!;
+                        } else {
+                          effectiveOnSearchTextFieldTapped = () {
+                            PageRestorationHelper.toSearchPage(context);
+                          };
+                        }
+                        return InkWell(
+                          borderRadius: Constant.inputBorderRadius,
+                          onTap: effectiveOnSearchTextFieldTapped,
+                          child: textFieldBuilder(context)
+                        );
+                      },
+                    )
                   );
-                },
+                  return searchTextWidget;
+                }
               )
             )
-          )
-        ),
-        if (actionTitleBuilder != null) actionTitleBuilder!(context),
-      ]
-    );
+          ),
+          if (actionTitleBuilder != null) actionTitleBuilder!(context),
+        ]
+      );
+      return searchContentInterceptor != null ? searchContentInterceptor!(context, oldTitle, result) : result;
+    };
   }
 
   @override

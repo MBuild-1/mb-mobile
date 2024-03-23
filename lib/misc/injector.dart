@@ -9,6 +9,7 @@ import '../controller/deliveryreviewcontroller/deliveryreviewsubpagecontroller/w
 import '../controller/mainmenucontroller/mainmenusubpagecontroller/explore_nusantara_main_menu_sub_controller.dart';
 import '../controller/mainmenucontroller/mainmenusubpagecontroller/feed_main_menu_sub_controller.dart';
 import '../controller/mainmenucontroller/mainmenusubpagecontroller/home_main_menu_sub_controller.dart';
+import '../controller/mainmenucontroller/mainmenusubpagecontroller/mbestie_main_menu_sub_controller.dart';
 import '../controller/mainmenucontroller/mainmenusubpagecontroller/menu_main_menu_sub_controller.dart';
 import '../controller/mainmenucontroller/mainmenusubpagecontroller/wishlist_main_menu_sub_controller.dart';
 import '../data/datasource/addressdatasource/address_data_source.dart';
@@ -130,6 +131,7 @@ import '../domain/usecase/create_order_version_1_point_1_use_case.dart';
 import '../domain/usecase/get_country_based_country_code.dart';
 import '../domain/usecase/get_product_bundle_detail_by_slug_use_case.dart';
 import '../domain/usecase/get_product_detail_by_slug_use_case.dart';
+import '../domain/usecase/get_user_and_loaded_related_user_data_use_case.dart';
 import '../domain/usecase/help_chat_template_use_case.dart';
 import '../domain/usecase/check_active_pin_use_case.dart';
 import '../domain/usecase/check_bucket_use_case.dart';
@@ -374,6 +376,9 @@ class _Injector {
         getProvinceMapUseCase: locator()
       )
     );
+    locator.registerLazySingleton<MBestieMainMenuSubControllerInjectionFactory>(
+      () => MBestieMainMenuSubControllerInjectionFactory()
+    );
     locator.registerLazySingleton<WishlistMainMenuSubControllerInjectionFactory>(
       () => WishlistMainMenuSubControllerInjectionFactory(
         getWishlistPagingUseCase: locator(),
@@ -386,6 +391,7 @@ class _Injector {
     locator.registerLazySingleton<MenuMainMenuSubControllerInjectionFactory>(
       () => MenuMainMenuSubControllerInjectionFactory(
         getUserUseCase: locator(),
+        getUserAndLoadedRelatedUserDataUseCase: locator(),
         getShortMyCartUseCase: locator(),
         logoutUseCase: locator(),
         sharedCartControllerContentDelegate: locator()
@@ -631,6 +637,12 @@ class _Injector {
     locator.registerLazySingleton<ModifyPinUseCase>(() => ModifyPinUseCase(userRepository: locator()));
     locator.registerLazySingleton<CheckActivePinUseCase>(() => CheckActivePinUseCase(userRepository: locator()));
     locator.registerLazySingleton<GetUserUseCase>(() => GetUserUseCase(userRepository: locator()));
+    locator.registerLazySingleton<GetUserAndLoadedRelatedUserDataUseCase>(
+      () => GetUserAndLoadedRelatedUserDataUseCase(
+        userRepository: locator(),
+        addressRepository: locator()
+      )
+    );
     locator.registerLazySingleton<EditUserUseCase>(() => EditUserUseCase(userRepository: locator()));
     locator.registerLazySingleton<ForgotPasswordUseCase>(() => ForgotPasswordUseCase(userRepository: locator()));
     locator.registerLazySingleton<WhatsappForgotPasswordUseCase>(() => WhatsappForgotPasswordUseCase(userRepository: locator()));

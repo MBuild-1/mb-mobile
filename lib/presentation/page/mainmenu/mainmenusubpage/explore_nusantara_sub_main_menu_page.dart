@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
@@ -7,6 +8,7 @@ import 'dart:math' as math;
 
 import '../../../../controller/mainmenucontroller/mainmenusubpagecontroller/explore_nusantara_main_menu_sub_controller.dart';
 import '../../../../domain/entity/province/province_map.dart';
+import '../../../../misc/backgroundappbarscaffoldtype/color_background_app_bar_scaffold_type.dart';
 import '../../../../misc/constant.dart';
 import '../../../../misc/controllerstate/explore_nusantara_main_menu_controller_state.dart';
 import '../../../../misc/custompainter/explore_nusantara_map_custom_painter.dart';
@@ -35,7 +37,7 @@ class ExploreNusantaraMainMenuSubPage extends DefaultGetxPage {
   late final ControllerMember<ExploreNusantaraMainMenuSubController> _exploreNusantaraMainMenuSubController = ControllerMember<ExploreNusantaraMainMenuSubController>().addToControllerManager(controllerManager);
   final String ancestorPageName;
 
-  ExploreNusantaraMainMenuSubPage({Key? key, required this.ancestorPageName}) : super(key: key);
+  ExploreNusantaraMainMenuSubPage({Key? key, required this.ancestorPageName}) : super(key: key, systemUiOverlayStyle: SystemUiOverlayStyle.dark);
 
   @override
   void onSetController() {
@@ -97,13 +99,13 @@ class _StatefulExploreNusantaraMainMenuSubControllerMediatorWidgetState extends 
             child: Text(
               "Welcome To Nusantara".tr,
               style: const TextStyle(
-                fontSize: 20,
+                fontSize: 22,
                 fontWeight: FontWeight.bold
               ),
             ),
           ),
         ),
-        const SizedBox(height: 20.0),
+        const SizedBox(height: 0.0),
       ],
     );
   }
@@ -118,12 +120,21 @@ class _StatefulExploreNusantaraMainMenuSubControllerMediatorWidgetState extends 
             if (value.provinceMapListLoadDataResult.isSuccess) {
               return Column(
                 children: [
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    height: 200,
-                    child: ExploreNusantaraModifiedCachedNetworkImage(
-                      imageUrl: value.selectedProvinceMap!.icon.toEmptyStringNonNull
-                    ),
+                  Builder(
+                    builder: (context) {
+                      double height = (MediaQuery.of(context).size.width * 411 / 547) - 40;
+                      return SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        height: height,
+                        child: Transform.scale(
+                          scale: 1.11,
+                          origin: Offset(0, height / 2),
+                          child: ExploreNusantaraModifiedCachedNetworkImage(
+                            imageUrl: value.selectedProvinceMap!.icon.toEmptyStringNonNull
+                          ),
+                        )
+                      );
+                    }
                   ),
                 ]
               );
@@ -142,7 +153,7 @@ class _StatefulExploreNusantaraMainMenuSubControllerMediatorWidgetState extends 
       onConsumeValue: (context, value) {
         if (value.provinceMapListLoadDataResult.isSuccess) {
           return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
+            padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0).copyWith(top: 0.0),
             child: SizedBox(
               height: 45,
               child: Stack(
@@ -152,7 +163,7 @@ class _StatefulExploreNusantaraMainMenuSubControllerMediatorWidgetState extends 
                       onPressed: () {},
                       text: "",
                       outlineGradientButtonType: OutlineGradientButtonType.solid,
-                      outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
+                      outlineGradientButtonVariation: OutlineGradientButtonVariation.variation5,
                     ),
                   ),
                   Row(
@@ -252,7 +263,7 @@ class _StatefulExploreNusantaraMainMenuSubControllerMediatorWidgetState extends 
     }
     Widget contentWidget(Widget Function(double, double, List<ProvinceMap>) content) {
       return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 0.0),
         child: RxConsumer<ExploreNusantaraMainMenuControllerState>(
           rxValue: widget.exploreNusantaraMainMenuSubController.exploreNusantaraMainMenuControllerStateRx,
           onConsumeValue: (context, value) => LoadDataResultImplementer<List<ProvinceMap>>(
@@ -278,178 +289,179 @@ class _StatefulExploreNusantaraMainMenuSubControllerMediatorWidgetState extends 
     }
     return WidgetHelper.checkVisibility(
       MainRouteObserver.subMainMenuVisibility[Constant.subPageKeyExploreNusantaraMainMenu],
-      () => BackgroundAppBarScaffold(
-        backgroundAppBarImage: _exploreNusantaraAppBarBackgroundAssetImage,
-        appBar: MainMenuSearchAppBar(value: 0.0),
-        withModifiedScaffold: false,
-        body: Expanded(
-          child: Stack(
-            children: [
-              RxConsumer<ExploreNusantaraMainMenuControllerState>(
-                rxValue: widget.exploreNusantaraMainMenuSubController.exploreNusantaraMainMenuControllerStateRx,
-                onConsumeValue: (context, value) {
-                  if (value.provinceMapListLoadDataResult.isSuccess) {
-                    return Stack(
-                      children: [
-                        Builder(
-                          builder: (context) {
-                            ProvinceMap provinceMap = value.selectedProvinceMap!;
-                            String banner = provinceMap.bannerMobile.isNotEmptyString ? provinceMap.bannerMobile.toEmptyStringNonNull : provinceMap.bannerDesktop.toEmptyStringNonNull;
-                            return SizedBox(
-                              width: MediaQuery.of(context).size.width,
-                              child: AspectRatio(
-                                aspectRatio: Constant.aspectRatioValueExploreNusantaraBanner.toDouble(),
-                                child: Stack(
-                                  children: [
-                                    ExploreNusantaraBackgroundModifiedCachedNetworkImage(imageUrl: banner),
-                                    Container(color: Colors.white.withOpacity(0.6)),
-                                  ],
-                                ),
-                              ),
-                            );
-                          }
-                        ),
-                        Align(
-                          alignment: Alignment.bottomCenter,
-                          child: SizedBox(
-                            width: MediaQuery.of(context).size.width,
-                            child: AspectRatio(
-                              aspectRatio: Constant.aspectRatioValueExploreNusantaraBackground.toDouble(),
-                              child: Stack(
-                                children: [
-                                  Container(color: Colors.grey.withOpacity(0.4)),
-                                  ExploreNusantaraBackgroundModifiedCachedNetworkImage(
-                                    imageUrl: value.selectedProvinceMap!.background.toEmptyStringNonNull
-                                  ),
-                                ],
-                              ),
+      () => Stack(
+        children: [
+          RxConsumer<ExploreNusantaraMainMenuControllerState>(
+            rxValue: widget.exploreNusantaraMainMenuSubController.exploreNusantaraMainMenuControllerStateRx,
+            onConsumeValue: (context, value) {
+              if (value.provinceMapListLoadDataResult.isSuccess) {
+                return Stack(
+                  children: [
+                    Builder(
+                      builder: (context) {
+                        ProvinceMap provinceMap = value.selectedProvinceMap!;
+                        String banner = provinceMap.bannerMobile.isNotEmptyString ? provinceMap.bannerMobile.toEmptyStringNonNull : provinceMap.bannerDesktop.toEmptyStringNonNull;
+                        return SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          child: AspectRatio(
+                            aspectRatio: Constant.aspectRatioValueExploreNusantaraBanner.toDouble(),
+                            child: Stack(
+                              children: [
+                                ExploreNusantaraBackgroundModifiedCachedNetworkImage(imageUrl: banner),
+                              ],
                             ),
                           ),
-                        ),
-                      ]
-                    );
-                  } else {
-                    return Container();
-                  }
-                }
-              ),
-              Center(
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 400,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.bottomCenter,
-                      end: Alignment.topCenter,
-                      colors: [
-                        Theme.of(context).canvasColor.withOpacity(0.0),
-                        Theme.of(context).canvasColor,
-                        Theme.of(context).canvasColor,
-                        Theme.of(context).canvasColor.withOpacity(0.0),
-                      ],
-                      stops: const [
-                        0.0, 0.2, 0.8, 1.0
-                      ]
-                    )
-                  ),
-                ),
-              ),
-              InteractiveViewer(
-                maxScale: 10.0,
-                transformationController: _transformationController,
-                onInteractionUpdate: (scaleUpdateDetails) {
-                  _scale = _transformationController.value.getMaxScaleOnAxis();
-                  setState(() {});
-                },
-                child: Column(
-                  children: [
-                    const Expanded(
-                      child: SizedBox()
+                        );
+                      }
                     ),
-                    hideWidget(_headerSection()),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: RxConsumer<ExploreNusantaraMainMenuControllerState>(
-                        rxValue: widget.exploreNusantaraMainMenuSubController.exploreNusantaraMainMenuControllerStateRx,
-                        onConsumeValue: (context, value) => contentWidget(
-                          (width, height, provinceMapList) => SizedBox(
-                            width: width,
-                            height: height,
-                            child: ModifiedCanvasTouchDetector(
-                              builder: (context) => CustomPaint(
-                                painter: ExploreNusantaraMapCustomPainter(
-                                  context: context,
-                                  provinceMapList: provinceMapList,
-                                  selectedProvinceMap: value.selectedProvinceMap,
-                                  onSelectProvinceMap: (provinceMap) {
-                                    widget.exploreNusantaraMainMenuSubController.selectProvinceMap(provinceMap);
-                                  },
-                                )
-                              )
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        child: AspectRatio(
+                          aspectRatio: Constant.aspectRatioValueExploreNusantaraBackground.toDouble(),
+                          child: Stack(
+                            children: [
+                              Container(color: Colors.grey.withOpacity(0.4)),
+                              ExploreNusantaraBackgroundModifiedCachedNetworkImage(
+                                imageUrl: value.selectedProvinceMap!.background.toEmptyStringNonNull
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ]
+                );
+              } else {
+                return Container();
+              }
+            }
+          ),
+          Center(
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Theme.of(context).scaffoldBackgroundColor.withOpacity(0.0),
+                    Theme.of(context).scaffoldBackgroundColor.withOpacity(0.0),
+                    Theme.of(context).scaffoldBackgroundColor,
+                    Theme.of(context).scaffoldBackgroundColor,
+                    Theme.of(context).scaffoldBackgroundColor,
+                    Theme.of(context).scaffoldBackgroundColor,
+                    Theme.of(context).scaffoldBackgroundColor.withOpacity(0.0),
+                  ],
+                  stops: const [
+                    0.0, 0.26, 0.36, 0.5, 0.6, 0.7, 1.0
+                  ]
+                )
+              ),
+            ),
+          ),
+          InteractiveViewer(
+            maxScale: 10.0,
+            transformationController: _transformationController,
+            onInteractionUpdate: (scaleUpdateDetails) {
+              _scale = _transformationController.value.getMaxScaleOnAxis();
+              setState(() {});
+            },
+            child: Column(
+              children: [
+                const Expanded(
+                  child: SizedBox()
+                ),
+                hideWidget(_headerSection()),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 0.0),
+                  child: RxConsumer<ExploreNusantaraMainMenuControllerState>(
+                    rxValue: widget.exploreNusantaraMainMenuSubController.exploreNusantaraMainMenuControllerStateRx,
+                    onConsumeValue: (context, value) => contentWidget(
+                      (width, height, provinceMapList) => SizedBox(
+                        width: width,
+                        height: height,
+                        child: ModifiedCanvasTouchDetector(
+                          builder: (context) => CustomPaint(
+                            painter: ExploreNusantaraMapCustomPainter(
+                              context: context,
+                              provinceMapList: provinceMapList,
+                              selectedProvinceMap: value.selectedProvinceMap,
+                              onSelectProvinceMap: (provinceMap) {
+                                widget.exploreNusantaraMainMenuSubController.selectProvinceMap(provinceMap);
+                              },
                             )
                           )
                         )
-                      ),
+                      )
+                    )
+                  ),
+                ),
+                hideWidget(_footerSection()),
+                hideWidget(_changeProvinceButtonSelection()),
+                hideWidget(_requiredLoginWidgetSpacing())
+              ],
+            ),
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Flexible(
+                child: IgnorePointer(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _headerSection(),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 0.0),
+                          child: Builder(
+                            builder: (context) {
+                              return contentWidget(
+                                (width, height, _) => SizedBox(
+                                  width: width,
+                                  height: height,
+                                )
+                              );
+                            }
+                          )
+                        ),
+                        _footerSection(),
+                      ],
                     ),
-                    hideWidget(_footerSection()),
-                    hideWidget(_changeProvinceButtonSelection()),
-                    hideWidget(_requiredLoginWidgetSpacing())
-                  ],
+                  ),
                 ),
               ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Flexible(
-                    child: IgnorePointer(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            _headerSection(),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                              child: Builder(
-                                builder: (context) {
-                                  return contentWidget(
-                                    (width, height, _) => SizedBox(
-                                      width: width,
-                                      height: height,
-                                    )
-                                  );
-                                }
-                              )
-                            ),
-                            _footerSection(),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  _changeProvinceButtonSelection(),
-                  _requiredLoginWidgetSpacing()
-                ]
-              ),
-              if (_scale > 1.0) ...[
-                Positioned(
-                  right: 0.0,
-                  child: IconButton(
-                    icon: const Icon(
-                      Icons.zoom_out_map
-                    ),
-                    iconSize: 40,
-                    onPressed: () {
-                      _transformationController.value = Matrix4.identity();
-                      _scale = _transformationController.value.getMaxScaleOnAxis();
-                      setState(() {});
-                    },
-                  ),
-                )
-              ]
+              _changeProvinceButtonSelection(),
+              _requiredLoginWidgetSpacing()
             ]
           ),
-        ),
-      )
+          if (_scale > 1.0) ...[
+            SafeArea(
+              bottom: false,
+              child: Stack(
+                children: [
+                  Positioned(
+                    right: 0.0,
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.zoom_out_map
+                      ),
+                      iconSize: 40,
+                      onPressed: () {
+                        _transformationController.value = Matrix4.identity();
+                        _scale = _transformationController.value.getMaxScaleOnAxis();
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                ]
+              ),
+            )
+          ]
+        ]
+      ),
     );
   }
 }

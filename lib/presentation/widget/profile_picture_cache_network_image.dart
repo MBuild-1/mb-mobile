@@ -15,16 +15,38 @@ class ProfilePictureCacheNetworkImage extends CachedNetworkImage {
   // ignore: library_private_types_in_public_api
   final _OnBindShapeParentWidgetWithChild? onBindShapeParentWidgetWithChild;
   final Color? _backgroundColor;
+  final bool withPlaceholderShadow;
   Color get _defaultBackgroundColor => Colors.grey.shade200;
 
   @override
   PlaceholderWidgetBuilder? get placeholder {
-    return (context, url) => ProfileImagePlaceholder(diameter: dimension, backgroundColor: _backgroundColor ?? _defaultBackgroundColor);
+    return (context, url) => ProfileImagePlaceholder(
+      diameter: dimension,
+      backgroundColor: _backgroundColor ?? _defaultBackgroundColor,
+      withShadow: withPlaceholderShadow
+    );
+  }
+
+  @override
+  ImageWidgetBuilder? get imageBuilder {
+    return (context, imageProvider) => Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: imageProvider,
+          fit: BoxFit.cover,
+        ),
+        shape: BoxShape.circle
+      ),
+    );
   }
 
   @override
   LoadingErrorWidgetBuilder? get errorWidget {
-    return (widget, url, e) => ProfileImagePlaceholder(diameter: dimension, backgroundColor: _backgroundColor ?? _defaultBackgroundColor);
+    return (widget, url, e) => ProfileImagePlaceholder(
+      diameter: dimension,
+      backgroundColor: _backgroundColor ?? _defaultBackgroundColor,
+      withShadow: withPlaceholderShadow
+    );
   }
 
   ProfilePictureCacheNetworkImage({
@@ -32,6 +54,7 @@ class ProfilePictureCacheNetworkImage extends CachedNetworkImage {
     this.onBindShapeParentWidgetWithChild,
     required this.profileImageUrl,
     required this.dimension,
+    this.withPlaceholderShadow = false,
     Color? backgroundColor
   }) : _backgroundColor = backgroundColor,
       super(key: key,

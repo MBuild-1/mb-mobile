@@ -33,12 +33,22 @@ class _MainRouteObserver extends RouteObserver {
   Map<String, void Function(LoginResponse, void Function()?)?> get onLoginOrRegisterAppleViaCallbackRequestProcessSuccessCallback => _onLoginOrRegisterAppleViaCallbackRequestProcessSuccessCallback;
   Map<String, OnUpdateProductDetailShortDiscussionDelegate Function()?> _onUpdateProductDetailShortDiscussion = {};
   Map<String, OnUpdateProductDetailShortDiscussionDelegate Function()?> get onUpdateProductDetailShortDiscussion => _onUpdateProductDetailShortDiscussion;
+  Map<String, void Function()?> _onRefreshCartInMainMenuInEachPage = {};
+  Map<String, void Function()?> get onRefreshCartInMainMenuInEachPage => _onRefreshCartInMainMenuInEachPage;
 
   void Function(int)? onChangeMainMenuTap;
   void Function()? onRefreshWishlistInMainMenu;
   void Function()? onRefreshAddress;
   void Function()? onRefreshProfile;
-  void Function()? onRefreshCartInMainMenu;
+  void Function()? get onRefreshCartInMainMenu => () {
+    List<MapEntry<String, void Function()?>> keyList = List.of(onRefreshCartInMainMenuInEachPage.entries);
+    for (int i = keyList.length - 1; i >= 0; i--) {
+      var value = keyList[i];
+      if (value.value != null) {
+        value.value!();
+      }
+    }
+  };
   void Function(ProvinceMap)? onChangeSelectedProvince;
   void Function()? onResetInitMainMenu;
   void Function()? onRefreshSelectAddress;
@@ -85,6 +95,9 @@ class _MainRouteObserver extends RouteObserver {
       for (var key in newRouteMap.keys) key: null
     };
     _onUpdateProductDetailShortDiscussion = {
+      for (var key in newRouteMap.keys) key: null
+    };
+    _onRefreshCartInMainMenuInEachPage = {
       for (var key in newRouteMap.keys) key: null
     };
   }

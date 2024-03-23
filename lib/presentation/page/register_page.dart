@@ -9,7 +9,6 @@ import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/misc/ext/validation_result_ext.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
-import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:provider/provider.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:sizer/sizer.dart';
@@ -64,6 +63,7 @@ import '../notifier/login_notifier.dart';
 import '../notifier/third_party_login_notifier.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/field.dart';
+import '../widget/modified_pin_input.dart';
 import '../widget/modified_scaffold.dart';
 import '../widget/modified_shimmer.dart';
 import '../widget/modified_svg_picture.dart';
@@ -600,44 +600,10 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
                               }
                             ),
                             const SizedBox(height: 14.0),
-                            SizedBox(
-                              width: 180,
-                              child: PinCodeTextField(
-                                onTap: () async {
-                                  WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-                                    _verificationOtpFocusNode.unfocus();
-                                    await Future.delayed(const Duration(milliseconds: 10));
-                                    _verificationOtpFocusNode.requestFocus();
-                                  });
-                                },
-                                focusNode: _verificationOtpFocusNode,
-                                appContext: context,
-                                length: 6,
-                                obscureText: false,
-                                animationType: AnimationType.none,
-                                pinTheme: PinTheme(
-                                  selectedColor: Constant.colorMain,
-                                  activeColor: Constant.colorMain,
-                                  inactiveColor: Constant.colorMain,
-                                  borderRadius: BorderRadius.circular(5),
-                                  fieldHeight: 40,
-                                  fieldWidth: 30,
-                                  activeFillColor: Colors.black,
-                                ),
-                                animationDuration: const Duration(milliseconds: 0),
-                                enableActiveFill: false,
-                                controller: _verificationOtpTextEditingController,
-                                cursorColor: Colors.black,
-                                keyboardType: TextInputType.number,
-                                hintCharacter: '●',
-                                autoDisposeControllers: false,
-                                autoFocus: false,
-                                autoUnfocus: false,
-                                onCompleted: _onCompleted,
-                                beforeTextPaste: (text) {
-                                  return false;
-                                },
-                              ),
+                            ModifiedPinInput(
+                              focusNode: _verificationOtpFocusNode,
+                              textEditingController: _verificationOtpTextEditingController,
+                              onCompleted: _onCompleted
                             ),
                             const SizedBox(height: 10.0),
                             Builder(

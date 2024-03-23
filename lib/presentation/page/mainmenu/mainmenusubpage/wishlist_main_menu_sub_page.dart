@@ -13,6 +13,7 @@ import '../../../../domain/entity/wishlist/wishlist.dart';
 import '../../../../domain/entity/wishlist/wishlist_list_parameter.dart';
 import '../../../../domain/entity/wishlist/wishlist_paging_parameter.dart';
 import '../../../../misc/additionalloadingindicatorchecker/wishlist_sub_additional_paging_result_parameter_checker.dart';
+import '../../../../misc/backgroundappbarscaffoldtype/color_background_app_bar_scaffold_type.dart';
 import '../../../../misc/constant.dart';
 import '../../../../misc/controllercontentdelegate/wishlist_and_cart_controller_content_delegate.dart';
 import '../../../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
@@ -229,9 +230,12 @@ class _StatefulWishlistMainMenuSubControllerMediatorWidgetState extends State<_S
     return WidgetHelper.checkVisibility(
       MainRouteObserver.subMainMenuVisibility[Constant.subPageKeyWishlistMainMenu],
       () => BackgroundAppBarScaffold(
-        backgroundAppBarImage: _wishlistAppBarBackgroundAssetImage,
+        backgroundAppBarScaffoldType: ColorBackgroundAppBarScaffoldType(
+          color: Constant.colorDarkBlack2
+        ),
         appBar: MainMenuSearchAppBar(value: 0.0),
         withModifiedScaffold: false,
+        backgroundColor: Constant.colorSurfaceGrey,
         body: Expanded(
           child: WidgetHelper.checkingLogin(
             context,

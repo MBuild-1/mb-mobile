@@ -38,6 +38,7 @@ class _ConstantImpl {
   String get imagePatternGrey2 => _getImagesAssets("pattern_grey_2.png");
   String get imagePatternGrey3 => _getImagesAssets("pattern_grey_3.png");
   String get imagePatternBlue => _getImagesAssets("pattern_blue.png");
+  String get imagePatternBlack => _getImagesAssets("pattern_black.png");
   String get imagePatternLightBlue => _getImagesAssets("pattern_light_blue.png");
   String get imagePatternOrange => _getImagesAssets("pattern_orange.png");
   String get imagePatternBlackSquare => _getImagesAssets("pattern_black_square.png");
@@ -56,6 +57,7 @@ class _ConstantImpl {
   String get imageEmptyErrorSend => _getImagesAssets("empty_error_send.png");
   String get imageEmptyErrorTransaction => _getImagesAssets("empty_error_transaction.png");
   String get imageEmptyErrorWishlist => _getImagesAssets("empty_error_wishlist.png");
+  String get imageComingSoon => _getImagesAssets("coming_soon.png");
 
   String get baseVectorsAssetsPath => "assets/vectors/";
   String _getVectorsAssets(String vectorAssetsPath) => "$baseVectorsAssetsPath$vectorAssetsPath";
@@ -66,6 +68,8 @@ class _ConstantImpl {
   String get vectorFeedUnselected => _getVectorsAssets("mainmenu/feed_unselected.svg");
   String get vectorExploreSelected => _getVectorsAssets("mainmenu/explore_selected.svg");
   String get vectorExploreUnselected => _getVectorsAssets("mainmenu/explore_unselected.svg");
+  String get vectorMBestieSelected => _getVectorsAssets("mainmenu/mbestie_selected.svg");
+  String get vectorMBestieUnselected => _getVectorsAssets("mainmenu/mbestie_unselected.svg");
   String get vectorWishlistSelected => _getVectorsAssets("mainmenu/wishlist_selected.svg");
   String get vectorWishlistUnselected => _getVectorsAssets("mainmenu/wishlist_unselected.svg");
   String get vectorMenuSelected => _getVectorsAssets("mainmenu/menu_selected.svg");
@@ -136,6 +140,10 @@ class _ConstantImpl {
   String get vectorPinPoint => _getVectorsAssets("pin_point.svg");
   String get vectorUpdateApplication => _getVectorsAssets("update_application.svg");
   String get vectorInformation => _getVectorsAssets("information.svg");
+  String get vectorMenuSearchBarChat => _getVectorsAssets("menu_search_bar_chat.svg");
+  String get vectorMenuSearchBarTransaction => _getVectorsAssets("menu_search_bar_transaction.svg");
+  String get vectorMenuSearchBarCart => _getVectorsAssets("menu_search_bar_cart.svg");
+  String get vectorEdit => _getVectorsAssets("edit.svg");
 
   Color get colorYellow => const Color.fromRGBO(244, 184, 43, 1);
   Color get colorLightRed => const Color.fromRGBO(255, 236, 230, 1);
@@ -158,13 +166,16 @@ class _ConstantImpl {
   Color get colorGrey11 => ColorHelper.convertFromAlphaEnabledToNonAlphaEnabledColor(
     const Color.fromRGBO(0, 0, 0, 0.5)
   );
-  Color get colorSurfaceGrey => const Color.fromRGBO(247, 247, 247, 1);
+  Color get colorGrey12 => const Color.fromRGBO(97, 97, 97, 1);
+  Color get colorGrey13 => const Color.fromRGBO(217, 217, 217, 1);
+  Color get colorSurfaceGrey => const Color.fromRGBO(236, 238, 241, 1);
   Color get colorDarkGrey => const Color.fromRGBO(105, 105, 105, 1);
   Color get colorBrown => const Color.fromRGBO(191, 105, 25, 1);
   Color get colorBrown2 => const Color.fromRGBO(192, 90, 28, 1);
   Color get colorSuccessGreen => const Color.fromRGBO(67, 147, 108, 1);
   Color get colorSuccessLightGreen => const Color.fromRGBO(199, 246, 212, 1);
   Color get colorDarkBlack => const Color.fromRGBO(57, 57, 57, 1);
+  Color get colorDarkBlack2 => const Color.fromRGBO(30, 30, 30, 1);
   Color get colorSurfaceBlue => const Color.fromRGBO(209, 233, 238, 1);
   Color get colorDarkBlue => const Color.fromRGBO(37, 37, 140, 1);
   Color get colorDarkBlue2 => const Color.fromRGBO(32, 107, 126, 1);
@@ -222,6 +233,11 @@ class _ConstantImpl {
   Gradient get buttonGradient3 => LinearGradient(
     stops: const [1],
     colors: [Constant.colorGrey7]
+  );
+
+  Gradient get buttonGradient4 => const LinearGradient(
+    stops: [1],
+    colors: [Colors.white]
   );
 
   double get heightSpacingListItem => 6.0;
@@ -319,11 +335,11 @@ class _ConstantImpl {
   String get textLoading => "Loading".tr;
   String get textEnUsLanguageKey => "en_US";
   String get textInIdLanguageKey => "in_ID";
-  String get textAboutUsUrl => "https://masterbagasi.com/about-us";
+  String get textAboutUsUrl => "https://masterbagasi.com/about";
   String get textMasterBagasiCareUrl => "https://masterbagasi.com/mb-care";
   String get textContactUsUrl => "https://masterbagasi.com/contact-us";
   String get textTermAndConditionsUrl => "https://masterbagasi.com/terms-and-conditions";
-  String get textPrivacyPolicyUrl => "https://masterbagasi.com/privacy-policy";
+  String get textPrivacyPolicyUrl => "https://masterbagasi.com/privacy";
   String get textAffiliateUrl => "https://masterbagasi.com/affiliate";
   String get textLowerCaseAddressAlreadySetPrimary => "address already set primary";
   String get textErrorTitleWhenParsingOrderParameterJson => "Error when parsing order parameter json";
@@ -362,6 +378,7 @@ class _ConstantImpl {
   String get subPageKeyFeedMainMenu => "sub_page_key_feed_main_menu";
   String get subPageKeyExploreNusantaraMainMenu => "sub_page_key_explore_nusantara_main_menu";
   String get subPageKeyWishlistMainMenu => "sub_page_key_wishlist_main_menu";
+  String get subPageKeyMBestieMainMenu => "sub_page_key_mbestie_main_menu";
   String get subPageKeyMenuMainMenu => "sub_page_key_menu_main_menu";
   String get addToCartTypeProductEntry => "add_to_cart_type_product_entry";
   String get addToCartTypeProductBundle => "add_to_cart_type_product_bundle";

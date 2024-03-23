@@ -287,7 +287,12 @@ class OnObserveLoadProductDelegateFactory {
             data: onObserveSuccessLoadCartCarouselParameter.data,
             title: onObserveSuccessLoadCartCarouselParameter.title,
             description: onObserveSuccessLoadCartCarouselParameter.description,
-            itemList: onObserveSuccessLoadCartCarouselParameter.cartList,
+            itemList: onObserveSuccessLoadCartCarouselParameter.cartList.map<CartCarouselCompoundParameterized>(
+              (cart) => CartCarouselCompoundParameterized(
+                cart: cart,
+                elevation: onObserveSuccessLoadCartCarouselParameter.elevation
+              )
+            ).toList(),
             onInjectParameterEntityAndListItem: onInjectLoadCartCarouselParameterizedEntity,
             onAfterProcess: () => _getCartRefreshDelegate(
               getRepeatableParameter: () => onObserveSuccessLoadCartCarouselParameter.repeatableDynamicItemCarouselAdditionalParameter
@@ -539,6 +544,7 @@ class OnObserveSuccessLoadCartCarouselParameter {
   MultiLanguageString? description;
   List<Cart> cartList;
   dynamic data;
+  double elevation;
   RepeatableDynamicItemCarouselAdditionalParameter? repeatableDynamicItemCarouselAdditionalParameter;
 
   OnObserveSuccessLoadCartCarouselParameter({
@@ -546,6 +552,7 @@ class OnObserveSuccessLoadCartCarouselParameter {
     required this.description,
     required this.cartList,
     this.data,
+    this.elevation = 3,
     this.repeatableDynamicItemCarouselAdditionalParameter
   });
 }
@@ -603,5 +610,15 @@ class AddressCarouselCompoundParameterized {
   AddressCarouselCompoundParameterized({
     required this.onObserveSuccessLoadAddressCarouselParameter,
     required this.address
+  });
+}
+
+class CartCarouselCompoundParameterized {
+  double elevation;
+  Cart cart;
+
+  CartCarouselCompoundParameterized({
+    required this.elevation,
+    required this.cart
   });
 }

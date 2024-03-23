@@ -15,6 +15,9 @@ import '../../misc/multi_language_string.dart';
 import '../../misc/page_restoration_helper.dart';
 import '../../misc/routeargument/notification_redirector_route_argument.dart';
 import '../notifier/component_notifier.dart';
+import 'cart_page.dart';
+import 'inbox_page.dart';
+import 'notification_page.dart';
 import 'notification_redirector_page.dart';
 
 typedef OnCreateRestorationCallback<T extends GetxPageRestoration> = T Function();
@@ -413,7 +416,7 @@ abstract class MixableGetxPageRestoration extends GetxPageRestoration {
   void dispose() {}
 }
 
-abstract class ExtendedMixableGetxPageRestoration extends MixableGetxPageRestoration with NotificationRedirectorPageRestorationMixin {}
+abstract class ExtendedMixableGetxPageRestoration extends MixableGetxPageRestoration with NotificationRedirectorPageRestorationMixin, NotificationPageRestorationMixin, InboxPageRestorationMixin, CartPageRestorationMixin {}
 
 class Restorator {
   late final RestorationMixin _restorationMixin;

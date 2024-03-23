@@ -21,6 +21,7 @@ import '../../../presentation/widget/additional_item_summary_widget.dart';
 import '../../../presentation/widget/additional_item_widget.dart';
 import '../../../presentation/widget/address/horizontal_address_item.dart';
 import '../../../presentation/widget/address/vertical_address_item.dart';
+import '../../../presentation/widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../../../presentation/widget/carousel_list_item.dart';
 import '../../../presentation/widget/cart/cart_header.dart';
 import '../../../presentation/widget/cart/horizontal_cart_item.dart';
@@ -100,6 +101,8 @@ import '../../../presentation/widget/productcategory/horizontal_product_category
 import '../../../presentation/widget/productcategory/vertical_product_category_item.dart';
 import '../../../presentation/widget/productdiscussion/productdiscussiondialog/vertical_product_discussion_dialog_item.dart';
 import '../../../presentation/widget/productdiscussion/vertical_product_discussion_item.dart';
+import '../../../presentation/widget/profilemenuincard/profile_menu_in_card_group.dart';
+import '../../../presentation/widget/profilemenuincard/profile_menu_in_card_item.dart';
 import '../../../presentation/widget/prompt_indicator.dart';
 import '../../../presentation/widget/province/vertical_province_item.dart';
 import '../../../presentation/widget/province_map_header_list_item.dart';
@@ -232,6 +235,8 @@ import '../../controllerstate/listitemcontrollerstate/productdiscussionlistitemc
 import '../../controllerstate/listitemcontrollerstate/productlistitemcontrollerstate/horizontal_product_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productlistitemcontrollerstate/product_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/productlistitemcontrollerstate/vertical_product_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/profilemenuincardlistitemcontrollerstate/profile_menu_in_card_group_list_item_controller_state.dart';
+import '../../controllerstate/listitemcontrollerstate/profilemenuincardlistitemcontrollerstate/profile_menu_in_card_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/province_map_header_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/row_container_list_item_controller_state.dart';
 import '../../controllerstate/listitemcontrollerstate/selectcountrieslistitemcontrollerstate/country_list_item_controller_state.dart';
@@ -263,12 +268,14 @@ import '../../injector.dart';
 import '../../listitempagingparameterinjection/list_item_paging_parameter_injection.dart';
 import '../../load_data_result.dart';
 import '../../login_helper.dart';
+import '../../multi_language_string.dart';
 import '../../page_restoration_helper.dart';
 import '../../product_helper.dart';
 import '../../productentryheaderbackground/product_entry_header_background.dart';
 import '../../typedef.dart';
 import '../../widget_helper.dart';
 import 'paging_controller_state_paged_child_builder_delegate.dart';
+import 'dart:math' as math;
 
 class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extends PagingControllerStatePagedChildBuilderDelegate<PageKeyType, ListItemControllerState> {
   final List<ListItemPagingParameterInjection> listItemPagingParameterInjectionList;
@@ -834,13 +841,33 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
         List<InlineSpan> inlineSpanList = [];
         if (addressLoadDataResultParameter.isLoading) {
           inlineSpanList = [
-            TextSpan(text: "${"Delivered to".tr} ", style: const TextStyle(color: Colors.white))
+            const TextSpan(
+              text: "Please Wait",
+              style: TextStyle(
+                color: Colors.white,
+                backgroundColor: Colors.grey
+              ),
+            )
           ];
         } else if (addressLoadDataResultParameter.isSuccess) {
           Address address = addressLoadDataResultParameter.resultIfSuccess!;
           inlineSpanList = [
-            TextSpan(text: "${"Delivered to".tr} ", style: const TextStyle(color: Colors.white)),
-            TextSpan(text: address.country.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            TextSpan(
+              text: "Delivered to".tr,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 10
+              )
+            ),
+            const TextSpan(text: "\r\n", style: TextStyle(color: Colors.white)),
+            TextSpan(
+              text: address.country.name,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 13
+              )
+            ),
           ];
         } else if (addressLoadDataResultParameter.isFailed) {
           ErrorProviderResult errorProviderResult = item.errorProvider.onGetErrorProviderResult(addressLoadDataResultParameter.resultIfFailed).toErrorProviderResultNonNull();
@@ -848,7 +875,7 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
             TextSpan(text: errorProviderResult.message, style: const TextStyle(color: Colors.white)),
           ];
         }
-        return TapArea(
+        Widget result = TapArea(
           onTap: () async {
             LoginHelper.checkingLogin(context, () {
               DialogHelper.showModalBottomDialogPage<bool, String>(
@@ -862,11 +889,18 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
             });
           },
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
-            color: Constant.colorDarkBlue,
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 3.0).copyWith(bottom: 6.0),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                ModifiedSvgPicture.asset(Constant.vectorLocation, color: Colors.white),
+                SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: ModifiedSvgPicture.asset(
+                    Constant.vectorLocation,
+                    color: Colors.white
+                  ),
+                ),
                 const SizedBox(width: 10),
                 Flexible(
                   child: Builder(
@@ -879,81 +913,110 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
                         child: Text.rich(
                           textSpan,
                           overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
+                          maxLines: 2,
                         ),
                       );
                     },
                   )
-                )
+                ),
+                if (addressLoadDataResultParameter.isSuccess) ...[
+                  const SizedBox(width: 14),
+                  Transform.rotate(
+                    angle: math.pi / 2,
+                    child: ModifiedSvgPicture.asset(
+                      Constant.vectorArrow,
+                      color: Colors.white,
+                      height: 10,
+                    ),
+                  )
+                ]
               ],
             ),
           ),
         );
-      }
-      Widget addressWidget = () {
         if (addressLoadDataResult.isLoading) {
           return IgnorePointer(
             child: ModifiedShimmer.fromColors(
-              child: getDeliveryToWidget(addressLoadDataResult)
-            ),
+              child: const Center(
+                child: Text(
+                  "Please Wait Loading",
+                  style: TextStyle(
+                    backgroundColor: Colors.grey
+                  ),
+                  maxLines: 1
+                ),
+              )
+            )
           );
         } else {
-          return getDeliveryToWidget(addressLoadDataResult);
+          return result;
         }
-      }();
-      return Row(
-        children: [
-          Expanded(
-            child: addressWidget
-          ),
-          Expanded(
-            child: () {
-              List<InlineSpan> inlineSpanList = [
-                TextSpan(text: "Send Private Items".tr, style: const TextStyle(color: Colors.white)),
-              ];
-              return TapArea(
-                onTap: () async {
-                  LoginHelper.checkingLogin(context, () {
-                    PageRestorationHelper.toCartPage(
-                      context,
-                      cartPageParameter: TabRedirectionCartPageParameter(
-                        tabRedirectionCartType: TabRedirectionCartType.warehouse
-                      )
-                    );
-                  });
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
-                  color: Constant.colorDarkBlue,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Flexible(
-                        child: Builder(
-                          builder: (context) {
-                            TextSpan textSpan = TextSpan(
-                              children: inlineSpanList
-                            );
-                            return Tooltip(
-                              richMessage: textSpan,
-                              child: Text.rich(
-                                textSpan,
+      }
+      return Container(
+        color: Colors.black,
+        child: Row(
+          children: [
+            Expanded(
+              child: getDeliveryToWidget(addressLoadDataResult)
+            ),
+            Expanded(
+              child: () {
+                List<InlineSpan> inlineSpanList = [
+                  TextSpan(text: "Send Personal Stuffs".tr, style: const TextStyle(color: Colors.white)),
+                ];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6),
+                  child: SizedOutlineGradientButton(
+                    onPressed: () async {
+                      LoginHelper.checkingLogin(context, () {
+                        PageRestorationHelper.toCartPage(
+                          context,
+                          cartPageParameter: TabRedirectionCartPageParameter(
+                            tabRedirectionCartType: TabRedirectionCartType.warehouse
+                          )
+                        );
+                      });
+                    },
+                    text: "",
+                    childInterceptor: (style) {
+                      return Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Flexible(
+                              child: Text(
+                                "Send Personal Stuffs".tr,
+                                style: style?.copyWith(fontSize: 12),
+                                textAlign: TextAlign.center,
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 1,
                               ),
-                            );
-                          }
+                            ),
+                            const SizedBox(width: 10),
+                            ModifiedSvgPicture.asset(Constant.vectorArrow, color: Colors.white)
+                          ],
                         ),
-                      ),
-                      const SizedBox(width: 10),
-                      ModifiedSvgPicture.asset(Constant.vectorArrow, color: Colors.white)
-                    ],
+                      );
+                    },
+                    outlineGradientButtonType: OutlineGradientButtonType.outline,
+                    outlineGradientButtonVariation: OutlineGradientButtonVariation.variation1,
+                    customGradientButtonVariation: (outlineGradientButtonType) {
+                      return CustomGradientButtonVariation(
+                        outlineGradientButtonType: outlineGradientButtonType,
+                        gradient: Constant.buttonGradient4,
+                        backgroundColor: Colors.transparent,
+                        textStyle: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold
+                        )
+                      );
+                    },
                   ),
-                ),
-              );
-            }()
-          )
-        ],
+                );
+              }()
+            )
+          ],
+        ),
       );
     } else if (item is ProductDetailImageListItemControllerState) {
       List<ProductEntry> productEntryList = item.productEntryList;
@@ -1114,6 +1177,7 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
         return HorizontalShortCartItem(
           cart: item.cart,
           onSelectCart: item.onSelectCart,
+          elevation: item.elevation,
         );
       } else if (item is VerticalShortCartListItemControllerState) {
         if (item is ShimmerVerticalShortCartListItemControllerState) {
@@ -1429,6 +1493,49 @@ class ListItemPagingControllerStatePagedChildBuilderDelegate<PageKeyType> extend
       } else {
         return Container();
       }
+    } else if (item is SelectLanguageListItemControllerState) {
+      if (item is VerticalSelectLanguageListItemControllerState) {
+        return VerticalSelectLanguageItem(
+          selectLanguage: item.selectLanguage,
+          isSelected: item.isSelected,
+          onSelectLanguage: item.onSelectLanguage
+        );
+      } else {
+        return Container();
+      }
+    } else if (item is ProfileMenuInCardGroupListItemControllerState) {
+      int j = 0;
+      List<ProfileMenuInCardListItemControllerState> profileMenuInCardListItemControllerStateList = item.profileMenuInCardListItemControllerStateList;
+      List<ProfileMenuInCardItem> profileMenuInCardItemList = [];
+      while (j < profileMenuInCardListItemControllerStateList.length) {
+        ProfileMenuInCardListItemControllerState profileMenuInCardListItemControllerState = profileMenuInCardListItemControllerStateList[j];
+        profileMenuInCardListItemControllerState.withSeparator = j > 0;
+        profileMenuInCardItemList.add(
+          _itemBuilder(context, profileMenuInCardListItemControllerState, index) as ProfileMenuInCardItem
+        );
+        j++;
+      }
+      return ProfileMenuInCardGroup(
+        title: item.title,
+        isExpand: item.isExpand,
+        onExpand: item.canExpand ? () {
+          item.isExpand = !item.isExpand;
+          item.onUpdateState();
+        } : null,
+        profileMenuInCardItemList: profileMenuInCardItemList
+      );
+    } else if (item is ProfileMenuInCardListItemControllerState) {
+      return ProfileMenuInCardItem(
+        onTap: item.onTap,
+        icon: item.icon,
+        title: item.title,
+        titleInterceptor: item.titleInterceptor,
+        description: item.description,
+        descriptionInterceptor: item.descriptionInterceptor,
+        color: item.color,
+        padding: item.padding,
+        withSeparator: item.withSeparator
+      );
     } else {
       return Container();
     }

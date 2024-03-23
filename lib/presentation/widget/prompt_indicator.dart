@@ -10,6 +10,8 @@ enum PromptIndicatorType {
 
 class PromptIndicator extends StatelessWidget {
   final Image? image;
+  final double? imageWidth;
+  final double? imageHeight;
   final String? promptTitleText;
   final String? promptText;
   final String? buttonText;
@@ -19,6 +21,8 @@ class PromptIndicator extends StatelessWidget {
   const PromptIndicator({
     Key? key,
     this.image,
+    this.imageWidth,
+    this.imageHeight,
     this.promptTitleText,
     this.promptText,
     this.buttonText,
@@ -31,6 +35,8 @@ class PromptIndicator extends StatelessWidget {
     if (promptIndicatorType == PromptIndicatorType.vertical) {
       return _VerticalPromptIndicator(
         image: image,
+        imageWidth: imageWidth,
+        imageHeight: imageHeight,
         promptTitleText: promptTitleText,
         promptText: promptText,
         buttonText: buttonText,
@@ -39,6 +45,8 @@ class PromptIndicator extends StatelessWidget {
     } else {
       return _HorizontalPromptIndicator(
         image: image,
+        imageWidth: imageWidth,
+        imageHeight: imageHeight,
         promptTitleText: promptTitleText,
         promptText: promptText,
         buttonText: buttonText,
@@ -50,6 +58,8 @@ class PromptIndicator extends StatelessWidget {
 
 class _VerticalPromptIndicator extends StatelessWidget {
   final Image? image;
+  final double? imageWidth;
+  final double? imageHeight;
   final String? promptTitleText;
   final String? promptText;
   final String? buttonText;
@@ -58,6 +68,8 @@ class _VerticalPromptIndicator extends StatelessWidget {
   const _VerticalPromptIndicator({
     Key? key,
     this.image,
+    this.imageWidth,
+    this.imageHeight,
     this.promptTitleText,
     this.promptText,
     this.buttonText,
@@ -68,8 +80,8 @@ class _VerticalPromptIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     List<Widget> columnWidget = <Widget>[
       SizedBox(
-        height: 50.w,
-        width: double.infinity,
+        width: imageWidth ?? double.infinity,
+        height: imageHeight ?? 50.w,
         child: FittedBox(
           child: image
         )
@@ -79,20 +91,21 @@ class _VerticalPromptIndicator extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              promptTitleText ?? "",
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 14.sp,
-                fontWeight: FontWeight.bold
+            if (!promptTitleText.isEmptyString) ...[
+              Text(
+                promptTitleText ?? "",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.bold
+                ),
+                textAlign: TextAlign.center
               ),
-              textAlign: TextAlign.center
-            ),
-            if (!promptText.isEmptyString)
-              ...[
-                const SizedBox(height: 4.0),
-                Text(promptText ?? "", style: const TextStyle(color: Colors.black), textAlign: TextAlign.center)
-              ]
+            ],
+            if (!promptText.isEmptyString) ...[
+              const SizedBox(height: 4.0),
+              Text(promptText ?? "", style: const TextStyle(color: Colors.black), textAlign: TextAlign.center)
+            ]
           ]
         ),
       ),
@@ -132,6 +145,8 @@ class _VerticalPromptIndicator extends StatelessWidget {
 
 class _HorizontalPromptIndicator extends StatelessWidget {
   final Image? image;
+  final double? imageWidth;
+  final double? imageHeight;
   final String? promptTitleText;
   final String? promptText;
   final String? buttonText;
@@ -140,6 +155,8 @@ class _HorizontalPromptIndicator extends StatelessWidget {
   const _HorizontalPromptIndicator({
     Key? key,
     this.image,
+    this.imageWidth,
+    this.imageHeight,
     this.promptTitleText,
     this.promptText,
     this.buttonText,
@@ -150,7 +167,8 @@ class _HorizontalPromptIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     List<Widget> rowWidget = <Widget>[
       SizedBox(
-        height: 55,
+        width: imageWidth,
+        height: imageHeight ?? 55,
         child: FittedBox(
           child: image
         )
@@ -161,20 +179,21 @@ class _HorizontalPromptIndicator extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              promptTitleText ?? "",
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 16,
-                fontWeight: FontWeight.bold
+            if (promptTitleText.isEmptyString) ...[
+              Text(
+                promptTitleText ?? "",
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold
+                ),
+                textAlign: TextAlign.start
               ),
-              textAlign: TextAlign.start
-            ),
-            if (!promptText.isEmptyString)
-              ...[
-                const SizedBox(height: 4.0),
-                Text(promptText ?? "", style: const TextStyle(color: Colors.black), textAlign: TextAlign.start)
-              ]
+            ],
+            if (!promptText.isEmptyString) ...[
+              const SizedBox(height: 4.0),
+              Text(promptText ?? "", style: const TextStyle(color: Colors.black), textAlign: TextAlign.start)
+            ]
           ]
         ),
       ),

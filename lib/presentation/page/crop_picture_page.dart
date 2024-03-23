@@ -48,7 +48,7 @@ class CropPicturePage extends RestorableGetxPage<_CropPicturePageRestoration> {
     );
     return ModifiedScaffold(
       appBar: ModifiedAppBar(
-        title: Text("Crop Profile".tr),
+        title: Text("Crop Profile Photo".tr),
         titleInterceptor: (context, title) => Row(
           children: [
             Expanded(

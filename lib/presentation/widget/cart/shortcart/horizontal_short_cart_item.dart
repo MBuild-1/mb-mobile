@@ -10,6 +10,7 @@ class HorizontalShortCartItem extends ShortCartItem {
   const HorizontalShortCartItem({
     super.key,
     required super.cart,
-    super.onSelectCart
+    super.onSelectCart,
+    super.elevation = 3
   });
 }

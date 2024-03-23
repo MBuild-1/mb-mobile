@@ -233,13 +233,23 @@ class HomeMainMenuSubController extends BaseGetxController {
         onObserveSuccessDynamicItemActionState: (title, description, loadDataResult) {
           List<ProductCategory> productCategoryList = loadDataResult.resultIfSuccess!;
           if (_homeMainMenuDelegate != null) {
-            return _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveSuccessLoadProductCategoryCarousel(
-              OnObserveSuccessLoadProductCategoryCarouselParameter(
-                title: title,
-                description: description,
-                productCategoryList: productCategoryList,
-                data: Constant.carouselKeyIndonesianCategoryProduct
-              )
+            return CompoundListItemControllerState(
+              listItemControllerState: [
+                VirtualSpacingListItemControllerState(
+                  height: 8.0
+                ),
+                _homeMainMenuDelegate!.onObserveLoadProductDelegate.onObserveSuccessLoadProductCategoryCarousel(
+                  OnObserveSuccessLoadProductCategoryCarouselParameter(
+                    title: title,
+                    description: description,
+                    productCategoryList: productCategoryList,
+                    data: Constant.carouselKeyIndonesianCategoryProduct
+                  )
+                ),
+                VirtualSpacingListItemControllerState(
+                  height: 16.0
+                )
+              ]
             );
           }
           throw MessageError(title: "Home main menu delegate must be initialized");
@@ -489,10 +499,12 @@ class HomeMainMenuSubController extends BaseGetxController {
           if (bannerLoadDataResult.isFailedBecauseCancellation) {
             return;
           }
+          String bannerTitle = "";
           if (bannerLoadDataResult.isSuccess) {
             List<TransparentBanner> transparentBannerList = bannerLoadDataResult.resultIfSuccess!;
             if (transparentBannerList.isNotEmpty) {
               TransparentBanner transparentBanner = transparentBannerList.first;
+              bannerTitle = transparentBanner.title;
               Banner banner = Banner(
                 id: transparentBanner.id,
                 imageUrl: transparentBanner.imageUrl,
@@ -529,6 +541,7 @@ class HomeMainMenuSubController extends BaseGetxController {
           }
           observer(title, description, productEntryPagingDataResult.map<LoadSponsorBannerAndContentResponse>(
             (value) => LoadSponsorBannerAndContentResponse(
+              brandName: bannerTitle,
               sponsorTransparentBannerList: bannerLoadDataResult.resultIfSuccess!,
               sponsorProductEntryList: productEntryPagingDataResult.resultIfSuccess!
             )
@@ -1208,10 +1221,12 @@ class ProductSponsorTransparentBannerParameterData {
 }
 
 class LoadSponsorBannerAndContentResponse {
+  String brandName;
   List<TransparentBanner> sponsorTransparentBannerList;
   List<ProductEntry> sponsorProductEntryList;
 
   LoadSponsorBannerAndContentResponse({
+    required this.brandName,
     required this.sponsorTransparentBannerList,
     required this.sponsorProductEntryList
   });

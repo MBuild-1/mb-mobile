@@ -33,6 +33,10 @@ typedef OnRemoveWishlistWithWishlist = void Function(Wishlist);
 typedef OnAddCartWithProductAppearanceData = void Function(ProductAppearanceData);
 typedef OnRemoveCartWithProductAppearanceData = void Function(ProductAppearanceData);
 
+enum ShowContentType {
+  onlyText, full
+}
+
 abstract class ProductItem extends StatelessWidget {
   final ProductAppearanceData productAppearanceData;
   final OnAddWishlistWithProductAppearanceData? onAddWishlist;
@@ -47,7 +51,7 @@ abstract class ProductItem extends StatelessWidget {
   bool get showBadge => true;
 
   @protected
-  bool get showContent => true;
+  ShowContentType get showContent => ShowContentType.full;
 
   @protected
   String get priceString => _priceString(productAppearanceData.price.toDouble());
@@ -175,13 +179,13 @@ abstract class ProductItem extends StatelessWidget {
                       )
                     ),
                   ],
-                  if (showPicture && showContent) ...[
+                  if (showPicture) ...[
                     ModifiedDivider(
                       lineHeight: 3.5,
                       lineColor: Constant.colorGrey5
                     ),
                   ],
-                  if (showContent) ...[
+                  if (showContent == ShowContentType.full) ...[
                     Padding(
                       padding: const EdgeInsets.all(10),
                       child: Column(
@@ -279,6 +283,24 @@ abstract class ProductItem extends StatelessWidget {
                         ],
                       ),
                     ),
+                  ] else ...[
+                    Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Tooltip(
+                            message: productAppearanceData.name.toStringNonNull,
+                            child: Text(
+                              productAppearanceData.name.toStringNonNull,
+                              style: const TextStyle(),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis
+                            ),
+                          ),
+                        ]
+                      )
+                    )
                   ]
                 ],
               )

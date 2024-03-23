@@ -7,6 +7,7 @@ import '../../misc/constant.dart';
 import '../../misc/dialog_helper.dart';
 import '../page/modaldialogpage/select_countries_modal_dialog_page.dart';
 import 'button/custombutton/sized_outline_gradient_button.dart';
+import 'modified_country_flag.dart';
 
 class SelectCountryIndicator extends StatelessWidget {
   final Country? selectedCountry;
@@ -48,10 +49,9 @@ class SelectCountryIndicator extends StatelessWidget {
           style: getDefaultTextStyle()
         ) : Row(
           children: [
-            SizedBox(
+            ModifiedCountryFlag(
               width: 16,
-              height: 12,
-              child: CountryFlags.flag(selectedCountry!.code),
+              countryCode: selectedCountry!.code,
             ),
             const SizedBox(width: 10),
             Text(
