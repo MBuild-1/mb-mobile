@@ -35,12 +35,14 @@ class GetUserAndLoadedRelatedUserDataUseCase {
         String? countryId = userProfile.countryId;
         UserAndLoadedRelatedUserData returnValue({
           required String countryCode,
-          required String countryName
+          required String countryName,
+          required String countryId
         }) {
           return UserAndLoadedRelatedUserData(
             user: user,
             countryName: countryName,
-            countryCode: countryCode
+            countryCode: countryCode,
+            countryId: countryId
           );
         }
         if (countryId.isNotEmptyString) {
@@ -51,7 +53,8 @@ class GetUserAndLoadedRelatedUserDataUseCase {
           ).map(
             (value) => returnValue(
               countryCode: value.country.code,
-              countryName: value.country.name
+              countryName: value.country.name,
+              countryId: value.country.id
             )
           );
         } else {
@@ -59,7 +62,8 @@ class GetUserAndLoadedRelatedUserDataUseCase {
           return SuccessLoadDataResult<UserAndLoadedRelatedUserData>(
             value: returnValue(
               countryCode: "ID",
-              countryName: "Indonesia"
+              countryName: "Indonesia",
+              countryId: "19e0e323-35b2-445c-9a0a-6c62fa9ee8d4"
             )
           );
         }
