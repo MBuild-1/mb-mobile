@@ -910,9 +910,12 @@ class _WidgetHelperImpl {
               AppBarIconButton(
                 padding: const EdgeInsets.all(6.0),
                 size: searchAppBarDimension.iconButtonSize,
-                icon: ModifiedSvgPicture.asset(
-                  Constant.vectorMenuSearchBarTransaction,
-                  overrideDefaultColorWithSingleColor: false
+                icon: Transform.scale(
+                  scale: 0.9,
+                  child: ModifiedSvgPicture.asset(
+                    Constant.vectorMenuSearchBarTransaction,
+                    overrideDefaultColorWithSingleColor: false
+                  ),
                 ),
                 overlay: Positioned(
                   top: 0,
@@ -927,9 +930,13 @@ class _WidgetHelperImpl {
               AppBarIconButton(
                 padding: const EdgeInsets.all(6.0),
                 size: searchAppBarDimension.iconButtonSize,
-                icon: ModifiedSvgPicture.asset(
-                  Constant.vectorMenuSearchBarCart,
-                  overrideDefaultColorWithSingleColor: false
+                icon: Transform.scale(
+                  scale: 1.1,
+                  origin: const Offset(0, 10),
+                  child: ModifiedSvgPicture.asset(
+                    Constant.vectorMenuSearchBarCart,
+                    overrideDefaultColorWithSingleColor: false
+                  ),
                 ),
                 overlay: Positioned(
                   top: 0,
@@ -944,9 +951,12 @@ class _WidgetHelperImpl {
               AppBarIconButton(
                 padding: const EdgeInsets.all(6.0),
                 size: searchAppBarDimension.iconButtonSize,
-                icon: ModifiedSvgPicture.asset(
-                  Constant.vectorMenuSearchBarChat,
-                  overrideDefaultColorWithSingleColor: false
+                icon: Transform.scale(
+                  scale: 0.8,
+                  child: ModifiedSvgPicture.asset(
+                    Constant.vectorMenuSearchBarChat,
+                    overrideDefaultColorWithSingleColor: false
+                  ),
                 ),
                 overlay: Positioned(
                   top: 0,
