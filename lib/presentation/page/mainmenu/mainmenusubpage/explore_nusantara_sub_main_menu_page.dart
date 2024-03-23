@@ -311,6 +311,19 @@ class _StatefulExploreNusantaraMainMenuSubControllerMediatorWidgetState extends 
                             child: Stack(
                               children: [
                                 ExploreNusantaraBackgroundModifiedCachedNetworkImage(imageUrl: banner),
+                                Container(
+                                  color: () {
+                                    Color? color;
+                                    LoginHelper.checkingLogin(
+                                      context,
+                                      () {},
+                                      resultIfHasNotBeenLogin: () {
+                                        color = Colors.white.withOpacity(0.7);
+                                      }
+                                    );
+                                    return color;
+                                  }()
+                                )
                               ],
                             ),
                           ),
