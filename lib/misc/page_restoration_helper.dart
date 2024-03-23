@@ -59,6 +59,7 @@ import '../presentation/page/shared_cart_page.dart';
 import '../presentation/page/videopage/video_page.dart';
 import '../presentation/page/web_viewer_page.dart';
 import 'constant.dart';
+import 'dialog_helper.dart';
 import 'getextended/get_extended.dart';
 import 'login_helper.dart';
 
@@ -204,12 +205,14 @@ class _PageRestorationHelperImpl {
   }
 
   void toCouponPage(BuildContext context, String? couponId) {
-    PageRestorationHelper.findPageRestorationMixin<CouponPageRestorationMixin>(
-      onGetxPageRestorationFound: (restoration) {
-        restoration.couponPageRestorableRouteFuture.present(couponId.toEmptyStringNonNull);
-      },
-      context: context
-    );
+    DialogHelper.showPromptUnderConstruction(context);
+    return;
+    // PageRestorationHelper.findPageRestorationMixin<CouponPageRestorationMixin>(
+    //   onGetxPageRestorationFound: (restoration) {
+    //     restoration.couponPageRestorableRouteFuture.present(couponId.toEmptyStringNonNull);
+    //   },
+    //   context: context
+    // );
   }
 
   void toCartPage(BuildContext context, {CartPageParameter? cartPageParameter}) {
