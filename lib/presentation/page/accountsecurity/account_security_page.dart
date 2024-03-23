@@ -246,7 +246,7 @@ class _StatefulAccountSecurityControllerMediatorWidgetState extends State<_State
                 ),
                 pinMenuListItemControllerState,
                 ProfileMenuListItemControllerState(
-                  onTap: (context) => PageRestorationHelper.toPersonalVerificationPage(context),
+                  onTap: (context) => DialogHelper.showPromptUnderConstruction(context),
                   title: 'Personal Data Verification'.tr,
                   descriptionInterceptor: descriptionInterceptor,
                   icon: null
