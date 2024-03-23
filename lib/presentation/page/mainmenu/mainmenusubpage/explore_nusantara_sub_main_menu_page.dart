@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:masterbagasi/misc/ext/load_data_result_ext.dart';
 import 'package:masterbagasi/misc/ext/string_ext.dart';
 import 'package:masterbagasi/presentation/widget/loaddataresultimplementer/load_data_result_implementer_directly.dart';
+import 'package:sizer/sizer.dart';
 import 'dart:math' as math;
 
 import '../../../../controller/mainmenucontroller/mainmenusubpagecontroller/explore_nusantara_main_menu_sub_controller.dart';
@@ -98,10 +99,12 @@ class _StatefulExploreNusantaraMainMenuSubControllerMediatorWidgetState extends 
             opacity: (1.0  - ((_scale - 1.0) / 0.5)).clamp(0.0, 1.0),
             child: Text(
               "Welcome To Nusantara".tr,
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold
+              style: TextStyle(
+                fontSize: (16.5).sp,
+                fontWeight: FontWeight.bold,
               ),
+              maxLines: 2,
+              textAlign: TextAlign.center,
             ),
           ),
         ),
