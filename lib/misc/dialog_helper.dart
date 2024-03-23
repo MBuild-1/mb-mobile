@@ -316,7 +316,11 @@ class _DialogHelperImpl {
                             Expanded(
                               child: Column(
                                 children: [
-
+                                  ModifiedSvgPicture.asset(
+                                    height: 100,
+                                    Constant.vectorBag,
+                                    overrideDefaultColorWithSingleColor: false
+                                  ),
                                   const SizedBox(height: 10),
                                   SizedOutlineGradientButton(
                                     onPressed: () async {
