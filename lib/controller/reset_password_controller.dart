@@ -11,6 +11,7 @@ import '../domain/entity/resetpassword/whatsapp/whatsapp_reset_password_paramete
 import '../domain/entity/user/user.dart';
 import '../domain/usecase/check_reset_password_use_case.dart';
 import '../domain/usecase/reset_password_use_case.dart';
+import '../misc/ValidatorHelper.dart';
 import '../misc/error/message_error.dart';
 import '../misc/error/validation_error.dart';
 import '../misc/load_data_result.dart';
@@ -54,7 +55,11 @@ class ResetPasswordController extends BaseGetxController {
     resetPasswordValidatorGroup = ResetPasswordValidatorGroup(
       resetPasswordCompoundValidator: PasswordCompoundValidator(
         passwordValidator: Validator(
-          onValidate: () => _resetPasswordDelegate!.onGetNewPasswordInput().isNotEmpty ? SuccessValidationResult() : FailedValidationResult(e: ValidationError(message: "${"Password is required".tr}."))
+          onValidate: () {
+            return ValidatorHelper.getPasswordValidator(
+              _resetPasswordDelegate!.onGetNewPasswordInput()
+            ).validate();
+          }
         ),
         passwordConfirmationValidator: Validator(
           onValidate: () {

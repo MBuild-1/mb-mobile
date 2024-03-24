@@ -179,7 +179,11 @@ class RegisterController extends BaseGetxController {
       ),
       passwordCompoundValidator: PasswordCompoundValidator(
         passwordValidator: Validator(
-          onValidate: () => !_registerDelegate!.onGetPasswordRegisterInput().isEmptyString ? SuccessValidationResult() : FailedValidationResult(e: ValidationError(message: "${"Password is required".tr}."))
+          onValidate: () {
+            return ValidatorHelper.getPasswordValidator(
+              _registerDelegate!.onGetPasswordRegisterInput()
+            ).validate();
+          },
         ),
         passwordConfirmationValidator: Validator(
           onValidate: () {
