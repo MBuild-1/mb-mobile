@@ -225,6 +225,7 @@ class _StatefulRegisterControllerMediatorWidget extends StatefulWidget {
 class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegisterControllerMediatorWidget> {
   late LoginNotifier _loginNotifier;
   final TextEditingController _emailTextEditingController = TextEditingController();
+  final TextEditingController _usernameTextEditingController = TextEditingController();
   final TextEditingController _nameTextEditingController = TextEditingController();
   final TextEditingController _passwordTextEditingController = TextEditingController();
   final TextEditingController _passwordConfirmationTextEditingController = TextEditingController();
@@ -260,6 +261,7 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
       RegisterDelegate(
         onUnfocusAllWidget: () => FocusScope.of(context).unfocus(),
         onGetEmailOrPhoneNumberRegisterInput: () => _emailTextEditingController.text,
+        onGetUsernameRegisterInput: () => _usernameTextEditingController.text,
         onGetNameRegisterInput: () => _nameTextEditingController.text,
         onGetGenderRegisterInput: () => (_selectedGender?.value).toEmptyStringNonNull,
         onGetPasswordRegisterInput: () => _passwordTextEditingController.text,
@@ -659,6 +661,26 @@ class _StatefulRegisterControllerMediatorWidgetState extends State<_StatefulRegi
                         return Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
+                            RxConsumer<Validator>(
+                              rxValue: widget.registerController.nameValidatorRx,
+                              onConsumeValue: (context, value) => Field(
+                                child: (context, validationResult, validator) => ModifiedTextField(
+                                  isError: validationResult.isFailed,
+                                  controller: _usernameTextEditingController,
+                                  decoration: DefaultInputDecoration(
+                                    label: Text("Username".tr),
+                                    labelStyle: const TextStyle(color: Colors.black),
+                                    floatingLabelStyle: const TextStyle(color: Colors.black),
+                                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                                    prefixText: "@"
+                                  ),
+                                  onChanged: (value) => validator?.validate(),
+                                  textInputAction: TextInputAction.next,
+                                ),
+                                validator: value,
+                              ),
+                            ),
+                            SizedBox(height: 3.h),
                             RxConsumer<Validator>(
                               rxValue: widget.registerController.nameValidatorRx,
                               onConsumeValue: (context, value) => Field(

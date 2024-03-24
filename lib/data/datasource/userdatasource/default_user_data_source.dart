@@ -225,6 +225,7 @@ class DefaultUserDataSource implements UserDataSource {
     FormData formData = FormData.fromMap(
       <String, dynamic> {
         "credential": registerSecondStepParameter.credential,
+        "username": registerSecondStepParameter.username,
         "name": registerSecondStepParameter.name,
         "password": registerSecondStepParameter.password,
         "password_confirmation": registerSecondStepParameter.passwordConfirmation,

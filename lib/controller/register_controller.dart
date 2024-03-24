@@ -97,6 +97,7 @@ class RegisterController extends BaseGetxController {
   late final RegisterValidatorGroup registerValidatorGroup;
 
   // Register Second Step
+  late Rx<Validator> usernameValidatorRx;
   late Rx<Validator> nameValidatorRx;
   late Rx<Validator> genderValidatorRx;
   late Rx<PasswordCompoundValidator> passwordCompoundValidatorRx;
@@ -171,6 +172,9 @@ class RegisterController extends BaseGetxController {
 
     // Register second step validator group
     registerSecondStepValidatorGroup = RegisterSecondStepValidatorGroup(
+      usernameValidator: Validator(
+        onValidate: () => !_registerDelegate!.onGetUsernameRegisterInput().isEmptyString ? SuccessValidationResult() : FailedValidationResult(e: ValidationError(message: "${"Username is required".tr}."))
+      ),
       nameValidator: Validator(
         onValidate: () => !_registerDelegate!.onGetNameRegisterInput().isEmptyString ? SuccessValidationResult() : FailedValidationResult(e: ValidationError(message: "${"Name is required".tr}."))
       ),
@@ -198,6 +202,7 @@ class RegisterController extends BaseGetxController {
         )
       )
     );
+    usernameValidatorRx = registerSecondStepValidatorGroup.genderValidator.obs;
     nameValidatorRx = registerSecondStepValidatorGroup.nameValidator.obs;
     genderValidatorRx = registerSecondStepValidatorGroup.genderValidator.obs;
     passwordCompoundValidatorRx = registerSecondStepValidatorGroup.passwordCompoundValidator.obs;
@@ -335,6 +340,7 @@ class RegisterController extends BaseGetxController {
         LoadDataResult<RegisterSecondStepResponse> registerSecondStepLoadDataResult = await registerSecondStepUseCase.execute(
           RegisterSecondStepParameter(
             credential: _credential.toEmptyStringNonNull,
+            username: _registerDelegate!.onGetUsernameRegisterInput(),
             name: _registerDelegate!.onGetNameRegisterInput(),
             password: _registerDelegate!.onGetPasswordRegisterInput(),
             passwordConfirmation: _registerDelegate!.onGetPasswordConfirmationRegisterInput(),
@@ -531,6 +537,7 @@ class RegisterDelegate {
   OnUnfocusAllWidget onUnfocusAllWidget;
   _OnRegisterBack onRegisterBack;
   _OnGetRegisterInput onGetEmailOrPhoneNumberRegisterInput;
+  _OnGetRegisterInput onGetUsernameRegisterInput;
   _OnGetRegisterInput onGetNameRegisterInput;
   _OnGetRegisterInput onGetGenderRegisterInput;
   _OnGetRegisterInput onGetPasswordRegisterInput;
@@ -560,6 +567,7 @@ class RegisterDelegate {
     required this.onUnfocusAllWidget,
     required this.onRegisterBack,
     required this.onGetEmailOrPhoneNumberRegisterInput,
+    required this.onGetUsernameRegisterInput,
     required this.onGetNameRegisterInput,
     required this.onGetGenderRegisterInput,
     required this.onGetPasswordRegisterInput,
