@@ -326,11 +326,15 @@ class _PageRestorationHelperImpl {
     );
   }
 
-  void toAddressPage(BuildContext context) {
+  void toAddressPage(BuildContext context, {AddressPageParameter? addressPageParameter}) {
     LoginHelper.checkingLogin(context, () {
       PageRestorationHelper.findPageRestorationMixin<AddressPageRestorationMixin>(
         onGetxPageRestorationFound: (restoration) {
-          restoration.addressPageRestorableRouteFuture.present();
+          restoration.addressPageRestorableRouteFuture.present(
+            (addressPageParameter ?? AddressPageParameter(
+              directToAddAddress: false
+            )).toJsonString()
+          );
         },
         context: context
       );

@@ -17,6 +17,7 @@ import '../../misc/controllerstate/listitemcontrollerstate/addresslistitemcontro
 import '../../misc/controllerstate/listitemcontrollerstate/list_item_controller_state.dart';
 import '../../misc/controllerstate/paging_controller_state.dart';
 import '../../misc/dialog_helper.dart';
+import '../../misc/error/message_error.dart';
 import '../../misc/errorprovider/error_provider.dart';
 import '../../misc/getextended/get_extended.dart';
 import '../../misc/getextended/get_restorable_route_future.dart';
@@ -30,6 +31,7 @@ import '../../misc/paging/modified_paging_controller.dart';
 import '../../misc/paging/pagingcontrollerstatepagedchildbuilderdelegate/list_item_paging_controller_state_paged_child_builder_delegate.dart';
 import '../../misc/paging/pagingresult/paging_data_result.dart';
 import '../../misc/paging/pagingresult/paging_result.dart';
+import '../../misc/string_util.dart';
 import '../../misc/toast_helper.dart';
 import '../widget/button/custombutton/sized_outline_gradient_button.dart';
 import '../widget/modified_paged_list_view.dart';
@@ -42,10 +44,12 @@ import 'modify_address_page.dart';
 class AddressPage extends RestorableGetxPage<_AddressPageRestoration> {
   late final ControllerMember<AddressController> _addressController = ControllerMember<AddressController>().addToControllerManager(controllerManager);
 
+  final AddressPageParameter addressPageParameter;
   final _StatefulAddressControllerMediatorWidgetDelegate _statefulAddressControllerMediatorWidgetDelegate = _StatefulAddressControllerMediatorWidgetDelegate();
 
   AddressPage({
-    Key? key
+    Key? key,
+    required this.addressPageParameter
   }) : super(key: key, pageRestorationId: () => "address-page");
 
   @override
@@ -78,6 +82,7 @@ class AddressPage extends RestorableGetxPage<_AddressPageRestoration> {
   Widget buildPage(BuildContext context) {
     return _StatefulAddressControllerMediatorWidget(
       addressController: _addressController.controller,
+      addressPageParameter: addressPageParameter,
       statefulAddressControllerMediatorWidgetDelegate: _statefulAddressControllerMediatorWidgetDelegate
     );
   }
@@ -111,13 +116,21 @@ class _AddressPageRestoration extends ExtendedMixableGetxPageRestoration with Mo
 }
 
 class AddressPageGetPageBuilderAssistant extends GetPageBuilderAssistant {
-  AddressPageGetPageBuilderAssistant();
+  final AddressPageParameter addressPageParameter;
+
+  AddressPageGetPageBuilderAssistant({
+    required this.addressPageParameter
+  });
 
   @override
-  GetPageBuilder get pageBuilder => (() => AddressPage());
+  GetPageBuilder get pageBuilder => (() => AddressPage(
+    addressPageParameter: addressPageParameter
+  ));
 
   @override
-  GetPageBuilder get pageWithOuterGetxBuilder => (() => GetxPageBuilder.buildRestorableGetxPage(AddressPage()));
+  GetPageBuilder get pageWithOuterGetxBuilder => (() => GetxPageBuilder.buildRestorableGetxPage(
+    AddressPage(addressPageParameter: addressPageParameter)
+  ));
 }
 
 mixin AddressPageRestorationMixin on MixableGetxPageRestoration {
@@ -165,9 +178,15 @@ class AddressPageRestorableRouteFuture extends GetRestorableRouteFuture {
   }
 
   static Route<bool?>? _getRoute([Object? arguments]) {
+    if (arguments is! String) {
+      throw MessageError(message: "Arguments must be a String");
+    }
+    AddressPageParameter addressPageParameter = arguments.toAddressPageParameter();
     return GetExtended.toWithGetPageRouteReturnValue<bool?>(
       GetxPageBuilder.buildRestorableGetxPageBuilder(
-        AddressPageGetPageBuilderAssistant()
+        AddressPageGetPageBuilderAssistant(
+          addressPageParameter: addressPageParameter
+        )
       ),
     );
   }
@@ -200,10 +219,12 @@ class _StatefulAddressControllerMediatorWidgetDelegate {
 
 class _StatefulAddressControllerMediatorWidget extends StatefulWidget {
   final AddressController addressController;
+  final AddressPageParameter addressPageParameter;
   final _StatefulAddressControllerMediatorWidgetDelegate statefulAddressControllerMediatorWidgetDelegate;
 
   const _StatefulAddressControllerMediatorWidget({
     required this.addressController,
+    required this.addressPageParameter,
     required this.statefulAddressControllerMediatorWidgetDelegate
   });
 
@@ -236,6 +257,20 @@ class _StatefulAddressControllerMediatorWidgetState extends State<_StatefulAddre
     );
     _addressListItemPagingControllerState.isPagingControllerExist = true;
     widget.statefulAddressControllerMediatorWidgetDelegate.onRefreshAddressList = () => _addressListItemPagingController.refresh();
+    if (widget.addressPageParameter.directToAddAddress) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        _gotoModifyAddressPage();
+      });
+    }
+  }
+
+  void _gotoModifyAddressPage() {
+    PageRestorationHelper.toModifyAddressPage(
+      context,
+      ModifyAddressPageParameter(
+        modifyAddressPageParameterValue: null
+      )
+    );
   }
 
   Future<LoadDataResult<PagingResult<ListItemControllerState>>> _addressListItemPagingControllerStateListener(int pageKey, List<ListItemControllerState>? listItemControllerStateList) async {
@@ -320,12 +355,7 @@ class _StatefulAddressControllerMediatorWidgetState extends State<_StatefulAddre
                 softWrap: false,
                 overflow: TextOverflow.ellipsis,
                 child: GestureDetector(
-                  onTap: () => PageRestorationHelper.toModifyAddressPage(
-                    context,
-                    ModifyAddressPageParameter(
-                      modifyAddressPageParameterValue: null
-                    )
-                  ),
+                  onTap: _gotoModifyAddressPage,
                   child: Text("Add Address".tr),
                 ),
               ),
@@ -382,6 +412,33 @@ class _StatefulAddressControllerMediatorWidgetState extends State<_StatefulAddre
           )
         )
       ),
+    );
+  }
+}
+
+class AddressPageParameter {
+  bool directToAddAddress;
+
+  AddressPageParameter({
+    required this.directToAddAddress
+  });
+}
+
+extension AddressPageParameterExt on AddressPageParameter {
+  String toJsonString() => StringUtil.encodeJson(
+    () {
+      return <String, dynamic>{
+        "direct_to_add_address": directToAddAddress ? "1" : "0",
+      };
+    }()
+  );
+}
+
+extension AddressPageParameterStringExt on String {
+  AddressPageParameter toAddressPageParameter() {
+    Map<String, dynamic> result = StringUtil.decodeJson(this);
+    return AddressPageParameter(
+      directToAddAddress: result["direct_to_add_address"] == "1"
     );
   }
 }

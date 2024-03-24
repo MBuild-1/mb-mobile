@@ -86,6 +86,7 @@ import '../../../widget/modifiedappbar/main_menu_search_app_bar.dart';
 import '../../../widget/modifiedcachednetworkimage/transparent_banner_modified_cached_network_image.dart';
 import '../../../widget/tap_area.dart';
 import '../../../widget/titleanddescriptionitem/title_and_description_item.dart';
+import '../../address_page.dart';
 import '../../getx_page.dart';
 import '../../modaldialogpage/check_rates_for_various_countries_modal_dialog_page.dart';
 import '../../modaldialogpage/select_address_modal_dialog_page.dart';
@@ -1016,7 +1017,12 @@ class _StatefulHomeMainMenuSubControllerMediatorWidgetState extends State<_State
                 onAddressSelectedChanged: (address) {
                   onObserveLoadCurrentAddressParameter.repeatableDynamicItemCarouselAdditionalParameter.onRepeatLoading();
                 },
-                onGotoAddAddress: () => PageRestorationHelper.toAddressPage(context),
+                onGotoAddAddress: () => PageRestorationHelper.toAddressPage(
+                  context,
+                  addressPageParameter: AddressPageParameter(
+                    directToAddAddress: true
+                  )
+                ),
                 selectAddressModalDialogPageActionDelegate: selectAddressModalDialogPageActionDelegate
               ),
             ]
